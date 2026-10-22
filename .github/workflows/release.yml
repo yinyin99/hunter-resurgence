@@ -1,0 +1,55 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet build tools/backup -c Release
+      - run: dotnet run --project tools/backup -c Release --no-build -- --selftest
+      # One repository secret per settings.json key. Values are never printed; the required ones must be non-empty.
+      - name: Write settings.json
+        shell: pwsh
+        env:
+          API_HOST: ${{ secrets.API_HOST }}
+          APIV2_HOST: ${{ secrets.APIV2_HOST }}
+          WEB_HOST: ${{ secrets.WEB_HOST }}
+          PHOTO_HOST: ${{ secrets.PHOTO_HOST }}
+          STATIC_HOST: ${{ secrets.STATIC_HOST }}
+          OAUTH_CONSUMER_KEY: ${{ secrets.OAUTH_CONSUMER_KEY }}
+          CLIENT_EXE: ${{ secrets.CLIENT_EXE }}
+        run: |
+          $s = [ordered]@{
+            client_exe         = $env:CLIENT_EXE
+            oauth_consumer_key = $env:OAUTH_CONSUMER_KEY
+            api_host           = $env:API_HOST
+            apiv2_host         = $env:APIV2_HOST
+            web_host           = $env:WEB_HOST
+            photo_host         = $env:PHOTO_HOST
+            static_host        = $env:STATIC_HOST
+          }
+          foreach ($k in 'client_exe','oauth_consumer_key','api_host','apiv2_host','web_host') {
+            if (-not $s[$k]) { throw "repository secret for $k is missing" }
+          }
+          foreach ($k in 'photo_host','static_host') { if (-not $s[$k]) { $s.Remove($k) } }
+          $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
+      - name: Publish and zip
+        shell: cmd
+        run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json"
+      - name: Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          $zip = "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"
+          $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip)." | Set-Content notes.md
+          gh release create $env:TAG $zip --title $env:TAG --notes-file notes.md
