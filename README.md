@@ -8,15 +8,6 @@ Unofficial fan project. Not affiliated with, endorsed by or connected to the dev
 
 Licensed under the [GNU AGPL-3.0](LICENSE).
 
-## Status
-
-| Part | State |
-|---|---|
-| Profile backup tool | available (`tools/backup`) |
-| Community server | later |
-| Launcher | later |
-| Website | later |
-
 ## For players: the backup tool
 
 A small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. The app speaks English, French, Spanish, Portuguese, German and Russian, follows your Windows language and can be switched in the window. Details: [docs/backup.md](docs/backup.md).
@@ -40,6 +31,24 @@ To check that the zip was built by this repository's release workflow from its p
 ```
 gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 ```
+
+## Roadmap
+
+The official servers close on 2026-11-11. The game needs them even for single-player hunts, so after that date it can be played again once step 4 is done. The order is fixed; there are no dates, because each step needs the one before.
+
+| Step | What it brings | State |
+|---|---|---|
+| Now | **Profile backup**: saves your profile while the official servers are still up | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
+| 1 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC. One-time setup; the game's files stay unchanged | First, after the shutdown |
+| 2 | **Community server**: the server code in this repository. Anyone can run a server with the data of their own game install; none of the game's files are in this repository | Planned |
+| 3 | **Accounts and restore**: sign in with your email (a one-time code, no password), optionally link your Steam account; upload your backup zip to get your inventory, trophies, statistics, skills, missions and wallet back | Planned |
+| 4 | **New launcher, play again**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it | Planned |
+| 5 | **New website**: profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only, nothing sold for real money), missions and friends | Planned |
+| Later | Trophy lodge and bait-site pages inside the game, multiplayer, competitions | - |
+
+A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip, and the Steam account recorded by a backup made in **My account** mode, prove that the backup is yours. Keep the zip private.
+
+**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`). Open an issue or a pull request.
 
 ## Build
 
