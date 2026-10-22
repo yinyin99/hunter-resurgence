@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- console exe for dotnet run and the self-check; the publish profile makes the published exe WinExe -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>backup</AssemblyName>
+    <RootNamespace>Backup</RootNamespace>
+    <Version>0.1.0</Version>
+    <UseWPF>true</UseWPF>
+    <!-- Program.Main runs the self-check and settings init before any WPF type is touched -->
+    <StartupObject>Backup.Program</StartupObject>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- WPF binding needs a real culture: with invariant globalization it throws "Cannot find non-neutral culture" -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- also set by the publish profile; here too so a build and a publish restore the same packages (the single-file setting adds the ILLink tasks) -->
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <!-- the WPF SDK drops these two from the implicit usings; Engine, Settings and SelfTest use them -->
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- placeholders only; build output only; publish.cmd copies the builder's real settings.json next to the published exe -->
+    <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
