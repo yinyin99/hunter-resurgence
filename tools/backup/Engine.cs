@@ -338,14 +338,15 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         foreach (var u in urls) await Picture(u, "photos/", true); // the photo host has its own lane
     }
 
-    /// <summary>A picture by URL: only https on a configured host. Otherwise logged and skipped; strict (gallery) counts that as a failure.</summary>
+    /// <summary>A picture by URL: only https on a configured host. Otherwise skipped; strict (gallery) records it as a failed request in the manifest, the others only log it.</summary>
     async Task Picture(string? url, string dirName, bool strict = false)
     {
         if (url != null && url.StartsWith("//")) url = "https:" + url;
         if (!Uri.TryCreate(url, UriKind.Absolute, out var u) || u.Scheme != "https" || !s.Hosts.Contains(u.Host))
         {
-            if (url is { Length: > 0 }) log($"! picture skipped (not an https URL on a configured host): {url}");
-            if (strict) Interlocked.Increment(ref failed);
+            const string why = "not an https URL on a configured host";
+            if (strict) Fail(new R(url ?? ""), dirName + "skipped_" + Clean(url ?? ""), null, url is { Length: > 0 } ? why : "no picture URL");
+            else if (url is { Length: > 0 }) log($"! picture skipped ({why}): {url}");
             progress(Interlocked.Increment(ref done), Volatile.Read(ref total));
             return;
         }

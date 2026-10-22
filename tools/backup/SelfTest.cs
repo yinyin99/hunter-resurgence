@@ -64,6 +64,7 @@ static class SelfTest
                 "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
                 "/game/user/7/lodges" => """[{"id":3}]""",
                 "/v1/Expedition/list" => """{"total":1,"expeditions":[{"id":42}]}""",
+                "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
                 "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
                 "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
                 _ => """{"ok":1}""",
@@ -222,6 +223,14 @@ static class SelfTest
             var mu = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
             Check(!fu.Seen.Any(p => p.StartsWith("/game/user/harvest/")) && eu.Failed == 0 && mu.All(e => e!["error"] == null) && !fu.Seen.Intersect(gameOnly).Any(), $"public profile: no game-only request, 0 failed ({fu.Seen.Count} requests)");
             Check(!JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!.AsObject().ContainsKey("steam_id64"), "public profile: never a steam_id64 even when Steam is signed in");
+
+            Directory.Delete(dir, true);
+            var fq = new Fake(tok);
+            var eq = Make(fq, key);
+            await eq.Run(tmp, "hh", null, new HashSet<string> { "photos" }, false, false, default);
+            var mq = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
+            var skipped = mq.Where(e => e!["error"]?.ToString() == "not an https URL on a configured host").ToList();
+            Check(eq.Failed == 1 && skipped.Count == 1 && fq.Seen.Count(p => p == "/g1.jpg") == 1 && !fq.Seen.Contains("/g2.jpg"), "gallery photo on an unconfigured host: one failed, one manifest entry with the reason, not fetched");
         }
         finally { Directory.Delete(tmp, true); }
     }
