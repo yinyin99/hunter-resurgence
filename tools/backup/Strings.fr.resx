@@ -74,7 +74,7 @@
     <value>Pseudo ou identifiant du profil public</value>
   </data>
   <data name="WhatToSave" xml:space="preserve">
-    <value>Quoi sauvegarder</value>
+    <value>À sauvegarder</value>
   </data>
   <data name="OutDir_Placeholder" xml:space="preserve">
     <value>Dossier de destination</value>
