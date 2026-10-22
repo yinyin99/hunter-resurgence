@@ -1,0 +1,7 @@
+bin/
+obj/
+settings.json
+*.zip
+# backup output
+backup-*/
+game-backup/
