@@ -14,8 +14,17 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-      - run: dotnet build tools/backup -c Release
-      - run: dotnet run --project tools/backup -c Release --no-build -- --selftest
+      # The tag is the only version: vX.Y.Z or vX.Y.Z-suffix, checked before anything is built.
+      - name: Version from the tag
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          $ver = $env:TAG -replace '^v', ''
+          if ($ver -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$') { throw "tag $env:TAG is not vMAJOR.MINOR.PATCH[-suffix]" }
+          "VERSION=$ver" >> $env:GITHUB_ENV
+      - run: dotnet build tools/backup -c Release -p:Version=${{ env.VERSION }}
+      - run: dotnet run --project tools/backup -c Release --no-build -p:Version=${{ env.VERSION }} -- --selftest
       # One repository secret per settings.json key. Values are never printed; every key is required, so a missing secret fails the release.
       - name: Write settings.json
         shell: pwsh
@@ -45,7 +54,7 @@ jobs:
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
       - name: Publish and zip
         shell: cmd
-        run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json"
+        run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json" -p:Version=${{ env.VERSION }}
       # Build provenance (attestations need a public repository on this plan: skipped while private).
       - name: Attest
         if: ${{ !github.event.repository.private }}
@@ -62,6 +71,14 @@ jobs:
         run: |
           $zip = "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"
           $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip)." | Set-Content notes.md
+          # checkout may turn an annotated tag into a lightweight one: fetch the real tag object, then use its message if there is one
+          git fetch --force origin "refs/tags/${env:TAG}:refs/tags/${env:TAG}"
+          $notes = ""
+          if ((git cat-file -t "refs/tags/$env:TAG") -eq "tag") {
+            $msg = (git tag -l --format='%(contents)' $env:TAG) -join "`n"
+            $notes = "## Changes`n`n$($msg.Trim())`n`n"
+          }
+          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip)."
+          $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           gh release create $env:TAG $zip --title $env:TAG --notes-file notes.md @flags

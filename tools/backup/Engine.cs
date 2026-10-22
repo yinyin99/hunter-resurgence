@@ -45,7 +45,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         "- Client-side state that was never sent to the server.\r\n" +
         "- Other players' data (only the public profile of a handle you type is saved).";
 
-    public static string Version => Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
+    /// <summary>The release version (the git tag, set by the build); "0.0.0-dev" for a local build. The +commit suffix the SDK adds is cut.</summary>
+    public static string Version { get; } = (Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0-dev").Split('+')[0];
     const string UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36";
     static readonly JsonSerializerOptions J = new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 

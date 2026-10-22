@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ui:TitleBar Title="Profile backup (read-only)" />
+        <ui:TitleBar x:Name="TitleBarMain" Title="Profile backup (read-only)" />
 
         <Grid Grid.Row="1" Margin="16,0,16,8">
             <Grid.RowDefinitions>

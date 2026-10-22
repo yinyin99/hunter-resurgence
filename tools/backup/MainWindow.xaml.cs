@@ -35,6 +35,7 @@ public partial class MainWindow : FluentWindow
     {
         SystemThemeWatcher.Watch(this); // light/dark follow the system, Mica backdrop
         InitializeComponent();
+        Title = TitleBarMain.Title = $"Profile backup (read-only) {Engine.Version}";
         OutDir.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "game-backup");
         NotCoveredText.Text = Engine.NotCovered;
         boxes = [.. Engine.Groups.Select(Row)];
