@@ -4,6 +4,8 @@ on:
     tags: ["v*"]
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 jobs:
   release:
     runs-on: windows-latest
@@ -43,6 +45,14 @@ jobs:
       - name: Publish and zip
         shell: cmd
         run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json"
+      # Build provenance (attestations need a public repository on this plan: skipped while private).
+      - name: Attest
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            tools/backup/bin/Release/net10.0-windows/win-x64/backup-win-x64.zip
+            tools/backup/bin/Release/net10.0-windows/win-x64/publish/backup.exe
       - name: Release
         shell: pwsh
         env:
