@@ -54,7 +54,7 @@ jobs:
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
       - name: Publish and zip
         shell: cmd
-        run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json" -p:Version=${{ env.VERSION }}
+        run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json" ${{ env.VERSION }}
       # Build provenance (attestations need a public repository on this plan: skipped while private).
       - name: Attest
         if: ${{ !github.event.repository.private }}
