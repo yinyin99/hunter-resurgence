@@ -16,7 +16,7 @@ The window is WPF with the WPF UI library (Fluent theme, follows the system ligh
 
 ### settings.json
 
-`settings.json` sits next to the exe. It holds `client_exe` (the game's exe name, used to find the running game), `oauth_consumer_key` (the website's public key) and the host names the app talks to: `api_host`, `apiv2_host`, `web_host`, plus `photo_host`, `static_host` and any other `*_host` that pictures may come from. The repository only contains `tools/backup/settings.example.json` with placeholders; the app refuses to start a backup while a placeholder is left. The real values are not in this repository: whoever builds a release supplies them (the release workflow reads them from repository secrets, see `CONTRIBUTING.md`).
+`settings.json` sits next to the exe. It holds `client_exe` (the game's exe name, used to find the running game), `oauth_consumer_key` (the website's public key) and the host names the app talks to: `api_host`, `apiv2_host`, `web_host`, plus `photo_host`, `static_host`, `avatar_host` (pictures are fetched only from https URLs on a host listed here, so every picture host needs a key) and any other `*_host` that pictures may come from. The repository only contains `tools/backup/settings.example.json` with placeholders; the app refuses to start a backup while a placeholder is left. The real values are not in this repository: whoever builds a release supplies them (the release workflow reads them from repository secrets, see `CONTRIBUTING.md`).
 
 ## What is saved
 

@@ -16,7 +16,7 @@ jobs:
           global-json-file: global.json
       - run: dotnet build tools/backup -c Release
       - run: dotnet run --project tools/backup -c Release --no-build -- --selftest
-      # One repository secret per settings.json key. Values are never printed; the required ones must be non-empty.
+      # One repository secret per settings.json key. Values are never printed; every key is required, so a missing secret fails the release.
       - name: Write settings.json
         shell: pwsh
         env:
@@ -25,6 +25,7 @@ jobs:
           WEB_HOST: ${{ secrets.WEB_HOST }}
           PHOTO_HOST: ${{ secrets.PHOTO_HOST }}
           STATIC_HOST: ${{ secrets.STATIC_HOST }}
+          AVATAR_HOST: ${{ secrets.AVATAR_HOST }}
           OAUTH_CONSUMER_KEY: ${{ secrets.OAUTH_CONSUMER_KEY }}
           CLIENT_EXE: ${{ secrets.CLIENT_EXE }}
         run: |
@@ -36,11 +37,11 @@ jobs:
             web_host           = $env:WEB_HOST
             photo_host         = $env:PHOTO_HOST
             static_host        = $env:STATIC_HOST
+            avatar_host        = $env:AVATAR_HOST
           }
-          foreach ($k in 'client_exe','oauth_consumer_key','api_host','apiv2_host','web_host') {
+          foreach ($k in $s.Keys) {
             if (-not $s[$k]) { throw "repository secret for $k is missing" }
           }
-          foreach ($k in 'photo_host','static_host') { if (-not $s[$k]) { $s.Remove($k) } }
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
       - name: Publish and zip
         shell: cmd

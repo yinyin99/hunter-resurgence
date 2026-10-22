@@ -32,7 +32,7 @@ tools\backup\publish.cmd path\to\settings.json
 
 ## Releases
 
-Pushing a tag `v*` runs `.github/workflows/release.yml`: build, selftest, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key: `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE` (required) and `PHOTO_HOST`, `STATIC_HOST` (optional).
+Pushing a tag `v*` runs `.github/workflows/release.yml`: build, selftest, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
 ## Commits
 
