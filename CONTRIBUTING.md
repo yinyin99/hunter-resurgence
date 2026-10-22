@@ -34,6 +34,22 @@ tools\backup\publish.cmd path\to\settings.json
 
 Pushing a tag `v*` runs `.github/workflows/release.yml`: build, selftest, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
+### Versioning
+
+The git tag is the only version: `vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-suffix`. The workflow takes the version from it (the exe, its window title and the backup manifest show it); a local build says `0.0.0-dev`.
+
+- Patch: fixes only.
+- Minor: anything new, including any change to the manifest format.
+- `-rc.N` (for example `v0.2.0-rc.1`): test builds. A tag with a suffix is published as a prerelease.
+- `1.0.0`: when the restore server accepts these backups.
+
+Tag with an annotated tag whose message lists the changes; it becomes the "Changes" section of the release notes:
+
+```
+git tag -a v0.2.0 -m "What changed, one line per change"
+git push origin v0.2.0
+```
+
 ## Commits
 
 Conventional Commits (`feat:`, `fix:`, `docs:`, `ci:`, `chore:` ...), imperative subject under 72 characters, one purpose per commit.
