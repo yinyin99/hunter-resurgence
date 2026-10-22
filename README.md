@@ -1,6 +1,10 @@
-# Community server, launcher and website
+# Hunter Resurgence
 
-An unofficial, community-run project for a hunting game whose official servers close on 2026-11-11. It is not affiliated with, endorsed by or connected to the game's publisher. This repository contains no game files and no game data; you need your own copy of the game.
+Unofficial community server, launcher and website for theHunter Classic, whose official servers close on 2026-11-11.
+
+## Disclaimer
+
+Unofficial fan project. Not affiliated with, endorsed by or connected to the developer or publisher of theHunter Classic. theHunter Classic is a trademark of its respective owner. This repository contains no game files or game data; you need your own copy of the game.
 
 Licensed under the [GNU AGPL-3.0](LICENSE).
 

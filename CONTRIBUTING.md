@@ -6,7 +6,7 @@ This project is licensed under the GNU AGPL-3.0. By contributing you agree that 
 
 These apply to every file and every commit message:
 
-- Never write the game's product name. Say "the game".
+- Only README.md names the game, in plain text (tagline and disclaimer). Everywhere else, say "the game".
 - No real hostnames or domains of the publisher, no user ids, handles, tokens or email addresses of real people. Use placeholders (`<api-host>`, `<client-exe>`, ...).
 - No game files and no game data (assets, captures, dumps, saved replies of real accounts).
 - Nothing about how knowledge of the game or its servers was obtained: no reverse-engineering notes, addresses, tool names, capture or live-session logs, nothing about a person's account or runs.
