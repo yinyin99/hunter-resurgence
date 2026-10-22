@@ -81,4 +81,10 @@ jobs:
           $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip)."
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
-          gh release create $env:TAG $zip --title $env:TAG --notes-file notes.md @flags
+          # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
+          gh release create $env:TAG --draft --title $env:TAG --notes-file notes.md @flags
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          gh release upload $env:TAG $zip
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          gh release edit $env:TAG --draft=false
+          if ($LASTEXITCODE -ne 0) { exit 1 }
