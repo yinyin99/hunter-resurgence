@@ -59,7 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="App_Title" xml:space="preserve">
-    <value>Profilsicherung (nur lesend)</value>
+    <value>Profilsicherung (nur Lesezugriff)</value>
   </data>
   <data name="Own_Radio" xml:space="preserve">
     <value>Mein Konto (aus dem laufenden Spiel)</value>
@@ -74,7 +74,7 @@
     <value>Nickname oder ID des öffentlichen Profils</value>
   </data>
   <data name="WhatToSave" xml:space="preserve">
-    <value>Was gesichert wird</value>
+    <value>Zu sichernde Daten</value>
   </data>
   <data name="OutDir_Placeholder" xml:space="preserve">
     <value>Zielordner</value>
@@ -92,13 +92,13 @@
     <value>Bereits gesicherte Dateien überspringen (fortsetzen)</value>
   </data>
   <data name="Upload" xml:space="preserve">
-    <value>Hochladen auf den Server: kommt später</value>
+    <value>Auf den Server hochladen: bald verfügbar</value>
   </data>
   <data name="Upload_Name" xml:space="preserve">
-    <value>Hochladen auf den Server, noch nicht verfügbar</value>
+    <value>Auf den Server hochladen, noch nicht verfügbar</value>
   </data>
   <data name="Start" xml:space="preserve">
-    <value>Start</value>
+    <value>Starten</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Abbrechen</value>
@@ -113,7 +113,7 @@
     <value>Ordner öffnen</value>
   </data>
   <data name="Open_Name" xml:space="preserve">
-    <value>Sicherung im Explorer öffnen</value>
+    <value>Sicherung im Datei-Explorer öffnen</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
@@ -131,13 +131,13 @@
     <value>Nicht enthalten:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Anordnung und Ausrichtung platzierter Objekte: Zelte, Lockstellen, Tarnzelte, Hochsitze und andere große Ausrüstung. Gesichert werden nur die unveränderten Angaben zu Revier und Position jedes Gegenstands (`location`, `metadata`); der Server speichert keine Anordnung.</value>
+    <value>Anordnung und Ausrichtung platzierter Gegenstände: Zelte, Lockstellen, Tarnzelte, Hochsitze und andere große Ausrüstung. Gesichert werden nur die unveränderten Angaben zu Revier und Position jedes Gegenstands (`location`, `metadata`); der Server speichert keine Anordnung.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Spieleinstellungen und Steuerung (bleiben auf diesem PC).</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Zustand auf Clientseite, der nie an den Server gesendet wurde.</value>
+    <value>Clientseitige Daten, die nie an den Server gesendet wurden.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
     <value>Daten anderer Spieler (gesichert wird nur das öffentliche Profil des eingegebenen Nicknames).</value>
@@ -167,7 +167,7 @@
     <value>Jede Jagd mit ihren Abschüssen, Schüssen und Bewertungen</value>
   </data>
   <data name="Group_kills" xml:space="preserve">
-    <value>Abschuss-Seiten und Fotos</value>
+    <value>Abschussseiten und Fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
     <value>Bewertungsbogen und Foto jedes bewerteten Abschusses (viele Anfragen)</value>
@@ -188,7 +188,7 @@
     <value>Fotos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Fotos der Bildergalerie in voller Größe (groß)</value>
+    <value>Fotos der Bildergalerie in voller Größe (große Datenmenge)</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mitteilungen</value>
@@ -209,31 +209,31 @@
     <value>Dafür muss das Spiel laufen.</value>
   </data>
   <data name="Tip_Part" xml:space="preserve">
-    <value>Das meiste ist öffentlich; was das laufende Spiel braucht, wird ohne es übersprungen.</value>
+    <value>Die meisten Daten sind öffentlich; was das laufende Spiel erfordert, wird ohne Spiel übersprungen.</value>
   </data>
   <data name="Tip_Public" xml:space="preserve">
-    <value>Dafür muss das Spiel laufen: wählen Sie „Mein Konto“.</value>
+    <value>Dafür muss das Spiel laufen: Wählen Sie „Mein Konto“.</value>
   </data>
   <data name="Status_Public" xml:space="preserve">
-    <value>Öffentliches Profil: das Spiel wird nicht benötigt</value>
+    <value>Öffentliches Profil: Das Spiel wird nicht benötigt</value>
   </data>
   <data name="Status_NoHunt" xml:space="preserve">
-    <value>Das Spiel ist geöffnet, aber es wurde keine Jagd gestartet: starten Sie eine Jagd.</value>
+    <value>Das Spiel läuft, aber es wurde noch keine Jagd gestartet: Starten Sie eine Jagd.</value>
   </data>
   <data name="Status_Waiting" xml:space="preserve">
-    <value>Warten auf das Spiel: öffnen Sie es und starten Sie dann eine Jagd. Diese App kann vorher oder nachher geöffnet werden.</value>
+    <value>Warten auf das Spiel: Öffnen Sie es und starten Sie dann eine Jagd. Diese App kann vorher oder nachher geöffnet werden.</value>
   </data>
   <data name="Status_Stale" xml:space="preserve">
-    <value>Session abgelaufen: starten Sie eine Jagd zur Erneuerung</value>
+    <value>Session abgelaufen: Starten Sie eine Jagd, um sie zu erneuern</value>
   </data>
   <data name="Status_Found" xml:space="preserve">
-    <value>Spiel-Session gefunden um {0}</value>
+    <value>Spiel-Session um {0} gefunden</value>
   </data>
   <data name="Msg_SettingsMissing" xml:space="preserve">
     <value>Einstellungen fehlen</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
-    <value>Kein Profil gewählt</value>
+    <value>Kein Profil ausgewählt</value>
   </data>
   <data name="Msg_NoProfileText" xml:space="preserve">
     <value>Geben Sie einen Nickname oder eine ID ein.</value>
@@ -242,7 +242,7 @@
     <value>Noch keine Spiel-Session</value>
   </data>
   <data name="Msg_NoSessionText" xml:space="preserve">
-    <value>Öffnen Sie das Spiel und starten Sie eine Jagd, oder wählen Sie Öffentliches Profil.</value>
+    <value>Öffnen Sie das Spiel und starten Sie eine Jagd, oder wählen Sie „Öffentliches Profil“.</value>
   </data>
   <data name="Msg_Nothing" xml:space="preserve">
     <value>Nichts ausgewählt</value>
@@ -254,22 +254,22 @@
     <value>Sicherung gespeichert</value>
   </data>
   <data name="Msg_SavedGaps" xml:space="preserve">
-    <value>Sicherung mit Lücken gespeichert</value>
+    <value>Sicherung gespeichert, aber unvollständig</value>
   </data>
   <data name="Msg_Cancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Sicherung abgebrochen</value>
   </data>
   <data name="Msg_Failed" xml:space="preserve">
     <value>Sicherung fehlgeschlagen</value>
   </data>
   <data name="Msg_Counts" xml:space="preserve">
-    <value>{0} gesichert, {1} übersprungen (schon vorhanden), {2} fehlgeschlagen.</value>
+    <value>{0} gesichert, {1} übersprungen (bereits vorhanden), {2} fehlgeschlagen.</value>
   </data>
   <data name="Msg_Stale" xml:space="preserve">
-    <value>Session abgelaufen: starten Sie eine Jagd zur Erneuerung und führen Sie es dann erneut aus.</value>
+    <value>Session abgelaufen: Starten Sie eine Jagd, um sie zu erneuern, und führen Sie die Sicherung dann erneut aus.</value>
   </data>
   <data name="Msg_Retry" xml:space="preserve">
-    <value>Später mit aktivierter Fortsetzung erneut ausführen.</value>
+    <value>Führen Sie die Sicherung später mit aktivierter Fortsetzung erneut aus.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Bisher {0} gesichert, {1} übersprungen. Starten Sie mit aktivierter Fortsetzung erneut, um fortzufahren.</value>
@@ -278,7 +278,7 @@
     <value>Wird gestartet…</value>
   </data>
   <data name="Eta_Less" xml:space="preserve">
-    <value>weniger als eine Minute übrig</value>
+    <value>noch weniger als eine Minute</value>
   </data>
   <data name="Eta_Min" xml:space="preserve">
     <value>noch etwa {0} Min.</value>
@@ -290,10 +290,10 @@
     <value>{0}: einige Seiten wurden abgelehnt (Fehlerantwort).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
-    <value>noch kein Token: öffnen Sie das Spiel und starten Sie eine Jagd, oder geben Sie einen Nickname oder eine ID ein</value>
+    <value>Noch keine Spiel-Session: Starten Sie das Spiel und eine Jagd, oder geben Sie einen Nickname oder eine ID ein</value>
   </data>
   <data name="Err_Refused" xml:space="preserve">
-    <value>die Spiel-Session wurde abgelehnt: starten Sie eine Jagd zur Erneuerung</value>
+    <value>Die Spiel-Session wurde abgelehnt: Starten Sie eine Jagd, um sie zu erneuern</value>
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Abfrage fehlgeschlagen (unbekannter Nickname?)</value>
