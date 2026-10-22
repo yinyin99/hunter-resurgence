@@ -62,7 +62,7 @@
     <value>Sauvegarde du profil (lecture seule)</value>
   </data>
   <data name="Own_Radio" xml:space="preserve">
-    <value>Mon compte (depuis le jeu en cours)</value>
+    <value>Mon compte (depuis le jeu lancé)</value>
   </data>
   <data name="Public_Radio" xml:space="preserve">
     <value>Profil public</value>
@@ -86,13 +86,13 @@
     <value>Choisir le dossier de destination</value>
   </data>
   <data name="Zip" xml:space="preserve">
-    <value>Créer un zip</value>
+    <value>Créer un fichier zip</value>
   </data>
   <data name="Skip" xml:space="preserve">
     <value>Ignorer les fichiers déjà sauvegardés (reprise)</value>
   </data>
   <data name="Upload" xml:space="preserve">
-    <value>Envoi vers le serveur : bientôt</value>
+    <value>Envoi vers le serveur : bientôt disponible</value>
   </data>
   <data name="Upload_Name" xml:space="preserve">
     <value>Envoi vers le serveur, pas encore disponible</value>
@@ -113,7 +113,7 @@
     <value>Ouvrir le dossier</value>
   </data>
   <data name="Open_Name" xml:space="preserve">
-    <value>Ouvrir la sauvegarde dans l'Explorateur</value>
+    <value>Ouvrir la sauvegarde dans l’Explorateur de fichiers</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Détails</value>
@@ -125,19 +125,19 @@
     <value>Langue</value>
   </data>
   <data name="NotCovered_Link" xml:space="preserve">
-    <value>Qu'est-ce qui n'est pas sauvegardé ?</value>
+    <value>Qu’est-ce qui n’est pas sauvegardé ?</value>
   </data>
   <data name="NotCovered_Title" xml:space="preserve">
-    <value>Non couvert :</value>
+    <value>Non inclus :</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Disposition et orientation des objets placés : tentes, conteneurs d'appâts, affûts, miradors et autre grand équipement. Seuls la réserve et la position brutes de chaque objet (`location`, `metadata`) sont sauvegardées ; le serveur ne conserve aucune disposition.</value>
+    <value>Disposition et orientation des objets placés : tentes, conteneurs d’appâts, affûts, miradors et autre grand équipement. Seules les données brutes de réserve et de position de chaque objet (`location`, `metadata`) sont sauvegardées ; le serveur ne conserve aucune disposition.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Réglages et commandes du jeu (conservés sur ce PC).</value>
+    <value>Paramètres et commandes du jeu (conservés sur ce PC).</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>État côté client qui n'a jamais été envoyé au serveur.</value>
+    <value>Données côté client qui n’ont jamais été envoyées au serveur.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
     <value>Données des autres joueurs (seul le profil public du pseudo saisi est sauvegardé).</value>
@@ -146,7 +146,7 @@
     <value>Profil</value>
   </data>
   <data name="GroupDesc_profile" xml:space="preserve">
-    <value>Statistiques, compétences, succès, rangs, meilleurs scores</value>
+    <value>Statistiques, compétences, succès, rangs, records personnels</value>
   </data>
   <data name="Group_inventory" xml:space="preserve">
     <value>Inventaire et chiens</value>
@@ -164,13 +164,13 @@
     <value>Historique de chasse</value>
   </data>
   <data name="GroupDesc_hunts" xml:space="preserve">
-    <value>Chaque chasse avec ses tués, ses tirs et ses scores</value>
+    <value>Chaque chasse avec ses prélèvements, ses tirs et ses scores</value>
   </data>
   <data name="Group_kills" xml:space="preserve">
-    <value>Fiches de tués et photos</value>
+    <value>Fiches de prélèvements et photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Fiche de score et photo de chaque tué noté (nombreuses requêtes)</value>
+    <value>Fiche de score et photo de chaque prélèvement noté (nombreuses requêtes)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Compte</value>
@@ -188,7 +188,7 @@
     <value>Photos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Photos de la galerie en taille réelle (volumineux)</value>
+    <value>Photos de la galerie en taille réelle (volumineuses)</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Messages</value>
@@ -200,31 +200,31 @@
     <value>Recherche du compte</value>
   </data>
   <data name="Tag_All" xml:space="preserve">
-    <value>nécessite le jeu</value>
+    <value>jeu requis</value>
   </data>
   <data name="Tag_Part" xml:space="preserve">
-    <value>en partie : jeu requis</value>
+    <value>jeu requis en partie</value>
   </data>
   <data name="Tip_All" xml:space="preserve">
-    <value>Tout ceci nécessite le jeu en cours.</value>
+    <value>Tout ceci nécessite le jeu lancé.</value>
   </data>
   <data name="Tip_Part" xml:space="preserve">
-    <value>La plupart est public ; la partie qui nécessite le jeu en cours est ignorée sans lui.</value>
+    <value>La plupart des données sont publiques ; celles qui nécessitent le jeu lancé sont ignorées sans lui.</value>
   </data>
   <data name="Tip_Public" xml:space="preserve">
-    <value>Nécessite le jeu en cours : choisissez « Mon compte ».</value>
+    <value>Nécessite le jeu lancé : choisissez « Mon compte ».</value>
   </data>
   <data name="Status_Public" xml:space="preserve">
-    <value>Profil public : le jeu n'est pas nécessaire</value>
+    <value>Profil public : le jeu n’est pas nécessaire</value>
   </data>
   <data name="Status_NoHunt" xml:space="preserve">
-    <value>Le jeu est ouvert mais aucune chasse n'a commencé : lancez une chasse.</value>
+    <value>Le jeu est lancé, mais aucune chasse n’a démarré : lancez une chasse.</value>
   </data>
   <data name="Status_Waiting" xml:space="preserve">
-    <value>En attente du jeu : ouvrez-le, puis lancez une chasse. Cette application peut être ouverte avant ou après.</value>
+    <value>En attente du jeu : ouvrez-le, puis lancez une chasse. Vous pouvez ouvrir cette application avant ou après.</value>
   </data>
   <data name="Status_Stale" xml:space="preserve">
-    <value>Session expirée : lancez une chasse pour la renouveler</value>
+    <value>Session expirée : lancez une chasse pour la renouveler</value>
   </data>
   <data name="Status_Found" xml:space="preserve">
     <value>Session de jeu trouvée à {0}</value>
@@ -233,19 +233,19 @@
     <value>Paramètres manquants</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
-    <value>Aucun profil choisi</value>
+    <value>Aucun profil sélectionné</value>
   </data>
   <data name="Msg_NoProfileText" xml:space="preserve">
     <value>Saisissez un pseudo ou un identifiant.</value>
   </data>
   <data name="Msg_NoSession" xml:space="preserve">
-    <value>Pas encore de session de jeu</value>
+    <value>Aucune session de jeu pour le moment</value>
   </data>
   <data name="Msg_NoSessionText" xml:space="preserve">
-    <value>Ouvrez le jeu et lancez une chasse, ou choisissez Profil public.</value>
+    <value>Ouvrez le jeu et lancez une chasse, ou choisissez « Profil public ».</value>
   </data>
   <data name="Msg_Nothing" xml:space="preserve">
-    <value>Rien de choisi</value>
+    <value>Aucune sélection</value>
   </data>
   <data name="Msg_NothingText" xml:space="preserve">
     <value>Cochez au moins un groupe.</value>
@@ -254,54 +254,54 @@
     <value>Sauvegarde terminée</value>
   </data>
   <data name="Msg_SavedGaps" xml:space="preserve">
-    <value>Sauvegarde terminée avec des lacunes</value>
+    <value>Sauvegarde terminée, mais incomplète</value>
   </data>
   <data name="Msg_Cancelled" xml:space="preserve">
-    <value>Annulée</value>
+    <value>Sauvegarde annulée</value>
   </data>
   <data name="Msg_Failed" xml:space="preserve">
     <value>Échec de la sauvegarde</value>
   </data>
   <data name="Msg_Counts" xml:space="preserve">
-    <value>{0} enregistrés, {1} ignorés (déjà présents), {2} en échec.</value>
+    <value>Sauvegardés : {0}, ignorés (déjà présents) : {1}, en échec : {2}.</value>
   </data>
   <data name="Msg_Stale" xml:space="preserve">
-    <value>Session expirée : lancez une chasse pour la renouveler, puis recommencez.</value>
+    <value>Session expirée : lancez une chasse pour la renouveler, puis relancez la sauvegarde.</value>
   </data>
   <data name="Msg_Retry" xml:space="preserve">
-    <value>Recommencez plus tard avec la reprise activée.</value>
+    <value>Relancez plus tard avec la reprise activée.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
-    <value>{0} enregistrés jusqu'ici, {1} ignorés. Relancez avec la reprise activée pour continuer.</value>
+    <value>Sauvegardés jusqu’ici : {0}, ignorés : {1}. Relancez avec la reprise activée pour continuer.</value>
   </data>
   <data name="Progress_Starting" xml:space="preserve">
     <value>Démarrage…</value>
   </data>
   <data name="Eta_Less" xml:space="preserve">
-    <value>moins d'une minute restante</value>
+    <value>il reste moins d’une minute</value>
   </data>
   <data name="Eta_Min" xml:space="preserve">
-    <value>environ {0} min restantes</value>
+    <value>il reste environ {0} min</value>
   </data>
   <data name="Fail_Server" xml:space="preserve">
-    <value>{0} : certaines pages n'ont pas répondu (erreur du serveur).</value>
+    <value>{0} : certaines pages n’ont pas répondu (erreur du serveur).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
-    <value>{0} : certaines pages ont été refusées (réponse d'erreur).</value>
+    <value>{0} : certaines pages ont été refusées (réponse d’erreur).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
-    <value>pas encore de jeton : lancez le jeu puis une chasse, ou saisissez un pseudo ou un identifiant</value>
+    <value>Pas encore de session de jeu : lancez le jeu puis une chasse, ou saisissez un pseudo ou un identifiant</value>
   </data>
   <data name="Err_Refused" xml:space="preserve">
-    <value>la session de jeu a été refusée : lancez une chasse pour la renouveler</value>
+    <value>La session de jeu a été refusée : lancez une chasse pour la renouveler</value>
   </data>
   <data name="Err_Lookup" xml:space="preserve">
-    <value>recherche échouée (pseudo inconnu ?)</value>
+    <value>Échec de la recherche (pseudo inconnu ?)</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
-    <value>aucun identifiant d'utilisateur dans la réponse</value>
+    <value>Aucun identifiant d’utilisateur dans la réponse</value>
   </data>
   <data name="Err_Setting" xml:space="preserve">
-    <value>{0} : définissez « {1} » (absent ou encore un exemple)</value>
+    <value>{0} : définissez « {1} » (absent ou encore à sa valeur d’exemple)</value>
   </data>
 </root>
