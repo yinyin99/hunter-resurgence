@@ -272,7 +272,7 @@ static class SelfTest
             Check(Poll(w, t2) && !w.Stale, "a new process replaces the token and clears stale");
             foreach (var p in procs) { p.Kill(true); p.WaitForExit(); p.Dispose(); }
             procs.Clear();
-            w.Scan();
+            for (int i = 0; i < 40 && (w.Scan() || w.GameSeen); i++) Thread.Sleep(250); // a killed process can stay listed for a moment on a busy machine
             Check(w.Token == t2 && !w.GameSeen, "token is kept after the game exits");
         }
         finally
