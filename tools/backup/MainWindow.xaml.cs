@@ -16,10 +16,11 @@ public partial class MainWindow : FluentWindow
 
     readonly Settings? cfg;
     readonly Watcher? watcher;
-    readonly string cfgError = "";
-    readonly CheckBox[] boxes;
+    string cfgError = "";
+    CheckBox[]? boxes;
     readonly bool[] remembered;
     readonly string keyPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "game-backup", "claim.key");
+    readonly string langPath; // the chosen language, next to the claim key
     readonly DispatcherTimer watchTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     readonly DispatcherTimer runTimer = new() { Interval = TimeSpan.FromMilliseconds(250) }; // log and progress, only while a backup runs
     readonly Queue<string> pending = new(), lines = new();
@@ -27,23 +28,33 @@ public partial class MainWindow : FluentWindow
     Engine? eng;
     CancellationTokenSource? cts;
     string lastStatus = "", resultPath = "";
+    Func<(string Title, string Msg)>? resultText; // so the result bar can be worded again when the language changes
     bool logDirty;
     double grownBy;
     volatile int doneNow, totalNow;
 
     public MainWindow()
     {
+        langPath = Path.Combine(Path.GetDirectoryName(keyPath)!, "language.txt");
+        Loc.Init(langPath);
         SystemThemeWatcher.Watch(this); // light/dark follow the system, Mica backdrop
         InitializeComponent();
-        Title = TitleBarMain.Title = $"Profile backup (read-only) {Engine.Version}";
         OutDir.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "game-backup");
-        NotCoveredText.Text = Engine.NotCovered;
-        boxes = [.. Engine.Groups.Select(Row)];
         remembered = [.. Engine.Groups.Select(g => g.On)];
-        foreach (var b in boxes) Groups.Children.Add(b);
         try { cfg = Settings.Load(); watcher = new(cfg.ClientExe); }
         catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
 
+        foreach (var l in Loc.Languages) LangBox.Items.Add(new ComboBoxItem { Content = l.Name, Tag = l.Code });
+        LangBox.SelectedIndex = Array.FindIndex(Loc.Languages, l => l.Code == Loc.Code);
+        LangBox.SelectionChanged += (_, _) =>
+        {
+            if (LangBox.SelectedItem is not ComboBoxItem { Tag: string code } || code == Loc.Code) return;
+            Loc.Set(code);
+            try { Directory.CreateDirectory(Path.GetDirectoryName(langPath)!); File.WriteAllText(langPath, code); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { } // not remembered, still switched
+            ApplyLanguage();
+            FitHeight();
+        };
         OwnRadio.Checked += (_, _) => ApplyMode();
         PublicRadio.Checked += (_, _) => ApplyMode();
         Browse.Click += (_, _) =>
@@ -59,35 +70,101 @@ public partial class MainWindow : FluentWindow
         watchTimer.Tick += (_, _) => Tick();
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
         watchTimer.Start();
+        ApplyLanguage();
         ApplyMode();
-        Tick();
+        Loaded += (_, _) => FitHeight();
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); cts?.Cancel(); };
     }
 
+    /// <summary>Longer languages need taller cards, and a result bar takes room too: the window is as tall as its content (never taller than the screen). The log, when open, keeps the room GrowFor gave it.</summary>
+    void FitHeight()
+    {
+        var chrome = ActualHeight - Body.ActualHeight;
+        Body.Measure(new Size(Body.ActualWidth, double.PositiveInfinity));
+        var area = SystemParameters.WorkArea;
+        Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height + grownBy), area.Height);
+        Top = Math.Max(area.Top, Math.Min(Top, area.Bottom - Height));
+    }
+
+    // ---------- language ----------
+
+    /// <summary>Sets every text from the resources of the current language. Ticks, typed text and the result are kept; only words change.</summary>
+    void ApplyLanguage()
+    {
+        Title = TitleBarMain.Title = $"{Loc.S("App_Title")} {Engine.Version}";
+        System.Windows.Automation.AutomationProperties.SetName(LangBox, Loc.S("Lang_Name"));
+        OwnRadio.Content = Loc.S("Own_Radio");
+        PublicRadio.Content = Loc.S("Public_Radio");
+        Who.PlaceholderText = Loc.S("Who_Placeholder");
+        Named(Who, "Who_Name");
+        GroupsTitle.Text = Loc.S("WhatToSave");
+        OutDir.PlaceholderText = Loc.S("OutDir_Placeholder");
+        Named(OutDir, "OutDir_Placeholder");
+        Browse.Content = Loc.S("Browse");
+        Named(Browse, "Browse_Name");
+        Zip.Content = Wrapped(Loc.S("Zip"));
+        Skip.Content = Wrapped(Loc.S("Skip"));
+        Upload.Content = Wrapped(Loc.S("Upload"));
+        Named(Upload, "Upload_Name");
+        if (cts == null) Start.Content = Loc.S("Start");
+        Named(Bar, "Bar_Name");
+        OpenBtn.Content = Loc.S("Open_Folder");
+        Named(OpenBtn, "Open_Name");
+        Details.Header = Loc.S("Details");
+        Named(LogBox, "Log_Name");
+        NotCoveredLink.Content = Loc.S("NotCovered_Link");
+        NotCoveredText.Text = Engine.NotCovered;
+        BuildRows();
+        if (cfg == null) // the settings error is worded in the language too
+            try { Settings.Load(); } catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
+        if (resultText != null) (Result.Title, Result.Message) = resultText();
+        lastStatus = "";
+        Tick();
+    }
+
+    static void Named(DependencyObject o, string key) => System.Windows.Automation.AutomationProperties.SetName(o, Loc.S(key));
+
+    static TextBlock Wrapped(string text) => new() { Text = text, TextWrapping = TextWrapping.Wrap };
+
     // ---------- groups ----------
 
-    CheckBox Row((string Key, string Label, string Desc, bool On, Engine.Session Needs) g)
+    /// <summary>The group rows are built again for a new language and take over the ticks and enabled state of the old ones.</summary>
+    void BuildRows()
     {
-        var title = new StackPanel { Orientation = Orientation.Horizontal };
-        title.Children.Add(new TextBlock { Text = g.Label, FontWeight = FontWeights.SemiBold });
+        var old = boxes;
+        boxes = [.. Engine.Groups.Select(Row)];
+        Groups.Children.Clear();
+        for (int i = 0; i < boxes.Length; i++)
+        {
+            if (old != null) (boxes[i].IsChecked, boxes[i].IsEnabled) = (old[i].IsChecked, old[i].IsEnabled);
+            if (!boxes[i].IsEnabled) boxes[i].ToolTip = Loc.S("Tip_Public");
+            Groups.Children.Add(boxes[i]);
+        }
+    }
+
+    CheckBox Row((string Key, bool On, Engine.Session Needs) g)
+    {
+        string label = Loc.S("Group_" + g.Key), descText = Loc.S("GroupDesc_" + g.Key);
+        var title = new WrapPanel();
+        title.Children.Add(new TextBlock { Text = label, FontWeight = FontWeights.SemiBold });
         if (g.Needs != Engine.Session.None)
         {
             var tag = new Border
             {
                 Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(6, 0, 6, 1), CornerRadius = new CornerRadius(8),
-                ToolTip = g.Needs == Engine.Session.All ? "All of this needs the running game." : "Most of this is public; the part that needs the running game is skipped without it.",
-                Child = new TextBlock { Text = g.Needs == Engine.Session.All ? "needs game" : "part needs game", FontSize = 11 },
+                ToolTip = Loc.S(g.Needs == Engine.Session.All ? "Tip_All" : "Tip_Part"),
+                Child = new TextBlock { Text = Loc.S(g.Needs == Engine.Session.All ? "Tag_All" : "Tag_Part"), FontSize = 11 },
             };
             tag.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
             title.Children.Add(tag);
         }
         var text = new StackPanel();
         text.Children.Add(title);
-        var desc = new TextBlock { Text = g.Desc, FontSize = 12, TextTrimming = TextTrimming.CharacterEllipsis };
+        var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
         desc.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(desc);
         var box = new CheckBox { Content = text, IsChecked = g.On, MinWidth = 0, Margin = new Thickness(0, 0, 8, 2) };
-        System.Windows.Automation.AutomationProperties.SetName(box, $"{g.Label}: {g.Desc}");
+        System.Windows.Automation.AutomationProperties.SetName(box, $"{label}: {descText}");
         ToolTipService.SetShowOnDisabled(box, true);
         return box;
     }
@@ -105,7 +182,7 @@ public partial class MainWindow : FluentWindow
             if (!own && boxes[i].IsEnabled) remembered[i] = boxes[i].IsChecked == true;
             boxes[i].IsEnabled = own;
             boxes[i].IsChecked = own ? remembered[i] : false;
-            boxes[i].ToolTip = own ? null : "Needs the running game: choose \"My account\".";
+            boxes[i].ToolTip = own ? null : Loc.S("Tip_Public");
         }
     }
 
@@ -118,12 +195,12 @@ public partial class MainWindow : FluentWindow
         else
         {
             if (watcher.Scan()) Log($"game session found {watcher.At:HH:mm:ss}"); // also in public mode: it is ready when My account is chosen
-            if (PublicRadio.IsChecked == true) (text, icon) = ("Public profile: the game is not needed", SymbolRegular.Person24);
+            if (PublicRadio.IsChecked == true) (text, icon) = (Loc.S("Status_Public"), SymbolRegular.Person24);
             else
                 (text, icon) = watcher.Token == null
-                    ? (watcher.GameSeen ? "The game is open but no hunt has started: start a hunt." : "Waiting for the game: open it, then start a hunt. This app can be opened before or after.", SymbolRegular.Hourglass24)
-                    : watcher.Stale ? ("Session expired: start a hunt to refresh", SymbolRegular.Warning24)
-                    : ($"Game session found at {watcher.At:HH:mm}", SymbolRegular.CheckmarkCircle24);
+                    ? (Loc.S(watcher.GameSeen ? "Status_NoHunt" : "Status_Waiting"), SymbolRegular.Hourglass24)
+                    : watcher.Stale ? (Loc.S("Status_Stale"), SymbolRegular.Warning24)
+                    : (Loc.F("Status_Found", watcher.At.ToString("HH:mm")), SymbolRegular.CheckmarkCircle24);
         }
         if (text == lastStatus) return; // nothing changed: no layout work
         lastStatus = text;
@@ -135,22 +212,22 @@ public partial class MainWindow : FluentWindow
 
     async void OnStart(object sender, RoutedEventArgs e)
     {
-        if (cts != null) { cts.Cancel(); Start.IsEnabled = false; Start.Content = "Cancelling…"; return; }
-        if (cfg == null) { Show(InfoBarSeverity.Error, "Settings missing", cfgError, null); return; }
+        if (cts != null) { cts.Cancel(); Start.IsEnabled = false; Start.Content = Loc.S("Cancelling"); return; }
+        if (cfg == null) { Show(InfoBarSeverity.Error, () => (Loc.S("Msg_SettingsMissing"), cfgError), null); return; }
         bool own = OwnRadio.IsChecked == true;
         var who = own ? "" : Who.Text.Trim();
-        if (!own && who.Length == 0) { Show(InfoBarSeverity.Warning, "No profile chosen", "Type a handle or id.", null); Who.Focus(); return; }
-        if (own && watcher?.Token == null) { Show(InfoBarSeverity.Warning, "No game session yet", "Open the game and start a hunt, or choose Public profile.", null); return; }
-        var keys = Engine.Groups.Where((_, i) => boxes[i].IsChecked == true).Select(g => g.Key).ToHashSet();
-        if (keys.Count == 0) { Show(InfoBarSeverity.Warning, "Nothing chosen", "Tick at least one group.", null); return; }
+        if (!own && who.Length == 0) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_NoProfile"), Loc.S("Msg_NoProfileText")), null); Who.Focus(); return; }
+        if (own && watcher?.Token == null) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_NoSession"), Loc.S("Msg_NoSessionText")), null); return; }
+        var keys = Engine.Groups.Where((_, i) => boxes![i].IsChecked == true).Select(g => g.Key).ToHashSet();
+        if (keys.Count == 0) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_Nothing"), Loc.S("Msg_NothingText")), null); return; }
 
         cts = new();
         Result.IsOpen = false;
         OpenBtn.Visibility = Visibility.Collapsed;
         Inputs.IsEnabled = false;
-        Start.Content = "Cancel";
+        Start.Content = Loc.S("Cancel");
         Bar.IsIndeterminate = true;
-        ProgressText.Text = "Starting…";
+        ProgressText.Text = Loc.S("Progress_Starting");
         (doneNow, totalNow) = (0, 0);
         clock.Restart();
         runTimer.Start();
@@ -159,23 +236,26 @@ public partial class MainWindow : FluentWindow
         string outDir = OutDir.Text, token = own ? watcher!.Token! : "";
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
-        InfoBarSeverity sev; string title, msg; string? path = null;
+        InfoBarSeverity sev; Func<(string Title, string Msg)> text; string? path = null;
         try
         {
             path = await Task.Run(() => run.Run(outDir, who, own ? token : null, keys, resume, zip, ct));
-            (sev, title) = run.Failed == 0 ? (InfoBarSeverity.Success, "Backup saved") : (InfoBarSeverity.Warning, "Backup saved with gaps");
-            msg = $"{run.Saved} saved, {run.Skipped} skipped (already there), {run.Failed} failed."
-                + (run.TokenStale ? " Session expired: start a hunt to refresh, then run again." : run.Failed > 0 ? $" {run.FailureSummary} Run again later with resume on." : "");
+            var (saved, skipped, failed, stale) = (run.Saved, run.Skipped, run.Failed, run.TokenStale);
+            sev = failed == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
+            text = () => (Loc.S(failed == 0 ? "Msg_Saved" : "Msg_SavedGaps"),
+                Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : ""));
         }
         catch (OperationCanceledException)
         {
-            (sev, title) = (InfoBarSeverity.Warning, "Cancelled");
-            msg = $"{run.Saved} saved so far, {run.Skipped} skipped. Start again with resume on to continue.";
+            var (saved, skipped) = (run.Saved, run.Skipped);
+            sev = InfoBarSeverity.Warning;
+            text = () => (Loc.S("Msg_Cancelled"), Loc.F("Msg_CancelledText", saved, skipped));
             path = run.Folder;
         }
         catch (Exception ex)
         {
-            (sev, title, msg) = (InfoBarSeverity.Error, "Backup failed", ex.Message);
+            sev = InfoBarSeverity.Error;
+            text = () => (Loc.S("Msg_Failed"), ex.Message);
             if (run.TokenStale && watcher != null) watcher.Stale = true;
         }
         if (run.TokenStale && watcher != null) watcher.Stale = true;
@@ -186,11 +266,11 @@ public partial class MainWindow : FluentWindow
         clock.Stop();
         Inputs.IsEnabled = true;
         Start.IsEnabled = true;
-        Start.Content = "Start";
+        Start.Content = Loc.S("Start");
         Bar.IsIndeterminate = false;
         ProgressText.Text = "";
         Bar.Value = Bar.Maximum;
-        Show(sev, title, msg, path);
+        Show(sev, text, path);
         lastStatus = "";
         Tick();
     }
@@ -206,19 +286,20 @@ public partial class MainWindow : FluentWindow
         if (r.TotalKnown && r.Sent >= 3 && secs >= 5 && t > d)
         {
             double left = (t - d) / (r.Sent / secs); // requests still to do at the rate so far, both hosts counted
-            eta = left < 45 ? " · less than a minute left" : $" · about {Math.Ceiling(left / 60)} min left";
+            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : Loc.F("Eta_Min", Math.Ceiling(left / 60)));
         }
-        ProgressText.Text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? r.Group : "starting")}{eta}";
+        ProgressText.Text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
     }
 
-    void Show(InfoBarSeverity sev, string title, string msg, string? path)
+    void Show(InfoBarSeverity sev, Func<(string Title, string Msg)> text, string? path)
     {
         resultPath = path ?? "";
+        resultText = text;
         Result.Severity = sev;
-        Result.Title = title;
-        Result.Message = msg;
+        (Result.Title, Result.Message) = text();
         OpenBtn.Visibility = resultPath.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         Result.IsOpen = true;
+        FitHeight();
     }
 
     void OpenResult()

@@ -1,7 +1,10 @@
+using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Backup;
 
@@ -81,6 +84,7 @@ static class SelfTest
         try
         {
             Parser();
+            Translations();
             Lanes(Manifest().GetAwaiter().GetResult()).GetAwaiter().GetResult();
             Watch();
             Console.WriteLine("selftest ok");
@@ -102,6 +106,29 @@ static class SelfTest
         Check(Watcher.ParseToken($"x /connect:hunt://gs.test/{h}/lang/en_US/access_token/{a[..39]}/refresh_token/{r}") == null, "short token rejected");
         Check(Watcher.ParseToken($"x /connect:other://gs.test/{h}/lang/en_US/access_token/{a}/refresh_token/{r}") == null, "other scheme rejected");
         Check(Watcher.ParseToken("C:\\g\\launcher.exe") == null, "launcher command line has no token");
+    }
+
+    /// <summary>Every language resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime).</summary>
+    static void Translations()
+    {
+        static Dictionary<string, string> Read(CultureInfo c) =>
+            (Loc.Rm.GetResourceSet(c, true, false) ?? throw new Exception($"FAIL no resources for '{c.Name}'")).Cast<DictionaryEntry>().ToDictionary(e => (string)e.Key, e => (string)e.Value!);
+        static string Holes(string s) => string.Join(",", Regex.Matches(s, @"\{(\d+)").Select(m => m.Groups[1].Value).Order());
+        var en = Read(CultureInfo.InvariantCulture);
+        var bad = new List<string>();
+        foreach (var (code, culture, _) in Loc.Languages.Where(l => l.Code != "en"))
+        {
+            var tr = Read(CultureInfo.GetCultureInfo(culture));
+            bad.AddRange(en.Keys.Except(tr.Keys).Select(k => $"{culture}: missing {k}"));
+            bad.AddRange(tr.Keys.Except(en.Keys).Select(k => $"{culture}: extra {k}"));
+            foreach (var (k, v) in tr.Where(p => en.ContainsKey(p.Key)))
+            {
+                if (Holes(v) != Holes(en[k])) bad.Add($"{culture}: {k} has placeholders {{{Holes(v)}}}, English has {{{Holes(en[k])}}}");
+                try { string.Format(v, "", "", "", ""); } catch (FormatException) { bad.Add($"{culture}: {k} is not a valid format string"); }
+            }
+        }
+        if (bad.Count > 0) throw new Exception("FAIL translations: " + string.Join("; ", bad));
+        Check(true, $"{Loc.Languages.Length - 1} translations have the {en.Count} keys and placeholders of Strings.resx");
     }
 
     /// <summary>Returns the files and request count of one complete run, the baseline of the cancel test.</summary>
@@ -211,7 +238,7 @@ static class SelfTest
             ed.BackoffMs = 20;
             await ed.Run(tmp, "hh", null, new HashSet<string> { "profile", "trophies" }, false, false, default);
             Check(ed.Failed > 2 && fd.Starts["apiv2.test"].Count == 5 + (ed.Failed - 1), $"dead host: one back-off cycle, then one attempt per request ({fd.Starts["apiv2.test"].Count} attempts for {ed.Failed} requests)");
-            Check(ed.FailureSummary == "Some profile pages did not answer (server error). Some trophies and lodges pages did not answer (server error).", "result bar names the groups that did not answer");
+            Check(ed.FailureSummary == "Profile: some pages did not answer (server error). Trophies and lodges: some pages did not answer (server error).", "result bar names the groups that did not answer");
 
             Directory.Delete(dir, true);
             var fu = new Fake(tok);
