@@ -35,6 +35,12 @@ Get-FileHash backup-win-x64.zip -Algorithm SHA256
 
 If the two differ, do not run it.
 
+To check that the zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
+
+```
+gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
+```
+
 ## Build
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
