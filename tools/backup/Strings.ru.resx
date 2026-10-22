@@ -68,31 +68,31 @@
     <value>Публичный профиль</value>
   </data>
   <data name="Who_Placeholder" xml:space="preserve">
-    <value>ник или id</value>
+    <value>ник или ID</value>
   </data>
   <data name="Who_Name" xml:space="preserve">
-    <value>Ник или id публичного профиля</value>
+    <value>Ник или ID публичного профиля</value>
   </data>
   <data name="WhatToSave" xml:space="preserve">
     <value>Что сохранить</value>
   </data>
   <data name="OutDir_Placeholder" xml:space="preserve">
-    <value>Папка для результата</value>
+    <value>Папка назначения</value>
   </data>
   <data name="Browse" xml:space="preserve">
     <value>Обзор…</value>
   </data>
   <data name="Browse_Name" xml:space="preserve">
-    <value>Выбрать папку для результата</value>
+    <value>Выбрать папку назначения</value>
   </data>
   <data name="Zip" xml:space="preserve">
-    <value>Сохранить zip-архив</value>
+    <value>Создать ZIP-архив</value>
   </data>
   <data name="Skip" xml:space="preserve">
-    <value>Пропускать уже сохранённые файлы (продолжение)</value>
+    <value>Пропускать уже сохранённые файлы (возобновление)</value>
   </data>
   <data name="Upload" xml:space="preserve">
-    <value>Загрузка на сервер: скоро</value>
+    <value>Загрузка на сервер: скоро появится</value>
   </data>
   <data name="Upload_Name" xml:space="preserve">
     <value>Загрузка на сервер пока недоступна</value>
@@ -113,7 +113,7 @@
     <value>Открыть папку</value>
   </data>
   <data name="Open_Name" xml:space="preserve">
-    <value>Открыть копию в Проводнике</value>
+    <value>Открыть резервную копию в Проводнике</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Подробности</value>
@@ -131,13 +131,13 @@
     <value>Не сохраняется:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Расположение и ориентация размещённых объектов: палаток, кормушек, засидок, вышек и другого крупногабаритного снаряжения. Сохраняются только исходные данные об охотугодье и позиции каждого предмета (`location`, `metadata`); сервер не хранит расположение.</value>
+    <value>Расстановка и ориентация размещённых объектов: палатки, кормушки, засидки, вышки и другое крупногабаритное снаряжение. Сохраняются только исходные данные об охотугодье и позиции каждого предмета (`location`, `metadata`); сервер не хранит расстановку.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Настройки и управление игры (остаются на этом ПК).</value>
+    <value>Настройки игры и параметры управления (остаются на этом ПК).</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Состояние на стороне клиента, которое никогда не отправлялось на сервер.</value>
+    <value>Данные на стороне клиента, которые никогда не отправлялись на сервер.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
     <value>Данные других игроков (сохраняется только публичный профиль введённого ника).</value>
@@ -146,13 +146,13 @@
     <value>Профиль</value>
   </data>
   <data name="GroupDesc_profile" xml:space="preserve">
-    <value>Статистика, навыки, достижения, рейтинг, лучшие результаты</value>
+    <value>Статистика, навыки, достижения, рейтинг, личные рекорды</value>
   </data>
   <data name="Group_inventory" xml:space="preserve">
     <value>Инвентарь и собаки</value>
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
-    <value>Ваши предметы и собаки, позиции размещённых предметов, набор</value>
+    <value>Ваши предметы и собаки, позиции размещённых предметов, набор снаряжения</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Трофеи и залы</value>
@@ -164,13 +164,13 @@
     <value>История охоты</value>
   </data>
   <data name="GroupDesc_hunts" xml:space="preserve">
-    <value>Каждая охота: убийства, выстрелы и очки</value>
+    <value>Каждая охота с убийствами, выстрелами и очками</value>
   </data>
   <data name="Group_kills" xml:space="preserve">
     <value>Страницы убийств и фото</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Карточка очков и фото каждого убийства с очками (много запросов)</value>
+    <value>Карточка очков и фото каждого оценённого убийства (много запросов)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Аккаунт</value>
@@ -218,7 +218,7 @@
     <value>Публичный профиль: игра не нужна</value>
   </data>
   <data name="Status_NoHunt" xml:space="preserve">
-    <value>Игра открыта, но охота не начата: начните охоту.</value>
+    <value>Игра запущена, но охота не начата: начните охоту.</value>
   </data>
   <data name="Status_Waiting" xml:space="preserve">
     <value>Ожидание игры: откройте её и начните охоту. Приложение можно открыть до или после.</value>
@@ -230,7 +230,7 @@
     <value>Сессия игры найдена в {0}</value>
   </data>
   <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Нет настроек</value>
+    <value>Настройки отсутствуют</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Профиль не выбран</value>
@@ -251,28 +251,28 @@
     <value>Отметьте хотя бы одну группу.</value>
   </data>
   <data name="Msg_Saved" xml:space="preserve">
-    <value>Копия сохранена</value>
+    <value>Резервная копия сохранена</value>
   </data>
   <data name="Msg_SavedGaps" xml:space="preserve">
-    <value>Копия сохранена с пропусками</value>
+    <value>Резервная копия сохранена не полностью</value>
   </data>
   <data name="Msg_Cancelled" xml:space="preserve">
-    <value>Отменено</value>
+    <value>Резервное копирование отменено</value>
   </data>
   <data name="Msg_Failed" xml:space="preserve">
-    <value>Не удалось сделать копию</value>
+    <value>Не удалось создать резервную копию</value>
   </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Сохранено: {0}, пропущено (уже есть): {1}, с ошибкой: {2}.</value>
   </data>
   <data name="Msg_Stale" xml:space="preserve">
-    <value>Сессия истекла: начните охоту, чтобы обновить её, и запустите снова.</value>
+    <value>Сессия истекла: начните охоту, чтобы обновить её, и запустите копирование снова.</value>
   </data>
   <data name="Msg_Retry" xml:space="preserve">
-    <value>Запустите снова позже с включённым продолжением.</value>
+    <value>Запустите копирование снова позже с включённым возобновлением.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
-    <value>Пока сохранено: {0}, пропущено: {1}. Запустите снова с включённым продолжением, чтобы продолжить.</value>
+    <value>Пока сохранено: {0}, пропущено: {1}. Чтобы продолжить, запустите снова с включённым возобновлением.</value>
   </data>
   <data name="Progress_Starting" xml:space="preserve">
     <value>Запуск…</value>
@@ -290,16 +290,16 @@
     <value>{0}: часть страниц отклонена (ответ с ошибкой).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
-    <value>пока нет токена: откройте игру и начните охоту либо введите ник или id</value>
+    <value>Пока нет сессии игры: запустите игру и начните охоту либо введите ник или ID</value>
   </data>
   <data name="Err_Refused" xml:space="preserve">
-    <value>сессия игры отклонена: начните охоту, чтобы обновить её</value>
+    <value>Сессия игры отклонена: начните охоту, чтобы обновить её</value>
   </data>
   <data name="Err_Lookup" xml:space="preserve">
-    <value>поиск не удался (неизвестный ник?)</value>
+    <value>Поиск не удался (неизвестный ник?)</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
-    <value>в ответе нет id пользователя</value>
+    <value>В ответе нет ID пользователя</value>
   </data>
   <data name="Err_Setting" xml:space="preserve">
     <value>{0}: задайте «{1}» (нет значения или остался пример)</value>
