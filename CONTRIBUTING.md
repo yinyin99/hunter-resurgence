@@ -50,6 +50,13 @@ git tag -a v0.2.0 -m "What changed, one line per change"
 git push origin v0.2.0
 ```
 
+### Protections
+
+- Published releases are immutable: their assets and tag are locked, and a version number can never be reused. A failed or wrong release means the next patch number.
+- Release tags `vX.Y.Z` cannot be deleted or moved (tag ruleset, no bypass); disabling the ruleset is the only way out.
+- `-rc.N` prereleases are immutable too and stay public, so use them sparingly.
+- Pull requests from forks need the maintainer's approval before CI runs.
+
 ## Commits
 
 Conventional Commits (`feat:`, `fix:`, `docs:`, `ci:`, `chore:` ...), imperative subject under 72 characters, one purpose per commit.
