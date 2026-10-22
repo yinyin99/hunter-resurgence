@@ -254,7 +254,7 @@
     <value>Backup saved</value>
   </data>
   <data name="Msg_SavedGaps" xml:space="preserve">
-    <value>Backup saved with gaps</value>
+    <value>Backup saved, but incomplete</value>
   </data>
   <data name="Msg_Cancelled" xml:space="preserve">
     <value>Cancelled</value>
@@ -290,7 +290,7 @@
     <value>{0}: some pages were refused (error reply).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
-    <value>no token yet: start the game and a hunt, or type a handle or id</value>
+    <value>no game session yet: start the game and a hunt, or type a handle or id</value>
   </data>
   <data name="Err_Refused" xml:space="preserve">
     <value>the game session was refused: start a hunt to refresh</value>
