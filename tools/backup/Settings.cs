@@ -13,7 +13,7 @@ sealed record Settings(string ApiHost, string Apiv2Host, string WebHost, string 
     {
         var d = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(FilePath)) ?? [];
         string Get(string k) => d.TryGetValue(k, out var v) && v.Length > 0 && !v.Contains('<')
-            ? v : throw new InvalidOperationException($"{FilePath}: set \"{k}\" (missing or still a placeholder)");
+            ? v : throw new InvalidOperationException(Loc.F("Err_Setting", FilePath, k));
         return new(Get("api_host"), Get("apiv2_host"), Get("web_host"), Get("client_exe"),
             d.Where(kv => kv.Key.EndsWith("_host") && !kv.Value.Contains('<')).Select(kv => kv.Value).ToHashSet(),
             d.TryGetValue("oauth_consumer_key", out var ck) && ck.Length > 0 && !ck.Contains('<') ? ck : null); // public key of the website, optional

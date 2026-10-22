@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Title" xml:space="preserve">
+    <value>Резервная копия профиля (только чтение)</value>
+  </data>
+  <data name="Own_Radio" xml:space="preserve">
+    <value>Мой аккаунт (из запущенной игры)</value>
+  </data>
+  <data name="Public_Radio" xml:space="preserve">
+    <value>Публичный профиль</value>
+  </data>
+  <data name="Who_Placeholder" xml:space="preserve">
+    <value>ник или id</value>
+  </data>
+  <data name="Who_Name" xml:space="preserve">
+    <value>Ник или id публичного профиля</value>
+  </data>
+  <data name="WhatToSave" xml:space="preserve">
+    <value>Что сохранить</value>
+  </data>
+  <data name="OutDir_Placeholder" xml:space="preserve">
+    <value>Папка для результата</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Обзор…</value>
+  </data>
+  <data name="Browse_Name" xml:space="preserve">
+    <value>Выбрать папку для результата</value>
+  </data>
+  <data name="Zip" xml:space="preserve">
+    <value>Сохранить zip-архив</value>
+  </data>
+  <data name="Skip" xml:space="preserve">
+    <value>Пропускать уже сохранённые файлы (продолжение)</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Загрузка на сервер: скоро</value>
+  </data>
+  <data name="Upload_Name" xml:space="preserve">
+    <value>Загрузка на сервер пока недоступна</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Начать</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Cancelling" xml:space="preserve">
+    <value>Отмена…</value>
+  </data>
+  <data name="Bar_Name" xml:space="preserve">
+    <value>Ход резервного копирования</value>
+  </data>
+  <data name="Open_Folder" xml:space="preserve">
+    <value>Открыть папку</value>
+  </data>
+  <data name="Open_Name" xml:space="preserve">
+    <value>Открыть копию в Проводнике</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Подробности</value>
+  </data>
+  <data name="Log_Name" xml:space="preserve">
+    <value>Журнал</value>
+  </data>
+  <data name="Lang_Name" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="NotCovered_Link" xml:space="preserve">
+    <value>Что не сохраняется?</value>
+  </data>
+  <data name="NotCovered_Title" xml:space="preserve">
+    <value>Не сохраняется:</value>
+  </data>
+  <data name="NotCovered_1" xml:space="preserve">
+    <value>Расположение и ориентация размещённых объектов: палаток, кормушек, засидок, вышек и другого крупногабаритного снаряжения. Сохраняются только исходные данные об охотугодье и позиции каждого предмета (`location`, `metadata`); сервер не хранит расположение.</value>
+  </data>
+  <data name="NotCovered_2" xml:space="preserve">
+    <value>Настройки и управление игры (остаются на этом ПК).</value>
+  </data>
+  <data name="NotCovered_3" xml:space="preserve">
+    <value>Состояние на стороне клиента, которое никогда не отправлялось на сервер.</value>
+  </data>
+  <data name="NotCovered_4" xml:space="preserve">
+    <value>Данные других игроков (сохраняется только публичный профиль введённого ника).</value>
+  </data>
+  <data name="Group_profile" xml:space="preserve">
+    <value>Профиль</value>
+  </data>
+  <data name="GroupDesc_profile" xml:space="preserve">
+    <value>Статистика, навыки, достижения, рейтинг, лучшие результаты</value>
+  </data>
+  <data name="Group_inventory" xml:space="preserve">
+    <value>Инвентарь и собаки</value>
+  </data>
+  <data name="GroupDesc_inventory" xml:space="preserve">
+    <value>Ваши предметы и собаки, позиции размещённых предметов, набор</value>
+  </data>
+  <data name="Group_trophies" xml:space="preserve">
+    <value>Трофеи и залы</value>
+  </data>
+  <data name="GroupDesc_trophies" xml:space="preserve">
+    <value>Список трофеев, залы и выставленные в них трофеи</value>
+  </data>
+  <data name="Group_hunts" xml:space="preserve">
+    <value>История охоты</value>
+  </data>
+  <data name="GroupDesc_hunts" xml:space="preserve">
+    <value>Каждая охота: убийства, выстрелы и очки</value>
+  </data>
+  <data name="Group_kills" xml:space="preserve">
+    <value>Страницы убийств и фото</value>
+  </data>
+  <data name="GroupDesc_kills" xml:space="preserve">
+    <value>Карточка очков и фото каждого убийства с очками (много запросов)</value>
+  </data>
+  <data name="Group_account" xml:space="preserve">
+    <value>Аккаунт</value>
+  </data>
+  <data name="GroupDesc_account" xml:space="preserve">
+    <value>Миссии, история кошелька, фоны</value>
+  </data>
+  <data name="Group_friends" xml:space="preserve">
+    <value>Друзья</value>
+  </data>
+  <data name="GroupDesc_friends" xml:space="preserve">
+    <value>Список друзей и заявки в друзья</value>
+  </data>
+  <data name="Group_photos" xml:space="preserve">
+    <value>Фото</value>
+  </data>
+  <data name="GroupDesc_photos" xml:space="preserve">
+    <value>Фото из галереи в полном размере (большой объём)</value>
+  </data>
+  <data name="Group_messages" xml:space="preserve">
+    <value>Сообщения</value>
+  </data>
+  <data name="GroupDesc_messages" xml:space="preserve">
+    <value>Список бесед, без текстов сообщений</value>
+  </data>
+  <data name="Group_lookup" xml:space="preserve">
+    <value>Поиск аккаунта</value>
+  </data>
+  <data name="Tag_All" xml:space="preserve">
+    <value>нужна игра</value>
+  </data>
+  <data name="Tag_Part" xml:space="preserve">
+    <value>частично нужна игра</value>
+  </data>
+  <data name="Tip_All" xml:space="preserve">
+    <value>Всё это требует запущенной игры.</value>
+  </data>
+  <data name="Tip_Part" xml:space="preserve">
+    <value>Большая часть данных публичная; то, что требует запущенной игры, без неё пропускается.</value>
+  </data>
+  <data name="Tip_Public" xml:space="preserve">
+    <value>Требуется запущенная игра: выберите «Мой аккаунт».</value>
+  </data>
+  <data name="Status_Public" xml:space="preserve">
+    <value>Публичный профиль: игра не нужна</value>
+  </data>
+  <data name="Status_NoHunt" xml:space="preserve">
+    <value>Игра открыта, но охота не начата: начните охоту.</value>
+  </data>
+  <data name="Status_Waiting" xml:space="preserve">
+    <value>Ожидание игры: откройте её и начните охоту. Приложение можно открыть до или после.</value>
+  </data>
+  <data name="Status_Stale" xml:space="preserve">
+    <value>Сессия истекла: начните охоту, чтобы обновить её</value>
+  </data>
+  <data name="Status_Found" xml:space="preserve">
+    <value>Сессия игры найдена в {0}</value>
+  </data>
+  <data name="Msg_SettingsMissing" xml:space="preserve">
+    <value>Нет настроек</value>
+  </data>
+  <data name="Msg_NoProfile" xml:space="preserve">
+    <value>Профиль не выбран</value>
+  </data>
+  <data name="Msg_NoProfileText" xml:space="preserve">
+    <value>Введите ник или id.</value>
+  </data>
+  <data name="Msg_NoSession" xml:space="preserve">
+    <value>Пока нет сессии игры</value>
+  </data>
+  <data name="Msg_NoSessionText" xml:space="preserve">
+    <value>Откройте игру и начните охоту либо выберите «Публичный профиль».</value>
+  </data>
+  <data name="Msg_Nothing" xml:space="preserve">
+    <value>Ничего не выбрано</value>
+  </data>
+  <data name="Msg_NothingText" xml:space="preserve">
+    <value>Отметьте хотя бы одну группу.</value>
+  </data>
+  <data name="Msg_Saved" xml:space="preserve">
+    <value>Копия сохранена</value>
+  </data>
+  <data name="Msg_SavedGaps" xml:space="preserve">
+    <value>Копия сохранена с пропусками</value>
+  </data>
+  <data name="Msg_Cancelled" xml:space="preserve">
+    <value>Отменено</value>
+  </data>
+  <data name="Msg_Failed" xml:space="preserve">
+    <value>Не удалось сделать копию</value>
+  </data>
+  <data name="Msg_Counts" xml:space="preserve">
+    <value>Сохранено: {0}, пропущено (уже есть): {1}, с ошибкой: {2}.</value>
+  </data>
+  <data name="Msg_Stale" xml:space="preserve">
+    <value>Сессия истекла: начните охоту, чтобы обновить её, и запустите снова.</value>
+  </data>
+  <data name="Msg_Retry" xml:space="preserve">
+    <value>Запустите снова позже с включённым продолжением.</value>
+  </data>
+  <data name="Msg_CancelledText" xml:space="preserve">
+    <value>Пока сохранено: {0}, пропущено: {1}. Запустите снова с включённым продолжением, чтобы продолжить.</value>
+  </data>
+  <data name="Progress_Starting" xml:space="preserve">
+    <value>Запуск…</value>
+  </data>
+  <data name="Eta_Less" xml:space="preserve">
+    <value>осталось меньше минуты</value>
+  </data>
+  <data name="Eta_Min" xml:space="preserve">
+    <value>осталось около {0} мин</value>
+  </data>
+  <data name="Fail_Server" xml:space="preserve">
+    <value>{0}: часть страниц не ответила (ошибка сервера).</value>
+  </data>
+  <data name="Fail_Refused" xml:space="preserve">
+    <value>{0}: часть страниц отклонена (ответ с ошибкой).</value>
+  </data>
+  <data name="Err_NoToken" xml:space="preserve">
+    <value>пока нет токена: откройте игру и начните охоту либо введите ник или id</value>
+  </data>
+  <data name="Err_Refused" xml:space="preserve">
+    <value>сессия игры отклонена: начните охоту, чтобы обновить её</value>
+  </data>
+  <data name="Err_Lookup" xml:space="preserve">
+    <value>поиск не удался (неизвестный ник?)</value>
+  </data>
+  <data name="Err_NoUid" xml:space="preserve">
+    <value>в ответе нет id пользователя</value>
+  </data>
+  <data name="Err_Setting" xml:space="preserve">
+    <value>{0}: задайте «{1}» (нет значения или остался пример)</value>
+  </data>
+</root>

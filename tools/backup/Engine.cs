@@ -25,25 +25,21 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     /// <summary>How much of a group needs the game session: None = public data only, Part = a few requests need it, All = all of it.</summary>
     public enum Session { None, Part, All }
 
-    public static readonly (string Key, string Label, string Desc, bool On, Session Needs)[] Groups =
+    /// <summary>The groups the UI offers; their texts are the resources Group_&lt;key&gt; and GroupDesc_&lt;key&gt;.</summary>
+    public static readonly (string Key, bool On, Session Needs)[] Groups =
     [
-        ("profile", "Profile", "Stats, skills, achievements, ranks, best scores", true, Session.None),
-        ("inventory", "Inventory and dogs", "Items and dogs you own, placed-item positions, loadout", true, Session.Part),
-        ("trophies", "Trophies and lodges", "Trophy list, lodges and their mounted trophies", true, Session.Part),
-        ("hunts", "Hunt history", "Every hunt with its kills, shots and scores", true, Session.None),
-        ("kills", "Kill pages and photos", "Score sheet and picture of every scored kill (many requests)", false, Session.None),
-        ("account", "Account", "Missions, wallet history, backgrounds", true, Session.All),
-        ("friends", "Friends", "Friends list and friend requests", true, Session.Part),
-        ("photos", "Photos", "Gallery pictures at full size (large)", false, Session.None),
-        ("messages", "Messages", "Conversation list, not the message texts", false, Session.All),
+        ("profile", true, Session.None),
+        ("inventory", true, Session.Part),
+        ("trophies", true, Session.Part),
+        ("hunts", true, Session.None),
+        ("kills", false, Session.None),
+        ("account", true, Session.All),
+        ("friends", true, Session.Part),
+        ("photos", false, Session.None),
+        ("messages", false, Session.All),
     ];
 
-    public const string NotCovered =
-        "Not covered:\r\n" +
-        "- Placed-object layout and orientation: tents, bait sites and feeders, blinds, towers and other large equipment. Only the raw per-item reserve/position (`location`, `metadata`) is saved; the server keeps no placement layout.\r\n" +
-        "- In-game settings and controls (kept on this PC).\r\n" +
-        "- Client-side state that was never sent to the server.\r\n" +
-        "- Other players' data (only the public profile of a handle you type is saved).";
+    public static string NotCovered => string.Join("\r\n", Loc.S("NotCovered_Title"), "- " + Loc.S("NotCovered_1"), "- " + Loc.S("NotCovered_2"), "- " + Loc.S("NotCovered_3"), "- " + Loc.S("NotCovered_4"));
 
     /// <summary>The release version (the git tag, set by the build); "0.0.0-dev" for a local build. The +commit suffix the SDK adds is cut.</summary>
     public static string Version { get; } = (Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0-dev").Split('+')[0];
@@ -60,18 +56,18 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     public int Saved => saved;
     public int Skipped => skipped;
     public int Failed => failed;
-    /// <summary>Plain words for the result bar: which groups lost requests and why. Empty when nothing failed.</summary>
+    /// <summary>Plain words for the result bar, in the UI language: which groups lost requests and why. Empty when nothing failed.</summary>
     public string FailureSummary
     {
         get
         {
             lock (problems)
-                return string.Join(" ", problems.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => $"Some {p.Key.ToLowerInvariant()} pages " + (p.Value == ServerError ? "did not answer (server error)." : "were refused (error reply).")));
+                return string.Join(" ", problems.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => Loc.F(p.Value == ServerError ? "Fail_Server" : "Fail_Refused", Loc.S("Group_" + p.Key))));
         }
     }
     /// <summary>Requests actually sent, retries included (the UI's time estimate).</summary>
     public int Sent => sent;
-    /// <summary>Group of the request that last finished, for the progress line.</summary>
+    /// <summary>Key of the group of the request that last finished, for the progress line.</summary>
     public volatile string Group = "";
     /// <summary>False while a group is still listing pages, so the total can still grow.</summary>
     /// <summary>The folder of this backup (after Run has found the user id).</summary>
@@ -108,7 +104,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         (this.token, this.resume, this.ct, own) = (token, resume, ct, idText.Length == 0);
         http.Timeout = TimeSpan.FromSeconds(120); // player queries are slow
         http.DefaultRequestHeaders.UserAgent.ParseAdd(UA);
-        if (own && token == null) throw new InvalidOperationException("no token yet: start the game and a hunt, or type a handle or id");
+        if (own && token == null) throw new InvalidOperationException(Loc.S("Err_NoToken"));
         var idr = own ? Q("Me/me", true) : idText.All(char.IsAsciiDigit) ? null : Q("Public_user/getByHostname", false, ("hostname", idText));
         (int Status, byte[] Body)? idRes = null;
         if (idr == null) uid = idText;
@@ -116,12 +112,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         {
             log($"looking up {(own ? "your account" : idText)}");
             idRes = await Send(idr);
-            if (idRes is not { } x || !Ok(idr, x.Status, x.Body)) throw new InvalidOperationException(TokenStale ? "the game session was refused: start a hunt to refresh" : "lookup failed (unknown handle?)");
+            if (idRes is not { } x || !Ok(idr, x.Status, x.Body)) throw new InvalidOperationException(Loc.S(TokenStale ? "Err_Refused" : "Err_Lookup"));
             var j = Json(x.Body);
             uid = j?["id"]?.ToString() ?? "";
             handle = j?["handle"]?.ToString();
             me = j;
-            if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new InvalidOperationException("no user id in the reply");
+            if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new InvalidOperationException(Loc.S("Err_NoUid"));
         }
         dir = Path.Combine(outRoot, "backup-" + uid);
         Directory.CreateDirectory(dir);
@@ -145,7 +141,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         {
             if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body);
             // groups run side by side; each host's lane keeps its own requests one at a time
-            try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, g.Label, stop))); }
+            try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
             catch when (fault != null) { }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
         }
@@ -157,12 +153,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         return path;
     }
 
-    async Task RunGroup(string key, string label, CancellationTokenSource stop)
+    async Task RunGroup(string key, CancellationTokenSource stop)
     {
-        group.Value = label;
+        group.Value = key;
         try
         {
-            log($"== {label}");
+            log($"== {key}");
             await (key switch
             {
                 "profile" => Profile(), "inventory" => Inventory(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
