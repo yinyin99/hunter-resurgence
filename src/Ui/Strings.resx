@@ -18,4 +18,61 @@
   <data name="Feed.News" xml:space="preserve"><value>{GAME} NEWS</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>DEVELOPED BY</value></data>
   <data name="Footer.Follow" xml:space="preserve"><value>FOLLOW {GAME}</value></data>
+  <data name="Menu.Label" xml:space="preserve"><value>Main menu</value></data>
+  <data name="Menu.Store" xml:space="preserve"><value>STORE</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>HELP</value></data>
+  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
+  <data name="Menu.Downloads" xml:space="preserve"><value>DOWNLOADS</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Single player game</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Multiplayer game</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Find a multiplayer game</value></data>
+  <data name="Menu.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ is {game}'s virtual currency that can be used to purchase items in the Store, such as weapons, equipment, clothing and much more.</value></data>
+  <data name="Statusbar.Launcher" xml:space="preserve"><value>Launcher</value></data>
+  <data name="Statusbar.Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
+  <data name="Statusbar.Fuel" xml:space="preserve"><value>fuel:</value></data>
+  <data name="Statusbar.Days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="Tip.Friends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>My Wallet / Purchase History</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Sign Out</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Your Hunter Score</value></data>
+  <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Account settings</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Game Management</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings.GameSettings" xml:space="preserve"><value>Game settings</value></data>
+  <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Logfiles</value></data>
+  <data name="Settings.GameFolder" xml:space="preserve"><value>Game Folder</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Clear launcher cache</value></data>
+  <data name="Settings.ClearGameCache" xml:space="preserve"><value>Clear game cache</value></data>
+  <data name="Friends.Title" xml:space="preserve"><value>Friends ({0})</value></data>
+  <data name="Friends.Search" xml:space="preserve"><value>Find other hunters...</value></data>
+  <data name="Friends.SendMessage" xml:space="preserve"><value>Send message</value></data>
+  <data name="Friends.Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Friends.RemoveConfirm" xml:space="preserve"><value>Are you sure that you want to remove {0} from your friends list?</value></data>
+  <data name="Friends.None" xml:space="preserve"><value>No friends yet</value></data>
+  <data name="Friends.Results" xml:space="preserve"><value>Search results ({0})</value></data>
+  <data name="Friends.NoHunters" xml:space="preserve"><value>No hunters found</value></data>
+  <data name="Friends.SendRequest" xml:space="preserve"><value>Send friend request</value></data>
+  <data name="Friends.RequestSent" xml:space="preserve"><value>Friend request sent</value></data>
+  <data name="Language.Title" xml:space="preserve"><value>Select your language</value></data>
+  <data name="Language.English" xml:space="preserve"><value>English</value></data>
+  <data name="Language.French" xml:space="preserve"><value>French</value></data>
+  <data name="Alert.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Alert.Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Alert.No" xml:space="preserve"><value>No</value></data>
+  <data name="Alert.Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Footer.Ratings" xml:space="preserve"><value>RATINGS</value></data>
+  <data name="Footer.Privacy" xml:space="preserve"><value>Privacy Policy</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>End User Licence Agreement</value></data>
+  <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>
+  <data name="Footer.Eula.Title" xml:space="preserve"><value>END USER LICENSE AGREEMENT</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Last updated on: placeholder text</value></data>
+  <data name="Legal.Section" xml:space="preserve"><value>INTRODUCTION</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Placeholder heading</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
 </root>
