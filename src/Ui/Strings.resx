@@ -729,4 +729,30 @@
   <data name="Invite.Joined" xml:space="preserve"><value>Joined</value></data>
   <data name="Invite.Reward" xml:space="preserve"><value>Reward</value></data>
   <data name="Invite.LinkText" xml:space="preserve"><value>This is your referral link, copy and send it to anyone you would like to invite to {game}:</value></data>
+  <data name="Prof.Title" xml:space="preserve"><value>{0}'s profile</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Ranks</value></data>
+  <data name="Prof.TabAchievements" xml:space="preserve"><value>Achievements</value></data>
+  <data name="Prof.TabSkills" xml:space="preserve"><value>Skills</value></data>
+  <data name="Prof.TabStats" xml:space="preserve"><value>Statistics</value></data>
+  <data name="Prof.TabGallery" xml:space="preserve"><value>Gallery</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Trophies</value></data>
+  <data name="Prof.TabDogs" xml:space="preserve"><value>Dogs</value></data>
+  <data name="Prof.TabFriends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Prof.Membership" xml:space="preserve"><value>Hunter</value></data>
+  <data name="Prof.Rank" xml:space="preserve"><value>Rank {0}</value></data>
+  <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
+  <data name="Prof.TipMembership" xml:space="preserve"><value>{0}'s membership type</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>{0}'s Hunter Score</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>{0}'s Hunter Score rank</value></data>
+  <data name="Prof.TipOnline" xml:space="preserve"><value>{0} is online</value></data>
+  <data name="Prof.Request" xml:space="preserve"><value>Send a friend request</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Friend request pending</value></data>
+  <data name="Prof.Overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="Prof.Animals" xml:space="preserve"><value>Animals</value></data>
+  <data name="Prof.Weapons" xml:space="preserve"><value>Weapons</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Collectables</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Progress</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Prof.Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="Prof.Unlocked" xml:space="preserve"><value>Unlocked</value></data>
 </root>
