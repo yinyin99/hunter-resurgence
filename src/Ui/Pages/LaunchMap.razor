@@ -1,0 +1,136 @@
+@page "/launch-map/{Kind:int}"
+@inject IServersService Service
+@inject ISessionService Sessions
+@inject IPatchService Patch
+@inject ModalService Modal
+
+<PageTitle>@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</PageTitle>
+
+<h2 class="page-title">@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</h2>
+@if (single)
+{
+    <p class="intro">@L["Launch.Intro1"]</p>
+    <p class="intro">@L["Launch.Intro2"]</p>
+}
+else
+{
+    <form class="options" @onsubmit:preventDefault>
+        <div class="col info">
+            <h3>@L["Launch.Info"]</h3>
+            <label for="game-name" class="muted">@L["Launch.GameName"]</label>
+            <input id="game-name" name="name" maxlength="25" @bind="name" />
+            <textarea name="description" maxlength="255" placeholder="@L["Launch.Description"]" @bind="description"></textarea>
+        </div>
+        <div class="col who">
+            <h3>@L["Launch.Who"]</h3>
+            <label class="radio"><input type="radio" name="publicGame" checked="@friendsOnly" @onchange="() => friendsOnly = true" /> @L["Launch.FriendsOnly"]</label>
+            <label class="radio"><input type="radio" name="publicGame" checked="@(!friendsOnly)" @onchange="() => friendsOnly = false" /> @L["Launch.Anyone"]</label>
+            <label for="game-password" class="muted">@L["Launch.Password"]</label>
+            <input id="game-password" name="gamepassword" maxlength="20" placeholder="@L["Launch.PasswordPlaceholder"]" @bind="password" />
+        </div>
+        <div class="col players">
+            <label class="muted">@L["Launch.MaxPlayers"]</label>
+            <Select Id="num-players" Width="141" Options="playerCounts" Value="@maxPlayers.ToString()" ValueChanged="v => maxPlayers = int.Parse(v)" />
+            <label class="check"><input type="checkbox" id="limitHunterscore" @bind="limit" /> @L["Launch.LimitScore"]</label>
+            <div class="range">
+                <label for="hsMin" class="muted">@L["Launch.Min"]</label>
+                <label for="hsMax" class="muted">@L["Launch.Max"]</label>
+                <input id="hsMin" disabled="@(!limit)" value="@hsMin" @onchange='e => hsMin = Digits(e.Value, "0")' />
+                <input id="hsMax" disabled="@(!limit)" value="@hsMax" @onchange='e => hsMax = Digits(e.Value, "3000")' />
+            </div>
+            <div class="slider @(limit ? "" : "off")">
+                <input type="range" min="0" max="3000" disabled="@(!limit)" aria-label="@L["Launch.Min"]" value="@Math.Min(Number(hsMin), 3000)" @oninput="e => hsMin = Math.Min(Number(e.Value), Number(hsMax)).ToString()" />
+                <input type="range" min="0" max="3000" disabled="@(!limit)" aria-label="@L["Launch.Max"]" value="@Math.Min(Number(hsMax), 3000)" @oninput="e => hsMax = Math.Max(Number(e.Value), Number(hsMin)).ToString()" />
+            </div>
+        </div>
+        <div class="col start">
+            <h3>@L["Launch.Start"]</h3>
+            <label class="muted">@L["Launch.StartTime"]</label>
+            <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.Create"].Value : L["Launch.Patching"].Value)</button>
+        </div>
+    </form>
+}
+<div class="badges">
+    @foreach (var r in reserves)
+    {
+        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve)" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
+    }
+</div>
+<div class="stage">
+    <div class="pane">
+        @if (single)
+        {
+            <label class="muted">@L["Launch.StartTime"]</label>
+            <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
+        }
+        <h3>@reserves.FirstOrDefault(r => r.Id == reserve)?.Name</h3>
+        <p class="legend"><Icon Name="house" /> @L["Launch.Lodges"]</p>
+        <ul>
+            @foreach (var m in markers.Where(m => m.Kind == MarkerKind.Lodge))
+            {
+                <li class="@(m.Id == marker ? "current" : "")"><a href="#" @onclick="() => marker = m.Id" @onclick:preventDefault>@m.Name</a></li>
+            }
+        </ul>
+        <p class="legend"><Icon Name="campground" /> @L["Launch.Tents"]</p>
+        <p class="no-tents">@((MarkupString)L["Launch.NoTents"].Value)</p>
+    </div>
+    <MapPlaceholder Markers="markers" Height="750" Selected="marker" OnPick="m => marker = m.Id">
+        @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
+        {
+            <span class="start-label" style="left:@(at.X)%;top:@(at.Y)%">@L["Launch.StartingAt", at.Name]</span>
+        }
+    </MapPlaceholder>
+</div>
+
+@code {
+    static readonly IReadOnlyList<string> hours = Enumerable.Range(5, 14).Select(h => $"{h:00}:00").ToList();
+    static readonly IReadOnlyList<string> playerCounts = Enumerable.Range(2, 7).Select(n => n.ToString()).ToList();
+
+    IReadOnlyList<Reserve> reserves = [];
+    IReadOnlyList<MapMarker> markers = [];
+    // the last start is remembered by the old page in a cookie; the defaults are its first values
+    int reserve = 2, marker = 1, hour = 9, maxPlayers = 8;
+    string name = "", description = "", password = "", hsMin = "0", hsMax = "99999";
+    bool friendsOnly, limit, ready = true;
+
+    [Parameter] public int Kind { get; set; }
+
+    bool single => Kind == 1;
+    static int Number(object? value) => int.TryParse(value?.ToString(), out var n) ? n : 0;
+    string Hour => $"{hour:00}:00";
+
+    protected override async Task OnInitializedAsync()
+    {
+        name = L["Launch.GameOf", (await Sessions.CurrentAsync())?.Handle ?? "Hunter01"];
+        reserves = await Service.ReservesAsync();
+        markers = await Service.MarkersAsync(reserve);
+        ready = (await Patch.StatusAsync()).State == PatchState.Ready;
+    }
+
+    void SetHour(string value) => hour = int.Parse(value[..2]);
+
+    async Task Choose(int id)
+    {
+        reserve = id;
+        markers = await Service.MarkersAsync(id);
+        marker = markers.First(m => m.Kind == MarkerKind.Lodge).Id;
+    }
+
+    /// <summary>The old blur handler: only the first run of digits stays, empty falls back.</summary>
+    static string Digits(object? value, string fallback)
+    {
+        var run = System.Text.RegularExpressions.Regex.Match(value?.ToString() ?? "", @"\d+").Value;
+        return run.Length > 0 ? run : fallback;
+    }
+
+    async Task Go()
+    {
+        var result = single
+            ? await Service.StartSingleAsync(reserve, marker, hour * 60)
+            : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
+                limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60);
+        if (!result.Ok) Modal.Alert(L["Launch.Failed"]);
+    }
+}

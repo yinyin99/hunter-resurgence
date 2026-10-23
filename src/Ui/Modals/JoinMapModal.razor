@@ -1,0 +1,64 @@
+@inject ModalService Modal
+@inject IServersService Servers
+
+<div class="join" role="dialog" aria-modal="true">
+    <MapPlaceholder Markers="markers" Height="608" Zoom="false" OnPick="Pick">
+        <p class="hint"><Icon Name="caret-down" /> @L["Join.Hint"]</p>
+    </MapPlaceholder>
+    <aside>
+        <button class="close" aria-label="@L["Join.Close"]" @onclick="Modal.Close">&times;</button>
+        <h2>@Server.Name</h2>
+        <h5>@L["Servers.Details"]</h5>
+        <p class="line">@L["Servers.HostLabel"] <a href="/profile/@Server.Host" @onclick="Modal.Close">@Server.Host</a></p>
+        <p class="line">@L["Servers.ReserveLabel"] @reserve</p>
+        <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(Server.Seconds)</p>
+        <h5 class="players-title">@L["Servers.PlayerList", Server.Players, Server.Max]</h5>
+        @foreach (var (p, i) in Server.Roster.Select((p, i) => (p, i)))
+        {
+            <div class="player" style="border-color:@(i % 2 == 0 ? "#c0396b" : "#8e87d6")">
+                <AssetSlot Name="avatar-default" Width="50" Height="50" />
+                <a href="/profile/@p.Handle" @onclick="Modal.Close">@p.Handle</a>
+                <span class="score"><Icon Name="paw" /> @p.HunterScore</span>
+            </div>
+        }
+    </aside>
+    @if (asking is not null)
+    {
+        <form class="password" @onsubmit="Submit" id="mp-password-dialog">
+            <button type="button" class="close" aria-label="@L["Join.Close"]" @onclick="() => asking = null">&times;</button>
+            <label for="join-password">@L["Join.Password"]</label>
+            <input id="join-password" type="password" maxlength="20" placeholder="@L["Join.PasswordPlaceholder"]" @bind="password" autofocus />
+            <button class="btn btn-primary">@L["Join.Go"]</button>
+        </form>
+    }
+</div>
+
+@code {
+    IReadOnlyList<MapMarker> markers = [];
+    string reserve = "";
+    MapMarker? asking;
+    string? password;
+
+    /// <summary>The game to join; set by the dashboard's Quick Join and the server list's Join Game.</summary>
+    [Parameter, EditorRequired] public GameServer Server { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        markers = await Servers.MarkersAsync(Server.Reserve);
+        reserve = (await Servers.ReservesAsync()).FirstOrDefault(r => r.Id == Server.Reserve)?.Name ?? "";
+    }
+
+    async Task Pick(MapMarker marker)
+    {
+        if (Server.Password) { (asking, password) = (marker, null); return; }
+        await Join(marker, null);
+    }
+
+    Task Submit() => Join(asking!, password);
+
+    async Task Join(MapMarker marker, string? pass)
+    {
+        var result = await Servers.JoinAsync(Server.Id, marker.Id, pass);
+        if (result.Ok) Modal.Close(); else Modal.Alert(L["Launch.Failed"]);
+    }
+}

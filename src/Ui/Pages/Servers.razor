@@ -1,0 +1,147 @@
+@page "/servers"
+@inject ModalService Modal
+@implements IDisposable
+@inject IServersService Service
+
+<PageTitle>@L["Servers.Title"]</PageTitle>
+
+<h2 class="page-title">@L["Servers.Title"]</h2>
+<div class="layout">
+    <div class="list">
+        <div class="search">
+            <Icon Name="magnifying-glass" />
+            <input type="search" placeholder="@L["Servers.Search"]" aria-label="@L["Servers.Search"]" @bind="query" @bind:event="oninput" />
+            @if (query.Length > 0) { <button type="button" class="clear" data-tip="@L["Servers.Clear"]" aria-label="@L["Servers.Clear"]" @onclick="() => query = string.Empty"><Icon Name="xmark" /></button> }
+        </div>
+        <div class="tools">
+            <span>@L["Servers.Showing", shown.Count]</span>
+            <label>@L["Servers.OnlyAllowed"] <input type="checkbox" @bind="allowedOnly" /></label>
+            <button id="serverListRefresh" class="btn btn-primary" @onclick="Load">@L["Servers.Refresh"]</button>
+        </div>
+        @if (shown.Count > 0)
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th aria-sort='@Sorted("name")'><a href="#" @onclick='() => Sort("name")' @onclick:preventDefault>@L["Servers.GameName"]</a></th>
+                        <th aria-sort='@Sorted("reserve")'><a href="#" @onclick='() => Sort("reserve")' @onclick:preventDefault>@L["Servers.Reserve"]</a></th>
+                        <th class="players" aria-sort='@Sorted("players")'><a href="#" @onclick='() => Sort("players")' @onclick:preventDefault>@L["Servers.Players"]</a></th>
+                        <th aria-sort='@Sorted("host")'><a href="#" @onclick='() => Sort("host")' @onclick:preventDefault>@L["Servers.Host"]</a></th>
+                        <th aria-sort='@Sorted("country")'><a href="#" @onclick='() => Sort("country")' @onclick:preventDefault>@L["Servers.Country"]</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in shown)
+                    {
+                        <tr class="@(g == selected ? "selected" : "")" @onclick="() => selected = g">
+                            <td class="name">@g.Name</td>
+                            <td>@reserves.GetValueOrDefault(g.Reserve)</td>
+                            <td class="players">@g.Players/@g.Max</td>
+                            <td class="host"><a href="/profile/@g.Host" @onclick:stopPropagation>@g.Host</a></td>
+                            <td class="where"><ServerWhere Server="g" />@if (g.Password) { <span class="lock" data-tip="@L["Servers.Locked"]"><Icon Name="lock" /></span> }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty">
+                <h4>@L["Servers.NoGames"]</h4>
+                <p>@L["Servers.NoGamesDesc"]</p>
+                <a class="btn btn-primary" href="/launch-map/2">@L["Servers.HostOwn"]</a>
+            </div>
+        }
+        <h5 class="info-title">@L["Servers.InfoTitle"]</h5>
+        <p class="info">@L["Servers.Info"] <ExternalLink Key="support_connections">@L["Servers.InfoLink"]</ExternalLink></p>
+        <p class="legend"><i class="dot short"></i> = @L["Servers.Short"] <i class="dot medium"></i> = @L["Servers.Medium"] <i class="dot long"></i> = @L["Servers.Long"]</p>
+    </div>
+    @if (selected is { } s)
+    {
+        <aside class="preview">
+            <p class="muted">@L["Servers.Details"]</p>
+            <h3>@s.Name</h3>
+            @if (s.Description.Length > 0) { <p class="description">@s.Description</p> }
+            <button class="btn btn-primary btn-large btn-block" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = s })">@L["Servers.Join"]</button>
+            <h5>@L["Servers.Details"]</h5>
+            <p class="line">@L["Servers.HostLabel"] <a href="/profile/@s.Host">@s.Host</a></p>
+            <p class="line">@L["Servers.ReserveLabel"] @reserves.GetValueOrDefault(s.Reserve)</p>
+            <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(s.Seconds)</p>
+            <p class="line gap">@L["Servers.MinScore"] @s.MinScore</p>
+            <p class="line">@L["Servers.MaxScore"] @s.MaxScore</p>
+            <h5 class="players-title">@L["Servers.PlayerList", s.Players, s.Max]</h5>
+            @foreach (var p in s.Roster)
+            {
+                <div class="player"><AssetSlot Name="avatar-default" Width="50" Height="50" /><a href="/profile/@p.Handle">@p.Handle</a><span class="score"><Icon Name="paw" /> @p.HunterScore</span></div>
+            }
+        </aside>
+    }
+</div>
+
+@code {
+    IReadOnlyList<GameServer> all = [];
+    Dictionary<int, string> reserves = [];
+    GameServer? selected;
+    string query = "";
+    bool allowedOnly;
+
+    /// <summary>The old search: every word must be part of game name plus host.</summary>
+    IReadOnlyList<GameServer> shown
+    {
+        get
+        {
+            var rows = all
+                .Where(g => query.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(w => (g.Name + g.Host).Contains(w, StringComparison.OrdinalIgnoreCase)))
+                .Where(g => !allowedOnly || !g.Password);
+            Func<GameServer, object> key = sortBy switch
+            {
+                "name" => g => g.Name.ToLowerInvariant(),
+                "reserve" => g => reserves.GetValueOrDefault(g.Reserve, ""),
+                "players" => g => g.Players,
+                "host" => g => g.Host.ToLowerInvariant(),
+                "country" => g => g.Country,
+                _ => g => g.Id,
+            };
+            return (descending ? rows.OrderByDescending(key) : rows.OrderBy(key)).ToList();
+        }
+    }
+
+    string? sortBy;
+    bool descending;
+    readonly CancellationTokenSource stop = new();
+
+    string Sorted(string column) => sortBy != column ? "none" : descending ? "descending" : "ascending";
+
+    void Sort(string column)
+    {
+        descending = sortBy == column && !descending;
+        sortBy = column;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        reserves = (await Service.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
+        await Load();
+        _ = Refresh();
+    }
+
+    /// <summary>The old list asks the network again every five minutes.</summary>
+    async Task Refresh()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token)) await InvokeAsync(async () => { await Load(); StateHasChanged(); });
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => stop.Cancel();
+
+    async Task Load()
+    {
+        all = await Service.ServersAsync();
+        // the first game is selected, as in the old list
+        selected = all.FirstOrDefault(g => g.Id == selected?.Id) ?? all.FirstOrDefault();
+    }
+}
