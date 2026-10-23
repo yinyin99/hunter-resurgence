@@ -19,6 +19,6 @@
     {
         if (!firstRender) return;
         await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
-        await shell.InvokeVoidAsync("setLang", System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+        await shell.InvokeVoidAsync("setLang", System.Globalization.CultureInfo.CurrentUICulture.Name);
     }
 }
