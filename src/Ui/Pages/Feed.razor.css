@@ -1,4 +1,0 @@
-.probe { width: var(--w-container); margin: 0 auto; padding-top: var(--h-statusbar); }
-.probe-main { width: calc(var(--w-main) - 40px); padding: 20px; background: var(--bg-column); min-height: 600px; }
-.probe-mode { color: var(--fg-muted-2); }
-.probe-icons { font-size: 28px; }
