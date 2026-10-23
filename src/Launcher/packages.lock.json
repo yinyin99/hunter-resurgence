@@ -276,11 +276,19 @@
         "resolved": "1.0.4258.31",
         "contentHash": "sHVZ2MQrHT1J3q5/6csn0fIP27rzpTO/RRC+wPQDrZheB7T4t2n+vVbY6SdCKr4WRV9s/gmBM3PPMWWJtoDzMg=="
       },
+      "resurgence.services": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.13, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.13, )"
+        }
+      },
       "resurgence.ui": {
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "[10.0.13, )",
-          "Microsoft.Extensions.Localization": "[10.0.13, )"
+          "Microsoft.Extensions.Localization": "[10.0.13, )",
+          "Resurgence.Services": "[1.0.0, )"
         }
       }
     },

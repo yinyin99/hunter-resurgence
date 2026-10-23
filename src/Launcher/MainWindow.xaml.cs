@@ -10,6 +10,7 @@ public partial class MainWindow : Window
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
         services.AddLocalization();
+        services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         Resources.Add("services", services.BuildServiceProvider());
         InitializeComponent();

@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // static SSR only; add AddInteractiveServerComponents() when a page needs interactivity
 builder.Services.AddRazorComponents();
 builder.Services.AddLocalization();
+builder.Services.AddMockServices();
 
 var app = builder.Build();
 app.UseRequestLocalization(o => o.SetDefaultCulture("en").AddSupportedCultures("en", "fr", "es", "pt-BR", "de", "ru").AddSupportedUICultures("en", "fr", "es", "pt-BR", "de", "ru"));

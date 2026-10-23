@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Services\Resurgence.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.13" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.13" />
   </ItemGroup>

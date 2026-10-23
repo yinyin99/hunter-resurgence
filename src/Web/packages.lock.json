@@ -8,8 +8,14 @@
         "resolved": "10.0.12",
         "contentHash": "+sIBo9AMBZH46qHWHQdfzcGMt+RuBaPYrUMOAM9VjA7MQ9QtIez3lq1C3E05+Yroa94KKt3DSWaxmCI4H28a9Q=="
       },
-      "resurgence.ui": {
+      "resurgence.services": {
         "type": "Project"
+      },
+      "resurgence.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Resurgence.Services": "[1.0.0, )"
+        }
       }
     }
   }

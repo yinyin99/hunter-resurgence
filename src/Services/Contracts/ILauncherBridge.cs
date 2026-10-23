@@ -1,0 +1,11 @@
+namespace Resurgence.Services;
+
+/// <summary>What only the launcher window can do; the website gets a stub that logs.</summary>
+public interface ILauncherBridge
+{
+    bool IsSteam { get; }
+    /// <param name="kind">game, screenshots or logs</param>
+    void OpenFolder(string kind);
+    void OpenExternal(string url);
+    void StartGame(string url);
+}
