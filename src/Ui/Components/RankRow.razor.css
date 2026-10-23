@@ -1,0 +1,16 @@
+tr { border-top: 1px solid #222; }
+tr:nth-child(even) { background: #151515; }
+td { padding: 0; vertical-align: middle; }
+.rank { width: 105px; font-size: 22px; text-align: center; color: #ddd; }
+.avatar { width: 60px; line-height: 0; }
+.handle { padding-left: 12px; }
+.handle a { font-size: 14px; }
+.value { padding-right: 45px; font-size: 24px; text-align: right; color: #eee; }
+.value a { color: #eee; }
+.value.mid { width: 210px; padding: 0; text-align: center; }
+.sp { display: inline-block; margin-left: 12px; padding: 0 4px; border-radius: 2px; background: #444; font-size: 11px; line-height: 16px; vertical-align: 3px; color: #ddd; }
+tr.small { border: 0; background: none; }
+tr.small td { padding: 2px 0; }
+tr.small .handle { padding-left: 14px; }
+tr.small .handle a { color: #eee; }
+tr.small .value { padding-right: 10px; font-size: 18px; }
