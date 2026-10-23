@@ -25,7 +25,7 @@ The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, me
 
 The website is signed-in or public:
 
-- **Signed out**: the public top bar (`Already a hunter? Sign in`), the news with a play button, the store and its items, leaderboards, competitions, help, download, and hunter profiles and score sheets. Pages that need an account (missions, wallet, messages, settings, game management, invite, welcome, community league) go back to the news.
+- **Signed out**: the public top bar (`Already a hunter? Sign in`), the news with a play button, the store and its items, leaderboards, competitions, help, download, and hunter profiles and score sheets. Pages that need an account (missions, wallet, bank, messages, settings, game management, invite, welcome, community league) go back to the news.
 - **Signed in**: the same menu as the launcher without the launcher-only items. The pages that only the launcher has (`/dashboard`, `/servers`, `/launch-map/...`, `/tutorials` and the sign-up screens) go back to the news.
 
 Four plain pages are meant for the browser the old launcher opened: `/auto-login`, `/email/verify` (also `/email/confirm`, `/email/change`), `/thank-you` and `/logout`. They have no menu.
