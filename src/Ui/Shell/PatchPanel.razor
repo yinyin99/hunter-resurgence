@@ -21,8 +21,7 @@
                 case "error":
                     <h1>@L["Patch.ErrorTitle"]</h1>
                     <h2>@ErrorText</h2>
-                    var see = L["Patch.PleaseSee", "|"].Value.Split('|');
-                    <p>@see[0]<ExternalLink Key="support">@L["Patch.SupportSection"]</ExternalLink>@see[1]</p>
+                    <p>@L.Frag("Patch.PleaseSee", SupportLink())</p>
                     <button class="btn btn-primary btn-large" @onclick="Dismiss">@L["Patch.GotIt"]</button>
                     break;
                 case "launcher":
@@ -94,7 +93,7 @@
 
     string InfoText => Status.State switch
     {
-        PatchState.Downloading => L["Patch.Downloading", L[Status.Kind switch { DownloadKind.Full => "Patch.KindFull", DownloadKind.Launcher => "Patch.KindLauncher", _ => "Patch.KindPatch" }].Value, Status.File, Fmt.Size(Status.Bytes), Fmt.Size(Status.Rate)],
+        PatchState.Downloading => L["Patch.Downloading", L[Status.Kind switch { DownloadKind.Full => "Patch.KindFull", DownloadKind.Launcher => "Patch.KindLauncher", _ => "Patch.KindPatch" }].Value, Status.File, Fmt.Size(L, Status.Bytes), Fmt.Size(L, Status.Rate)],
         PatchState.Verifying => L["Patch.Verifying"],
         PatchState.Extracting => L["Patch.Extracting"],
         PatchState.Patching => Status.Step switch
@@ -112,6 +111,8 @@
         ? (int)(100 * Math.Min(Status.Progress, 1)) : null;
 
     string ErrorText => L[$"Launcher.Error.{Status.ErrorCode}"] is { ResourceNotFound: false } known ? known.Value : L["Launcher.Error.Unknown", Status.ErrorCode].Value;
+
+    RenderFragment SupportLink() => @<ExternalLink Key="support">@L["Patch.SupportSection"]</ExternalLink>;
 
     void Dismiss() => dismissed.Add(Notice!);
 

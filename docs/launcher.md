@@ -94,4 +94,6 @@ English and French. All texts are .NET resources in `src/Ui/`: `Strings.resx` (E
 
 Game vocabulary (animal names, collectables and a few labels) is not written by hand: the resx keys `Term.species.<id>`, `Term.collectable.<id>` and `Term.ui.<name>` hold one text per old id and language. A service passes the id (the mocks pass the English name, which is matched to its term); a text without a term is shown as it is. To add a language, add its texts to `Strings.<lang>.resx` the same way.
 
+A text is a whole sentence: a link or bold part is a hole, never markup in the resx. `{0}...{1}` wrap the words (`L.Html`), or one hole is the whole link or name (`L.Frag`); a translation may move the holes. Counts are written without a plural noun (`Games shown: {0}`), so one string fits every number.
+
 At start the launcher uses the language saved in `launcher.json`, else the Windows display language when it is French, else English. The selftest checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.

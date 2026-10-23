@@ -47,7 +47,7 @@
                         break;
                     case "language":
                         <form @onsubmit="SaveLocale" @onsubmit:preventDefault>
-                            <label>@L["Set.Language"]<select class="field-sel" id="locale" @bind="language"><option value="en">@L["Language.English"]</option><option value="fr">@L["Language.French"]</option></select></label>
+                            <label>@L["Set.Language"]<select class="field-sel" id="locale" @bind="language">@foreach (var l in Languages.All) { <option value="@l.Code">@l.Name</option> }</select></label>
                             <label>@L["Set.Country"]<select class="field-sel" id="country" @bind="country"><option value="">@L["Set.CountryChoose"]</option>@foreach (var c in choices.Countries) { <option value="@c">@c</option> }</select></label>
                             <label>@L["Set.TimeZone"]<select class="field-sel" id="timezone" @bind="timeZone">@foreach (var z in choices.TimeZones) { <option value="@z">@z.Replace('_', ' ')</option> }</select></label>
                             <button type="submit" class="btn btn-primary">@L["Set.Save"]</button>
@@ -70,7 +70,7 @@
                         </form>
                         break;
                     case "purchases":
-                        <p class="info">@purchases[0]<a href="/bank/ems">@L["Set.Bank"]</a>@purchases[1]<a href="/store">@L["Set.Store"]</a>@purchases[2]</p>
+                        <p class="info">@L.Frag("Set.PurchasesText", Link("/bank/ems", L["Set.Bank"]), Link("/store", L["Set.Store"]))</p>
                         <p class="center"><a href="/wallet">@L["Set.WalletLink"]</a></p>
                         break;
                     case "bans":
@@ -84,7 +84,7 @@
                         <p class="info">@L["Set.FacebookText"] <a href="#" id="fb_connect" @onclick:preventDefault>@L["Set.Connect"]</a></p>
                         break;
                     case "steam":
-                        <p class="info">@steam[0]<b>@handle</b>@steam[1]</p>
+                        <p class="info">@L.Frag("Set.SteamText", Strong(handle))</p>
                         <div class="warn"><h5>@L["Set.Warning"]</h5><p>@L["Set.SteamWarning"]</p></div>
                         <button type="button" class="btn btn-primary" @onclick="Disconnect">@L["Set.SteamDisconnect"]</button>
                         break;
@@ -132,9 +132,8 @@
     [Parameter] public string? Tab { get; set; }
     string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "avatar";
     string Title => tab switch { "avatar" => "Set.AvatarTitle", "email" => "Set.EmailTitle", "language" => "Set.TabLocale", "purchases" => "Set.PurchasesTitle", "bans" => "Set.BansTitle", "facebook" => "Set.TabFacebook", "steam" => "Set.SteamTitle", _ => "Set.TabProfile" };
-    // the sentences with a link or the handle in the middle are cut at marker characters
-    string[] purchases => L["Set.PurchasesText", "\u0001", "\u0002"].Value.Split('\u0001', '\u0002');
-    string[] steam => L["Set.SteamText", "\u0001"].Value.Split('\u0001');
+    RenderFragment Link(string href, string text) => @<a href="@href">@text</a>;
+    RenderFragment Strong(string text) => @<b>@text</b>;
 
     string Group(string name) => name switch { "Animals" => L["Set.GroupAnimals"], "Weapons" => L["Set.GroupWeapons"], "Exploration" => L["Set.GroupExploration"], "Events" => L["Set.GroupEvents"], _ => L["Set.GroupMissions"] };
 

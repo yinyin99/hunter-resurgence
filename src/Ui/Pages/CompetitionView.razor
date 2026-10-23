@@ -20,7 +20,7 @@
     </header>
     <dl class="stats">
         <div><dt>@L["Comp.Players"]</dt><dd>@c.Players</dd></div>
-        <div class="wide"><dt>@L[c.Status == "Signup" ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Fmt.Elapsed(d.EndsIn)</dd></div>
+        <div class="wide"><dt>@L[c.Status == "Signup" ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Fmt.Elapsed(L, d.EndsIn)</dd></div>
         <div><dt>@L["Comp.YourPosition"]</dt><dd>@(d.Position?.ToString() ?? L["Comp.NA"])</dd></div>
         <div><dt>@L["Comp.ScoreToBeat"]</dt><dd>@d.ScoreToBeat</dd></div>
         <div><dt>@L["Comp.Attempts"]</dt><dd>@d.Used/@d.Max</dd></div>

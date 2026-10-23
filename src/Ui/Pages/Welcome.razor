@@ -7,11 +7,11 @@
     <h2 class="page-title">@(L["Welcome.Title"].Value.ToUpperInvariant())</h2>
     <div class="who">
         <AssetSlot Name="avatar-current" Width="80" Height="80" />
-        <h2>@congrats[0]<a href="/profile/@handle">@handle</a>@congrats[1]</h2>
+        <h2>@L.Frag("Welcome.Congrats", Profile())</h2>
     </div>
     <p class="text">@L["Welcome.Intro"]</p>
     <h4>@L["Welcome.Retail"]</h4>
-    <p class="text">@((MarkupString)L["Welcome.RetailText", "<a href=\"#\" id=\"activation\">", "</a>"].Value)</p>
+    <p class="text">@L.Html("Welcome.RetailText", "<a href=\"#\" id=\"activation\">", "</a>")</p>
     <div class="cards">
         @Card("Welcome.Tutorials", "/tutorials", "Welcome.TutorialsGo", null)
         @Card("Welcome.Hunting", "/dashboard", "Welcome.HuntingGo", null)
@@ -24,7 +24,7 @@
 
 @code {
     string handle = "";
-    string[] congrats => L["Welcome.Congrats", "\u0001"].Value.Split('\u0001');
+    RenderFragment Profile() => @<a href="/profile/@handle">@handle</a>;
 
     protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
 

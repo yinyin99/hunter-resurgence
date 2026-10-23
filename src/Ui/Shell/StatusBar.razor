@@ -7,15 +7,15 @@
 
 <header class="bar @(Mode.Launcher ? "" : "web")">
     <div class="row">
-        <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">@L["Statusbar.Launcher"]</span> }</a>
+        <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">Launcher</span> }</a>
         <div class="left">
             <button class="section friends" popovertarget="friends" data-tip="@L["Tip.Friends"]" aria-label="@L["Tip.Friends"]" @onclick="() => friendsLoaded = true"><Icon Name="user" /></button>
             <a class="section" href="/messages" data-tip="@L["Tip.Messages"]" aria-label="@L["Tip.Messages"]"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
             <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
             <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
             <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Statusbar.Days", balances.AmmoDays]</span></span>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Statusbar.Days", balances.FuelDays]</span></span>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", balances.AmmoDays]</span></span>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", balances.FuelDays]</span></span>
         </div>
         <div class="right">
             <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>

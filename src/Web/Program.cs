@@ -32,13 +32,18 @@ app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always
 app.Use((ctx, next) =>
 {
     var lang = ctx.Request.Query["lang"].ToString();
-    if (lang is "en" or "fr") ctx.Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new(lang)), new CookieOptions { Secure = true });
+    if (Languages.Find(lang) is { } l) ctx.Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new(l.Code)), new CookieOptions { Secure = true });
     return next();
 });
 app.UseRequestLocalization(o =>
 {
-    o.SetDefaultCulture("en").AddSupportedCultures("en", "fr").AddSupportedUICultures("en", "fr");
+    var codes = Languages.All.Select(l => l.Code).ToArray();
+    o.SetDefaultCulture("en").AddSupportedCultures(codes).AddSupportedUICultures(codes);
     o.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider { QueryStringKey = "lang", UIQueryStringKey = "lang" });
+    // the browser's languages by preference, any region ("de-AT" is German, "pt" Brazilian Portuguese), replacing the exact-match default
+    o.RequestCultureProviders.Remove(o.RequestCultureProviders.OfType<AcceptLanguageHeaderRequestCultureProvider>().Single());
+    o.RequestCultureProviders.Add(new CustomRequestCultureProvider(ctx => Task.FromResult(ctx.Request.GetTypedHeaders().AcceptLanguage
+        .OrderByDescending(a => a.Quality ?? 1).Select(a => Languages.Match(a.Value.Value)).FirstOrDefault(l => l is not null) is { } l ? new ProviderCultureResult(l.Code) : null)));
 });
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 // development only, after the status code pages so the re-executed /not-found request (new scope) gets it too:

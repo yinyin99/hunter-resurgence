@@ -12,7 +12,7 @@ public sealed class LauncherLanguageSwitcher(LauncherEnv env, NavigationManager 
         env.Prefs.Language = code;
         env.Prefs.Save(Prefs.DefaultPath);
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture =
-            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(App.Languages.First(l => l.Code == code).Culture);
+            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(code);
         nav.NavigateTo(nav.Uri, forceLoad: true);
     }
 }

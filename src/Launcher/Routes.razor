@@ -1,5 +1,7 @@
+@using Microsoft.JSInterop
 @inject HostMode Mode
 @inject Resurgence.Services.ISessionService Sessions
+@inject IJSRuntime JS
 
 <Router AppAssembly="typeof(Routes).Assembly"
         AdditionalAssemblies="new[] { typeof(Strings).Assembly }"
@@ -11,4 +13,12 @@
 
 @code {
     protected override Task OnInitializedAsync() => Mode.ApplyMockSessionAsync(Sessions);
+
+    // the host page is static HTML: tell it the language of this run
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await shell.InvokeVoidAsync("setLang", System.Globalization.CultureInfo.CurrentUICulture.Name);
+    }
 }

@@ -29,11 +29,9 @@
   <data name="Menu.Find" xml:space="preserve"><value>Find a multiplayer game</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
   <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ is {game}'s virtual currency that can be used to purchase items in the Store, such as weapons, equipment, clothing and much more.</value></data>
-  <data name="Statusbar.Launcher" xml:space="preserve"><value>Launcher</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>fuel:</value></data>
-  <data name="Statusbar.Days" xml:space="preserve"><value>{0} days</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Friends</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>My Wallet / Purchase History</value></data>
@@ -68,7 +66,7 @@
   <data name="Alert.Close" xml:space="preserve"><value>Close</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>RATINGS</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privacy Policy</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>End User Licence Agreement</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>End User License Agreement</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>END USER LICENSE AGREEMENT</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Last updated on: placeholder text</value></data>
@@ -77,26 +75,26 @@
   <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
-  <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>
   <data name="Signin.Code" xml:space="preserve"><value>Code</value></data>
   <data name="Signin.SendCode" xml:space="preserve"><value>Send code</value></data>
   <data name="Signin.Submit" xml:space="preserve"><value>Sign in</value></data>
-  <data name="Signin.Back" xml:space="preserve"><value>Use another e-mail address</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Use another email address</value></data>
   <data name="Signin.Sent" xml:space="preserve"><value>We sent a 6-digit code to {0}.</value></data>
-  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Please enter a valid e-mail address.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Please enter a valid email address.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Incorrect code. Please try again.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>PLAY FOR FREE</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Continue reading →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>News Archive</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>{0} Members Online</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBERS ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join Discord</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Hangout with people who get it</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Hang out with people who get it</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Go Hunting</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
   <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Active missions:</value></data>
-  <data name="Hunt.NoMissions" xml:space="preserve"><value>You don't have any active missions. Activate missions on the &lt;a href="/missions"&gt;missions page&lt;/a&gt;</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>You don't have any active missions. Activate missions on the {0}missions page{1}.</value></data>
   <data name="Hunt.MoreMissions" xml:space="preserve"><value>and {0} more...</value></data>
   <data name="Hunt.NoFriends" xml:space="preserve"><value>None of your friends are online</value></data>
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Friends online:</value></data>
@@ -121,7 +119,7 @@
   <data name="Launch.Patching" xml:space="preserve"><value>Patching</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Lodges:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Tents:</value></data>
-  <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at &lt;a href="/store?category=8&amp;type=30"&gt;the store&lt;/a&gt;</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at the {0}store{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Starting at {0}</value></data>
@@ -135,7 +133,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Password protect</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Game password</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max players</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Limit hunterscore</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limit Hunter Score</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
@@ -146,20 +144,20 @@
   <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Show only games I'm allowed to join</value></data>
-  <data name="Servers.Showing" xml:space="preserve"><value>Showing {0} games</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Games shown: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Game name</value></data>
   <data name="Servers.Reserve" xml:space="preserve"><value>Reserve</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Players</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
   <data name="Servers.Country" xml:space="preserve"><value>Country</value></data>
-  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Players: {1}/{2} - Host: </value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Players: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Game details</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Join Game</value></data>
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserve:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Game time:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min hunterscore:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Max hunterscore:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min Hunter Score:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max Hunter Score:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Players ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Information about multiplayer connections</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Playing multiplayer with people that are long distances away from you may cause connection problems or lag. It is recommended that you join games where the host is close to you. The colored dots next to the flags in the server list will give you an indication of how far away from the game's host you are.</value></data>
@@ -168,19 +166,19 @@
   <data name="Servers.Medium" xml:space="preserve"><value>Medium distance</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Long distance</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>No games found</value></data>
-  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We couldn't find any public multiplayer games that you are allowed to join</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We couldn't find any public multiplayer games that you are allowed to join.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOST YOUR OWN GAME</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>This game is password protected</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Server location: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europe</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>North america</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>South america</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>North America</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>South America</value></data>
   <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
   <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Click a starting location on the map to join this game</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Enter password to join this game:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Enter password</value></data>
-  <data name="Join.Go" xml:space="preserve"><value>Join game</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Join Game</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Close</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>It's recommended that you play through the basic tutorials before you start your first real hunt in the first reserve. In these tutorials you will meet the resident warden of that reserve. He will take you through the basics and teach you what you need to know to be successful in {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Start tutorial</value></data>
@@ -189,7 +187,7 @@
   <data name="GameSettings.Initial" xml:space="preserve"><value>Initial setup</value></data>
   <data name="GameSettings.Save" xml:space="preserve"><value>Save</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Cancel</value></data>
-  <data name="GameSettings.StartGame" xml:space="preserve"><value>Start game</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Start Game</value></data>
   <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertical Sync</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Screen Resolution</value></data>
@@ -197,8 +195,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scene Complexity</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scene complexity handles vegetation density and render distance. For render distance, Low settings will grant 220m maximum horizontal vision. Medium settings will grant 270m. High/Very High will grant 320m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texture Quality</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures requires 512MB video card memory in singleplayer and 768MB in multiplayer.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0}MB of video memory</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures require 512 MB video card memory in single player and 768 MB in multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0} MB of video memory</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow Quality</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic Filtering</value></data>
@@ -228,7 +226,7 @@
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Game update required</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>There is an update for {game} available. You need to update {game} on Steam before you can play. You need to close the launcher in order to update.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} is Steam only</value></data>
-  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>From now on you need to play the game via Steam platform!</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>From now on you need to play the game via the Steam platform!</value></data>
   <data name="Patch.GoToSteam" xml:space="preserve"><value>Go to Steam</value></data>
   <data name="Patch.ErrorTitle" xml:space="preserve"><value>An error occurred</value></data>
   <data name="Patch.PleaseSee" xml:space="preserve"><value>Please see the {0} for more information.</value></data>
@@ -290,18 +288,18 @@
   <data name="Launcher.Error.16002" xml:space="preserve"><value>Could not connect to game server. Please try again.</value></data>
   <data name="Launcher.Error.16003" xml:space="preserve"><value>Invalid OS.</value></data>
   <data name="Launcher.Error.16004" xml:space="preserve"><value>Start game from the website.</value></data>
-  <data name="Launcher.Error.16005" xml:space="preserve"><value>The game has crashed (We will investigate).</value></data>
-  <data name="Launcher.Error.16006" xml:space="preserve"><value>User does not have access</value></data>
-  <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>The game has crashed (we will investigate).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>User does not have access.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running.</value></data>
   <data name="Launcher.Error.16008" xml:space="preserve"><value>Wrong settings file version. Please go into settings and reconfigure.</value></data>
   <data name="Launcher.Error.16009" xml:space="preserve"><value>Graphics card does not support D3DQUERYTYPE_EVENT.</value></data>
-  <data name="Signup.Trying" xml:space="preserve"><value>Hang on, we're trying to log you in...</value></data>
-  <data name="Signup.SteamIntro" xml:space="preserve"><value>Hello. You are starting the game from steam, but we couldn't see if you have an account. Please choose one below:</value></data>
-  <data name="Signup.SteamLink" xml:space="preserve"><value>Log in below to link your account to steam.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Hang on, we're trying to sign you in...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Hello. You are starting the game from Steam, but we couldn't see if you have an account. Please choose one below:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Sign in below to link your account to Steam.</value></data>
   <data name="Signup.SteamConnect" xml:space="preserve"><value>Connect existing account to Steam</value></data>
   <data name="Signup.SteamRegister" xml:space="preserve"><value>Register for a new {game} account</value></data>
   <data name="Signup.Or" xml:space="preserve"><value>- or -</value></data>
-  <data name="Signup.Email" xml:space="preserve"><value>E-mail address</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Email address</value></data>
   <data name="Signup.Continue" xml:space="preserve"><value>Continue</value></data>
   <data name="Signup.P1.Title" xml:space="preserve"><value>USERNAME AND AVATAR</value></data>
   <data name="Signup.P1.Pick" xml:space="preserve"><value>Pick a name</value></data>
@@ -311,48 +309,48 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Previous avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Next avatar</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>GET YOUR FIRST WEAPON</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>You’ve made it so far, awesome! Here is a welcome gift from us - your first weapon, the shiny 12GA Single Shot Shotgun with free replenishable ammo. With this rugged beauty you can ethically hunt all animals in the game, except Bison.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>You've made it so far, awesome! Here is a welcome gift from us - your first weapon, the shiny 12GA Single Shot Shotgun with free replenishable ammo. With this rugged beauty you can ethically hunt all animals in the game, except Bison.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>ENJOY YOUR HUNTING LICENSES</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>It’s almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals are rotating weekly. Paying members can hunt all the species, check our Membership store if you want to become one.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>It's almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals that rotate weekly. Paying members can hunt all the species; check our Membership store if you want to become one.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRM YOUR EMAIL</value></data>
-  <data name="Signup.P4.Text" xml:space="preserve"><value>Good things come to those who confirm their emails! Please check your inbox for a message from us and follow the instructions in it. Your current email is {0}. If it’s not correct, please change it below and click "Resend the confirmation email".</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Good things come to those who confirm their emails! Please check your inbox for a message from us and follow the instructions in it. Your current email is {0}. If it's not correct, please change it below and click "Resend email".</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>YOUR REWARD</value></data>
-  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Thank you for confirming your e-mail.</value></data>
-  <data name="Signup.P4.Change" xml:space="preserve"><value>Update e-mail address</value></data>
-  <data name="Signup.P4.Resend" xml:space="preserve"><value>Resend e-mail</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Thank you for confirming your email.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Update email address</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Resend email</value></data>
   <data name="Signup.P4.Launch" xml:space="preserve"><value>Launch tutorial</value></data>
   <data name="Signup.P4.Settings" xml:space="preserve"><value>Game settings</value></data>
   <data name="Signup.P5.Title" xml:space="preserve"><value>YOU ARE READY TO TAKE ON THE BIG GAME</value></data>
   <data name="Signup.P5.Text" xml:space="preserve"><value>You can run the tutorials again under the HUNT NOW button.</value></data>
   <data name="Signup.P5.Hunt" xml:space="preserve"><value>Hunt now!</value></data>
-  <data name="Dialog.Login.Title" xml:space="preserve"><value>Login</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Sign in</value></data>
   <data name="Dialog.Email" xml:space="preserve"><value>Email Address</value></data>
-  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Login</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Sign in</value></data>
   <data name="Dialog.Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Dialog.EmailRequired" xml:space="preserve"><value>Email address required</value></data>
   <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Invalid email address</value></data>
-  <data name="Dialog.EmailTaken" xml:space="preserve"><value>This e-mail is unavailable</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>That email address is not available</value></data>
   <data name="Dialog.Change.Title" xml:space="preserve"><value>Change Email</value></data>
   <data name="Dialog.Change.Submit" xml:space="preserve"><value>Change</value></data>
-  <data name="Dialog.Sent.Title" xml:space="preserve"><value>E-mail sent</value></data>
-  <data name="Dialog.Sent.Text" xml:space="preserve"><value>We have sent you a new e-mail with a link to confirm your e-mail address.</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>Email sent</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>We have sent you a new email with a link to confirm your email address.</value></data>
   <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
   <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Launch Tutorial</value></data>
   <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Save and launch</value></data>
-  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Graphics quality</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Graphics Quality</value></data>
   <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Low settings</value></data>
   <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Medium settings</value></data>
   <data name="Dialog.Tutorial.High" xml:space="preserve"><value>High settings</value></data>
   <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultra settings</value></data>
   <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Custom settings</value></data>
-  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anisotropic filtering</value></data>
-  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Display mode</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anisotropic Filtering</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Display Mode</value></data>
   <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
   <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
-  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Scene complexity</value></data>
-  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Shadow quality</value></data>
-  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Texture quality</value></data>
-  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Scene Complexity</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Shadow Quality</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Texture Quality</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical Sync</value></data>
   <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Competitions</value></data>
   <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
   <data name="Comp.Title" xml:space="preserve"><value>COMPETITIONS</value></data>
@@ -381,7 +379,7 @@
   <data name="Comp.Join" xml:space="preserve"><value>JOIN</value></data>
   <data name="Comp.Leave" xml:space="preserve"><value>LEAVE</value></data>
   <data name="Comp.ChipStatus" xml:space="preserve"><value>Competition status: {0}</value></data>
-  <data name="Comp.StateSignUp" xml:space="preserve"><value>Sign up</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Signup</value></data>
   <data name="Comp.StateOngoing" xml:space="preserve"><value>Ongoing</value></data>
   <data name="Comp.StateEnded" xml:space="preserve"><value>Ended</value></data>
   <data name="Comp.StartsIn" xml:space="preserve"><value>Starts in</value></data>
@@ -400,7 +398,7 @@
   <data name="Comp.Weapons" xml:space="preserve"><value>Weapons</value></data>
   <data name="Comp.Scoring" xml:space="preserve"><value>Scoring</value></data>
   <data name="Comp.Special" xml:space="preserve"><value>Special Requirements</value></data>
-  <data name="Comp.Gamemode" xml:space="preserve"><value>Gamemode</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Game mode</value></data>
   <data name="Comp.Disclaimer" xml:space="preserve"><value>An attempt is subtracted every time a hunt is started on a reserve where a competition is active. Competitions cannot be activated while in the game, any changes made while in the game will only take effect the next time a hunt is started.</value></data>
   <data name="Comp.Participants" xml:space="preserve"><value>Participants with a result ({0})</value></data>
   <data name="Comp.Player" xml:space="preserve"><value>Player</value></data>
@@ -419,8 +417,8 @@
   <data name="Board.Title" xml:space="preserve"><value>LEADERBOARDS</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Range</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Top Hunterscore</value></data>
-  <data name="Board.HallOfFame" xml:space="preserve"><value>Hall Of Fame</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Top Hunter Score</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
   <data name="Board.Single" xml:space="preserve"><value>Single Antler</value></data>
@@ -433,7 +431,7 @@
   <data name="Board.AllTime" xml:space="preserve"><value>All time top Hunter Score</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rank</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Hunter</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunterscore</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Past season Hall of Fame</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Season {0}</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Top Lane Bandit scores</value></data>
@@ -460,7 +458,7 @@
   <data name="Mis.Inactive" xml:space="preserve"><value>Inactive</value></data>
   <data name="Mis.Completed" xml:space="preserve"><value>Completed</value></data>
   <data name="Mis.Activate" xml:space="preserve"><value>ACTIVATE</value></data>
-  <data name="Mis.Broken" xml:space="preserve"><value>Your Streak is broken. Press ACTIVATE to start a new one or BUY/USE Resume Streak to continue your last streak.</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Your streak is broken. Press ACTIVATE to start a new one or BUY/USE Resume Streak to continue your last streak.</value></data>
   <data name="Mis.BrokenNote" xml:space="preserve"><value>* Daily Missions will remain inactive until you choose to activate or resume a streak.</value></data>
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Activation complete!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Enjoy your service!</value></data>
@@ -469,7 +467,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automatically activate only favourite missions</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>You can reset your missions for a fee at the store.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Go to store</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>You have completed {0} of {1} missions and a total {2} of {3} mission packs.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>You have completed {0} of {1} missions and {2} of {3} mission packs.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filter in</value></data>
   <data name="Mis.All" xml:space="preserve"><value>All</value></data>
@@ -490,13 +488,18 @@
   <data name="Mis.NoActive" xml:space="preserve"><value>You currently don't have any missions activated. Activate an available mission below to get started.</value></data>
   <data name="Mis.NoAvailable" xml:space="preserve"><value>No available missions</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>You need to complete the following missions to unlock {0}:</value></data>
-  <data name="Mis.Failed" xml:space="preserve"><value>Something went wrong and you didn’t get your item. Sorry. Please try again!</value></data>
-  <data name="Store.Sales" xml:space="preserve"><value>Sales</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Something went wrong and you didn't get your item. Sorry. Please try again!</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Sales</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>All Items</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Bundles</value></data>
   <data name="Store.Cat.0" xml:space="preserve"><value>Weapons</value></data>
   <data name="Store.Cat.10" xml:space="preserve"><value>Ammo</value></data>
   <data name="Store.Cat.5" xml:space="preserve"><value>Sights</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Rifle Sights</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Handgun Sights</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Shotgun Sights</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Bow &amp; Crossbow Sights</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Muzzleloader Sights</value></data>
   <data name="Store.Cat.59" xml:space="preserve"><value>Dogs</value></data>
   <data name="Store.Cat.15" xml:space="preserve"><value>Lures</value></data>
   <data name="Store.Cat.18" xml:space="preserve"><value>Clothing</value></data>
@@ -511,7 +514,7 @@
   <data name="Store.Search" xml:space="preserve"><value>Search</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>BUY</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Not buyable</value></data>
-  <data name="Store.Login" xml:space="preserve"><value>Log in to buy</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Sign in to buy</value></data>
   <data name="Store.Own" xml:space="preserve"><value>You own:</value></data>
   <data name="Store.Or" xml:space="preserve"><value>or</value></data>
   <data name="Store.Days" xml:space="preserve"><value>days</value></data>
@@ -562,7 +565,7 @@
   <data name="Wal.GiftCode" xml:space="preserve"><value>Purchased as gift. Gift code: {0}</value></data>
   <data name="Bank.BuyEms" xml:space="preserve"><value>Buy em$</value></data>
   <data name="Bank.Help" xml:space="preserve"><value>Help</value></data>
-  <data name="Bank.History" xml:space="preserve"><value>Purchase history</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>Purchase History</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Your em$ balance:</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Redeem a discount code</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Enter your discount code</value></data>
@@ -570,7 +573,7 @@
   <data name="Bank.Invalid" xml:space="preserve"><value>The discount code you entered is invalid or expired</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>In-game currency</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Weapons, tents, clothing, hunting licenses and much more can be purchased with in-game currency (em$).</value></data>
-  <data name="Bank.Gift" xml:space="preserve"><value>Purchase as a Gift</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Purchase as a gift</value></data>
   <data name="Bank.Compare" xml:space="preserve"><value>* Compared to 500 em$</value></data>
   <data name="Bank.Save" xml:space="preserve"><value>Save {0}%*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Starter Bundles</value></data>
@@ -582,7 +585,6 @@
   <data name="Bank.Animals" xml:space="preserve"><value>License to hunt all animals</value></data>
   <data name="Bank.Reserves" xml:space="preserve"><value>Access to all reserves</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Unlimited basic ammo</value></data>
-  <data name="Bank.Other" xml:space="preserve"><value>+ {0} other items</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Items included in a membership or bought separately are kept even if your membership expires</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Compared to 3 months {game} Membership</value></data>
@@ -599,7 +601,7 @@
   <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Disclaimer</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
-  <data name="Bank.Extra" xml:space="preserve"><value>{0} extra weapons</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Extra weapons: {0}, other items: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} months</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Only allow messages from friends</value></data>
@@ -611,37 +613,37 @@
   <data name="Msg.Sent" xml:space="preserve"><value>Sent {0}</value></data>
   <data name="Msg.Empty" xml:space="preserve"><value>You haven't sent or received any messages yet. When you start a chat with another hunter, it will appear here.</value></data>
   <data name="Msg.NoUser" xml:space="preserve"><value>No such user.</value></data>
-  <data name="Msg.Self" xml:space="preserve"><value>You cant send messages to yourself.</value></data>
-  <data name="Msg.Failed" xml:space="preserve"><value>An error occured while sending your message.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>You can't send messages to yourself.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>An error occurred while sending your message.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Account settings</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Account E-mail</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Account email</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
-  <data name="Set.TabLocale" xml:space="preserve"><value>Language &amp; Time zone</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Language &amp; time zone</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer bans</value></data>
   <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook settings</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam settings</value></data>
-  <data name="Set.TabProfile" xml:space="preserve"><value>Profile Settings</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profile settings</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Player avatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>The avatar you choose will represent you both in game and on the web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Your current avatar</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Select a new avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Unlockable avatars</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>This avatar is locked. You can unlock it by buying it in the store.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>Email:</value></data>
   <data name="Set.EmailAddress" xml:space="preserve"><value>Email Address</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Update E-mail</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>A confirmation e-mail has been sent to your new e-mail address. Please confirm it in order to activate the new e-mail address.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>That E-mail address is not available</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Something went wrong when trying to update your E-mail</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirm E-mail</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Your e-mail address has been changed.</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Update Email</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>A confirmation email has been sent to your new email address. Please confirm it in order to activate the new email address.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>That email address is not available</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Something went wrong when trying to update your email.</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirm Email</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Your email address has been changed.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Resend confirmation</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Resend email successfull</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>Confirmation email resent.</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Resending the email failed. Please try again or contact support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Language</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Country</value></data>
   <data name="Set.CountryChoose" xml:space="preserve"><value>Choose country</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Time Zone:</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Time zone:</value></data>
   <data name="Set.Save" xml:space="preserve"><value>Save</value></data>
   <data name="Set.PurchasesTitle" xml:space="preserve"><value>Account purchase history</value></data>
   <data name="Set.PurchasesText" xml:space="preserve"><value>All transactions you make, both through the {0} and the {1} are saved in your wallet.</value></data>
@@ -652,7 +654,7 @@
   <data name="Set.BansNone" xml:space="preserve"><value>You have not banned any players from your games</value></data>
   <data name="Set.Unban" xml:space="preserve"><value>Unban</value></data>
   <data name="Set.UnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>You can connect your account to facebook to make it easier to login.</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>You can connect your account to Facebook to make it easier to sign in.</value></data>
   <data name="Set.Connect" xml:space="preserve"><value>Connect</value></data>
   <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
   <data name="Set.SteamText" xml:space="preserve"><value>Your {game} account {0} is connected to your Steam account. If you want to connect this {game} account to another Steam account, or connect the Steam account to another account on {game}, you must first disconnect the two accounts that are already connected.</value></data>
@@ -671,7 +673,7 @@
   <data name="Set.GroupMissions" xml:space="preserve"><value>Daily Missions</value></data>
   <data name="Set.SaveProfile" xml:space="preserve"><value>Save Profile Settings</value></data>
   <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support.</value></data>
   <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Bait Sites</value></data>
   <data name="GM.Home" xml:space="preserve"><value>HOME</value></data>
@@ -685,32 +687,32 @@
   <data name="GM.Active" xml:space="preserve"><value>Active</value></data>
   <data name="GM.Refill" xml:space="preserve"><value>Refill</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
-  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0} your brand new {game} account has been created!</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0}, your brand new {game} account has been created!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>If you have already downloaded and installed the game launcher and client, you are ready to start playing! If you are new to {game} we recommend playing through the tutorials before going on your first real hunt. The tutorials will teach you everything you need to know to make it on your own in the Evergreen Hunting Reserve. Get started below.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Do you have a retail code?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>If you have bought a retail version of {game}, {0}click here{1} to activate your retail code.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Go to tutorials</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Go Hunting</value></data>
-  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with {game} or if you are just too eager to get out there</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with {game} or if you are just too eager to get out there.</value></data>
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Start a new game</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Downloads</value></data>
-  <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>To downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your e-mail address, language settings or your player avatar you can do so on the settings page.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your email address, language settings or your player avatar you can do so on the settings page.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Change account settings</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profile</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>All of your progress in {game} is shown on your profile page, there you will find detailed stats for all of your previous hunts.</value></data>
   <data name="Welcome.ProfileGo" xml:space="preserve"><value>View my profile</value></data>
   <data name="Welcome.Help" xml:space="preserve"><value>Help</value></data>
-  <data name="Welcome.HelpText" xml:space="preserve"><value>Need help getting started? Check out the help section and our great community managed resources</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Need help getting started? Check out the help section and our great community managed resources.</value></data>
   <data name="Welcome.HelpGo" xml:space="preserve"><value>View help section</value></data>
   <data name="Invite.Title" xml:space="preserve"><value>Recruit a friend</value></data>
   <data name="Invite.How" xml:space="preserve"><value>How to recruit a friend</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Send an invite</value></data>
-  <data name="Invite.Step1Text" xml:space="preserve"><value>Click the button below to get your referral link and send it to a friend you would like to invite to {game}</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Click the button below to get your referral link and send it to a friend you would like to invite to {game}.</value></data>
   <data name="Invite.Step2" xml:space="preserve"><value>Play {game} together</value></data>
   <data name="Invite.Step2Text" xml:space="preserve"><value>When your friend registers an account {0}using your link{1}, they receive 200 em$, a 5x30mm Rangefinder, a Moose caller and a scent eliminator!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Get rewarded</value></data>
@@ -808,7 +810,7 @@
   <data name="Stat.BestDisabled" xml:space="preserve"><value>Personal best function is currently disabled.</value></data>
   <data name="Stat.BestQueued" xml:space="preserve"><value>Personal best for {0} and season {1} is queued to be calculated. Check back soon.</value></data>
   <data name="Stat.BestBuilding" xml:space="preserve"><value>Personal best for {0} and season {1} is being calculated and will soon be available.</value></data>
-  <data name="Stat.BestNone" xml:space="preserve"><value>{0} didn't go for any expeditions in season {1}</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} didn't go for any expeditions in season {1}.</value></data>
   <data name="Stat.BestAllQueued" xml:space="preserve"><value>All Time personal best for {0} is queued to be calculated. Check back soon.</value></data>
   <data name="Stat.BestAllBuilding" xml:space="preserve"><value>All Time personal best for {0} is being calculated and will soon be available.</value></data>
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} didn't go for any expeditions yet to calculate All Time personal best.</value></data>
@@ -829,16 +831,16 @@
   <data name="Prof.DogSkills" xml:space="preserve"><value>Skills</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>This dog has not unlocked any skills yet.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Delete</value></data>
-  <data name="Browser.LoginProgress" xml:space="preserve"><value>Login in progress...</value></data>
-  <data name="Browser.LoginDone" xml:space="preserve"><value>Login Complete!</value></data>
-  <data name="Browser.AutoLoginText" xml:space="preserve"><value>This page opened because {game} needs to log you in.</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Signing in...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Sign-in complete!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>This page opened because {game} needs to sign you in.</value></data>
   <data name="Browser.Wait" xml:space="preserve"><value>Please wait...</value></data>
   <data name="Browser.CanClose" xml:space="preserve"><value>You can close this window/tab now if you like.</value></data>
   <data name="Browser.Delay" xml:space="preserve"><value>This might take a few seconds...</value></data>
   <data name="Browser.EmailProgress" xml:space="preserve"><value>Email confirmation in progress...</value></data>
   <data name="Browser.EmailDone" xml:space="preserve"><value>Email confirmation complete!</value></data>
   <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
-  <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Sign-out complete</value></data>
   <data name="Term.species.19" xml:space="preserve"><value>Alpine Ibex</value></data>
   <data name="Term.species.28" xml:space="preserve"><value>American Black Duck</value></data>
   <data name="Term.species.23" xml:space="preserve"><value>Arctic Fox</value></data>
@@ -974,4 +976,150 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Collectables</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handguns</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Crossbows</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0}m</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0}s</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} GB</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} MB</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} KB</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} bytes</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} miles)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>a few seconds ago</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>a minute ago</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>{0} minutes ago</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>an hour ago</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>{0} hours ago</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>a day ago</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>{0} days ago</value></data>
+  <data name="Splash.Loading" xml:space="preserve"><value>Loading</value></data>
+  <data name="Splash.Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>{game} support</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guides &amp; Tutorials</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Video Tutorials</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Local community websites</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} has several official support channels. A lot of information on how to play the game as well as troubleshooting can be found on our community maintained Wiki page. Our official {game} forums are very active and visited daily by many of our players that are happy to help beginners.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>If you are unable to find an answer to your questions in the forum or wiki, you may open a ticket in our support system and we'll try to help you as quickly as possible!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Support</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forum</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (also in {1}, {2} and {3})</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>German</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>French</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>Spanish</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Information about multiplayer connections</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>New to {game}?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Check out some video tutorials &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Community resources &amp; Guides</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>{game} has a large community, check out some of these great resources created by our members.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Learn the basics of how to play {game}. Make sure to go through the {0}playable tutorials{1} as well before going on your first hunt in the Evergreen Hunting Reserve!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>By {0}</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Local Community Websites</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game} has a vibrant community and many of our players hang out in local communities with players from their region! Check out these local {game} community fan sites!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>INDEX</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Daily Missions Services</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Resume Streak</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Resume a Streak</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Daily missions are a brand new addition to {game}'s mission system that can be found in the {0}Missions section{1} in the Launcher or Website.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>As they are meant to be completed in one day, Daily Missions are supposed to be quite simple and most will not require specific weapons or equipment. Hard Daily Missions may sometimes be an exception to this, but don't be discouraged! You can complete Dailies in Multiplayer if you like.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>The new Daily Missions interface</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>How does it work?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Each day every player receives a new Daily Mission to complete. Different players will receive different Daily Missions (DM from now on).</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Completing a DM increases your DM streak by 1. A {0}streak{1} is defined as a series of completed consecutive DMs.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Skipping or failing to complete a DM will "break your streak" and will bring you back to day one.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>If you break your streak, Daily Missions will become inactive until you either Activate them to start a new streak or resume your last streak. A broken streak can be recovered using a {0}Resume Streak{1} service from the Store to continue from your last completed Daily Mission.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Difficulty Levels</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>DMs come in three difficulty levels:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Easy</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Medium</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Hard</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Each difficulty level is color-coded: an easy DM is represented by a green icon, a medium DM by a blue icon, and a hard DM by a red icon.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>In addition to colors, each difficulty level has a different number of stars: 1 star for easy, 2 stars for medium, and 3 stars for hard.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Each difficulty level comes with different base rewards: {0}100 gm$ for Easy, 500 gm$ for Medium, and 1000 gm$ for Hard{1} respectively.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Rewards increase as your DMs streak gets longer, more on this below.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Progression</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Your first DM will always be an easy one. If you complete it, DMs of different difficulty levels will alternate according to a pattern that we call a {0}cycle{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>A cycle looks like this:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>As you can see a cycle lasts for 16 days, provided of course that you keep completing the DMs that are assigned to you day after day.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Once the first cycle is completed, a new cycle begins with {0}gm$ rewards increased by 10%{1} (Easy = 110 gm$, Medium = 550 gm$, Hard = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>With every subsequent cycle, rewards increase by an extra 10% up to a maximum of double the amount of the base rewards (a 100% increase).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>So for example, if you manage to complete 10 cycles in a row without breaking your streak you will then receive a x2 reward for each mission, which will continue until you break your streak.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Differences with Regular Missions</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Unlike regular missions, for a harvest to be valid in DMs, you will have to kill the animal yourself. Friends can still help you {0}find{1} the required animal in a Multiplayer session though.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Unlike regular missions, Daily Missions don't need to be activated. A Daily Mission is always active for the time it lasts (24 hours).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>You can earn achievements by completing DMs. You can check your DM achievements in the Achievements section of your player's profile:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Completing DMs will count towards 3 different types of achievements, one for each difficulty level.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Here's a table showing the milestones for each difficulty level:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Difficulty</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Missions Completed</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Special Rewards</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>As you progress through your DM streak you will receive special rewards for completing Hard (difficulty) DMs.</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Special rewards come in the form of:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>items</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trophies</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Items and trophies are exclusive rewards that you can win only by completing DMs (i.e. there's no other way to obtain them!). Your rewards will only show at the start of a new game.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}IMPORTANT:{1} All of the DM's Special Rewards can only be won once! If you break your streak and start a new one, you will still receive gm$ but will need to surpass your previous streak to earn new Special rewards.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>You will be able to see any special rewards in the Rewards section of your DM:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Here's a handy table showing how this works:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Number of Hard DMs completed in a row (streak)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Special Reward</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Hunting Cap</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Camo Pattern A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Basic T-Shirt</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Daily Missions Hero</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Bolt Action Rifle</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Camo Pattern B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Leather Jacket</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hard Core Hunting</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Lever Action Rifle</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Engraved</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Unique trophy (3 months)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Unique trophy (6 months)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Unique trophy ({0} Hard DMs)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Unique trophy (1 year)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>As the name suggests, this service allows you to resume a DM's streak. For example, if you have a long streak of completed DMs and then missed or failed a DM, you can use this service to resume your streak and continue from your last completed DM.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>The good thing is, it doesn't matter how much time has passed since you broke your streak, you will always be able to resume it - even if you broke it, say, a year before.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>This service can be purchased in advance and activated when needed. There is no limit to how many of these cards you can purchase or own.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>You can purchase this service directly on the DM page: as soon as you break your streak a button will appear to the left of your "Day 1" DM, prompting you to buy it (or use it, if you already own at least one).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternatively, you can purchase it from the {0}Store{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Once purchased you will be able to use this service directly on the DM page:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>How to download and play {game}</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Multiplayer requirements</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Single player requirements</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Supported operating systems:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Operating system:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Memory:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Graphics card:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Graphics resolution:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Internet connection:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>Host FPS:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 &amp; Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual core processor (2 GHz)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256 MB on board memory (for low &amp; medium). 512 - 768 MB on board memory (for high, depending on number of players).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 or better). ATI X1900 (or better). 256 MB on board memory (for low &amp; medium). 512 MB on board memory (for high).</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>At least 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps Up &amp; Down</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps Up &amp; Down (depending on number of players)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>If the host does not run the game in at least 25-30 fps (frames per second), the physics will produce errors. Players with low-end computers should try to lower the settings to be able to run the game with as high fps as possible. {0}30 FPS{1} is the lowest recommended value. FPS can be measured with free tools available on the internet.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Search tool</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Download the game (about 12 GB).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Click here to download</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Step {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Run the game after installation completes.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Click the {0} button on the webpage to start a new game.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Troubleshooting</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>The troubleshooting utility automatically checks your game setup, detects common issues, and recommends fixes to help you get back to playing faster.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Download the troubleshooting utility.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Place it in your game folder near the game executable.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Game Folder]\game\&lt;utility&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Run the tool to analyze configuration and performance issues.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Apply the suggested fixes offered during the analysis.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>If the proposed solutions don't help, download the generated log file and send it to our {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>support team</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Download Utility</value></data>
 </root>

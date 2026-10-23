@@ -17,8 +17,8 @@ else { <CollectableTable Rows="Hunt.Collectables" /> }
 else { <ul>@foreach (var a in Hunt.Achievements) { <li>@a</li> } </ul> }
 <h4>@L["Stat.Misc"]</h4>
 <table class="misc tbl"><tbody>
-    <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(Hunt.DistanceKm)</td></tr>
-    <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(Hunt.Seconds)</td></tr>
+    <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(L, Hunt.DistanceKm)</td></tr>
+    <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(L, Hunt.Seconds)</td></tr>
 </tbody></table>
 <h4 class="gap">@L["Stat.Antlers"]</h4>
 @if (Hunt.Antlers.Count == 0) { <p>@L["Stat.NoAntlerExp"]</p> }

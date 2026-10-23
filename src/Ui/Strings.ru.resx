@@ -1,0 +1,1125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>Такой страницы не существует.</value></data>
+  <data name="Menu.HuntNow" xml:space="preserve"><value>ОХОТА</value></data>
+  <data name="Menu.GetEms" xml:space="preserve"><value>ПОЛУЧИТЬ EM$</value></data>
+  <data name="Menu.News" xml:space="preserve"><value>НОВОСТИ</value></data>
+  <data name="Menu.Competitions" xml:space="preserve"><value>СОРЕВНОВАНИЯ</value></data>
+  <data name="Menu.Leaderboards" xml:space="preserve"><value>СПИСКИ ЛИДЕРОВ</value></data>
+  <data name="Menu.Missions" xml:space="preserve"><value>МИССИИ</value></data>
+  <data name="Feed.LatestNews" xml:space="preserve"><value>ПОСЛЕДНИЕ НОВОСТИ</value></data>
+  <data name="Feed.News" xml:space="preserve"><value>НОВОСТИ {GAME}</value></data>
+  <data name="Footer.DevelopedBy" xml:space="preserve"><value>РАЗРАБОТЧИК</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>СЛЕДИТЕ ЗА {GAME}</value></data>
+  <data name="Menu.Label" xml:space="preserve"><value>Главное меню</value></data>
+  <data name="Menu.Store" xml:space="preserve"><value>МАГАЗИН</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>ПОМОЩЬ</value></data>
+  <data name="Menu.Forum" xml:space="preserve"><value>ФОРУМ</value></data>
+  <data name="Menu.Downloads" xml:space="preserve"><value>ЗАГРУЗКА</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Главная</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Одиночная игра</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Мультиплеер</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Найти многопользовательскую игру</value></data>
+  <data name="Menu.Tutorials" xml:space="preserve"><value>Обучение</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ — виртуальная валюта {game}. В магазине за неё можно купить оружие, снаряжение, одежду и многое другое.</value></data>
+  <data name="Statusbar.Settings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>боеприпасы:</value></data>
+  <data name="Statusbar.Fuel" xml:space="preserve"><value>топливо:</value></data>
+  <data name="Tip.Friends" xml:space="preserve"><value>Друзья</value></data>
+  <data name="Tip.Messages" xml:space="preserve"><value>Сообщения</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>Мой кошелёк / История покупок</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Выйти</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Ваши очки охотника</value></data>
+  <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Settings.GameSettings" xml:space="preserve"><value>Настройки игры</value></data>
+  <data name="Settings.Screenshots" xml:space="preserve"><value>Скриншоты</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Журналы</value></data>
+  <data name="Settings.GameFolder" xml:space="preserve"><value>Папка с игрой</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Очистить кэш лаунчера</value></data>
+  <data name="Settings.ClearGameCache" xml:space="preserve"><value>Очистить кэш игры</value></data>
+  <data name="Friends.Title" xml:space="preserve"><value>Друзья ({0})</value></data>
+  <data name="Friends.Search" xml:space="preserve"><value>Найти других охотников...</value></data>
+  <data name="Friends.SendMessage" xml:space="preserve"><value>Отправить сообщение</value></data>
+  <data name="Friends.Remove" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Friends.RemoveConfirm" xml:space="preserve"><value>Вы действительно хотите удалить {0} из списка друзей?</value></data>
+  <data name="Friends.None" xml:space="preserve"><value>Друзей пока нет</value></data>
+  <data name="Friends.Results" xml:space="preserve"><value>Результаты поиска ({0})</value></data>
+  <data name="Friends.NoHunters" xml:space="preserve"><value>Охотники не найдены</value></data>
+  <data name="Friends.SendRequest" xml:space="preserve"><value>Отправить запрос в друзья</value></data>
+  <data name="Friends.RequestSent" xml:space="preserve"><value>Запрос отправлен</value></data>
+  <data name="Language.Title" xml:space="preserve"><value>Выберите язык</value></data>
+  <data name="Language.English" xml:space="preserve"><value>Английский</value></data>
+  <data name="Language.French" xml:space="preserve"><value>Французский</value></data>
+  <data name="Alert.Ok" xml:space="preserve"><value>ОК</value></data>
+  <data name="Alert.Yes" xml:space="preserve"><value>Да</value></data>
+  <data name="Alert.No" xml:space="preserve"><value>Нет</value></data>
+  <data name="Alert.Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Footer.Ratings" xml:space="preserve"><value>ВОЗРАСТНЫЕ РЕЙТИНГИ</value></data>
+  <data name="Footer.Privacy" xml:space="preserve"><value>Конфиденциальность</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>Лицензионное соглашение</value></data>
+  <data name="Footer.Privacy.Title" xml:space="preserve"><value>ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</value></data>
+  <data name="Footer.Eula.Title" xml:space="preserve"><value>ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ С КОНЕЧНЫМ ПОЛЬЗОВАТЕЛЕМ</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Последнее обновление: текст-заполнитель</value></data>
+  <data name="Legal.Section" xml:space="preserve"><value>ВВЕДЕНИЕ</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Заголовок-заполнитель</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Текст-заполнитель. Настоящий юридический текст предоставляет оператор сервиса.</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>Уже охотник?</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Войти</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>Электронная почта</value></data>
+  <data name="Signin.Code" xml:space="preserve"><value>Код</value></data>
+  <data name="Signin.SendCode" xml:space="preserve"><value>Отправить код</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Войти</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Использовать другой адрес</value></data>
+  <data name="Signin.Sent" xml:space="preserve"><value>Мы отправили 6-значный код на адрес {0}.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Введите действительный адрес электронной почты.</value></data>
+  <data name="Validation.Code.Invalid" xml:space="preserve"><value>Неверный код. Попробуйте ещё раз.</value></data>
+  <data name="Landing.Play" xml:space="preserve"><value>ИГРАЙТЕ БЕСПЛАТНО</value></data>
+  <data name="Feed.ContinueReading" xml:space="preserve"><value>Читать далее →</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>Архив новостей</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>Онлайн: {0}</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>УЧАСТНИКОВ ОНЛАЙН</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Общайтесь с теми, кто вас поймёт</value></data>
+  <data name="Hunt.Go" xml:space="preserve"><value>Пойти на охоту</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>ОДИНОЧНАЯ ИГРА</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>МУЛЬТИПЛЕЕР</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Активные миссии:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>У вас нет активных миссий. Активируйте миссии на {0}странице миссий{1}.</value></data>
+  <data name="Hunt.MoreMissions" xml:space="preserve"><value>и ещё: {0}...</value></data>
+  <data name="Hunt.NoFriends" xml:space="preserve"><value>Никого из друзей нет онлайн</value></data>
+  <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Друзья онлайн:</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Начать одиночную игру</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Начать многопользовательскую игру</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>Или присоединиться</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>В игру</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Ваш прогресс</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Hunt.Rank" xml:space="preserve"><value>Рейтинг</value></data>
+  <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Последнее достижение</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Нет полученных достижений</value></data>
+  <data name="Hunt.Competitions" xml:space="preserve"><value>Соревнования</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Соревнования, в которые вы вступили:</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Просмотреть предстоящие соревнования</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>СОЗДАТЬ ОДИНОЧНУЮ ИГРУ</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>СОЗДАТЬ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на стоянки (значки домиков), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Одни из самых великолепных уголков природы и 45 видов животных ждут вас. Удачной охоты!</value></data>
+  <data name="Launch.StartTime" xml:space="preserve"><value>Время начала:</value></data>
+  <data name="Launch.StartGame" xml:space="preserve"><value>Начать игру</value></data>
+  <data name="Launch.Patching" xml:space="preserve"><value>Обновление</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Стоянки:</value></data>
+  <data name="Launch.Tents" xml:space="preserve"><value>Палатки:</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>У вас нет палаток на этом охотугодье. Палатки, которые вы ставите на охотугодье, служат переносными точками возрождения и доступа к инвентарю. Палатки можно приобрести в {0}магазине{1}.</value></data>
+  <data name="Launch.ZoomIn" xml:space="preserve"><value>Приблизить</value></data>
+  <data name="Launch.ZoomOut" xml:space="preserve"><value>Отдалить</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Старт: {0}</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Информация об игре и стартовая позиция</value></data>
+  <data name="Launch.GameName" xml:space="preserve"><value>Имя игры:</value></data>
+  <data name="Launch.GameOf" xml:space="preserve"><value>Игра игрока {0}</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Введите описание игры (необязательно)</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>Кто может присоединиться?</value></data>
+  <data name="Launch.FriendsOnly" xml:space="preserve"><value>Только люди из моего списка друзей</value></data>
+  <data name="Launch.Anyone" xml:space="preserve"><value>Все</value></data>
+  <data name="Launch.Password" xml:space="preserve"><value>Защитить паролем</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Пароль игры</value></data>
+  <data name="Launch.MaxPlayers" xml:space="preserve"><value>Максимум игроков</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Ограничить очки охотника</value></data>
+  <data name="Launch.Min" xml:space="preserve"><value>Мин.:</value></data>
+  <data name="Launch.Max" xml:space="preserve"><value>Макс.:</value></data>
+  <data name="Launch.Start" xml:space="preserve"><value>Старт</value></data>
+  <data name="Launch.Create" xml:space="preserve"><value>Создать игру</value></data>
+  <data name="Launch.Failed" xml:space="preserve"><value>При создании игровой сессии что-то пошло не так. Обновите список серверов и попробуйте присоединиться к другой игре.</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>НАЙТИ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Найти игру или хост...</value></data>
+  <data name="Servers.Clear" xml:space="preserve"><value>Очистить</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Обновить</value></data>
+  <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Показывать только игры, к которым я могу присоединиться</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Показано игр: {0}</value></data>
+  <data name="Servers.GameName" xml:space="preserve"><value>Имя игры</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
+  <data name="Servers.Players" xml:space="preserve"><value>Игроков</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Хост</value></data>
+  <data name="Servers.Country" xml:space="preserve"><value>Страна</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} — игроков: {1}/{2} — хост: {3}</value></data>
+  <data name="Servers.Details" xml:space="preserve"><value>Сведения об игре</value></data>
+  <data name="Servers.Join" xml:space="preserve"><value>Присоединиться</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Хост:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Охотугодье:</value></data>
+  <data name="Servers.GameTime" xml:space="preserve"><value>Время игры:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Мин. очки охотника:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Макс. очки охотника:</value></data>
+  <data name="Servers.PlayerList" xml:space="preserve"><value>Игроки ({0}/{1})</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Информация о многопользовательских подключениях</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Игра с людьми, которые находятся очень далеко от вас, может привести к проблемам с соединением и задержкам. Рекомендуем присоединяться к играм, где хост находится рядом с вами. Цветные точки рядом с флагами в списке серверов показывают, как далеко от вас находится хост игры.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Нажмите здесь, чтобы узнать больше о подключениях</value></data>
+  <data name="Servers.Short" xml:space="preserve"><value>Близкое расстояние</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Среднее расстояние</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Большое расстояние</value></data>
+  <data name="Servers.NoGames" xml:space="preserve"><value>Игры не найдены</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Нам не удалось найти публичные многопользовательские игры, к которым вы можете присоединиться.</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>СОЗДАЙТЕ СВОЮ ИГРУ</value></data>
+  <data name="Servers.Locked" xml:space="preserve"><value>Эта игра защищена паролем</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Расположение сервера: {0}</value></data>
+  <data name="Servers.Europe" xml:space="preserve"><value>Европа</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Северная Америка</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Южная Америка</value></data>
+  <data name="Servers.Asia" xml:space="preserve"><value>Азия</value></data>
+  <data name="Servers.Oceania" xml:space="preserve"><value>Океания</value></data>
+  <data name="Join.Hint" xml:space="preserve"><value>Нажмите на стартовую позицию на карте, чтобы присоединиться к этой игре</value></data>
+  <data name="Join.Password" xml:space="preserve"><value>Введите пароль, чтобы присоединиться к этой игре:</value></data>
+  <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Введите пароль</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Присоединиться</value></data>
+  <data name="Join.Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Перед первой настоящей охотой на первом охотугодье рекомендуется пройти базовое обучение. Там вы познакомитесь с местным егерем: он расскажет об основах и научит всему, что нужно для успеха в {game}.</value></data>
+  <data name="Tut.Start" xml:space="preserve"><value>Начать обучение</value></data>
+  <data name="Tut.Location" xml:space="preserve"><value>Место: {0}</value></data>
+  <data name="GameSettings.Title" xml:space="preserve"><value>Настройки игры</value></data>
+  <data name="GameSettings.Initial" xml:space="preserve"><value>Первоначальная настройка</value></data>
+  <data name="GameSettings.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="GameSettings.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Начать игру</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Полный экран</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>V-Sync</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Разрешение экрана</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Гц)</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Сложность ландшафта</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Сложность ландшафта определяет плотность растительности и дальность прорисовки. При низких настройках максимальная дальность видимости по горизонтали составит 220 м, при средних — 270 м, при высоких и очень высоких — 320 м.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Качество текстур</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Для текстур высокого качества нужно 512 МБ видеопамяти в одиночной игре и 768 МБ в мультиплеере.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Объём вашей видеопамяти: {0} МБ</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Качество теней</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Множественное сглаживание</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Анизотропная фильтрация</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Контекстные подсказки</value></data>
+  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Расширенная аудиопамять</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Низкое</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Среднее</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>Высокое</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Очень высокое</value></data>
+  <data name="GameSettings.Off" xml:space="preserve"><value>Выкл.</value></data>
+  <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Не настроено: в settings.json нет записей для этих файлов.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Запустите игру один раз, чтобы она создала свои файлы настроек.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Формат файла настроек лаунчеру неизвестен, поэтому файл оставлен без изменений.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Игра запущена. Закройте её перед сохранением: она сама перезаписывает эти файлы.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Не удалось сохранить настройки.</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>Понятно!</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>Новое обновление игры</value></data>
+  <data name="Patch.NewText" xml:space="preserve"><value>Вышло новое обновление игры. Оно установится автоматически, и как только это завершится, вы сможете начать новую охоту! А пока можете свободно осматриваться.</value></data>
+  <data name="Patch.FullTitle" xml:space="preserve"><value>Загрузка {game}</value></data>
+  <data name="Patch.FullText" xml:space="preserve"><value>Полная установка {game} загружается на ваш компьютер. Вы сможете начать играть сразу после её завершения. А пока можете свободно осматриваться.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>Лаунчер обновляется</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>Лаунчеру требуется обновление. Оно будет загружено автоматически. После обновления лаунчер нужно будет перезапустить.</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Требуется обновление игры</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Для {game} доступно обновление. Чтобы играть, сначала обновите {game} в Steam. Для обновления нужно закрыть лаунчер.</value></data>
+  <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} — только в Steam</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>Теперь играть нужно через платформу Steam!</value></data>
+  <data name="Patch.GoToSteam" xml:space="preserve"><value>Перейти в Steam</value></data>
+  <data name="Patch.ErrorTitle" xml:space="preserve"><value>Произошла ошибка</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Дополнительная информация: {0}.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>раздел поддержки</value></data>
+  <data name="Patch.StateDownloading" xml:space="preserve"><value>ЗАГРУЗКА</value></data>
+  <data name="Patch.StateVerifying" xml:space="preserve"><value>ПРОВЕРКА</value></data>
+  <data name="Patch.StateExtracting" xml:space="preserve"><value>ИЗВЛЕЧЕНИЕ</value></data>
+  <data name="Patch.StatePatching" xml:space="preserve"><value>ОБНОВЛЕНИЕ</value></data>
+  <data name="Patch.StateReady" xml:space="preserve"><value>ГОТОВО</value></data>
+  <data name="Patch.Downloading" xml:space="preserve"><value>Загрузка ({0}): {1} ({2}). {3}/с</value></data>
+  <data name="Patch.KindFull" xml:space="preserve"><value>полная установка</value></data>
+  <data name="Patch.KindPatch" xml:space="preserve"><value>обновление</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>обновление лаунчера</value></data>
+  <data name="Patch.Verifying" xml:space="preserve"><value>Подождите, идёт проверка загруженных файлов.</value></data>
+  <data name="Patch.Extracting" xml:space="preserve"><value>Подождите, идёт установка.</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Проверка контрольной суммы файла: {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Обновление файла: {0} / {1}</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Завершение...</value></data>
+  <data name="Patch.PatchError" xml:space="preserve"><value>Ошибка!</value></data>
+  <data name="Patch.Done" xml:space="preserve"><value>Теперь вы можете запустить игру.</value></data>
+  <data name="Installer.DownloadingGame" xml:space="preserve"><value>Загрузка игры...</value></data>
+  <data name="Installer.DownloadingUpdate" xml:space="preserve"><value>Загрузка обновления...</value></data>
+  <data name="Installer.Verifying" xml:space="preserve"><value>Проверка</value></data>
+  <data name="Installer.Installing" xml:space="preserve"><value>Установка</value></data>
+  <data name="Installer.Updating" xml:space="preserve"><value>Обновлено файлов: {0}/{1}</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Обновление завершено — закончите работу мастера установки, чтобы начать игру.</value></data>
+  <data name="Installer.Ready" xml:space="preserve"><value>Можно играть в {game}!</value></data>
+  <data name="Launcher.Error.Unknown" xml:space="preserve"><value>Произошла неизвестная ошибка (код {0}).</value></data>
+  <data name="Launcher.Error.1" xml:space="preserve"><value>Отсутствует ключ реестра.</value></data>
+  <data name="Launcher.Error.2" xml:space="preserve"><value>Сервер не указан. Запустите игру с сайта.</value></data>
+  <data name="Launcher.Error.3" xml:space="preserve"><value>Не удалось выполнить запрос к серверу (неверный идентификатор сессии или сервер недоступен).</value></data>
+  <data name="Launcher.Error.4" xml:space="preserve"><value>Несовместимое оборудование.</value></data>
+  <data name="Launcher.Error.5" xml:space="preserve"><value>Неверный адрес сервера в аргументе командной строки.</value></data>
+  <data name="Launcher.Error.6" xml:space="preserve"><value>Отсутствует исполняемый файл игры.</value></data>
+  <data name="Launcher.Error.7" xml:space="preserve"><value>Не удалось запустить клиент игры.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Не удалось записать торрент-файл.</value></data>
+  <data name="Launcher.Error.9" xml:space="preserve"><value>Загрузка не удалась.</value></data>
+  <data name="Launcher.Error.10" xml:space="preserve"><value>Не удалось загрузить данные торрента.</value></data>
+  <data name="Launcher.Error.11" xml:space="preserve"><value>Неверный файл .torrent.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Неверное расположение файлов лаунчера.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>Не удалось извлечь архив NSIS sfx.</value></data>
+  <data name="Launcher.Error.14" xml:space="preserve"><value>Ошибка обновления.</value></data>
+  <data name="Launcher.Error.15" xml:space="preserve"><value>Файл манифеста отсутствует или неверен.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Не удалось запустить обновлённый лаунчер.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Лаунчер не отвечает.</value></data>
+  <data name="Launcher.Error.18" xml:space="preserve"><value>Не удалось создать папку игры.</value></data>
+  <data name="Launcher.Error.19" xml:space="preserve"><value>Не удалось создать папку торрентов.</value></data>
+  <data name="Launcher.Error.20" xml:space="preserve"><value>Не удалось создать папку обновлений.</value></data>
+  <data name="Launcher.Error.21" xml:space="preserve"><value>Не удалось создать папку.</value></data>
+  <data name="Launcher.Error.22" xml:space="preserve"><value>Не удалось скопировать файлы.</value></data>
+  <data name="Launcher.Error.27" xml:space="preserve"><value>Внимание! Недостаточно места на диске.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>Не удалось применить обновление: текущая установка изменена или повреждена. Вместо этого загружается полная версия игры.</value></data>
+  <data name="Launcher.Error.49" xml:space="preserve"><value>Не удалось создать объект Direct3D.</value></data>
+  <data name="Launcher.Error.50" xml:space="preserve"><value>Не удалось получить текущий режим экрана.</value></data>
+  <data name="Launcher.Error.51" xml:space="preserve"><value>Не найдено подходящих режимов экрана.</value></data>
+  <data name="Launcher.Error.52" xml:space="preserve"><value>Не удалось определить режимы экрана, поддерживаемые видеокартой.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>Не удалось получить возможности видеокарты.</value></data>
+  <data name="Launcher.Error.16001" xml:space="preserve"><value>Недействительная сессия, начните новую игру.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>Не удалось подключиться к игровому серверу. Попробуйте ещё раз.</value></data>
+  <data name="Launcher.Error.16003" xml:space="preserve"><value>Неподдерживаемая операционная система.</value></data>
+  <data name="Launcher.Error.16004" xml:space="preserve"><value>Запустите игру с сайта.</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>Игра аварийно завершила работу (мы разберёмся).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>У пользователя нет доступа.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Игра уже запущена.</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Неверная версия файла настроек. Откройте настройки и настройте всё заново.</value></data>
+  <data name="Launcher.Error.16009" xml:space="preserve"><value>Видеокарта не поддерживает D3DQUERYTYPE_EVENT.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Подождите, мы пытаемся выполнить вход...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Здравствуйте! Вы запускаете игру из Steam, но нам не удалось определить, есть ли у вас аккаунт. Выберите вариант ниже:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Войдите ниже, чтобы привязать аккаунт к Steam.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Привязать существующий аккаунт к Steam</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Зарегистрировать новый аккаунт {game}</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>— или —</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Адрес эл. почты</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Продолжить</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>ИМЯ ПОЛЬЗОВАТЕЛЯ И АВАТАР</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Выберите имя</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Обязательное поле</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Имя пользователя недоступно</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Предложить имена</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Предыдущий аватар</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Следующий аватар</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>ПОЛУЧИТЕ ПЕРВОЕ ОРУЖИЕ</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Вы уже так далеко продвинулись — отлично! Вот наш приветственный подарок: ваше первое оружие, блестящее одноствольное ружьё 12 калибра с бесплатными пополняемыми боеприпасами. С этой надёжной красавицей можно этично охотиться на всех животных в игре, кроме бизона.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>ВАШИ ОХОТНИЧЬИ ЛИЦЕНЗИИ</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Скоро ваша первая охота! На кого пойдёте? Гостевые игроки получают бесплатные бессрочные охотничьи лицензии на белохвостого оленя, европейского кролика и фазана, а также ещё на двух животных, которые меняются каждую неделю. Игроки с членством могут охотиться на все виды — загляните в раздел «Членство» нашего магазина, если хотите его оформить.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>ПОДТВЕРДИТЕ ЭЛЕКТРОННУЮ ПОЧТУ</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Хорошее приходит к тем, кто подтверждает почту! Проверьте входящие: мы отправили вам письмо — следуйте инструкциям в нём. Сейчас указан адрес {0}. Если он неверный, измените его ниже и нажмите «Отправить ещё раз».</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>ВАША НАГРАДА</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Спасибо, что подтвердили электронную почту.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Изменить адрес почты</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Отправить ещё раз</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Запустить обучение</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Настройки игры</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>ВЫ ГОТОВЫ К ОХОТЕ НА КРУПНОГО ЗВЕРЯ</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Обучение можно пройти снова с помощью кнопки «ОХОТА».</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>На охоту!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Вход</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Адрес эл. почты</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Войти</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Укажите адрес эл. почты</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Неверный адрес эл. почты</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>Этот адрес эл. почты недоступен</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Смена адреса почты</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Сменить</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>Письмо отправлено</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>Мы отправили вам новое письмо со ссылкой для подтверждения адреса электронной почты.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>ОК</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Запуск обучения</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Сохранить и запустить</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Качество графики</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Низкие настройки</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Средние настройки</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Высокие настройки</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Настройки «Ультра»</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Пользовательские настройки</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Анизотропная фильтрация</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Режим экрана</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Полный экран</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Сложность ландшафта</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Качество теней</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Качество текстур</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>V-Sync</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Соревнования</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Лига сообщества</value></data>
+  <data name="Comp.Title" xml:space="preserve"><value>СОРЕВНОВАНИЯ</value></data>
+  <data name="Comp.Enrolled" xml:space="preserve"><value>Соревнования, в которые вы вступили</value></data>
+  <data name="Comp.Name" xml:space="preserve"><value>Название соревнования</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Попытки</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Место</value></data>
+  <data name="Comp.Starts" xml:space="preserve"><value>Начало</value></data>
+  <data name="Comp.Ends" xml:space="preserve"><value>Окончание</value></data>
+  <data name="Comp.Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="Comp.Action" xml:space="preserve"><value>Действие</value></data>
+  <data name="Comp.Players" xml:space="preserve"><value>Игроков</value></data>
+  <data name="Comp.Activate" xml:space="preserve"><value>Вступить</value></data>
+  <data name="Comp.Deactivate" xml:space="preserve"><value>Выйти</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>Нельзя вступить</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Мультиплеер</value></data>
+  <data name="Comp.Requirements" xml:space="preserve"><value>Требования:</value></data>
+  <data name="Comp.Upcoming" xml:space="preserve"><value>Предстоящие соревнования</value></data>
+  <data name="Comp.Previous" xml:space="preserve"><value>Предыдущие соревнования</value></data>
+  <data name="Comp.Filter" xml:space="preserve"><value>Нажмите, чтобы отфильтровать по видам:</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>Соревнования не найдены, попробуйте изменить фильтр</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Регистрация</value></data>
+  <data name="Comp.StatusStarted" xml:space="preserve"><value>Начато</value></data>
+  <data name="Comp.StatusFinished" xml:space="preserve"><value>Завершено</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>Н/Д</value></data>
+  <data name="Comp.Join" xml:space="preserve"><value>ВСТУПИТЬ</value></data>
+  <data name="Comp.Leave" xml:space="preserve"><value>ВЫЙТИ</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Статус соревнования: {0}</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Регистрация</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>Идёт</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Окончено</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Начало через</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Окончание через</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Ваше место</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Лучший результат</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Список лидеров</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>История</value></data>
+  <data name="Comp.Prizes" xml:space="preserve"><value>Призы</value></data>
+  <data name="Comp.Trophy" xml:space="preserve"><value>Трофей</value></data>
+  <data name="Comp.Rules" xml:space="preserve"><value>Правила и условия</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Виды: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Охотугодья: {0}</value></data>
+  <data name="Comp.Description" xml:space="preserve"><value>Описание</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Подсчёт очков</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Особые требования</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Режим игры</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Попытка списывается каждый раз, когда начинается охота на охотугодье, где идёт соревнование. Вступить в соревнование или выйти из него во время игры нельзя: изменения, сделанные в игре, вступят в силу только при следующем начале охоты.</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Участники с результатом ({0})</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Игрок</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Результат</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>Нет результатов для показа</value></data>
+  <data name="League.Title" xml:space="preserve"><value>ЛИГА СООБЩЕСТВА</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Добро пожаловать в Лигу сообщества {game}, которая заменит наш нынешний формат соревнований выходного дня.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>Каждую пятницу вы охотитесь на новое животное на назначенном охотугодье (животные, добытые вне этого охотугодья, не засчитываются). На участие у вас есть целая неделя и 7 попыток. Вступление в соревнование и выход из него — как обычно. На неделю, когда идёт охота на это животное, все обычные соревнования, посвящённые ему, приостанавливаются. И да, теперь скидки будут действовать целую неделю. Награды за каждое соревнование Лиги будут такими же, как за соревнования выходного дня, которые они заменяют.</value></data>
+  <data name="League.P3" xml:space="preserve"><value>Лига не влияет на события.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Все соревнования будут только для одиночной игры, кроме соревнований по уткам и гусям.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Каждые 4 недели мы переходим на новое охотугодье, а каждые 3 охотугодья составляют сезон.</value></data>
+  <data name="League.P6" xml:space="preserve"><value>Чтобы претендовать на ежемесячные и сезонные призы, участвовать в каждом соревновании Лиги не обязательно, но у тех, кто участвует как можно чаще, есть очевидные преимущества.</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>Вы не вступили ни в одно соревнование</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Ежемесячный список лидеров</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Сезонный список лидеров</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>СПИСКИ ЛИДЕРОВ</value></data>
+  <data name="Board.Score" xml:space="preserve"><value>Баллы</value></data>
+  <data name="Board.Range" xml:space="preserve"><value>Дистанция</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Лучшие очки охотника</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Зал славы</value></data>
+  <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
+  <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Одиночный рог</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Парные рога</value></data>
+  <data name="Board.TopScores" xml:space="preserve"><value>Лучший счёт в сезоне {0}</value></data>
+  <data name="Board.TopRanges" xml:space="preserve"><value>Лучшая дистанция в сезоне {0}</value></data>
+  <data name="Board.Full" xml:space="preserve"><value>Полный список лидеров</value></data>
+  <data name="Board.YourRank" xml:space="preserve"><value>Ваш рейтинг</value></data>
+  <data name="Board.NoRank" xml:space="preserve"><value>Вас пока нет в рейтинге этой категории</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Лучшие очки охотника за всё время</value></data>
+  <data name="Board.Rank" xml:space="preserve"><value>Рейтинг</value></data>
+  <data name="Board.Hunter" xml:space="preserve"><value>Охотник</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Board.Past" xml:space="preserve"><value>Зал славы прошлого сезона</value></data>
+  <data name="Board.SeasonN" xml:space="preserve"><value>Сезон {0}</value></data>
+  <data name="Board.TopLane" xml:space="preserve"><value>Лучшие результаты в Lane Bandit</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit — классная ретро-аркада, в которую можно играть на вашем Huntermate, пока вы ждёте появления трофея!</value></data>
+  <data name="Board.GetLane" xml:space="preserve"><value>Получить Lane Bandit</value></data>
+  <data name="Board.TopBust" xml:space="preserve"><value>Лучшие результаты в Bust Through</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through — классная ретро-аркада, в которую можно играть на вашем Huntermate, пока вы ждёте появления трофея!</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Соло</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Назад</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Дальше</value></data>
+  <data name="Pager.Label" xml:space="preserve"><value>Страницы</value></data>
+  <data name="Board.Avatar" xml:space="preserve"><value>Аватар игрока {0}</value></data>
+  <data name="Comp.Failed" xml:space="preserve"><value>Не удалось изменить участие в соревновании. Попробуйте ещё раз.</value></data>
+  <data name="Mis.Daily" xml:space="preserve"><value>Ежедневные миссии</value></data>
+  <data name="Mis.Regular" xml:space="preserve"><value>Традиционные миссии</value></data>
+  <data name="Mis.Help" xml:space="preserve"><value>Нажмите для справки</value></data>
+  <data name="Mis.Day" xml:space="preserve"><value>День {0}</value></data>
+  <data name="Mis.Today" xml:space="preserve"><value>сегодня</value></data>
+  <data name="Mis.Tomorrow" xml:space="preserve"><value>завтра</value></data>
+  <data name="Mis.Description" xml:space="preserve"><value>Описание</value></data>
+  <data name="Mis.Objectives" xml:space="preserve"><value>Задачи</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Охотугодья</value></data>
+  <data name="Mis.Rewards" xml:space="preserve"><value>Награды</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Неактивно</value></data>
+  <data name="Mis.Completed" xml:space="preserve"><value>Выполнено</value></data>
+  <data name="Mis.Activate" xml:space="preserve"><value>АКТИВИРОВАТЬ</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Ваша серия прервана. Нажмите АКТИВИРОВАТЬ, чтобы начать новую, или КУПИТЕ/ИСПОЛЬЗУЙТЕ «Возобновить серию», чтобы продолжить прежнюю.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Ежедневные миссии останутся неактивными, пока вы не решите активировать их или возобновить серию.</value></data>
+  <data name="Mis.ActivationDone" xml:space="preserve"><value>Активация завершена!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>Удачной охоты!</value></data>
+  <data name="Mis.ActivateAll" xml:space="preserve"><value>Активировать все</value></data>
+  <data name="Mis.Auto" xml:space="preserve"><value>Автоматически активировать новые доступные миссии</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Автоматически активировать только избранные миссии</value></data>
+  <data name="Mis.ResetDesc" xml:space="preserve"><value>Вы можете сбросить миссии за плату в магазине.</value></data>
+  <data name="Mis.GoToStore" xml:space="preserve"><value>Перейти в магазин</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Вы выполнили миссий: {0} из {1} и серий миссий: {2} из {3}.</value></data>
+  <data name="Mis.Filters" xml:space="preserve"><value>Фильтры</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Показывать</value></data>
+  <data name="Mis.All" xml:space="preserve"><value>Все</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Избранное</value></data>
+  <data name="Mis.Active" xml:space="preserve"><value>Активные</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Серии миссий</value></data>
+  <data name="Mis.Available" xml:space="preserve"><value>Доступные</value></data>
+  <data name="Mis.Species" xml:space="preserve"><value>Виды</value></data>
+  <data name="Mis.Weapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>Выбрано всё</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>Выбрано: {0}</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Скрыть выполненные</value></data>
+  <data name="Mis.Search" xml:space="preserve"><value>Поиск</value></data>
+  <data name="Mis.Filter" xml:space="preserve"><value>Фильтр</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Прогресс:</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Нажмите, чтобы добавить в избранное или убрать</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>Избранных миссий пока нет</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>У вас пока нет активных миссий. Активируйте доступную миссию ниже, чтобы начать.</value></data>
+  <data name="Mis.NoAvailable" xml:space="preserve"><value>Нет доступных миссий</value></data>
+  <data name="Mis.Unlock" xml:space="preserve"><value>Чтобы открыть {0}, нужно выполнить следующие миссии:</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Что-то пошло не так, и вы не получили предмет. Приносим извинения. Попробуйте ещё раз!</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Скидки</value></data>
+  <data name="Store.Cat.all" xml:space="preserve"><value>Все товары</value></data>
+  <data name="Store.Cat.bundles" xml:space="preserve"><value>Комплекты</value></data>
+  <data name="Store.Cat.0" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Store.Cat.10" xml:space="preserve"><value>Боеприпасы</value></data>
+  <data name="Store.Cat.5" xml:space="preserve"><value>Прицелы</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Прицелы для винтовок</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Прицелы для пистолетов</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Прицелы для дробовиков</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Прицелы для луков и арбалетов</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Прицелы для дульнозарядных</value></data>
+  <data name="Store.Cat.59" xml:space="preserve"><value>Собаки</value></data>
+  <data name="Store.Cat.15" xml:space="preserve"><value>Приманки</value></data>
+  <data name="Store.Cat.18" xml:space="preserve"><value>Одежда</value></data>
+  <data name="Store.Cat.27" xml:space="preserve"><value>Улучшения</value></data>
+  <data name="Store.Cat.46" xml:space="preserve"><value>Услуги</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Позы для трофейных снимков</value></data>
+  <data name="Store.Cat.24" xml:space="preserve"><value>Снаряжение</value></data>
+  <data name="Store.Cat.29" xml:space="preserve"><value>Крупное снаряжение</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Предметы событий</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Залы трофеев</value></data>
+  <data name="Store.Cat.108" xml:space="preserve"><value>Транспорт</value></data>
+  <data name="Store.Search" xml:space="preserve"><value>Поиск</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>КУПИТЬ</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>Не продаётся</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Войти, чтобы купить</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>У вас есть:</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>или</value></data>
+  <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
+  <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>
+  <data name="Store.BundleTag" xml:space="preserve"><value>КОМПЛЕКТ</value></data>
+  <data name="Store.Included" xml:space="preserve"><value>Включает</value></data>
+  <data name="Store.Value" xml:space="preserve"><value>Стоимость</value></data>
+  <data name="Store.BundlePrice" xml:space="preserve"><value>Цена комплекта</value></data>
+  <data name="Store.Capacity" xml:space="preserve"><value>Занимаемое место</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>Этот предмет нельзя купить</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Этот комплект нельзя купить: достигнут предел владения хотя бы для одного из входящих в него предметов</value></data>
+  <data name="Store.None" xml:space="preserve"><value>В этой категории нет предметов</value></data>
+  <data name="Store.Details" xml:space="preserve"><value>Детали</value></data>
+  <data name="Store.ClickMore" xml:space="preserve"><value>Нажмите, чтобы увидеть подробности</value></data>
+  <data name="Store.Confirm" xml:space="preserve"><value>Подтвердите покупку</value></data>
+  <data name="Store.BuyEms" xml:space="preserve"><value>Купить за em$</value></data>
+  <data name="Store.BuyGms" xml:space="preserve"><value>Купить за gm$</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>Недостаточно gm$</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Получить ещё em$</value></data>
+  <data name="Store.Includes" xml:space="preserve"><value>Включает</value></data>
+  <data name="Store.Complete" xml:space="preserve"><value>Покупка завершена!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Наслаждайтесь покупкой: {0}!</value></data>
+  <data name="Store.Oops" xml:space="preserve"><value>Ой.</value></data>
+  <data name="Store.Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Вы экономите</value></data>
+  <data name="Wal.MyWallet" xml:space="preserve"><value>Мой кошелёк</value></data>
+  <data name="Wal.History" xml:space="preserve"><value>История покупок</value></data>
+  <data name="Wal.Balance" xml:space="preserve"><value>Текущий баланс</value></data>
+  <data name="Wal.Spent" xml:space="preserve"><value>Всего потрачено</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>История покупок в банке</value></data>
+  <data name="Wal.TabEms" xml:space="preserve"><value>История покупок за em$</value></data>
+  <data name="Wal.TabGms" xml:space="preserve"><value>История покупок за gm$</value></data>
+  <data name="Wal.Type" xml:space="preserve"><value>Тип</value></data>
+  <data name="Wal.Date" xml:space="preserve"><value>Дата</value></data>
+  <data name="Wal.Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="Wal.Item" xml:space="preserve"><value>Предмет</value></data>
+  <data name="Wal.Amount" xml:space="preserve"><value>Сумма</value></data>
+  <data name="Wal.Provider" xml:space="preserve"><value>Способ оплаты</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>На этой странице перечислены все покупки, совершённые за {0}</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>Вы ещё не совершали покупок за {0}.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>Вы ещё не совершали покупок.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Сумма ({0})</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Баланс до</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Баланс после</value></data>
+  <data name="Wal.Items" xml:space="preserve"><value>Предметы</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Показать ещё</value></data>
+  <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Куплено в подарок. Подарок активирован: {0}.</value></data>
+  <data name="Wal.GiftCode" xml:space="preserve"><value>Куплено в подарок. Подарочный код: {0}</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>Купить em$</value></data>
+  <data name="Bank.Help" xml:space="preserve"><value>Помощь</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>История покупок</value></data>
+  <data name="Bank.Balance" xml:space="preserve"><value>Ваш баланс em$:</value></data>
+  <data name="Bank.Redeem" xml:space="preserve"><value>Использовать код скидки</value></data>
+  <data name="Bank.EnterCode" xml:space="preserve"><value>Введите код скидки</value></data>
+  <data name="Bank.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Bank.Invalid" xml:space="preserve"><value>Введённый код скидки недействителен или истёк</value></data>
+  <data name="Bank.InGame" xml:space="preserve"><value>Внутриигровая валюта</value></data>
+  <data name="Bank.EmsDesc" xml:space="preserve"><value>За внутриигровую валюту (em$) можно купить оружие, палатки, одежду, охотничьи лицензии и многое другое.</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Купить в подарок</value></data>
+  <data name="Bank.Compare" xml:space="preserve"><value>* По сравнению с 500 em$</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Экономия {0}%*</value></data>
+  <data name="Bank.Starter" xml:space="preserve"><value>Стартовые комплекты</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Получите всё необходимое, чтобы начать охоту на любое животное в охотугодьях Эвергрин. В наши стартовые комплекты входит базовое членство, которое даёт лицензию на охоту на всех животных в игре, и специальный набор предметов, который поможет вам встать на путь мастера-охотника.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Особые комплекты</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Выберите один из наших особых комплектов, чтобы получить всё необходимое для охоты на самых популярных животных в {game}. В каждый из них входит базовое членство с лицензией на охоту на все виды в игре и подборка рекомендуемых предметов для охоты на конкретных животных.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Базовое членство</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>Членство: {0} мес.</value></data>
+  <data name="Bank.Animals" xml:space="preserve"><value>Лицензия на охоту на всех животных</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Доступ ко всем охотугодьям</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Неограниченные базовые боеприпасы</value></data>
+  <data name="Bank.Details" xml:space="preserve"><value>Детали</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Предметы, входящие в членство или купленные отдельно, сохраняются, даже если членство истекло</value></data>
+  <data name="Bank.ComparePrize" xml:space="preserve"><value>* По сравнению с 3 месяцами членства в {game}</value></data>
+  <data name="Bank.HelpTitle" xml:space="preserve"><value>Вопросы и ответы о магазине {game}</value></data>
+  <data name="Bank.Q1" xml:space="preserve"><value>Что такое em$?</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>em$ — виртуальная валюта {game}. В магазине за неё можно купить оружие, снаряжение, одежду и многое другое.</value></data>
+  <data name="Bank.Q2" xml:space="preserve"><value>Как купить em$ в подарок другу?</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>На вкладке «Купить em$» этого окна отметьте флажок «Купить в подарок», затем нажмите кнопку «КУПИТЬ» рядом с нужной суммой. Вы перейдёте к сводке покупки на сайте Steam. Нажмите кнопку подтверждения оплаты («Authorize»). Вы попадёте на страницу подтверждения (спасибо за покупку). Нажмите на свой баланс em$ в верхней части экрана (где написано «em$ XXXX») и откройте {0}историю покупок{1}. Последняя запись в истории покупок должна выглядеть так: «Куплено в подарок. Подарочный код:» и далее сам код. Скопируйте код и отправьте его другу, которому хотите сделать подарок. Затем другу нужно будет использовать код, чтобы em$ были зачислены на его баланс.</value></data>
+  <data name="Bank.Q3" xml:space="preserve"><value>Как использовать подарочный код?</value></data>
+  <data name="Bank.A3" xml:space="preserve"><value>Нажмите кнопку «Использовать код скидки» в правом верхнем углу этого окна, вставьте туда подарочный код и нажмите кнопку «ОК». Появится сообщение с запросом подтверждения: нажмите кнопку «Нажмите здесь, чтобы получить этот подарок». Появится сообщение о том, что подарок зачислен на ваш аккаунт. Нажмите «ОК» и наслаждайтесь подарком!</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>Я не успел воспользоваться скидкой. Можно ли всё равно её получить?</value></data>
+  <data name="Bank.A4" xml:space="preserve"><value>Когда скидка или распродажа закончилась, мы не можем предложить цену со скидкой.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Возврат средств</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>Как и большинство цифровых валют, em$ не подлежат возврату. Игру можно скачать и попробовать бесплатно: прежде чем покупать em$, убедитесь, что она работает на вашем компьютере и вам подходит.</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Отказ от ответственности</value></data>
+  <data name="Bank.A6" xml:space="preserve"><value>Обратите внимание: em$ нельзя продать или передать, а также обменять на наличные или что-либо ещё, кроме собственно содержимого {game}. em$ не подлежат возврату. em$ не имеют денежной стоимости и не являются валютой или имуществом какого-либо вида.</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Доп. оружие: {0}, прочие предметы: {1}</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} мес.</value></data>
+  <data name="Msg.Title" xml:space="preserve"><value>Сообщения</value></data>
+  <data name="Msg.OnlyFriends" xml:space="preserve"><value>Разрешить сообщения только от друзей</value></data>
+  <data name="Msg.New" xml:space="preserve"><value>Новое сообщение</value></data>
+  <data name="Msg.Conversations" xml:space="preserve"><value>Диалоги</value></data>
+  <data name="Msg.Text" xml:space="preserve"><value>Текст сообщения</value></data>
+  <data name="Msg.Send" xml:space="preserve"><value>Отправить сообщение</value></data>
+  <data name="Msg.To" xml:space="preserve"><value>Кому:</value></data>
+  <data name="Msg.Sent" xml:space="preserve"><value>Отправлено {0}</value></data>
+  <data name="Msg.Empty" xml:space="preserve"><value>Вы ещё не отправляли и не получали сообщений. Когда вы начнёте чат с другим охотником, он появится здесь.</value></data>
+  <data name="Msg.NoUser" xml:space="preserve"><value>Такого пользователя нет.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>Нельзя отправлять сообщения самому себе.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>При отправке сообщения произошла ошибка.</value></data>
+  <data name="Set.Title" xml:space="preserve"><value>Настройки аккаунта</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Эл. почта аккаунта</value></data>
+  <data name="Set.TabAvatar" xml:space="preserve"><value>Аватар</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Язык и часовой пояс</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Блокировки в мультиплеере</value></data>
+  <data name="Set.TabFacebook" xml:space="preserve"><value>Настройки Facebook</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Настройки Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Настройки профиля</value></data>
+  <data name="Set.AvatarTitle" xml:space="preserve"><value>Аватар игрока</value></data>
+  <data name="Set.AvatarInfo" xml:space="preserve"><value>Выбранный аватар будет представлять вас и в игре, и на сайте</value></data>
+  <data name="Set.AvatarCurrent" xml:space="preserve"><value>Ваш текущий аватар</value></data>
+  <data name="Set.AvatarSelect" xml:space="preserve"><value>Выбрать новый аватар</value></data>
+  <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Аватары, которые можно открыть</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Этот аватар заблокирован. Его можно открыть, купив в магазине.</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>Эл. почта:</value></data>
+  <data name="Set.EmailAddress" xml:space="preserve"><value>Адрес эл. почты</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Изменить адрес почты</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>На ваш новый адрес электронной почты отправлено письмо с подтверждением. Подтвердите его, чтобы активировать новый адрес.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>Этот адрес эл. почты недоступен</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Не удалось обновить адрес электронной почты.</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Подтвердить почту</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Ваш адрес электронной почты изменён.</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Отправить ещё раз</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>Письмо отправлено повторно.</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Не удалось отправить письмо повторно. Попробуйте ещё раз или обратитесь в поддержку.</value></data>
+  <data name="Set.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Set.Country" xml:space="preserve"><value>Страна</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Выберите страну</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Часовой пояс:</value></data>
+  <data name="Set.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>История покупок аккаунта</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Все транзакции, совершаемые через {0} и {1}, сохраняются в вашем кошельке.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>банк</value></data>
+  <data name="Set.Store" xml:space="preserve"><value>магазин</value></data>
+  <data name="Set.WalletLink" xml:space="preserve"><value>Нажмите здесь, чтобы открыть кошелёк</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Заблокированные игроки</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Вы ещё не блокировали игроков в своих играх</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Разблокировать</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Вы уверены, что хотите разблокировать {0} в своих играх?</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>Вы можете привязать свой аккаунт к Facebook, чтобы входить было проще.</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Привязать</value></data>
+  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>Ваш аккаунт {game} {0} привязан к вашему аккаунту Steam. Чтобы привязать этот аккаунт {game} к другому аккаунту Steam или этот аккаунт Steam к другому аккаунту {game}, сначала нужно отвязать два уже связанных аккаунта.</value></data>
+  <data name="Set.Warning" xml:space="preserve"><value>Предупреждение</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>Если отвязать аккаунт Steam, вы выйдете из {game} и лаунчер закроется. Вы не сможете снова играть в {game} через Steam, пока не привяжете другой аккаунт.</value></data>
+  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Я понимаю и хочу отвязать свой аккаунт Steam</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Фон профиля</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Фоны профиля открываются, когда вы достигаете новых уровней в трёх категориях достижений: «Повелитель зверей», «Стрелок-мастер» и «Исследователь». Открытые фоны остаются доступными навсегда.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Подробнее об уровнях достижений.</value></data>
+  <data name="Set.HeaderNone" xml:space="preserve"><value>Нет</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>Последний</value></data>
+  <data name="Set.GroupAnimals" xml:space="preserve"><value>Животные</value></data>
+  <data name="Set.GroupWeapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Set.GroupExploration" xml:space="preserve"><value>Исследование</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>События</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Ежедневные миссии</value></data>
+  <data name="Set.SaveProfile" xml:space="preserve"><value>Сохранить настройки профиля</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Настройки профиля сохранены</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>Не удалось сохранить профиль. Попробуйте ещё раз или обратитесь в поддержку.</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Зал трофеев</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Кормушки</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>ГЛАВНАЯ</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Выберите раздел.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>ВЫБОР ЗАЛА ТРОФЕЕВ</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>У вас пока нет ни одного зала.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>УПРАВЛЕНИЕ КОРМУШКАМИ</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Заполнить кормушку до:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Прикорм</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Активно</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Пополнить</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Добро пожаловать в {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Поздравляем, {0}! Ваш новый аккаунт {game} создан!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Если вы уже скачали и установили лаунчер и клиент игры, можно начинать играть! Если вы впервые в {game}, рекомендуем пройти обучение, прежде чем отправляться на первую настоящую охоту. Обучение научит всему, что нужно, чтобы самостоятельно освоиться в охотугодьях Эвергрин. Начните ниже.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>У вас есть розничный код?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>Если вы купили розничную версию {game}, {0}нажмите здесь{1}, чтобы активировать розничный код.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Обучение</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Пусть Док, егерь охотугодий Эвергрин, научит вас всему, что нужно знать об игре {game}.</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Перейти к обучению</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>Пойти на охоту</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Начните настоящую охоту, если вы уже знакомы с {game} или вам просто не терпится отправиться в путь.</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Начать новую игру</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Загрузка</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Если вы ещё не скачали лаунчер и клиент игры, сделайте это, прежде чем начинать охоту.</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>К загрузкам</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Изменить адрес электронной почты, язык или аватар можно на странице настроек.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Изменить настройки аккаунта</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Профиль</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Весь ваш прогресс в {game} показан на странице профиля — там вы найдёте подробную статистику по всем прошлым охотам.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>Посмотреть мой профиль</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Помощь</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Нужна помощь на старте? Загляните в раздел помощи и на отличные ресурсы, которые ведёт сообщество.</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>Открыть раздел помощи</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Пригласить друга</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>Как пригласить друга</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Отправить приглашение</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Нажмите кнопку ниже, чтобы получить реферальную ссылку, и отправьте её другу, которого хотите пригласить в {game}.</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Играйте в {game} вместе</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Когда ваш друг зарегистрирует аккаунт {0}по вашей ссылке{1}, он получит 200 em$, дальномер 5x30 мм, манок на лося и нейтрализатор запаха!</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Получайте награды</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>Если ваш друг купит em$, вы получите награду!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>Награды — ниже</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Нажмите здесь, чтобы пригласить друга</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Награды</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* Награда за приглашение выдаётся, когда приглашённый друг впервые покупает em$. За КАЖДОГО приглашённого друга вы получите её только один раз.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** Награда за первую покупку выдаётся, когда ЛЮБОЙ из приглашённых вами друзей впервые покупает такое количество em$. Каждую такую награду можно получить только один раз, а не за каждую покупку.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>Если ваш друг купит</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>Вы получаете*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>Единовременная награда**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Мои приглашённые</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>Пользователь</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>Присоединился</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Награда</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>Это ваша реферальная ссылка: скопируйте её и отправьте тем, кого хотите пригласить в {game}:</value></data>
+  <data name="Prof.Title" xml:space="preserve"><value>Профиль: {0}</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Рейтинги</value></data>
+  <data name="Prof.TabAchievements" xml:space="preserve"><value>Достижения</value></data>
+  <data name="Prof.TabSkills" xml:space="preserve"><value>Навыки</value></data>
+  <data name="Prof.TabStats" xml:space="preserve"><value>Статистика</value></data>
+  <data name="Prof.TabGallery" xml:space="preserve"><value>Галерея</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Трофеи</value></data>
+  <data name="Prof.TabDogs" xml:space="preserve"><value>Собаки</value></data>
+  <data name="Prof.TabFriends" xml:space="preserve"><value>Друзья</value></data>
+  <data name="Prof.Membership" xml:space="preserve"><value>Охотник</value></data>
+  <data name="Prof.Rank" xml:space="preserve"><value>Рейтинг: {0}</value></data>
+  <data name="Prof.Online" xml:space="preserve"><value>В сети</value></data>
+  <data name="Prof.TipMembership" xml:space="preserve"><value>Тип членства игрока {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>Очки охотника игрока {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Рейтинг по очкам охотника игрока {0}</value></data>
+  <data name="Prof.TipOnline" xml:space="preserve"><value>{0} в сети</value></data>
+  <data name="Prof.Request" xml:space="preserve"><value>Отправить запрос в друзья</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Запрос в друзья ожидает ответа</value></data>
+  <data name="Prof.Overview" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Prof.Animals" xml:space="preserve"><value>Животные</value></data>
+  <data name="Prof.Weapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Предметы для сбора</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Прогресс</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Prof.Categories" xml:space="preserve"><value>Категории</value></data>
+  <data name="Prof.Unlocked" xml:space="preserve"><value>Открыто</value></data>
+  <data name="Prof.Exploration" xml:space="preserve"><value>Исследование</value></data>
+  <data name="Prof.DailyMissions" xml:space="preserve"><value>Ежедневные миссии</value></data>
+  <data name="Prof.Challenges" xml:space="preserve"><value>Испытания</value></data>
+  <data name="Prof.AchUnlocked" xml:space="preserve"><value>Открыто достижений</value></data>
+  <data name="Prof.AchRecent" xml:space="preserve"><value>Последние достижения</value></data>
+  <data name="Prof.Total" xml:space="preserve"><value>Итого</value></data>
+  <data name="Prof.Species" xml:space="preserve"><value>Вид</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Обнаружение</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Тропление</value></data>
+  <data name="Prof.Shooting" xml:space="preserve"><value>Стрельба</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Ур.</value></data>
+  <data name="Prof.Statistics" xml:space="preserve"><value>Статистика</value></data>
+  <data name="Stat.Last" xml:space="preserve"><value>Последняя охота</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Статистика за всё время</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>История охоты</value></data>
+  <data name="Stat.Best" xml:space="preserve"><value>Личные рекорды</value></data>
+  <data name="Stat.Misc" xml:space="preserve"><value>Прочее</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Собранные рога</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Подтверждённые трофеи</value></data>
+  <data name="Stat.Weapon" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Stat.Ammo" xml:space="preserve"><value>Боеприпасы</value></data>
+  <data name="Stat.Shots" xml:space="preserve"><value>Выстрелов</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Точность стрельбы</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Убийств за попадание</value></data>
+  <data name="Stat.Longest" xml:space="preserve"><value>Дальний выстрел</value></data>
+  <data name="Stat.Species" xml:space="preserve"><value>Вид</value></data>
+  <data name="Stat.Spotted" xml:space="preserve"><value>Обнаружено</value></data>
+  <data name="Stat.Tracked" xml:space="preserve"><value>Выслежено</value></data>
+  <data name="Stat.Harvested" xml:space="preserve"><value>Добыто</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Название</value></data>
+  <data name="Stat.Collected" xml:space="preserve"><value>Собрано</value></data>
+  <data name="Stat.Total" xml:space="preserve"><value>Итого</value></data>
+  <data name="Stat.Max" xml:space="preserve"><value>Макс.</value></data>
+  <data name="Stat.Distance" xml:space="preserve"><value>Пройденное расстояние</value></data>
+  <data name="Stat.Duration" xml:space="preserve"><value>Длительность охоты</value></data>
+  <data name="Stat.NoShots" xml:space="preserve"><value>Выстрелов не было</value></data>
+  <data name="Stat.NoShotsExp" xml:space="preserve"><value>За эту охоту не сделано ни одного выстрела.</value></data>
+  <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>За эту охоту не было контактов с животными.</value></data>
+  <data name="Stat.NoCollectExp" xml:space="preserve"><value>За эту охоту не собрано ни одного предмета.</value></data>
+  <data name="Stat.NoAchExp" xml:space="preserve"><value>За эту охоту не получено достижений.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>За эту охоту не собрано ни одного рога.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>За эту охоту нет подтверждённых трофеев.</value></data>
+  <data name="Stat.NoExpeditions" xml:space="preserve"><value>Этот охотник ещё не ходил на охоту.</value></data>
+  <data name="Stat.Start" xml:space="preserve"><value>Старт</value></data>
+  <data name="Stat.Dur" xml:space="preserve"><value>Длительность</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Стоянка</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Предметы для сбора</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Убийств</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>За всё время</value></data>
+  <data name="Stat.Season" xml:space="preserve"><value>Сезон {0}</value></data>
+  <data name="Stat.BestDisabled" xml:space="preserve"><value>Функция личных рекордов сейчас отключена.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Личные рекорды игрока {0} за сезон {1} поставлены в очередь на расчёт. Загляните позже.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Личные рекорды игрока {0} за сезон {1} рассчитываются и скоро будут доступны.</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>Игрок {0} не ходил на охоту в сезоне {1}.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Личные рекорды игрока {0} за всё время поставлены в очередь на расчёт. Загляните позже.</value></data>
+  <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Личные рекорды игрока {0} за всё время рассчитываются и скоро будут доступны.</value></data>
+  <data name="Stat.BestAllNone" xml:space="preserve"><value>Игрок {0} ещё не ходил на охоту, поэтому рекорды за всё время рассчитать нельзя.</value></data>
+  <data name="Stat.Score" xml:space="preserve"><value>Баллы</value></data>
+  <data name="Stat.Range" xml:space="preserve"><value>Дистанция</value></data>
+  <data name="Stat.Previous" xml:space="preserve"><value>Назад</value></data>
+  <data name="Stat.Next" xml:space="preserve"><value>Дальше</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Нет изображений для показа.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Нет трофеев для показа.</value></data>
+  <data name="Prof.DogsEmpty" xml:space="preserve"><value>У этого охотника нет собак.</value></data>
+  <data name="Prof.FriendsEmpty" xml:space="preserve"><value>Нет друзей для показа.</value></data>
+  <data name="Prof.DownloadGallery" xml:space="preserve"><value>Скачать галерею</value></data>
+  <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Готовим галерею к загрузке</value></data>
+  <data name="Prof.GalleryReady" xml:space="preserve"><value>Галерея готова к скачиванию!</value></data>
+  <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Пожалуйста, не закрывайте окно</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Удалить это изображение? Это действие необратимо!</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Ур.:</value></data>
+  <data name="Prof.DogSkills" xml:space="preserve"><value>Навыки</value></data>
+  <data name="Prof.DogNoSkills" xml:space="preserve"><value>У этой собаки пока нет открытых навыков.</value></data>
+  <data name="Prof.Delete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Выполняется вход...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Вход выполнен!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>Эта страница открылась, потому что {game} нужно выполнить вход в ваш аккаунт.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Подождите...</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>Теперь можно закрыть это окно или вкладку.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>Это может занять несколько секунд...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Подтверждение электронной почты...</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>Электронная почта подтверждена!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Спасибо, что присоединились! Продолжайте в лаунчере {game}, чтобы начать играть!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Выход выполнен</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Альпийский козёл</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>Американская чёрная кряква</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Песец</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Аксис</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Бантенг</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Толсторог</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Бизон</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Чёрный медведь</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Колумбийский олень (нетипичный)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Колумбийский олень (типичный)</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Красная рысь</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Бурый медведь</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Канадская казарка</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Американский кролик</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Койот</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Баран Далла</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Обыкновенная рысь</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>Европейский кролик</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Лань</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Дикий козёл</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Дикий кабан</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Серая утка</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Волк</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Гризли</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Полулапчатый гусь</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Кряква</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Лось</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Чернохвостый олень (нетипичный)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Чернохвостый олень (типичный)</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Шилохвость</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Фазан</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Полярный медведь</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Пума</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Благородный олень</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Лиса</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Рыжий кенгуру</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Северный олень</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Тундряная куропатка</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Вапити Скалистых гор</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Косуля</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Кролень</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Олень Рузвельта</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Олень Руса</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Индийский замбар</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Чернохвостый олень Ситка</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Белый гусь</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Американский беляк</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Индейка</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Тираннозавр рекс</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Водяной буйвол</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Вендиго</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Вервольф</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Вервольф</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>Белохвостая куропатка</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Белохвостый олень (нетипичный)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Белохвостый олень (типичный)</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Вепрь</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Белая куропатка</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Глухарь</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Мухомор красный</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>Белый гриб</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Лисичка обыкновенная</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Шампиньон обыкновенный</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Жёлтая болотная сыроежка</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Скандинавский горшок</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Византийская монета</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Рог лани</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Зелёный подарок</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Синий подарок</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Красный подарок</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Фиолетовый подарок</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Серебряный подарок</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Зелёный череп</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Розовая роза</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>Белая роза</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Красная роза</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Золотое яйцо</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Блин с фруктами</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Синий череп</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Блин с мороженым</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Блин «Делюкс»</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Красный череп</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Фиолетовый череп</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Рог аксиса</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>Белая роза ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Тёмный ритуал</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Коричневый плюшевый мишка ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Красная роза ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Золотой воздушный шарик ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Рог белохвостого оленя (нетипичный)</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Золотой подарок</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Рог белохвостого оленя</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Рог чернохвостого оленя</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Рог оленя Рузвельта</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Рог чернохвостого оленя (нетипичный)</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Рог колумбийского оленя</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Рог колумбийского оленя (нетипичный)</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Рог лося</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Красный плюшевый мишка ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>День мёртвых</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Рог косули</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Рог благородного оленя</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Блин с шоколадной крошкой</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Рог северного оленя</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Блин с маслом и сиропом</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>Гриб 1UP</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Золотой самородок</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Рог оленя Ситка</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Серебряное яйцо</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Бронзовое яйцо</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Оранжевая тыква</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Коричневая тыква</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Жёлтая тыква</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Горшок с золотом</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Старый нож аборигенов</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Старый нож аборигенов</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Старый нож аборигенов</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Гематитовый воздушный шарик ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Серебряный воздушный шарик ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Рог вапити Скалистых гор</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Серебряный доллар</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Окаменелый аммонит</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Окаменелый зуб акулы</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Орлиное перо</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Вороново перо</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Рог оленя Руса</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Рог замбара</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Серебряный плюшевый мишка ко Дню святого Валентина</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Розовая роза ко Дню святого Валентина</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Одиночная игра</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Животные</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Предметы для сбора</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Пистолеты</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Арбалеты</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0} д.</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0} ч</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0} мин</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0} с</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} ГБ</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} МБ</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} КБ</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} Б</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} км ({1} ми)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>несколько секунд назад</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>минуту назад</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>{0} мин. назад</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>час назад</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>{0} ч назад</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>день назад</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>{0} дн. назад</value></data>
+  <data name="Splash.Loading" xml:space="preserve"><value>Загрузка</value></data>
+  <data name="Splash.Error" xml:space="preserve"><value>Ошибка</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>Поддержка {game}</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Руководства и обучение</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Видеоуроки</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Сайты местных сообществ</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>У {game} есть несколько официальных каналов поддержки. Много информации о том, как играть и как решать проблемы, можно найти на странице вики, которую ведёт сообщество. Наши официальные форумы {game} очень активны, и их ежедневно посещают многие игроки, которые рады помочь новичкам.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Если вы не нашли ответ на свои вопросы на форуме или в вики, можете создать обращение в нашей системе поддержки, и мы постараемся помочь вам как можно быстрее!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Поддержка {game}</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Форум {game}</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Вики {game}</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (также на {1}, {2} и {3})</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>немецком</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>французском</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>испанском</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Информация о многопользовательских подключениях</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>Новичок в {game}?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Смотреть видеоуроки &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Ресурсы сообщества и руководства</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>У {game} большое сообщество — посмотрите эти замечательные материалы, созданные нашими участниками.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Изучите основы игры в {game}. Обязательно пройдите также {0}интерактивное обучение{1}, прежде чем отправляться на первую охоту в охотугодьях Эвергрин!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>Автор: {0}</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Сайты местных сообществ</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>У {game} яркое сообщество, и многие наши игроки общаются в местных сообществах с игроками из своего региона! Загляните на эти местные фан-сайты {game}!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>СОДЕРЖАНИЕ</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Услуги ежедневных миссий</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Возобновить серию</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Возобновление серии</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Ежедневные миссии — совершенно новая часть системы миссий {game}; найти их можно в {0}разделе «Миссии»{1} в лаунчере или на сайте.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Поскольку ежедневные миссии нужно выполнять за один день, они довольно простые, и для большинства не потребуется особое оружие или снаряжение. Сложные ежедневные миссии иногда могут быть исключением, но не падайте духом! Ежедневные миссии можно выполнять и в мультиплеере.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Новый интерфейс ежедневных миссий</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>Как это работает?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Каждый день каждый игрок получает новую ежедневную миссию. Разные игроки получают разные ежедневные миссии (далее — ЕМ).</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Выполнение ЕМ увеличивает вашу серию ЕМ на 1. {0}Серия{1} — это ряд выполненных подряд ЕМ.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Пропуск или невыполнение ЕМ «прервёт вашу серию» и вернёт вас к первому дню.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>Если вы прервали серию, ежедневные миссии станут неактивными, пока вы не активируете их, чтобы начать новую серию, или не возобновите последнюю. Прерванную серию можно восстановить с помощью услуги «{0}Возобновить серию{1}» из магазина и продолжить с последней выполненной ежедневной миссии.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Уровни сложности</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>ЕМ бывают трёх уровней сложности:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Лёгкая</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Средняя</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Сложная</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Каждый уровень сложности обозначен цветом: лёгкая ЕМ — зелёным значком, средняя — синим, сложная — красным.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Помимо цвета, у каждого уровня своё число звёзд: 1 звезда у лёгких, 2 у средних и 3 у сложных.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>У каждого уровня сложности своя базовая награда: {0}100 gm$ за лёгкую, 500 gm$ за среднюю и 1000 gm$ за сложную{1} соответственно.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Награды растут по мере того, как ваша серия ЕМ становится длиннее — подробнее об этом ниже.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Как растут награды</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Ваша первая ЕМ всегда будет лёгкой. Если вы её выполните, ЕМ разных уровней сложности будут чередоваться по схеме, которую мы называем {0}циклом{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>Цикл выглядит так:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Как видите, цикл длится 16 дней — при условии, что вы день за днём продолжаете выполнять назначаемые вам ЕМ.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Когда первый цикл завершён, начинается новый, в котором {0}награды в gm$ увеличены на 10%{1} (лёгкая = 110 gm$, средняя = 550 gm$, сложная = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>С каждым следующим циклом награды растут ещё на 10% — вплоть до двойного размера базовых наград (увеличение на 100%).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>Так, если вы выполните 10 циклов подряд, не прервав серию, то будете получать удвоенную (x2) награду за каждую миссию, пока не прервёте серию.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Отличия от традиционных миссий</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>В отличие от традиционных миссий, чтобы добыча засчиталась в ЕМ, животное нужно убить самому. Друзья всё же могут помочь вам {0}найти{1} нужное животное в мультиплеере.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>В отличие от традиционных миссий, ежедневные миссии не нужно активировать. Ежедневная миссия всегда активна всё время своего действия (24 часа).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>За выполнение ЕМ можно получать достижения. Достижения по ЕМ можно посмотреть в разделе «Достижения» профиля игрока:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Выполнение ЕМ засчитывается в три типа достижений — по одному для каждого уровня сложности.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Вот таблица с этапами для каждого уровня сложности:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Сложность</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Выполнено миссий</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Особые награды</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>По мере продвижения вашей серии ЕМ вы будете получать особые награды за выполнение сложных ЕМ.</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Особые награды бывают следующих видов:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>предметы</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>трофеи</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Предметы и трофеи — эксклюзивные награды, которые можно выиграть только за выполнение ЕМ (получить их иным способом нельзя!). Награды появятся только в начале новой игры.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}ВАЖНО:{1} все особые награды ЕМ можно выиграть только один раз! Если вы прервёте серию и начнёте новую, вы по-прежнему будете получать gm$, но чтобы получить новые особые награды, нужно будет превзойти прежнюю серию.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Все особые награды можно увидеть в разделе «Награды» вашей ЕМ:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Вот удобная таблица, показывающая, как это работает:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Число подряд выполненных сложных ЕМ (серия)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Особая награда</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Охотничья кепка</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Камуфляж A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Простая футболка</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Герой ежедневных миссий</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Затворная винтовка</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Камуфляж B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Кожаная куртка</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Хардкорная охота</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Рычажная винтовка</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Гравировка</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Уникальный трофей (3 мес.)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Уникальный трофей (6 мес.)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Уникальный трофей ({0} сложных ЕМ)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Уникальный трофей (1 год)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Как следует из названия, эта услуга позволяет возобновить серию ЕМ. Например, если у вас длинная серия выполненных ЕМ, а затем вы пропустили или не выполнили ЕМ, с помощью этой услуги можно возобновить серию и продолжить с последней выполненной ЕМ.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>Что хорошо: неважно, сколько времени прошло с момента прерывания серии — вы всегда сможете её возобновить, даже если прервали её, скажем, год назад.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>Эту услугу можно купить заранее и активировать, когда понадобится. Количество таких карточек, которое можно купить или иметь, не ограничено.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Услугу можно купить прямо на странице ЕМ: как только вы прервёте серию, слева от вашей ЕМ «День 1» появится кнопка с предложением купить её (или использовать, если у вас уже есть хотя бы одна).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>Также её можно купить в {0}магазине{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>После покупки услугу можно будет использовать прямо на странице ЕМ:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Как скачать {game} и начать играть</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Требования для мультиплеера</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Требования для одиночной игры</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Поддерживаемые операционные системы:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Операционная система:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>Процессор:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Память:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Видеокарта:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Разрешение экрана:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Интернет-соединение:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Хост:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS хоста:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 и Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 и Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Двухъядерный процессор (2 ГГц)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 ГГц)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 ГБ</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 или лучше), ATI Radeon HD 2000 Series (2400 или лучше). 256 МБ видеопамяти (для низких и средних настроек). 512–768 МБ видеопамяти (для высоких, в зависимости от числа игроков).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 или лучше). ATI X1900 (или лучше). 256 МБ видеопамяти (для низких и средних настроек). 512 МБ видеопамяти (для высоких).</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Не менее 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Клиент: 512 Кбит/с вх. и исх.</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Мбит/с вх. и исх. (в зависимости от числа игроков)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Если хост запускает игру менее чем на 25–30 FPS (кадров в секунду), физика будет работать с ошибками. Игрокам со слабыми компьютерами стоит снизить настройки, чтобы игра работала при как можно большем FPS. {0}30 FPS{1} — минимальное рекомендуемое значение. FPS можно измерить бесплатными программами, которые есть в интернете.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Найти программу</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Скачайте игру (около 12 ГБ).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Нажмите здесь, чтобы скачать</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Шаг {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Запустите игру после завершения установки.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Нажмите кнопку {0} на странице сайта, чтобы начать новую игру.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Устранение неполадок</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Утилита устранения неполадок автоматически проверяет настройку игры, находит типичные проблемы и рекомендует исправления, чтобы вы быстрее вернулись к игре.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Скачайте утилиту устранения неполадок.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Поместите её в папку игры рядом с исполняемым файлом игры.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Папка игры]\game\&lt;утилита&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Запустите утилиту, чтобы проанализировать проблемы конфигурации и производительности.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Примените исправления, предложенные в ходе анализа.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Если предложенные решения не помогли, скачайте созданный файл журнала и отправьте его в нашу {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>службу поддержки</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Скачать утилиту</value></data>
+</root>

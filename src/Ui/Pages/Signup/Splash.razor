@@ -4,11 +4,11 @@
 @inject HostMode Mode
 @inject Branding Brand
 
-<PageTitle>Loading</PageTitle>
+<PageTitle>@L["Splash.Loading"]</PageTitle>
 
 <div class="su-splash">
     <div class="logo @(Error is null ? "" : "error")"><AssetSlot Name="logo-splash" Width="483" Height="65" /></div>
-    @if (Error is not null) { <div class="message"><h1>Error</h1><div>@Brand.Expand(Error)</div></div> }
+    @if (Error is not null) { <div class="message"><h1>@L["Splash.Error"]</h1><div>@Brand.Expand(Error)</div></div> }
 </div>
 
 @code {

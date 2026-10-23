@@ -4,13 +4,9 @@
 <div class="lang-select">
     <h2><Icon Name="caret-down" /> @L["Language.Title"] <button class="close" aria-label="@L["Alert.Close"]" @onclick="Modal.Close">&times;</button></h2>
     <ul>
-        @foreach (var (code, name) in languages)
+        @foreach (var l in Languages.All)
         {
-            <li><a href="#" @onclick="() => Language.Set(code)" @onclick:preventDefault><img src="_content/Resurgence.Ui/flags/@(code).svg" alt="" /> @L[name]</a></li>
+            <li><a href="#" @onclick="() => Language.Set(l.Code)" @onclick:preventDefault><img src="_content/Resurgence.Ui/flags/@(l.Flag).svg" alt="" /> @l.Name</a></li>
         }
     </ul>
 </div>
-
-@code {
-    static readonly (string Code, string Name)[] languages = [("en", "Language.English"), ("fr", "Language.French")];
-}

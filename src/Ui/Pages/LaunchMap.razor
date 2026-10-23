@@ -75,7 +75,7 @@ else
             }
         </ul>
         <p class="legend"><Icon Name="campground" /> @L["Launch.Tents"]</p>
-        <p class="no-tents">@((MarkupString)L["Launch.NoTents"].Value)</p>
+        <p class="no-tents">@L.Html("Launch.NoTents", "<a href=\"/store?category=8&amp;type=30\">", "</a>")</p>
     </div>
     <MapPlaceholder Markers="markers" Height="750" Selected="marker" OnPick="m => marker = m.Id">
         @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
