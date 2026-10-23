@@ -295,4 +295,62 @@
   <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running</value></data>
   <data name="Launcher.Error.16008" xml:space="preserve"><value>Wrong settings file version. Please go into settings and reconfigure.</value></data>
   <data name="Launcher.Error.16009" xml:space="preserve"><value>Graphics card does not support D3DQUERYTYPE_EVENT.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Hang on, we're trying to log you in...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Hello. You are starting the game from steam, but we couldn't see if you have an account. Please choose one below:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Log in below to link your account to steam.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Connect existing account to Steam</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Register for a new {game} account</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>- or -</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>E-mail address</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>USERNAME AND AVATAR</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Pick a name</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Required</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Username not available</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Suggest names</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Previous avatar</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Next avatar</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>GET YOUR FIRST WEAPON</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>You’ve made it so far, awesome! Here is a welcome gift from us - your first weapon, the shiny 12GA Single Shot Shotgun with free replenishable ammo. With this rugged beauty you can ethically hunt all animals in the game, except Bison.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>ENJOY YOUR HUNTING LICENSES</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>It’s almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals are rotating weekly. Paying members can hunt all the species, check our Membership store if you want to become one.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRM YOUR EMAIL</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Good things come to those who confirm their emails! Please check your inbox for a message from us and follow the instructions in it. Your current email is {0}. If it’s not correct, please change it below and click "Resend the confirmation email".</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>YOUR REWARD</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Thank you for confirming your e-mail.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Update e-mail address</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Resend e-mail</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Launch tutorial</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Game settings</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>YOU ARE READY TO TAKE ON THE BIG GAME</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>You can run the tutorials again under the HUNT NOW button.</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Hunt now!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Login</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Email Address</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Login</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Email address required</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Invalid email address</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>This e-mail is unavailable</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Change Email</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Change</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>E-mail sent</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>We have sent you a new e-mail with a link to confirm your e-mail address.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Launch Tutorial</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Save and launch</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Graphics quality</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Low settings</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Medium settings</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>High settings</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultra settings</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Custom settings</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anisotropic filtering</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Display mode</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Scene complexity</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Shadow quality</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Texture quality</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
 </root>

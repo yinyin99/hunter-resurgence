@@ -295,4 +295,62 @@
   <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running</value></data>
   <data name="Launcher.Error.16008" xml:space="preserve"><value>Wrong settings file version. Please go into settings and reconfigure.</value></data>
   <data name="Launcher.Error.16009" xml:space="preserve"><value>Graphics card does not support D3DQUERYTYPE_EVENT.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Veuillez patienter, nous essayons de vous connecter...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Bonjour. Vous démarrez le jeu avec steam, mais nous ne pouvions pas vérifier si vous aviez déjà un compte. Veuillez choisir ci-dessous :</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Connectez-vous pour relier votre compte à Steam.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Connecter compte existant à Steam</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Créer un nouveau compte {game}</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>- ou -</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Adresse email</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Continuer</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>Nom d’utilisateur et avatar</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Pick a name</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Obligatoire</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Nom d'utilisateur non disponible</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Proposer des noms</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Avatar précédent</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Avatar suivant</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>Votre première arme</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Voici un cadeau de bienvenue de notre part - votre première arme - le fusil monocoup cal. 12. Avec cette beauté, vous pouvez éthiquement chasser tous les animaux (bison exclu).</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>Profitez de vos licences de chasse</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Il est presque temps de partir à votre première chasse ! Que traquerez-vous ? En tant que joueur invité, vous obtenez gratuitement des licences de chasse à vie pour le cerf de Virginie, le lapin européen et le faisan, et deux autres animaux gratuits changent chaque semaine. Les membres payants peuvent chasser toutes les espèces ; consultez notre boutique d’abonnement si vous souhaitez le devenir.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>Confirmez votre adresse e-mail</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Une bonne chose n'arrive jamais seule. Confirmez votre adresse email pour recevoir une autre récompense ! Nous vous avons envoyé un message, veuillez consulter votre boîte de réception et suivre les instructions. Votre adresse email actuelle est {0}. Si elle est incorrecte, veuillez la changer ci-dessous.</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>Votre récompense</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Merci d'avoir confirmé votre adresse email. Vous obtenez les récompenses suivantes : une carabine à verrou .243 (Carbone), un éliminateur d'odeur, un pantalon noir et un affût terrestre.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Mettre à jour l'adresse email</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Renvoyer e-mail</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Lancer le tutoriel</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Paramètres de jeu</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>Vous êtes prêt à vous mesurer aux gros gibiers</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Vous pouvez accéder aux tutoriels en cliquant sur le bouton CHASSER. </value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Chasser !</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Connexion</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Email Address</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Connexion</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Adresse email obligatoire</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Adresse email invalide</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>Cette adresse email n'est pas disponible</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Changer d'adresse</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Changer</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>E-mail envoyé</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>Nous vous avons envoyé un nouvel e-mail avec un lien pour confirmer votre adresse email.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Lancer le tutoriel</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Appliquer</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Graphics quality</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Low settings</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Medium settings</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>High settings</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultra settings</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Custom settings</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Filtrage anisotrope</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Mode d’affichage</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Détails de l'environnement</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Qualité des ombres</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Détails des textures</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
 </root>
