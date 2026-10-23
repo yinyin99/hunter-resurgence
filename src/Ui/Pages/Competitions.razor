@@ -1,0 +1,82 @@
+@page "/competitions"
+@page "/competitions/upcoming/{Species:int?}"
+@page "/competitions/previous/{PageNo:int?}"
+@inject ICompetitionsService Service
+@inject ModalService Modal
+@inject NavigationManager Nav
+
+<PageTitle>@L["Comp.Tab.Competitions"]</PageTitle>
+
+<div class="page-min">
+<Tabs Items="main" Active="/competitions" />
+<h2 class="page-title">@L["Comp.Title"]</h2>
+
+<h4 class="enrolled">@L["Comp.Enrolled"] (@enrolled.Count)</h4>
+<CompetitionTable Enrolled="enrolled" OnLeave="Leave" />
+
+<Tabs Kind="sub" Items="sub" Active="@(previous ? "/competitions/previous" : "/competitions/upcoming")" />
+@if (!previous)
+{
+    <div class="filter">
+        <p>@L["Comp.Filter"]</p>
+        <div class="species">
+            @foreach (var s in species)
+            {
+                @if (s.Competitions == 0) { <span class="chip off">@s.Name <small>(0)</small></span> }
+                else { <a class="chip @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@s.Name <small>(@s.Competitions)</small></a> }
+            }
+        </div>
+    </div>
+}
+@if (rows.Count == 0 && loaded) { <p class="none">@L["Comp.NoneFound"]</p> }
+else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
+@if (previous) { <Paginator Page="page" Pages="pages" Href='n => "/competitions/previous/" + n' /> }
+</div>
+
+@code {
+    IReadOnlyList<Enrolled> enrolled = [];
+    IReadOnlyList<Species> species = [];
+    IReadOnlyList<Competition> rows = [];
+    IReadOnlyList<(string, string)> main = [], sub = [];
+    int page = 1, pages = 1;
+    bool loaded;
+
+    [Parameter] public int? Species { get; set; }
+    [Parameter] public int? PageNo { get; set; }
+
+    bool previous => Nav.ToBaseRelativePath(Nav.Uri).StartsWith("competitions/previous", StringComparison.OrdinalIgnoreCase);
+
+    protected override void OnInitialized()
+    {
+        main = [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
+        sub = [(L["Comp.Upcoming"], "/competitions/upcoming"), (L["Comp.Previous"], "/competitions/previous")];
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loaded = false;
+        enrolled = await Service.EnrolledAsync();
+        if (previous)
+        {
+            var p = await Service.PreviousAsync(PageNo ?? 1);
+            (rows, page, pages) = (p.Rows, p.Number, p.Pages);
+        }
+        else
+        {
+            species = await Service.SpeciesAsync();
+            rows = await Service.UpcomingAsync(Species);
+        }
+        loaded = true;
+    }
+
+    // activating and leaving are fake in the mock: the lists are read again
+    async Task Join(int id) => await Change(await Service.JoinAsync(id));
+
+    async Task Leave(int id) => await Change(await Service.LeaveAsync(id));
+
+    async Task Change(Result r)
+    {
+        if (!r.Ok) Modal.Alert(L[r.Error ?? "Comp.Failed"]);
+        else await OnParametersSetAsync();
+    }
+}

@@ -1,0 +1,65 @@
+<table class="comps @(Enrolled is null ? "all" : "enrolled")">
+    <thead>
+        <tr>
+            <th class="name">@L["Comp.Name"]</th>
+            @if (Enrolled is not null) { <th>@L["Comp.Attempts"]</th><th>@L["Comp.Position"]</th> } else { <th>@L["Comp.Players"]</th> }
+            <th>@L["Comp.Starts"]</th><th>@L["Comp.Ends"]</th><th>@L["Comp.Status"]</th><th>@L["Comp.Action"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Enrolled is not null)
+        {
+            @foreach (var e in Enrolled)
+            {
+                <tr>
+                    <td class="name">@Name(e.Competition)</td>
+                    <td>@e.Used / @e.Max</td>
+                    <td>@(e.Position?.ToString() ?? L["Comp.NA"])</td>
+                    <td>@Date(e.Competition.Start)</td><td>@Date(e.Competition.End)</td><td>@Status(e.Competition)</td>
+                    <td class="action"><button type="button" class="btn leave" @onclick="() => OnLeave.InvokeAsync(e.Competition.Id)">@L["Comp.Deactivate"]</button></td>
+                </tr>
+            }
+        }
+        else if (Rows is not null)
+        {
+            @foreach (var c in Rows)
+            {
+                <tr>
+                    <td class="name">@Name(c)</td>
+                    <td>@c.Players</td>
+                    <td class="s">@Date(c.Start)</td><td class="s">@Date(c.End)</td><td class="s">@Status(c)</td>
+                    <td class="action">
+                        @if (c.Joinable) { <button type="button" class="btn btn-primary" @onclick="() => OnJoin.InvokeAsync(c.Id)">@L["Comp.Activate"]</button> }
+                        else { <button type="button" class="btn" disabled>@L["Comp.CantJoin"]</button> }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    /// <summary>The competitions the player has activated (with attempts and position) ...</summary>
+    [Parameter] public IReadOnlyList<Enrolled>? Enrolled { get; set; }
+    /// <summary>... or a plain list with a join button.</summary>
+    [Parameter] public IReadOnlyList<Competition>? Rows { get; set; }
+    /// <summary>Where the name links to.</summary>
+    [Parameter] public string Details { get; set; } = "/competitions/details/";
+    [Parameter] public EventCallback<int> OnJoin { get; set; }
+    [Parameter] public EventCallback<int> OnLeave { get; set; }
+
+    static string Date(DateTime? d) => d is { } v ? Fmt.Utc(v) : "";
+
+    // the server's English status words, shown in the player's language
+    string Status(Competition c) => c.Status switch { "Started" => L["Comp.StatusStarted"], "Finished" => L["Comp.StatusFinished"], "Signup" => L["Comp.StatusSignup"], var s => s ?? "" };
+
+    RenderFragment Name(Competition c) => @<div class="what">
+        <AssetSlot Name="@("competition-" + c.Icon)" Width="45" Height="45" />
+        <div>
+            <a href="@(Details + c.Id)">@c.Name</a>
+            <div class="tags">@foreach (var t in c.Tags) { <span>@(t == "Single player" ? L["Comp.Single"] : t)</span> }</div>
+            @if (c.Description.Length > 0 && Enrolled is null) { <div class="desc">@c.Description</div> }
+            @if (c.Requirements is { } r && Enrolled is null) { <div class="desc"><b>@L["Comp.Requirements"]</b> @r</div> }
+        </div>
+    </div>;
+}

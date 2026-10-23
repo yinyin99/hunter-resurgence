@@ -1,0 +1,9 @@
+.enrolled { margin: 0 0 10px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: #eee; }
+.filter { margin: 0 0 20px; padding: 8px 10px 4px; background: #161616; }
+.filter p { margin: 0 0 6px; font-size: 11px; line-height: 14px; color: #ccc; }
+.species { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 4px; }
+.chip { display: block; padding: 0 8px; background: #333; font-size: 14px; line-height: 27px; text-align: center; color: #ddd; }
+.chip small { margin-left: 4px; font-size: 12px; color: #888; }
+.chip.on { background: #111; color: #fff; }
+.chip.off { color: #666; }
+.none { padding: 10px; text-align: center; background: #d9edf7; color: #31708f; }
