@@ -755,4 +755,16 @@
   <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Categories</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Unlocked</value></data>
+  <data name="Prof.Exploration" xml:space="preserve"><value>Exploration</value></data>
+  <data name="Prof.DailyMissions" xml:space="preserve"><value>Daily Missions</value></data>
+  <data name="Prof.Challenges" xml:space="preserve"><value>Challenges</value></data>
+  <data name="Prof.AchUnlocked" xml:space="preserve"><value>Achievements Unlocked</value></data>
+  <data name="Prof.AchRecent" xml:space="preserve"><value>Recent Achievements</value></data>
+  <data name="Prof.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Prof.Species" xml:space="preserve"><value>Species</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Spotting</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Tracking</value></data>
+  <data name="Prof.Shooting" xml:space="preserve"><value>Shooting</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Lvl</value></data>
+  <data name="Prof.Statistics" xml:space="preserve"><value>Statistics</value></data>
 </root>
