@@ -10,8 +10,8 @@
 @if (data is not null)
 {
     <button type="button" class="btn btn-primary all" @onclick="ActivateAll">@L["Mis.ActivateAll"]</button>
-    <label class="check"><input type="checkbox" id="auto-activate" checked="@data.Auto" @onchange='e => Automatic("auto", e)' /> @L["Mis.Auto"]</label>
-    <label class="check"><input type="checkbox" id="activate-only-favourite" checked="@data.OnlyFavourite" @onchange='e => Automatic("onlyfavourite", e)' /> @L["Mis.OnlyFavourite"]</label>
+    <label class="check"><input class="tick" type="checkbox" id="auto-activate" checked="@data.Auto" @onchange='e => Automatic("auto", e)' /> @L["Mis.Auto"]</label>
+    <label class="check"><input class="tick" type="checkbox" id="activate-only-favourite" checked="@data.OnlyFavourite" @onchange='e => Automatic("onlyfavourite", e)' /> @L["Mis.OnlyFavourite"]</label>
     <p class="line">@L["Mis.ResetDesc"] <a href="/store/item/221">@L["Mis.GoToStore"]</a></p>
     <p class="line">@L["Mis.Completion", data.Completed, data.Total, data.PacksDone, data.PacksTotal]</p>
 
@@ -19,13 +19,13 @@
         <h4>@L["Mis.Filters"]</h4>
         <form @onsubmit="Apply" @onsubmit:preventDefault>
             <div class="grid">
-                <label>@L["Mis.FilterIn"]<select id="block_id" @bind="filterIn"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
+                <label>@L["Mis.FilterIn"]<select class="field-sel" id="block_id" @bind="filterIn"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
                 <label>@L["Mis.Reserves"]<MultiSelect Options="reserves" Selected="reserveSel" /></label>
                 <label>@L["Mis.Species"]<MultiSelect Options="species" Selected="speciesSel" Label="s => L.Term(s)" /></label>
                 <label>@L["Mis.Weapons"]<MultiSelect Options="weapons" Selected="weaponSel" /></label>
             </div>
-            <label class="hide"><input type="checkbox" id="hide-completed" @bind="hideCompleted" /> @L["Mis.HideCompleted"]</label>
-            <label class="search">@L["Mis.Search"]<input type="text" id="mission-search" @bind="search" @bind:event="oninput" /></label>
+            <label class="hide"><input class="tick" type="checkbox" id="hide-completed" @bind="hideCompleted" /> @L["Mis.HideCompleted"]</label>
+            <label class="search">@L["Mis.Search"]<input class="field-light" type="text" id="mission-search" @bind="search" @bind:event="oninput" /></label>
             <button type="submit" class="btn btn-primary">@L["Mis.Filter"]</button>
         </form>
     </section>
@@ -33,7 +33,7 @@
     @if (Show("favourite"))
     {
         <section class="box">
-            <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input type="checkbox" id="mission_favourite_hide" /> @L["Mis.HideCompleted"]</label></h4>
+            <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input class="tick" type="checkbox" id="mission_favourite_hide" /> @L["Mis.HideCompleted"]</label></h4>
             @if (data.Packs.All(p => !p.Favourite)) { <p class="notice">@L["Mis.NoFavourites"]</p> }
             else { @Packs(data.Packs.Where(p => p.Favourite)) }
         </section>

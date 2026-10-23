@@ -17,7 +17,7 @@
     @if (asking)
     {
         <form class="code" @onsubmit="Apply" @onsubmit:preventDefault>
-            <input id="code" type="text" placeholder="@L["Bank.EnterCode"]" @bind="code" @bind:event="oninput" />
+            <input class="field-light" id="code" type="text" placeholder="@L["Bank.EnterCode"]" @bind="code" @bind:event="oninput" />
             <input id="apply-code" type="submit" value="@L["Alert.Ok"]" />
             <button type="button" id="cancel-code" @onclick="Cancel">@L["Bank.Cancel"]</button>
             @if (invalid) { <span class="invalid">@L["Bank.Invalid"]</span> }

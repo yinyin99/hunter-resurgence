@@ -16,9 +16,9 @@ h5 { margin: 12px 0 8px; font-size: 17.5px; line-height: 20px; font-weight: 400;
 .pane h2 { margin: 20px 0 14px; font-size: 28px; line-height: 36px; font-weight: 400; color: #fff; }
 .pane h3 { margin: 20px 0 10px; font-size: 22px; line-height: 28px; font-weight: 400; color: #fff; }
 label { display: block; margin: 0 0 18px; font-size: 14px; line-height: 20px; color: #ccc; }
-input[type=email], input[type=text], select { display: block; box-sizing: border-box; margin-top: 8px; padding: 0 8px; border: 0; border-radius: 2px; font-size: 14px; }
-input[type=email], input[type=text] { width: 288px; height: 38px; background: #eee; color: #333; }
-select { width: 270px; height: 30px; background: #444; color: #eee; }
+input[type=email], input[type=text], select { display: block; margin-top: 8px; padding: 0 8px; font-size: 14px; }
+input[type=email], input[type=text] { width: 288px; height: 38px; }
+select { width: 270px; height: 30px; }
 .btn { padding: 5px 12px; font-size: 14px; line-height: 20px; }
 .alert { margin: 0 0 12px; padding: 8px 12px; border-radius: 3px; font-size: 14px; line-height: 20px; }
 .alert.ok { background: #dff0d8; color: #3c763d; }

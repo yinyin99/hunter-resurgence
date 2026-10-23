@@ -47,9 +47,9 @@
                         break;
                     case "language":
                         <form @onsubmit="SaveLocale" @onsubmit:preventDefault>
-                            <label>@L["Set.Language"]<select id="locale" @bind="language"><option value="en">@L["Language.English"]</option><option value="fr">@L["Language.French"]</option></select></label>
-                            <label>@L["Set.Country"]<select id="country" @bind="country"><option value="">@L["Set.CountryChoose"]</option>@foreach (var c in choices.Countries) { <option value="@c">@c</option> }</select></label>
-                            <label>@L["Set.TimeZone"]<select id="timezone" @bind="timeZone">@foreach (var z in choices.TimeZones) { <option value="@z">@z.Replace('_', ' ')</option> }</select></label>
+                            <label>@L["Set.Language"]<select class="field-sel" id="locale" @bind="language"><option value="en">@L["Language.English"]</option><option value="fr">@L["Language.French"]</option></select></label>
+                            <label>@L["Set.Country"]<select class="field-sel" id="country" @bind="country"><option value="">@L["Set.CountryChoose"]</option>@foreach (var c in choices.Countries) { <option value="@c">@c</option> }</select></label>
+                            <label>@L["Set.TimeZone"]<select class="field-sel" id="timezone" @bind="timeZone">@foreach (var z in choices.TimeZones) { <option value="@z">@z.Replace('_', ' ')</option> }</select></label>
                             <button type="submit" class="btn btn-primary">@L["Set.Save"]</button>
                         </form>
                         break;
@@ -57,13 +57,13 @@
                         <form @onsubmit="Email" @onsubmit:preventDefault>
                             @if (!codeSent)
                             {
-                                <label>@L["Set.EmailAddress"]<input id="email" type="email" name="email" @bind="email" @bind:event="oninput" /></label>
+                                <label>@L["Set.EmailAddress"]<input class="field-light" id="email" type="email" name="email" @bind="email" @bind:event="oninput" /></label>
                                 <button type="submit" class="btn btn-primary">@L["Set.EmailUpdate"]</button>
                             }
                             else
                             {
                                 <p class="info">@L["Signin.Sent", email]</p>
-                                <label>@L["Signin.Code"]<input id="code" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" @bind="code" @bind:event="oninput" /></label>
+                                <label>@L["Signin.Code"]<input class="field-light" id="code" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" @bind="code" @bind:event="oninput" /></label>
                                 <button type="submit" class="btn btn-primary">@L["Set.EmailConfirm"]</button>
                                 <a href="#" class="resend" @onclick="Resend" @onclick:preventDefault>@L["Set.EmailResend"]</a>
                             }

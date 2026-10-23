@@ -3,8 +3,7 @@
 .title { margin-bottom: 8px; color: #ccc; line-height: 20px; }
 .search { position: relative; }
 .search ::deep .icon { position: absolute; left: 9px; top: 8px; color: #ccc; }
-.search input { box-sizing: border-box; width: 100%; height: 30px; padding: 0 8px 0 28px; border: 1px solid var(--field-bd); background: var(--field-bg); color: #ccc; font: inherit; }
-.search input:focus { outline: 0; border-color: #666; }
+.search input { width: 100%; height: 30px; padding: 0 8px 0 28px; }
 .list { margin: 0; padding: 0 10px; list-style: none; background: var(--bg-dropdown); }
 .list li { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #2c2c2c; }
 .handle { flex: 0 1 auto; color: var(--accent); }

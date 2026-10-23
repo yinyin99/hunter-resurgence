@@ -4,7 +4,7 @@
 <div class="friends-dropdown">
     <div class="top">
         <div class="title">@L["Friends.Title", friends.Count]</div>
-        <div class="search"><Icon Name="magnifying-glass" /><input type="text" placeholder="@L["Friends.Search"]" @oninput="Search" /></div>
+        <div class="search"><Icon Name="magnifying-glass" /><input class="field" type="text" placeholder="@L["Friends.Search"]" @oninput="Search" /></div>
     </div>
     @if (found is null)
     {

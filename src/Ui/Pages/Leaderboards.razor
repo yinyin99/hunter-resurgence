@@ -27,7 +27,7 @@
         case "halloffame":
             <section class="panel head hall">
                 <h4>@L["Board.Past"]</h4>
-                <select id="leaderboard-season-selector" @onchange="PickSeason">
+                <select class="field-light" id="leaderboard-season-selector" @onchange="PickSeason">
                     @for (var n = 1; n < current; n++) { <option value="@n" selected="@(n == season)">@L["Board.SeasonN", n]</option> }
                 </select>
             </section>

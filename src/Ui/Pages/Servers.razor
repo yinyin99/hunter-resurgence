@@ -10,12 +10,12 @@
     <div class="list">
         <div class="search">
             <Icon Name="magnifying-glass" />
-            <input type="search" placeholder="@L["Servers.Search"]" aria-label="@L["Servers.Search"]" @bind="query" @bind:event="oninput" />
+            <input class="field" type="search" placeholder="@L["Servers.Search"]" aria-label="@L["Servers.Search"]" @bind="query" @bind:event="oninput" />
             @if (query.Length > 0) { <button type="button" class="clear" data-tip="@L["Servers.Clear"]" aria-label="@L["Servers.Clear"]" @onclick="() => query = string.Empty"><Icon Name="xmark" /></button> }
         </div>
         <div class="tools">
             <span>@L["Servers.Showing", shown.Count]</span>
-            <label>@L["Servers.OnlyAllowed"] <input type="checkbox" @bind="allowedOnly" /></label>
+            <label>@L["Servers.OnlyAllowed"] <input class="tick" type="checkbox" @bind="allowedOnly" /></label>
             <button id="serverListRefresh" class="btn btn-primary" @onclick="Load">@L["Servers.Refresh"]</button>
         </div>
         @if (shown.Count > 0)

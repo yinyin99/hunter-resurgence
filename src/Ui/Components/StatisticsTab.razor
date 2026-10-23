@@ -35,7 +35,7 @@
         }
         break;
     default:
-        <select id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
+        <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
             <option value="0">@L["Stat.AllTime"]</option>
             @foreach (var n in Enumerable.Range(1, 15)) { <option value="@n">@L["Stat.Season", n]</option> }
         </select>

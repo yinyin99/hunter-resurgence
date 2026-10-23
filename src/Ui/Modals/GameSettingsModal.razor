@@ -6,10 +6,10 @@
     @if (settings is not null)
     {
         <div class="rows">
-            <label class="row"><span>@L["GameSettings.Fullscreen"]</span><input type="checkbox" id="fullscreen" @bind="fullscreen" /></label>
-            <label class="row"><span>@L["GameSettings.Vsync"]</span><input type="checkbox" id="vsync" @bind="vsync" /></label>
+            <label class="row"><span>@L["GameSettings.Fullscreen"]</span><input class="tick" type="checkbox" id="fullscreen" @bind="fullscreen" /></label>
+            <label class="row"><span>@L["GameSettings.Vsync"]</span><input class="tick" type="checkbox" id="vsync" @bind="vsync" /></label>
             <label class="row"><span>@L["GameSettings.Resolution"]</span>
-                <select id="display_mode" @bind="resolution">
+                <select class="field-sel" id="display_mode" @bind="resolution">
                     @for (var i = 0; i < settings.Resolutions.Count; i++)
                     {
                         var r = settings.Resolutions[i];
@@ -17,14 +17,14 @@
                     }
                 </select>
             </label>
-            <label class="row"><span>@L["GameSettings.Scene"]</span><select id="scene_complexity" @bind="scene">@Levels(4)</select><small>@L["GameSettings.SceneHelp"]</small></label>
-            <label class="row"><span>@L["GameSettings.Texture"]</span><select id="texture_quality" @bind="texture">@Levels(3)</select>
+            <label class="row"><span>@L["GameSettings.Scene"]</span><select class="field-sel" id="scene_complexity" @bind="scene">@Levels(4)</select><small>@L["GameSettings.SceneHelp"]</small></label>
+            <label class="row"><span>@L["GameSettings.Texture"]</span><select class="field-sel" id="texture_quality" @bind="texture">@Levels(3)</select>
                 <small>@L["GameSettings.TextureHelp"]@(settings.VideoMemoryMb > 0 ? " " + L["GameSettings.TextureMemory", settings.VideoMemoryMb] : "")</small></label>
-            <label class="row"><span>@L["GameSettings.Shadow"]</span><select id="shadow_quality" @bind="shadow">@Levels(4)</select></label>
-            <label class="row"><span>@L["GameSettings.Msaa"]</span><select id="msaa" @bind="msaa">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")</select></label>
-            <label class="row"><span>@L["GameSettings.Aniso"]</span><select id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
-            @if (contextual is not null) { <label class="row"><span>@L["GameSettings.ContextHelp"]</span><input type="checkbox" id="contextual_help" @bind="contextual" /></label> }
-            @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input type="checkbox" id="extended_audio" @bind="audio" /></label> }
+            <label class="row"><span>@L["GameSettings.Shadow"]</span><select class="field-sel" id="shadow_quality" @bind="shadow">@Levels(4)</select></label>
+            <label class="row"><span>@L["GameSettings.Msaa"]</span><select class="field-sel" id="msaa" @bind="msaa">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")</select></label>
+            <label class="row"><span>@L["GameSettings.Aniso"]</span><select class="field-sel" id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
+            @if (contextual is not null) { <label class="row"><span>@L["GameSettings.ContextHelp"]</span><input class="tick" type="checkbox" id="contextual_help" @bind="contextual" /></label> }
+            @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input class="tick" type="checkbox" id="extended_audio" @bind="audio" /></label> }
         </div>
         @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
         <div class="buttons">

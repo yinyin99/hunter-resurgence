@@ -1,13 +1,11 @@
 .intro { margin: 0 0 10px; line-height: 20px; color: #ccc; }
 .muted { display: block; margin: 0 0 4px; font-size: 13px; line-height: 18px; color: var(--fg-muted-2); }
 h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text-transform: none; color: #bbb; }
-input:not([type]), input[type="password"], textarea { box-sizing: border-box; border: 1px solid #333; border-radius: var(--radius); background: var(--field-bg); color: #ccc; font: inherit; }
 .options { display: flex; margin: 3px 0 33px; }
 .col { flex: none; }
 .info { width: 300px; margin-right: 20px; }
 .info input { width: 100%; height: 30px; padding: 0 8px; margin-bottom: 10px; }
 .info textarea { width: 100%; height: 110px; padding: 8px; resize: none; }
-.info textarea::placeholder, .who input::placeholder { color: #aaa; }
 .who { width: 240px; margin-right: 0; }
 .radio, .check { display: block; margin: 0 0 4px; color: var(--fg-muted-2); line-height: 20px; }
 .radio input { appearance: none; width: 16px; height: 16px; margin: 0 5px -3px 0; border-radius: 50%; background: var(--check-bg); }
@@ -17,11 +15,9 @@ input:not([type]), input[type="password"], textarea { box-sizing: border-box; bo
 .players { width: 160px; padding-top: 34px; }
 .players .muted { margin-bottom: 4px; }
 .check { margin: 16px 0 4px; }
-.check input { appearance: none; width: 16px; height: 16px; margin: 0 4px -3px 0; border-radius: 3px; background: var(--check-bg); }
-.check input:checked { background: var(--check-tick); }
+.check input { margin: 0 4px -3px 0; }
 .range { display: grid; grid-template-columns: 58px 58px; gap: 0 4px; }
-.range input { width: 56px; height: 36px; padding: 0 8px; border: 1px solid #2a2a2a; border-radius: 3px; background: var(--field-bg); color: #ccc; font: inherit; }
-.range input:disabled { opacity: .5; }
+.range input { width: 56px; height: 36px; padding: 0 8px; }
 .slider { position: relative; height: 22px; margin: 12px 0 0; border-radius: 3px; background: #1c1c1c; }
 .slider.off { opacity: .5; }
 .slider input { appearance: none; position: absolute; left: 0; top: 0; width: 100%; height: 22px; margin: 0; background: none; pointer-events: none; }

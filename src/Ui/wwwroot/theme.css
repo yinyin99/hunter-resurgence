@@ -271,6 +271,21 @@ a { transition: color var(--t-fast) var(--ease); }
 .close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
 .close:hover { opacity: 1; }
 
+/* form fields: dark input (.field), dark select (.field-sel), light variant (.field-light); callers set size, padding and margins. .tick is the checkbox */
+.field, .field-sel, .field-light { box-sizing: border-box; border: 1px solid var(--line-2); border-radius: var(--r-2); font: inherit; transition: border-color var(--t-fast) var(--ease); }
+.field { background: var(--surface-3); color: var(--text-2); }
+.field-sel { background: var(--surface-7); color: var(--text-1); }
+.field-light { border-color: #ccc; background: #eee; color: #333; }
+.field:hover, .field-sel:hover { border-color: var(--line-3); }
+.field-light:hover { border-color: #999; }
+.field:focus-visible, .field-sel:focus-visible, .field-light:focus-visible { outline-offset: -1px; border-color: var(--accent); }
+.field::placeholder { color: var(--text-4); }
+.field:disabled, .field-sel:disabled, .field-light:disabled { opacity: .6; cursor: default; }
+.tick { appearance: none; box-sizing: border-box; width: 16px; height: 16px; margin: 0; border: 1px solid var(--line-3); border-radius: var(--r-1); background: var(--check-bg) center / 12px no-repeat; cursor: pointer; transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.tick:hover { border-color: #777; }
+.tick:checked { border-color: var(--check-tick); background-color: var(--check-tick); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 4.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E"); }
+.tick:disabled { opacity: .5; cursor: default; }
+
 /* an empty block of the final size while its data loads (the old app left the area empty) */
 .skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
 @keyframes skeleton { to { background-position: -150% 0; } }

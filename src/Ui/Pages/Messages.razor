@@ -11,7 +11,7 @@
 
 <div class="page-min">
     <h2 class="page-title">@(L["Msg.Title"].Value.ToUpperInvariant())</h2>
-    <label class="check"><input type="checkbox" id="receive-private-messages" checked="@onlyFriends" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
+    <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
     <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
     <div class="cols">
         <aside>
@@ -30,10 +30,10 @@
             @if (composing) { <h3>@L["Msg.New"]</h3> } else { <h4>@current</h4> }
             @if (composing)
             {
-                <input id="message-recipient" class="to" list="friends" placeholder="@L["Msg.To"]" @bind="recipient" @bind:event="oninput" />
+                <input id="message-recipient" class="field-light to" list="friends" placeholder="@L["Msg.To"]" @bind="recipient" @bind:event="oninput" />
                 <datalist id="friends">@foreach (var f in friends) { <option value="@f.Handle"></option> }</datalist>
             }
-            <textarea id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
+            <textarea class="field-light" id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
             <button id="sendMessage" type="button" class="send" disabled="@(!canSend)" @onclick="Send">@L["Msg.Send"]</button>
             <span class="count">@text.Length / 1024</span>
             @if (error is not null) { <p class="error" role="alert">@L[error]</p> }

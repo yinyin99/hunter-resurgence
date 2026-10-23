@@ -19,25 +19,25 @@ else
         <div class="col info">
             <h3>@L["Launch.Info"]</h3>
             <label for="game-name" class="muted">@L["Launch.GameName"]</label>
-            <input id="game-name" name="name" maxlength="25" @bind="name" />
-            <textarea name="description" maxlength="255" placeholder="@L["Launch.Description"]" @bind="description"></textarea>
+            <input class="field" id="game-name" name="name" maxlength="25" @bind="name" />
+            <textarea class="field" name="description" maxlength="255" placeholder="@L["Launch.Description"]" @bind="description"></textarea>
         </div>
         <div class="col who">
             <h3>@L["Launch.Who"]</h3>
             <label class="radio"><input type="radio" name="publicGame" checked="@friendsOnly" @onchange="() => friendsOnly = true" /> @L["Launch.FriendsOnly"]</label>
             <label class="radio"><input type="radio" name="publicGame" checked="@(!friendsOnly)" @onchange="() => friendsOnly = false" /> @L["Launch.Anyone"]</label>
             <label for="game-password" class="muted">@L["Launch.Password"]</label>
-            <input id="game-password" name="gamepassword" maxlength="20" placeholder="@L["Launch.PasswordPlaceholder"]" @bind="password" />
+            <input class="field" id="game-password" name="gamepassword" maxlength="20" placeholder="@L["Launch.PasswordPlaceholder"]" @bind="password" />
         </div>
         <div class="col players">
             <label class="muted">@L["Launch.MaxPlayers"]</label>
             <Select Id="num-players" Width="141" Options="playerCounts" Value="@maxPlayers.ToString()" ValueChanged="v => maxPlayers = int.Parse(v)" />
-            <label class="check"><input type="checkbox" id="limitHunterscore" @bind="limit" /> @L["Launch.LimitScore"]</label>
+            <label class="check"><input class="tick" type="checkbox" id="limitHunterscore" @bind="limit" /> @L["Launch.LimitScore"]</label>
             <div class="range">
                 <label for="hsMin" class="muted">@L["Launch.Min"]</label>
                 <label for="hsMax" class="muted">@L["Launch.Max"]</label>
-                <input id="hsMin" disabled="@(!limit)" value="@hsMin" @onchange='e => hsMin = Digits(e.Value, "0")' />
-                <input id="hsMax" disabled="@(!limit)" value="@hsMax" @onchange='e => hsMax = Digits(e.Value, "3000")' />
+                <input class="field" id="hsMin" disabled="@(!limit)" value="@hsMin" @onchange='e => hsMin = Digits(e.Value, "0")' />
+                <input class="field" id="hsMax" disabled="@(!limit)" value="@hsMax" @onchange='e => hsMax = Digits(e.Value, "3000")' />
             </div>
             <div class="slider @(limit ? "" : "off")">
                 <input type="range" min="0" max="3000" disabled="@(!limit)" aria-label="@L["Launch.Min"]" value="@Math.Min(Number(hsMin), 3000)" @oninput="e => hsMin = Math.Min(Number(e.Value), Number(hsMax)).ToString()" />

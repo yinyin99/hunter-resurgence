@@ -7,7 +7,7 @@ header a.on { background: #fdfdfd; color: #333; border-right: 1px solid #ddd; ma
 .balance b { font-weight: 400; color: #333; }
 .balance button { height: 28px; padding: 0 12px; border: 0; border-radius: 2px; background: #eee; font-size: 14px; color: #222; cursor: pointer; }
 .code { display: flex; gap: 8px; padding: 10px 15px; border-bottom: 1px solid #eee; }
-.code input[type=text] { width: 260px; height: 30px; padding: 0 8px; border: 1px solid #ccc; }
+.code input[type=text] { width: 260px; height: 30px; padding: 0 8px; }
 .code input[type=submit], .code button { height: 30px; padding: 0 14px; border: 0; background: #eee; cursor: pointer; }
 .invalid { align-self: center; font-size: 14px; color: #c00; }
 section { padding: 20px 20px 40px; }

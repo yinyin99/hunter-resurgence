@@ -14,7 +14,7 @@
             <div class="step"><h5><b>3</b>@L["Invite.Step3"]</h5><p>@L["Invite.Step3Text"]<br /><a href="#rewards">@L["Invite.SeeRewards"]</a></p></div>
         </div>
         <button type="button" id="invite" class="btn btn-primary" @onclick="() => link = !link">@L["Invite.Button"] <Icon Name="chevron-right" /></button>
-        @if (link && data is not null) { <p class="link"><span>@L["Invite.LinkText"]</span> <input type="text" readonly value="@data.Link" /></p> }
+        @if (link && data is not null) { <p class="link"><span>@L["Invite.LinkText"]</span> <input class="field-light" type="text" readonly value="@data.Link" /></p> }
     </section>
     @if (data is not null)
     {

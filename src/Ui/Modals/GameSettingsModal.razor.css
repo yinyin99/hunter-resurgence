@@ -4,10 +4,9 @@ h1 { margin: 0 0 7px; font-size: 38.5px; line-height: 50px; font-weight: 400; co
 .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; box-sizing: border-box; min-height: 54px; padding: 14px 20px; border-left: 4px solid var(--launcher-accent); border-bottom: 2px solid #111; background: var(--bg-block-3); }
 .row span { font-size: 18px; line-height: 24px; color: #ddd; }
 .row small { display: block; width: 100%; margin: 6px 0 -4px; font-size: 14px; line-height: 20px; color: #ccc; }
-select { width: 219px; height: 28px; padding: 0 4px; border: 1px solid #555; border-radius: 2px; background: var(--select-bg); color: #fff; font: 500 13px var(--font-body); }
+select { width: 219px; height: 28px; padding: 0 4px; font: 500 13px var(--font-body); }
 select:has(option) { margin: 2px 0; }
-input[type="checkbox"] { appearance: none; width: 16px; height: 16px; margin: 0 0 8px; border: 1px solid #555; border-radius: 2px; background: var(--check-bg); }
-input[type="checkbox"]:checked { background: var(--check-tick); }
+input[type="checkbox"] { margin: 0 0 8px; }
 .error { margin: 10px 0 0; color: var(--su-error); }
 .buttons { display: flex; justify-content: flex-end; gap: 4px; margin-top: 10px; }
 .buttons .btn { height: 42px; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }

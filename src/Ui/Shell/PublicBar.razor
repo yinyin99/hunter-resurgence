@@ -8,11 +8,11 @@
             <form id="signin" class="panel" popover @onsubmit="Submit" novalidate>
                 @if (!codeSent)
                 {
-                    <input type="text" name="email" autocomplete="email" placeholder="@L["Signin.Email"]" @bind="email" @bind:event="oninput" />
+                    <input class="field-light" type="text" name="email" autocomplete="email" placeholder="@L["Signin.Email"]" @bind="email" @bind:event="oninput" />
                 }
                 else
                 {
-                    <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="@L["Signin.Code"]" @bind="code" @bind:event="oninput" />
+                    <input class="field-light" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="@L["Signin.Code"]" @bind="code" @bind:event="oninput" />
                     <p class="hint">@L["Signin.Sent", email]</p>
                 }
                 @if (error is not null) { <div class="error" role="alert">@L[error]</div> }
