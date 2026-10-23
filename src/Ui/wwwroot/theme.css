@@ -274,7 +274,7 @@ a { transition: color var(--t-fast) var(--ease); }
 .skeleton-page { min-height: 600px; }
 
 @media (prefers-reduced-motion: reduce) {
-    *, .hover-tint::after { transition-duration: 0s !important; }
+    *, .hover-tint::after, .servers li::after { transition-duration: 0s !important; }
 }
 
 /* h2.page-title of the old pages */
