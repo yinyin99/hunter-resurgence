@@ -12,9 +12,13 @@
             @if (item.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
             <AssetSlot Name="store-item-large" Width="270" Height="197" Class="pic" />
             <div class="buy">
-                @if (item.Gms > 0) { <span class="gms">@L["Store.Or"] @item.Gms gm$</span> }
-                <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
-                @if (item.WasEms is { } was) { <s>@was em$</s> }
+                @* signed out the old page shows only the button *@
+                @if (signedIn)
+                {
+                    @if (item.Gms > 0) { <span class="gms">@L["Store.Or"] @item.Gms gm$</span> }
+                    <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
+                    @if (item.WasEms is { } was) { <s>@was em$</s> }
+                }
                 @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!item.Buyable) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button id="buy-item" class="btn btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
