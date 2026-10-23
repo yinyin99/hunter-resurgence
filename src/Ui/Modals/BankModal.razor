@@ -94,7 +94,7 @@
         @foreach (var n in Enumerable.Range(1, 6))
         {
             <h4>@L["Bank.Q" + n]</h4>
-            <p>@(n == 2 ? new MarkupString(L["Bank.A2", "<a href=\"/wallet\">", "</a>"]) : new MarkupString(System.Net.WebUtility.HtmlEncode(L["Bank.A" + n])))</p>
+            <p>@(n == 2 ? L.Html("Bank.A2", "<a href=\"/wallet\">", "</a>") : L.Html("Bank.A" + n))</p>
         }
     </div>;
 

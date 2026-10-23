@@ -96,7 +96,7 @@
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
   <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Active missions:</value></data>
-  <data name="Hunt.NoMissions" xml:space="preserve"><value>You don't have any active missions. Activate missions on the &lt;a href="/missions"&gt;missions page&lt;/a&gt;</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>You don't have any active missions. Activate missions on the {0}missions page{1}.</value></data>
   <data name="Hunt.MoreMissions" xml:space="preserve"><value>and {0} more...</value></data>
   <data name="Hunt.NoFriends" xml:space="preserve"><value>None of your friends are online</value></data>
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Friends online:</value></data>
@@ -121,7 +121,7 @@
   <data name="Launch.Patching" xml:space="preserve"><value>Patching</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Lodges:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Tents:</value></data>
-  <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at &lt;a href="/store?category=8&amp;type=30"&gt;the store&lt;/a&gt;</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at the {0}store{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Starting at {0}</value></data>

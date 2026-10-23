@@ -16,7 +16,7 @@
             <h3>@L["Hunt.Single"]</h3>
             <div class="content">
                 @if (missions is null) { <div class="loading"></div> }
-                else if (missions.Count == 0) { <p>@((MarkupString)L["Hunt.NoMissions"].Value)</p> }
+                else if (missions.Count == 0) { <p>@L.Html("Hunt.NoMissions", "<a href=\"/missions\">", "</a>")</p> }
                 else
                 {
                     <p>@L["Hunt.ActiveMissions"]</p>

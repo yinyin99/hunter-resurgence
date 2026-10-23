@@ -11,7 +11,7 @@
     </div>
     <p class="text">@L["Welcome.Intro"]</p>
     <h4>@L["Welcome.Retail"]</h4>
-    <p class="text">@((MarkupString)L["Welcome.RetailText", "<a href=\"#\" id=\"activation\">", "</a>"].Value)</p>
+    <p class="text">@L.Html("Welcome.RetailText", "<a href=\"#\" id=\"activation\">", "</a>")</p>
     <div class="cards">
         @Card("Welcome.Tutorials", "/tutorials", "Welcome.TutorialsGo", null)
         @Card("Welcome.Hunting", "/dashboard", "Welcome.HuntingGo", null)

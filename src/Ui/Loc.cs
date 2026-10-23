@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -33,4 +34,11 @@ public static class UiLocalization
         .AddLocalization()
         .AddSingleton(Branding.Load(settingsPath))
         .AddSingleton<IStringLocalizer<Strings>, Loc>();
+}
+
+public static class LocHtml
+{
+    /// <summary>A text with markup holes: the text is HTML-encoded, then {0}, {1}, ... become the given tags (a translator moves the holes, never writes markup).</summary>
+    public static MarkupString Html(this IStringLocalizer l, string key, params string[] tags) =>
+        new(string.Format(CultureInfo.CurrentCulture, System.Net.WebUtility.HtmlEncode(l[key].Value), tags));
 }

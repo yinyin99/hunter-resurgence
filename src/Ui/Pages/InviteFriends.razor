@@ -10,7 +10,7 @@
         <h1>@L["Invite.How"]</h1>
         <div class="steps">
             <div class="step"><h5><b>1</b>@L["Invite.Step1"]</h5><p>@L["Invite.Step1Text"]</p></div>
-            <div class="step"><h5><b>2</b>@L["Invite.Step2"]</h5><p>@((MarkupString)L["Invite.Step2Text", "<em>", "</em>"].Value)</p></div>
+            <div class="step"><h5><b>2</b>@L["Invite.Step2"]</h5><p>@L.Html("Invite.Step2Text", "<em>", "</em>")</p></div>
             <div class="step"><h5><b>3</b>@L["Invite.Step3"]</h5><p>@L["Invite.Step3Text"]<br /><a href="#rewards">@L["Invite.SeeRewards"]</a></p></div>
         </div>
         <button type="button" id="invite" class="btn btn-primary" @onclick="() => link = !link">@L["Invite.Button"] <Icon Name="chevron-right" /></button>

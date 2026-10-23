@@ -96,7 +96,7 @@
   <data name="Hunt.Single" xml:space="preserve"><value>SIMPLE JOUEUR</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIJOUEUR</value></data>
   <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Mission(s) active(s) :</value></data>
-  <data name="Hunt.NoMissions" xml:space="preserve"><value>Aucune mission active. Activez des missions en vous rendant sur la &lt;a href="/missions"&gt;page des missions&lt;/a&gt;.</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>Aucune mission active. Activez des missions en vous rendant sur la {0}page des missions{1}.</value></data>
   <data name="Hunt.MoreMissions" xml:space="preserve"><value>et {0} de plus...</value></data>
   <data name="Hunt.NoFriends" xml:space="preserve"><value>Aucun de vos amis n'est en ligne.</value></data>
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Amis en ligne :</value></data>
@@ -121,7 +121,7 @@
   <data name="Launch.Patching" xml:space="preserve"><value>Installation de la mise à jour</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Loges:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Tents:</value></data>
-  <data name="Launch.NoTents" xml:space="preserve"><value>Vous ne possédez aucune tente dans cette réserve. Les tentes que vous placez dans une réserve servent de point de départ et d'accès à votre inventaire. Obtenez vos tentes à la &lt;a href="/store?category=8&amp;type=30"&gt;boutique&lt;/a&gt;</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>Vous ne possédez aucune tente dans cette réserve. Les tentes que vous placez dans une réserve servent de point de départ et d'accès à votre inventaire. Obtenez vos tentes à la {0}boutique{1}</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom avant</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom arrière</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Starting at {0}</value></data>
