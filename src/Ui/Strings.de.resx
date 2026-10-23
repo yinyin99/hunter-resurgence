@@ -8,8 +8,8 @@
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Seite nicht gefunden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Diese Seite existiert nicht.</value></data>
-  <data name="Menu.HuntNow" xml:space="preserve"><value>JAGD BEGINNEN</value></data>
-  <data name="Menu.GetEms" xml:space="preserve"><value>EM$ ERWERBEN</value></data>
+  <data name="Menu.HuntNow" xml:space="preserve"><value>JAGD STARTEN</value></data>
+  <data name="Menu.GetEms" xml:space="preserve"><value>EM$ KAUFEN</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NACHRICHTEN</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>WETTBEWERBE</value></data>
   <data name="Menu.Leaderboards" xml:space="preserve"><value>RANGLISTEN</value></data>
@@ -39,8 +39,8 @@
   <data name="Tip.SignOut" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr Hunter-Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
-  <data name="Settings.Account" xml:space="preserve"><value>Account-Einstellungen</value></data>
-  <data name="Settings.GameManagement" xml:space="preserve"><value>Spiel-Management</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Kontoeinstellungen</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spielverwaltung</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprache</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spieleinstellungen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
@@ -75,11 +75,11 @@
   <data name="Legal.Subsection" xml:space="preserve"><value>Platzhalter-Überschrift</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Platzhaltertext. Den eigentlichen Rechtstext liefert der Betreiber dieses Dienstes.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sind Sie schon Jäger?</value></data>
-  <data name="Public.SignIn" xml:space="preserve"><value>Login</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-Mail</value></data>
   <data name="Signin.Code" xml:space="preserve"><value>Code</value></data>
   <data name="Signin.SendCode" xml:space="preserve"><value>Code senden</value></data>
-  <data name="Signin.Submit" xml:space="preserve"><value>Login</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Signin.Back" xml:space="preserve"><value>Andere E-Mail-Adresse verwenden</value></data>
   <data name="Signin.Sent" xml:space="preserve"><value>Wir haben einen 6-stelligen Code an {0} gesendet.</value></data>
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Bitte geben Sie eine gültige E-Mail-Adresse ein.</value></data>
@@ -90,7 +90,7 @@
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MITGLIEDER ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Discord beitreten</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Treffen Sie Leute, die Sie verstehen</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Treffen Sie Gleichgesinnte</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Zur Jagd</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EINZELSPIELER</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
@@ -107,13 +107,13 @@
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter-Score</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Neueste Errungenschaft</value></data>
-  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Keine Errungenschaften erreicht</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Keine Errungenschaften erzielt</value></data>
   <data name="Hunt.Competitions" xml:space="preserve"><value>Wettbewerbe</value></data>
-  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Wettbewerbe, an denen Sie teilnehmen:</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Ihre Wettbewerbe:</value></data>
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Aktivierbare Wettbewerbe ansehen</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>EINZELSPIELER-SPIEL ERSTELLEN</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>MULTIPLAYER-SPIEL ERSTELLEN</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Wählen Sie, wo Ihre Jagdsitzung beginnen soll. Klicken Sie auf eines der 12 Revier-Logos unten, um eine Karte des jeweiligen Reviers zu sehen, und klicken Sie auf die Lodges (die Haussymbole), um zu erfahren, welche Wildarten in diesem Gebiet vorkommen. Sie können die Weltkarte auch durchsuchen, indem Sie sie mit gedrückter Maustaste ziehen, und mit dem Mausrad hinein- und herauszoomen.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Wählen Sie, wo Ihre Jagd beginnen soll. Klicken Sie auf eines der 12 Revier-Logos unten, um eine Karte des jeweiligen Reviers zu sehen, und klicken Sie auf die Lodges (die Haussymbole), um zu erfahren, welche Wildarten in diesem Gebiet vorkommen. Sie können die Weltkarte auch verschieben, indem Sie sie mit gedrückter Maustaste ziehen, und mit dem Mausrad ein- und auszoomen.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Einige der großartigsten Naturlandschaften der Welt sowie 45 verschiedene Tierarten warten auf Sie. Waidmannsheil!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Startzeit:</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Spiel starten</value></data>
@@ -128,11 +128,11 @@
   <data name="Launch.GameName" xml:space="preserve"><value>Spielname:</value></data>
   <data name="Launch.GameOf" xml:space="preserve"><value>Spiel von {0}</value></data>
   <data name="Launch.Description" xml:space="preserve"><value>Spielbeschreibung eingeben (optional)</value></data>
-  <data name="Launch.Who" xml:space="preserve"><value>Wer darf teilnehmen?</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>Wer darf beitreten?</value></data>
   <data name="Launch.FriendsOnly" xml:space="preserve"><value>Nur Spieler auf meiner Freundesliste</value></data>
   <data name="Launch.Anyone" xml:space="preserve"><value>Jeder</value></data>
   <data name="Launch.Password" xml:space="preserve"><value>Mit Passwort schützen</value></data>
-  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Spiel-Passwort</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Spielpasswort</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max. Spielerzahl</value></data>
   <data name="Launch.LimitScore" xml:space="preserve"><value>Hunter-Score begrenzen</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min.:</value></data>
@@ -143,7 +143,7 @@
   <data name="Servers.Title" xml:space="preserve"><value>MULTIPLAYER-SPIEL FINDEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Spiel oder Host finden...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Löschen</value></data>
-  <data name="Servers.Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Neu laden</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Nur Spiele anzeigen, denen ich beitreten darf</value></data>
   <data name="Servers.Showing" xml:space="preserve"><value>Angezeigte Spiele: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Spielname</value></data>
@@ -161,7 +161,7 @@
   <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Hunter-Score:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Spieler ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informationen zu Multiplayer-Verbindungen</value></data>
-  <data name="Servers.Info" xml:space="preserve"><value>Wenn Sie mit Spielern spielen, die weit von Ihnen entfernt sind, kann es zu Verbindungsproblemen oder Lags kommen. Es wird empfohlen, Spielen beizutreten, deren Host sich in Ihrer Nähe befindet. Die farbigen Punkte neben den Flaggen in der Serverliste zeigen Ihnen an, wie weit Sie vom Host des Spiels entfernt sind.</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Wenn Sie mit Spielern spielen, die weit von Ihnen entfernt sind, kann es zu Verbindungsproblemen oder Verzögerungen (Lag) kommen. Es wird empfohlen, Spielen beizutreten, deren Host sich in Ihrer Nähe befindet. Die farbigen Punkte neben den Flaggen in der Serverliste zeigen Ihnen an, wie weit Sie vom Host des Spiels entfernt sind.</value></data>
   <data name="Servers.InfoLink" xml:space="preserve"><value>Hier klicken für mehr Informationen zu Verbindungen</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Kurze Distanz</value></data>
   <data name="Servers.Medium" xml:space="preserve"><value>Mittlere Distanz</value></data>
@@ -218,13 +218,13 @@
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Das Spiel läuft. Schließen Sie es vor dem Speichern: Es schreibt diese Dateien selbst neu.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Die Einstellungen konnten nicht gespeichert werden.</value></data>
   <data name="Patch.GotIt" xml:space="preserve"><value>Verstanden!</value></data>
-  <data name="Patch.NewTitle" xml:space="preserve"><value>Neuer Spiel-Patch</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>Neuer Spielpatch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Ein neuer Spiel-Patch wurde veröffentlicht. Ihr Spiel wird automatisch gepatcht, und sobald das abgeschlossen ist, können Sie eine neue Jagd starten! In der Zwischenzeit können Sie sich frei umsehen.</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>{game} wird heruntergeladen</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Eine vollständige Installation von {game} wird auf Ihren Computer heruntergeladen. Sobald der Vorgang abgeschlossen ist, können Sie mit dem Spielen beginnen. In der Zwischenzeit können Sie sich frei umsehen.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Der Launcher wird aktualisiert</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Der Launcher muss aktualisiert werden. Das Update wird automatisch heruntergeladen. Nach der Aktualisierung muss der Launcher neu gestartet werden.</value></data>
-  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spiel-Update erforderlich</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spielupdate erforderlich</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Für {game} ist ein Update verfügbar. Sie müssen {game} über Steam aktualisieren, bevor Sie spielen können. Dazu müssen Sie den Launcher schließen.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} gibt es nur auf Steam</value></data>
   <data name="Patch.SteamOnlyText" xml:space="preserve"><value>Ab sofort müssen Sie das Spiel über die Plattform Steam spielen!</value></data>
@@ -245,7 +245,7 @@
   <data name="Patch.Extracting" xml:space="preserve"><value>Das Installationsprogramm läuft. Bitte warten.</value></data>
   <data name="Patch.Checksum" xml:space="preserve"><value>Prüfsummencheck der Datei: {0} / {1} ({2})</value></data>
   <data name="Patch.File" xml:space="preserve"><value>Datei wird gepatcht: {0} / {1}</value></data>
-  <data name="Patch.Finishing" xml:space="preserve"><value>Abschluss...</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Wird abgeschlossen...</value></data>
   <data name="Patch.PatchError" xml:space="preserve"><value>Fehler!</value></data>
   <data name="Patch.Done" xml:space="preserve"><value>Sie können das Spiel jetzt starten.</value></data>
   <data name="Installer.DownloadingGame" xml:space="preserve"><value>Spiel wird heruntergeladen...</value></data>
@@ -253,7 +253,7 @@
   <data name="Installer.Verifying" xml:space="preserve"><value>Überprüfung</value></data>
   <data name="Installer.Installing" xml:space="preserve"><value>Installation</value></data>
   <data name="Installer.Updating" xml:space="preserve"><value>Aktualisierung: {0}/{1} Dateien</value></data>
-  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Update abgeschlossen – beenden Sie den Assistenten, um mit dem Spielen zu beginnen.</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Update abgeschlossen – schließen Sie den Assistenten ab, um mit dem Spielen zu beginnen.</value></data>
   <data name="Installer.Ready" xml:space="preserve"><value>{game} ist spielbereit!</value></data>
   <data name="Launcher.Error.Unknown" xml:space="preserve"><value>Ein unbekannter Fehler ist aufgetreten (Code {0}).</value></data>
   <data name="Launcher.Error.1" xml:space="preserve"><value>Registrierungsschlüssel fehlt.</value></data>
@@ -263,7 +263,7 @@
   <data name="Launcher.Error.5" xml:space="preserve"><value>Ungültige Server-URL im Befehlszeilenargument.</value></data>
   <data name="Launcher.Error.6" xml:space="preserve"><value>Ausführbare Spieldatei fehlt.</value></data>
   <data name="Launcher.Error.7" xml:space="preserve"><value>Spiel-Client konnte nicht gestartet werden.</value></data>
-  <data name="Launcher.Error.8" xml:space="preserve"><value>Torrent-Datei konnte nicht erstellt werden.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Torrent-Datei konnte nicht geschrieben werden.</value></data>
   <data name="Launcher.Error.9" xml:space="preserve"><value>Download fehlgeschlagen.</value></data>
   <data name="Launcher.Error.10" xml:space="preserve"><value>Download der Torrent-Daten fehlgeschlagen.</value></data>
   <data name="Launcher.Error.11" xml:space="preserve"><value>Ungültige .torrent-Datei.</value></data>
@@ -310,23 +310,23 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Vorheriger Avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Nächster Avatar</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>HOLEN SIE SICH IHRE ERSTE WAFFE</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>Sie haben es bis hierher geschafft, großartig! Hier ist ein Willkommensgeschenk von uns: Ihre erste Waffe, die glänzende Einzelschuss-Flinte Kaliber 12 mit kostenloser, nachfüllbarer Munition. Mit dieser robusten Schönheit können Sie alle Tiere im Spiel waidgerecht bejagen, außer Bisons.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Sie haben es bis hierher geschafft, großartig! Hier ist ein Willkommensgeschenk von uns: Ihre erste Waffe, die glänzende Einzellader-Flinte, Kaliber 12 mit kostenloser, nachfüllbarer Munition. Mit dieser robusten Schönheit können Sie alle Tiere im Spiel waidgerecht bejagen, außer Bisons.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>GENIESSEN SIE IHRE JAGDLIZENZEN</value></data>
   <data name="Signup.P3.Text" xml:space="preserve"><value>Bald ist es Zeit für Ihre erste Jagd! Auf welches Wild gehen Sie? Als Gastspieler erhalten Sie kostenlose, unbefristete Jagdlizenzen für Weißwedelhirsch, Europäisches Kaninchen und Fasan, dazu zwei weitere kostenlose Wildarten, die wöchentlich wechseln. Zahlende Mitglieder können alle Wildarten bejagen; schauen Sie in unseren Shop für Mitgliedschaften, wenn Sie Mitglied werden möchten.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>BESTÄTIGEN SIE IHRE E-MAIL-ADRESSE</value></data>
-  <data name="Signup.P4.Text" xml:space="preserve"><value>Wer seine E-Mail-Adresse bestätigt, dem kommen gute Dinge zu! Bitte prüfen Sie Ihren Posteingang auf eine Nachricht von uns und befolgen Sie die Anweisungen darin. Ihre aktuelle E-Mail-Adresse lautet {0}. Falls sie nicht stimmt, ändern Sie sie bitte unten und klicken Sie auf „E-Mail erneut senden“.</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Wer seine E-Mail-Adresse bestätigt, dem kommen gute Dinge zu! Bitte prüfen Sie Ihren Posteingang auf eine Nachricht von uns und befolgen Sie die Anweisungen darin. Ihre aktuelle E-Mail-Adresse lautet {0}. Falls sie nicht stimmt, ändern Sie sie bitte unten und klicken Sie auf „Erneut senden“.</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>IHRE BELOHNUNG</value></data>
   <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Vielen Dank für die Bestätigung Ihrer E-Mail-Adresse.</value></data>
   <data name="Signup.P4.Change" xml:space="preserve"><value>E-Mail-Adresse ändern</value></data>
-  <data name="Signup.P4.Resend" xml:space="preserve"><value>E-Mail erneut senden</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Erneut senden</value></data>
   <data name="Signup.P4.Launch" xml:space="preserve"><value>Tutorial starten</value></data>
   <data name="Signup.P4.Settings" xml:space="preserve"><value>Spieleinstellungen</value></data>
   <data name="Signup.P5.Title" xml:space="preserve"><value>SIE SIND BEREIT FÜR DAS GROSSWILD</value></data>
-  <data name="Signup.P5.Text" xml:space="preserve"><value>Sie können die Tutorials jederzeit über die Schaltfläche JAGD BEGINNEN erneut starten.</value></data>
-  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Jagd beginnen!</value></data>
-  <data name="Dialog.Login.Title" xml:space="preserve"><value>Login</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Sie können die Tutorials jederzeit über die Schaltfläche JAGD STARTEN erneut starten.</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Jagd starten!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Dialog.Email" xml:space="preserve"><value>E-Mail-Adresse</value></data>
-  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Login</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Dialog.Cancel" xml:space="preserve"><value>Abbrechen</value></data>
   <data name="Dialog.EmailRequired" xml:space="preserve"><value>E-Mail-Adresse erforderlich</value></data>
   <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Ungültige E-Mail-Adresse</value></data>
@@ -376,7 +376,7 @@
   <data name="Comp.StatusSignup" xml:space="preserve"><value>Anmeldung</value></data>
   <data name="Comp.StatusStarted" xml:space="preserve"><value>Gestartet</value></data>
   <data name="Comp.StatusFinished" xml:space="preserve"><value>Beendet</value></data>
-  <data name="Comp.NA" xml:space="preserve"><value>N/A</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>k. A.</value></data>
   <data name="Comp.Join" xml:space="preserve"><value>BEITRETEN</value></data>
   <data name="Comp.Leave" xml:space="preserve"><value>VERLASSEN</value></data>
   <data name="Comp.ChipStatus" xml:space="preserve"><value>Wettbewerbsstatus: {0}</value></data>
@@ -386,7 +386,7 @@
   <data name="Comp.StartsIn" xml:space="preserve"><value>Beginnt in</value></data>
   <data name="Comp.EndsIn" xml:space="preserve"><value>Endet in</value></data>
   <data name="Comp.YourPosition" xml:space="preserve"><value>Ihre Position</value></data>
-  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Zu überbietender Score</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Ziel-Score</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Übersicht</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Rangliste</value></data>
   <data name="Comp.History" xml:space="preserve"><value>Archiv</value></data>
@@ -412,7 +412,7 @@
   <data name="League.P4" xml:space="preserve"><value>Alle Wettbewerbe finden ausschließlich im Einzelspielermodus statt, mit Ausnahme von Enten- und Gänsewettbewerben.</value></data>
   <data name="League.P5" xml:space="preserve"><value>Alle 4 Wochen wechseln wir in ein neues Revier, und je 3 Reviere bilden eine Saison.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Sie müssen nicht an jedem einzelnen Liga-Wettbewerb teilnehmen, um sich für die Monats- oder Saisonpreise zu qualifizieren, aber es hat offensichtliche Vorteile, so oft wie möglich mitzumachen.</value></data>
-  <data name="League.NotEnrolled" xml:space="preserve"><value>Sie sind in keinem Wettbewerb eingeschrieben</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>Sie nehmen an keinem Wettbewerb teil</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Monatsrangliste</value></data>
   <data name="League.Season" xml:space="preserve"><value>Saisonrangliste</value></data>
   <data name="Board.Title" xml:space="preserve"><value>RANGLISTEN</value></data>
@@ -422,8 +422,8 @@
   <data name="Board.HallOfFame" xml:space="preserve"><value>Ruhmeshalle</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
-  <data name="Board.Single" xml:space="preserve"><value>Einzelne Abwurfstange</value></data>
-  <data name="Board.Double" xml:space="preserve"><value>Abwurfstangen-Paar</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Einzelstange</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Stangenpaar</value></data>
   <data name="Board.TopScores" xml:space="preserve"><value>Beste Bewertungen für Saison {0}</value></data>
   <data name="Board.TopRanges" xml:space="preserve"><value>Beste Schussweiten für Saison {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Gesamte Rangliste ansehen</value></data>
@@ -440,7 +440,7 @@
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit erwerben</value></data>
   <data name="Board.TopBust" xml:space="preserve"><value>Beste Bust-Through-Bewertungen</value></data>
   <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through ist ein cooles Retro-Arcade-Spiel, das Sie auf Ihrem Huntermate spielen können, um sich die Zeit zu vertreiben, während Sie auf das Erscheinen der Trophäe warten!</value></data>
-  <data name="Board.SP" xml:space="preserve"><value>SP</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Solo</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Zurück</value></data>
   <data name="Pager.Next" xml:space="preserve"><value>Weiter</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Seiten</value></data>
@@ -465,14 +465,14 @@
   <data name="Mis.Enjoy" xml:space="preserve"><value>Viel Spaß mit Ihrem Service!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Alle aktivieren</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Neue verfügbare Missionen automatisch aktivieren</value></data>
-  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Nur bevorzugte Missionen automatisch aktivieren</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Nur Favoriten-Missionen automatisch aktivieren</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Sie können Ihre Missionen gegen eine Gebühr im Shop zurücksetzen.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Zum Shop</value></data>
   <data name="Mis.Completion" xml:space="preserve"><value>Sie haben {0} von {1} Missionen und {2} von {3} Missionspaketen abgeschlossen.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filter</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtern nach</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Alle</value></data>
-  <data name="Mis.Favourite" xml:space="preserve"><value>Bevorzugte</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Favoriten</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Aktiv</value></data>
   <data name="Mis.Packs" xml:space="preserve"><value>Missionspakete</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Verfügbar</value></data>
@@ -484,8 +484,8 @@
   <data name="Mis.Search" xml:space="preserve"><value>Suche</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
   <data name="Mis.Progress" xml:space="preserve"><value>Fortschritt:</value></data>
-  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Klicken, um als bevorzugt zu markieren oder die Markierung zu entfernen</value></data>
-  <data name="Mis.NoFavourites" xml:space="preserve"><value>Sie haben derzeit keine bevorzugten Missionen</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Klicken, um als Favorit zu markieren oder die Markierung zu entfernen</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>Sie haben derzeit keine Favoriten-Missionen</value></data>
   <data name="Mis.NoActive" xml:space="preserve"><value>Sie haben derzeit keine Missionen aktiviert. Aktivieren Sie unten eine verfügbare Mission, um loszulegen.</value></data>
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Keine Missionen verfügbar</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Sie müssen die folgenden Missionen abschließen, um {0} freizuschalten:</value></data>
@@ -509,7 +509,7 @@
   <data name="Store.Cat.108" xml:space="preserve"><value>Fahrzeuge</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Suche</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KAUFEN</value></data>
-  <data name="Store.NotBuyable" xml:space="preserve"><value>Nicht käuflich</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>Nicht kaufbar</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Zum Kaufen anmelden</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Sie besitzen:</value></data>
   <data name="Store.Or" xml:space="preserve"><value>oder</value></data>
@@ -529,7 +529,7 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>Mit em$ kaufen</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>Mit gm$ kaufen</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Nicht genügend gm$</value></data>
-  <data name="Store.GetMoreEms" xml:space="preserve"><value>Mehr em$ erwerben</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Mehr em$ kaufen</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Enthält</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Kauf abgeschlossen!</value></data>
   <data name="Store.Enjoy" xml:space="preserve"><value>Viel Spaß mit {0}!</value></data>
@@ -559,7 +559,7 @@
   <data name="Wal.More" xml:space="preserve"><value>Mehr anzeigen</value></data>
   <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Als Geschenk gekauft. Eingelöst am {0}.</value></data>
   <data name="Wal.GiftCode" xml:space="preserve"><value>Als Geschenk gekauft. Geschenkcode: {0}</value></data>
-  <data name="Bank.BuyEms" xml:space="preserve"><value>em$ erwerben</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>em$ kaufen</value></data>
   <data name="Bank.Help" xml:space="preserve"><value>Hilfe</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Kaufverlauf</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Ihr em$-Kontostand:</value></data>
@@ -571,16 +571,16 @@
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Waffen, Zelte, Bekleidung, Jagdlizenzen und vieles mehr können mit Spielwährung (em$) erworben werden.</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Als Geschenk kaufen</value></data>
   <data name="Bank.Compare" xml:space="preserve"><value>* Im Vergleich zu 500 em$</value></data>
-  <data name="Bank.Save" xml:space="preserve"><value>{0} % sparen*</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>{0} % sparen*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Starter-Pakete</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Hier bekommen Sie alles, was Sie brauchen, um im Evergreen Hunting Reserve auf jedes Tier zu jagen. Unsere Starter-Pakete enthalten eine Basis-Mitgliedschaft, die Ihnen die Lizenz zur Jagd auf alle Tiere im Spiel gibt, sowie eine besondere Auswahl an Gegenständen, mit denen Sie auf dem besten Weg zum Meisterjäger sind.</value></data>
-  <data name="Bank.Special" xml:space="preserve"><value>Spezial-Pakete</value></data>
-  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Wählen Sie eines unserer Spezial-Pakete, um alles zu erhalten, was Sie für die Jagd auf die beliebtesten Tiere in {game} brauchen. Alle diese Pakete enthalten eine Basis-Mitgliedschaft mit der Lizenz zur Jagd auf alle Wildarten im Spiel sowie eine Auswahl empfohlener Gegenstände, die auf bestimmte Tiere und deren Bejagung zugeschnitten sind.</value></data>
-  <data name="Bank.Basic" xml:space="preserve"><value>Basis-Mitgliedschaften</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Hier bekommen Sie alles, was Sie brauchen, um im Evergreen-Jagdreservat jedes Tier zu bejagen. Unsere Starter-Pakete enthalten eine Basismitgliedschaft, die Ihnen die Lizenz zur Jagd auf alle Tiere im Spiel gibt, sowie eine besondere Auswahl an Gegenständen, mit denen Sie auf dem besten Weg zum Meisterjäger sind.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Spezialpakete</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Wählen Sie eines unserer Spezial-Pakete, um alles zu erhalten, was Sie für die Jagd auf die beliebtesten Tiere in {game} brauchen. Alle diese Pakete enthalten eine Basismitgliedschaft mit der Lizenz zur Jagd auf alle Wildarten im Spiel sowie eine Auswahl empfohlener Gegenstände, die auf bestimmte Tiere und deren Bejagung zugeschnitten sind.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Basismitgliedschaften</value></data>
   <data name="Bank.Months" xml:space="preserve"><value>{0} Monate Mitgliedschaft</value></data>
   <data name="Bank.Animals" xml:space="preserve"><value>Jagdlizenz für alle Wildarten</value></data>
   <data name="Bank.Reserves" xml:space="preserve"><value>Zugang zu allen Revieren</value></data>
-  <data name="Bank.Ammo" xml:space="preserve"><value>Unbegrenzte Basis-Munition</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Unbegrenzte Basismunition</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>In einer Mitgliedschaft enthaltene oder separat gekaufte Gegenstände bleiben Ihnen erhalten, auch wenn Ihre Mitgliedschaft ausläuft</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Im Vergleich zu 3 Monaten Mitgliedschaft bei {game}</value></data>
@@ -588,7 +588,7 @@
   <data name="Bank.Q1" xml:space="preserve"><value>Was sind em$?</value></data>
   <data name="Bank.A1" xml:space="preserve"><value>em$ ist die virtuelle Währung von {game}, mit der Sie im Shop Artikel wie Waffen, Ausrüstung, Kleidung und vieles mehr kaufen können.</value></data>
   <data name="Bank.Q2" xml:space="preserve"><value>Wie kaufe ich em$ als Geschenk für einen Freund?</value></data>
-  <data name="Bank.A2" xml:space="preserve"><value>Aktivieren Sie auf der Registerkarte „em$ erwerben“ dieses Fensters das Kontrollkästchen „Als Geschenk kaufen“ und klicken Sie dann beim gewünschten Betrag auf die Schaltfläche „KAUFEN“. Sie gelangen zu einer Kaufübersicht auf der Steam-Website. Klicken Sie auf die Schaltfläche „Authorize“. Sie gelangen zu einer Bestätigungsseite (Vielen Dank für Ihren Kauf). Klicken Sie oben auf dem Bildschirm auf Ihren em$-Kontostand (wo „em$ XXXX“ steht) und öffnen Sie Ihren {0}Kaufverlauf{1}. Der neueste Eintrag im Kaufverlauf sollte „Als Geschenk gekauft. Geschenkcode:“ lauten, gefolgt vom Geschenkcode. Kopieren Sie den Code und senden Sie ihn an den Freund, dem Sie ihn schenken möchten. Ihr Freund muss den Code anschließend einlösen, damit das em$-Geschenk seinem Kontostand gutgeschrieben wird.</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>Aktivieren Sie auf der Registerkarte „em$ kaufen“ dieses Fensters das Kontrollkästchen „Als Geschenk kaufen“ und klicken Sie dann beim gewünschten Betrag auf die Schaltfläche „KAUFEN“. Sie gelangen zu einer Kaufübersicht auf der Steam-Website. Klicken Sie auf die Schaltfläche „Authorize“. Sie gelangen zu einer Bestätigungsseite (Vielen Dank für Ihren Kauf). Klicken Sie oben auf dem Bildschirm auf Ihren em$-Kontostand (wo „em$ XXXX“ steht) und öffnen Sie Ihren {0}Kaufverlauf{1}. Der neueste Eintrag im Kaufverlauf sollte „Als Geschenk gekauft. Geschenkcode:“ lauten, gefolgt vom Geschenkcode. Kopieren Sie den Code und senden Sie ihn an den Freund, dem Sie ihn schenken möchten. Ihr Freund muss den Code anschließend einlösen, damit das em$-Geschenk seinem Kontostand gutgeschrieben wird.</value></data>
   <data name="Bank.Q3" xml:space="preserve"><value>Wie löse ich einen Geschenkcode ein?</value></data>
   <data name="Bank.A3" xml:space="preserve"><value>Klicken Sie oben rechts in diesem Fenster auf die Schaltfläche „Rabattcode einlösen“, fügen Sie dort Ihren Geschenkcode ein und klicken Sie auf „OK“. Es erscheint eine Bestätigungsmeldung; klicken Sie auf die Schaltfläche „Hier klicken, um dieses Geschenk einzulösen“. Eine Meldung bestätigt, dass Ihr Geschenk Ihrem Konto hinzugefügt wurde. Klicken Sie auf „OK“ und viel Spaß mit Ihrem Geschenk!</value></data>
   <data name="Bank.Q4" xml:space="preserve"><value>Ich habe einen Sonderpreis verpasst. Bekomme ich den Rabatt trotzdem?</value></data>
@@ -659,7 +659,7 @@
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ich habe verstanden und möchte mein Steam-Konto trennen</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Headerbild</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Headerbilder werden freigeschaltet, wenn Sie in drei verschiedenen Errungenschaftskategorien neue Stufen erreichen: Animals Master, Weapons Master und Exploration Master. Einmal freigeschaltet, bleiben Headerbilder für immer verfügbar.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Erfahren Sie mehr über die Achievement-Master-Stufen.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Erfahren Sie mehr über die Master-Stufen der Errungenschaften.</value></data>
   <data name="Set.HeaderNone" xml:space="preserve"><value>Keine</value></data>
   <data name="Set.HeaderRecent" xml:space="preserve"><value>Neueste</value></data>
   <data name="Set.GroupAnimals" xml:space="preserve"><value>Tiere</value></data>
@@ -683,16 +683,16 @@
   <data name="GM.Active" xml:space="preserve"><value>Aktiv</value></data>
   <data name="GM.Refill" xml:space="preserve"><value>Nachfüllen</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Willkommen bei {game}</value></data>
-  <data name="Welcome.Congrats" xml:space="preserve"><value>Herzlichen Glückwunsch {0}, Ihr brandneues Konto für {game} wurde erstellt!</value></data>
-  <data name="Welcome.Intro" xml:space="preserve"><value>Wenn Sie den Spiel-Launcher und den Client bereits heruntergeladen und installiert haben, können Sie loslegen! Wenn Sie neu bei {game} sind, empfehlen wir Ihnen, die Tutorials durchzuspielen, bevor Sie Ihre erste echte Jagd unternehmen. In den Tutorials lernen Sie alles, was Sie wissen müssen, um sich im Evergreen Hunting Reserve allein zurechtzufinden. Legen Sie unten los.</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Herzlichen Glückwunsch, {0}! Ihr brandneues Konto für {game} wurde erstellt!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Wenn Sie den Spiel-Launcher und den Client bereits heruntergeladen und installiert haben, können Sie loslegen! Wenn Sie neu bei {game} sind, empfehlen wir Ihnen, die Tutorials durchzuspielen, bevor Sie Ihre erste echte Jagd unternehmen. In den Tutorials lernen Sie alles, was Sie wissen müssen, um sich im Evergreen-Jagdreservat allein zurechtzufinden. Legen Sie unten los.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Haben Sie einen Retail-Code?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Wenn Sie eine Retail-Version von {game} gekauft haben, {0}klicken Sie hier{1}, um Ihren Retail-Code zu aktivieren.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Lassen Sie sich von Doc, dem ansässigen Aufseher des Evergreen Hunting Reserve, alles beibringen, was Sie über {game} wissen müssen.</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Lassen Sie sich von Doc, dem ansässigen Aufseher des Evergreen-Jagdreservats, alles beibringen, was Sie über {game} wissen müssen.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Zu den Tutorials</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Zur Jagd</value></data>
   <data name="Welcome.HuntingText" xml:space="preserve"><value>Starten Sie eine echte Jagd, wenn Sie {game} schon kennen oder es einfach kaum erwarten können, loszuziehen.</value></data>
-  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Neues Spiel beginnen</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Neues Spiel starten</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Downloads</value></data>
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Wenn Sie Launcher und Spiel-Client noch nicht heruntergeladen haben, müssen Sie das tun, bevor Sie mit der Jagd beginnen können.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Zu den Downloads</value></data>
@@ -804,10 +804,10 @@
   <data name="Stat.AllTime" xml:space="preserve"><value>Allzeit</value></data>
   <data name="Stat.Season" xml:space="preserve"><value>Saison {0}</value></data>
   <data name="Stat.BestDisabled" xml:space="preserve"><value>Die Funktion für persönliche Bestleistungen ist derzeit deaktiviert.</value></data>
-  <data name="Stat.BestQueued" xml:space="preserve"><value>Die Berechnung der persönlichen Bestleistungen für {0} und Saison {1} befindet sich in der Warteschlange. Schauen Sie bitte später wieder nach.</value></data>
-  <data name="Stat.BestBuilding" xml:space="preserve"><value>Die Berechnung der persönlichen Bestleistungen für {0} und Saison {1} läuft und ist bald verfügbar.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Die Berechnung der persönlichen Bestleistungen für {0} in Saison {1} befindet sich in der Warteschlange. Bitte schauen Sie später noch einmal vorbei.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Die Berechnung der persönlichen Bestleistungen für {0} in Saison {1} läuft und ist bald verfügbar.</value></data>
   <data name="Stat.BestNone" xml:space="preserve"><value>{0} war in Saison {1} auf keiner Jagd.</value></data>
-  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Die Berechnung der Allzeit-Bestleistungen für {0} befindet sich in der Warteschlange. Schauen Sie bitte später wieder nach.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Die Berechnung der Allzeit-Bestleistungen für {0} befindet sich in der Warteschlange. Bitte schauen Sie später noch einmal vorbei.</value></data>
   <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Die Berechnung der Allzeit-Bestleistungen für {0} läuft und ist bald verfügbar.</value></data>
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} war noch auf keiner Jagd, aus der sich Allzeit-Bestleistungen berechnen ließen.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Bewertung</value></data>
@@ -1008,7 +1008,7 @@
   <data name="Help.Support.Videos" xml:space="preserve"><value>Sehen Sie sich einige Video-Tutorials an &gt;</value></data>
   <data name="Help.Guides.Title" xml:space="preserve"><value>Community-Ressourcen &amp; Anleitungen</value></data>
   <data name="Help.Guides.Text" xml:space="preserve"><value>{game} hat eine große Community. Schauen Sie sich einige dieser tollen Ressourcen an, die von unseren Mitgliedern erstellt wurden.</value></data>
-  <data name="Help.Tut.Intro" xml:space="preserve"><value>Lernen Sie die Grundlagen von {game} kennen. Spielen Sie unbedingt auch die {0}spielbaren Tutorials{1} durch, bevor Sie Ihre erste Jagd im Evergreen Hunting Reserve unternehmen!</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Lernen Sie die Grundlagen von {game} kennen. Spielen Sie unbedingt auch die {0}spielbaren Tutorials{1} durch, bevor Sie Ihre erste Jagd im Evergreen-Jagdreservat unternehmen!</value></data>
   <data name="Help.Tut.By" xml:space="preserve"><value>Von {0}</value></data>
   <data name="Help.Community.Title" xml:space="preserve"><value>Lokale Community-Websites</value></data>
   <data name="Help.Community.Text" xml:space="preserve"><value>{game} hat eine lebendige Community, und viele unserer Spieler treffen sich in lokalen Communities mit Spielern aus ihrer Region! Schauen Sie sich diese lokalen Fanseiten zu {game} an!</value></data>
@@ -1021,7 +1021,7 @@
   <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Die neue Oberfläche für Tägliche Missionen</value></data>
   <data name="DayHelp.How.Title" xml:space="preserve"><value>Wie funktioniert das?</value></data>
   <data name="DayHelp.How.1" xml:space="preserve"><value>Jeden Tag erhält jeder Spieler eine neue Tägliche Mission zum Abschließen. Verschiedene Spieler erhalten verschiedene Tägliche Missionen (ab jetzt TM).</value></data>
-  <data name="DayHelp.How.2" xml:space="preserve"><value>Das Abschließen einer TM erhöht Ihre TM-Serie um 1. Eine {0}Serie{1} ist eine Folge aufeinanderfolgend abgeschlossener TMs.</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Das Abschließen einer TM erhöht Ihre TM-Serie um 1. Eine {0}Serie{1} ist eine ununterbrochene Folge abgeschlossener TMs.</value></data>
   <data name="DayHelp.How.3" xml:space="preserve"><value>Wenn Sie eine TM auslassen oder nicht abschließen, „unterbrechen Sie Ihre Serie“ und beginnen wieder bei Tag eins.</value></data>
   <data name="DayHelp.How.4" xml:space="preserve"><value>Wenn Ihre Serie unterbrochen ist, werden Tägliche Missionen inaktiv, bis Sie sie aktivieren, um eine neue Serie zu starten, oder Ihre letzte Serie fortsetzen. Eine unterbrochene Serie lässt sich mit dem Service {0}Serien-Wiederaufnahme{1} aus dem Shop wiederherstellen, sodass Sie ab Ihrer letzten abgeschlossenen Täglichen Mission weitermachen können.</value></data>
   <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Schwierigkeitsgrade</value></data>
@@ -1037,12 +1037,12 @@
   <data name="DayHelp.Prog.1" xml:space="preserve"><value>Ihre erste TM ist immer eine leichte. Wenn Sie sie abschließen, wechseln sich TMs verschiedener Schwierigkeitsgrade nach einem Muster ab, das wir {0}Zyklus{1} nennen.</value></data>
   <data name="DayHelp.Prog.2" xml:space="preserve"><value>So sieht ein Zyklus aus:</value></data>
   <data name="DayHelp.Prog.3" xml:space="preserve"><value>Wie Sie sehen, dauert ein Zyklus 16 Tage – vorausgesetzt natürlich, Sie schließen die Ihnen zugewiesenen TMs Tag für Tag ab.</value></data>
-  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Sobald der erste Zyklus abgeschlossen ist, beginnt ein neuer Zyklus mit {0}um 10 % erhöhten gm$-Belohnungen{1} (Leicht = 110 gm$, Mittel = 550 gm$, Schwer = 1100 gm$).</value></data>
-  <data name="DayHelp.Prog.5" xml:space="preserve"><value>Mit jedem weiteren Zyklus steigen die Belohnungen um weitere 10 %, bis zu einem Maximum von dem Doppelten der Grundbelohnungen (eine Steigerung um 100 %).</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Sobald der erste Zyklus abgeschlossen ist, beginnt ein neuer Zyklus mit {0}um 10 % erhöhten gm$-Belohnungen{1} (Leicht = 110 gm$, Mittel = 550 gm$, Schwer = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>Mit jedem weiteren Zyklus steigen die Belohnungen um weitere 10 %, bis maximal zum Doppelten der Grundbelohnungen (eine Steigerung um 100 %).</value></data>
   <data name="DayHelp.Prog.6" xml:space="preserve"><value>Wenn Sie es beispielsweise schaffen, 10 Zyklen in Folge abzuschließen, ohne Ihre Serie zu unterbrechen, erhalten Sie für jede Mission die doppelte Belohnung (x2), und zwar so lange, bis Ihre Serie unterbrochen wird.</value></data>
   <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Unterschiede zu regulären Missionen</value></data>
   <data name="DayHelp.Reg.1" xml:space="preserve"><value>Anders als bei regulären Missionen müssen Sie bei TMs das Tier selbst erlegen, damit der Abschuss zählt. Freunde können Ihnen in einer Multiplayer-Sitzung aber trotzdem dabei helfen, das gesuchte Tier {0}zu finden{1}.</value></data>
-  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Anders als reguläre Missionen müssen Tägliche Missionen nicht aktiviert werden. Eine Tägliche Mission ist für die Dauer ihrer Laufzeit (24 Stunden) immer aktiv.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Anders als reguläre Missionen müssen Tägliche Missionen nicht aktiviert werden. Eine Tägliche Mission ist während ihrer Laufzeit (24 Stunden) immer aktiv.</value></data>
   <data name="DayHelp.Ach.1" xml:space="preserve"><value>Mit dem Abschließen von TMs können Sie Errungenschaften verdienen. Ihre TM-Errungenschaften finden Sie im Bereich „Errungenschaften“ Ihres Spielerprofils:</value></data>
   <data name="DayHelp.Ach.2" xml:space="preserve"><value>Das Abschließen von TMs zählt für 3 verschiedene Arten von Errungenschaften, eine pro Schwierigkeitsgrad.</value></data>
   <data name="DayHelp.Ach.3" xml:space="preserve"><value>Diese Tabelle zeigt die Meilensteine für jeden Schwierigkeitsgrad:</value></data>
