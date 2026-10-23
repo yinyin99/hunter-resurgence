@@ -992,4 +992,131 @@
   <data name="Fmt.AgoDays" xml:space="preserve"><value>{0} days ago</value></data>
   <data name="Splash.Loading" xml:space="preserve"><value>Loading</value></data>
   <data name="Splash.Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>{game} support</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guides &amp; Tutorials</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Video Tutorials</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Local community websites</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} has several official support channels. A lot of information on how to play the game as well as troubleshooting can be found on our community maintained Wiki page. Our official {game} forums are very active and visited daily by many of our players that are happy to help beginners.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>If you are unable to find an answer to your questions in the forum or wiki, you may open a ticket in our support system and we'll try to help you as quickly as possible!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Support</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forum</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
+  <data name="Help.Support.AlsoIn" xml:space="preserve"><value>also in</value></data>
+  <data name="Help.Support.And" xml:space="preserve"><value>and</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>German</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>French</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>Spanish</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Information about multiplayer connections</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>New to {game}?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Check out some video tutorials &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Community resources &amp; Guides</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>{game} has a large community, check out some of these great resources created by our members.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Learn the basics of how to play {game}. Make sure to go through the {0}playable tutorials{1} as well before going on your first hunt in the Evergreen Hunting Reserve!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>By</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Local Community Websites</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game} has a vibrant community and many of our players hang out in local communities with players from their region! Check out these local {game} community fan sites!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>INDEX</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Daily Missions Services</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Resume Streak</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Resume a Streak</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Daily missions are a brand new addition to {game}'s mission system that can be found in the {0}Missions section{1} in the Launcher or Website.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>As they are meant to be completed in one day, Daily Missions are supposed to be quite simple and most will not require specific weapons or equipment. Hard Daily Missions may sometimes be an exception to this, but don't be discouraged! You can complete Dailies in Multiplayer if you like.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>The new Daily Missions interface</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>How does it work?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Each day every player receives a new Daily Mission to complete. Different players will receive different Daily Missions (DM from now on).</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Completing a DM increases your DM streak by 1. A {0}streak{1} is defined as a series of completed consecutive DMs.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Skipping or failing to complete a DM will "break your streak" and will bring you back to day one.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>If you break your streak, Daily Missions will become inactive until you either Activate them to start a new streak or resume your last streak. A broken streak can be recovered using a {0}Resume Streak{1} service from the Store to continue from your last completed Daily Mission.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Difficulty Levels</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>DMs come in three difficulty levels:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Easy</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Medium</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Hard</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Each difficulty level is color-coded: an easy DM is represented by a green icon, a medium DM by a blue icon, and a hard DM by a red icon.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>In addition to colors, each difficulty level has a different number of stars: 1 star for easy, 2 stars for medium, and 3 stars for hard.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Each difficulty level comes with different base rewards: {0}100 gm$ for Easy, 500 gm$ for Medium, and 1000 gm$ for Hard{1} respectively.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Rewards increase as your DMs streak gets longer, more on this below.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Progression</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Your first DM will always be an easy one. If you complete it, DMs of different difficulty levels will alternate according to a pattern that we call a {0}cycle{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>A cycle looks like this:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>As you can see a cycle lasts for 16 days, provided of course that you keep completing the DMs that are assigned to you day after day.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Once the first cycle is completed, a new cycle begins with {0}gm$ rewards increased by 10%{1} (Easy = 110 gm$, Medium = 550 gm$, Hard = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>With every subsequent cycle, rewards increase by an extra 10% up to a maximum of double the amount of the base rewards (a 100% increase).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>So for example, if you manage to complete 10 cycles in a row without breaking your streak you will then receive a x2 reward for each mission, which will continue until you break your streak.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Differences with Regular Missions</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Unlike regular missions, for a harvest to be valid in DMs, you will have to kill the animal yourself. Friends can still help you {0}find{1} the required animal in a Multiplayer session though.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Unlike regular missions, Daily Missions don't need to be activated. A Daily Mission is always active for the time it lasts (24 hours).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>You can earn achievements by completing DMs. You can check your DM achievements in the Achievements section of your player's profile:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Completing DMs will count towards 3 different types of achievements, one for each difficulty level.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Here's a table showing the milestones for each difficulty level:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Difficulty</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Missions Completed</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Special Rewards</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>As you progress through your DM streak you will receive special rewards for completing Hard (difficulty) DMs.</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Special rewards come in the form of:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>items</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trophies</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Items and trophies are exclusive rewards that you can win only by completing DMs (i.e. there's no other way to obtain them!). Your rewards will only show at the start of a new game.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}IMPORTANT:{1} All of the DM's Special Rewards can only be won once! If you break your streak and start a new one, you will still receive gm$ but will need to surpass your previous streak to earn new Special rewards.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>You will be able to see any special rewards in the Rewards section of your DM:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Here's a handy table showing how this works:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Number of{0}Hard DMs{0}completed{0}in a row{0}(streak)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Special Reward</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Hunting Cap</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Camo Pattern A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Basic T-Shirt</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Daily Missions Hero</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Bolt Action Rifle</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Camo Pattern B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Leather Jacket</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hard Core Hunting</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Lever Action Rifle</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Engraved</value></data>
+  <data name="DayHelp.Reward.TrophyMonths" xml:space="preserve"><value>Unique trophy ({0} months)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Unique trophy ({0} Hard DMs)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Unique trophy (1 year)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>As the name suggests, this service allows you to resume a DM's streak. For example, if you have a long streak of completed DMs and then missed or failed a DM, you can use this service to resume your streak and continue from your last completed DM.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>The good thing is, it doesn't matter how much time has passed since you broke your streak, you will always be able to resume it - even if you broke it, say, a year before.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>This service can be purchased in advance and activated when needed. There is no limit to how many of these cards you can purchase or own.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>You can purchase this service directly on the DM page: as soon as you break your streak a button will appear to the left of your "Day 1" DM, prompting you to buy it (or use it, if you already own at least one).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternatively, you can purchase it from the {0}Store{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Once purchased you will be able to use this service directly on the DM page:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>How to download and play {game}</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Multiplayer requirements</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Single player requirements</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Supported operating systems:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Operating system:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Memory:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Graphics card:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Graphics resolution:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Internet connection:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>Host FPS:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 &amp; Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual core processor (2 GHz)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256 MB on board memory (for low &amp; medium). 512 - 768 MB on board memory (for high, depending on number of players).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 or better). ATI X1900 (or better). 256 MB on board memory (for low &amp; medium). 512 MB on board memory (for high)</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>At least 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps Up &amp; Down</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps Up &amp; Down (depending on number of players)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>If the host does not run the game in at least 25-30 fps (frames per second), the physics will produce errors. Players with low-end computers should try to lower the settings to be able to run the game with as high fps as possible. {0}30 FPS{1} is the lowest recommended value. FPS can be measured with free tools available on the internet.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Search tool</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Download the game (about 12 GB).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Click here to download</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Step {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Run the game after installation completes.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Click the {0} button on the webpage to start a new game.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Troubleshooting</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>The troubleshooting utility automatically checks your game setup, detects common issues, and recommends fixes to help you get back to playing faster.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Download the troubleshooting utility.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Place it in your game folder near the game executable.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Game Folder]\game\&lt;utility&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Run the tool to analyze configuration and performance issues.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Apply the suggested fixes offered during the analysis.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>If the proposed solutions don't help, download the generated log file and send it to our {0}support team{0}.</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Download Utility</value></data>
 </root>

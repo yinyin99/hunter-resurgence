@@ -1,43 +1,44 @@
 @page "/download"
-@inject Branding Brand
 
 <PageTitle>@L["Menu.Downloads"]</PageTitle>
 
-@* static English in the old app in every language, so inline *@
+@{ var support = L["Download.Trouble.Step5", "|"].Value.Split('|'); }
+
 <div class="page-min">
-    <h2 class="page-title">@Brand.Expand("How to download and play {game}").ToUpperInvariant()</h2>
+    <h2 class="page-title">@L["Download.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
     <section class="box panel">
-        <h3>Multiplayer Requirements</h3>
-        <p><b>Supported Operating Systems:</b> Windows 7, Windows 8/8.1 &amp; Windows 10 <b>CPU:</b> Dual core processor (2 Ghz)<br />
-            <b>Memory:</b> 2 GB<br />
-            <b>Graphics card:</b> NVidia 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256Mb on board memory (for low &amp; medium). 512 - 768Mb on board memory (for high, depending of number of players).<br />
-            <b>Graphics resolution:</b> At least 1024x768<br />
-            <b>Internet connection:</b> Client : 512Kbps Up &amp; Down<br />
-            <b>Host:</b> 1Mbps - 2 Mbps Up &amp; Down (depending on number of players)<br />
-            <b>Host FPS:</b> If the host does not run the game in at least 25-30 fps (frames per second), the physics will produce errors. Players with low-end computers should try to lower the settings to be able to run the game with as high fps as possible. <b>30 FPS</b> is the lowest recommended value. FPS can be measured with free tools available on the internet. <ExternalLink Key="fps_tool">Search tool</ExternalLink><br />
-            <b>Operating System:</b> Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11</p>
-        <h3>Singleplayer Requirements</h3>
-        <p><b>Supported Operating Systems:</b> Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11<br />
-            <b>CPU:</b> Pentium 4 (3Ghz)<br />
-            <b>Memory:</b> 2 GB<br />
-            <b>Graphics card:</b> NVidia 7 Series (7600 or better). ATI X1900 (or better). 256Mb on board memory (for low &amp; medium). 512Mb on board memory (for high)<br />
-            <b>Graphics resolution:</b> At least 1024x768<br />
-            <b>Internet connection:</b> Yes</p>
-        <p class="plain">Download the game (about 12 GB).</p>
-        <ExternalLink Key="steam_store" Class="btn btn-primary btn-large get">Click here to download <Icon Name="download" /></ExternalLink>
+        <h3>@L["Download.Multi.Title"]</h3>
+        <p><b>@L["Download.Req.SupportedOs"]</b> @L["Download.Req.OsMulti"] <b>@L["Download.Req.Cpu"]</b> @L["Download.Req.CpuMulti"]<br />
+            <b>@L["Download.Req.Memory"]</b> @L["Download.Req.MemoryValue"]<br />
+            <b>@L["Download.Req.Graphics"]</b> @L["Download.Req.GraphicsMulti"]<br />
+            <b>@L["Download.Req.Resolution"]</b> @L["Download.Req.ResolutionValue"]<br />
+            <b>@L["Download.Req.Internet"]</b> @L["Download.Req.InternetClient"]<br />
+            <b>@L["Download.Req.Host"]</b> @L["Download.Req.HostValue"]<br />
+            <b>@L["Download.Req.HostFps"]</b> @L.Html("Download.Req.HostFpsText", "<b>", "</b>") <ExternalLink Key="fps_tool">@L["Download.Req.FpsTool"]</ExternalLink><br />
+            <b>@L["Download.Req.Os"]</b> @L["Download.Req.OsAll"]</p>
+        <h3>@L["Download.Single.Title"]</h3>
+        <p><b>@L["Download.Req.SupportedOs"]</b> @L["Download.Req.OsAll"]<br />
+            <b>@L["Download.Req.Cpu"]</b> @L["Download.Req.CpuSingle"]<br />
+            <b>@L["Download.Req.Memory"]</b> @L["Download.Req.MemoryValue"]<br />
+            <b>@L["Download.Req.Graphics"]</b> @L["Download.Req.GraphicsSingle"]<br />
+            <b>@L["Download.Req.Resolution"]</b> @L["Download.Req.ResolutionValue"]<br />
+            <b>@L["Download.Req.Internet"]</b> @L["Alert.Yes"]</p>
+        <p class="plain">@L["Download.Size"]</p>
+        <ExternalLink Key="steam_store" Class="btn btn-primary btn-large get">@L["Download.Click"] <Icon Name="download" /></ExternalLink>
     </section>
-    <section class="box panel"><h3>Step 2</h3><p class="plain">Run the game after installation completes.</p></section>
-    <section class="box panel"><h3>Step 3</h3><p class="plain">Click the <a href="/dashboard">Hunt Now</a> button on the webpage to start a new game.</p></section>
+    <section class="box panel"><h3>@L["Download.Step", 2]</h3><p class="plain">@L["Download.Step2.Text"]</p></section>
+    <section class="box panel"><h3>@L["Download.Step", 3]</h3><p class="plain">@L.Html("Download.Step3.Text", "<a href=\"/dashboard\">" + System.Net.WebUtility.HtmlEncode(L["Menu.HuntNow"].Value) + "</a>")</p></section>
     <section class="box panel">
-        <h3>Troubleshooting</h3>
-        <p class="plain">The troubleshooting utility automatically checks your game setup, detects common issues, and recommend fixes to help you get back to playing faster.</p>
+        <h3>@L["Download.Trouble.Title"]</h3>
+        <p class="plain">@L["Download.Trouble.Intro"]</p>
         <ul>
-            <li>Download the troubleshooting utility.</li>
-            <li>Place it in your game folder near the game executable. <b>[Game Folder]\game\&lt;utility&gt;</b></li>
-            <li>Run the tool to analyze configuration and performance issues.</li>
-            <li>Apply the suggested fixes offered during the analysis.</li>
-            <li>If the proposed solutions don’t help, download the generated log file and send it to our <ExternalLink Key="support_request">support team</ExternalLink>.</li>
+            <li>@L["Download.Trouble.Step1"]</li>
+            <li>@L["Download.Trouble.Step2"] <b>@L["Download.Trouble.Path"]</b></li>
+            <li>@L["Download.Trouble.Step3"]</li>
+            <li>@L["Download.Trouble.Step4"]</li>
+            <li>@support[0]<ExternalLink Key="support_request">@support[1]</ExternalLink>@support[2]</li>
         </ul>
-        <ExternalLink Key="health_utility">Download Utility</ExternalLink>
+        <ExternalLink Key="health_utility">@L["Download.Trouble.Utility"]</ExternalLink>
     </section>
 </div>
+
