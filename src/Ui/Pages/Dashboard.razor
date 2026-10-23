@@ -77,7 +77,7 @@
                             <ServerWhere Server="g" />
                             <div class="info">
                                 <div class="name">@g.Name</div>
-                                <div class="meta">@L["Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), g.Players, g.Max]<a href="/profile/@g.Host">@g.Host</a>@if (g.Password) { <Icon Name="lock" /> }</div>
+                                <div class="meta">@L.Frag("Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), g.Players, g.Max, Host(g.Host))@if (g.Password) { <Icon Name="lock" /> }</div>
                             </div>
                             <button class="btn btn-primary quick-join" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = g })">@L["Hunt.QuickJoin"]</button>
                         </li>
@@ -103,6 +103,8 @@
     Dictionary<int, string> reserves = [];
 
     int Percent => progress is { Max: > 0 } p ? p.Score * 100 / p.Max : 0;
+
+    RenderFragment Host(string handle) => @<a href="/profile/@handle">@handle</a>;
 
     protected override async Task OnInitializedAsync()
     {

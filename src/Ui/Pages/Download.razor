@@ -2,8 +2,6 @@
 
 <PageTitle>@L["Menu.Downloads"]</PageTitle>
 
-@{ var support = L["Download.Trouble.Step5", "|"].Value.Split('|'); }
-
 <div class="page-min">
     <h2 class="page-title">@L["Download.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
     <section class="box panel">
@@ -36,9 +34,12 @@
             <li>@L["Download.Trouble.Step2"] <b>@L["Download.Trouble.Path"]</b></li>
             <li>@L["Download.Trouble.Step3"]</li>
             <li>@L["Download.Trouble.Step4"]</li>
-            <li>@support[0]<ExternalLink Key="support_request">@support[1]</ExternalLink>@support[2]</li>
+            <li>@L.Frag("Download.Trouble.Step5", Support())</li>
         </ul>
         <ExternalLink Key="health_utility">@L["Download.Trouble.Utility"]</ExternalLink>
     </section>
 </div>
 
+@code {
+    RenderFragment Support() => @<ExternalLink Key="support_request">@L["Download.Trouble.SupportTeam"]</ExternalLink>;
+}

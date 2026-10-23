@@ -33,7 +33,6 @@
   <data name="Statusbar.Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munitions:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>Carburant:</value></data>
-  <data name="Statusbar.Days" xml:space="preserve"><value>{0} jours</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Amis</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Porte-monnaie / Historique des achats</value></data>
@@ -152,7 +151,7 @@
   <data name="Servers.Players" xml:space="preserve"><value>Joueurs</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Hôte</value></data>
   <data name="Servers.Country" xml:space="preserve"><value>Country</value></data>
-  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Joueurs : {1}/{2} - Hôte :</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Joueurs : {1}/{2} - Hôte : {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Détails de la partie</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Rejoindre</value></data>
   <data name="Servers.HostLabel" xml:space="preserve"><value>Hôte:</value></data>
@@ -582,7 +581,6 @@
   <data name="Bank.Animals" xml:space="preserve"><value>Licence pour chasser tous les animaux</value></data>
   <data name="Bank.Reserves" xml:space="preserve"><value>Accès à toutes les réserves</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Munitions classiques illimitées</value></data>
-  <data name="Bank.Other" xml:space="preserve"><value>+ {0} autre(s) article(s)</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Détails</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Les articles inclus dans un abonnement ou achetés séparément sont conservés, même si votre abonnement expire</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Compared to 3 months {game} Membership</value></data>
@@ -599,7 +597,7 @@
   <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Avertissement</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
-  <data name="Bank.Extra" xml:space="preserve"><value>{0} arme(s) supplémentaire(s)</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Armes supplémentaires : {0}, autres articles : {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Only allow messages from friends</value></data>

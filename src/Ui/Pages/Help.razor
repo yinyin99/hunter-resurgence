@@ -21,7 +21,7 @@
                 <ul class="links">
                     <li><ExternalLink Key="support">@L["Help.Support.LinkSupport"]</ExternalLink></li>
                     <li><ExternalLink Key="forum">@L["Help.Support.LinkForum"]</ExternalLink></li>
-                    <li><ExternalLink Key="wiki">@L["Help.Support.LinkWiki"]</ExternalLink> (@L["Help.Support.AlsoIn"] <ExternalLink Key="wiki_de">@L["Help.Lang.German"]</ExternalLink>, <ExternalLink Key="wiki_fr">@L["Help.Lang.French"]</ExternalLink> @L["Help.Support.And"] <ExternalLink Key="wiki_es">@L["Help.Lang.Spanish"]</ExternalLink>)</li>
+                    <li>@L.Frag("Help.Support.Wiki", Ext("wiki", L["Help.Support.LinkWiki"]), Ext("wiki_de", L["Help.Lang.German"]), Ext("wiki_fr", L["Help.Lang.French"]), Ext("wiki_es", L["Help.Lang.Spanish"]))</li>
                     <li><ExternalLink Key="support_connections">@L["Help.Support.Connections"]</ExternalLink></li>
                 </ul>
                 <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="245" /><b>@L["Help.Support.NewTo"]</b><span>@L["Help.Support.Videos"]</span></a>
@@ -50,7 +50,7 @@
                             <li>
                                 @if (Mode.Launcher) { <ExternalLink Key="@("video_" + v.Id)" Class="vt">@v.Title</ExternalLink> }
                                 else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title })' @onclick:preventDefault>@v.Title</a> }
-                                <span>@L["Help.Tut.By"]</span>&nbsp;@v.Author
+                                <span>@L.Frag("Help.Tut.By", Author(v.Author))</span>
                             </li>
                         }
                     </ul>
@@ -76,6 +76,9 @@
     [Parameter] public int? Section { get; set; }
     string tab => Section is not null ? "tutorials" : Tab is "guides" or "day-mission" or "tutorials" or "community" ? Tab! : "support";
     int section => Section ?? 1;
+
+    RenderFragment Ext(string key, string text) => @<ExternalLink Key="@key">@text</ExternalLink>;
+    RenderFragment Author(string name) => @<b>@name</b>;
 
     string G(string text) => Brand.Expand(text);
 

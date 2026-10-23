@@ -14,8 +14,8 @@
             <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
             <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
             <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Statusbar.Days", balances.AmmoDays]</span></span>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Statusbar.Days", balances.FuelDays]</span></span>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", balances.AmmoDays]</span></span>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", balances.FuelDays]</span></span>
         </div>
         <div class="right">
             <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>

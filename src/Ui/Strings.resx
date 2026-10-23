@@ -33,7 +33,6 @@
   <data name="Statusbar.Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>fuel:</value></data>
-  <data name="Statusbar.Days" xml:space="preserve"><value>{0} days</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Friends</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>My Wallet / Purchase History</value></data>
@@ -146,13 +145,13 @@
   <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Show only games I'm allowed to join</value></data>
-  <data name="Servers.Showing" xml:space="preserve"><value>Showing {0} games</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Games shown: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Game name</value></data>
   <data name="Servers.Reserve" xml:space="preserve"><value>Reserve</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Players</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
   <data name="Servers.Country" xml:space="preserve"><value>Country</value></data>
-  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Players: {1}/{2} - Host: </value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Players: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Game details</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Join Game</value></data>
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
@@ -582,7 +581,6 @@
   <data name="Bank.Animals" xml:space="preserve"><value>License to hunt all animals</value></data>
   <data name="Bank.Reserves" xml:space="preserve"><value>Access to all reserves</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Unlimited basic ammo</value></data>
-  <data name="Bank.Other" xml:space="preserve"><value>+ {0} other items</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Items included in a membership or bought separately are kept even if your membership expires</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Compared to 3 months {game} Membership</value></data>
@@ -599,7 +597,7 @@
   <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Disclaimer</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
-  <data name="Bank.Extra" xml:space="preserve"><value>{0} extra weapons</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Extra weapons: {0}, other items: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} months</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Only allow messages from friends</value></data>
@@ -1001,8 +999,7 @@
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Support</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forum</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
-  <data name="Help.Support.AlsoIn" xml:space="preserve"><value>also in</value></data>
-  <data name="Help.Support.And" xml:space="preserve"><value>and</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (also in {1}, {2} and {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>German</value></data>
   <data name="Help.Lang.French" xml:space="preserve"><value>French</value></data>
   <data name="Help.Lang.Spanish" xml:space="preserve"><value>Spanish</value></data>
@@ -1012,7 +1009,7 @@
   <data name="Help.Guides.Title" xml:space="preserve"><value>Community resources &amp; Guides</value></data>
   <data name="Help.Guides.Text" xml:space="preserve"><value>{game} has a large community, check out some of these great resources created by our members.</value></data>
   <data name="Help.Tut.Intro" xml:space="preserve"><value>Learn the basics of how to play {game}. Make sure to go through the {0}playable tutorials{1} as well before going on your first hunt in the Evergreen Hunting Reserve!</value></data>
-  <data name="Help.Tut.By" xml:space="preserve"><value>By</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>By {0}</value></data>
   <data name="Help.Community.Title" xml:space="preserve"><value>Local Community Websites</value></data>
   <data name="Help.Community.Text" xml:space="preserve"><value>{game} has a vibrant community and many of our players hang out in local communities with players from their region! Check out these local {game} community fan sites!</value></data>
   <data name="DayHelp.Index" xml:space="preserve"><value>INDEX</value></data>
@@ -1060,7 +1057,7 @@
   <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}IMPORTANT:{1} All of the DM's Special Rewards can only be won once! If you break your streak and start a new one, you will still receive gm$ but will need to surpass your previous streak to earn new Special rewards.</value></data>
   <data name="DayHelp.Rewards.5" xml:space="preserve"><value>You will be able to see any special rewards in the Rewards section of your DM:</value></data>
   <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Here's a handy table showing how this works:</value></data>
-  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Number of{0}Hard DMs{0}completed{0}in a row{0}(streak)</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Number of Hard DMs completed in a row (streak)</value></data>
   <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Special Reward</value></data>
   <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Hunting Cap</value></data>
   <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Camo Pattern A</value></data>
@@ -1072,7 +1069,8 @@
   <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hard Core Hunting</value></data>
   <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Lever Action Rifle</value></data>
   <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Engraved</value></data>
-  <data name="DayHelp.Reward.TrophyMonths" xml:space="preserve"><value>Unique trophy ({0} months)</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Unique trophy (3 months)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Unique trophy (6 months)</value></data>
   <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Unique trophy ({0} Hard DMs)</value></data>
   <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Unique trophy (1 year)</value></data>
   <data name="DayHelp.Resume.1" xml:space="preserve"><value>As the name suggests, this service allows you to resume a DM's streak. For example, if you have a long streak of completed DMs and then missed or failed a DM, you can use this service to resume your streak and continue from your last completed DM.</value></data>
@@ -1117,6 +1115,7 @@
   <data name="Download.Trouble.Path" xml:space="preserve"><value>[Game Folder]\game\&lt;utility&gt;</value></data>
   <data name="Download.Trouble.Step3" xml:space="preserve"><value>Run the tool to analyze configuration and performance issues.</value></data>
   <data name="Download.Trouble.Step4" xml:space="preserve"><value>Apply the suggested fixes offered during the analysis.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>If the proposed solutions don't help, download the generated log file and send it to our {0}support team{0}.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>If the proposed solutions don't help, download the generated log file and send it to our {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>support team</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Download Utility</value></data>
 </root>

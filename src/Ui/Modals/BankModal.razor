@@ -84,7 +84,7 @@
         <div class="what">
             <p>@(m.Name.Length == 0 ? L["Bank.MonthsOnly", m.Months] : L["Bank.Months", m.Months])</p>
             <p>@L["Bank.Animals"]</p><p>@L["Bank.Reserves"]</p><p>@L["Bank.Ammo"]</p>
-            @if (m.OtherItems > 0) { <p>@L["Bank.Extra", m.ExtraWeapons] @L["Bank.Other", m.OtherItems] <a href="#" @onclick:preventDefault>@L["Bank.Details"] <Icon Name="chevron-right" /></a></p> }
+            @if (m.OtherItems > 0) { <p>@L["Bank.Extras", m.ExtraWeapons, m.OtherItems] <a href="#" @onclick:preventDefault>@L["Bank.Details"] <Icon Name="chevron-right" /></a></p> }
         </div>
         <button type="button" class="buy" @onclick="() => Buy(kind, i)">@L["Store.Buy"] <Icon Name="chevron-right" /></button>
     </div>;
