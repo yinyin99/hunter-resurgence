@@ -69,7 +69,7 @@ else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
         loaded = true;
     }
 
-    // activating and leaving are fake in the mock: the lists are read again
+    // the lists are read again after the change
     async Task Join(int id) => await Change(await Service.JoinAsync(id));
 
     async Task Leave(int id) => await Change(await Service.LeaveAsync(id));

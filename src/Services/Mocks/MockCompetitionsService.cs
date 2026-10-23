@@ -26,7 +26,10 @@ public sealed class MockCompetitionsService : ICompetitionsService
 
     static readonly Competition[] Previous = Enumerable.Range(0, 70).Select(n => Make(170000 + n, Names.Species[n % Names.Species.Length].Name, n % 2 == 0 ? "board" : "weight", Tiers[n % 3], false, 2 + n * 7 % 30, false) with { Start = null, End = null, Status = null }).ToArray();
 
-    public Task<IReadOnlyList<Enrolled>> EnrolledAsync() => Task.FromResult<IReadOnlyList<Enrolled>>(Active.Select(c => new Enrolled(c, 10, 10, null)).ToList());
+    // activating and leaving move a competition in and out of this list (the mock lives as long as the host)
+    readonly List<Competition> enrolled = [.. Active];
+
+    public Task<IReadOnlyList<Enrolled>> EnrolledAsync() => Task.FromResult<IReadOnlyList<Enrolled>>(enrolled.Select(c => new Enrolled(c, 10, 10, null)).ToList());
 
     public Task<IReadOnlyList<Species>> SpeciesAsync() => Task.FromResult<IReadOnlyList<Species>>(Names.Species.OrderBy(s => s.Name).Select(s => new Species(s.Id, s.Name, Upcoming.Count(c => c.Tags.Contains(s.Name)))).ToList());
 
@@ -47,7 +50,7 @@ public sealed class MockCompetitionsService : ICompetitionsService
     {
         var c = Active.Concat(Upcoming).Concat(Previous).FirstOrDefault(c => c.Id == id);
         var sp = c?.Tags[0] ?? "";
-        return Task.FromResult(c is null ? null : new CompetitionDetails(c, Active.Any(a => a.Id == id), c.Description.Split(". ")[0].TrimEnd('.') + ".", 17407, null, "164.9212", 10, 10, ["Trophy", "Trophy", "Trophy"],
+        return Task.FromResult(c is null ? null : new CompetitionDetails(c, enrolled.Any(a => a.Id == id), c.Description.Split(". ")[0].TrimEnd('.') + ".", 17407, null, "164.9212", 10, 10, ["Trophy", "Trophy", "Trophy"],
             sp, "Reserve 01", "Harvest the highest scoring " + sp + " to win.", "Any permitted.", "Highest score.", "None.", "Singleplayer only."));
     }
 
@@ -61,7 +64,15 @@ public sealed class MockCompetitionsService : ICompetitionsService
         Enumerable.Range(0, 15).Select(n => (Year: 2026 - (n + 3) / 12, Month: (8 - n % 12 + 12) % 12)).Select((m, n) =>
             new HistoryMonth(m.Year, Months[m.Month], n % 4 == 0 ? [(29 - n % 9, id - 100 * n), (5 + n % 7, id - 100 * n - 50)] : [(8 + n * 7 % 20, id - 100 * n)])).ToList());
 
-    public Task<Result> JoinAsync(int id) => Task.FromResult(Result.Success);
+    public Task<Result> JoinAsync(int id)
+    {
+        if (Upcoming.FirstOrDefault(c => c.Id == id) is { } c && enrolled.All(e => e.Id != id)) enrolled.Add(c);
+        return Task.FromResult(Result.Success);
+    }
 
-    public Task<Result> LeaveAsync(int id) => Task.FromResult(Result.Success);
+    public Task<Result> LeaveAsync(int id)
+    {
+        enrolled.RemoveAll(c => c.Id == id);
+        return Task.FromResult(Result.Success);
+    }
 }
