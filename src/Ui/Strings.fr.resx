@@ -602,4 +602,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
   <data name="Bank.Extra" xml:space="preserve"><value>{0} armes en plus</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
+  <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
+  <data name="Msg.OnlyFriends" xml:space="preserve"><value>Only allow messages from friends</value></data>
+  <data name="Msg.New" xml:space="preserve"><value>Nouveau message</value></data>
+  <data name="Msg.Conversations" xml:space="preserve"><value>Conversations</value></data>
+  <data name="Msg.Text" xml:space="preserve"><value>Texte du message</value></data>
+  <data name="Msg.Send" xml:space="preserve"><value>Envoyer un message</value></data>
+  <data name="Msg.To" xml:space="preserve"><value>À :</value></data>
+  <data name="Msg.Sent" xml:space="preserve"><value>Sent {0}</value></data>
+  <data name="Msg.Empty" xml:space="preserve"><value>You haven't sent or received any messages yet. When you start a chat with another hunter, it will appear here.</value></data>
+  <data name="Msg.NoUser" xml:space="preserve"><value>No such user.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>You cant send messages to yourself.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>An error occured while sending your message.</value></data>
 </root>
