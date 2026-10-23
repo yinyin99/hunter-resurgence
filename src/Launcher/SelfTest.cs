@@ -195,7 +195,25 @@ static class SelfTest
         os.Set("Gamma", 10);
         GameFiles.WriteOptions(o, "fake_", os);
         Check(Bytes(o + GameFiles.BackupSuffix) == opt, "options: the copy is not overwritten");
+        GameSettingsDialog(root, s with { GraphicsFile = @"gfx\g.cfg", OptionsFile = null });
         Check(GameFiles.ReadOptions(o, "zz_").Problem == FileProblem.BadFormat && GameFiles.ReadOptions(Path.Combine(root, "opt", "absent.bin"), "fake_").Problem == FileProblem.Missing, "options: wrong prefix is a bad format, absent file is missing");
+    }
+
+    // the dialog's service on the files written above (root is its %APPDATA%)
+    static void GameSettingsDialog(string root, Settings s)
+    {
+        var prefs = new Prefs();
+        var saves = 0;
+        var svc = new GameSettingsService(s, prefs, root, () => saves++);
+        var read = svc.ReadAsync().Result;
+        Check(read.Error is null && read.Options is { Scene: 0, Aniso: 0, ContextualHelp: null } && read.Resolutions.Contains(read.Options.Resolution), "dialog: reads the graphics file, adds the current mode to the list");
+        Check(svc.FirstStartAsync().Result, "dialog: first start until the settings were saved");
+        var g = new GraphicsSettings { Aniso = 0, Width = 1, Height = 1, Hz = 1 };
+        Check(GameSettingsService.ToOptions(g, null).Aniso == 0 && GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null)).Aniso == 0, "dialog: Default anisotropic filtering stays Default when untouched");
+        Check(GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null) with { Aniso = 2 }).Aniso == 3 && GameSettingsService.ToOptions(g with { Aniso = 5 }, null).Aniso == 4, "dialog: list position and file value differ by one");
+        Check(svc.SaveAsync(read.Options with { Scene = 3, Fullscreen = true }).Result.Ok && saves == 1 && prefs.GameSettingsSaved && !svc.FirstStartAsync().Result, "dialog: save writes the file and remembers it");
+        Check(svc.ReadAsync().Result.Options is { Scene: 3, Fullscreen: true }, "dialog: reads back what was saved");
+        Check(new GameSettingsService(new Settings(null, null), new Prefs(), root, () => { }).ReadAsync().Result.Error == "GameSettings.NotConfigured", "dialog: not configured is reported");
     }
 
     static string Also(this string path, Action<string> act)

@@ -14,6 +14,8 @@ public sealed class Prefs
     /// <summary>Install folder chosen by hand; wins over detection while the client is found in it.</summary>
     public string? GameFolder { get; set; }
     public bool CloseOnGameStart { get; set; }
+    /// <summary>The Game settings were saved once: the first game start no longer asks for them.</summary>
+    public bool GameSettingsSaved { get; set; }
 
     public static Prefs Load(string path)
     {

@@ -1,5 +1,8 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Resurgence.Services;
+using Resurgence.Services.Mocks;
 using Resurgence.Ui;
 using Resurgence.Ui.Modals;
 
@@ -14,7 +17,12 @@ public partial class MainWindow : Window
         services.AddUiLocalization(Settings.FilePath);
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
-        services.AddSingleton(new HostMode { Launcher = true });
+        // dev aid: resurgence-launcher.exe --mock=patch:new-patch shows a patch state, --mock=settings:first the first start dialog
+        var mock = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--mock="))?[7..];
+        services.AddSingleton(new HostMode { Launcher = true, Mock = mock });
+        services.AddSingleton<IPatchService>(new MockPatchService(mock));
+        services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
+            : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<ModalService>();
         services.AddSingleton<ILanguageSwitcher, LauncherLanguageSwitcher>();
         Resources.Add("services", services.BuildServiceProvider());
