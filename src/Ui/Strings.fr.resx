@@ -28,7 +28,7 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Mode multijoueur</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Trouver une partie multijoueur</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriels</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ est la monnaie virtuelle de {game} qui permet d'acheter des objets dans la boutique, comme des armes, de l'équipement, des vêtements et bien plus.</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>L'em$ est une monnaie virtuelle qui peut être utilisée pour acheter des articles dans la boutique tels que les équipements, les armes, les vêtements et plus encore.</value></data>
   <data name="Statusbar.Launcher" xml:space="preserve"><value>Lanceur</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munitions:</value></data>
@@ -96,7 +96,7 @@
   <data name="Hunt.Single" xml:space="preserve"><value>SIMPLE JOUEUR</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIJOUEUR</value></data>
   <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Mission(s) active(s) :</value></data>
-  <data name="Hunt.NoMissions" xml:space="preserve"><value>Vous n'avez aucune mission active. Activez des missions sur la &lt;a href="/missions"&gt;page des missions&lt;/a&gt;</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>Aucune mission active. Activez des missions en vous rendant sur la &lt;a href="/missions"&gt;page des missions&lt;/a&gt;.</value></data>
   <data name="Hunt.MoreMissions" xml:space="preserve"><value>et {0} de plus...</value></data>
   <data name="Hunt.NoFriends" xml:space="preserve"><value>Aucun de vos amis n'est en ligne.</value></data>
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Amis en ligne :</value></data>
@@ -231,7 +231,7 @@
   <data name="Patch.SteamOnlyText" xml:space="preserve"><value>From now on you need to play the game via Steam platform!</value></data>
   <data name="Patch.GoToSteam" xml:space="preserve"><value>Aller sur Steam</value></data>
   <data name="Patch.ErrorTitle" xml:space="preserve"><value>Une erreur est survenue</value></data>
-  <data name="Patch.PleaseSee" xml:space="preserve"><value>Please see the {0} for more information.</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Veuillez consulter le {0} pour plus d'informations.</value></data>
   <data name="Patch.SupportSection" xml:space="preserve"><value>service client</value></data>
   <data name="Patch.StateDownloading" xml:space="preserve"><value>TÉLÉCHARGEMENT</value></data>
   <data name="Patch.StateVerifying" xml:space="preserve"><value>VÉRIFICATION</value></data>
@@ -244,8 +244,8 @@
   <data name="Patch.KindLauncher" xml:space="preserve"><value>mise à jour du lanceur</value></data>
   <data name="Patch.Verifying" xml:space="preserve"><value>Veuillez patienter pendant la vérification des fichiers téléchargés.</value></data>
   <data name="Patch.Extracting" xml:space="preserve"><value>Veuillez patienter pendant l'exécution du programme d'installation.</value></data>
-  <data name="Patch.Checksum" xml:space="preserve"><value>Verifying checksum of file: {0} / {1} ({2})</value></data>
-  <data name="Patch.File" xml:space="preserve"><value>Patching file: {0} / {1}</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Vérification de fichier : {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Application du correctif : {0} / {1}</value></data>
   <data name="Patch.Finishing" xml:space="preserve"><value>Phase finale...</value></data>
   <data name="Patch.PatchError" xml:space="preserve"><value>Erreur !</value></data>
   <data name="Patch.Done" xml:space="preserve"><value>You are now ready to start the game.</value></data>
@@ -326,7 +326,7 @@
   <data name="Signup.P5.Text" xml:space="preserve"><value>Vous pouvez accéder aux tutoriels en cliquant sur le bouton CHASSER. </value></data>
   <data name="Signup.P5.Hunt" xml:space="preserve"><value>Chasser !</value></data>
   <data name="Dialog.Login.Title" xml:space="preserve"><value>Connexion</value></data>
-  <data name="Dialog.Email" xml:space="preserve"><value>Email Address</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Adresse email</value></data>
   <data name="Dialog.Login.Submit" xml:space="preserve"><value>Connexion</value></data>
   <data name="Dialog.Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Dialog.EmailRequired" xml:space="preserve"><value>Adresse email obligatoire</value></data>
@@ -353,7 +353,7 @@
   <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Qualité des ombres</value></data>
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Détails des textures</value></data>
   <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
-  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Competitions</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Compétitions</value></data>
   <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
   <data name="Comp.Title" xml:space="preserve"><value>COMPÉTITIONS</value></data>
   <data name="Comp.Enrolled" xml:space="preserve"><value>Compétitions activées</value></data>
@@ -374,37 +374,37 @@
   <data name="Comp.Previous" xml:space="preserve"><value>Compétitions précédentes</value></data>
   <data name="Comp.Filter" xml:space="preserve"><value>Cliquez pour filtrer par espèce :</value></data>
   <data name="Comp.NoneFound" xml:space="preserve"><value>No competitions found, try changing the filter settings</value></data>
-  <data name="Comp.StatusSignup" xml:space="preserve"><value>Signup</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Inscriptions</value></data>
   <data name="Comp.StatusStarted" xml:space="preserve"><value>En cours</value></data>
   <data name="Comp.StatusFinished" xml:space="preserve"><value>Terminée</value></data>
-  <data name="Comp.NA" xml:space="preserve"><value>N/D</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>N/A</value></data>
   <data name="Comp.Join" xml:space="preserve"><value>REJOINDRE</value></data>
   <data name="Comp.Leave" xml:space="preserve"><value>QUITTER</value></data>
   <data name="Comp.ChipStatus" xml:space="preserve"><value>Competition status: {0}</value></data>
-  <data name="Comp.StateSignUp" xml:space="preserve"><value>Sign up</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Inscriptions</value></data>
   <data name="Comp.StateOngoing" xml:space="preserve"><value>Ongoing</value></data>
-  <data name="Comp.StateEnded" xml:space="preserve"><value>Ended</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Terminée</value></data>
   <data name="Comp.StartsIn" xml:space="preserve"><value>Starts in</value></data>
   <data name="Comp.EndsIn" xml:space="preserve"><value>Ends in</value></data>
   <data name="Comp.YourPosition" xml:space="preserve"><value>Votre position</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Score à battre</value></data>
-  <data name="Comp.Overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Vue d'ensemble</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Leaderboard</value></data>
-  <data name="Comp.History" xml:space="preserve"><value>History</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>Historique</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Prix</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trophée</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Règles et conditions</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Species: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Reserves: {0}</value></data>
   <data name="Comp.Description" xml:space="preserve"><value>Description</value></data>
-  <data name="Comp.Weapons" xml:space="preserve"><value>Weapons</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Armes</value></data>
   <data name="Comp.Scoring" xml:space="preserve"><value>Scoring</value></data>
   <data name="Comp.Special" xml:space="preserve"><value>Special Requirements</value></data>
   <data name="Comp.Gamemode" xml:space="preserve"><value>Gamemode</value></data>
   <data name="Comp.Disclaimer" xml:space="preserve"><value>Une tentative est décomptée à chaque fois qu'une chasse est lancée dans une réserve où une compétition est active. Les compétitions ne peuvent pas être activées durant une partie, les modifications apportées pendant celle-ci ne prendront effet que lors de votre prochaine chasse.</value></data>
   <data name="Comp.Participants" xml:space="preserve"><value>Participants with a result ({0})</value></data>
-  <data name="Comp.Player" xml:space="preserve"><value>Player</value></data>
-  <data name="Comp.Result" xml:space="preserve"><value>Result</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Joueur</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Résultat</value></data>
   <data name="Comp.NoResults" xml:space="preserve"><value>No results to display</value></data>
   <data name="League.Title" xml:space="preserve"><value>COMMUNITY LEAGUE</value></data>
   <data name="League.P1" xml:space="preserve"><value>Welcome to {game} Community League which will be replacing our current weekend competition format.</value></data>
@@ -413,7 +413,7 @@
   <data name="League.P4" xml:space="preserve"><value>All competitions will be Single Player only except any Duck or Goose competition.</value></data>
   <data name="League.P5" xml:space="preserve"><value>Every 4 weeks, we go to a new reserve, and every 3 reserves is a Season.</value></data>
   <data name="League.P6" xml:space="preserve"><value>You do not have to participate in every single League Competition to qualify for the monthly or Season prizes, but there are obvious advantages to throwing your hat in the ring as often as you can.</value></data>
-  <data name="League.NotEnrolled" xml:space="preserve"><value>You aren't enrolled in any competitions</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>Vous n'êtes inscrit(e) dans aucune compétition</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Monthly Leaderboard</value></data>
   <data name="League.Season" xml:space="preserve"><value>Season Leaderboard</value></data>
   <data name="Board.Title" xml:space="preserve"><value>CLASSEMENTS</value></data>
@@ -443,7 +443,7 @@
   <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through est un petit jeu d'arcade rétro auquel vous pouvez jouer sur votre HunterMate pour vous divertir en attendant que les animaux ne daignent se montrer !</value></data>
   <data name="Board.SP" xml:space="preserve"><value>SP</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Prev</value></data>
-  <data name="Pager.Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Suivant</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Pages</value></data>
   <data name="Board.Avatar" xml:space="preserve"><value>Avatar de {0}</value></data>
   <data name="Comp.Failed" xml:space="preserve"><value>La compétition n’a pas pu être modifiée. Veuillez réessayer.</value></data>
@@ -513,7 +513,7 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Inachetable</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Connectez-vous pour acheter</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Vous en possédez :</value></data>
-  <data name="Store.Or" xml:space="preserve"><value>or</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>ou</value></data>
   <data name="Store.Days" xml:space="preserve"><value>jours</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>PROMO</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PACK</value></data>
@@ -522,7 +522,7 @@
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prix du pack</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Coût en capacité</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Vous ne pouvez pas acheter cet article</value></data>
-  <data name="Store.MaxOwn" xml:space="preserve"><value>It's not possible to buy this bundle. Max own limit reached for at least one of the included items</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Vous ne pouvez pas acheter ce pack. Vous avez atteint le nombre limite pour au moins un des articles inclus.</value></data>
   <data name="Store.None" xml:space="preserve"><value>No items in this category</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Détails</value></data>
   <data name="Store.ClickMore" xml:space="preserve"><value>Cliquez pour afficher les détails</value></data>
@@ -599,7 +599,7 @@
   <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Avertissement</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
-  <data name="Bank.Extra" xml:space="preserve"><value>{0} armes en plus</value></data>
+  <data name="Bank.Extra" xml:space="preserve"><value>{0} arme(s) supplémentaire(s)</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Only allow messages from friends</value></data>
@@ -643,19 +643,19 @@
   <data name="Set.CountryChoose" xml:space="preserve"><value>Choisissez un pays</value></data>
   <data name="Set.TimeZone" xml:space="preserve"><value>Fuseau horaire :</value></data>
   <data name="Set.Save" xml:space="preserve"><value>Appliquer</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historique des achats du compte</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historique des achats</value></data>
   <data name="Set.PurchasesText" xml:space="preserve"><value>Toutes les transactions effectuées via la {0} et la {1} sont enregistrées dans votre porte-monnaie.</value></data>
   <data name="Set.Bank" xml:space="preserve"><value>banque</value></data>
   <data name="Set.Store" xml:space="preserve"><value>boutique</value></data>
   <data name="Set.WalletLink" xml:space="preserve"><value>Cliquez ici pour voir votre porte-monnaie</value></data>
   <data name="Set.BansTitle" xml:space="preserve"><value>Joueurs bannis</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Vous n’avez banni aucun joueur de vos parties</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Vous n'avez banni aucun joueur pour le moment</value></data>
   <data name="Set.Unban" xml:space="preserve"><value>Unban</value></data>
   <data name="Set.UnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
   <data name="Set.FacebookText" xml:space="preserve"><value>Vous pouvez connecter votre compte Facebook pour pouvoir vous identifier plus facilement.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Connecter</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Se connecter</value></data>
   <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Your {game} account {0} is connected to your Steam account. If you want to connect this {game} account to another Steam account, or connect the Steam account to another account on {game}, you must first disconnect the two accounts that are already connected.</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>Votre compte {game} {0} est connecté à votre compte Steam. Si vous désirez connecter votre compte {game} à un autre compte Steam, ou connecter votre compte Steam à un autre compte {game}, vous devez d'abord vous déconnecter de ces deux comptes.</value></data>
   <data name="Set.Warning" xml:space="preserve"><value>Avertissement</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Disconnecting your Steam account will log you out of {game} and close the launcher. You won't be able to play {game} on Steam again until you connect to another account.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Je comprends et souhaite déconnecter mon compte Steam</value></data>
@@ -667,8 +667,8 @@
   <data name="Set.GroupAnimals" xml:space="preserve"><value>Animaux</value></data>
   <data name="Set.GroupWeapons" xml:space="preserve"><value>Armes</value></data>
   <data name="Set.GroupExploration" xml:space="preserve"><value>Exploration</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Events</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Daily Missions</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>Événements</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Missions quotidiennes</value></data>
   <data name="Set.SaveProfile" xml:space="preserve"><value>Appliquer</value></data>
   <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
   <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
@@ -682,10 +682,10 @@
   <data name="GM.Fill" xml:space="preserve"><value>Fill feeder up to:</value></data>
   <data name="GM.BaitCol" xml:space="preserve"><value>Appâts</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Statut</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Actif</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Actives</value></data>
   <data name="GM.Refill" xml:space="preserve"><value>Réapprovisionner</value></data>
-  <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
-  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0} your brand new {game} account has been created!</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>BIENVENUE DANS {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Félicitations {0}, votre tout nouveau compte {game} a bien été créé !</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Si vous avez déjà téléchargé et installé le lanceur et le client du jeu, vous êtes prêt(e) à jouer ! Si vous êtes nouveau ou nouvelle sur {game}, nous vous recommandons de faire les tutoriels avant de lancer votre première vraie chasse. Les tutoriels vous apprendront tout ce que vous devez savoir pour vous débrouiller seul(e) dans la réserve de chasse d'Evergreen.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Vous possédez un code d'activation ?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Si vous avez acheté une version commerciale de {game}, {0}cliquez ici{1} pour utiliser votre code d'activation.</value></data>
@@ -835,7 +835,7 @@
   <data name="Browser.Wait" xml:space="preserve"><value>Veuillez patienter...</value></data>
   <data name="Browser.CanClose" xml:space="preserve"><value>Vous pouvez fermer cette fenêtre/onglet maintenant si vous le souhaitez.</value></data>
   <data name="Browser.Delay" xml:space="preserve"><value>Cela peut prendre quelques secondes...</value></data>
-  <data name="Browser.EmailProgress" xml:space="preserve"><value>Email confirmation in progress...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Vérification en cours...</value></data>
   <data name="Browser.EmailDone" xml:space="preserve"><value>Email vérifié !</value></data>
   <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
   <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
