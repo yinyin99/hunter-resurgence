@@ -1,4 +1,4 @@
-.settings-menu { margin: 0; padding: 10px 0 0; overflow: hidden; list-style: none; text-align: left; background: var(--surface-0); border-radius: 0 0 var(--r-3) var(--r-3); box-shadow: var(--shadow-2); }
+.settings-menu { margin: 0; padding: 10px 0 0; overflow: hidden; list-style: none; text-align: left; background: var(--surface-0); border-radius: 0 0 var(--r-3) var(--r-3); box-shadow: var(--shadow-dropdown); }
 li a { display: block; padding: 10px 20px; color: #fff; font-size: 16px; line-height: 20px; transition: background-color var(--t-fast) var(--ease); }
 li a:hover, li a:focus-visible { background: var(--accent); outline: 0; }
 .launcher-item { margin-top: 10px; border-top: 1px solid var(--line-2); }

@@ -16,5 +16,5 @@ h4 { margin: 40px 0 8px; font-size: 17.5px; line-height: 24px; font-weight: 400;
 .videos span { color: var(--fg-muted-2); }
 .videos span b { font-weight: 400; color: var(--text-2); }
 .videos ::deep .vt { color: var(--text-2); }
-.panel.bare { padding: 0; background: none; box-shadow: none; }
+.panel.bare { padding: 0; background: none; }
 .bare ::deep .tabs { margin: 12px 0 14px; }

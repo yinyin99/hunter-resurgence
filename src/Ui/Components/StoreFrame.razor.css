@@ -8,4 +8,4 @@
 .menu a.open { background: var(--surface-5); color: #fff; }
 .menu a.sub { min-height: 33px; padding: 4px 20px; border: 0; background: var(--surface-4); font-size: 15px; line-height: 24px; color: var(--text-4); }
 .menu a.sub.active { border-left: 4px solid var(--accent); padding-left: 16px; color: #fff; }
-.menu a:hover { background: var(--surface-6); color: #fff; }
+.menu a:hover { color: #fff; }

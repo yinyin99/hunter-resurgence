@@ -12,7 +12,7 @@
     <div class="grid">
         @foreach (var i in rows)
         {
-            <div class="card panel">
+            <div class="card panel hover-tint">
                 @if (i.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
                 <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="store-item" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/item/@i.Id" class="name">@i.Name</a>
