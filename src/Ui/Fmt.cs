@@ -71,4 +71,10 @@ public static class Fmt
 
     /// <summary>102.89 km (63.93 miles)</summary>
     public static string Kilometres(double km) => $"{km.ToString("0.00", English)} km ({(km * 0.621371192).ToString("0.00", English)} miles)";
+
+    /// <summary>79.31%: always with a point, in every language.</summary>
+    public static string Pct(double v) => v.ToString("0.00", English) + "%";
+
+    /// <summary>12.3456</summary>
+    public static string Score(double v) => v.ToString("0.0000", English);
 }

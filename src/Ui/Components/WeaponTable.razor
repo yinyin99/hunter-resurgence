@@ -6,7 +6,7 @@
             <tr>
                 <td><AssetSlot Name="weapon" Width="150" Height="30" /><span class="n">@w.Weapon</span></td>
                 <td><AssetSlot Name="ammo" Width="36" Height="36" /><span class="n">@w.Ammo</span></td>
-                <td>@w.Shots</td><td>@w.Accuracy.ToString("0.00")%</td><td>@w.Kills</td><td>@w.KillsPerHit.ToString("0.00")%</td>
+                <td>@w.Shots</td><td>@Fmt.Pct(w.Accuracy)</td><td>@w.Kills</td><td>@Fmt.Pct(w.KillsPerHit)</td>
                 <td>@(w.Longest is { } l ? Fmt.Metres(l) : "-- (--)")</td>
             </tr>
         }

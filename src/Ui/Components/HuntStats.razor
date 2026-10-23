@@ -29,7 +29,7 @@ else
 {
     <table class="kills">
         <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@k.Species</a></td><td>@k.Weapon (@k.Ammo)</td><td>@k.Score.ToString("0.0000")</td><td>@Fmt.Metres(k.DistanceM)</td></tr> }</tbody>
+        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@k.Species</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td></tr> }</tbody>
     </table>
 }
 
