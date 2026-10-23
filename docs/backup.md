@@ -72,9 +72,9 @@ If the API refuses the token, the app says "start a hunt to refresh" and skips t
 
 ## Claim key
 
-On first run the app writes 32 random bytes to `%APPDATA%\game-backup\claim.key`. Every backup folder and zip contains that file as `claim.key`; `manifest.json` records only its SHA-256 as `claim_hash`. Keep the zip private: the key is the secret half of a future re-claim.
+On first run the app writes 32 random bytes to `%APPDATA%\game-backup\claim.key`. Every backup folder and zip contains that file as `claim.key`; `manifest.json` records only its SHA-256 as `claim_hash`. Keep the zip private: the key, together with the Steam account, is what a future restore uses as a hint that the backup is yours.
 
-A community server is planned with email and one-time-code login. A Steam sign-in is optional and links the Steam account recorded in the backup.
+A community server is planned with Steam sign-in first (email sign-in may follow). The Steam account recorded in the backup links it to your sign-in. These are hints, not proof: if two people claim the same profile, the claim may be reviewed.
 
 ## Self-test
 
