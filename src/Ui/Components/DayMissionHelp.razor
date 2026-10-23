@@ -1,0 +1,121 @@
+@inject Branding Brand
+
+@* static English in the old app in every language, so inline; the pictures are slots *@
+<div class="dm">
+    <nav class="index">
+        <b>INDEX</b>
+        <p>Daily Missions</p>
+        <ul>
+            <li><a href="#how_it_works">How does it work?</a></li>
+            <li><a href="#difficulty">Difficulty Levels</a></li>
+            <li><a href="#progression">Progression</a></li>
+            <li><a href="#differences">Differences with Regular Missions</a></li>
+            <li><a href="#achievements">Achievements</a></li>
+            <li><a href="#rewards">Special Rewards</a></li>
+        </ul>
+        <p>Daily Missions Services</p>
+        <ul><li><a href="#resume_streak">Resume Streak</a></li></ul>
+    </nav>
+    <h2>Daily Missions</h2>
+    <p>@Brand.Expand("Daily missions are a brand new addition to {game}'s mission system that can be found in the ")<a href="/missions/daily">Missions section</a> in the Launcher or Website.<br />As they are meant to be completed in one day, Daily Missions are supposed to be quite simple and most will not require specific weapons or equipment. Hard Daily Missions may sometimes be an exception to this, but don't be discouraged! You can complete Dailies in Multiplayer if you like.</p>
+    <AssetSlot Name="help-dm-interface" Width="940" Height="850" />
+    <p class="cap"><i>The new Daily Missions interface</i></p>
+
+    <h3 id="how_it_works">How does it work?</h3>
+    <ul>
+        <li>Each day every player receives a new Daily Mission to complete. Different players will receive different Daily Missions (DM from now on).</li>
+        <li>Completing a DM increases your DM streak by 1. A <b>streak</b> is defined as a series of completed consecutive DMs.</li>
+        <li>Skipping or failing to complete a DM will "break your streak" and will bring you back to day one.</li>
+        <li>If you break your streak, Daily Missions will become inactive until you either Activate them to start a new streak or resume your last streak. A broken streak can be recovered using a <a href="#resume_streak">Resume Streak</a> service from the Store to continue from your last completed Daily Mission.</li>
+    </ul>
+
+    <h3 id="difficulty">Difficulty Levels</h3>
+    <p>DMs come in three difficulty levels:</p>
+    <ul><li>Easy</li><li>Medium</li><li>Hard</li></ul>
+    <p>Each difficulty level is color-coded: an easy DM is represented by a green icon, a medium DM by a blue icon, and a hard DM by a red icon.<br />In addition to colors, each difficulty level has a different number of stars: 1 star for easy, 2 stars for medium, and 3 stars for hard.</p>
+    <AssetSlot Name="help-dm-levels" Width="484" Height="200" />
+    <p>Each difficulty level comes with different base rewards: <b>100 gm$ for Easy, 500 gm$ for Medium, and 1000 gm$ for Hard</b> respectively.<br />Rewards increase as your DMs streak gets longer, more on this below.</p>
+
+    <h3 id="progression">Progression</h3>
+    <p>Your first DM will always be an easy one. If you complete it, DMs of different difficulty levels will alternate according to a pattern that we call a <b>cycle</b>.</p>
+    <p>A cycle looks like this:</p>
+    <AssetSlot Name="help-dm-cycle" Width="910" Height="84" />
+    <p>As you can see a cycle lasts for 16 days, provided of course that you keep completing the DMs that are assigned to you day after day.</p>
+    <p>Once the first cycle is completed, a new cycle begins with <b>gm$ rewards increased by 10%</b> (Easy = 110 gm$, Medium = 550 gm$, Hard =1100 gm$).<br />With every subsequent cycle, rewards increase by an extra 10% up to a maximum of double the amount of the base rewards (a 100% increase).</p>
+    <p>So for example, if you manage to complete 10 cycles in a row without breaking your streak you will then receive a x2 reward for each mission, which will continue until you break your streak.</p>
+
+    <h3 id="differences">Differences with Regular Missions</h3>
+    <ul>
+        <li>Unlike regular missions, for a harvest to be valid in DMs, you will have to kill the animal yourself. Friends can still help you <b>find</b> the required animal in a Multiplayer session though.</li>
+        <li>Unlike regular missions, Daily Missions don’t need to be activated. A Daily Mission is always active for the time it lasts (24 hours).</li>
+    </ul>
+
+    <h3 id="achievements">Achievements</h3>
+    <p>You can earn achievements by completing DMs. You can check your DM achievements in the Achievements section of your player's profile:</p>
+    <AssetSlot Name="help-dm-achievements" Width="800" Height="190" />
+    <p>Completing DMs will count towards 3 different types of achievements, one for each difficulty level.</p>
+    <p>Here's a table showing the milestones for each difficulty level:</p>
+    <table class="tg">
+        <thead><tr><th>Difficulty</th><th colspan="5">Missions Completed</th></tr></thead>
+        <tbody>
+                <tr><td class="easy">Easy</td><td>1</td><td>25</td><td>50</td><td>100</td><td>250</td></tr>
+                <tr><td class="medium">Medium</td><td>1</td><td>10</td><td>25</td><td>50</td><td>100</td></tr>
+                <tr><td class="hard">Hard</td><td>1</td><td>5</td><td>10</td><td>25</td><td>50</td></tr>
+        </tbody>
+    </table>
+
+    <h3 id="rewards">Special Rewards</h3>
+    <p>As you progress through your DM streak you will receive special rewards for completing Hard (difficulty) DMs.</p>
+    <p>Special rewards come in the form of:</p>
+    <ul><li>em$</li><li>items</li><li>trophies</li></ul>
+    <p>Items and trophies are exclusive rewards that you can win only by completing DMs (i.e. there's no other way to obtain them!). Your rewards will only show at the start of a new game.</p>
+    <p><b>IMPORTANT:</b> All of the DM's Special Rewards can only be won once! If you break your streak and start a new one, you will still receive gm$ but will need to surpass your previous streak to earn new Special rewards.</p>
+    <p>You will be able to see any special rewards in the Rewards section of your DM:</p>
+    <AssetSlot Name="help-dm-rewards" Width="700" Height="200" />
+    <p>Here's a handy table showing how this works:</p>
+    <table class="tg rewards">
+        <thead><tr><th>Number of<br />Hard DMs<br />completed<br />in a row<br />(streak)</th><th>Special Reward</th></tr></thead>
+        <tbody>
+                <tr><td>1</td><td>50 em$</td></tr>
+                <tr><td>2</td><td>50 em$</td></tr>
+                <tr><td>3</td><td>50 em$</td></tr>
+                <tr><td>4</td><td>50 em$</td></tr>
+                <tr><td>5</td><td><AssetSlot Name="reward-5" Width="60" Height="60" /> <span>Hunting Cap<br />Camo Pattern A</span></td></tr>
+                <tr><td>6</td><td><AssetSlot Name="reward-6" Width="60" Height="60" /> <span>Unique trophy (3 months)</span></td></tr>
+                <tr><td>7</td><td>50 em$</td></tr>
+                <tr><td>8</td><td>50 em$</td></tr>
+                <tr><td>9</td><td>50 em$</td></tr>
+                <tr><td>10</td><td><AssetSlot Name="reward-10" Width="60" Height="60" /> <span>Unique trophy (10 Hard DMs)</span></td></tr>
+                <tr><td>11</td><td><AssetSlot Name="reward-11" Width="60" Height="60" /> <span>Basic T-Shirt<br />Daily Missions Hero</span></td></tr>
+                <tr><td>12</td><td><AssetSlot Name="reward-12" Width="60" Height="60" /> <span>Unique trophy (6 months)</span></td></tr>
+                <tr><td>13</td><td>50 em$</td></tr>
+                <tr><td>14</td><td>50 em$</td></tr>
+                <tr><td>15</td><td><AssetSlot Name="reward-15" Width="60" Height="60" /> <span>Bolt Action Rifle<br />Camo Pattern B</span></td></tr>
+                <tr><td>16</td><td>50 em$</td></tr>
+                <tr><td>17</td><td>50 em$</td></tr>
+                <tr><td>18</td><td>50 em$</td></tr>
+                <tr><td>19</td><td>50 em$</td></tr>
+                <tr><td>20</td><td><AssetSlot Name="reward-20" Width="60" Height="60" /> <span>Unique trophy (20 Hard DMs)</span></td></tr>
+                <tr><td>21</td><td><AssetSlot Name="reward-21" Width="60" Height="60" /> <span>Leather Jacket<br />Hard Core Hunting</span></td></tr>
+                <tr><td>22</td><td>50 em$</td></tr>
+                <tr><td>23</td><td><AssetSlot Name="reward-23" Width="60" Height="60" /> <span>Unique trophy (1 year)</span></td></tr>
+                <tr><td>24</td><td>50 em$</td></tr>
+                <tr><td>25</td><td>50 em$</td></tr>
+                <tr><td>26</td><td>50 em$</td></tr>
+                <tr><td>27</td><td>50 em$</td></tr>
+                <tr><td>28</td><td>50 em$</td></tr>
+                <tr><td>29</td><td><AssetSlot Name="reward-29" Width="60" Height="60" /> <span>Lever Action Rifle<br />Engraved</span></td></tr>
+                <tr><td>30</td><td><AssetSlot Name="reward-30" Width="60" Height="60" /> <span>Unique trophy (30 Hard DMs)</span></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Daily Missions Services</h2>
+    <h3 id="resume_streak">Resume a Streak</h3>
+    <p>As the name suggests, this service allows you to resume a DM's streak. For example, if you have a long streak of completed DMs and then missed or failed a DM, you can use this service to resume your streak and continue from your last completed DM.</p>
+    <p>The good thing is, it doesn't matter how much time has passed since you broke your streak, you will always be able to resume it - even if you broke it, say, a year before.<br />This service can be purchased in advance and activated when needed. There is no limit to how many of these cards you can purchase or own.</p>
+    <p>You can purchase this service directly on the DM page: as soon as you break your streak a button will appear to the left of your "Day 1" DM, prompting you to buy it (or use it, if you already own at least one).</p>
+    <AssetSlot Name="help-dm-resume-buy" Width="700" Height="200" />
+    <p>Alternatively, you can purchase it from the <a href="/store">Store</a>.</p>
+    <p>Once purchased you will be able to use this service directly on the DM page:</p>
+    <AssetSlot Name="help-dm-resume-use" Width="700" Height="200" />
+</div>
