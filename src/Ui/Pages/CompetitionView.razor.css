@@ -27,9 +27,9 @@ p { margin: 0 0 6px; font-size: 14px; line-height: 20px; color: #ccc; }
 .month { margin: 0 0 7px 14px; font-size: 12px; line-height: 18px; }
 .month b { color: #ddd; }
 .month a { margin-left: 4px; }
-.board { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px; }
-.board th { padding: 8px; font-weight: 100; color: #eee; text-align: left; }
-.board td { padding: 8px; border-top: 1px solid #222; text-align: center; }
+.board { table-layout: fixed; }
+.board th, .board td { padding: 8px; }
+.board td { text-align: center; }
 .board th:nth-child(1) { width: 215px; }
 .board th:nth-child(2) { width: 262px; }
 .board td:last-child { text-align: left; }

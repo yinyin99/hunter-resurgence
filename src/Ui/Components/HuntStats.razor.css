@@ -2,10 +2,9 @@
 h4 { margin: 0 0 6px; font-size: 17px; line-height: 24px; font-weight: 400; color: #fff; }
 p { margin: 0 0 10px; font-size: 13px; line-height: 20px; color: #ddd; }
 ul { margin: 0 0 14px; padding-left: 20px; font-size: 14px; color: #ddd; }
-.misc { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }
-.misc td { padding: 4px 6px; border-top: 1px solid #262626; }
+.misc { margin: 0 0 20px; }
+.misc td { padding: 4px 6px; }
 .misc td:first-child { width: 44%; }
 .gap { margin-top: 20px; }
-.kills { width: 100%; margin: 0 0 14px; border-collapse: collapse; font-size: 14px; color: #ddd; }
-.kills th, .kills td { padding: 6px; text-align: left; font-weight: 400; border-bottom: 1px solid #262626; }
+.kills { margin: 0 0 14px; }
 .kills a { color: var(--primary); }

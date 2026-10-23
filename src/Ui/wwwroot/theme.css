@@ -245,6 +245,17 @@ a { transition: color var(--t-fast) var(--ease); }
 /* a dark surface; the ring is an inset shadow so it never changes the box size */
 .panel { background: var(--surface-2); border-radius: var(--r-3); box-shadow: var(--ring); }
 
+/* data table: one row line, a hover tint; cells are left aligned, .tbl-c centres every column but the first. Callers set widths and margins.
+   :where keeps these rules weaker than any scoped override (theme.css loads after the scoped bundle, so equal specificity would win here). */
+.tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-btn); color: var(--text-2); }
+:where(.tbl) th, :where(.tbl) td { text-align: left; font-weight: 400; }
+:where(.tbl) th { padding: 8px 6px; color: var(--text-1); }
+:where(.tbl) td { padding: 6px; border-top: 1px solid var(--line); }
+:where(.tbl) tbody tr { transition: background-color var(--t-fast) var(--ease); }
+:where(.tbl) tbody tr:hover { background: var(--tint-1); }
+:where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
+:where(.tbl-c) :is(th, td):first-child { text-align: left; }
+
 /* an empty block of the final size while its data loads (the old app left the area empty) */
 .skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
 @keyframes skeleton { to { background-position: -150% 0; } }

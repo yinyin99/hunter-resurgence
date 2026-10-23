@@ -34,7 +34,7 @@
             @if (participants.Count == 0) { <p>@L["Comp.NoResults"]</p> }
             else
             {
-                <table class="board">
+                <table class="board tbl">
                     <thead><tr><th>@L["Comp.Position"]</th><th>@L["Comp.Player"]</th><th>@L["Comp.Result"]</th></tr></thead>
                     <tbody>@foreach (var p in participants) { <tr><td>@p.Position</td><td><a href="/profile/@p.Handle">@p.Handle</a></td><td>@p.Result</td></tr> }</tbody>
                 </table>

@@ -20,7 +20,7 @@
             <h1>@bundle.Name</h1>
             <p class="text">@bundle.Description</p>
             @if (!bundle.Buyable) { <p class="own">@L["Store.MaxOwn"]</p> }
-            <table>
+            <table class="tbl">
                 <thead><tr><th>@L["Store.Included"]</th><th class="own">@L["Store.Own"]</th><th>@L["Store.Value"]</th></tr></thead>
                 <tbody>
                     @foreach (var l in bundle.Lines)

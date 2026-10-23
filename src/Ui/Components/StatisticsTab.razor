@@ -17,7 +17,7 @@
             <h4>@L["Prof.Collectables"]</h4>
             <CollectableTable Rows="totals.Collectables" />
             <h4>@L["Stat.Misc"]</h4>
-            <table class="misc"><tbody>
+            <table class="misc tbl"><tbody>
                 <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(totals.DistanceKm)</td></tr>
                 <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(totals.HuntSeconds)</td></tr>
             </tbody></table>
@@ -27,7 +27,7 @@
         @if (history is { Rows.Count: 0 }) { <p>@L["Stat.NoExpeditions"]</p> }
         else if (history is not null)
         {
-            <table class="hist">
+            <table class="hist tbl">
                 <thead><tr><th>@L["Stat.Start"]</th><th>@L["Stat.Dur"]</th><th>@L["Stat.Reserve"]</th><th>@L["Stat.Lodge"]</th><th>@L["Stat.CollectablesCol"]</th><th>@L["Stat.KillsCol"]</th></tr></thead>
                 <tbody>@foreach (var r in history.Rows) { <tr><td><a href="/profile/@Handle/expedition/@r.Id">@r.Start.ToString("yyyy-MM-dd HH:mm")</a></td><td>@Fmt.Duration(r.Seconds)</td><td>@r.Reserve</td><td>@r.Lodge</td><td>@r.Collectables</td><td>@r.Kills</td></tr> }</tbody>
             </table>
@@ -80,7 +80,7 @@
             case "building": <p>@(season == 0 ? L["Stat.BestAllBuilding", Handle] : L["Stat.BestBuilding", Handle, season])</p>; break;
             case "empty": <p>@(season == 0 ? L["Stat.BestAllNone", Handle] : L["Stat.BestNone", Handle, season])</p>; break;
             default:
-                <table class="hist">
+                <table class="hist tbl">
                     <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
                     <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@Fmt.Score(r.Score)</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
                 </table>

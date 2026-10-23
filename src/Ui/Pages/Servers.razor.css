@@ -10,14 +10,13 @@
 .tools input { appearance: none; width: 16px; height: 16px; margin: 0 0 -3px 2px; border-radius: 3px; background: var(--check-bg); }
 .tools input:checked { background: var(--check-tick); }
 .tools .btn { padding: 3px 11px; font-size: var(--fs-btn-sm); line-height: 18px; }
-table { width: 100%; border-collapse: collapse; }
-th { padding: 8px; font-size: 14px; font-weight: 300; text-align: left; }
+th { padding: 8px; font-weight: 300; }
 th a { color: var(--fg-muted-2); }
 th a:hover { color: var(--fg-heading); }
 th.players, td.players { text-align: center; }
-td { height: 40px; padding: 0 8px; border-bottom: 1px solid #222; color: var(--fg-muted); white-space: nowrap; }
+td { height: 40px; padding: 0 8px; color: var(--fg-muted); white-space: nowrap; }
 tbody tr { cursor: pointer; }
-tr.selected td { background: #3a3a3a; color: #fff; border-bottom-color: #3a3a3a; }
+tr.selected td { background: var(--surface-6); color: #fff; }
 td:first-child { border-radius: 4px 0 0 4px; }
 td:last-child { border-radius: 0 4px 4px 0; }
 td.name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }

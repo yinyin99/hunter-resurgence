@@ -16,7 +16,7 @@ else { <CollectableTable Rows="Hunt.Collectables" /> }
 @if (Hunt.Achievements.Count == 0) { <p>@L["Stat.NoAchExp"]</p> }
 else { <ul>@foreach (var a in Hunt.Achievements) { <li>@a</li> } </ul> }
 <h4>@L["Stat.Misc"]</h4>
-<table class="misc"><tbody>
+<table class="misc tbl"><tbody>
     <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(Hunt.DistanceKm)</td></tr>
     <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(Hunt.Seconds)</td></tr>
 </tbody></table>
@@ -27,7 +27,7 @@ else { <ul>@foreach (var a in Hunt.Antlers) { <li>@a</li> } </ul> }
 @if (Hunt.Kills.Count == 0) { <p>@L["Stat.NoKillsExp"]</p> }
 else
 {
-    <table class="kills">
+    <table class="kills tbl">
         <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
         <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td></tr> }</tbody>
     </table>

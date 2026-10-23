@@ -6,9 +6,7 @@
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 .text { margin: 0 0 20px; font-size: 12px; line-height: 20px; color: #ddd; }
 .own { color: #e0301e; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; color: #ddd; }
-th { padding: 4px 5px; text-align: left; font-weight: 400; }
-td { padding: 4px 5px; }
+th, td { padding: 4px 5px; }
 th:nth-child(2), td:nth-child(2) { width: 20%; text-align: center; }
 th:nth-child(3), td:nth-child(3) { width: 20%; text-align: center; }
 a { color: var(--accent); }

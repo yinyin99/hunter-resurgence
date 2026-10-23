@@ -8,7 +8,7 @@
     <h2 class="page-title">@(L["Wal.MyWallet"].Value.ToUpperInvariant()) / @(L["Wal.History"].Value.ToUpperInvariant())</h2>
     @if (summary is not null)
     {
-        <table class="sum">
+        <table class="sum tbl">
             <thead><tr><th>@L["Wal.Balance"]</th><th>@L["Wal.Spent"]</th></tr></thead>
             <tbody>
                 <tr><td>Em$ @summary.Ems.ToString("0.00")</td><td>Em$ @summary.EmsSpent.ToString("0.00")</td></tr>
@@ -25,7 +25,7 @@
             else if (payments.Count == 0) { <p class="none">@L["Wal.NoneBank"]</p> }
             else
             {
-                <table class="bank">
+                <table class="bank tbl">
                     <thead><tr><th>@L["Wal.Type"]</th><th>@L["Wal.Date"]</th><th>@L["Wal.Status"]</th><th>@L["Wal.Item"]</th><th>@L["Wal.Amount"]</th><th>@L["Wal.Provider"]</th></tr></thead>
                     <tbody>
                         @foreach (var p in payments)
@@ -44,7 +44,7 @@
             @if (loaded && entries.Count == 0) { <p class="none">@L["Wal.NoneVirtual", currency]</p> }
             else if (entries.Count > 0)
             {
-                <table class="entries">
+                <table class="entries tbl">
                     <thead><tr><th>@L["Wal.Date"]</th><th>@L["Wal.AmountOf", currency]</th><th>@L["Wal.Before"]</th><th>@L["Wal.After"]</th><th colspan="2">@L["Wal.Items"]</th></tr></thead>
                     <tbody>
                         @foreach (var e in entries)

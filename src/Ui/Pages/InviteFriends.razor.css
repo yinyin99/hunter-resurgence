@@ -13,8 +13,8 @@
 .link input { width: 420px; height: 28px; margin-left: 8px; border: 0; background: #eee; font-size: 14px; color: #333; }
 h3 { margin: 24px 0 14px; font-size: 28px; line-height: 36px; font-weight: 400; color: #fff; }
 .note { margin: 0 0 22px; font-size: 14px; line-height: 20px; color: #ddd; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; color: #ddd; }
-th, td { padding: 8px; text-align: left; vertical-align: top; font-weight: 400; border-bottom: 1px solid #262626; }
+table { line-height: 20px; }
+th, td { padding: 8px; vertical-align: top; }
 th:first-child { width: 222px; }
 td ul { margin: 0; padding-left: 18px; }
 td a { color: var(--primary); }

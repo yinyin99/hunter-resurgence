@@ -1,4 +1,2 @@
-table { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }
-th { padding: 8px 6px; text-align: center; font-weight: 400; }
-th:first-child, td:first-child { width: 30%; text-align: left; }
-td { padding: 6px; text-align: center; border-top: 1px solid #262626; }
+table { margin: 0 0 20px; }
+th:first-child, td:first-child { width: 30%; }

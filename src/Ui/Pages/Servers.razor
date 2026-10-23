@@ -20,7 +20,7 @@
         </div>
         @if (shown.Count > 0)
         {
-            <table>
+            <table class="tbl">
                 <thead>
                     <tr>
                         <th aria-sort='@Sorted("name")'><a href="#" @onclick='() => Sort("name")' @onclick:preventDefault>@L["Servers.GameName"]</a></th>

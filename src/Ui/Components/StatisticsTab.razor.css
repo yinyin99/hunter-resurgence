@@ -1,11 +1,10 @@
 h3 { margin: 0 0 20px; text-align: right; font-size: 26px; line-height: 38px; font-weight: 300; color: #aaa; }
 h4 { margin: 0 0 4px; font-size: 18px; line-height: 26px; font-weight: 400; color: #fff; }
 p { margin: 0 0 14px; font-size: 14px; line-height: 20px; color: #ddd; }
-.misc { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }
-.misc td { padding: 4px 6px; border-top: 1px solid #262626; }
+.misc { margin: 0 0 20px; }
+.misc td { padding: 4px 6px; }
 .misc td:first-child { width: 44%; }
-.hist { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 13px; color: #ddd; }
-.hist th { padding: 8px 6px; text-align: left; font-weight: 400; }
+.hist { margin: 0 0 20px; font-size: 13px; }
 .hist td { padding: 3px 6px; }
 .hist a { color: var(--primary); }
 select { display: block; box-sizing: border-box; width: 220px; height: 30px; margin: 20px 0; padding: 0 8px; border: 0; border-radius: 2px; background: #eee; font-size: 14px; color: #333; }
