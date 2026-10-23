@@ -1,0 +1,48 @@
+@inject ModalService Modal
+@inject IStoreService Store
+@inject IWalletService Wallet
+
+<div class="buy" role="dialog" aria-modal="true">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+    @if (state == 0)
+    {
+        <h2>@L["Store.Confirm"]</h2>
+        <p class="line">1x @Name - @Ems em$</p>
+        @if (balances is not null)
+        {
+            <div class="buttons">
+                @if (balances.Ems >= Ems) { <button class="btn btn-primary" @onclick="() => Pay(false)">@L["Store.BuyEms"]</button> }
+                else { <a class="btn btn-primary" href="/bank/ems" @onclick="Modal.Close">@L["Store.GetMoreEms"]</a> }
+                @if (Gms > 0)
+                {
+                    <button class="btn btn-primary" disabled="@(balances.Gms < Gms)" @onclick="() => Pay(true)">@(balances.Gms >= Gms ? L["Store.BuyGms"] + " (" + Gms + " gm$)" : L["Store.NotEnoughGms"])</button>
+                }
+            </div>
+        }
+    }
+    else if (state == 1) { <h2>@L["Store.Complete"]</h2><p class="line">@L["Store.Enjoy", Name]</p> }
+    else { <h2>@L["Store.Oops"]</h2><p class="line">@L["Mis.Failed"]</p><div class="buttons"><button class="btn btn-primary" @onclick="Modal.Close">@L["Alert.Ok"]</button></div> }
+</div>
+
+@code {
+    Balances? balances;
+    int state;
+
+    [Parameter, EditorRequired] public int Id { get; set; }
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter, EditorRequired] public int Ems { get; set; }
+    [Parameter] public int Gms { get; set; }
+    [Parameter] public bool Bundle { get; set; }
+
+    protected override async Task OnInitializedAsync() => balances = await Wallet.BalancesAsync();
+
+    // the mock buys nothing and keeps the balances
+    async Task Pay(bool gms)
+    {
+        state = (await Store.BuyAsync(Id, Bundle, gms)).Ok ? 1 : 2;
+        if (state != 1) return;
+        StateHasChanged();
+        await Task.Delay(2000);
+        Modal.Close();
+    }
+}
