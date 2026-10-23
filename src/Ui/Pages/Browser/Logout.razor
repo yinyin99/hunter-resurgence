@@ -1,0 +1,12 @@
+@page "/logout"
+@layout BrowserLayout
+@inject ISessionService Sessions
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+<BrowserNotice Text="@L["Browser.Logout"]" />
+
+@code {
+    // the old page clears the login and sends the browser on to the website; the mock host stays on the notice
+    protected override Task OnInitializedAsync() => Sessions.SignOutAsync();
+}

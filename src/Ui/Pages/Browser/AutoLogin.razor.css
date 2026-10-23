@@ -1,0 +1,8 @@
+.al { padding-top: 0; font-size: 40px; line-height: 50px; }
+.al ::deep .logo { display: block; margin: 0 auto; }
+h2 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 400; }
+.text { width: 900px; margin: 12px auto; font-size: 40px; line-height: 50px; }
+h3 { margin: 12px 0; font-size: 14px; line-height: 20px; font-weight: 400; }
+.delay { margin: 0; }
+.spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #444; border-top-color: #ddd; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

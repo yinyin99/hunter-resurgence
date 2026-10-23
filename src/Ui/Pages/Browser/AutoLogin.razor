@@ -1,0 +1,45 @@
+@page "/auto-login"
+@layout BrowserLayout
+@implements IDisposable
+@inject ISessionService Sessions
+@inject ModalService Modal
+@inject HostMode Mode
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+<div class="al">
+    <AssetSlot Name="logo-landing" Width="1000" Height="250" Class="logo" />
+    <h2>@L[done ? "Browser.LoginDone" : "Browser.LoginProgress"]</h2>
+    @if (!done) { <span class="spinner" role="img" aria-label="@L["Browser.Wait"]"></span> }
+    <p class="text">@L["Browser.AutoLoginText"]</p>
+    <h3>@L[done ? "Browser.CanClose" : "Browser.Wait"]</h3>
+    @if (done) { <p class="delay">@L["Browser.Delay"]</p> }
+</div>
+
+@code {
+    bool done;
+    Action? changed;
+
+    // without a web session the sign-in dialog opens first; the login then runs (mock: a short wait, after the first paint so the page does not hold back)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        if (await Sessions.CurrentAsync() is null)
+        {
+            Sessions.Changed += changed = async () => await InvokeAsync(Run);
+            Modal.Show<LoginDialog>(backdrop: "none");
+        }
+        else await Run();
+    }
+
+    async Task Run()
+    {
+        // dev hook ?mock=browser:hold keeps the progress state (for the comparison)
+        if (Mode.Mock == "browser:hold") return;
+        await Task.Delay(3000);
+        done = true;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Sessions.Changed -= changed;
+}
