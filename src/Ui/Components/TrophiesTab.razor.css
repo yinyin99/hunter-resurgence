@@ -1,0 +1,8 @@
+.grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.grid li { width: 150px; font-size: 13px; line-height: 18px; color: #ddd; }
+.grid li > * { display: block; }
+.grid li a { margin-top: 6px; color: var(--primary); }
+.grid li b { font-weight: 400; color: #fff; }
+.grid li span { color: #888; }
+.grid ::deep .asset-slot { display: block; }
+.empty { margin: 80px 0; text-align: center; font-size: 22px; font-weight: 300; color: #bbb; }

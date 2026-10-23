@@ -3,6 +3,7 @@
 @page "/profile/{Handle}/{Tab}/{Sub}"
 @page "/profile/{Handle}/{Tab}/{Sub}/{Arg:int}"
 @inject IProfileService Service
+@inject ISessionService Session
 
 <PageTitle>@L["Prof.Title", Handle]</PageTitle>
 
@@ -13,6 +14,13 @@
         <AssetSlot Name="profile-banner" Width="940" Height="200" Class="banner" />
         <div class="polaroid"><AssetSlot Name="avatar-profile" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
+        @if (signedIn && !profile.Own && !profile.Friend)
+        {
+            // the request goes out once; the button then stays off
+            <button type="button" class="btn btn-primary request" disabled="@requested" @onclick="() => requested = true">
+                @if (requested) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
+            </button>
+        }
         <p class="sub">
             <span data-tip="@L["Prof.TipMembership", profile.Handle]">@profile.Membership</span>
             <span data-tip="@L["Prof.TipScore", profile.Handle]"><Icon Name="paw" /> @profile.HunterScore</span>
@@ -32,6 +40,10 @@
             case "ranks": <RanksTab Handle="@profile.Handle" Sub="@Sub" />; break;
             case "achievements": <AchievementsTab Handle="@profile.Handle" Sub="@Sub" />; break;
             case "skills": <SkillsTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "gallery": <GalleryTab Handle="@profile.Handle" Own="@profile.Own" Sub="@Sub" />; break;
+            case "trophies": <TrophiesTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "dogs": <DogsTab Handle="@profile.Handle" />; break;
+            case "friends": <FriendsTab Handle="@profile.Handle" Own="@profile.Own" Sub="@Sub" />; break;
             case "statistics": <StatisticsTab Handle="@profile.Handle" Sub="@Sub" Arg="@Arg" />; break;
         }
     </div>
@@ -46,6 +58,7 @@
     ];
 
     Profile? profile;
+    bool signedIn, requested;
 
     [Parameter] public string Handle { get; set; } = "";
     [Parameter] public string? Tab { get; set; }
@@ -53,5 +66,10 @@
     [Parameter] public int? Arg { get; set; }
     string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "ranks";
 
-    protected override async Task OnParametersSetAsync() => profile = await Service.ProfileAsync(Handle);
+    protected override async Task OnParametersSetAsync()
+    {
+        profile = await Service.ProfileAsync(Handle);
+        signedIn = await Session.CurrentAsync() is not null;
+        requested = false;
+    }
 }

@@ -1,0 +1,28 @@
+@inject IProfileService Service
+
+@if (dogs is not null)
+{
+    @if (dogs.Count == 0) { <p class="empty">@L["Prof.DogsEmpty"]</p> }
+    <ul class="dogs">
+        @foreach (var d in dogs)
+        {
+            <li>
+                <AssetSlot Name="dog" Width="120" Height="120" />
+                <div>
+                    <b>@d.Name</b>
+                    <span>@d.Type</span>
+                    <span>@L["Prof.DogLvl"] @d.Level</span>
+                    <span>@L["Prof.DogSkills"]: @(d.Skills.Count == 0 ? L["Prof.DogNoSkills"] : string.Join(", ", d.Skills))</span>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    IReadOnlyList<Dog>? dogs;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+
+    protected override async Task OnParametersSetAsync() => dogs = await Service.DogsAsync(Handle);
+}

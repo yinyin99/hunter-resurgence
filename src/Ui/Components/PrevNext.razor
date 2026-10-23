@@ -1,0 +1,15 @@
+@* Previous / Next buttons of a profile list *@
+@if (Pages > 1)
+{
+    <p class="pager">
+        @if (Page > 1) { <a class="btn btn-primary" href="@Base/@(Page - 1)">@L["Stat.Previous"]</a> }
+        @if (Page < Pages) { <a class="btn btn-primary" href="@Base/@(Page + 1)">@L["Stat.Next"]</a> }
+    </p>
+}
+
+@code {
+    [Parameter] public int Page { get; set; } = 1;
+    [Parameter] public int Pages { get; set; } = 1;
+    /// <summary>The address of the list; a page number is added.</summary>
+    [Parameter, EditorRequired] public string Base { get; set; } = "";
+}

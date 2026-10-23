@@ -2,7 +2,7 @@
 
 <div class="video" role="dialog" aria-modal="true" tabindex="0" @onkeydown="Key" @ref="box">
     <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
-    <div class="frame"><AssetSlot Name="video" Width="900" Height="506" /></div>
+    <div class="frame"><AssetSlot Name="@Slot" Width="900" Height="506" /></div>
     <p>@Title</p>
 </div>
 
@@ -10,6 +10,8 @@
     ElementReference box;
 
     [Parameter, EditorRequired] public string Title { get; set; } = "";
+    /// <summary>The picture slot: a video, or a gallery photo in the same lightbox.</summary>
+    [Parameter] public string Slot { get; set; } = "video";
 
     // Escape closes the video, as in the old app
     void Key(KeyboardEventArgs e) { if (e.Key == "Escape") Modal.Close(); }

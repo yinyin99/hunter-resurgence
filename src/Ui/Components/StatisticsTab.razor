@@ -31,10 +31,7 @@
                 <thead><tr><th>@L["Stat.Start"]</th><th>@L["Stat.Dur"]</th><th>@L["Stat.Reserve"]</th><th>@L["Stat.Lodge"]</th><th>@L["Stat.CollectablesCol"]</th><th>@L["Stat.KillsCol"]</th></tr></thead>
                 <tbody>@foreach (var r in history.Rows) { <tr><td><a href="/profile/@Handle/expedition/@r.Id">@r.Start.ToString("yyyy-MM-dd HH:mm")</a></td><td>@Fmt.Duration(r.Seconds)</td><td>@r.Reserve</td><td>@r.Lodge</td><td>@r.Collectables</td><td>@r.Kills</td></tr> }</tbody>
             </table>
-            <p class="pager">
-                @if (history.Number > 1) { <a class="btn" href="/profile/@Handle/statistics/history/@(history.Number - 1)">@L["Stat.Previous"]</a> }
-                @if (history.Number < history.Pages) { <a class="btn" href="/profile/@Handle/statistics/history/@(history.Number + 1)">@L["Stat.Next"]</a> }
-            </p>
+            <PrevNext Page="history.Number" Pages="history.Pages" Base="@("/profile/" + Handle + "/statistics/history")" />
         }
         break;
     default:
