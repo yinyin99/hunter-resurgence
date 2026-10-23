@@ -43,4 +43,7 @@ public static class Fmt
 
     /// <summary>2026-08-19 15:26:35</summary>
     public static string DateTime(DateTime d) => d.ToString("yyyy-MM-dd HH:mm:ss", English);
+
+    /// <summary>A wallet row date: 2021-02-21 16:16.</summary>
+    public static string Purchase(DateTime d) => d.ToString("yyyy-MM-dd HH:mm", English);
 }

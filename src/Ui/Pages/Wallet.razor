@@ -1,0 +1,94 @@
+@page "/wallet"
+@page "/wallet/{Kind}"
+@inject IWalletService Service
+
+<PageTitle>@L["Wal.MyWallet"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Wal.MyWallet"].Value.ToUpperInvariant()) / @(L["Wal.History"].Value.ToUpperInvariant())</h2>
+    @if (summary is not null)
+    {
+        <table class="sum">
+            <thead><tr><th>@L["Wal.Balance"]</th><th>@L["Wal.Spent"]</th></tr></thead>
+            <tbody>
+                <tr><td>Em$ @summary.Ems.ToString("0.00")</td><td>Em$ @summary.EmsSpent.ToString("0.00")</td></tr>
+                <tr><td>Gm$ @summary.Gms.ToString("0.00")</td><td>Gm$ @summary.GmsSpent.ToString("0.00")</td></tr>
+            </tbody>
+        </table>
+    }
+    <Tabs Kind="strip" Items="tabs" Active="@("/wallet/" + kind)" />
+    <section class="panel">
+        <h3>@L["Wal.History"] @currency</h3>
+        @if (kind == "bank")
+        {
+            @if (!loaded) { }
+            else if (payments.Count == 0) { <p class="none">@L["Wal.NoneBank"]</p> }
+            else
+            {
+                <table class="bank">
+                    <thead><tr><th>@L["Wal.Type"]</th><th>@L["Wal.Date"]</th><th>@L["Wal.Status"]</th><th>@L["Wal.Item"]</th><th>@L["Wal.Amount"]</th><th>@L["Wal.Provider"]</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in payments)
+                        {
+                            <tr><td>@p.Type</td><td>@Fmt.Purchase(p.When)</td><td>@p.Status</td><td>@p.Item</td><td>@p.Amount.ToString("0.00")</td><td>@p.Provider</td></tr>
+                            @if (p.Redeemed is { } r) { <tr class="note"><td colspan="6">@L["Wal.GiftRedeemed", Fmt.DateTime(r)]</td></tr> }
+                            else if (p.GiftCode is not null) { <tr class="note"><td colspan="6">@L["Wal.GiftCode", p.GiftCode]</td></tr> }
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        else
+        {
+            <p class="desc">@L["Wal.EmsDesc", currency]</p>
+            @if (loaded && entries.Count == 0) { <p class="none">@L["Wal.NoneVirtual", currency]</p> }
+            else if (entries.Count > 0)
+            {
+                <table class="entries">
+                    <thead><tr><th>@L["Wal.Date"]</th><th>@L["Wal.AmountOf", currency]</th><th>@L["Wal.Before"]</th><th>@L["Wal.After"]</th><th colspan="2">@L["Wal.Items"]</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in entries)
+                        {
+                            <tr><td>@Fmt.Purchase(e.When)</td><td>@e.Amount</td><td>@e.Before</td><td>@e.After</td><td>@e.Item</td><td>@e.Summary</td></tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        @if (more) { <button type="button" class="btn load-more-button" @onclick="More">@L["Wal.More"]</button> }
+    </section>
+</div>
+
+@code {
+    WalletSummary? summary;
+    IReadOnlyList<(string, string)> tabs = [];
+    List<BankPayment> payments = [];
+    List<WalletEntry> entries = [];
+    bool loaded, more;
+
+    [Parameter] public string? Kind { get; set; }
+    string kind => Kind is "ems" or "gms" ? Kind : "bank";
+    string currency => kind == "gms" ? "gm$" : kind == "ems" ? "em$" : "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        tabs = [(L["Wal.TabBank"], "/wallet/bank"), (L["Wal.TabEms"], "/wallet/ems"), (L["Wal.TabGms"], "/wallet/gms")];
+        summary = await Service.SummaryAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        (payments, entries, loaded) = ([], [], false);
+        await More();
+    }
+
+    // "Show more" appears while the last call returned a full page
+    async Task More()
+    {
+        int n;
+        if (kind == "bank") { var p = await Service.BankAsync(payments.Count); payments.AddRange(p); n = p.Count; }
+        else { var p = await Service.EntriesAsync(kind == "gms", entries.Count); entries.AddRange(p); n = p.Count; }
+        more = n == IWalletService.PageSize;
+        loaded = true;
+    }
+}
