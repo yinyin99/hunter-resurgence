@@ -1,0 +1,10 @@
+@page "/signup/page2"
+@layout SignupLayout
+
+<PageTitle>@L["Signup.P2.Title"]</PageTitle>
+
+<SignupCard Title="@L["Signup.P2.Title"]" Art="signup-bg-3" Class="p2">
+    <div class="su-gift"><AssetSlot Name="gift-frame" Width="561" Height="288" /><AssetSlot Name="gift-shotgun" Width="467" Height="99" Class="item" /></div>
+    <Paper X="621" Y="202">@L["Signup.P2.Text"]</Paper>
+    <a class="su-btn large su-next" href="/signup/page3">@L["Signup.Continue"]</a>
+</SignupCard>

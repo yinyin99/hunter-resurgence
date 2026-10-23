@@ -1,0 +1,97 @@
+@page "/signup/page1"
+@layout SignupLayout
+@implements IDisposable
+@inject ISignupService Signup
+@inject ISessionService Sessions
+@inject IAccountService Account
+@inject NavigationManager Nav
+
+<PageTitle>@L["Signup.P1.Title"]</PageTitle>
+
+<SignupCard Title="@L["Signup.P1.Title"]" Art="signup-bg-2" Class="p1">
+    <div class="su-carousel" tabindex="0" @onkeydown="Key" @onwheel="Wheel" @onwheel:preventDefault>
+        @for (var pos = 0; pos < (avatars.Count > 0 ? 5 : 0); pos++)
+        {
+            var at = (sel + pos - 2 + avatars.Count * 2) % avatars.Count;
+            var size = pos == 2 ? 160 : pos is 1 or 3 ? 130 : 110;
+            <button type="button" class="su-avatar pos@(pos + 1)" tabindex="-1" aria-label="@avatars[at]" @onclick="() => sel = at"><AssetSlot Name="@avatars[at]" Width="size" Height="size" /></button>
+        }
+        <button type="button" class="su-arrow left" aria-label="@L["Signup.P1.Prev"]" @onclick="Prev"></button>
+        <button type="button" class="su-arrow right" aria-label="@L["Signup.P1.Next"]" @onclick="Next"></button>
+    </div>
+    <form class="su-name" @onsubmit="Continue" novalidate>
+        <button type="button" class="su-dice" aria-label="@L["Signup.P1.Dice"]" @onclick="Suggest"><Icon Name="dice" /></button>
+        <input class="su-input" name="username" required placeholder="@L["Signup.P1.Pick"]" autocomplete="off" value="@name" @oninput="Typed" @ref="box" />
+        @if (message is not null) { <span class="su-bubble" role="alert">@L[message]</span> }
+        <button type="submit" class="su-btn large" disabled="@(!ok)">@L["Signup.Continue"]</button>
+    </form>
+    @if (names.Count > 0)
+    {
+        <ul class="su-names">
+            @foreach (var n in names) { <li><button type="button" @onclick="() => Pick(n)">@n</button></li> }
+        </ul>
+    }
+</SignupCard>
+
+@code {
+    IReadOnlyList<string> avatars = [];
+    IReadOnlyList<string> names = [];
+    int sel = 2;
+    string name = "";
+    bool dirty;
+    bool? available;
+    ElementReference box;
+    CancellationTokenSource? typing;
+
+    bool ok => name.Length > 0 && available == true;
+    string? message => dirty && name.Length == 0 ? "Signup.P1.Required" : available == false ? "Signup.P1.Taken" : null;
+
+    protected override async Task OnInitializedAsync() => avatars = await Signup.AvatarsAsync();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await box.FocusAsync();
+    }
+
+    void Prev() => sel = (sel + avatars.Count - 1) % avatars.Count;
+    void Next() => sel = (sel + 1) % avatars.Count;
+    void Wheel(WheelEventArgs e) { if (e.DeltaY < 0) Prev(); else Next(); }
+
+    // the arrow keys move the selection (the old page did not react to them in a modern engine)
+    void Key(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowLeft") Prev();
+        else if (e.Key == "ArrowRight") Next();
+    }
+
+    async Task Suggest() => names = await Signup.SuggestNamesAsync();
+
+    Task Pick(string n) => Check(n, 0);
+
+    /// <summary>The name is checked half a second after the last key.</summary>
+    Task Typed(ChangeEventArgs e) => Check((string?)e.Value ?? "", 500);
+
+    async Task Check(string value, int delay)
+    {
+        (name, dirty, available) = (value, true, null);
+        typing?.Cancel();
+        typing = new();
+        if (name.Length == 0) return;
+        try
+        {
+            await Task.Delay(delay, typing.Token);
+            available = await Signup.UsernameAvailableAsync(name);
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    async Task Continue()
+    {
+        if (!ok) return;
+        await Sessions.SetHandleAsync(name);
+        await Account.SaveAsync("avatar", new Dictionary<string, string> { ["avatar"] = avatars[sel] });
+        Nav.NavigateTo("/signup/page2");
+    }
+
+    public void Dispose() => typing?.Cancel();
+}

@@ -1,0 +1,81 @@
+@inject ModalService Modal
+@inject IGameSettingsService Service
+
+<div class="su-dialog tutorial" role="dialog" aria-labelledby="su-dlg">
+    <h2 id="su-dlg">@L["Dialog.Tutorial.Title"]</h2>
+    @if (settings is not null)
+    {
+        <form class="su-form" @onsubmit="Save" novalidate>
+            <label>@L["Dialog.Tutorial.Preset"]<select id="graphics-preset-select" value="@preset" @onchange="Preset">
+                @Option(0, "Dialog.Tutorial.Low")@Option(1, "Dialog.Tutorial.Medium")@Option(2, "Dialog.Tutorial.High")@Option(3, "Dialog.Tutorial.Ultra")@Option(4, "Dialog.Tutorial.Custom")
+            </select></label>
+            @if (preset == 4)
+            {
+                <label>@L["Dialog.Tutorial.Aniso"]<select id="anisotropic-filtering-select" @bind="o.Aniso">@Option(0, "GameSettings.Off")@Option(1, "GameSettings.X2")@Option(2, "GameSettings.X4")@Option(3, "GameSettings.X8")@Option(4, "GameSettings.X16")</select></label>
+                <label>@L["Dialog.Tutorial.Display"]<select id="display-mode" @bind="resolution">
+                    @for (var i = 0; i < settings.Resolutions.Count; i++) { var r = settings.Resolutions[i]; <option value="@i">@L["GameSettings.ResolutionFormat", r.Width, r.Height, r.Hz]</option> }
+                </select></label>
+                <label>@L["Dialog.Tutorial.Fullscreen"]<input type="checkbox" name="fullscreen" @bind="o.Fullscreen" /></label>
+                <label>@L["Dialog.Tutorial.Msaa"]<select id="msaa" @bind="o.Msaa">@Option(0, "GameSettings.Off")@Option(1, "GameSettings.X2")@Option(2, "GameSettings.X4")@Option(3, "GameSettings.X8")</select></label>
+                <label>@L["Dialog.Tutorial.Scene"]<select id="scene_complexity" @bind="o.Scene">@Levels(4)</select></label>
+                <label>@L["Dialog.Tutorial.Shadow"]<select id="shadow_quality" @bind="o.Shadow">@Levels(4)</select></label>
+                <label>@L["Dialog.Tutorial.Texture"]<select id="texture_quality" @bind="o.Texture">@Levels(3)</select></label>
+                <label>@L["Dialog.Tutorial.Vsync"]<input type="checkbox" name="vsync" @bind="o.Vsync" /></label>
+            }
+            @if (error is not null) { <div class="su-login-error" role="alert">@L[error]</div> }
+            <div class="su-actions">
+                <button type="submit" class="su-btn medium">@L["Dialog.Tutorial.Save"]</button>
+                <button type="button" class="su-btn medium" @onclick="Modal.Close">@L["Dialog.Cancel"]</button>
+            </div>
+        </form>
+    }
+</div>
+
+@code {
+    /// <summary>The graphics presets of the old dialog as list positions: anisotropic filtering, MSAA, shadow, texture, vertical sync (the scene complexity and the display mode stay).</summary>
+    static readonly (int Aniso, int Msaa, int Shadow, int Texture, bool Vsync)[] Presets = [(0, 0, 0, 0, false), (1, 1, 1, 1, true), (3, 2, 2, 2, true), (4, 3, 3, 2, true)];
+
+    sealed class Options { public bool Fullscreen, Vsync; public int Scene, Texture, Shadow, Msaa, Aniso; }
+
+    GameSettings? settings;
+    Options o = new();
+    int preset = 1, resolution;
+    string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await Service.ReadAsync();
+        // the files cannot be read: tell why and show nothing to edit
+        if (settings.Error is { } problem) { Modal.Alert(L[problem]); return; }
+        var s = settings.Options;
+        (o.Fullscreen, o.Vsync, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso) = (s.Fullscreen, s.Vsync, s.Scene, s.Texture, s.Shadow, s.Msaa, s.Aniso);
+        resolution = Math.Max(0, settings.Resolutions.ToList().IndexOf(s.Resolution));
+    }
+
+    RenderFragment Option(int value, string key) => b =>
+    {
+        b.OpenElement(0, "option");
+        b.AddAttribute(1, "value", value);
+        b.AddContent(2, L[key].Value);
+        b.CloseElement();
+    };
+
+    RenderFragment Levels(int count) => b =>
+    {
+        string[] keys = ["GameSettings.Low", "GameSettings.Medium", "GameSettings.High", "GameSettings.VeryHigh"];
+        for (var i = 0; i < count; i++) Option(i, keys[i])(b);
+    };
+
+    void Preset(ChangeEventArgs e)
+    {
+        preset = int.Parse((string)e.Value!);
+        if (preset < Presets.Length) (o.Aniso, o.Msaa, o.Shadow, o.Texture, o.Vsync, o.Fullscreen) = (Presets[preset].Aniso, Presets[preset].Msaa, Presets[preset].Shadow, Presets[preset].Texture, Presets[preset].Vsync, true);
+    }
+
+    async Task Save()
+    {
+        var r = await Service.SaveAsync(new(o.Fullscreen, o.Vsync, settings!.Resolutions.Count > 0 ? settings.Resolutions[resolution] : settings.Options.Resolution, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, settings.Options.ContextualHelp, settings.Options.ExtendedAudio));
+        error = r.Error;
+        if (r.Ok) Modal.Close();
+    }
+}

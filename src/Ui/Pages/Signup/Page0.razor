@@ -1,0 +1,39 @@
+@page "/signup/page0"
+@page "/signup/page0/{View}"
+@layout SignupLayout
+@inject NavigationManager Nav
+
+<PageTitle>@L["Signup.Continue"]</PageTitle>
+
+<SignupCard Art="signup-bg-1" Class="@("p0 " + mode + (steam ? " steam" : ""))">
+    @if (mode == "steam")
+    {
+        <Paper X="415" Y="189" Width="363" Height="87">@L["Signup.SteamIntro"]</Paper>
+        <button type="button" class="su-btn medium su-connect" @onclick='() => mode = "login"'>@L["Signup.SteamConnect"]</button>
+        <div class="su-or">@L["Signup.Or"]</div>
+        <button type="button" class="su-btn medium su-new" @onclick='() => mode = "register"'>@L["Signup.SteamRegister"]</button>
+    }
+    else
+    {
+        @if (steam && mode == "login") { <Paper X="415" Y="136" Width="363" Height="87">@L["Signup.SteamLink"]</Paper> }
+        @* signing in goes through the start, which finds out whether the account still needs its username *@
+        <EmailCode Register="@(mode == "register")" Done='() => Nav.NavigateTo("/signup/start")' />
+    }
+</SignupCard>
+
+@code {
+    string mode = "register";
+    string? shown;
+    bool steam;
+
+    /// <summary>steam: the game was started from Steam and does not know the account yet (choose, then sign in or register); login and register show the e-mail and code form.</summary>
+    [Parameter] public string? View { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (View == shown) return; // the layout re-renders when the session changes: keep the chosen mode
+        shown = View;
+        mode = View is "steam" or "login" ? View : "register";
+        steam = View == "steam";
+    }
+}

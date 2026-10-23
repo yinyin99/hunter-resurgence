@@ -1,0 +1,28 @@
+@page "/signup/start"
+@layout SignupLayout
+@inject NavigationManager Nav
+@inject HostMode Mode
+@inject ISessionService Sessions
+@inject IProfileService Profile
+@inject ILauncherBridge Bridge
+
+<PageTitle>@L["Signup.Trying"]</PageTitle>
+
+<div class="su-start">
+    <Paper X="372" Y="310" Width="533" Height="135">@L["Signup.Trying"]</Paper>
+</div>
+
+@code {
+    /// <summary>Signed in: on to the game, to the single player map until the player has a few expeditions. An account without a username goes to its username; no session to the sign-in.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Mode.Mock == "start:hold") return;
+        var next = await Sessions.StartAsync() switch
+        {
+            StartOutcome.LoggedIn => await Profile.ExpeditionCountAsync() <= 10 ? "/launch-map/1" : "/feed",
+            StartOutcome.NeedsSignup => "/signup/page1",
+            _ => Bridge.IsSteam ? "/signup/page0/steam" : "/signup/page0/register",
+        };
+        Nav.NavigateTo(next, replace: true);
+    }
+}
