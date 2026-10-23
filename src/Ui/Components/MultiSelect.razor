@@ -1,21 +1,17 @@
 <div class="multi">
-    <button type="button" class="btn" aria-haspopup="listbox" aria-expanded="@open" @onclick="() => open = !open">
+    <button type="button" class="btn" popovertarget="@uid" aria-haspopup="listbox">
         <span>@(Selected.Count == 0 || Selected.Count == Options.Count ? L["Mis.AllSelected"] : L["Mis.NSelected", Selected.Count])</span><span class="caret"></span>
     </button>
-    @if (open)
-    {
-        <div class="off" @onclick="() => open = false"></div>
-        <ul role="listbox">
-            @foreach (var o in Options)
-            {
-                <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @(Label?.Invoke(o) ?? o)</label></li>
-            }
-        </ul>
-    }
+    <ul id="@uid" class="pop" popover role="listbox">
+        @foreach (var o in Options)
+        {
+            <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @(Label?.Invoke(o) ?? o)</label></li>
+        }
+    </ul>
 </div>
 
 @code {
-    bool open;
+    readonly string uid = "multi" + Guid.NewGuid().ToString("N")[..8];
 
     [Parameter, EditorRequired] public IReadOnlyList<string> Options { get; set; } = [];
     /// <summary>The chosen options; empty means all.</summary>

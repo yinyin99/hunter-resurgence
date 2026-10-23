@@ -1,31 +1,21 @@
 <div class="select" style="width:@(Width)px">
-    <button type="button" id="@Id" class="field" aria-haspopup="listbox" aria-expanded="@open" @onclick="() => open = !open">
+    <button type="button" id="@Id" class="field" popovertarget="@uid" aria-haspopup="listbox">
         <span>@Value</span><span class="arrow"><Icon Name="chevron-down" /></span>
     </button>
-    @if (open)
-    {
-        <div class="off" @onclick="() => open = false"></div>
-        <ul role="listbox">
-            @foreach (var option in Options)
-            {
-                <li role="option"><a href="#" @onclick="() => Pick(option)" @onclick:preventDefault>@option</a></li>
-            }
-        </ul>
-    }
+    <ul id="@uid" class="pop" popover role="listbox">
+        @foreach (var option in Options)
+        {
+            <li role="option"><button type="button" popovertarget="@uid" popovertargetaction="hide" @onclick="() => ValueChanged.InvokeAsync(option)">@option</button></li>
+        }
+    </ul>
 </div>
 
 @code {
-    bool open;
+    readonly string uid = "sel" + Guid.NewGuid().ToString("N")[..8];
 
     [Parameter, EditorRequired] public IReadOnlyList<string> Options { get; set; } = [];
     [Parameter, EditorRequired] public string Value { get; set; } = "";
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public string? Id { get; set; }
     [Parameter] public int Width { get; set; } = 150;
-
-    async Task Pick(string option)
-    {
-        open = false;
-        await ValueChanged.InvokeAsync(option);
-    }
 }

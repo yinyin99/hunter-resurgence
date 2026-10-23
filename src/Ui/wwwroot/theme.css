@@ -256,6 +256,15 @@ a { transition: color var(--t-fast) var(--ease); }
 :where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
 :where(.tbl-c) :is(th, td):first-child { text-align: left; }
 
+/* popover menus: the browser gives top layer, Esc and click-outside dismissal. .pop opens under the button that invokes it (implicit anchor) */
+[popover] { color: inherit; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), overlay var(--t-base) allow-discrete, display var(--t-base) allow-discrete; }
+[popover]:popover-open { opacity: 1; transform: none; }
+@starting-style { [popover]:popover-open { opacity: 0; transform: translateY(-4px); } }
+.pop { position: fixed; position-anchor: auto; inset: auto; top: anchor(bottom); left: anchor(left); min-width: max(158px, anchor-size(width)); margin: 4px 0 0; padding: 6px 0; border: 0; border-radius: var(--r-2); background: var(--surface-3); box-shadow: var(--shadow-2); overflow: auto; }
+.pop li { margin: 0; padding: 0; list-style: none; }
+.pop li button { display: block; box-sizing: border-box; width: 100%; padding: 3px 20px; border: 0; background: none; color: var(--fg-muted); font: inherit; line-height: 20px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+.pop li button:hover, .pop li button:focus-visible { background: var(--accent); color: #fff; outline: 0; }
+
 /* an empty block of the final size while its data loads (the old app left the area empty) */
 .skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
 @keyframes skeleton { to { background-position: -150% 0; } }

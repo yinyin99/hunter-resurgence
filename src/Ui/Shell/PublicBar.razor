@@ -4,33 +4,29 @@
     <div class="inner">
         <a class="logo" href="/feed"><AssetSlot Name="logo-large" Width="300" Height="50" /></a>
         <div class="signin">
-            <button type="button" class="toggle" aria-expanded="@open" @onclick="() => open = !open"><span class="ask">@L["Public.Already"]</span> <span class="in">@L["Public.SignIn"]</span> <Icon Name="caret-down" /></button>
-            @if (open)
-            {
-                <div class="dismiss" @onclick="() => open = false"></div>
-                <form class="panel" @onsubmit="Submit" novalidate>
-                    @if (!codeSent)
-                    {
-                        <input type="text" name="email" autocomplete="email" placeholder="@L["Signin.Email"]" @bind="email" @bind:event="oninput" />
-                    }
-                    else
-                    {
-                        <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="@L["Signin.Code"]" @bind="code" @bind:event="oninput" />
-                        <p class="hint">@L["Signin.Sent", email]</p>
-                    }
-                    @if (error is not null) { <div class="error" role="alert">@L[error]</div> }
-                    <div class="row">
-                        @if (codeSent) { <a href="#" @onclick="Back" @onclick:preventDefault>@L["Signin.Back"]</a> }
-                        <button type="submit" class="btn btn-primary">@L[codeSent ? "Signin.Submit" : "Signin.SendCode"]</button>
-                    </div>
-                </form>
-            }
+            <button type="button" class="toggle" popovertarget="signin"><span class="ask">@L["Public.Already"]</span> <span class="in">@L["Public.SignIn"]</span> <Icon Name="caret-down" /></button>
+            <form id="signin" class="panel" popover @onsubmit="Submit" novalidate>
+                @if (!codeSent)
+                {
+                    <input type="text" name="email" autocomplete="email" placeholder="@L["Signin.Email"]" @bind="email" @bind:event="oninput" />
+                }
+                else
+                {
+                    <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="@L["Signin.Code"]" @bind="code" @bind:event="oninput" />
+                    <p class="hint">@L["Signin.Sent", email]</p>
+                }
+                @if (error is not null) { <div class="error" role="alert">@L[error]</div> }
+                <div class="row">
+                    @if (codeSent) { <a href="#" @onclick="Back" @onclick:preventDefault>@L["Signin.Back"]</a> }
+                    <button type="submit" class="btn btn-primary">@L[codeSent ? "Signin.Submit" : "Signin.SendCode"]</button>
+                </div>
+            </form>
         </div>
     </div>
 </header>
 
 @code {
-    bool open, codeSent;
+    bool codeSent;
     string email = "", code = "";
     string? error;
 
@@ -40,7 +36,7 @@
         var result = codeSent ? await Sessions.SignInAsync(email, code) : await Sessions.RequestCodeAsync(email);
         error = result.Error;
         if (!result.Ok) return;
-        if (codeSent) { open = codeSent = false; code = ""; }
+        if (codeSent) { codeSent = false; code = ""; }
         else codeSent = true;
     }
 
