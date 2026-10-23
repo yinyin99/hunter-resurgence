@@ -1,3 +1,8 @@
+// Sets the page language (the launcher's host page is static).
+export function setLang(code) {
+    document.documentElement.lang = code;
+}
+
 // Tells the shell when the page is scrolled past a threshold (quick-nav); throttled like the old interface (25 ms).
 let handler;
 
