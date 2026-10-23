@@ -1,5 +1,5 @@
 .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 14px; width: 740px; }
-.card { position: relative; box-sizing: border-box; height: 207px; padding: 12px 14px; background: #161616; }
+.card { position: relative; box-sizing: border-box; height: 207px; padding: 12px 14px; }
 h4 { margin: 0 0 8px; font-size: 16px; line-height: 22px; font-weight: 400; color: #ddd; }
 .card ::deep .pic { position: absolute; left: 14px; top: 60px; }
 .rings { position: absolute; right: 14px; top: 38px; display: flex; gap: 10px; }

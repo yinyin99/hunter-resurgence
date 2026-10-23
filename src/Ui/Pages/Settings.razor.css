@@ -6,7 +6,7 @@
 .menu a:hover { color: #aaa; }
 .menu li.on { background: #1c1c1c; }
 .menu li.on a { color: #fff; }
-.panel { flex: 1; min-width: 0; background: #171717; }
+.panel { flex: 1; min-width: 0; overflow: hidden; }
 .bar { margin: 0; padding: 0 8px; background: linear-gradient(#262626, #1e1e1e); font-size: 17.5px; line-height: 40px; font-weight: 400; color: #fff; }
 .pane { padding: 16px; min-height: 240px; }
 .info { margin: 2px 0 8px; font-size: 15px; line-height: 20px; color: #ddd; }

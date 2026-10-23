@@ -19,9 +19,9 @@
                     <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
                     @if (item.WasEms is { } was) { <s>@was em$</s> }
                 }
-                @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!item.Buyable) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
-                else { <button id="buy-item" class="btn btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
+                else if (!item.Buyable) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
+                else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
             </div>
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>

@@ -232,6 +232,7 @@ a:hover { color: var(--accent-hover); }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
+.btn-tall { height: 42px; padding: 0 20px; font-size: 16px; }
 .btn-large { padding: 11px 19px; font-size: var(--fs-btn-lg); line-height: 20px; }
 .btn-block { display: block; box-sizing: border-box; width: 100%; text-align: center; }
 .btn:disabled, .btn.disabled { opacity: .65; cursor: default; box-shadow: none; transform: none; filter: none; background-image: none; }

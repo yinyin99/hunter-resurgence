@@ -1,7 +1,7 @@
 #store-category-search { display: block; box-sizing: border-box; width: 222px; height: 36px; margin: 0 0 12px; padding: 0 10px; border: 0; border-radius: 3px; background: #232323; font-size: 14px; color: #ddd; }
 #store-category-search::placeholder { color: #bbb; }
 .grid { display: grid; grid-template-columns: 350px 350px; gap: 10px; }
-.card { position: relative; height: 280px; padding: 10px; box-sizing: border-box; background: #1c1c1c; }
+.card { position: relative; height: 280px; padding: 10px; box-sizing: border-box; background: var(--surface-3); }
 .card ::deep .pic { display: block; margin: 0 auto 32px; }
 .name { display: block; font-size: 14px; line-height: 20px; color: #ddd; }
 .variant { display: block; font-size: 12px; line-height: 16px; color: #666; }

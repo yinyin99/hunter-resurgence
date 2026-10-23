@@ -1,4 +1,4 @@
-.box { margin: 0 0 10px; padding: 14px 20px 16px; background: #171717; font-size: 14px; line-height: 20px; color: #ddd; }
+.box { margin: 0 0 10px; padding: 14px 20px 16px; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .box h3 { margin: 0 0 8px; font-size: 25px; line-height: 32px; font-weight: 400; color: #fff; }
 .box h3 + p + h3 { margin-top: 12px; }
 .box p { margin: 0 0 12px; }

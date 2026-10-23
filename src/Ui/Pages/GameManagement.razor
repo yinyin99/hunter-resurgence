@@ -12,7 +12,7 @@
     <div class="screen">
         @if (Tab == "trophy-lodge")
         {
-            <div class="card lodge">
+            <div class="card panel lodge">
                 <h4>@L["GM.LodgeTitle"]</h4>
                 @if (lodges.Count == 0) { <p>@L["GM.NoLodges"]</p> }
                 @foreach (var l in lodges) { <p>@l.Name</p> }
@@ -20,7 +20,7 @@
         }
         else if (Tab == "bait-sites")
         {
-            <div class="card bait">
+            <div class="card panel bait">
                 <div class="head"><h4>@L["GM.BaitTitle"]</h4><label>@L["GM.Fill"] <input id="fill" type="number" min="0" @bind="fill" /></label></div>
                 @foreach (var g in sites.GroupBy(s => s.Group))
                 {
@@ -42,7 +42,7 @@
         }
         else
         {
-            <div class="card home"><h4>@L["GM.Home"]</h4><p>@L["GM.Choose"]</p></div>
+            <div class="card panel home"><h4>@L["GM.Home"]</h4><p>@L["GM.Choose"]</p></div>
         }
     </div>
 </div>

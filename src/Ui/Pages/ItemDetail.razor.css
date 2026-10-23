@@ -6,7 +6,6 @@
 .buy b { font-size: 20px; font-weight: 400; color: var(--text-2); }
 .buy b.sale { color: #e01010; }
 .buy s { margin: 0 14px 0 0; text-decoration: none; }
-.buy .btn { height: 42px; padding: 0 20px; font-size: 16px; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: var(--text-3); }
 .cap, .own { margin: 0 0 20px; font-size: 12px; line-height: 16px; }

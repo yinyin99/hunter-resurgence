@@ -12,9 +12,9 @@
 .section .icon { font-size: 18px; vertical-align: -3px; }
 .service { padding: 4px 8px 0; line-height: 40px; white-space: nowrap; }
 .inf { font-size: 24px; vertical-align: -2px; }
-.pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--radius-balance); background: var(--pill-balance-fg); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
+.pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--r-pill); background: var(--pill-balance-fg); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
 .pill.ems { background: var(--pill-ems); }
-.count { position: absolute; right: 0; top: 4px; min-width: 12px; padding: 0 3px; border: 1px solid #000; border-radius: 9px; background: var(--badge); color: #fff; font-size: 11px; line-height: 14px; text-align: center; }
+.count { position: absolute; right: 0; top: 4px; min-width: 12px; padding: 0 3px; border: 1px solid #000; border-radius: var(--r-pill); background: var(--badge); color: #fff; font-size: 11px; line-height: 14px; text-align: center; }
 .settings .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base); position: absolute; top: 44px; right: -2px; width: 200px; z-index: 5; }
 .settings:hover .menu, .settings:focus-within .menu { visibility: visible; opacity: 1; transform: none; }
 .settings:hover, .settings:focus-within { color: #fff; }

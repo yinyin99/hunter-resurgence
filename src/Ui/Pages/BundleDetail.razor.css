@@ -2,7 +2,6 @@
 .item ::deep .pic { display: block; margin: 45px auto 0; }
 .buy { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin: -40px 0 12px; padding-right: 25px; font-size: 24px; line-height: 40px; }
 .buy b { font-weight: 400; color: #ddd; }
-.buy .btn { height: 42px; padding: 0 20px; font-size: 16px; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 .text { margin: 0 0 20px; font-size: 12px; line-height: 20px; color: #ddd; }
 .own { color: #e0301e; }

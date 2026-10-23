@@ -12,9 +12,9 @@
             <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
             <AssetSlot Name="store-bundle-large" Width="190" Height="207" Class="pic" />
             <div class="buy">
-                @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!bundle.Buyable) { <button class="btn" disabled title="@L["Store.MaxOwn"]">@L["Store.Buy"]</button> }
-                else { <button id="buy-bundle" class="btn btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
+                else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@L["Store.MaxOwn"]">@L["Store.Buy"]</button> }
+                else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
                 <b>@bundle.Price em$</b>
             </div>
             <h1>@bundle.Name</h1>

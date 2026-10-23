@@ -28,7 +28,7 @@
 
     protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
 
-    RenderFragment Card(string key, string href, string go, string? icon) => @<section class="card">
+    RenderFragment Card(string key, string href, string go, string? icon) => @<section class="card panel">
         <h3>@L[key]</h3>
         <p>@L[key + "Text"]</p>
         @if (icon is not null) { <Icon Name="@icon" /> }

@@ -2,7 +2,7 @@
 .tabs a { display: block; width: 150px; padding: 0; background: #222; font-size: 14px; line-height: 28px; text-align: center; color: #fff; }
 .tabs a.on { background: #333; }
 .screen { position: relative; height: 570px; margin: 0 20px; background: #000; }
-.card { position: absolute; left: 74px; box-sizing: border-box; width: 792px; padding: 20px; background: #2c2c2c; color: #8c8c8c; }
+.card { position: absolute; left: 74px; box-sizing: border-box; width: 792px; padding: 20px; background: var(--surface-5); color: #8c8c8c; }
 .card h4 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; color: #8c8c8c; }
 .card p { margin: 0; font-size: 14px; line-height: 20px; }
 .home { top: 270px; height: 100px; }

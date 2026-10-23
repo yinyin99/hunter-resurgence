@@ -6,7 +6,7 @@
     <div class="cards">
         @foreach (var s in skills)
         {
-            <section class="card">
+            <section class="card panel">
                 <h4>@L.Term(s.Name)</h4>
                 <AssetSlot Name="skill-species" Width="80" Height="90" Class="pic" />
                 <div class="rings">@foreach (var r in s.Rings) { @Ring(r) }</div>

@@ -10,8 +10,6 @@
 .online { width: 7px; height: 7px; margin-left: -4px; border-radius: 50%; background: var(--online-2); }
 .buttons { margin-left: auto; white-space: nowrap; }
 .btn { padding: 2px 5px; font-size: var(--fs-btn-sm); line-height: 16px; font-weight: 500; }
-.btn-primary { color: #fff; }
-.btn-inverse { background: var(--btn-inverse-bg); color: #fff; }
 .empty { color: var(--fg-muted); }
 .results .title { margin: 5px 10px 15px; }
 .notice { margin: 0 10px; padding: 10px; background: #d9edf7; color: #3a87ad; text-align: center; border-radius: var(--radius); }
