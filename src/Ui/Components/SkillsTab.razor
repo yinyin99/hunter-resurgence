@@ -18,7 +18,7 @@ else
 {
     @foreach (var g in skills.GroupBy(s => s.Group))
     {
-        <h4 class="group">@L.Term(g.Key)</h4>
+        <h4 class="group">@L.Term(g.Key ?? "")</h4>
         @foreach (var s in g)
         {
             <div class="item"><span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>
