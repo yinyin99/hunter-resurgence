@@ -82,7 +82,7 @@
             default:
                 <table class="hist">
                     <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-                    <tbody>@foreach (var r in best.Rows) { <tr><td>@r.Species</td><td>@Fmt.Score(r.Score)</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
+                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@Fmt.Score(r.Score)</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
                 </table>
                 break;
         }

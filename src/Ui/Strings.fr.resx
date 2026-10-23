@@ -368,7 +368,6 @@
   <data name="Comp.Activate" xml:space="preserve"><value>Activer</value></data>
   <data name="Comp.Deactivate" xml:space="preserve"><value>Désactiver</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Impossible de rejoindre</value></data>
-  <data name="Comp.Single" xml:space="preserve"><value>Simple joueur</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multijoueur</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Conditions :</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Compétitions en cours</value></data>
@@ -840,4 +839,139 @@
   <data name="Browser.EmailDone" xml:space="preserve"><value>Email vérifié !</value></data>
   <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
   <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Axis Deer</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Banteng</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Bernache du Canada</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Bison</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Bouquetin des Alpes</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Buffle d'Asie</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Canard chipeau</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>Canard noir</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Canard pilet</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Canaroie semipalmée</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Cerf Sitka</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Cerf de Virginie (Atypique)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Cerf de Virginie (Typique)</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Cerf mulet (Atypique)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Cerf mulet (Typique)</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Cerf rusa</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Cerf à queue noire (Atypique)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Cerf à queue noire (Typique)</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Cerf élaphe</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Chevreuil</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Chèvre sauvage</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Colvert</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Coyote</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Dindon</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Faisan</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Fallow Deer</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Grizzli</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Kangourou roux</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Lagopède alpin</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Lagopède des saules</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>Lagopède à queue blanche</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Lapin d'Amérique</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>Lapin de garenne</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Lièvre d'Amérique</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Loup gris</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Loup-garou</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Loup-garou</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Lynx d'Eurasie</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Lynx roux</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Mouflon canadien</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Mouflon de Dall</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Oie des neiges</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Ours brun</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Ours noir</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Ours polaire</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Porc sauvage</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Puma</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Renard arctique</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Renard roux</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Renne</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Roe-bit</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Sambar</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Sanglier</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Tyrannosaurus Rex</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Wapiti de Roosevelt</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Wapiti des montagnes Rocheuses</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Wendigo</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Wood Grouse</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Élan</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Amanite tue-mouches</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>Cèpe</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Girolle</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Champignon de Paris</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Russule jaune des marais</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Pot viking</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Pièce byzantine</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Fallow Deer Antler</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Cadeau vert</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Cadeau bleu</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Cadeau rouge</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Cadeau violet</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Cadeau argenté</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Crâne vert</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Rose rose</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>Rose blanche</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Rose rouge</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Œuf d'or</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Fruit Pancake</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Crâne bleu</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Ice Cream Pancake</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Deluxe Pancake</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Crâne rouge</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Crâne violet</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Axis Deer Antler</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>Rose blanche (Saint-Valentin)</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Rituel sombre</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Brown Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Rose rouge (Saint-Valentin)</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Gold Valentines Balloon</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Bois de cerf de Virginie (Atypique)</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Cadeau doré</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Bois de cerf de Virginie</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Bois de cerf mulet</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Bois de wapiti de Roosevelt</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Bois de cerf mulet (Atypique)</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Bois de cerf à queue noire</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Bois de cerf à queue noire (Atypique)</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Bois d’élan</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Red Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Bois de chevreuil</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Bois de cerf élaphe</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Chocolate Chip Pancake</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Bois de renne</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Butter and Syrup Pancake</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>Champignon 1-Up</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Pépite d'or</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Bois de cerf Sitka</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Œuf d'argent</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Œuf de bronze</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Citrouille orange</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Citrouille marron</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Citrouille jaune</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Chaudron d'or</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Vieux couteau aborigène</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Vieux couteau aborigène</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Vieux couteau aborigène</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Ballon de la Saint-Valentin en hématite</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Ballon de la Saint-Valentin argenté</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Bois de wapiti des montagnes Rocheuses</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Silver Dollar Coin</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Ammonite fossilisée</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Dent de requin fossilisée</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Plume d'aigle</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Plume de corbeau</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Bois de cerf rusa</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Bois de sambar</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Silver Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Rose rose (Saint-Valentin)</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Simple joueur</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Animaux</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Armes</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Collectés</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Armes de poing</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Arbalètes</value></data>
 </root>

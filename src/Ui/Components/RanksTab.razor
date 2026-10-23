@@ -15,7 +15,7 @@ else
     {
         <div class="row">
             <AssetSlot Name="@("rank-" + sub)" Width="110" Height="110" Class="badge" />
-            <div class="what"><h4>@b.Name</h4><div class="bar"><i style="width:@Pct(b)%"></i><b>@b.Level</b></div></div>
+            <div class="what"><h4>@L.Term(b.Name)</h4><div class="bar"><i style="width:@Pct(b)%"></i><b>@b.Level</b></div></div>
         </div>
     }
 }

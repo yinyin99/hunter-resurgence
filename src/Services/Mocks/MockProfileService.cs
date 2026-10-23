@@ -31,7 +31,7 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
          new("1 Rifle A (Standard)", "1 Rifle A (Standard) harvests in the reserve.", new(2026, 10, 20)), new("1 Sitka Deer", "1 Sitka Deer harvested in the reserve.", new(2026, 10, 19)),
          new("1 Wild Boar", "1 Wild Boar harvested in the reserve.", new(2026, 10, 19)), new("1 Red Fox", "1 Red Fox harvested in the reserve.", new(2026, 10, 18))]));
 
-    static Milestone M(string title, int value, params int[] steps) => new($"{title} ({steps.Count(s => value >= s)}/{steps.Length})", steps.Count(s => value >= s), steps, value);
+    static Milestone M(string title, int value, params int[] steps) => new(title, steps.Count(s => value >= s), steps, value);
 
     public Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind)
     {

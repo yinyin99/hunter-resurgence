@@ -368,7 +368,6 @@
   <data name="Comp.Activate" xml:space="preserve"><value>Activate</value></data>
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deactivate</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Can't join</value></data>
-  <data name="Comp.Single" xml:space="preserve"><value>Single player</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Requirements:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Upcoming competitions</value></data>
@@ -840,4 +839,139 @@
   <data name="Browser.EmailDone" xml:space="preserve"><value>Email confirmation complete!</value></data>
   <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
   <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Alpine Ibex</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>American Black Duck</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Arctic Fox</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Axis Deer</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Banteng</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Bighorn Sheep</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Bison</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Black Bear</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Blacktail Deer (Non-Typical)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Blacktail Deer (Typical)</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Bobcat</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Brown Bear</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Canada Goose</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Cottontail Rabbit</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Coyote</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Dall Sheep</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Eurasian Lynx</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>European Rabbit</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Fallow Deer</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Feral Goat</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Feral Hog</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Gadwall</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Grey Wolf</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Grizzly Bear</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Magpie Goose</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Mallard</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Moose</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Mule Deer (Non-Typical)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Mule Deer (Typical)</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Northern Pintail</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Pheasant</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Polar Bear</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Puma</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Red Deer</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Red Fox</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Red Kangaroo</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Reindeer</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Rock Ptarmigan</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Rocky Mountain Elk</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Roe Deer</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Roe-bit</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Roosevelt Elk</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Rusa Deer</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Sambar Deer</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Sitka Deer</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Snow Goose</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Snowshoe Hare</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Turkey</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Tyrannosaurus Rex</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Water Buffalo</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Wendigo</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>White-tailed Ptarmigan</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Whitetail Deer (Non-Typical)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Whitetail Deer (Typical)</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Wild Boar</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Willow Ptarmigan</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Wood Grouse</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Fly Amanita</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>King Bolete</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Golden Chanterelle</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Common Mushroom</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Yellow Swamp Russula</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Norse Pot</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Byzantine Coin</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Fallow Deer Antler</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Green Present</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Blue Present</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Red Present</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Purple Present</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Silver Present</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Green Skull</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Pink Rose</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>White Rose</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Red Rose</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Golden Egg</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Fruit Pancake</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Blue Skull</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Ice Cream Pancake</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Deluxe Pancake</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Red Skull</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Purple Skull</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Axis Deer Antler</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>White Valentine's Rose</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Dark Ritual</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Brown Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Red Valentine's Rose</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Gold Valentines Balloon</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Whitetail Deer Non-Typical Antler</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Golden Present</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Whitetail Deer Antler</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Mule Deer Antler</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Roosevelt Elk Antler</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Mule Deer Non-Typical Antler</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Blacktail Deer Antler</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Blacktail Deer Non-Typical Antler</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Moose Antler</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Red Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Roe Deer Antler</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Red Deer Antler</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Chocolate Chip Pancake</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Reindeer Antler</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Butter and Syrup Pancake</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>1UP Mushroom</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Gold Nugget</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Sitka Deer Antler</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Silver Egg</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Bronze Egg</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Orange Pumpkin</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Brown Pumpkin</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Yellow Pumpkin</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Pot Of Gold</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Old Aboriginal Knife</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Old Aboriginal Knife</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Old Aboriginal Knife</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Hematite Valentines Balloon</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Silver Valentines Balloon</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Rocky Mountain Elk Antler</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Silver Dollar Coin</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Ammonite Fossil</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Shark Tooth Fossil</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Eagle Feather</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Raven Feather</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Rusa Deer Antler</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Sambar Deer Antler</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Silver Valentine's Teddy Bear</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Pink Valentine's Rose</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Single player</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Animals</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Weapons</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Collectables</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handguns</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Crossbows</value></data>
 </root>

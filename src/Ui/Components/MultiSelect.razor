@@ -8,7 +8,7 @@
         <ul role="listbox">
             @foreach (var o in Options)
             {
-                <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @o</label></li>
+                <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @(Label?.Invoke(o) ?? o)</label></li>
             }
         </ul>
     }
@@ -20,6 +20,8 @@
     [Parameter, EditorRequired] public IReadOnlyList<string> Options { get; set; } = [];
     /// <summary>The chosen options; empty means all.</summary>
     [Parameter] public HashSet<string> Selected { get; set; } = [];
+    /// <summary>The text shown for an option; the option itself by default.</summary>
+    [Parameter] public Func<string, string>? Label { get; set; }
     [Parameter] public EventCallback Changed { get; set; }
 
     async Task Toggle(string option, bool on)

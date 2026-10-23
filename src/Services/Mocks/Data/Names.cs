@@ -6,13 +6,13 @@ static class Names
     // ids 19, 23 and 28 are those of the old pages
     public static readonly (int Id, string Name)[] Species =
     [
-        (19, "Alpine Ibex"), (28, "American Black Duck"), (23, "Arctic Fox"), (4, "Axis Deer"), (5, "Banteng"), (6, "Bighorn Sheep"), (7, "Bison"), (8, "Black Bear"),
-        (9, "Blacktail Deer (Typical)"), (10, "Bobcat"), (11, "Brown Bear"), (12, "Canada Goose"), (13, "Cottontail Rabbit"), (14, "Coyote"), (15, "Dall Sheep"),
-        (16, "Eurasian Lynx"), (17, "European Rabbit"), (18, "Fallow Deer"), (20, "Feral Goat"), (21, "Feral Hog"), (22, "Gadwall"), (24, "Grey Wolf"), (25, "Grizzly Bear"),
-        (26, "Magpie Goose"), (27, "Mallard"), (29, "Moose"), (30, "Mule Deer (Typical)"), (31, "Northern Pintail"), (32, "Pheasant"), (33, "Polar Bear"), (34, "Puma"),
-        (35, "Red Deer"), (36, "Red Fox"), (37, "Reindeer"), (38, "Rock Ptarmigan"), (39, "Roe Deer"), (40, "Turkey"), (41, "Whitetail Deer (Typical)"), (42, "Wood Grouse"),
-        (43, "Red Kangaroo"), (44, "Rocky Mountain Elk"), (45, "Roosevelt Elk"), (46, "Rusa Deer"), (47, "Sambar Deer"), (48, "Sitka Deer"), (49, "Snow Goose"), (50, "Snowshoe Hare"),
-        (51, "Water Buffalo"), (52, "White-tailed Ptarmigan"), (53, "Wild Boar"), (54, "Willow Ptarmigan"),
+        (19, "Alpine Ibex"), (28, "American Black Duck"), (23, "Arctic Fox"), (54, "Axis Deer"), (46, "Banteng"), (39, "Bighorn Sheep"), (24, "Bison"), (9, "Black Bear"),
+        (6, "Blacktail Deer (Typical)"), (43, "Bobcat"), (13, "Brown Bear"), (16, "Canada Goose"), (17, "Cottontail Rabbit"), (4, "Coyote"), (41, "Dall Sheep"),
+        (49, "Eurasian Lynx"), (20, "European Rabbit"), (55, "Fallow Deer"), (40, "Feral Goat"), (5, "Feral Hog"), (29, "Gadwall"), (36, "Grey Wolf"), (37, "Grizzly Bear"),
+        (47, "Magpie Goose"), (15, "Mallard"), (8, "Moose"), (1, "Mule Deer (Typical)"), (27, "Northern Pintail"), (7, "Pheasant"), (30, "Polar Bear"), (52, "Puma"),
+        (12, "Red Deer"), (14, "Red Fox"), (18, "Reindeer"), (34, "Rock Ptarmigan"), (11, "Roe Deer"), (2, "Turkey"), (0, "Whitetail Deer (Typical)"), (57, "Wood Grouse"),
+        (21, "Red Kangaroo"), (38, "Rocky Mountain Elk"), (3, "Roosevelt Elk"), (44, "Rusa Deer"), (45, "Sambar Deer"), (26, "Sitka Deer"), (51, "Snow Goose"), (25, "Snowshoe Hare"),
+        (42, "Water Buffalo"), (35, "White-tailed Ptarmigan"), (10, "Wild Boar"), (33, "Willow Ptarmigan"),
     ];
 
     static readonly string[] First = ["Quiet", "Wild", "Grey", "Silent", "North", "Moss", "Pine", "River"];

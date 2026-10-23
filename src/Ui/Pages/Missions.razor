@@ -21,7 +21,7 @@
             <div class="grid">
                 <label>@L["Mis.FilterIn"]<select id="block_id" @bind="filterIn"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
                 <label>@L["Mis.Reserves"]<MultiSelect Options="reserves" Selected="reserveSel" /></label>
-                <label>@L["Mis.Species"]<MultiSelect Options="species" Selected="speciesSel" /></label>
+                <label>@L["Mis.Species"]<MultiSelect Options="species" Selected="speciesSel" Label="s => L.Term(s)" /></label>
                 <label>@L["Mis.Weapons"]<MultiSelect Options="weapons" Selected="weaponSel" /></label>
             </div>
             <label class="hide"><input type="checkbox" id="hide-completed" @bind="hideCompleted" /> @L["Mis.HideCompleted"]</label>
@@ -83,7 +83,7 @@
     {
         tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
         data = await Service.RegularAsync();
-        (reserves, species, weapons) = (data.Missions.Select(m => m.Reserve).Distinct().Order().ToList(), data.Missions.Select(m => m.Species).Distinct().Order().ToList(), data.Missions.Select(m => m.Weapon).Distinct().Order().ToList());
+        (reserves, species, weapons) = (data.Missions.Select(m => m.Reserve).Distinct().Order().ToList(), data.Missions.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), data.Missions.Select(m => m.Weapon).Distinct().Order().ToList());
         Apply();
     }
 

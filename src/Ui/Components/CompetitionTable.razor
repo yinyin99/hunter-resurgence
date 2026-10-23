@@ -57,7 +57,7 @@
         <AssetSlot Name="@("competition-" + c.Icon)" Width="45" Height="45" />
         <div>
             <a href="@(Details + c.Id)">@c.Name</a>
-            <div class="tags">@foreach (var t in c.Tags) { <span>@(t == "Single player" ? L["Comp.Single"] : t)</span> }</div>
+            <div class="tags">@foreach (var t in c.Tags) { <span>@L.Term(t)</span> }</div>
             @if (c.Description.Length > 0 && Enrolled is null) { <div class="desc">@c.Description</div> }
             @if (c.Requirements is { } r && Enrolled is null) { <div class="desc"><b>@L["Comp.Requirements"]</b> @r</div> }
         </div>

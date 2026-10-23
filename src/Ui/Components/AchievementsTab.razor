@@ -28,7 +28,7 @@ else
         <div class="row">
             <AssetSlot Name="@("ach-" + sub)" Width="100" Height="100" Class="badge" />
             <div class="what">
-                <h4>@m.Title</h4>
+                <h4>@L.Term(m.Title) (@m.Done/@m.Steps.Count)</h4>
                 <div class="steps">
                     <i style="width:@Fill(m).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></i>
                     @foreach (var (s, i) in m.Steps.Select((s, i) => (s, i))) { <span class="@(i < m.Done ? "got" : "")">@s</span> }

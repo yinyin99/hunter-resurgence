@@ -26,7 +26,8 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
     static IReadOnlyList<(int Id, string Name)> Groups(string kind) => kind switch
     {
         "antlers-single" or "antlers-double" => Antlers.Select((a, i) => (2000 + i * 3, a)).ToList(),
-        _ => Names.Species.OrderBy(s => s.Name).ToList(),
+        // the species ids are the old ones; 0 is taken by the boards without groups, so the species with id 0 moves to 99
+        _ => Names.Species.OrderBy(s => s.Name).Select(s => (s.Id == 0 ? 99 : s.Id, s.Name)).ToList(),
     };
 
     public Task<int> SeasonAsync() => Task.FromResult(46);

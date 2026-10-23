@@ -22,8 +22,8 @@
         <div class="species">
             @foreach (var s in species)
             {
-                @if (s.Competitions == 0) { <span class="chip off">@s.Name <small>(0)</small></span> }
-                else { <a class="chip @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@s.Name <small>(@s.Competitions)</small></a> }
+                @if (s.Competitions == 0) { <span class="chip off">@L.Term("species", s.Id, s.Name) <small>(0)</small></span> }
+                else { <a class="chip @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@L.Term("species", s.Id, s.Name) <small>(@s.Competitions)</small></a> }
             }
         </div>
     </div>
@@ -63,7 +63,8 @@ else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
         }
         else
         {
-            species = await Service.SpeciesAsync();
+            // the filter is in alphabetical order of the names shown
+            species = (await Service.SpeciesAsync()).OrderBy(s => L.Term("species", s.Id, s.Name), StringComparer.CurrentCulture).ToList();
             rows = await Service.UpcomingAsync(Species);
         }
         loaded = true;

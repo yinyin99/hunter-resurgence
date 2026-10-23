@@ -7,7 +7,7 @@
         @foreach (var s in skills)
         {
             <section class="card">
-                <h4>@s.Name</h4>
+                <h4>@L.Term(s.Name)</h4>
                 <AssetSlot Name="skill-species" Width="80" Height="90" Class="pic" />
                 <div class="rings">@foreach (var r in s.Rings) { @Ring(r) }</div>
             </section>
@@ -18,7 +18,7 @@ else
 {
     @foreach (var g in skills.GroupBy(s => s.Group))
     {
-        <h4 class="group">@g.Key</h4>
+        <h4 class="group">@L.Term(g.Key)</h4>
         @foreach (var s in g)
         {
             <div class="item"><span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>

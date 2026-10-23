@@ -35,7 +35,7 @@
                 @foreach (var h in hall)
                 {
                     <section class="tile hof">
-                        <h4>@h.Species</h4>
+                        <h4>@L.Term(h.Species)</h4>
                         <AssetSlot Name="species" Width="135" Height="135" />
                         <h6>@L["Board.Score"]</h6>
                         @if (h.Score.Handle.Length > 0)
@@ -75,7 +75,7 @@
                     @foreach (var b in boards)
                     {
                         <section class="tile">
-                            <h4>@b.Name</h4>
+                            <h4>@L.Term(b.Name)</h4>
                             <table class="board small"><tbody>@foreach (var r in b.Top) { <RankRow R="r" Kind="@kind" Small="true" /> }</tbody></table>
                             <a class="btn full" href="/leaderboards/@(kind.Replace("-", "/"))/@b.Id">@L["Board.Full"] <Icon Name="chevron-right" /></a>
                         </section>
@@ -86,7 +86,7 @@
             {
                 <section class="panel head species">
                     <AssetSlot Name="species" Width="118" Height="118" />
-                    <h3>@(boards.FirstOrDefault(b => b.Id == id)?.Name)</h3>
+                    <h3>@L.Term(boards.FirstOrDefault(b => b.Id == id)?.Name ?? "")</h3>
                 </section>
                 <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
                 @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
