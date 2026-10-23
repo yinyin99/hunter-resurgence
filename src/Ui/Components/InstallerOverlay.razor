@@ -1,6 +1,8 @@
 @inherits PatchWatcher
 @inject Branding Brand
 
+@if (Status.State != PatchState.Ready)
+{
 <div class="well" role="status">
     <div class="text">@Text</div>
     @if (Bar is { } width)
@@ -13,6 +15,7 @@
         <div class="dots" aria-hidden="true"><i class="@(Tick % 3 == 0 ? "on" : "")"></i><i class="@(Tick % 3 == 1 ? "on" : "")"></i><i class="@(Tick % 3 == 2 ? "on" : "")"></i></div>
     }
 </div>
+}
 
 @code {
     // the texts are English in every language, as in the old installer
@@ -22,7 +25,7 @@
         PatchState.Verifying => L["Installer.Verifying"],
         PatchState.Extracting => L["Installer.Installing"],
         PatchState.Patching when Status.Step is PatchStep.Checksum or PatchStep.Files => L["Installer.Updating", Status.Done, Status.Total],
-        PatchState.Patching or PatchState.Done => L["Installer.UpdateComplete"],
+        PatchState.Patching => L["Installer.UpdateComplete"],
         _ => L["Installer.Ready"],
     };
 

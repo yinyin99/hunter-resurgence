@@ -1,0 +1,17 @@
+<section class="su-card @Class">
+    <AssetSlot Name="@Art" Width="1200" Height="674" Class="su-art" />
+    <header class="su-head">
+        @if (Title is not null) { <h1 class="me-header">@Title</h1> }
+        <AssetSlot Name="logo-large" Width="300" Height="56" Class="su-logo" />
+    </header>
+    @ChildContent
+    <div class="su-installer"><InstallerOverlay /></div>
+</section>
+
+@code {
+    /// <summary>The 1200x674 card of the signup screens: background picture of the page, header band with the logo, and the installer overlay at the bottom (L19).</summary>
+    [Parameter] public string? Title { get; set; }
+    [Parameter, EditorRequired] public string Art { get; set; } = "";
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

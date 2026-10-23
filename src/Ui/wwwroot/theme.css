@@ -238,3 +238,102 @@ html:has(.shell.launcher)::-webkit-scrollbar-track-piece { background-color: #22
 html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical { height: 50px; background-color: var(--fg-muted-3); }
 html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical:hover { background-color: rgba(255, 255, 255, .3); transition: background-color .2s linear; }
 html:has(.shell.launcher)::-webkit-scrollbar-thumb:horizontal { width: 50px; background-color: #333; }
+
+/* signup (launcher only): the 1200x674 card on the leather page, the splash and the start; positions are those of the old pages, relative to the card */
+html:has(.su) { overflow: hidden; }
+.su { position: relative; height: 760px; overflow: hidden; background: #352e29; color: #fff; font: 400 14px/20px var(--font-signup); }
+.su.blank { background: var(--su-bg); }
+.su-leather { position: absolute; left: 0; top: 0; width: 100% !important; height: 100% !important; border: 0; background: #352e29 !important; color: transparent; }
+.su-card { position: relative; width: 1200px; height: 674px; margin: 42px auto 0; overflow: hidden; background: #1b1b1b; box-shadow: 0 0 20px #000; }
+.su-art { position: absolute; left: 0; top: 0; width: 100% !important; height: 100% !important; border: 0; }
+.su-head { position: absolute; left: 0; top: 0; width: 100%; height: 86px; background: rgba(0, 0, 0, .35); }
+.su-head h1 { position: absolute; left: 35px; top: 0; margin: 0; font: 400 36px/90px var(--font-signup); color: #fff; }
+.su-logo { position: absolute; left: 880px; top: 16px; }
+.su-installer { position: absolute; left: 0; bottom: 0; width: 1200px; }
+
+.su-paper { position: absolute; }
+.su-paper .asset-slot { position: absolute; left: 0; top: 0; }
+.su-paper p { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; margin: 0; padding: 0 26px; text-align: center; font: 400 14px/20px var(--font-signup); color: #fff; }
+.su-gift { position: absolute; left: 37px; top: 131px; width: 548px; height: 274px; }
+.su-gift .asset-slot { position: absolute; left: 0; top: 0; }
+.p2 .su-gift .item { left: 40px; top: 98px; }
+.p3 .su-gift .item { left: 35px; top: 46px; }
+.p4 .su-gift .item { left: 56px; top: 74px; }
+
+.su-btn { box-sizing: border-box; display: inline-block; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: #fff; font: 400 14px/43px var(--font-signup); text-align: center; text-shadow: 0 1px 1px rgba(0, 0, 0, .45); cursor: pointer; }
+.su-btn:hover { background: var(--su-btn-hover); color: #fff; }
+.su-btn.medium { height: 45px; padding: 0 10px; font-size: 16px; }
+.su-btn.large { height: 58px; padding: 0 15px; font-size: 18px; line-height: 56px; }
+.su-btn:disabled, .su-btn.disabled { background: var(--su-btn-disabled); color: #eee; cursor: default; }
+.su-btn.disabled { pointer-events: none; }
+.su-next, .su-hunt { position: absolute; top: 476px; }
+.su-next { left: 600px; transform: translateX(-50%); }
+.su-hunt { left: 400px; width: 400px; }
+.su-row { position: absolute; left: 0; top: 476px; width: 1210px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+.su-cog { width: 47px; padding: 0; font-size: 19px; }
+
+.su-input { box-sizing: border-box; width: 200px; height: 34px; padding: 6px 10px; border: 1px solid var(--su-input-bd); border-radius: var(--su-radius-input); background: var(--su-input-bg); color: var(--su-input-fg); font: 400 12px/20px var(--font-signup); }
+.su-input::placeholder { color: var(--su-placeholder); }
+.su-input:focus { outline: 0; border-color: var(--su-focus); box-shadow: 0 0 6px var(--su-focus-glow); }
+.su-input:focus:invalid { border-color: var(--su-invalid); box-shadow: 0 0 6px var(--su-invalid-glow); }
+.su-hint { margin: 0 0 6px; font-size: 12px; line-height: 16px; text-align: center; text-shadow: 0 0 3px #000; }
+.su-login-error { padding: 4px 8px; border: 1px solid #000; border-radius: 2px; background: var(--su-login-error); font-size: 12px; line-height: 16px; text-align: center; }
+.su-link { display: block; margin-top: 6px; color: var(--su-link); font-size: 12px; text-align: center; text-shadow: 0 0 3px #000; }
+.su-link:hover { color: var(--su-link-hover); }
+
+/* the card forms have no box of their own: their parts are placed on the card */
+.su-card .su-form { display: contents; }
+.p0 .su-input { position: absolute; left: 500px; top: 236px; }
+.p0.steam .su-input { top: 281px; }
+.p0 .su-msgs { position: absolute; left: 500px; top: 280px; width: 200px; }
+.p0.steam .su-msgs { top: 325px; }
+.p0 .su-actions .su-btn { position: absolute; left: 600px; top: 461px; transform: translateX(-50%); }
+.p0 .su-connect { position: absolute; left: 600px; top: 360px; transform: translateX(-50%); }
+.p0 .su-new { position: absolute; left: 600px; top: 445px; transform: translateX(-50%); }
+.p0 .su-or { position: absolute; left: 449px; top: 415px; width: 301px; text-align: center; font-weight: 700; color: #000; }
+
+.su-carousel { position: absolute; left: 335px; top: 156px; width: 535px; height: 160px; }
+.su-avatar { position: absolute; padding: 0; border: 0; border-radius: 50%; overflow: hidden; background: none; cursor: pointer; }
+.su-avatar .asset-slot { border-radius: 50%; }
+.su-avatar.pos1 { left: 0; top: 25px; opacity: .5; }
+.su-avatar.pos2 { left: 83px; top: 15px; opacity: .7; }
+.su-avatar.pos3 { left: 187px; top: 0; z-index: 1; }
+.su-avatar.pos4 { left: 321px; top: 15px; opacity: .7; }
+.su-avatar.pos5 { left: 425px; top: 25px; opacity: .5; }
+.su-arrow { position: absolute; z-index: 2; top: 62px; width: 31px; height: 41px; padding: 0; border: 0; background: none; cursor: pointer; }
+.su-arrow.left { left: 160px; }
+.su-arrow.right { left: 338px; }
+.su-arrow::after { content: ""; position: absolute; top: 9px; border: 11px solid transparent; }
+.su-arrow.left::after { left: 0; border-left: 0; border-right: 13px solid #fff; }
+.su-arrow.right::after { right: 0; border-right: 0; border-left: 13px solid #fff; }
+.su-dice { position: absolute; left: 458px; top: 365px; width: 52px; height: 40px; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: var(--su-link-button); font-size: 22px; cursor: pointer; }
+.p1 .su-input { position: absolute; left: 520px; top: 367px; width: 186px; }
+.su-bubble::before { content: ""; position: absolute; left: -8px; top: 10px; border: 7px solid transparent; border-left: 0; border-right: 8px solid #fff; }
+.su-bubble { position: absolute; left: 730px; top: 367px; box-sizing: border-box; height: 34px; padding: 6px 10px; border: 1px solid #000; background: #fff; color: red; font: 400 13px/20px var(--font-signup); text-align: center; }
+.p1 .su-name > .su-btn { position: absolute; left: 605px; top: 476px; transform: translateX(-50%); }
+.su-names { position: absolute; left: 200px; top: 365px; width: 240px; margin: 0; padding: 0; list-style: none; background: #fff; }
+.su-names button { display: block; box-sizing: border-box; width: 100%; height: 42px; padding: 0 12px; border: 0; border-bottom: 1px solid #ddd; background: #fff; color: #444; font: 400 13px var(--font-signup); text-align: left; cursor: pointer; }
+.su-names button:hover { background: #f5f5f5; }
+
+.su-splash { position: absolute; left: 0; top: 0; width: 100%; height: 760px; background: #111; color: #f00; text-align: center; font: 100 24px/1.2 sans-serif; }
+.su-splash .logo { position: absolute; left: 0; right: 0; top: 50%; height: 200px; margin-top: -100px; display: flex; align-items: center; justify-content: center; transition: top .2s; }
+.su-splash .logo.error { top: 40%; }
+.su-splash .message { position: absolute; left: 10%; width: 80%; top: calc(40% + 51px); }
+.su-splash h1 { margin: 0 0 10px; font: 100 48px/1.2 sans-serif; color: #f00; }
+.su-start { position: absolute; left: 0; top: 0; width: 100%; height: 760px; }
+
+/* dialogs of the signup (L14, L16-L18): 400 px at 440,230 over the page, no backdrop */
+.su-dialog { pointer-events: auto; position: absolute; left: 50%; top: 230px; box-sizing: border-box; width: 400px; margin-left: -200px; padding: 13px 18px 20px; border: 2px solid var(--su-dialog-bd); background: var(--su-dialog-bg); color: #fff; font: 400 14px/20px var(--font-signup); }
+.su-dialog h2 { margin: 0 0 20px; padding-bottom: 6px; border-bottom: 1px solid var(--su-dialog-rule); color: var(--su-dialog-head); font: 400 24px/30px var(--font-signup); }
+.su-dialog p { margin: 0 0 12px; font-size: 12px; line-height: 16px; }
+.su-dialog .su-input { display: block; width: 100%; margin: 0 0 16px; font-size: 13px; }
+.su-dialog .su-actions { text-align: center; }
+.su-dialog .su-actions .su-btn { margin: 0 4px; }
+.su-dialog .su-hint, .su-dialog .su-link { text-shadow: none; }
+.su-dialog .su-login-error { margin-bottom: 10px; }
+.su-required { display: block; margin-bottom: 2px; color: var(--su-error); font-size: 11px; line-height: 14px; text-align: right; }
+.su-alert { margin: 0 0 12px; padding: 6px 10px; border: 1px solid #ebccd1; border-radius: 4px; background: #f2dede; color: #a94442; font-size: 13px; line-height: 18px; }
+.su-dialog.tutorial label { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; margin: 0 0 8px; text-align: right; font: 700 12px/18px var(--font-signup); }
+.su-dialog.tutorial select { justify-self: start; font-size: 12px; }
+.su-dialog.tutorial input[type=checkbox] { justify-self: start; margin: 0; }
+.su-dialog.tutorial .su-actions { margin-top: 14px; }
