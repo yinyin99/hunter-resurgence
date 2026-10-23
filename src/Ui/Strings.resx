@@ -216,9 +216,9 @@
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Resolution</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} @ {2} Hz</value></data>
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scene complexity</value></data>
-  <data name="GameSettings.Scene.Hint" xml:space="preserve"><value>Controls vegetation density and render distance: Low 220 m, Medium 270 m, High and Very high 320 m.</value></data>
+  <data name="GameSettings.Scene.Hint" xml:space="preserve"><value>Sets vegetation density and view distance.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texture quality</value></data>
-  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>High textures need 512 MB of video memory in single player and 768 MB in multiplayer.</value></data>
+  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>High textures need more video memory, especially in multiplayer.</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow quality</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Anti-aliasing (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic filtering</value></data>

@@ -7,7 +7,7 @@ builder.Services.AddRazorComponents();
 builder.Services.AddLocalization();
 
 var app = builder.Build();
-app.UseRequestLocalization("en"); // English only until other Strings.<culture>.resx exist
+app.UseRequestLocalization(o => o.SetDefaultCulture("en").AddSupportedCultures("en", "fr", "es", "pt-BR", "de", "ru").AddSupportedUICultures("en", "fr", "es", "pt-BR", "de", "ru"));
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
 app.MapStaticAssets();

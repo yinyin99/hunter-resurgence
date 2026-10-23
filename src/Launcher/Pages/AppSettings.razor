@@ -139,7 +139,7 @@
     private readonly List<ServerInfo> servers = [.. SampleData.Servers];
     private string newAddress = "";
 
-    private int LanguageIndex => Math.Max(0, Array.IndexOf(Codes, Env.Prefs.Language));
+    private int LanguageIndex => Math.Max(0, Array.IndexOf(Codes, Codes.Contains(Env.Prefs.Language) ? Env.Prefs.Language : App.Code));
 
     private void SetLanguage(int i)
     {

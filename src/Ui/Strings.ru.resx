@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="Nav.Main" xml:space="preserve"><value>Главная навигация</value></data>
+  <data name="Page.Empty" xml:space="preserve"><value>Здесь пока ничего нет.</value></data>
+  <data name="Nav.Home" xml:space="preserve"><value>Главная</value></data>
+  <data name="Nav.Download" xml:space="preserve"><value>Скачать</value></data>
+  <data name="Nav.SignIn" xml:space="preserve"><value>Войти</value></data>
+  <data name="Nav.Play" xml:space="preserve"><value>Играть</value></data>
+  <data name="Nav.Store" xml:space="preserve"><value>Магазин</value></data>
+  <data name="Nav.Missions" xml:space="preserve"><value>Задания</value></data>
+  <data name="Nav.Friends" xml:space="preserve"><value>Друзья</value></data>
+  <data name="Nav.Restore" xml:space="preserve"><value>Восстановить копию</value></data>
+  <data name="Nav.GameSettings" xml:space="preserve"><value>Настройки игры</value></data>
+  <data name="Nav.AppSettings" xml:space="preserve"><value>Настройки лаунчера</value></data>
+  <data name="Nav.Profile" xml:space="preserve"><value>Профиль</value></data>
+  <data name="Nav.Trophies" xml:space="preserve"><value>Трофеи</value></data>
+  <data name="Nav.Hunts" xml:space="preserve"><value>История охоты</value></data>
+  <data name="Nav.Leaderboards" xml:space="preserve"><value>Таблицы лидеров</value></data>
+  <data name="Leaderboards.Lead" xml:space="preserve"><value>Кто впереди, по категориям.</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>По этому адресу ничего нет.</value></data>
+  <data name="Download.Lead" xml:space="preserve"><value>Скачайте лаунчер для Windows.</value></data>
+  <data name="Play.Lead" xml:space="preserve"><value>Выберите сервер и начните охоту.</value></data>
+  <data name="Store.Lead" xml:space="preserve"><value>Потратьте внутриигровую валюту.</value></data>
+  <data name="Missions.Lead" xml:space="preserve"><value>Ваши текущие и выполненные задания.</value></data>
+  <data name="Friends.Lead" xml:space="preserve"><value>Ваши друзья и заявки.</value></data>
+  <data name="Restore.Lead" xml:space="preserve"><value>Проверьте zip-файл резервной копии и посмотрите, что в нём.</value></data>
+  <data name="GameSettings.Lead" xml:space="preserve"><value>Графика, управление и звук игры.</value></data>
+  <data name="Launcher.Busy" xml:space="preserve"><value>Занято</value></data>
+  <data name="Launcher.Wallet" xml:space="preserve"><value>Кошелёк</value></data>
+  <data name="Launcher.Credits" xml:space="preserve"><value>{0:N0} кредитов</value></data>
+  <data name="Launcher.Server" xml:space="preserve"><value>Сервер</value></data>
+  <data name="Launcher.ChangeServer" xml:space="preserve"><value>Сменить сервер</value></data>
+  <data name="Launcher.SignOut" xml:space="preserve"><value>Выйти</value></data>
+  <data name="SignIn.Title" xml:space="preserve"><value>Вход</value></data>
+  <data name="SignIn.StepEmail" xml:space="preserve"><value>Эл. почта</value></data>
+  <data name="SignIn.StepCode" xml:space="preserve"><value>Код</value></data>
+  <data name="SignIn.EmailLead" xml:space="preserve"><value>Введите адрес электронной почты, и мы отправим вам код для входа.</value></data>
+  <data name="SignIn.Email" xml:space="preserve"><value>Адрес электронной почты</value></data>
+  <data name="SignIn.SendCode" xml:space="preserve"><value>Отправить код</value></data>
+  <data name="SignIn.EmailInvalid" xml:space="preserve"><value>Введите корректный адрес электронной почты.</value></data>
+  <data name="SignIn.CodeSent" xml:space="preserve"><value>Мы отправили шестизначный код на {0}.</value></data>
+  <data name="SignIn.Code" xml:space="preserve"><value>Шестизначный код</value></data>
+  <data name="SignIn.CodeInvalid" xml:space="preserve"><value>Код состоит из шести цифр.</value></data>
+  <data name="SignIn.UseAnotherEmail" xml:space="preserve"><value>Другой адрес</value></data>
+  <data name="SignIn.SteamNote" xml:space="preserve"><value>Привязка аккаунта Steam необязательна, её можно сделать позже в настройках лаунчера.</value></data>
+  <data name="Play.GameFoundBadge" xml:space="preserve"><value>Игра найдена</value></data>
+  <data name="Play.GameMissingBadge" xml:space="preserve"><value>Игра не найдена</value></data>
+  <data name="Play.GameMissing" xml:space="preserve"><value>Укажите папку с игрой в настройках лаунчера.</value></data>
+  <data name="Play.GameNotConfiguredBadge" xml:space="preserve"><value>Игра не настроена</value></data>
+  <data name="Play.GameNotConfigured" xml:space="preserve"><value>Заполните settings.json рядом с лаунчером (steam_app_id и client_exe).</value></data>
+  <data name="Play.NeedsServer" xml:space="preserve"><value>Нужен сервер сообщества.</value></data>
+  <data name="Play.GameMissingLink" xml:space="preserve"><value>Открыть настройки лаунчера</value></data>
+  <data name="Play.Server" xml:space="preserve"><value>Сервер сообщества</value></data>
+  <data name="Play.Region" xml:space="preserve"><value>Регион</value></data>
+  <data name="Play.PlayersOnline" xml:space="preserve"><value>Игроков онлайн</value></data>
+  <data name="Play.Ping" xml:space="preserve"><value>Пинг</value></data>
+  <data name="Play.PingMs" xml:space="preserve"><value>{0} мс</value></data>
+  <data name="Play.Version" xml:space="preserve"><value>Версия</value></data>
+  <data name="Play.Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="Play.ChangeServer" xml:space="preserve"><value>Сменить сервер</value></data>
+  <data name="Play.ChooseServer" xml:space="preserve"><value>Выберите сервер</value></data>
+  <data name="Play.Current" xml:space="preserve"><value>Текущий</value></data>
+  <data name="Play.HuntNow" xml:space="preserve"><value>На охоту</value></data>
+  <data name="Play.Mode" xml:space="preserve"><value>Режим охоты</value></data>
+  <data name="Play.ModeSingle" xml:space="preserve"><value>Одиночная игра</value></data>
+  <data name="Play.ModeHost" xml:space="preserve"><value>Создать сетевую игру</value></data>
+  <data name="Play.ModeJoin" xml:space="preserve"><value>Присоединиться к сетевой игре</value></data>
+  <data name="Play.OpenGames" xml:space="preserve"><value>Открытые игры</value></data>
+  <data name="Play.NoOpenGames" xml:space="preserve"><value>Сейчас на этом сервере нет открытых игр.</value></data>
+  <data name="Play.Host" xml:space="preserve"><value>Хост</value></data>
+  <data name="Play.Reserve" xml:space="preserve"><value>Угодья</value></data>
+  <data name="Play.Players" xml:space="preserve"><value>Игроки</value></data>
+  <data name="Play.Access" xml:space="preserve"><value>Доступ</value></data>
+  <data name="Play.Join" xml:space="preserve"><value>Войти</value></data>
+  <data name="Play.Password" xml:space="preserve"><value>Пароль</value></data>
+  <data name="Play.Open" xml:space="preserve"><value>Открыта</value></data>
+  <data name="Play.Full" xml:space="preserve"><value>Заполнена</value></data>
+  <data name="Play.ChooseReserve" xml:space="preserve"><value>Выберите угодья</value></data>
+  <data name="Play.HostOptions" xml:space="preserve"><value>Параметры хоста</value></data>
+  <data name="Play.GameName" xml:space="preserve"><value>Название игры</value></data>
+  <data name="Play.DefaultGameName" xml:space="preserve"><value>Охота игрока {0}</value></data>
+  <data name="Play.MaxPlayers" xml:space="preserve"><value>Максимум игроков</value></data>
+  <data name="Play.GamePassword" xml:space="preserve"><value>Пароль</value></data>
+  <data name="Play.PasswordHint" xml:space="preserve"><value>Оставьте пустым, чтобы не задавать пароль.</value></data>
+  <data name="Play.PublicGame" xml:space="preserve"><value>Публичная игра</value></data>
+  <data name="Play.PublicHint" xml:space="preserve"><value>Публичные игры появляются в списке открытых игр.</value></data>
+  <data name="Play.News" xml:space="preserve"><value>Новости</value></data>
+  <data name="Store.Balance" xml:space="preserve"><value>Баланс</value></data>
+  <data name="Store.Categories" xml:space="preserve"><value>Категории магазина</value></data>
+  <data name="Store.Cat.weapons" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Store.Cat.ammo" xml:space="preserve"><value>Боеприпасы</value></data>
+  <data name="Store.Cat.optics" xml:space="preserve"><value>Оптика</value></data>
+  <data name="Store.Cat.gear" xml:space="preserve"><value>Одежда</value></data>
+  <data name="Store.Cat.licences" xml:space="preserve"><value>Лицензии</value></data>
+  <data name="Store.Cat.equipment" xml:space="preserve"><value>Снаряжение</value></data>
+  <data name="Store.NoItems" xml:space="preserve"><value>В этой категории нет товаров.</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Есть</value></data>
+  <data name="Store.CannotAfford" xml:space="preserve"><value>Недостаточно кредитов</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>Купить</value></data>
+  <data name="Store.ConfirmTitle" xml:space="preserve"><value>Подтверждение покупки</value></data>
+  <data name="Store.Item" xml:space="preserve"><value>Товар</value></data>
+  <data name="Store.Price" xml:space="preserve"><value>Цена</value></data>
+  <data name="Store.BalanceAfter" xml:space="preserve"><value>Баланс после покупки</value></data>
+  <data name="Store.Bought" xml:space="preserve"><value>Куплено: {0}.</value></data>
+  <data name="Missions.Daily" xml:space="preserve"><value>Ежедневные задания</value></data>
+  <data name="Missions.NoneDaily" xml:space="preserve"><value>Сейчас нет ежедневных заданий.</value></data>
+  <data name="Missions.Chains" xml:space="preserve"><value>Цепочки заданий</value></data>
+  <data name="Missions.NoneChains" xml:space="preserve"><value>Сейчас нет цепочек заданий.</value></data>
+  <data name="Missions.Claimed" xml:space="preserve"><value>Получена</value></data>
+  <data name="Missions.Completed" xml:space="preserve"><value>Выполнено</value></data>
+  <data name="Missions.Reward" xml:space="preserve"><value>Награда:</value></data>
+  <data name="Missions.Claim" xml:space="preserve"><value>Получить</value></data>
+  <data name="Friends.AddLabel" xml:space="preserve"><value>Добавить друга по нику</value></data>
+  <data name="Friends.Send" xml:space="preserve"><value>Отправить заявку</value></data>
+  <data name="Friends.List" xml:space="preserve"><value>Друзья</value></data>
+  <data name="Friends.NoFriends" xml:space="preserve"><value>Друзей пока нет. Отправьте заявку выше.</value></data>
+  <data name="Friends.Incoming" xml:space="preserve"><value>Входящие заявки</value></data>
+  <data name="Friends.NoIncoming" xml:space="preserve"><value>Входящих заявок нет.</value></data>
+  <data name="Friends.Outgoing" xml:space="preserve"><value>Исходящие заявки</value></data>
+  <data name="Friends.NoOutgoing" xml:space="preserve"><value>Исходящих заявок нет.</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Принять</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Отклонить</value></data>
+  <data name="Friends.AcceptFrom" xml:space="preserve"><value>Принять заявку от {0}</value></data>
+  <data name="Friends.DeclineFrom" xml:space="preserve"><value>Отклонить заявку от {0}</value></data>
+  <data name="Friends.CancelTo" xml:space="preserve"><value>Отменить заявку для {0}</value></data>
+  <data name="Friends.InHunt" xml:space="preserve"><value>На охоте: {0}</value></data>
+  <data name="Friends.InLauncher" xml:space="preserve"><value>В лаунчере</value></data>
+  <data name="Friends.SeenToday" xml:space="preserve"><value>Был в сети сегодня</value></data>
+  <data name="Friends.SeenYesterday" xml:space="preserve"><value>Был в сети вчера</value></data>
+  <data name="Friends.SeenDaysAgo" xml:space="preserve"><value>Был в сети {0} дн. назад</value></data>
+  <data name="Friends.Invalid" xml:space="preserve"><value>Ник состоит из 1–32 букв, цифр или знаков подчёркивания.</value></data>
+  <data name="Friends.Duplicate" xml:space="preserve"><value>{0} уже в друзьях или заявка ещё не рассмотрена.</value></data>
+  <data name="Friends.Sent" xml:space="preserve"><value>Заявка отправлена игроку {0}</value></data>
+  <data name="Restore.Explain" xml:space="preserve"><value>Zip-файл резервной копии восстанавливает ваш инвентарь, трофеи, статистику, навыки, задания и кошелёк. Ничего не меняется, пока вы не подтвердите на последнем шаге.</value></data>
+  <data name="Restore.NotRestored" xml:space="preserve"><value>Что не восстанавливается</value></data>
+  <data name="Restore.Steps" xml:space="preserve"><value>Шаги восстановления</value></data>
+  <data name="Restore.Step.Upload" xml:space="preserve"><value>Загрузка</value></data>
+  <data name="Restore.Step.Verify" xml:space="preserve"><value>Проверка владельца</value></data>
+  <data name="Restore.Step.Preview" xml:space="preserve"><value>Просмотр</value></data>
+  <data name="Restore.Step.Confirm" xml:space="preserve"><value>Подтверждение</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Выбрать zip с копией</value></data>
+  <data name="Restore.File.Hint" xml:space="preserve"><value>Выберите zip, созданный программой резервного копирования. Он читается только на этом ПК, ничего никуда не отправляется.</value></data>
+  <data name="Restore.Valid" xml:space="preserve"><value>Копия корректна</value></data>
+  <data name="Restore.Uid" xml:space="preserve"><value>ID аккаунта</value></data>
+  <data name="Restore.Handle" xml:space="preserve"><value>Ник</value></data>
+  <data name="Restore.ToolVersion" xml:space="preserve"><value>Версия программы резервного копирования</value></data>
+  <data name="Restore.Date" xml:space="preserve"><value>Создана</value></data>
+  <data name="Restore.Groups" xml:space="preserve"><value>Группы</value></data>
+  <data name="Restore.Claim.Ok" xml:space="preserve"><value>Ключ владельца совпадает с манифестом копии.</value></data>
+  <data name="Restore.Claim.Hint" xml:space="preserve"><value>Сервер сообщества ещё раз проверит этот ключ, прежде чем что-либо восстанавливать.</value></data>
+  <data name="Restore.Steam" xml:space="preserve"><value>Аккаунт Steam</value></data>
+  <data name="Restore.Steam.None" xml:space="preserve"><value>В этой копии не записан аккаунт Steam.</value></data>
+  <data name="Restore.Steam.NotRunning" xml:space="preserve"><value>Steam здесь не запущен, поэтому аккаунты нельзя сравнить.</value></data>
+  <data name="Restore.Steam.Same" xml:space="preserve"><value>Тот же аккаунт Steam, что выполнил вход на этом ПК.</value></data>
+  <data name="Restore.Steam.Differs" xml:space="preserve"><value>На этом ПК выполнен вход в другой аккаунт Steam.</value></data>
+  <data name="Restore.Steam.Hint" xml:space="preserve"><value>Дополнительное необязательное подтверждение владения; решает сервер сообщества.</value></data>
+  <data name="Restore.Files" xml:space="preserve"><value>Файлы</value></data>
+  <data name="Restore.FilesSaved" xml:space="preserve"><value>Сохранено</value></data>
+  <data name="Restore.FilesFailed" xml:space="preserve"><value>Без результата</value></data>
+  <data name="Restore.Endpoint" xml:space="preserve"><value>Конечная точка</value></data>
+  <data name="Restore.Group.profile" xml:space="preserve"><value>Профиль</value></data>
+  <data name="Restore.Group.inventory" xml:space="preserve"><value>Инвентарь и собаки</value></data>
+  <data name="Restore.Group.trophies" xml:space="preserve"><value>Трофеи и залы</value></data>
+  <data name="Restore.Group.hunts" xml:space="preserve"><value>История охоты</value></data>
+  <data name="Restore.Group.kills" xml:space="preserve"><value>Страницы добычи и фото</value></data>
+  <data name="Restore.Group.account" xml:space="preserve"><value>Аккаунт</value></data>
+  <data name="Restore.Group.friends" xml:space="preserve"><value>Друзья</value></data>
+  <data name="Restore.Group.photos" xml:space="preserve"><value>Фото</value></data>
+  <data name="Restore.Group.messages" xml:space="preserve"><value>Сообщения</value></data>
+  <data name="Restore.Summary.File" xml:space="preserve"><value>Файл копии</value></data>
+  <data name="Restore.Offline" xml:space="preserve"><value>Ничего не отправлено. Для восстановления нужен сервер сообщества.</value></data>
+  <data name="Restore.Confirm" xml:space="preserve"><value>Восстановить</value></data>
+  <data name="Restore.Error.TooBig" xml:space="preserve"><value>Файл больше 512 МБ.</value></data>
+  <data name="Restore.Error.Unreadable" xml:space="preserve"><value>Не удалось прочитать файл.</value></data>
+  <data name="Restore.Error.NotZip" xml:space="preserve"><value>Это не zip-файл.</value></data>
+  <data name="Restore.Error.NoManifest" xml:space="preserve"><value>Нет manifest.json: это не копия, созданная программой резервного копирования.</value></data>
+  <data name="Restore.Error.BadManifest" xml:space="preserve"><value>Не удаётся прочитать manifest.json.</value></data>
+  <data name="Restore.Error.NoClaimKey" xml:space="preserve"><value>В копии нет claim.key.</value></data>
+  <data name="Restore.Error.ClaimMismatch" xml:space="preserve"><value>claim.key не совпадает с манифестом: копия была изменена или повреждена.</value></data>
+  <data name="GameSettings.Tabs" xml:space="preserve"><value>Группы настроек</value></data>
+  <data name="GameSettings.Tab.Graphics" xml:space="preserve"><value>Графика</value></data>
+  <data name="GameSettings.Tab.Audio" xml:space="preserve"><value>Звук</value></data>
+  <data name="GameSettings.Tab.Controls" xml:space="preserve"><value>Управление</value></data>
+  <data name="GameSettings.Tab.Interface" xml:space="preserve"><value>Интерфейс</value></data>
+  <data name="GameSettings.Opt.Low" xml:space="preserve"><value>Низкое</value></data>
+  <data name="GameSettings.Opt.Medium" xml:space="preserve"><value>Среднее</value></data>
+  <data name="GameSettings.Opt.High" xml:space="preserve"><value>Высокое</value></data>
+  <data name="GameSettings.Opt.VeryHigh" xml:space="preserve"><value>Очень высокое</value></data>
+  <data name="GameSettings.Opt.Ultra" xml:space="preserve"><value>Ультра</value></data>
+  <data name="GameSettings.Opt.Custom" xml:space="preserve"><value>Своё</value></data>
+  <data name="GameSettings.Opt.Default" xml:space="preserve"><value>По умолчанию</value></data>
+  <data name="GameSettings.Opt.Off" xml:space="preserve"><value>Выкл.</value></data>
+  <data name="GameSettings.Opt.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.Opt.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.Opt.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.Opt.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.Preset" xml:space="preserve"><value>Набор качества</value></data>
+  <data name="GameSettings.Preset.Hint" xml:space="preserve"><value>Выбор набора задаёт параметры качества ниже. Если изменить один из них, набор станет «Своё».</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Полный экран</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Вертикальная синхронизация</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Разрешение</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} @ {2} Гц</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Сложность сцены</value></data>
+  <data name="GameSettings.Scene.Hint" xml:space="preserve"><value>Определяет плотность растительности и дальность видимости.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Качество текстур</value></data>
+  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>Высокие текстуры требуют больше видеопамяти, особенно в сетевой игре.</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Качество теней</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Сглаживание (MSAA)</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Анизотропная фильтрация</value></data>
+  <data name="GameSettings.Scope" xml:space="preserve"><value>Качество прицела</value></data>
+  <data name="GameSettings.MasterVolume" xml:space="preserve"><value>Общая громкость</value></data>
+  <data name="GameSettings.InvertMouse" xml:space="preserve"><value>Инвертировать мышь</value></data>
+  <data name="GameSettings.LookSpeed" xml:space="preserve"><value>Скорость обзора</value></data>
+  <data name="GameSettings.AimSpeed" xml:space="preserve"><value>Скорость прицеливания</value></data>
+  <data name="GameSettings.BinocularSpeed" xml:space="preserve"><value>Скорость бинокля</value></data>
+  <data name="GameSettings.Gamepad" xml:space="preserve"><value>Использовать геймпад</value></data>
+  <data name="GameSettings.Gamma" xml:space="preserve"><value>Гамма</value></data>
+  <data name="GameSettings.PlayerNames" xml:space="preserve"><value>Показывать имена игроков</value></data>
+  <data name="GameSettings.StatusBar" xml:space="preserve"><value>Строка состояния</value></data>
+  <data name="GameSettings.PlayerSpotting" xml:space="preserve"><value>Отметки игроков</value></data>
+  <data name="GameSettings.AnimalSpotting" xml:space="preserve"><value>Отметки животных</value></data>
+  <data name="GameSettings.Chat" xml:space="preserve"><value>Чат</value></data>
+  <data name="GameSettings.MapPopups" xml:space="preserve"><value>Всплывающие окна карты</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Контекстная подсказка</value></data>
+  <data name="GameSettings.AutoReload" xml:space="preserve"><value>Автоперезарядка</value></data>
+  <data name="GameSettings.GlassesShader" xml:space="preserve"><value>Эффект очков</value></data>
+  <data name="GameSettings.Reset" xml:space="preserve"><value>Отменить изменения</value></data>
+  <data name="GameSettings.Saved" xml:space="preserve"><value>Сохранено</value></data>
+  <data name="GameSettings.NothingToSave" xml:space="preserve"><value>Ничего не изменилось.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Не удалось сохранить: {0}</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Не настроено: в settings.json нет записи для этого файла.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Запустите игру один раз, чтобы она создала этот файл.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>У этого файла неизвестный лаунчеру формат, поэтому он не тронут.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Игра запущена. Закройте её перед сохранением: она сама перезаписывает эти файлы.</value></data>
+  <data name="AppSettings.Summary" xml:space="preserve"><value>Язык, папка с игрой, аккаунты и серверы этого лаунчера.</value></data>
+  <data name="AppSettings.General" xml:space="preserve"><value>Общие</value></data>
+  <data name="AppSettings.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="AppSettings.Language.Hint" xml:space="preserve"><value>Применяется после перезапуска лаунчера.</value></data>
+  <data name="AppSettings.CloseOnStart" xml:space="preserve"><value>Закрывать лаунчер при запуске игры</value></data>
+  <data name="AppSettings.Folder" xml:space="preserve"><value>Папка с игрой</value></data>
+  <data name="AppSettings.Folder.Path" xml:space="preserve"><value>Папка, в которую установлена игра</value></data>
+  <data name="AppSettings.Folder.Checked" xml:space="preserve"><value>Последняя проверка: {0}</value></data>
+  <data name="AppSettings.Folder.None" xml:space="preserve"><value>Не найдена</value></data>
+  <data name="AppSettings.Folder.Chosen" xml:space="preserve"><value>Папка выбрана вручную.</value></data>
+  <data name="AppSettings.Folder.Automatic" xml:space="preserve"><value>Определять автоматически</value></data>
+  <data name="AppSettings.Folder.Wrong" xml:space="preserve"><value>В этой папке нет клиента игры.</value></data>
+  <data name="AppSettings.SaveFailed" xml:space="preserve"><value>Не удалось сохранить ваш выбор.</value></data>
+  <data name="AppSettings.Browse" xml:space="preserve"><value>Обзор</value></data>
+  <data name="AppSettings.Detect" xml:space="preserve"><value>Определить снова</value></data>
+  <data name="AppSettings.Steam" xml:space="preserve"><value>Аккаунт Steam</value></data>
+  <data name="AppSettings.Steam.Hint" xml:space="preserve"><value>Необязательно. Нужен только чтобы подтвердить, что копия принадлежит вам, при восстановлении.</value></data>
+  <data name="AppSettings.Steam.Signed" xml:space="preserve"><value>Выполнен вход на этом ПК</value></data>
+  <data name="AppSettings.Steam.NoUser" xml:space="preserve"><value>Steam не запущен или вход не выполнен.</value></data>
+  <data name="AppSettings.Steam.Link" xml:space="preserve"><value>Привязать аккаунт Steam</value></data>
+  <data name="AppSettings.Steam.Unlink" xml:space="preserve"><value>Отвязать</value></data>
+  <data name="AppSettings.Servers" xml:space="preserve"><value>Серверы сообщества</value></data>
+  <data name="AppSettings.Servers.Hint" xml:space="preserve"><value>Серверы, показанные на странице «Играть». Добавьте сервер по его адресу.</value></data>
+  <data name="AppSettings.Servers.Empty" xml:space="preserve"><value>Серверов нет. Добавьте сервер ниже.</value></data>
+  <data name="AppSettings.Servers.Name" xml:space="preserve"><value>Название</value></data>
+  <data name="AppSettings.Servers.Address" xml:space="preserve"><value>Адрес</value></data>
+  <data name="AppSettings.Servers.Actions" xml:space="preserve"><value>Действия</value></data>
+  <data name="AppSettings.Servers.Remove" xml:space="preserve"><value>Удалить</value></data>
+  <data name="AppSettings.Servers.RemoveNamed" xml:space="preserve"><value>Удалить {0}</value></data>
+  <data name="AppSettings.Servers.AddLabel" xml:space="preserve"><value>Адрес сервера</value></data>
+  <data name="AppSettings.Servers.Placeholder" xml:space="preserve"><value>host.example.org:7000</value></data>
+  <data name="AppSettings.Servers.Add" xml:space="preserve"><value>Добавить</value></data>
+  <data name="AppSettings.Tools" xml:space="preserve"><value>Инструменты</value></data>
+  <data name="AppSettings.Tools.GameFolder" xml:space="preserve"><value>Открыть папку с игрой</value></data>
+  <data name="AppSettings.Tools.LogFolder" xml:space="preserve"><value>Открыть папку клиента (журналы)</value></data>
+  <data name="AppSettings.Tools.Screenshots" xml:space="preserve"><value>Открыть папку скриншотов Steam</value></data>
+  <data name="AppSettings.About" xml:space="preserve"><value>О программе</value></data>
+  <data name="AppSettings.About.Version" xml:space="preserve"><value>Версия лаунчера {0}</value></data>
+  <data name="AppSettings.About.Licence" xml:space="preserve"><value>Свободное ПО под лицензией GNU AGPL-3.0.</value></data>
+  <data name="AppSettings.About.Repo" xml:space="preserve"><value>Исходный код на GitHub</value></data>
+  <data name="Players.Breadcrumb" xml:space="preserve"><value>Навигационная цепочка</value></data>
+  <data name="Players.Sections" xml:space="preserve"><value>Разделы игрока</value></data>
+  <data name="Players.Tab.Overview" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Players.Tab.Trophies" xml:space="preserve"><value>Трофеи</value></data>
+  <data name="Players.Tab.Hunts" xml:space="preserve"><value>История охоты</value></data>
+  <data name="Players.MemberSince" xml:space="preserve"><value>С нами с {0}</value></data>
+  <data name="Players.Stat.Hunts" xml:space="preserve"><value>Охоты</value></data>
+  <data name="Players.Stat.Kills" xml:space="preserve"><value>Добыча</value></data>
+  <data name="Players.Stat.Trophies" xml:space="preserve"><value>Трофеи</value></data>
+  <data name="Players.Stat.Distance" xml:space="preserve"><value>Пройденное расстояние</value></data>
+  <data name="Players.Stat.BestScore" xml:space="preserve"><value>Лучший результат</value></data>
+  <data name="Players.Km" xml:space="preserve"><value>{0:0.#} км</value></data>
+  <data name="Players.Kg" xml:space="preserve"><value>{0:0.#} кг</value></data>
+  <data name="Players.Meters" xml:space="preserve"><value>{0} м</value></data>
+  <data name="Players.RecentTrophies" xml:space="preserve"><value>Недавние трофеи</value></data>
+  <data name="Players.RecentHunts" xml:space="preserve"><value>Недавние охоты</value></data>
+  <data name="Players.ViewAll" xml:space="preserve"><value>Показать все</value></data>
+  <data name="Trophies.None" xml:space="preserve"><value>Нет трофеев для показа.</value></data>
+  <data name="Trophies.Species" xml:space="preserve"><value>Вид</value></data>
+  <data name="Trophies.Sort" xml:space="preserve"><value>Сортировка</value></data>
+  <data name="Trophies.Sort.Score" xml:space="preserve"><value>Лучший результат</value></data>
+  <data name="Trophies.Sort.Date" xml:space="preserve"><value>Сначала новые</value></data>
+  <data name="Trophies.Score" xml:space="preserve"><value>Очки</value></data>
+  <data name="Trophies.Weight" xml:space="preserve"><value>Вес</value></data>
+  <data name="Trophies.Weapon" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Trophies.Reserve" xml:space="preserve"><value>Угодья</value></data>
+  <data name="Trophies.Date" xml:space="preserve"><value>Дата</value></data>
+  <data name="Hunts.None" xml:space="preserve"><value>Охот пока нет.</value></data>
+  <data name="Hunts.Date" xml:space="preserve"><value>Дата</value></data>
+  <data name="Hunts.Reserve" xml:space="preserve"><value>Угодья</value></data>
+  <data name="Hunts.Duration" xml:space="preserve"><value>Длительность</value></data>
+  <data name="Hunts.Kills" xml:space="preserve"><value>Добыча</value></data>
+  <data name="Hunts.BestScore" xml:space="preserve"><value>Лучший результат</value></data>
+  <data name="Hunts.Minutes" xml:space="preserve"><value>{0} мин</value></data>
+  <data name="Hunt.Title" xml:space="preserve"><value>Охота: {0}</value></data>
+  <data name="Hunt.Lead" xml:space="preserve"><value>{0}, охотник — {1}</value></data>
+  <data name="Hunt.Kills" xml:space="preserve"><value>Добыча этой охоты</value></data>
+  <data name="Hunt.NoKills" xml:space="preserve"><value>В этой охоте нет добычи.</value></data>
+  <data name="Kill.Sheet" xml:space="preserve"><value>Оценочный лист: {0}</value></data>
+  <data name="Kill.Context" xml:space="preserve"><value>Выстрел игрока {0}, {1}, {2}.</value></data>
+  <data name="Kill.Species" xml:space="preserve"><value>Вид</value></data>
+  <data name="Kill.Gender" xml:space="preserve"><value>Пол</value></data>
+  <data name="Kill.Weight" xml:space="preserve"><value>Вес</value></data>
+  <data name="Kill.Score" xml:space="preserve"><value>Очки</value></data>
+  <data name="Kill.Distance" xml:space="preserve"><value>Дистанция</value></data>
+  <data name="Kill.Weapon" xml:space="preserve"><value>Оружие</value></data>
+  <data name="Kill.Ammo" xml:space="preserve"><value>Боеприпасы</value></data>
+  <data name="Kill.Placement" xml:space="preserve"><value>Место попадания</value></data>
+  <data name="Kill.Harvested" xml:space="preserve"><value>Разделана</value></data>
+  <data name="Kill.NotHarvested" xml:space="preserve"><value>Не разделана</value></data>
+  <data name="Kill.Ethical" xml:space="preserve"><value>Этичный выстрел</value></data>
+  <data name="Kill.NotEthical" xml:space="preserve"><value>Неэтичный выстрел</value></data>
+  <data name="Kill.ToHunt" xml:space="preserve"><value>Назад к охоте</value></data>
+  <data name="Kill.ToPlayer" xml:space="preserve"><value>Профиль игрока {0}</value></data>
+  <data name="Leaderboards.Species" xml:space="preserve"><value>Вид</value></data>
+  <data name="Leaderboards.WeaponClass" xml:space="preserve"><value>Класс оружия</value></data>
+  <data name="Leaderboards.Season" xml:space="preserve"><value>Сезон</value></data>
+  <data name="Leaderboards.Rank" xml:space="preserve"><value>Место</value></data>
+  <data name="Leaderboards.Hunter" xml:space="preserve"><value>Охотник</value></data>
+  <data name="Leaderboards.Score" xml:space="preserve"><value>Очки</value></data>
+  <data name="Leaderboards.Kills" xml:space="preserve"><value>Добыча</value></data>
+  <data name="Leaderboards.None" xml:space="preserve"><value>С такими фильтрами никого нет в рейтинге.</value></data>
+  <data name="Leaderboards.You" xml:space="preserve"><value>Вы</value></data>
+  <data name="Dialog.Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Common.Apply" xml:space="preserve"><value>Применить</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Назад</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>Далее</value></data>
+  <data name="Common.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Common.Confirm" xml:space="preserve"><value>Подтвердить</value></data>
+  <data name="Common.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="Common.Select" xml:space="preserve"><value>Выбрать</value></data>
+  <data name="Common.All" xml:space="preserve"><value>Все</value></data>
+  <data name="Common.Online" xml:space="preserve"><value>В сети</value></data>
+  <data name="Common.Offline" xml:space="preserve"><value>Не в сети</value></data>
+  <data name="Common.Yes" xml:space="preserve"><value>Да</value></data>
+  <data name="Common.No" xml:space="preserve"><value>Нет</value></data>
+  <data name="Nav.Players" xml:space="preserve"><value>Игроки</value></data>
+  <data name="Home.Pitch" xml:space="preserve"><value>Снова на охоту, вместе: лаунчер, сервер и сайт сообщества для игры.</value></data>
+  <data name="Home.Cta" xml:space="preserve"><value>Скачать лаунчер</value></data>
+  <data name="Home.FindPlayer" xml:space="preserve"><value>Найти игрока</value></data>
+  <data name="Home.TopHunters" xml:space="preserve"><value>Лучшие охотники сезона</value></data>
+  <data name="Home.LatestNews" xml:space="preserve"><value>Последние новости</value></data>
+  <data name="Home.Servers" xml:space="preserve"><value>Серверы сообщества</value></data>
+  <data name="Home.ServersOnline" xml:space="preserve"><value>В сети {0} из {1}</value></data>
+  <data name="Home.ServerName" xml:space="preserve"><value>Сервер</value></data>
+  <data name="Home.ServerRegion" xml:space="preserve"><value>Регион</value></data>
+  <data name="Home.ServerStatus" xml:space="preserve"><value>Статус</value></data>
+  <data name="Players.Lead" xml:space="preserve"><value>Найдите охотника по нику.</value></data>
+  <data name="Players.SearchLabel" xml:space="preserve"><value>Ник игрока</value></data>
+  <data name="Players.Search" xml:space="preserve"><value>Найти</value></data>
+  <data name="Players.Prompt" xml:space="preserve"><value>Введите ник, чтобы найти игрока.</value></data>
+  <data name="Players.NoMatch" xml:space="preserve"><value>Нет игроков, подходящих под «{0}».</value></data>
+  <data name="Players.Found" xml:space="preserve"><value>Найдено игроков: {0}</value></data>
+  <data name="Players.TrophyCount" xml:space="preserve"><value>Трофеев: {0}</value></data>
+  <data name="Players.TrophyCount.One" xml:space="preserve"><value>Трофеев: {0}</value></data>
+  <data name="Download.CardName" xml:space="preserve"><value>Лаунчер Hunter Resurgence</value></data>
+  <data name="Download.Platform" xml:space="preserve"><value>Windows 10/11, 64-разрядная</value></data>
+  <data name="Download.Requires" xml:space="preserve"><value>Нужен компонент Microsoft Edge WebView2. В Windows 11 он установлен по умолчанию.</value></data>
+  <data name="Download.NotReleased" xml:space="preserve"><value>Пока не выпущен</value></data>
+  <data name="Download.Steam.Title" xml:space="preserve"><value>Запуск через Steam</value></data>
+  <data name="Download.Steam.Install" xml:space="preserve"><value>Установите лаунчер в любое место на ПК.</value></data>
+  <data name="Download.Steam.Properties" xml:space="preserve"><value>В Steam щёлкните игру в библиотеке правой кнопкой мыши, выберите «Свойства», затем «Параметры запуска».</value></data>
+  <data name="Download.Steam.Paste" xml:space="preserve"><value>Вставьте эту строку, указав настоящий путь к лаунчеру:</value></data>
+  <data name="Download.Steam.Play" xml:space="preserve"><value>Нажмите «Играть»: Steam откроет лаунчер.</value></data>
+  <data name="Download.Steam.Untouched" xml:space="preserve"><value>Файлы самой игры остаются нетронутыми.</value></data>
+  <data name="Download.Backup.Title" xml:space="preserve"><value>Сначала сделайте копию профиля</value></data>
+  <data name="Download.Backup.Text" xml:space="preserve"><value>Программа резервного копирования профиля сохраняет вашу статистику, инвентарь, трофеи и историю охоты в файлы на вашем ПК. Запустите её до 2026‑11‑11, пока официальные серверы работают.</value></data>
+  <data name="Download.Backup.Link" xml:space="preserve"><value>Получить программу резервного копирования</value></data>
+  <data name="SignIn.Web.Notice" xml:space="preserve"><value>Аккаунты откроются, когда заработает сервер сообщества.</value></data>
+</root>

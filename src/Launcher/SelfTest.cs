@@ -1,6 +1,10 @@
+using System.Collections;
+using System.Globalization;
 using System.IO.Compression;
+using System.Resources;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Resurgence.Launcher;
 
@@ -21,6 +25,7 @@ static class SelfTest
             Directory.CreateDirectory(root);
             Game(root);
             PrefsRoundTrip(root);
+            Translations();
             GameSettingsFiles(root);
             Zips(root);
             Console.WriteLine("selftest ok");
@@ -86,12 +91,37 @@ static class SelfTest
     static void PrefsRoundTrip(string root)
     {
         var path = Path.Combine(root, "prefs", "launcher.json");
-        Check(Prefs.Load(path).Language == "en", "no launcher.json: defaults");
+        Check(Prefs.Load(path).Language == "", "no launcher.json: defaults");
         new Prefs { Language = "de", GameFolder = @"C:\x y", CloseOnGameStart = true }.Save(path);
         var p = Prefs.Load(path);
         Check(p is { Language: "de", GameFolder: @"C:\x y", CloseOnGameStart: true }, "launcher.json round trip");
         File.WriteAllText(path, "{ not json");
-        Check(Prefs.Load(path).Language == "en", "damaged launcher.json: defaults");
+        Check(Prefs.Load(path).Language == "", "damaged launcher.json: defaults");
+        Check(App.Pick("de", "fr") == "de" && App.Pick("", "fr") == "fr" && App.Pick("xx", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "pt") == "pt", "language: saved choice, else Windows language, else English");
+    }
+
+    /// <summary>Every language resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime).</summary>
+    static void Translations()
+    {
+        var rm = new ResourceManager("Resurgence.Ui.Strings", typeof(Resurgence.Ui.Strings).Assembly);
+        Dictionary<string, string> Read(CultureInfo c) =>
+            (rm.GetResourceSet(c, true, false) ?? throw new Exception($"FAIL no resources for '{c.Name}'")).Cast<DictionaryEntry>().ToDictionary(e => (string)e.Key, e => (string)e.Value!);
+        static string Holes(string s) => string.Join(",", Regex.Matches(s, @"\{(\d+)").Select(m => m.Groups[1].Value).Order());
+        var en = Read(CultureInfo.InvariantCulture);
+        var bad = new List<string>();
+        foreach (var (_, culture) in App.Languages.Where(l => l.Code != "en"))
+        {
+            var tr = Read(CultureInfo.GetCultureInfo(culture));
+            bad.AddRange(en.Keys.Except(tr.Keys).Select(k => $"{culture}: missing {k}"));
+            bad.AddRange(tr.Keys.Except(en.Keys).Select(k => $"{culture}: extra {k}"));
+            foreach (var (k, v) in tr.Where(p => en.ContainsKey(p.Key)))
+            {
+                if (Holes(v) != Holes(en[k])) bad.Add($"{culture}: {k} has placeholders {{{Holes(v)}}}, English has {{{Holes(en[k])}}}");
+                try { string.Format(v, "", "", "", ""); } catch (FormatException) { bad.Add($"{culture}: {k} is not a valid format string"); }
+            }
+        }
+        if (bad.Count > 0) throw new Exception("FAIL translations: " + string.Join("; ", bad));
+        Check(true, $"{App.Languages.Length - 1} translations have the {en.Count} keys and placeholders of Strings.resx");
     }
 
     static string Bytes(string path) => System.Text.Encoding.Latin1.GetString(File.ReadAllBytes(path));

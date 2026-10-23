@@ -9,8 +9,8 @@ public sealed class Prefs
 
     public static string DefaultPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hunter-resurgence", "launcher.json");
 
-    /// <summary>Language code (en, fr, es, pt, de, ru); only English texts exist so far.</summary>
-    public string Language { get; set; } = "en";
+    /// <summary>Language code (en, fr, es, pt, de, ru); empty until the player chooses, then the Windows display language is used.</summary>
+    public string Language { get; set; } = "";
     /// <summary>Install folder chosen by hand; wins over detection while the client is found in it.</summary>
     public string? GameFolder { get; set; }
     public bool CloseOnGameStart { get; set; }

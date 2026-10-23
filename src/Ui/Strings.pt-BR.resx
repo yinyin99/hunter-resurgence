@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="Nav.Main" xml:space="preserve"><value>Navegação principal</value></data>
+  <data name="Page.Empty" xml:space="preserve"><value>Ainda não há nada aqui.</value></data>
+  <data name="Nav.Home" xml:space="preserve"><value>Início</value></data>
+  <data name="Nav.Download" xml:space="preserve"><value>Baixar</value></data>
+  <data name="Nav.SignIn" xml:space="preserve"><value>Entrar</value></data>
+  <data name="Nav.Play" xml:space="preserve"><value>Jogar</value></data>
+  <data name="Nav.Store" xml:space="preserve"><value>Loja</value></data>
+  <data name="Nav.Missions" xml:space="preserve"><value>Missões</value></data>
+  <data name="Nav.Friends" xml:space="preserve"><value>Amigos</value></data>
+  <data name="Nav.Restore" xml:space="preserve"><value>Restaurar backup</value></data>
+  <data name="Nav.GameSettings" xml:space="preserve"><value>Configurações do jogo</value></data>
+  <data name="Nav.AppSettings" xml:space="preserve"><value>Configurações do launcher</value></data>
+  <data name="Nav.Profile" xml:space="preserve"><value>Perfil</value></data>
+  <data name="Nav.Trophies" xml:space="preserve"><value>Troféus</value></data>
+  <data name="Nav.Hunts" xml:space="preserve"><value>Histórico de caçadas</value></data>
+  <data name="Nav.Leaderboards" xml:space="preserve"><value>Classificações</value></data>
+  <data name="Leaderboards.Lead" xml:space="preserve"><value>Quem está no topo, por categoria.</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Página não encontrada</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>Não há nada neste endereço.</value></data>
+  <data name="Download.Lead" xml:space="preserve"><value>Baixe o launcher para Windows.</value></data>
+  <data name="Play.Lead" xml:space="preserve"><value>Escolha um servidor e comece uma caçada.</value></data>
+  <data name="Store.Lead" xml:space="preserve"><value>Gaste a moeda do jogo.</value></data>
+  <data name="Missions.Lead" xml:space="preserve"><value>Suas missões ativas e concluídas.</value></data>
+  <data name="Friends.Lead" xml:space="preserve"><value>Seus amigos e solicitações.</value></data>
+  <data name="Restore.Lead" xml:space="preserve"><value>Verifique um zip de backup e veja o que ele contém.</value></data>
+  <data name="GameSettings.Lead" xml:space="preserve"><value>Gráficos, controles e áudio do jogo.</value></data>
+  <data name="Launcher.Busy" xml:space="preserve"><value>Ocupado</value></data>
+  <data name="Launcher.Wallet" xml:space="preserve"><value>Carteira</value></data>
+  <data name="Launcher.Credits" xml:space="preserve"><value>{0:N0} créditos</value></data>
+  <data name="Launcher.Server" xml:space="preserve"><value>Servidor</value></data>
+  <data name="Launcher.ChangeServer" xml:space="preserve"><value>Trocar de servidor</value></data>
+  <data name="Launcher.SignOut" xml:space="preserve"><value>Sair</value></data>
+  <data name="SignIn.Title" xml:space="preserve"><value>Entrar</value></data>
+  <data name="SignIn.StepEmail" xml:space="preserve"><value>E-mail</value></data>
+  <data name="SignIn.StepCode" xml:space="preserve"><value>Código</value></data>
+  <data name="SignIn.EmailLead" xml:space="preserve"><value>Digite seu endereço de e-mail e enviaremos um código de acesso.</value></data>
+  <data name="SignIn.Email" xml:space="preserve"><value>Endereço de e-mail</value></data>
+  <data name="SignIn.SendCode" xml:space="preserve"><value>Enviar código</value></data>
+  <data name="SignIn.EmailInvalid" xml:space="preserve"><value>Digite um endereço de e-mail válido.</value></data>
+  <data name="SignIn.CodeSent" xml:space="preserve"><value>Enviamos um código de seis dígitos para {0}.</value></data>
+  <data name="SignIn.Code" xml:space="preserve"><value>Código de seis dígitos</value></data>
+  <data name="SignIn.CodeInvalid" xml:space="preserve"><value>O código tem seis dígitos.</value></data>
+  <data name="SignIn.UseAnotherEmail" xml:space="preserve"><value>Usar outro e-mail</value></data>
+  <data name="SignIn.SteamNote" xml:space="preserve"><value>Vincular uma conta Steam é opcional e pode ser feito depois, nas configurações do launcher.</value></data>
+  <data name="Play.GameFoundBadge" xml:space="preserve"><value>Jogo encontrado</value></data>
+  <data name="Play.GameMissingBadge" xml:space="preserve"><value>Jogo não encontrado</value></data>
+  <data name="Play.GameMissing" xml:space="preserve"><value>Defina a pasta do jogo nas configurações do launcher.</value></data>
+  <data name="Play.GameNotConfiguredBadge" xml:space="preserve"><value>Jogo não configurado</value></data>
+  <data name="Play.GameNotConfigured" xml:space="preserve"><value>Preencha o settings.json ao lado do launcher (steam_app_id e client_exe).</value></data>
+  <data name="Play.NeedsServer" xml:space="preserve"><value>Precisa de um servidor da comunidade.</value></data>
+  <data name="Play.GameMissingLink" xml:space="preserve"><value>Abrir configurações do launcher</value></data>
+  <data name="Play.Server" xml:space="preserve"><value>Servidor da comunidade</value></data>
+  <data name="Play.Region" xml:space="preserve"><value>Região</value></data>
+  <data name="Play.PlayersOnline" xml:space="preserve"><value>Jogadores online</value></data>
+  <data name="Play.Ping" xml:space="preserve"><value>Ping</value></data>
+  <data name="Play.PingMs" xml:space="preserve"><value>{0} ms</value></data>
+  <data name="Play.Version" xml:space="preserve"><value>Versão</value></data>
+  <data name="Play.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Play.ChangeServer" xml:space="preserve"><value>Trocar de servidor</value></data>
+  <data name="Play.ChooseServer" xml:space="preserve"><value>Escolha um servidor</value></data>
+  <data name="Play.Current" xml:space="preserve"><value>Atual</value></data>
+  <data name="Play.HuntNow" xml:space="preserve"><value>Caçar agora</value></data>
+  <data name="Play.Mode" xml:space="preserve"><value>Modo de caçada</value></data>
+  <data name="Play.ModeSingle" xml:space="preserve"><value>Um jogador</value></data>
+  <data name="Play.ModeHost" xml:space="preserve"><value>Hospedar multijogador</value></data>
+  <data name="Play.ModeJoin" xml:space="preserve"><value>Entrar no multijogador</value></data>
+  <data name="Play.OpenGames" xml:space="preserve"><value>Partidas abertas</value></data>
+  <data name="Play.NoOpenGames" xml:space="preserve"><value>Nenhuma partida aberta neste servidor no momento.</value></data>
+  <data name="Play.Host" xml:space="preserve"><value>Anfitrião</value></data>
+  <data name="Play.Reserve" xml:space="preserve"><value>Reserva</value></data>
+  <data name="Play.Players" xml:space="preserve"><value>Jogadores</value></data>
+  <data name="Play.Access" xml:space="preserve"><value>Acesso</value></data>
+  <data name="Play.Join" xml:space="preserve"><value>Entrar</value></data>
+  <data name="Play.Password" xml:space="preserve"><value>Senha</value></data>
+  <data name="Play.Open" xml:space="preserve"><value>Aberta</value></data>
+  <data name="Play.Full" xml:space="preserve"><value>Cheia</value></data>
+  <data name="Play.ChooseReserve" xml:space="preserve"><value>Escolha uma reserva</value></data>
+  <data name="Play.HostOptions" xml:space="preserve"><value>Opções do anfitrião</value></data>
+  <data name="Play.GameName" xml:space="preserve"><value>Nome da partida</value></data>
+  <data name="Play.DefaultGameName" xml:space="preserve"><value>Caçada de {0}</value></data>
+  <data name="Play.MaxPlayers" xml:space="preserve"><value>Máximo de jogadores</value></data>
+  <data name="Play.GamePassword" xml:space="preserve"><value>Senha</value></data>
+  <data name="Play.PasswordHint" xml:space="preserve"><value>Deixe em branco para não usar senha.</value></data>
+  <data name="Play.PublicGame" xml:space="preserve"><value>Partida pública</value></data>
+  <data name="Play.PublicHint" xml:space="preserve"><value>Partidas públicas aparecem na lista de partidas abertas.</value></data>
+  <data name="Play.News" xml:space="preserve"><value>Notícias</value></data>
+  <data name="Store.Balance" xml:space="preserve"><value>Saldo</value></data>
+  <data name="Store.Categories" xml:space="preserve"><value>Categorias da loja</value></data>
+  <data name="Store.Cat.weapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Store.Cat.ammo" xml:space="preserve"><value>Munição</value></data>
+  <data name="Store.Cat.optics" xml:space="preserve"><value>Ópticas</value></data>
+  <data name="Store.Cat.gear" xml:space="preserve"><value>Roupas</value></data>
+  <data name="Store.Cat.licences" xml:space="preserve"><value>Licenças</value></data>
+  <data name="Store.Cat.equipment" xml:space="preserve"><value>Equipamento</value></data>
+  <data name="Store.NoItems" xml:space="preserve"><value>Nenhum item nesta categoria.</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Adquirido</value></data>
+  <data name="Store.CannotAfford" xml:space="preserve"><value>Créditos insuficientes</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>Comprar</value></data>
+  <data name="Store.ConfirmTitle" xml:space="preserve"><value>Confirmar compra</value></data>
+  <data name="Store.Item" xml:space="preserve"><value>Item</value></data>
+  <data name="Store.Price" xml:space="preserve"><value>Preço</value></data>
+  <data name="Store.BalanceAfter" xml:space="preserve"><value>Saldo após a compra</value></data>
+  <data name="Store.Bought" xml:space="preserve"><value>Você comprou {0}.</value></data>
+  <data name="Missions.Daily" xml:space="preserve"><value>Missões diárias</value></data>
+  <data name="Missions.NoneDaily" xml:space="preserve"><value>Nenhuma missão diária no momento.</value></data>
+  <data name="Missions.Chains" xml:space="preserve"><value>Sequências de missões</value></data>
+  <data name="Missions.NoneChains" xml:space="preserve"><value>Nenhuma sequência de missões no momento.</value></data>
+  <data name="Missions.Claimed" xml:space="preserve"><value>Resgatada</value></data>
+  <data name="Missions.Completed" xml:space="preserve"><value>Concluída</value></data>
+  <data name="Missions.Reward" xml:space="preserve"><value>Recompensa:</value></data>
+  <data name="Missions.Claim" xml:space="preserve"><value>Resgatar</value></data>
+  <data name="Friends.AddLabel" xml:space="preserve"><value>Adicionar um amigo pelo apelido</value></data>
+  <data name="Friends.Send" xml:space="preserve"><value>Enviar solicitação</value></data>
+  <data name="Friends.List" xml:space="preserve"><value>Amigos</value></data>
+  <data name="Friends.NoFriends" xml:space="preserve"><value>Ainda sem amigos. Envie uma solicitação acima.</value></data>
+  <data name="Friends.Incoming" xml:space="preserve"><value>Solicitações recebidas</value></data>
+  <data name="Friends.NoIncoming" xml:space="preserve"><value>Nenhuma solicitação recebida.</value></data>
+  <data name="Friends.Outgoing" xml:space="preserve"><value>Solicitações enviadas</value></data>
+  <data name="Friends.NoOutgoing" xml:space="preserve"><value>Nenhuma solicitação enviada.</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Aceitar</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Recusar</value></data>
+  <data name="Friends.AcceptFrom" xml:space="preserve"><value>Aceitar solicitação de {0}</value></data>
+  <data name="Friends.DeclineFrom" xml:space="preserve"><value>Recusar solicitação de {0}</value></data>
+  <data name="Friends.CancelTo" xml:space="preserve"><value>Cancelar solicitação enviada a {0}</value></data>
+  <data name="Friends.InHunt" xml:space="preserve"><value>Caçando em {0}</value></data>
+  <data name="Friends.InLauncher" xml:space="preserve"><value>No launcher</value></data>
+  <data name="Friends.SeenToday" xml:space="preserve"><value>Visto hoje</value></data>
+  <data name="Friends.SeenYesterday" xml:space="preserve"><value>Visto ontem</value></data>
+  <data name="Friends.SeenDaysAgo" xml:space="preserve"><value>Visto há {0} dias</value></data>
+  <data name="Friends.Invalid" xml:space="preserve"><value>Um apelido tem de 1 a 32 letras, dígitos ou sublinhados.</value></data>
+  <data name="Friends.Duplicate" xml:space="preserve"><value>{0} já é amigo ou tem uma solicitação pendente.</value></data>
+  <data name="Friends.Sent" xml:space="preserve"><value>Solicitação enviada a {0}</value></data>
+  <data name="Restore.Explain" xml:space="preserve"><value>Um zip de backup restaura seu inventário, troféus, estatísticas, habilidades, missões e carteira. Nada muda até você confirmar na última etapa.</value></data>
+  <data name="Restore.NotRestored" xml:space="preserve"><value>O que não é restaurado</value></data>
+  <data name="Restore.Steps" xml:space="preserve"><value>Etapas da restauração</value></data>
+  <data name="Restore.Step.Upload" xml:space="preserve"><value>Envio</value></data>
+  <data name="Restore.Step.Verify" xml:space="preserve"><value>Verificar propriedade</value></data>
+  <data name="Restore.Step.Preview" xml:space="preserve"><value>Prévia</value></data>
+  <data name="Restore.Step.Confirm" xml:space="preserve"><value>Confirmar</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Escolher zip de backup</value></data>
+  <data name="Restore.File.Hint" xml:space="preserve"><value>Escolha o zip criado pela ferramenta de backup. Ele é lido apenas neste PC; nada é enviado.</value></data>
+  <data name="Restore.Valid" xml:space="preserve"><value>Backup válido</value></data>
+  <data name="Restore.Uid" xml:space="preserve"><value>ID da conta</value></data>
+  <data name="Restore.Handle" xml:space="preserve"><value>Apelido</value></data>
+  <data name="Restore.ToolVersion" xml:space="preserve"><value>Versão da ferramenta de backup</value></data>
+  <data name="Restore.Date" xml:space="preserve"><value>Criado em</value></data>
+  <data name="Restore.Groups" xml:space="preserve"><value>Grupos</value></data>
+  <data name="Restore.Claim.Ok" xml:space="preserve"><value>A chave de reivindicação confere com o manifesto do backup.</value></data>
+  <data name="Restore.Claim.Hint" xml:space="preserve"><value>O servidor da comunidade confere essa chave de novo antes de restaurar qualquer coisa.</value></data>
+  <data name="Restore.Steam" xml:space="preserve"><value>Conta Steam</value></data>
+  <data name="Restore.Steam.None" xml:space="preserve"><value>Este backup não tem conta Steam registrada.</value></data>
+  <data name="Restore.Steam.NotRunning" xml:space="preserve"><value>O Steam não está em execução aqui, então as contas não podem ser comparadas.</value></data>
+  <data name="Restore.Steam.Same" xml:space="preserve"><value>Mesma conta Steam que está conectada neste PC.</value></data>
+  <data name="Restore.Steam.Differs" xml:space="preserve"><value>Outra conta Steam está conectada neste PC.</value></data>
+  <data name="Restore.Steam.Hint" xml:space="preserve"><value>Prova de propriedade extra e opcional; quem decide é o servidor da comunidade.</value></data>
+  <data name="Restore.Files" xml:space="preserve"><value>Arquivos</value></data>
+  <data name="Restore.FilesSaved" xml:space="preserve"><value>Salvos</value></data>
+  <data name="Restore.FilesFailed" xml:space="preserve"><value>Sem resultado</value></data>
+  <data name="Restore.Endpoint" xml:space="preserve"><value>Endpoint</value></data>
+  <data name="Restore.Group.profile" xml:space="preserve"><value>Perfil</value></data>
+  <data name="Restore.Group.inventory" xml:space="preserve"><value>Inventário e cães</value></data>
+  <data name="Restore.Group.trophies" xml:space="preserve"><value>Troféus e salões</value></data>
+  <data name="Restore.Group.hunts" xml:space="preserve"><value>Histórico de caçadas</value></data>
+  <data name="Restore.Group.kills" xml:space="preserve"><value>Páginas de abates e fotos</value></data>
+  <data name="Restore.Group.account" xml:space="preserve"><value>Conta</value></data>
+  <data name="Restore.Group.friends" xml:space="preserve"><value>Amigos</value></data>
+  <data name="Restore.Group.photos" xml:space="preserve"><value>Fotos</value></data>
+  <data name="Restore.Group.messages" xml:space="preserve"><value>Mensagens</value></data>
+  <data name="Restore.Summary.File" xml:space="preserve"><value>Arquivo de backup</value></data>
+  <data name="Restore.Offline" xml:space="preserve"><value>Nada foi enviado. Restaurar precisa do servidor da comunidade.</value></data>
+  <data name="Restore.Confirm" xml:space="preserve"><value>Restaurar</value></data>
+  <data name="Restore.Error.TooBig" xml:space="preserve"><value>O arquivo é maior que 512 MB.</value></data>
+  <data name="Restore.Error.Unreadable" xml:space="preserve"><value>Não foi possível ler o arquivo.</value></data>
+  <data name="Restore.Error.NotZip" xml:space="preserve"><value>Este não é um arquivo zip.</value></data>
+  <data name="Restore.Error.NoManifest" xml:space="preserve"><value>Falta o manifest.json: este não é um backup criado pela ferramenta de backup.</value></data>
+  <data name="Restore.Error.BadManifest" xml:space="preserve"><value>Não é possível ler o manifest.json.</value></data>
+  <data name="Restore.Error.NoClaimKey" xml:space="preserve"><value>Falta o claim.key no backup.</value></data>
+  <data name="Restore.Error.ClaimMismatch" xml:space="preserve"><value>O claim.key não confere com o manifesto: o backup foi alterado ou está danificado.</value></data>
+  <data name="GameSettings.Tabs" xml:space="preserve"><value>Grupos de configurações</value></data>
+  <data name="GameSettings.Tab.Graphics" xml:space="preserve"><value>Gráficos</value></data>
+  <data name="GameSettings.Tab.Audio" xml:space="preserve"><value>Áudio</value></data>
+  <data name="GameSettings.Tab.Controls" xml:space="preserve"><value>Controles</value></data>
+  <data name="GameSettings.Tab.Interface" xml:space="preserve"><value>Interface</value></data>
+  <data name="GameSettings.Opt.Low" xml:space="preserve"><value>Baixo</value></data>
+  <data name="GameSettings.Opt.Medium" xml:space="preserve"><value>Médio</value></data>
+  <data name="GameSettings.Opt.High" xml:space="preserve"><value>Alto</value></data>
+  <data name="GameSettings.Opt.VeryHigh" xml:space="preserve"><value>Muito alto</value></data>
+  <data name="GameSettings.Opt.Ultra" xml:space="preserve"><value>Ultra</value></data>
+  <data name="GameSettings.Opt.Custom" xml:space="preserve"><value>Personalizado</value></data>
+  <data name="GameSettings.Opt.Default" xml:space="preserve"><value>Padrão</value></data>
+  <data name="GameSettings.Opt.Off" xml:space="preserve"><value>Desligado</value></data>
+  <data name="GameSettings.Opt.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.Opt.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.Opt.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.Opt.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.Preset" xml:space="preserve"><value>Predefinição de qualidade</value></data>
+  <data name="GameSettings.Preset.Hint" xml:space="preserve"><value>Escolher uma predefinição ajusta as opções de qualidade abaixo. Alterar uma delas muda para Personalizado.</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Tela cheia</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Sincronização vertical</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Resolução</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} @ {2} Hz</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Complexidade da cena</value></data>
+  <data name="GameSettings.Scene.Hint" xml:space="preserve"><value>Define a densidade da vegetação e a distância de visão.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Qualidade das texturas</value></data>
+  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>Texturas altas exigem mais memória de vídeo, principalmente no multijogador.</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Qualidade das sombras</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Suavização de bordas (MSAA)</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtragem anisotrópica</value></data>
+  <data name="GameSettings.Scope" xml:space="preserve"><value>Qualidade da luneta</value></data>
+  <data name="GameSettings.MasterVolume" xml:space="preserve"><value>Volume geral</value></data>
+  <data name="GameSettings.InvertMouse" xml:space="preserve"><value>Inverter mouse</value></data>
+  <data name="GameSettings.LookSpeed" xml:space="preserve"><value>Velocidade de giro</value></data>
+  <data name="GameSettings.AimSpeed" xml:space="preserve"><value>Velocidade de mira</value></data>
+  <data name="GameSettings.BinocularSpeed" xml:space="preserve"><value>Velocidade do binóculo</value></data>
+  <data name="GameSettings.Gamepad" xml:space="preserve"><value>Usar controle</value></data>
+  <data name="GameSettings.Gamma" xml:space="preserve"><value>Gama</value></data>
+  <data name="GameSettings.PlayerNames" xml:space="preserve"><value>Mostrar nomes dos jogadores</value></data>
+  <data name="GameSettings.StatusBar" xml:space="preserve"><value>Barra de status</value></data>
+  <data name="GameSettings.PlayerSpotting" xml:space="preserve"><value>Marcação de jogadores</value></data>
+  <data name="GameSettings.AnimalSpotting" xml:space="preserve"><value>Marcação de animais</value></data>
+  <data name="GameSettings.Chat" xml:space="preserve"><value>Chat</value></data>
+  <data name="GameSettings.MapPopups" xml:space="preserve"><value>Pop-ups do mapa</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ajuda contextual</value></data>
+  <data name="GameSettings.AutoReload" xml:space="preserve"><value>Recarga automática</value></data>
+  <data name="GameSettings.GlassesShader" xml:space="preserve"><value>Efeito dos óculos</value></data>
+  <data name="GameSettings.Reset" xml:space="preserve"><value>Desfazer alterações</value></data>
+  <data name="GameSettings.Saved" xml:space="preserve"><value>Salvo</value></data>
+  <data name="GameSettings.NothingToSave" xml:space="preserve"><value>Nada mudou.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Não foi possível salvar: {0}</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Não configurado: o settings.json não tem entrada para este arquivo.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Inicie o jogo uma vez para ele criar este arquivo.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Este arquivo tem um formato que o launcher não conhece, então ele é deixado intacto.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>O jogo está em execução. Feche-o antes de salvar: ele mesmo reescreve estes arquivos.</value></data>
+  <data name="AppSettings.Summary" xml:space="preserve"><value>Idioma, pasta do jogo, contas e servidores deste launcher.</value></data>
+  <data name="AppSettings.General" xml:space="preserve"><value>Geral</value></data>
+  <data name="AppSettings.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="AppSettings.Language.Hint" xml:space="preserve"><value>Vale depois de reiniciar o launcher.</value></data>
+  <data name="AppSettings.CloseOnStart" xml:space="preserve"><value>Fechar o launcher quando o jogo iniciar</value></data>
+  <data name="AppSettings.Folder" xml:space="preserve"><value>Pasta do jogo</value></data>
+  <data name="AppSettings.Folder.Path" xml:space="preserve"><value>Pasta em que o jogo está instalado</value></data>
+  <data name="AppSettings.Folder.Checked" xml:space="preserve"><value>Última verificação: {0}</value></data>
+  <data name="AppSettings.Folder.None" xml:space="preserve"><value>Não encontrada</value></data>
+  <data name="AppSettings.Folder.Chosen" xml:space="preserve"><value>Pasta escolhida manualmente.</value></data>
+  <data name="AppSettings.Folder.Automatic" xml:space="preserve"><value>Usar detecção automática</value></data>
+  <data name="AppSettings.Folder.Wrong" xml:space="preserve"><value>Essa pasta não contém o cliente do jogo.</value></data>
+  <data name="AppSettings.SaveFailed" xml:space="preserve"><value>Não foi possível salvar suas escolhas.</value></data>
+  <data name="AppSettings.Browse" xml:space="preserve"><value>Procurar</value></data>
+  <data name="AppSettings.Detect" xml:space="preserve"><value>Detectar de novo</value></data>
+  <data name="AppSettings.Steam" xml:space="preserve"><value>Conta Steam</value></data>
+  <data name="AppSettings.Steam.Hint" xml:space="preserve"><value>Opcional. Usada só para provar que você é o dono de um backup ao restaurá-lo.</value></data>
+  <data name="AppSettings.Steam.Signed" xml:space="preserve"><value>Conectada neste PC</value></data>
+  <data name="AppSettings.Steam.NoUser" xml:space="preserve"><value>O Steam não está em execução ou ninguém está conectado.</value></data>
+  <data name="AppSettings.Steam.Link" xml:space="preserve"><value>Vincular conta Steam</value></data>
+  <data name="AppSettings.Steam.Unlink" xml:space="preserve"><value>Desvincular</value></data>
+  <data name="AppSettings.Servers" xml:space="preserve"><value>Servidores da comunidade</value></data>
+  <data name="AppSettings.Servers.Hint" xml:space="preserve"><value>Servidores mostrados na página Jogar. Adicione um pelo endereço.</value></data>
+  <data name="AppSettings.Servers.Empty" xml:space="preserve"><value>Nenhum servidor. Adicione um abaixo.</value></data>
+  <data name="AppSettings.Servers.Name" xml:space="preserve"><value>Nome</value></data>
+  <data name="AppSettings.Servers.Address" xml:space="preserve"><value>Endereço</value></data>
+  <data name="AppSettings.Servers.Actions" xml:space="preserve"><value>Ações</value></data>
+  <data name="AppSettings.Servers.Remove" xml:space="preserve"><value>Remover</value></data>
+  <data name="AppSettings.Servers.RemoveNamed" xml:space="preserve"><value>Remover {0}</value></data>
+  <data name="AppSettings.Servers.AddLabel" xml:space="preserve"><value>Endereço do servidor</value></data>
+  <data name="AppSettings.Servers.Placeholder" xml:space="preserve"><value>host.example.org:7000</value></data>
+  <data name="AppSettings.Servers.Add" xml:space="preserve"><value>Adicionar</value></data>
+  <data name="AppSettings.Tools" xml:space="preserve"><value>Ferramentas</value></data>
+  <data name="AppSettings.Tools.GameFolder" xml:space="preserve"><value>Abrir pasta do jogo</value></data>
+  <data name="AppSettings.Tools.LogFolder" xml:space="preserve"><value>Abrir pasta do cliente (logs)</value></data>
+  <data name="AppSettings.Tools.Screenshots" xml:space="preserve"><value>Abrir pasta de capturas de tela do Steam</value></data>
+  <data name="AppSettings.About" xml:space="preserve"><value>Sobre</value></data>
+  <data name="AppSettings.About.Version" xml:space="preserve"><value>Launcher versão {0}</value></data>
+  <data name="AppSettings.About.Licence" xml:space="preserve"><value>Software livre, licenciado sob a GNU AGPL-3.0.</value></data>
+  <data name="AppSettings.About.Repo" xml:space="preserve"><value>Código-fonte no GitHub</value></data>
+  <data name="Players.Breadcrumb" xml:space="preserve"><value>Caminho de navegação</value></data>
+  <data name="Players.Sections" xml:space="preserve"><value>Seções do jogador</value></data>
+  <data name="Players.Tab.Overview" xml:space="preserve"><value>Visão geral</value></data>
+  <data name="Players.Tab.Trophies" xml:space="preserve"><value>Troféus</value></data>
+  <data name="Players.Tab.Hunts" xml:space="preserve"><value>Histórico de caçadas</value></data>
+  <data name="Players.MemberSince" xml:space="preserve"><value>Membro desde {0}</value></data>
+  <data name="Players.Stat.Hunts" xml:space="preserve"><value>Caçadas</value></data>
+  <data name="Players.Stat.Kills" xml:space="preserve"><value>Abates</value></data>
+  <data name="Players.Stat.Trophies" xml:space="preserve"><value>Troféus</value></data>
+  <data name="Players.Stat.Distance" xml:space="preserve"><value>Distância percorrida</value></data>
+  <data name="Players.Stat.BestScore" xml:space="preserve"><value>Melhor pontuação</value></data>
+  <data name="Players.Km" xml:space="preserve"><value>{0:0.#} km</value></data>
+  <data name="Players.Kg" xml:space="preserve"><value>{0:0.#} kg</value></data>
+  <data name="Players.Meters" xml:space="preserve"><value>{0} m</value></data>
+  <data name="Players.RecentTrophies" xml:space="preserve"><value>Troféus recentes</value></data>
+  <data name="Players.RecentHunts" xml:space="preserve"><value>Caçadas recentes</value></data>
+  <data name="Players.ViewAll" xml:space="preserve"><value>Ver tudo</value></data>
+  <data name="Trophies.None" xml:space="preserve"><value>Nenhum troféu para mostrar.</value></data>
+  <data name="Trophies.Species" xml:space="preserve"><value>Espécie</value></data>
+  <data name="Trophies.Sort" xml:space="preserve"><value>Ordenar por</value></data>
+  <data name="Trophies.Sort.Score" xml:space="preserve"><value>Maior pontuação</value></data>
+  <data name="Trophies.Sort.Date" xml:space="preserve"><value>Mais recentes primeiro</value></data>
+  <data name="Trophies.Score" xml:space="preserve"><value>Pontuação</value></data>
+  <data name="Trophies.Weight" xml:space="preserve"><value>Peso</value></data>
+  <data name="Trophies.Weapon" xml:space="preserve"><value>Arma</value></data>
+  <data name="Trophies.Reserve" xml:space="preserve"><value>Reserva</value></data>
+  <data name="Trophies.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Hunts.None" xml:space="preserve"><value>Nenhuma caçada ainda.</value></data>
+  <data name="Hunts.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Hunts.Reserve" xml:space="preserve"><value>Reserva</value></data>
+  <data name="Hunts.Duration" xml:space="preserve"><value>Duração</value></data>
+  <data name="Hunts.Kills" xml:space="preserve"><value>Abates</value></data>
+  <data name="Hunts.BestScore" xml:space="preserve"><value>Melhor pontuação</value></data>
+  <data name="Hunts.Minutes" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Hunt.Title" xml:space="preserve"><value>Caçada em {0}</value></data>
+  <data name="Hunt.Lead" xml:space="preserve"><value>{0}, caçada por {1}</value></data>
+  <data name="Hunt.Kills" xml:space="preserve"><value>Abates nesta caçada</value></data>
+  <data name="Hunt.NoKills" xml:space="preserve"><value>Nenhum abate nesta caçada.</value></data>
+  <data name="Kill.Sheet" xml:space="preserve"><value>Ficha de pontuação: {0}</value></data>
+  <data name="Kill.Context" xml:space="preserve"><value>Tiro de {0} em {1} às {2}.</value></data>
+  <data name="Kill.Species" xml:space="preserve"><value>Espécie</value></data>
+  <data name="Kill.Gender" xml:space="preserve"><value>Sexo</value></data>
+  <data name="Kill.Weight" xml:space="preserve"><value>Peso</value></data>
+  <data name="Kill.Score" xml:space="preserve"><value>Pontuação</value></data>
+  <data name="Kill.Distance" xml:space="preserve"><value>Distância</value></data>
+  <data name="Kill.Weapon" xml:space="preserve"><value>Arma</value></data>
+  <data name="Kill.Ammo" xml:space="preserve"><value>Munição</value></data>
+  <data name="Kill.Placement" xml:space="preserve"><value>Local do tiro</value></data>
+  <data name="Kill.Harvested" xml:space="preserve"><value>Aproveitado</value></data>
+  <data name="Kill.NotHarvested" xml:space="preserve"><value>Não aproveitado</value></data>
+  <data name="Kill.Ethical" xml:space="preserve"><value>Abate ético</value></data>
+  <data name="Kill.NotEthical" xml:space="preserve"><value>Abate não ético</value></data>
+  <data name="Kill.ToHunt" xml:space="preserve"><value>Voltar à caçada</value></data>
+  <data name="Kill.ToPlayer" xml:space="preserve"><value>Perfil de {0}</value></data>
+  <data name="Leaderboards.Species" xml:space="preserve"><value>Espécie</value></data>
+  <data name="Leaderboards.WeaponClass" xml:space="preserve"><value>Classe de arma</value></data>
+  <data name="Leaderboards.Season" xml:space="preserve"><value>Temporada</value></data>
+  <data name="Leaderboards.Rank" xml:space="preserve"><value>Posição</value></data>
+  <data name="Leaderboards.Hunter" xml:space="preserve"><value>Caçador</value></data>
+  <data name="Leaderboards.Score" xml:space="preserve"><value>Pontuação</value></data>
+  <data name="Leaderboards.Kills" xml:space="preserve"><value>Abates</value></data>
+  <data name="Leaderboards.None" xml:space="preserve"><value>Ninguém está classificado com estes filtros.</value></data>
+  <data name="Leaderboards.You" xml:space="preserve"><value>Você</value></data>
+  <data name="Dialog.Close" xml:space="preserve"><value>Fechar</value></data>
+  <data name="Common.Apply" xml:space="preserve"><value>Aplicar</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Voltar</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>Avançar</value></data>
+  <data name="Common.Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Common.Confirm" xml:space="preserve"><value>Confirmar</value></data>
+  <data name="Common.Save" xml:space="preserve"><value>Salvar</value></data>
+  <data name="Common.Select" xml:space="preserve"><value>Selecionar</value></data>
+  <data name="Common.All" xml:space="preserve"><value>Todos</value></data>
+  <data name="Common.Online" xml:space="preserve"><value>Online</value></data>
+  <data name="Common.Offline" xml:space="preserve"><value>Offline</value></data>
+  <data name="Common.Yes" xml:space="preserve"><value>Sim</value></data>
+  <data name="Common.No" xml:space="preserve"><value>Não</value></data>
+  <data name="Nav.Players" xml:space="preserve"><value>Jogadores</value></data>
+  <data name="Home.Pitch" xml:space="preserve"><value>Vamos caçar de novo, juntos: um launcher, um servidor e um site da comunidade para o jogo.</value></data>
+  <data name="Home.Cta" xml:space="preserve"><value>Baixar o launcher</value></data>
+  <data name="Home.FindPlayer" xml:space="preserve"><value>Encontrar um jogador</value></data>
+  <data name="Home.TopHunters" xml:space="preserve"><value>Melhores caçadores da temporada</value></data>
+  <data name="Home.LatestNews" xml:space="preserve"><value>Últimas notícias</value></data>
+  <data name="Home.Servers" xml:space="preserve"><value>Servidores da comunidade</value></data>
+  <data name="Home.ServersOnline" xml:space="preserve"><value>{0} de {1} online</value></data>
+  <data name="Home.ServerName" xml:space="preserve"><value>Servidor</value></data>
+  <data name="Home.ServerRegion" xml:space="preserve"><value>Região</value></data>
+  <data name="Home.ServerStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="Players.Lead" xml:space="preserve"><value>Encontre um caçador pelo apelido.</value></data>
+  <data name="Players.SearchLabel" xml:space="preserve"><value>Apelido do jogador</value></data>
+  <data name="Players.Search" xml:space="preserve"><value>Buscar</value></data>
+  <data name="Players.Prompt" xml:space="preserve"><value>Digite um apelido para encontrar um jogador.</value></data>
+  <data name="Players.NoMatch" xml:space="preserve"><value>Nenhum jogador corresponde a "{0}".</value></data>
+  <data name="Players.Found" xml:space="preserve"><value>{0} jogadores encontrados</value></data>
+  <data name="Players.TrophyCount" xml:space="preserve"><value>{0} troféus</value></data>
+  <data name="Players.TrophyCount.One" xml:space="preserve"><value>{0} troféu</value></data>
+  <data name="Download.CardName" xml:space="preserve"><value>Launcher do Hunter Resurgence</value></data>
+  <data name="Download.Platform" xml:space="preserve"><value>Windows 10/11, 64 bits</value></data>
+  <data name="Download.Requires" xml:space="preserve"><value>Precisa do runtime Microsoft Edge WebView2, que já vem instalado no Windows 11.</value></data>
+  <data name="Download.NotReleased" xml:space="preserve"><value>Ainda não disponível</value></data>
+  <data name="Download.Steam.Title" xml:space="preserve"><value>Inicie pelo Steam</value></data>
+  <data name="Download.Steam.Install" xml:space="preserve"><value>Instale o launcher onde quiser no seu PC.</value></data>
+  <data name="Download.Steam.Properties" xml:space="preserve"><value>No Steam, clique com o botão direito no jogo da sua biblioteca e escolha Propriedades, depois Opções de inicialização.</value></data>
+  <data name="Download.Steam.Paste" xml:space="preserve"><value>Cole esta linha, com o caminho real do launcher:</value></data>
+  <data name="Download.Steam.Play" xml:space="preserve"><value>Clique em Jogar: o Steam abre o launcher.</value></data>
+  <data name="Download.Steam.Untouched" xml:space="preserve"><value>Os arquivos do próprio jogo ficam intactos.</value></data>
+  <data name="Download.Backup.Title" xml:space="preserve"><value>Faça antes um backup do seu perfil</value></data>
+  <data name="Download.Backup.Text" xml:space="preserve"><value>A ferramenta de backup do perfil salva suas estatísticas, inventário, troféus e histórico de caçadas como arquivos no seu PC. Execute-a antes de 2026‑11‑11, enquanto os servidores oficiais ainda estão no ar.</value></data>
+  <data name="Download.Backup.Link" xml:space="preserve"><value>Obter a ferramenta de backup</value></data>
+  <data name="SignIn.Web.Notice" xml:space="preserve"><value>As contas abrem quando o servidor da comunidade estiver no ar.</value></data>
+</root>
