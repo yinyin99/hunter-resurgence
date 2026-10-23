@@ -1,0 +1,7 @@
+.well { position: relative; box-sizing: border-box; width: 1200px; height: 100px; padding: 22px 34px 34px; background: rgba(0, 0, 0, .5); color: #fff; font: 400 14px/20px var(--font-signup); text-align: center; }
+.track { height: 20px; margin-top: 6px; background: #000; }
+.fill { height: 100%; background: #5cb85c repeating-linear-gradient(-45deg, rgba(255, 255, 255, .15) 0 12.5px, transparent 12.5px 25px); }
+.number { position: absolute; left: 0; right: 0; top: 37px; font-size: 20px; line-height: 30px; font-weight: 700; }
+.dots { margin-top: 14px; }
+.dots i { display: inline-block; width: 5px; height: 5px; margin: 0 3px; background: #fff; opacity: 0; }
+.dots i.on { opacity: 1; }

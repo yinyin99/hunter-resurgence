@@ -1,0 +1,141 @@
+@inherits PatchWatcher
+@inject IJSRuntime JS
+@inject Branding Brand
+
+@if (Notice is { } notice)
+{
+    <div class="overlay @(Status.Notice == LauncherNotice.SteamOnly ? "full" : "")" role="alertdialog" aria-modal="true">
+        <div class="box">
+            @switch (notice)
+            {
+                case "steam-only":
+                    <Icon Name="download" />
+                    <h1>@L["Patch.SteamOnlyTitle"]</h1>
+                    <p>@L["Patch.SteamOnlyText"]</p>
+                    <ExternalLink Key="steam_store" Class="btn btn-primary btn-large">@L["Patch.GoToSteam"]</ExternalLink>
+                    break;
+                case "steam-update":
+                    <h1>@L["Patch.SteamUpdateTitle"]</h1>
+                    <p>@L["Patch.SteamUpdateText"]</p>
+                    break;
+                case "error":
+                    <h1>@L["Patch.ErrorTitle"]</h1>
+                    <h2>@ErrorText</h2>
+                    var see = L["Patch.PleaseSee", "|"].Value.Split('|');
+                    <p>@see[0]<ExternalLink Key="support">@L["Patch.SupportSection"]</ExternalLink>@see[1]</p>
+                    <button class="btn btn-primary btn-large" @onclick="Dismiss">@L["Patch.GotIt"]</button>
+                    break;
+                case "launcher":
+                    <h1>@L["Patch.LauncherTitle"]</h1>
+                    <p>@L["Patch.LauncherText"]</p>
+                    <div class="cogs"><Icon Name="gear" /><Icon Name="gear" /><Icon Name="gear" /></div>
+                    break;
+                case "full":
+                    <Icon Name="download" />
+                    <h1>@L["Patch.FullTitle"]</h1>
+                    <p>@L["Patch.FullText"]</p>
+                    <button class="btn btn-primary btn-large" @onclick="Dismiss">@L["Patch.GotIt"]</button>
+                    break;
+                default:
+                    <h1>@L["Patch.NewTitle"]</h1>
+                    <p>@L["Patch.NewText"]</p>
+                    <button class="btn btn-primary btn-large" @onclick="Dismiss">@L["Patch.GotIt"]</button>
+                    break;
+            }
+        </div>
+    </div>
+}
+@if (BarShown)
+{
+    <div class="bar" role="status">
+        <div class="inner">
+            <div class="state">@StateText</div>
+            <div class="info">@InfoText</div>
+            @if (Percent is { } percent) { <div class="percent">@percent%</div> }
+        </div>
+    </div>
+}
+
+@code {
+    readonly HashSet<string> dismissed = [];
+    IJSObjectReference? module;
+    DotNetObjectReference<PatchPanel>? self;
+    bool doneHidden, watching;
+
+    /// <summary>Which message blocks the window: a notice of the launcher, or the download that is running; null when none or already dismissed.</summary>
+    string? Notice
+    {
+        get
+        {
+            var key = Status.Notice switch
+            {
+                LauncherNotice.SteamOnly => "steam-only",
+                LauncherNotice.SteamUpdate => "steam-update",
+                LauncherNotice.Error => "error",
+                _ when Status.State == PatchState.Downloading => Status.Kind switch { DownloadKind.Launcher => "launcher", DownloadKind.Full => "full", _ => "patch" },
+                _ => null,
+            };
+            return key is null || dismissed.Contains(key) ? null : key;
+        }
+    }
+
+    bool BarShown => Status.State is PatchState.Downloading or PatchState.Verifying or PatchState.Extracting or PatchState.Patching || Status.State == PatchState.Done && !doneHidden;
+
+    string Dots => Tick % 4 == 0 ? "" : " " + new string('.', Tick % 4);
+
+    string StateText => L[Status.State switch
+    {
+        PatchState.Downloading => "Patch.StateDownloading",
+        PatchState.Verifying => "Patch.StateVerifying",
+        PatchState.Extracting => "Patch.StateExtracting",
+        PatchState.Patching => "Patch.StatePatching",
+        _ => "Patch.StateReady",
+    }] + (Status.State == PatchState.Done ? "" : Dots);
+
+    string InfoText => Status.State switch
+    {
+        PatchState.Downloading => L["Patch.Downloading", L[Status.Kind switch { DownloadKind.Full => "Patch.KindFull", DownloadKind.Launcher => "Patch.KindLauncher", _ => "Patch.KindPatch" }].Value, Status.File, Fmt.Size(Status.Bytes), Fmt.Size(Status.Rate)],
+        PatchState.Verifying => L["Patch.Verifying"],
+        PatchState.Extracting => L["Patch.Extracting"],
+        PatchState.Patching => Status.Step switch
+        {
+            PatchStep.Checksum => L["Patch.Checksum", Status.Done, Status.Total, Status.Item],
+            PatchStep.Files => L["Patch.File", Status.Done, Status.Total],
+            PatchStep.Finishing => L["Patch.Finishing"],
+            _ => L["Patch.PatchError"],
+        },
+        _ => L["Patch.Done"],
+    };
+
+    /// <summary>floor(100 * progress) while a download or the patch counts files; the other states show no number.</summary>
+    int? Percent => Status.State is PatchState.Downloading || Status.State == PatchState.Patching && Status.Step is PatchStep.Checksum or PatchStep.Files
+        ? (int)(100 * Math.Min(Status.Progress, 1)) : null;
+
+    string ErrorText => L[$"Launcher.Error.{Status.ErrorCode}"] is { ResourceNotFound: false } known ? known.Value : L["Launcher.Error.Unknown", Status.ErrorCode].Value;
+
+    void Dismiss() => dismissed.Add(Notice!);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // READY slides away five seconds after the next mouse move
+        if (Status.State != PatchState.Done) { (doneHidden, watching) = (false, false); return; }
+        if (watching || doneHidden) return;
+        watching = true;
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await module.InvokeVoidAsync("onceMouse", self = DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async Task Moved()
+    {
+        await Task.Delay(5000);
+        doneHidden = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        self?.Dispose();
+    }
+}
