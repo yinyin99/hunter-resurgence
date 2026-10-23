@@ -223,6 +223,11 @@ a { transition: color var(--t-fast) var(--ease); }
 /* a dark surface */
 .panel { background: var(--surface-2); border-radius: var(--r-3); }
 
+/* a clickable card on a dark surface: a faint white tint on hover (an overlay, so the card keeps its own background; no size change) */
+.hover-tint { position: relative; }
+.hover-tint::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
+.hover-tint:hover::after { background: var(--tint-1); }
+
 /* data table: one row line, a hover tint; cells are left aligned, .tbl-c centres every column but the first. Callers set widths and margins.
    :where keeps these rules weaker than any scoped override (theme.css loads after the scoped bundle, so equal specificity would win here). */
 .tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-btn); color: var(--text-2); }
@@ -269,7 +274,7 @@ a { transition: color var(--t-fast) var(--ease); }
 .skeleton-page { min-height: 600px; }
 
 @media (prefers-reduced-motion: reduce) {
-    * { transition-duration: 0s !important; }
+    *, .hover-tint::after { transition-duration: 0s !important; }
 }
 
 /* h2.page-title of the old pages */
