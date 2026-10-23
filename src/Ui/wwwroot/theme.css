@@ -206,7 +206,6 @@ a:hover { color: var(--accent-hover); }
     border: 0;
     border-radius: var(--r-2);
     background-color: var(--btn-bg);
-    background-image: var(--sheen);
     color: var(--btn-fg);
     font-size: var(--fs-btn);
     cursor: pointer;
