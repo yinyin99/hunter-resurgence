@@ -1,0 +1,93 @@
+@inject IProfileService Service
+
+<SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/statistics")" />
+@switch (sub)
+{
+    case "":
+        @if (last is not null) { <HuntStats Hunt="last" Handle="@Handle" /> }
+        break;
+    case "lifetime":
+        @if (totals is not null)
+        {
+            <h3>@L["Stat.Lifetime"]</h3>
+            <h4>@L["Prof.Weapons"]</h4>
+            @if (totals.Weapons.Count == 0) { <p>@L["Stat.NoShots"]</p> } else { <WeaponTable Weapons="totals.Weapons" /> }
+            <h4>@L["Prof.Animals"]</h4>
+            <SpeciesTable Rows="totals.Animals" />
+            <h4>@L["Prof.Collectables"]</h4>
+            <CollectableTable Rows="totals.Collectables" />
+            <h4>@L["Stat.Misc"]</h4>
+            <table class="misc"><tbody>
+                <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(totals.DistanceKm)</td></tr>
+                <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(totals.HuntSeconds)</td></tr>
+            </tbody></table>
+        }
+        break;
+    case "history":
+        @if (history is { Rows.Count: 0 }) { <p>@L["Stat.NoExpeditions"]</p> }
+        else if (history is not null)
+        {
+            <table class="hist">
+                <thead><tr><th>@L["Stat.Start"]</th><th>@L["Stat.Dur"]</th><th>@L["Stat.Reserve"]</th><th>@L["Stat.Lodge"]</th><th>@L["Stat.CollectablesCol"]</th><th>@L["Stat.KillsCol"]</th></tr></thead>
+                <tbody>@foreach (var r in history.Rows) { <tr><td><a href="/profile/@Handle/expedition/@r.Id">@r.Start.ToString("yyyy-MM-dd HH:mm")</a></td><td>@Fmt.Duration(r.Seconds)</td><td>@r.Reserve</td><td>@r.Lodge</td><td>@r.Collectables</td><td>@r.Kills</td></tr> }</tbody>
+            </table>
+            <p class="pager">
+                @if (history.Number > 1) { <a class="btn" href="/profile/@Handle/statistics/history/@(history.Number - 1)">@L["Stat.Previous"]</a> }
+                @if (history.Number < history.Pages) { <a class="btn" href="/profile/@Handle/statistics/history/@(history.Number + 1)">@L["Stat.Next"]</a> }
+            </p>
+        }
+        break;
+    default:
+        <select id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
+            <option value="0">@L["Stat.AllTime"]</option>
+            @foreach (var n in Enumerable.Range(1, 15)) { <option value="@n">@L["Stat.Season", n]</option> }
+        </select>
+        @if (best is not null) { @Best() }
+        break;
+}
+
+@code {
+    static readonly (string Key, string Label)[] subs = [("", "Stat.Last"), ("lifetime", "Stat.Lifetime"), ("history", "Stat.History"), ("best", "Stat.Best")];
+    Expedition? last;
+    Totals? totals;
+    Page<HistoryRow>? history;
+    PersonalBest? best;
+    int season;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public string? Sub { get; set; }
+    [Parameter] public int? Arg { get; set; }
+    string sub => Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        season = Arg ?? 0;
+        switch (sub)
+        {
+            case "": last = await Service.ExpeditionAsync(Handle, null); break;
+            case "lifetime": totals = await Service.TotalsAsync(Handle); break;
+            case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
+            default: best = await Service.BestAsync(Handle, season); break;
+        }
+    }
+
+    [Inject] NavigationManager Nav { get; set; } = null!;
+
+    void Season(ChangeEventArgs e) => Nav.NavigateTo($"/profile/{Handle}/statistics/best/{e.Value}");
+
+    RenderFragment Best() => @<div class="best">
+        @switch (best!.Status)
+        {
+            case "disabled": <p>@L["Stat.BestDisabled"]</p>; break;
+            case "queued": <p>@(season == 0 ? L["Stat.BestAllQueued", Handle] : L["Stat.BestQueued", Handle, season])</p>; break;
+            case "building": <p>@(season == 0 ? L["Stat.BestAllBuilding", Handle] : L["Stat.BestBuilding", Handle, season])</p>; break;
+            case "empty": <p>@(season == 0 ? L["Stat.BestAllNone", Handle] : L["Stat.BestNone", Handle, season])</p>; break;
+            default:
+                <table class="hist">
+                    <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
+                    <tbody>@foreach (var r in best.Rows) { <tr><td>@r.Species</td><td>@r.Score.ToString("0.0000")</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
+                </table>
+                break;
+        }
+    </div>;
+}

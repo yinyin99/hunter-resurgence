@@ -58,4 +58,17 @@ public static class Fmt
         < 36 * 3600 => "a day ago",
         _ => $"{Math.Round(a.TotalDays)} days ago",
     };
+
+    /// <summary>1d 16h 5m 32s: minutes are not padded, seconds have two digits.</summary>
+    public static string Duration(int seconds)
+    {
+        var (d, h, m, s) = (seconds / 86400, seconds / 3600 % 24, seconds / 60 % 60, seconds % 60);
+        return (d > 0 ? $"{d}d " : "") + (d > 0 || h > 0 ? $"{h}h " : "") + $"{m}m {s:00}s";
+    }
+
+    /// <summary>124.53m (408.56ft)</summary>
+    public static string Metres(double m) => $"{m.ToString("0.00", English)}m ({(m * 3.28084).ToString("0.00", English)}ft)";
+
+    /// <summary>102.89 km (63.93 miles)</summary>
+    public static string Kilometres(double km) => $"{km.ToString("0.00", English)} km ({(km * 0.621371192).ToString("0.00", English)} miles)";
 }

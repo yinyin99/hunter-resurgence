@@ -1,0 +1,5 @@
+table { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }
+th { padding: 8px 6px; text-align: center; font-weight: 400; }
+td { padding: 6px; text-align: center; border-top: 1px solid #262626; }
+th:nth-child(2), td:nth-child(2) { width: 42%; text-align: left; }
+td ::deep .asset-slot { display: block; }

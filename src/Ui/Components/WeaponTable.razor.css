@@ -1,0 +1,9 @@
+table { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }
+th { padding: 8px 6px; text-align: center; font-weight: 400; line-height: 20px; }
+th:first-child { text-align: left; }
+td { padding: 4px 6px; text-align: center; border-top: 1px solid #262626; }
+td:first-child, td:nth-child(2) { text-align: left; }
+.n { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+td ::deep .asset-slot { display: block; }
+td:nth-child(2) ::deep .asset-slot { margin: 0 auto; }
+th:last-child, td:last-child { width: 96px; }
