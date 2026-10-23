@@ -16,6 +16,9 @@ builder.Services.AddMockServices();
 builder.Services.AddScoped<HostMode>();
 // one mock session per browser circuit, so signing in or out in one tab does not change the others
 builder.Services.AddScoped<ISessionService, MockSessionService>();
+// the development states (?mock=patch:..., ?mock=settings:first) are per browser circuit too
+builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 
