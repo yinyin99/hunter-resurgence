@@ -46,4 +46,16 @@ public static class Fmt
 
     /// <summary>A wallet row date: 2021-02-21 16:16.</summary>
     public static string Purchase(DateTime d) => d.ToString("yyyy-MM-dd HH:mm", English);
+
+    /// <summary>The "fromNow" wording of the old pages: a minute ago, an hour ago, 3 days ago.</summary>
+    public static string Ago(TimeSpan a) => a.TotalSeconds switch
+    {
+        < 45 => "a few seconds ago",
+        < 90 => "a minute ago",
+        < 45 * 60 => $"{Math.Round(a.TotalMinutes)} minutes ago",
+        < 90 * 60 => "an hour ago",
+        < 22 * 3600 => $"{Math.Round(a.TotalHours)} hours ago",
+        < 36 * 3600 => "a day ago",
+        _ => $"{Math.Round(a.TotalDays)} days ago",
+    };
 }

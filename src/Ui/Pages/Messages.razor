@@ -1,0 +1,94 @@
+@page "/messages"
+@page "/messages/{Handle}"
+@page "/new-message"
+@page "/new-message/{Handle}"
+@inject IMessagesService Service
+@inject IFriendsService Friends
+@inject ISessionService Sessions
+@inject NavigationManager Nav
+
+<PageTitle>@L["Msg.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Msg.Title"].Value.ToUpperInvariant())</h2>
+    <label class="check"><input type="checkbox" id="receive-private-messages" checked="@onlyFriends" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
+    <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
+    <div class="cols">
+        <aside>
+            <h4>@L["Msg.Conversations"]</h4>
+            @if (conversations.Count == 0) { <p class="empty">@L["Msg.Empty"]</p> }
+            <ul>
+                @foreach (var c in conversations)
+                {
+                    <li class="@(c.Handle == current ? "on" : "")">
+                        <a href="/messages/@c.Handle"><AssetSlot Name="avatar-default" Width="40" Height="40" Class="av" /><span class="who">@c.Handle</span><span class="last">@c.Last</span>@if (c.Unread) { <i class="dot"></i> }</a>
+                    </li>
+                }
+            </ul>
+        </aside>
+        <section>
+            @if (composing) { <h3>@L["Msg.New"]</h3> } else { <h4>@current</h4> }
+            @if (composing)
+            {
+                <input id="message-recipient" class="to" list="friends" placeholder="@L["Msg.To"]" @bind="recipient" @bind:event="oninput" />
+                <datalist id="friends">@foreach (var f in friends) { <option value="@f.Handle"></option> }</datalist>
+            }
+            <textarea id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
+            <button id="sendMessage" type="button" class="send" disabled="@(!canSend)" @onclick="Send">@L["Msg.Send"]</button>
+            <span class="count">@text.Length / 1024</span>
+            @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
+            @if (!composing)
+            {
+                <div class="thread">
+                    @foreach (var m in thread)
+                    {
+                        <div class="@(m.Mine ? "me" : "you")">
+                            <a href="/profile/@(m.Mine ? me : current)" class="h">@(m.Mine ? me : current)</a>
+                            <div class="body"><AssetSlot Name="avatar-default" Width="60" Height="60" Class="av" /><div class="msg"><p>@m.Text</p><small>@L["Msg.Sent", Fmt.Ago(m.Ago)]</small></div></div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>
+
+@code {
+    IReadOnlyList<Conversation> conversations = [];
+    IReadOnlyList<Friend> friends = [];
+    IReadOnlyList<Message> thread = [];
+    string text = "", recipient = "", me = "", current = "";
+    string? error;
+    bool onlyFriends;
+
+    [Parameter] public string? Handle { get; set; }
+    bool composing => Nav.Uri.Contains("/new-message");
+    bool canSend => text.Trim().Length is > 0 and <= 1024 && (!composing || recipient.Trim().Length > 0);
+
+    protected override async Task OnInitializedAsync()
+    {
+        (conversations, onlyFriends, me) = (await Service.ConversationsAsync(), await Service.OnlyFriendsAsync(), (await Sessions.CurrentAsync())?.Handle ?? "");
+        friends = await Friends.FriendsAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        (text, error, recipient) = ("", null, Handle ?? "");
+        current = composing ? "" : conversations.FirstOrDefault(c => string.Equals(c.Handle, Handle, StringComparison.OrdinalIgnoreCase))?.Handle ?? Handle ?? conversations.FirstOrDefault()?.Handle ?? "";
+        thread = current.Length > 0 ? await Service.ThreadAsync(current) : [];
+    }
+
+    async Task OnlyFriends(ChangeEventArgs e) { onlyFriends = (bool)e.Value!; await Service.SetOnlyFriendsAsync(onlyFriends); }
+
+    // sending is fake in the mock: the message shows at the top of the thread, or the thread opens
+    async Task Send()
+    {
+        var to = composing ? recipient.Trim() : current;
+        var r = await Service.SendAsync(to, text.Trim());
+        error = r.Error;
+        if (!r.Ok) return;
+        if (composing) { Nav.NavigateTo("/messages/" + to); return; }
+        thread = [new(true, text.Trim(), TimeSpan.Zero), .. thread];
+        text = "";
+    }
+}
