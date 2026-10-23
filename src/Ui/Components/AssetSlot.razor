@@ -1,8 +1,9 @@
-<span class="asset-slot" style="width:@(Width)px;height:@(Height)px" role="img" aria-label="@Name">@Name</span>
+<span class="asset-slot @Class" style="width:@(Width)px;height:@(Height)px" role="img" aria-label="@Name">@(Width < 80 ? "" : Name)</span>
 
 @code {
     /// <summary>Neutral stand-in for a picture of the old interface; the slot ids are listed in the migration plan.</summary>
     [Parameter, EditorRequired] public string Name { get; set; } = "";
     [Parameter] public int Width { get; set; } = 100;
     [Parameter] public int Height { get; set; } = 100;
+    [Parameter] public string? Class { get; set; }
 }

@@ -193,3 +193,36 @@ a:hover { color: var(--accent-hover); }
     color: var(--fg-muted-2);
     font-size: 11px;
 }
+
+/* scroll lock while a modal is open (old: html.openModal) */
+html:has(.modal-backdrop) { overflow: hidden; }
+
+/* tooltip below the element: <a data-tip="text"> */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: max-content;
+    max-width: 260px;
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    background: var(--bg-tooltip);
+    color: #fff;
+    font: 500 var(--fs-tooltip)/14px var(--font-body);
+    text-align: center;
+    white-space: normal;
+    pointer-events: none;
+}
+
+/* launcher mode: the thin dark scrollbar of the old launcher (webkit only) */
+html:has(.shell.launcher)::-webkit-scrollbar { width: 8px; height: 6px; }
+html:has(.shell.launcher)::-webkit-scrollbar-button:start:decrement,
+html:has(.shell.launcher)::-webkit-scrollbar-button:end:increment { height: 0; background-color: #222; }
+html:has(.shell.launcher)::-webkit-scrollbar-track-piece { background-color: #222; }
+html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical { height: 50px; background-color: var(--fg-muted-3); }
+html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical:hover { background-color: rgba(255, 255, 255, .3); transition: background-color .2s linear; }
+html:has(.shell.launcher)::-webkit-scrollbar-thumb:horizontal { width: 50px; background-color: #333; }

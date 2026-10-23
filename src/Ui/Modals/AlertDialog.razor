@@ -1,0 +1,28 @@
+@inject ModalService Modal
+
+<div class="alert-panel" role="alertdialog" aria-modal="true">
+    <p>@Text</p>
+    <div class="buttons">
+        @if (Answer is null)
+        {
+            <button class="btn btn-primary" autofocus @onclick="Modal.Close">@L["Alert.Ok"]</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" autofocus @onclick="() => Done(true)">@L["Alert.Yes"]</button>
+            <button class="btn btn-inverse" @onclick="() => Done(false)">@L["Alert.No"]</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Text { get; set; } = "";
+    /// <summary>Set for the Yes/No variant; null shows a single OK.</summary>
+    [Parameter] public TaskCompletionSource<bool>? Answer { get; set; }
+
+    void Done(bool yes)
+    {
+        Answer!.SetResult(yes);
+        Modal.Close();
+    }
+}

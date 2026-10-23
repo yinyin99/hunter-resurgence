@@ -1,0 +1,17 @@
+@implements IDisposable
+@inject ModalService Modal
+
+@if (Modal.Type is { } type)
+{
+    <div class="modal-backdrop @Modal.Backdrop">
+        <DynamicComponent Type="type" Parameters="Modal.Parameters" />
+    </div>
+}
+
+@code {
+    Action? changed;
+
+    protected override void OnInitialized() => Modal.Changed += changed = () => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Modal.Changed -= changed;
+}
