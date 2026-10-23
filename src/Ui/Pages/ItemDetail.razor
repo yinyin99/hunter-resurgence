@@ -1,0 +1,52 @@
+@page "/store/item/{Id:int}"
+@inject IStoreService Service
+@inject ISessionService Sessions
+@inject ModalService Modal
+
+<PageTitle>@L["Menu.Store"]</PageTitle>
+
+<StoreFrame Active="@(item?.Category ?? "all")">
+    @if (item is not null)
+    {
+        <article class="item panel">
+            @if (item.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
+            <AssetSlot Name="store-item-large" Width="270" Height="197" Class="pic" />
+            <div class="buy">
+                @* signed out the old page shows only the button *@
+                @if (signedIn)
+                {
+                    @if (item.Gms > 0) { <span class="gms">@L["Store.Or"] @item.Gms gm$</span> }
+                    <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
+                    @if (item.WasEms is { } was) { <s>@was em$</s> }
+                }
+                @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
+                else if (!item.Buyable) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
+                else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+            </div>
+            <h1>@item.Name</h1>
+            <h3>@item.Variant</h3>
+            @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
+            @if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
+            @if (!item.Buyable) { <p class="own">@L["Store.CantBuy"]</p> }
+            <p class="text">@item.Description</p>
+        </article>
+    }
+    else if (loaded) { <p class="text">@L["Store.None"]</p> }
+    else { <div class="skeleton wait"></div> }
+</StoreFrame>
+
+@code {
+    StoreItem? item;
+    bool loaded, signedIn;
+
+    [Parameter] public int Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        signedIn = await Sessions.CurrentAsync() is not null;
+        item = await Service.ItemAsync(Id);
+        loaded = true;
+    }
+
+    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = item!.Id, ["Name"] = item.Name, ["Ems"] = item.Ems, ["Gms"] = item.Gms });
+}

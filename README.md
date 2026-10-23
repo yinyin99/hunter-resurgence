@@ -52,8 +52,8 @@ A restore can only bring back what the backup saved ([what is not saved](docs/ba
 
 **No money, ever.** This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
 
-**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`). Open an issue or a pull request.
+**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`) and the launcher and website French texts (`src/Ui/Strings.fr.resx`). Open an issue or a pull request.
 
 ## Build
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). The launcher and the website are described in [docs/launcher.md](docs/launcher.md) and [docs/website.md](docs/website.md).

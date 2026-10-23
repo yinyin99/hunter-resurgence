@@ -1,0 +1,41 @@
+@inject IProfileService Service
+@inject ModalService Modal
+
+@if (page is not null)
+{
+    @if (rows.Count == 0) { <p class="empty">@L["Prof.FriendsEmpty"]</p> }
+    <ul class="list">
+        @foreach (var f in rows)
+        {
+            <li>
+                <AssetSlot Name="avatar" Width="48" Height="48" />
+                <a href="/profile/@f.Handle" class="handle">@f.Handle</a> <Icon Name="paw" /> @f.HunterScore
+                <span class="buttons">
+                    <a class="btn btn-primary" href="/messages/@f.Handle">@L["Friends.SendMessage"]</a>
+                    @if (Own) { <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button> }
+                </span>
+            </li>
+        }
+    </ul>
+    <PrevNext Page="page.Number" Pages="page.Pages" Base="@("/profile/" + Handle + "/friends")" />
+}
+
+@code {
+    Page<ProfileFriend>? page;
+    List<ProfileFriend> rows = [];
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public bool Own { get; set; }
+    [Parameter] public string? Sub { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        page = await Service.FriendsAsync(Handle, int.TryParse(Sub, out var n) ? n : 1);
+        rows = [.. page.Rows];
+    }
+
+    async Task Remove(ProfileFriend f)
+    {
+        if (await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle])) rows.Remove(f);
+    }
+}

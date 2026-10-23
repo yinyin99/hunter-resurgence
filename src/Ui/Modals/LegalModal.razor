@@ -1,0 +1,17 @@
+@inject ModalService Modal
+
+<div class="legal-modal">
+    <h1><Icon Name="caret-down" /> @L[Title] <button class="close" aria-label="@L["Alert.Close"]" @onclick="Modal.Close">&times;</button></h1>
+    <p class="updated">@L["Legal.Updated"]</p>
+    <h1>1. @L["Legal.Section"]</h1>
+    <p>@L["Legal.Placeholder"]</p>
+    <h4>1.1 @L["Legal.Subsection"]</h4>
+    <p>@L["Legal.Placeholder"]</p>
+    <h1>2. @L["Legal.Section"]</h1>
+    <p>@L["Legal.Placeholder"]</p>
+</div>
+
+@code {
+    /// <summary>Resource key of the heading (Footer.Privacy.Title or Footer.Eula.Title).</summary>
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+}

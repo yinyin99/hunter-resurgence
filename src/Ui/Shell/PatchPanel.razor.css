@@ -1,0 +1,19 @@
+.overlay { position: fixed; inset: 0 0 var(--h-patchbar) 0; z-index: 100000; display: flex; align-items: center; justify-content: center; background: var(--bg-patch-modal); text-align: center; }
+.overlay.full { bottom: 0; }
+.box { width: 600px; color: var(--text-2); }
+.overlay.full .box { width: 800px; }
+.box h1 { margin: 0 0 10px; font-size: 38.5px; line-height: 44px; font-weight: 400; color: #fff; }
+.box h2 { margin: 0 0 12px; font-size: 26px; line-height: 32px; font-weight: 400; color: var(--text-2); }
+.box p { margin: 0 0 14px; font-size: 18px; line-height: 22px; color: var(--text-2); }
+.box ::deep .icon { width: 52px; height: 52px; margin-bottom: 10px; color: var(--primary); }
+.cogs { margin-top: 10px; }
+.cogs ::deep .icon { width: 28px; height: 28px; margin: 0 6px; color: var(--launcher-accent); animation: spin 2s linear infinite; }
+.box .btn-large { padding: 10px 19px; height: 42px; box-sizing: border-box; }
+.box ::deep a, .box ::deep span:not(.btn) { color: var(--accent); }
+.box ::deep a.btn { color: #fff; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100000; height: 115px; box-sizing: border-box; border-top: 1px solid var(--line-2); background: var(--bg-patch); }
+.inner { position: relative; width: 800px; margin: 0 auto; padding-top: 14px; }
+.state { font-size: 28px; line-height: 40px; font-weight: 700; text-transform: uppercase; color: var(--primary); }
+.info { margin-top: 0; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.percent { position: absolute; right: 10px; top: 24px; font-size: 40px; line-height: 50px; font-weight: 700; color: var(--primary); }

@@ -1,0 +1,12 @@
+.carousel { display: flex; height: 380px; margin: 0 -20px; background: #000; }
+.slide { position: relative; width: 805px; height: 380px; }
+.slide ::deep .image { display: flex; width: 805px; height: 380px; }
+.date { position: absolute; left: 0; top: 0; width: 75px; box-sizing: border-box; padding: 0 10px; background: rgba(0, 0, 0, .85); color: var(--text-2); font-size: 16px; line-height: 40px; }
+.caption { position: absolute; left: 20px; bottom: 20px; right: 20px; text-shadow: 0 1px 3px #000; }
+h2 { margin: 0; font-size: 36px; line-height: 44px; color: #fff; }
+.caption p { margin: 0; font-size: 18px; line-height: 26px; font-weight: 500; color: #fff; }
+.caption ::deep a, .caption ::deep span { color: var(--accent); }
+.caption .icon { color: var(--accent); width: 12px; }
+.thumbs { width: 175px; }
+.thumb { display: block; width: 175px; height: 95px; padding: 0; border: 0; background: none; cursor: pointer; }
+.thumb ::deep .asset-slot { display: flex; }

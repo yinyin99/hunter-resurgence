@@ -1,0 +1,23 @@
+@inject HostMode Mode
+@inject ISessionService Sessions
+
+<Router AppAssembly="typeof(Program).Assembly"
+        AdditionalAssemblies="new[] { typeof(Strings).Assembly }"
+        NotFoundPage="typeof(Resurgence.Ui.Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Resurgence.Ui.Layouts.ShellLayout)" />
+    </Found>
+</Router>
+
+@code {
+    /// <summary>The launcher flag decided by the request (development ?mode=) reaches the interactive circuit as a parameter.</summary>
+    [Parameter] public bool Launcher { get; set; }
+    [Parameter] public bool Dev { get; set; }
+    [Parameter] public string? Mock { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        (Mode.Launcher, Mode.Dev, Mode.Mock) = (Launcher, Dev, Mock);
+        if (Dev) await Mode.ApplyMockSessionAsync(Sessions);
+    }
+}

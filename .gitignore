@@ -5,3 +5,11 @@ settings.json
 # backup output
 backup-*/
 game-backup/
+
+# UI migration references: kept in the private repo
+docs/UI_INVENTORY.md
+docs/reference/
+docs/compare/
+docs/PARITY_REPORT.md
+docs/DEVIATIONS.md
+docs/MIGRATION_PLAN.md

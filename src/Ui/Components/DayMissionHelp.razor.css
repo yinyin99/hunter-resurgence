@@ -1,0 +1,18 @@
+.dm p, .dm li { font-size: 14px; line-height: 20px; color: var(--text-2); }
+.dm p { margin: 0 0 10px; }
+.index { display: inline-block; box-sizing: border-box; width: 290px; margin: 0 0 20px; padding: 8px 12px; border: 2px solid #666; background: var(--surface-3); }
+.index b, .index p { display: block; margin: 0; font-size: 13px; line-height: 18px; color: #fff; }
+.index ul { margin: 6px 0 10px; padding-left: 20px; list-style: disc; }
+.index li { font-size: 13px; line-height: 20px; }
+.dm a { color: var(--primary); }
+.dm h2 { margin: 0 0 14px; font-size: 28px; line-height: 36px; font-weight: 400; color: #fff; }
+.dm h3 { margin: 22px 0 8px; font-size: 22px; line-height: 30px; font-weight: 400; color: var(--primary); }
+.dm ul { margin: 0 0 10px; padding-left: 40px; }
+.dm .cap { margin-top: 4px; }
+.dm ::deep .asset-slot { display: block; margin: 0 0 10px; }
+.tg { border-collapse: collapse; margin: 0 0 20px; }
+.tg th, .tg td { padding: 8px 10px; border: 1px solid #000; font-size: 14px; line-height: 20px; text-align: center; color: var(--text-2); }
+.tg th { background: var(--surface-6); }
+.tg .easy { background: #2f6a1f; } .tg .medium { background: #3a4ba0; } .tg .hard { background: #a02f2f; }
+.rewards td:last-child { text-align: left; }
+.rewards ::deep .asset-slot { display: inline-block; margin: 0 8px 0 0; vertical-align: middle; }

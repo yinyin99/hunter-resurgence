@@ -1,0 +1,18 @@
+@inject ModalService Modal
+@inject NavigationManager Nav
+
+<div class="su-dialog" role="dialog" aria-labelledby="su-dlg">
+    <h2 id="su-dlg">@L["Dialog.Login.Title"]</h2>
+    <EmailCode Dialog Placeholder="Dialog.Email" SubmitText="Dialog.Login.Submit" Done="Modal.Close">
+        <Cancel><button type="button" class="su-btn medium" @onclick="Cancel">@L["Dialog.Cancel"]</button></Cancel>
+    </EmailCode>
+</div>
+
+@code {
+    /// <summary>Behind the dialog is a blank page that needs the account: cancelling goes back to the start, which finds the right sign-in.</summary>
+    void Cancel()
+    {
+        Modal.Close();
+        Nav.NavigateTo("/signup/start");
+    }
+}

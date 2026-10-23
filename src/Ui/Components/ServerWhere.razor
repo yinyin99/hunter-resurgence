@@ -1,0 +1,15 @@
+<i class="dot @Server.Distance.ToString().ToLowerInvariant()" data-tip="@tip"></i><img class="flag" src="_content/Resurgence.Ui/flags/@(Server.Country).svg" alt="" data-tip="@tip" />
+
+@code {
+    /// <summary>The coloured distance dot and the country flag of a game; both show "Server location: ..." as a tip.</summary>
+    [Parameter, EditorRequired] public GameServer Server { get; set; } = null!;
+
+    string tip => L["Servers.Location", L[Server.Country switch
+    {
+        "us" or "ca" => "Servers.NorthAmerica",
+        "br" => "Servers.SouthAmerica",
+        "au" => "Servers.Oceania",
+        "jp" or "cn" => "Servers.Asia",
+        _ => "Servers.Europe",
+    }].Value].Value;
+}

@@ -1,0 +1,14 @@
+.discord { width: 300px; border-radius: 5px; overflow: hidden; background: #2b2d31; color: #ccc; font-size: 14px; }
+.head { display: flex; align-items: center; gap: 10px; height: 74px; padding: 0 20px; background: #5865f2; color: #fff; }
+.head .icon { width: 36px; height: 36px; }
+.head b { font-size: 22px; }
+.head span { margin-left: auto; font-size: 14px; }
+.body { box-sizing: border-box; padding: 16px 20px 6px; height: 327px; overflow: hidden; }
+.label { margin-bottom: 8px; font-size: 12px; text-transform: uppercase; color: #999; }
+ul { margin: 0; padding: 0; list-style: none; }
+li { display: flex; align-items: center; gap: 6px; height: 22px; white-space: nowrap; }
+li em { margin-left: auto; font-style: normal; color: #666; }
+.discord ::deep .dot { border-radius: 50%; }
+.foot { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 8px 15px; background: #232428; color: #777; font-size: 13px; line-height: 16px; }
+.foot span { max-width: 130px; }
+.foot ::deep .join { padding: 6px 28px; border-radius: 3px; background: #4e5058; color: #fff; }

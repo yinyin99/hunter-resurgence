@@ -1,0 +1,43 @@
+@page "/"
+@page "/feed"
+@inject ISessionService Sessions
+@inject INewsService News
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+@if (signedIn == false)
+{
+    <section class="hero">
+        <AssetSlot Name="bg-hero" Width="980" Height="550" />
+        <AssetSlot Name="logo-hero" Width="485" Height="120" Class="hero-logo" />
+        <ExternalLink Key="steam_store" Class="hero-button">@L["Landing.Play"] <Icon Name="chevron-right" /> <Icon Name="chevron-right" /></ExternalLink>
+    </section>
+}
+<h2 class="latest @(signedIn == false ? "after-hero" : "")">@L["Feed.LatestNews"]</h2>
+<FeedCarousel />
+<div class="columns">
+    <div class="news">
+        <h3>@L["Feed.News"]</h3>
+        @foreach (var post in posts)
+        {
+            <article>
+                <h4><ExternalLink Key="news" Path="@post.Slug">@post.Title</ExternalLink></h4>
+                <p class="when">@Fmt.DateTime(post.When)</p>
+                <p class="excerpt">@post.Excerpt <ExternalLink Key="news" Path="@post.Slug">@L["Feed.ContinueReading"]</ExternalLink></p>
+            </article>
+        }
+        <p class="archive"><ExternalLink Key="news_archive">@L["Feed.NewsArchive"]</ExternalLink></p>
+    </div>
+    @if (signedIn == true) { <DiscordWidget /> }
+</div>
+
+@code {
+    bool? signedIn;
+    IReadOnlyList<NewsPost> posts = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        signedIn = await Sessions.CurrentAsync() is not null;
+        posts = await News.RecentAsync();
+    }
+}

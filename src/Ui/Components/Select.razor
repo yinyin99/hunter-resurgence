@@ -1,0 +1,21 @@
+<div class="select" style="width:@(Width)px">
+    <button type="button" id="@Id" class="field" popovertarget="@uid" aria-haspopup="listbox">
+        <span>@Value</span><span class="arrow"><Icon Name="chevron-down" /></span>
+    </button>
+    <ul id="@uid" class="pop" popover role="listbox">
+        @foreach (var option in Options)
+        {
+            <li role="option"><button type="button" popovertarget="@uid" popovertargetaction="hide" @onclick="() => ValueChanged.InvokeAsync(option)">@option</button></li>
+        }
+    </ul>
+</div>
+
+@code {
+    readonly string uid = "sel" + Guid.NewGuid().ToString("N")[..8];
+
+    [Parameter, EditorRequired] public IReadOnlyList<string> Options { get; set; } = [];
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public int Width { get; set; } = 150;
+}

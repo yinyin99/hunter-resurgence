@@ -1,0 +1,80 @@
+@page "/profile/{Handle}"
+@page "/profile/{Handle}/{Tab}"
+@page "/profile/{Handle}/{Tab}/{Sub}"
+@page "/profile/{Handle}/{Tab}/{Sub}/{Arg:int}"
+@inject IProfileService Service
+@inject ISessionService Session
+
+<PageTitle>@L["Prof.Title", Handle]</PageTitle>
+
+<div class="page-min">
+@if (profile is not null)
+{
+    <header class="head">
+        <AssetSlot Name="profile-banner" Width="940" Height="200" Class="banner" />
+        <div class="polaroid"><AssetSlot Name="avatar-profile" Width="170" Height="185" /><Icon Name="paw" /></div>
+        <h1>@profile.Handle</h1>
+        @if (signedIn && !profile.Own && !profile.Friend)
+        {
+            // the request goes out once; the button then stays off
+            <button type="button" class="btn btn-primary request" disabled="@requested" @onclick="() => requested = true">
+                @if (requested) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
+            </button>
+        }
+        <p class="sub">
+            <span data-tip="@L["Prof.TipMembership", profile.Handle]">@profile.Membership</span>
+            <span data-tip="@L["Prof.TipScore", profile.Handle]"><Icon Name="paw" /> @profile.HunterScore</span>
+            <a href="/leaderboards/hunterscore" data-tip="@L["Prof.TipRank", profile.Handle]"><Icon Name="asterisk" /> @L["Prof.Rank", profile.Rank]</a>
+            @if (profile.Online) { <span class="online" data-tip="@L["Prof.TipOnline", profile.Handle]"><i></i>@L["Prof.Online"]</span> }
+        </p>
+    </header>
+    <div class="body">
+        <ul class="tabs">
+            @foreach (var (key, label, icon) in tabs)
+            {
+                <li class="@(key == marked ? "on" : "")"><a href="/profile/@profile.Handle/@key"><Icon Name="@icon" /> @L[label]</a></li>
+            }
+        </ul>
+        @switch (tab)
+        {
+            case "ranks": <RanksTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "achievements": <AchievementsTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "skills": <SkillsTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "gallery": <GalleryTab Handle="@profile.Handle" Own="@profile.Own" Sub="@Sub" />; break;
+            case "trophies": <TrophiesTab Handle="@profile.Handle" Sub="@Sub" />; break;
+            case "dogs": <DogsTab Handle="@profile.Handle" />; break;
+            case "friends": <FriendsTab Handle="@profile.Handle" Own="@profile.Own" Sub="@Sub" />; break;
+            case "expedition": <ExpeditionTab Handle="@profile.Handle" Id="@id" />; break;
+            case "score" or "antler": <SheetTab Handle="@profile.Handle" Kind="@Tab" Id="@id" />; break;
+            case "statistics": <StatisticsTab Handle="@profile.Handle" Sub="@Sub" Arg="@Arg" />; break;
+        }
+    </div>
+}
+</div>
+
+@code {
+    static readonly (string Key, string Label, string Icon)[] tabs =
+    [
+        ("ranks", "Prof.TabRanks", "bars"), ("achievements", "Prof.TabAchievements", "bookmark"), ("skills", "Prof.TabSkills", "star"), ("statistics", "Prof.TabStats", "chart-simple"),
+        ("gallery", "Prof.TabGallery", "camera"), ("trophies", "Prof.TabTrophies", "trophy"), ("dogs", "Prof.TabDogs", "dog"), ("friends", "Prof.TabFriends", "user"),
+    ];
+
+    Profile? profile;
+    bool signedIn, requested;
+
+    [Parameter] public string Handle { get; set; } = "";
+    [Parameter] public string? Tab { get; set; }
+    [Parameter] public string? Sub { get; set; }
+    [Parameter] public int? Arg { get; set; }
+    string tab => tabs.Any(t => t.Key == Tab) || Tab is "expedition" or "score" or "antler" ? Tab! : "ranks";
+    /// <summary>The tab shown as open: an expedition belongs to Statistics, a scoring sheet to none.</summary>
+    string? marked => tab is "score" or "antler" ? null : tab == "expedition" ? "statistics" : tab;
+    long id => long.TryParse(Sub, out var n) ? n : 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        profile = await Service.ProfileAsync(Handle);
+        signedIn = await Session.CurrentAsync() is not null;
+        requested = false;
+    }
+}

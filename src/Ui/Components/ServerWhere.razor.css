@@ -1,0 +1,5 @@
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.dot.short { background: var(--dist-short); box-shadow: 0 0 6px var(--dist-short); }
+.dot.medium { background: var(--dist-mid); box-shadow: 0 0 6px var(--dist-mid); }
+.dot.long { background: var(--dist-long); box-shadow: 0 0 6px var(--dist-long); }
+.flag { width: 22px; height: 16px; vertical-align: middle; }

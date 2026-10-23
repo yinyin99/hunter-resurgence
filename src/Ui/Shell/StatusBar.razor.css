@@ -1,0 +1,29 @@
+.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; min-width: var(--w-container); background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .07), 0 4px 18px rgba(0, 0, 0, .6); font-size: var(--fs-statusbar); color: var(--fg-muted); }
+.row { position: relative; height: var(--h-statusbar); }
+.web .row { width: var(--w-container); margin: 0 auto; }
+.web .left { left: 192px; }
+.web { min-width: var(--w-container); }
+.logo { position: absolute; left: 8px; top: 13px; display: block; width: 173px; height: 44px; }
+.launcher-label { position: absolute; left: 177px; top: 27px; height: 25px; padding-left: 6px; border-left: 2px solid #575757; font-weight: 100; line-height: 25px; color: var(--fg-muted); white-space: nowrap; }
+.left { position: absolute; left: 270px; top: 4px; display: flex; align-items: flex-start; }
+.right { position: absolute; right: 2px; top: 4px; display: flex; flex-direction: row-reverse; align-items: flex-start; }
+.section { position: relative; display: block; box-sizing: border-box; height: 48px; padding: 0 8px; border: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-radius: var(--r-2) var(--r-2) 0 0; background: none; color: var(--fg-muted); font: inherit; line-height: 40px; white-space: nowrap; cursor: pointer; transition: background-color var(--t-base) var(--ease), border-color var(--t-base) var(--ease), color var(--t-fast) var(--ease); }
+.section:hover { background: var(--tint-2); border-bottom-color: var(--accent); color: #fff; }
+.section .icon { font-size: 18px; vertical-align: -3px; }
+.service { padding: 4px 8px 0; line-height: 40px; white-space: nowrap; }
+.inf { font-size: 24px; vertical-align: -2px; }
+.pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--r-pill); background: var(--pill-balance-fg); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
+.pill.ems { background: var(--pill-ems); }
+.count { position: absolute; right: 0; top: 4px; min-width: 12px; padding: 0 3px; border: 1px solid #000; border-radius: var(--r-pill); background: var(--badge); color: #fff; font-size: 11px; line-height: 14px; text-align: center; }
+.settings .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base); position: absolute; top: 44px; right: -2px; width: 200px; z-index: 5; }
+.settings:hover .menu, .settings:focus-within .menu { visibility: visible; opacity: 1; transform: none; }
+.settings:hover, .settings:focus-within { color: #fff; }
+.settings a { color: inherit; }
+.settings .icon { font-size: 17px; vertical-align: -3px; }
+.score { color: var(--fg-muted); }
+.score .icon { font-size: 14px; color: #fff; }
+.user { display: flex; align-items: center; height: 40px; margin: 4px 0 0 0; padding: 0 8px; }
+.user .name { max-width: 100px; margin-left: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-muted); }
+.user .name:hover { color: #fff; }
+.friends-pos { position: fixed; inset: auto; left: 271px; top: var(--h-statusbar); margin: 0; padding: 0; border: 0; background: none; overflow: visible; }
+.bar:has(#friends:popover-open) .friends { background: var(--tint-2); border-bottom-color: var(--accent); color: #fff; }

@@ -1,0 +1,127 @@
+@page "/dashboard"
+@inject HostMode Mode
+@inject NavigationManager Nav
+@inject ModalService Modal
+@inject IMissionsService Missions
+@inject IFriendsService Friends
+@inject IProfileService Profiles
+@inject IServersService Servers
+
+<PageTitle>@L["Hunt.Go"]</PageTitle>
+
+<div class="dash">
+    <h2 class="page-title">@L["Hunt.Go"]</h2>
+    <div class="row">
+        <section class="block">
+            <h3>@L["Hunt.Single"]</h3>
+            <div class="content">
+                @if (missions is null) { <div class="loading"></div> }
+                else if (missions.Count == 0) { <p>@((MarkupString)L["Hunt.NoMissions"].Value)</p> }
+                else
+                {
+                    <p>@L["Hunt.ActiveMissions"]</p>
+                    <p class="names">@string.Join(" ", missions.Take(2).Select(m => m.Name + ","))@if (missions.Count > 2) { <text> <a href="/missions">@L["Hunt.MoreMissions", missions.Count - 2]</a></text> }</p>
+                }
+            </div>
+            <a class="btn btn-primary btn-large btn-block action" href="/launch-map/1">@L["Hunt.StartSingle"] <Icon Name="chevron-right" /></a>
+        </section>
+        <section class="block">
+            <h3>@L["Hunt.Multi"]</h3>
+            <div class="content">
+                @if (online is null) { <div class="loading"></div> }
+                else if (online.Count == 0) { <p>@L["Hunt.NoFriends"]</p> }
+                else
+                {
+                    <p>@L["Hunt.FriendsOnline"]</p>
+                    <p class="names">@foreach (var f in online) { <a href="/profile/@f.Handle" class="friend" data-tip="@f.Handle"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a> }</p>
+                }
+            </div>
+            <div class="action group">
+                <a class="btn btn-primary btn-large" href="/launch-map/0">@L["Hunt.StartMulti"] <Icon Name="chevron-right" /></a>
+                <button class="btn btn-ui btn-large" disabled>@L["Hunt.OrJoin"] <Icon Name="chevron-down" /></button>
+            </div>
+        </section>
+    </div>
+    <div class="row">
+        <section class="block progress">
+            <h3>@L["Hunt.Progress"]</h3>
+            @if (progress is null) { <div class="loading"></div> }
+            else
+            {
+                <div class="who">
+                    <AssetSlot Name="avatar-default" Width="80" Height="80" />
+                    <div>
+                        <p class="score">@L["Hunt.HunterScore"]</p>
+                        <div class="bar" role="progressbar" aria-valuenow="@progress.Score" aria-valuemax="@progress.Max"><i style="width:@(Percent)%"></i></div>
+                        <p class="numbers">@progress.Score/@progress.Max (@Percent%)</p>
+                        <p>@L["Hunt.Rank"]: <a href="/leaderboards">@progress.Rank</a></p>
+                    </div>
+                </div>
+                <h4>@L["Hunt.LatestAchievement"]</h4>
+                @if (progress.Latest is { } a)
+                {
+                    <p><b>@a.Title</b> <span class="when">@a.Date.ToString("yyyy-MM-dd")</span></p>
+                    <p>@a.Description</p>
+                }
+                else { <p>@L["Hunt.NoAchievements"]</p> }
+            }
+        </section>
+        <section class="block servers">
+            @if (games is null) { <div class="loading"></div> }
+            else
+            {
+                <ul>
+                    @foreach (var g in games)
+                    {
+                        <li>
+                            <ServerWhere Server="g" />
+                            <div class="info">
+                                <div class="name">@g.Name</div>
+                                <div class="meta">@L["Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), g.Players, g.Max]<a href="/profile/@g.Host">@g.Host</a>@if (g.Password) { <Icon Name="lock" /> }</div>
+                            </div>
+                            <button class="btn btn-primary quick-join" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = g })">@L["Hunt.QuickJoin"]</button>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+    <div class="row">
+        <section class="block wide">
+            <h3>@L["Hunt.Competitions"]</h3>
+            <p>@L["Hunt.CompetitionsIn"]</p>
+            <a class="btn btn-primary btn-large view-all" href="/competitions">@L["Hunt.ViewCompetitions"] <Icon Name="chevron-right" /></a>
+        </section>
+    </div>
+</div>
+
+@code {
+    IReadOnlyList<Mission>? missions;
+    IReadOnlyList<Friend>? online;
+    Progress? progress;
+    IReadOnlyList<GameServer>? games;
+    Dictionary<int, string> reserves = [];
+
+    int Percent => progress is { Max: > 0 } p ? p.Score * 100 / p.Max : 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // development preview of the old loading state (every widget a spinner): ?mock=dashboard:loading
+        if (Mode is { Dev: true, Mock: "dashboard:loading" }) return;
+        // the old page filled its widgets as each answer arrived: here each one renders as soon as it is ready
+        await Task.WhenAll(Fill(async () => missions = await Missions.ActiveAsync()),
+            Fill(async () => online = (await Friends.FriendsAsync()).Where(f => f.Online).Take(20).ToList()),
+            Fill(async () => progress = await Profiles.ProgressAsync()),
+            Fill(async () =>
+            {
+                reserves = (await Servers.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
+                games = (await Servers.ServersAsync()).ToList();
+            }));
+    }
+
+    async Task Fill(Func<Task> load)
+    {
+        await load();
+        StateHasChanged();
+    }
+}

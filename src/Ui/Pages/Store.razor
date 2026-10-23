@@ -1,0 +1,61 @@
+@page "/store"
+@page "/store/{Key}"
+@inject IStoreService Service
+@inject ISessionService Sessions
+@inject ModalService Modal
+
+<PageTitle>@L["Menu.Store"]</PageTitle>
+
+<StoreFrame Active="@key">
+    <input id="store-category-search" type="text" placeholder="@L["Store.Search"]" @bind="search" @bind:event="oninput" @bind:after="Reload" />
+    @if (rows.Count == 0 && key != "bundles") { <p class="none">@L["Store.None"]</p> }
+    <div class="grid">
+        @foreach (var i in rows)
+        {
+            <div class="card panel">
+                @if (i.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
+                <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="store-item" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/item/@i.Id" class="name">@i.Name</a>
+                <span class="variant">@i.Variant</span>
+                <p class="price">
+                    @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
+                    @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
+                </p>
+                @if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
+                @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
+                else if (!i.Buyable) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
+                else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
+            </div>
+        }
+    </div>
+    <Paginator Page="page" Pages="pages" Href='n => "/store/" + key + "?page=" + n' />
+</StoreFrame>
+
+@code {
+    IReadOnlyList<StoreItem> rows = [];
+    string search = "";
+    int page = 1, pages = 1;
+    bool signedIn;
+
+    [Parameter] public string? Key { get; set; }
+    [SupplyParameterFromQuery(Name = "page")] public int? PageNo { get; set; }
+    string key => Key ?? "all";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        signedIn = await Sessions.CurrentAsync() is not null;
+        page = PageNo ?? 1;
+        await Load();
+    }
+
+    async Task Reload() { page = 1; await Load(); }
+
+    async Task Load()
+    {
+        if (key == "bundles") { rows = []; return; }
+        var p = await Service.ItemsAsync(key, search, page);
+        (rows, page, pages) = (p.Rows, p.Number, p.Pages);
+    }
+
+    void Buy(StoreItem i) => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = i.Id, ["Name"] = i.Name, ["Ems"] = i.Ems, ["Gms"] = i.Gms });
+}

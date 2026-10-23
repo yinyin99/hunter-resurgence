@@ -1,0 +1,8 @@
+<table class="tbl tbl-c">
+    <thead><tr><th></th><th>@L["Stat.Name"]</th><th>@L["Stat.Collected"]</th><th>@L["Stat.Total"]</th><th>@L["Stat.Max"]</th></tr></thead>
+    <tbody>@foreach (var c in Rows) { <tr><td><AssetSlot Name="collectable" Width="24" Height="24" /></td><td>@c.Name</td><td>@c.Collected</td><td>@c.Total</td><td>@c.Max</td></tr> }</tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<CollectableStat> Rows { get; set; } = [];
+}

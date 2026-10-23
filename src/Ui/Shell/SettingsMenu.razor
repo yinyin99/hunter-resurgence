@@ -1,0 +1,18 @@
+@inject HostMode Mode
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+
+<ul class="settings-menu">
+    <li><a href="/settings">@L["Settings.Account"]</a></li>
+    <li><a href="/game-management">@L["Settings.GameManagement"]</a></li>
+    <li><a href="#" @onclick="() => Modal.Show<LanguageModal>()" @onclick:preventDefault>@L["Settings.Language"]</a></li>
+    @if (Mode.Launcher)
+    {
+        <li class="launcher-item"><a href="#" id="game-settings" @onclick="() => Modal.Show<GameSettingsModal>()" @onclick:preventDefault>@L["Settings.GameSettings"]</a></li>
+        <li><a href="#" @onclick='() => Bridge.OpenFolder("screenshots")' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
+        <li><a href="#" @onclick='() => Bridge.OpenFolder("logs")' @onclick:preventDefault>@L["Settings.Logfiles"]</a></li>
+        <li><a href="#" @onclick='() => Bridge.OpenFolder("game")' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>
+        <li><a href="#" @onclick='() => Bridge.ClearCache("launcher")' @onclick:preventDefault>@L["Settings.ClearLauncherCache"]</a></li>
+        <li><a href="#" @onclick='() => Bridge.ClearCache("game")' @onclick:preventDefault>@L["Settings.ClearGameCache"]</a></li>
+    }
+</ul>

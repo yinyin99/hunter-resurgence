@@ -1,0 +1,7 @@
+table { margin: 0 0 20px; }
+td { padding: 4px 6px; }
+td:nth-child(2) { text-align: left; }
+.n { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+td ::deep .asset-slot { display: block; }
+td:nth-child(2) ::deep .asset-slot { margin: 0 auto; }
+th:last-child, td:last-child { width: 96px; }

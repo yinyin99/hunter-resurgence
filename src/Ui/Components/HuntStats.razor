@@ -1,0 +1,40 @@
+@* the statistics of one expedition: the last hunt of a hunter, or one expedition of the history *@
+<div class="head">
+    <span class="where">@Hunt.Reserve</span>
+    <span class="when">@Hunt.Start.ToString("yyyy-MM-dd HH:mm") UTC - @(Hunt.End is { } e ? e.ToString("yyyy-MM-dd HH:mm") + " UTC" : "")</span>
+</div>
+<h4>@L["Prof.Weapons"]</h4>
+@if (Hunt.Weapons.Count == 0) { <p>@L["Stat.NoShotsExp"]</p> }
+else { <WeaponTable Weapons="Hunt.Weapons" /> }
+<h4>@L["Prof.Animals"]</h4>
+@if (Hunt.Animals.Count == 0) { <p>@L["Stat.NoAnimalsExp"]</p> }
+else { <SpeciesTable Rows="Hunt.Animals" /> }
+<h4>@L["Prof.Collectables"]</h4>
+@if (Hunt.Collectables.Count == 0) { <p>@L["Stat.NoCollectExp"]</p> }
+else { <CollectableTable Rows="Hunt.Collectables" /> }
+<h4>@L["Prof.TabAchievements"]</h4>
+@if (Hunt.Achievements.Count == 0) { <p>@L["Stat.NoAchExp"]</p> }
+else { <ul>@foreach (var a in Hunt.Achievements) { <li>@a</li> } </ul> }
+<h4>@L["Stat.Misc"]</h4>
+<table class="misc tbl"><tbody>
+    <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(Hunt.DistanceKm)</td></tr>
+    <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(Hunt.Seconds)</td></tr>
+</tbody></table>
+<h4 class="gap">@L["Stat.Antlers"]</h4>
+@if (Hunt.Antlers.Count == 0) { <p>@L["Stat.NoAntlerExp"]</p> }
+else { <ul>@foreach (var a in Hunt.Antlers) { <li>@a</li> } </ul> }
+<h4>@L["Stat.Kills"]</h4>
+@if (Hunt.Kills.Count == 0) { <p>@L["Stat.NoKillsExp"]</p> }
+else
+{
+    <table class="kills tbl">
+        <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
+        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td></tr> }</tbody>
+    </table>
+}
+
+@code {
+    [Parameter, EditorRequired] public Expedition Hunt { get; set; } = null!;
+    /// <summary>The hunter whose score sheets the kills link to.</summary>
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+}

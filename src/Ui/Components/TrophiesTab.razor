@@ -1,0 +1,27 @@
+@inject IProfileService Service
+
+@if (page is not null)
+{
+    @if (page.Rows.Count == 0) { <p class="empty">@L["Prof.TrophiesEmpty"]</p> }
+    <ul class="grid">
+        @foreach (var t in page.Rows)
+        {
+            <li>
+                <AssetSlot Name="trophy" Width="150" Height="150" />
+                @if (t.CompetitionId is { } id) { <a href="/competitions/details/@id">@t.Competition</a> }
+                <b>@t.Name</b>
+                <span>@t.Date.ToString("yyyy-MM-dd")</span>
+            </li>
+        }
+    </ul>
+    <PrevNext Page="page.Number" Pages="page.Pages" Base="@("/profile/" + Handle + "/trophies")" />
+}
+
+@code {
+    Page<Trophy>? page;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public string? Sub { get; set; }
+
+    protected override async Task OnParametersSetAsync() => page = await Service.TrophiesAsync(Handle, int.TryParse(Sub, out var n) ? n : 1);
+}

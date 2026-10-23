@@ -1,0 +1,42 @@
+.sheet { width: 720px; background: #fff; color: #444; font-size: 11px; }
+.logo { position: relative; height: 108px; padding: 22px 0 0 76px; box-sizing: border-box; }
+.logo ::deep .medal { position: absolute; right: 20px; top: 10px; }
+.sheet ::deep .asset-slot { display: block; }
+.guide { position: relative; height: 300px; background: #f0ebe3; }
+.guide.big { height: 552px; }
+.species { position: absolute; left: 0; right: 0; top: 12px; text-align: center; font-size: 11px; color: #000; }
+.guide > ::deep .asset-slot { position: absolute; left: 20px; top: 60px; }
+.guide.big > ::deep .asset-slot { left: 60px; top: 56px; }
+.abn { position: absolute; right: 0; top: 52px; width: 114px; border-collapse: collapse; font-size: 10px; text-align: center; }
+.abn th { padding: 5px 2px; background: #d8c9b3; font-size: 9px; font-weight: 400; white-space: nowrap; color: #666; }
+.abn td { padding: 4px; height: 17px; border-bottom: 1px solid #e8dcc8; background: #f7f3ec; color: #555; }
+.abn .sub td { background: #f0ebe3; text-align: left; }
+table { border-collapse: collapse; }
+th { padding: 4px 6px; line-height: 16px; background: #d8c9b3; font-weight: 400; text-align: left; color: #555; }
+td { padding: 4px 10px; line-height: 16px; border: 1px solid #efe6d6; background: #fff; text-align: right; color: #555; }
+.facts, .rows, .sums { width: 100%; }
+.facts th { width: 30%; }
+.facts td { width: 20%; }
+.rows thead th { text-align: center; }
+.rows tbody th { width: 296px; }
+.rows td { width: 107px; }
+.sums { width: 260px; margin: 0 0 0 auto; }
+.sums th { text-align: left; }
+.shot { width: 100%; margin: 6px 0 12px; font-size: 10px; }
+.shot th { background: none; padding: 4px 2px; text-align: center; color: #000; }
+.shot td { border: 0; padding: 4px 2px; text-align: center; background: none; }
+.shot a, .info a { color: var(--primary); }
+.info { display: flex; gap: 2px; padding: 0 8px 12px; }
+dl { display: grid; grid-template-columns: 1fr 1fr; width: 458px; margin: 0; }
+dl div { margin: 0 0 6px; }
+dt { padding: 4px 2px 2px; color: #555; }
+dd { margin: 0; padding: 4px 8px; border: 1px solid #efe6d6; text-align: right; color: #555; }
+.aside { width: 246px; }
+.map-btn { display: block; width: 100%; height: 28px; margin: 0 0 80px; border: 0; border-radius: 4px; background: var(--primary); font-size: 20px; line-height: 28px; color: #fff; cursor: pointer; }
+.final { height: 48px; background: #d8c9b3; text-align: center; font-weight: 700; line-height: 48px; color: #333; }
+.aside p { margin: 0; padding: 8px; border: 1px solid #efe6d6; text-align: center; }
+.aside b { display: block; line-height: 20px; color: #333; }
+.map { position: relative; margin: 0 8px 12px; }
+.x { position: absolute; right: 6px; top: 4px; z-index: 5; border: 0; background: none; font-size: 28px; color: #fff; cursor: pointer; }
+.sponsor { padding: 0 0 16px; }
+.sponsor ::deep .asset-slot { margin: 0 auto; }

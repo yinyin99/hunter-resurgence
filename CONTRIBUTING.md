@@ -9,7 +9,6 @@ These apply to every file and every commit message:
 - Only README.md names the game, in plain text (tagline and disclaimer). Everywhere else, say "the game".
 - No real hostnames or domains of the publisher, no user ids, handles, tokens or email addresses of real people. Use placeholders (`<api-host>`, `<client-exe>`, ...).
 - No game files and no game data (assets, captures, dumps, saved replies of real accounts). Never patch, ship or download game files: the client is redirected with the hosts file and a local certificate (for now; the method may change).
-- No money: do not add donation or sponsor links, a funding file, ads, paid features, or sales of items or currency. Pull requests that do are closed.
 - Nothing about how knowledge of the game or its servers was obtained: no reverse-engineering notes, addresses, tool names, capture or live-session logs, nothing about a person's account or runs.
 
 Real values for a build (hosts, consumer key, exe name) live in a `settings.json` that is never committed (it is git-ignored). Releases read them from repository secrets.
@@ -19,13 +18,17 @@ Real values for a build (hosts, consumer key, exe name) live in a `settings.json
 Needs the .NET SDK pinned in `global.json` (Windows).
 
 ```
-dotnet build tools/backup -c Release
+dotnet build hunter-resurgence.slnx -c Release
 dotnet run --project tools/backup -c Release -- --selftest
+dotnet run --project src/Launcher -c Release -- --selftest
+dotnet run --project src/Web
 ```
 
-The selftest uses a fake HTTP handler and a fake process; it exits 0 when every check is ok.
+The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`) and the library they share (`src/Ui`). Each selftest exits 0 when every check is ok: the backup tool's uses a fake HTTP handler and a fake process, the launcher's uses temporary files only. The last command starts the website on `http://localhost:5080`.
 
-To build the distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
+The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md) and [docs/backup.md](docs/backup.md).
+
+To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 
 ```
 tools\backup\publish.cmd path\to\settings.json

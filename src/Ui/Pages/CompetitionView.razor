@@ -1,0 +1,112 @@
+@page "/competitions/details/{Id:int}"
+@page "/competitions/details/{Id:int}/{Tab}"
+@inject ICompetitionsService Service
+@inject ModalService Modal
+
+<PageTitle>@L["Comp.Tab.Competitions"]</PageTitle>
+
+<div class="page-min">
+@if (d is not null)
+{
+    var c = d.Competition;
+    <header class="hero">
+        <AssetSlot Name="competition-hero" Width="980" Height="340" Class="art" />
+        <div class="chips"><span>@L["Comp.ChipStatus", state]</span><span>@d.Species</span></div>
+        <h1>@c.Name</h1>
+        <p>@d.Tagline</p>
+        @if (d.Active) { <button type="button" class="btn leave" @onclick="Leave">@L["Comp.Leave"]</button> }
+        else if (c.Joinable) { <button type="button" class="btn leave" @onclick="Join">@L["Comp.Join"]</button> }
+        else { <button type="button" class="btn leave" disabled>@L["Comp.CantJoin"]</button> }
+    </header>
+    <dl class="stats">
+        <div><dt>@L["Comp.Players"]</dt><dd>@c.Players</dd></div>
+        <div class="wide"><dt>@L[c.Status == "Signup" ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Fmt.Elapsed(d.EndsIn)</dd></div>
+        <div><dt>@L["Comp.YourPosition"]</dt><dd>@(d.Position?.ToString() ?? L["Comp.NA"])</dd></div>
+        <div><dt>@L["Comp.ScoreToBeat"]</dt><dd>@d.ScoreToBeat</dd></div>
+        <div><dt>@L["Comp.Attempts"]</dt><dd>@d.Used/@d.Max</dd></div>
+    </dl>
+    <Tabs Kind="pills" Items="pills" Active="@active" />
+
+    @switch (Tab)
+    {
+        case "leaderboard":
+            <h3>@L["Comp.Participants", participants.Count]</h3>
+            @if (participants.Count == 0) { <p>@L["Comp.NoResults"]</p> }
+            else
+            {
+                <table class="board tbl">
+                    <thead><tr><th>@L["Comp.Position"]</th><th>@L["Comp.Player"]</th><th>@L["Comp.Result"]</th></tr></thead>
+                    <tbody>@foreach (var p in participants) { <tr><td>@p.Position</td><td><a href="/profile/@p.Handle">@p.Handle</a></td><td>@p.Result</td></tr> }</tbody>
+                </table>
+            }
+            break;
+        case "history":
+            <h3>@L["Comp.History"]</h3>
+            @foreach (var year in history.GroupBy(h => h.Year))
+            {
+                <h5 class="year">@year.Key</h5>
+                @foreach (var m in year)
+                {
+                    <p class="month"><b>@m.Month</b> @foreach (var (day, id) in m.Runs) { <a href="/competitions/details/@id">@day</a> }</p>
+                }
+            }
+            break;
+        default:
+            <h3 class="prizes-title">@L["Comp.Prizes"]</h3>
+            <ul class="prizes">
+                @for (var i = 0; i < d.Prizes.Count; i++)
+                {
+                    <li><span class="medal m@(i + 1)">@(i + 1)</span> @(d.Prizes[i] == "Trophy" ? L["Comp.Trophy"] : d.Prizes[i])</li>
+                }
+            </ul>
+            <h3>@L["Comp.Rules"]</h3>
+            <p class="rule">@L["Comp.Species", d.Species]<br />@L["Comp.Reserves", d.Reserves]</p>
+            <h4>@L["Comp.Description"]</h4><p>@d.Description</p>
+            <h4>@L["Comp.Weapons"]</h4><p>@d.Weapons</p>
+            <h4>@L["Comp.Scoring"]</h4><p>@d.Scoring</p>
+            <h4>@L["Comp.Special"]</h4><p>@d.Special</p>
+            <h4>@L["Comp.Gamemode"]</h4><p>@d.Gamemode</p>
+            <div class="when">
+                <p>@L["Comp.Starts"]: @(c.Start is { } s ? Fmt.UtcLong(s) : "")</p>
+                <p>@L["Comp.Ends"]: @(c.End is { } e ? Fmt.UtcLong(e) : "")</p>
+                <p>@L["Comp.Attempts"]: *@d.Used / @d.Max</p>
+                <p>* @L["Comp.Disclaimer"]</p>
+            </div>
+            break;
+    }
+}
+</div>
+
+@code {
+    CompetitionDetails? d;
+    IReadOnlyList<Participant> participants = [];
+    IReadOnlyList<HistoryMonth> history = [];
+    IReadOnlyList<(string Label, string Href)> pills = [];
+
+    [Parameter] public int Id { get; set; }
+    [Parameter] public string? Tab { get; set; }
+
+    string active => pills[Tab switch { "leaderboard" => 1, "history" => 2, _ => 0 }].Href;
+
+    string state => d!.Competition.Status switch { "Started" => L["Comp.StateOngoing"], "Signup" => L["Comp.StateSignUp"], _ => L["Comp.StateEnded"] };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var b = "/competitions/details/" + Id;
+        pills = [(L["Comp.Overview"], b), (L["Comp.Leaderboard"], b + "/leaderboard"), (L["Comp.History"], b + "/history")];
+        d = await Service.DetailsAsync(Id);
+        participants = await Service.ParticipantsAsync(Id);
+        history = await Service.HistoryAsync(Id);
+    }
+
+    async Task Join() => await Change(await Service.JoinAsync(Id));
+
+    async Task Leave() => await Change(await Service.LeaveAsync(Id));
+
+    // activating and leaving are fake in the mock: the page is read again
+    async Task Change(Result r)
+    {
+        if (!r.Ok) Modal.Alert(L[r.Error ?? "Comp.Failed"]);
+        else await OnParametersSetAsync();
+    }
+}

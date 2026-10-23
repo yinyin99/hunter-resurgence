@@ -1,0 +1,11 @@
+.map { position: relative; overflow: hidden; background: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px) 0 0 / 40px 40px, #1d2a31; }
+.plane { position: absolute; inset: 0; transform-origin: 50% 50%; transition: transform .2s; }
+.slot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--fg-muted-3); font-size: 11px; }
+.marker { position: absolute; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin: -11px 0 0 -11px; padding: 0; border: 0; border-radius: var(--r-2); background: var(--surface-1); color: #fff; font-size: 12px; cursor: default; }
+.marker:not(:disabled) { cursor: pointer; }
+.marker:not(:disabled):hover, .marker.selected { background: var(--badge); }
+.zoom { position: absolute; left: 10px; top: 10px; z-index: 5; display: flex; flex-direction: column; border-radius: var(--r-2); box-shadow: 0 1px 5px rgba(0, 0, 0, .65); }
+.zoom button { width: 26px; height: 26px; padding: 0; border: 0; border-bottom: 1px solid #ccc; background: #fff; color: #000; font-size: 14px; cursor: pointer; }
+.zoom button:first-child { border-radius: 4px 4px 0 0; }
+.zoom button:last-child { border-bottom: 0; border-radius: 0 0 4px 4px; }
+.zoom button:disabled { background: #f4f4f4; color: var(--text-3); cursor: default; }

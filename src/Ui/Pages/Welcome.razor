@@ -1,0 +1,37 @@
+@page "/welcome"
+@inject ISessionService Sessions
+
+<PageTitle>@L["Welcome.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Welcome.Title"].Value.ToUpperInvariant())</h2>
+    <div class="who">
+        <AssetSlot Name="avatar-current" Width="80" Height="80" />
+        <h2>@congrats[0]<a href="/profile/@handle">@handle</a>@congrats[1]</h2>
+    </div>
+    <p class="text">@L["Welcome.Intro"]</p>
+    <h4>@L["Welcome.Retail"]</h4>
+    <p class="text">@((MarkupString)L["Welcome.RetailText", "<a href=\"#\" id=\"activation\">", "</a>"].Value)</p>
+    <div class="cards">
+        @Card("Welcome.Tutorials", "/tutorials", "Welcome.TutorialsGo", null)
+        @Card("Welcome.Hunting", "/dashboard", "Welcome.HuntingGo", null)
+        @Card("Welcome.Downloads", "/download", "Welcome.DownloadsGo", "download")
+        @Card("Welcome.Settings", "/settings", "Welcome.SettingsGo", null)
+        @Card("Welcome.Profile", "/profile/" + handle, "Welcome.ProfileGo", "user")
+        @Card("Welcome.Help", "/help", "Welcome.HelpGo", null)
+    </div>
+</div>
+
+@code {
+    string handle = "";
+    string[] congrats => L["Welcome.Congrats", "\u0001"].Value.Split('\u0001');
+
+    protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+
+    RenderFragment Card(string key, string href, string go, string? icon) => @<section class="card panel">
+        <h3>@L[key]</h3>
+        <p>@L[key + "Text"]</p>
+        @if (icon is not null) { <Icon Name="@icon" /> }
+        <a class="btn btn-primary" href="@href">@L[go] <Icon Name="chevron-right" /></a>
+    </section>;
+}

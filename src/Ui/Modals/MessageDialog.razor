@@ -1,0 +1,7 @@
+@inject ModalService Modal
+
+<div class="su-dialog" role="alertdialog" aria-labelledby="su-dlg" aria-describedby="su-dlg-text">
+    <h2 id="su-dlg">@L["Dialog.Sent.Title"]</h2>
+    <p id="su-dlg-text">@L["Dialog.Sent.Text"]</p>
+    <div class="su-actions"><button type="button" class="su-btn medium" autofocus @onclick="Modal.Close">@L["Dialog.Ok"]</button></div>
+</div>

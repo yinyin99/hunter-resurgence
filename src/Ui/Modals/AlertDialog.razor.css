@@ -1,0 +1,4 @@
+.alert-panel { position: absolute; top: calc(50% - 90px); left: calc(50% - 170px); width: var(--w-modal-alert); text-align: center; }
+p { margin: 0; padding: 30px 20px; font-size: 16px; line-height: 20px; font-weight: 500; color: var(--text-1); }
+.buttons { padding: 12px 20px 11px 14px; text-align: right; border-top: 2px groove #4e4c50; }
+.btn { margin-left: 5px; padding: 6px 12px; font-weight: 500; }

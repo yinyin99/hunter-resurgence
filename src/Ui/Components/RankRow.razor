@@ -1,0 +1,18 @@
+<tr class="@(Small ? "small" : "")">
+    @if (!Small) { <td class="rank">@R.Rank</td> }
+    <td class="avatar"><AssetSlot Name="avatar-default" Width="@(Small ? 52 : 60)" Height="@(Small ? 52 : 60)" /></td>
+    <td class="handle"><a href="/profile/@R.Handle">@R.Handle</a></td>
+    <td class="value @(Kind == "hunterscore" ? "mid" : "")">
+        @if (R.Sheet > 0) { <a href="/profile/@R.Handle/score/@R.Sheet">@Fmt.Board(Kind, R.Value)</a> }
+        else { @Fmt.Board(Kind, R.Value) }
+        @if (!Small && Kind is not "hunterscore") { <span class="sp">@L["Board.SP"]</span> }
+    </td>
+</tr>
+
+@code {
+    [Parameter, EditorRequired] public Ranked R { get; set; } = null!;
+    /// <summary>score, range, hunterscore, lanebandit, bustthrough or antlers-single/double; decides the value format.</summary>
+    [Parameter, EditorRequired] public string Kind { get; set; } = "";
+    /// <summary>The short rows of an overview tile.</summary>
+    [Parameter] public bool Small { get; set; }
+}

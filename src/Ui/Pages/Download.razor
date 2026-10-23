@@ -1,0 +1,43 @@
+@page "/download"
+@inject Branding Brand
+
+<PageTitle>@L["Menu.Downloads"]</PageTitle>
+
+@* static English in the old app in every language, so inline *@
+<div class="page-min">
+    <h2 class="page-title">@Brand.Expand("How to download and play {game}").ToUpperInvariant()</h2>
+    <section class="box panel">
+        <h3>Multiplayer Requirements</h3>
+        <p><b>Supported Operating Systems:</b> Windows 7, Windows 8/8.1 &amp; Windows 10 <b>CPU:</b> Dual core processor (2 Ghz)<br />
+            <b>Memory:</b> 2 GB<br />
+            <b>Graphics card:</b> NVidia 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256Mb on board memory (for low &amp; medium). 512 - 768Mb on board memory (for high, depending of number of players).<br />
+            <b>Graphics resolution:</b> At least 1024x768<br />
+            <b>Internet connection:</b> Client : 512Kbps Up &amp; Down<br />
+            <b>Host:</b> 1Mbps - 2 Mbps Up &amp; Down (depending on number of players)<br />
+            <b>Host FPS:</b> If the host does not run the game in at least 25-30 fps (frames per second), the physics will produce errors. Players with low-end computers should try to lower the settings to be able to run the game with as high fps as possible. <b>30 FPS</b> is the lowest recommended value. FPS can be measured with free tools available on the internet. <ExternalLink Key="fps_tool">Search tool</ExternalLink><br />
+            <b>Operating System:</b> Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11</p>
+        <h3>Singleplayer Requirements</h3>
+        <p><b>Supported Operating Systems:</b> Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11<br />
+            <b>CPU:</b> Pentium 4 (3Ghz)<br />
+            <b>Memory:</b> 2 GB<br />
+            <b>Graphics card:</b> NVidia 7 Series (7600 or better). ATI X1900 (or better). 256Mb on board memory (for low &amp; medium). 512Mb on board memory (for high)<br />
+            <b>Graphics resolution:</b> At least 1024x768<br />
+            <b>Internet connection:</b> Yes</p>
+        <p class="plain">Download the game (about 12 GB).</p>
+        <ExternalLink Key="steam_store" Class="btn btn-primary btn-large get">Click here to download <Icon Name="download" /></ExternalLink>
+    </section>
+    <section class="box panel"><h3>Step 2</h3><p class="plain">Run the game after installation completes.</p></section>
+    <section class="box panel"><h3>Step 3</h3><p class="plain">Click the <a href="/dashboard">Hunt Now</a> button on the webpage to start a new game.</p></section>
+    <section class="box panel">
+        <h3>Troubleshooting</h3>
+        <p class="plain">The troubleshooting utility automatically checks your game setup, detects common issues, and recommend fixes to help you get back to playing faster.</p>
+        <ul>
+            <li>Download the troubleshooting utility.</li>
+            <li>Place it in your game folder near the game executable. <b>[Game Folder]\game\&lt;utility&gt;</b></li>
+            <li>Run the tool to analyze configuration and performance issues.</li>
+            <li>Apply the suggested fixes offered during the analysis.</li>
+            <li>If the proposed solutions don’t help, download the generated log file and send it to our <ExternalLink Key="support_request">support team</ExternalLink>.</li>
+        </ul>
+        <ExternalLink Key="health_utility">Download Utility</ExternalLink>
+    </section>
+</div>

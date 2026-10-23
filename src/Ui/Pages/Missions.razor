@@ -1,0 +1,160 @@
+@page "/missions"
+@page "/missions/group/{Group:int}"
+@inject IMissionsService Service
+@inject ModalService Modal
+
+<PageTitle>@L["Mis.Regular"]</PageTitle>
+
+<div class="page-min">
+<Tabs Items="tabs" Active="/missions" HelpHref="/help/day-mission" />
+@if (data is not null)
+{
+    <button type="button" class="btn btn-primary all" @onclick="ActivateAll">@L["Mis.ActivateAll"]</button>
+    <label class="check"><input class="tick" type="checkbox" id="auto-activate" checked="@data.Auto" @onchange='e => Automatic("auto", e)' /> @L["Mis.Auto"]</label>
+    <label class="check"><input class="tick" type="checkbox" id="activate-only-favourite" checked="@data.OnlyFavourite" @onchange='e => Automatic("onlyfavourite", e)' /> @L["Mis.OnlyFavourite"]</label>
+    <p class="line">@L["Mis.ResetDesc"] <a href="/store/item/221">@L["Mis.GoToStore"]</a></p>
+    <p class="line">@L["Mis.Completion", data.Completed, data.Total, data.PacksDone, data.PacksTotal]</p>
+
+    <section class="box filters">
+        <h4>@L["Mis.Filters"]</h4>
+        <form @onsubmit="Apply" @onsubmit:preventDefault>
+            <div class="grid">
+                <label>@L["Mis.FilterIn"]<select class="field-sel" id="block_id" @bind="filterIn"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
+                <label>@L["Mis.Reserves"]<MultiSelect Options="reserves" Selected="reserveSel" /></label>
+                <label>@L["Mis.Species"]<MultiSelect Options="species" Selected="speciesSel" Label="s => L.Term(s)" /></label>
+                <label>@L["Mis.Weapons"]<MultiSelect Options="weapons" Selected="weaponSel" /></label>
+            </div>
+            <label class="hide"><input class="tick" type="checkbox" id="hide-completed" @bind="hideCompleted" /> @L["Mis.HideCompleted"]</label>
+            <label class="search">@L["Mis.Search"]<input class="field-light" type="text" id="mission-search" @bind="search" @bind:event="oninput" /></label>
+            <button type="submit" class="btn btn-primary">@L["Mis.Filter"]</button>
+        </form>
+    </section>
+
+    @if (Show("favourite"))
+    {
+        <section class="box">
+            <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input class="tick" type="checkbox" id="mission_favourite_hide" /> @L["Mis.HideCompleted"]</label></h4>
+            @if (data.Packs.All(p => !p.Favourite)) { <p class="notice">@L["Mis.NoFavourites"]</p> }
+            else { @Packs(data.Packs.Where(p => p.Favourite)) }
+        </section>
+    }
+    @if (Show("active"))
+    {
+        <section class="box">
+            <h4 @onclick="() => closed ^= 1">@L["Mis.Active"] (@active.Count) <span class="caret"></span></h4>
+            @if (active.Count == 0) { <p class="notice">@L["Mis.NoActive"]</p> }
+            else if ((closed & 1) == 0) { @Rows(active) }
+        </section>
+    }
+    @if (Show("available"))
+    {
+        <section class="box">
+            <h4 @onclick="() => closed ^= 2">@L["Mis.Available"] (@available.Count) <span class="caret"></span></h4>
+            @if (available.Count == 0) { <p class="notice">@L["Mis.NoAvailable"]</p> }
+            else if ((closed & 2) == 0) { @Rows(available) }
+        </section>
+    }
+    @if (Show("packs"))
+    {
+        <section class="box">
+            <h4 @onclick="() => closed ^= 4">@L["Mis.Packs"] <span class="caret"></span></h4>
+            @if ((closed & 4) == 0) { @Packs(packs) }
+        </section>
+    }
+}
+else { <div class="skeleton skeleton-page"></div> }
+</div>
+
+@code {
+    RegularMissions? data;
+    IReadOnlyList<(string, string)> tabs = [];
+    IReadOnlyList<string> reserves = [], species = [], weapons = [];
+    readonly HashSet<string> reserveSel = [], speciesSel = [], weaponSel = [], open = [];
+    string filterIn = "all", search = "";
+    // the filter is applied by the Filter button: these are the values it applied
+    string appliedIn = "all", applied = "";
+    bool hideCompleted, appliedHide;
+    int closed;
+    IReadOnlyList<Mission> active = [], available = [];
+    IReadOnlyList<MissionPack> packs = [];
+
+    [Parameter] public int? Group { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
+        data = await Service.RegularAsync();
+        (reserves, species, weapons) = (data.Missions.Select(m => m.Reserve).Distinct().Order().ToList(), data.Missions.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), data.Missions.Select(m => m.Weapon).Distinct().Order().ToList());
+        Apply();
+    }
+
+    bool Show(string box) => appliedIn == "all" || appliedIn == box;
+
+    // client-side, as in the old page: the Filter button narrows the lists
+    void Apply()
+    {
+        (appliedIn, applied, appliedHide) = (filterIn, search.Trim(), hideCompleted);
+        var ms = data!.Missions.Where(m => (reserveSel.Count == 0 || reserveSel.Contains(m.Reserve)) && (speciesSel.Count == 0 || speciesSel.Contains(m.Species)) && (weaponSel.Count == 0 || weaponSel.Contains(m.Weapon))
+            && (applied.Length == 0 || m.Name.Contains(applied, StringComparison.OrdinalIgnoreCase)) && !(appliedHide && m.State == "completed")).ToList();
+        active = ms.Where(m => m.State == "active").ToList();
+        available = ms.Where(m => m.State == "available").ToList();
+        packs = data.Packs.Where(p => applied.Length == 0 || p.Name.Contains(applied, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    RenderFragment Rows(IReadOnlyList<Mission> list) => @<ul class="rows">
+        @foreach (var m in list)
+        {
+            <li class="@(open.Contains(m.Name) ? "open" : "")">
+                <button type="button" class="row" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
+                @if (open.Contains(m.Name))
+                {
+                    <div class="more">
+                        <h5>@L["Mis.Rewards"]</h5><p>@m.Reward</p>
+                        <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
+                        <h5>@L["Mis.Objectives"]</h5><ol>@foreach (var o in m.Objectives) { <li>@o</li> }</ol>
+                        @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }
+                    </div>
+                }
+            </li>
+        }
+    </ul>;
+
+    RenderFragment Packs(IEnumerable<MissionPack> list) => @<ul class="rows packs">
+        @foreach (var p in list)
+        {
+            <li>
+                <div class="row pack"><span class="tri"></span><span class="name">@p.Name<small>@L["Mis.Progress"] @p.Done / @p.Total</small></span>
+                    <button type="button" class="star" title="@L["Mis.FavouriteTip"]" aria-pressed="@p.Favourite" @onclick="() => Favourite(p)"><Icon Name="@(p.Favourite ? "star" : "star-regular")" /></button></div>
+            </li>
+        }
+    </ul>;
+
+    void Toggle(string name) { if (!open.Remove(name)) open.Add(name); }
+
+    // activating, favouriting and the two automatic settings are fake in the mock
+    async Task Activate(int id) => await Done(await Service.ActivateAsync(id));
+
+    async Task ActivateAll() => await Done(await Service.ActivateAsync(0));
+
+    async Task Done(Result r)
+    {
+        Modal.Alert(r.Ok ? L["Mis.ActivationDone"] + " " + L["Mis.Enjoy"] : L["Mis.Failed"]);
+        data = await Service.RegularAsync();
+        Apply();
+    }
+
+    async Task Favourite(MissionPack p)
+    {
+        await Service.SetFavouriteAsync(p.Id, !p.Favourite);
+        data = data! with { Packs = data.Packs.Select(x => x.Id == p.Id ? x with { Favourite = !x.Favourite } : x).ToList() };
+        Apply();
+    }
+
+    async Task Automatic(string setting, ChangeEventArgs e)
+    {
+        var on = (bool)e.Value!;
+        await Service.SetAutomaticAsync(setting, on);
+        // turning one on turns the other off
+        data = setting == "auto" ? data! with { Auto = on, OnlyFavourite = on ? false : data.OnlyFavourite } : data! with { OnlyFavourite = on, Auto = on ? false : data.Auto };
+    }
+}

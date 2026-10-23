@@ -1,0 +1,54 @@
+@page "/store/bundle/{Id:int}"
+@inject IStoreService Service
+@inject ISessionService Sessions
+@inject ModalService Modal
+
+<PageTitle>@L["Menu.Store"]</PageTitle>
+
+<StoreFrame Active="bundles">
+    @if (bundle is not null)
+    {
+        <article class="item">
+            <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
+            <AssetSlot Name="store-bundle-large" Width="190" Height="207" Class="pic" />
+            <div class="buy">
+                @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
+                else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@L["Store.MaxOwn"]">@L["Store.Buy"]</button> }
+                else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                <b>@bundle.Price em$</b>
+            </div>
+            <h1>@bundle.Name</h1>
+            <p class="text">@bundle.Description</p>
+            @if (!bundle.Buyable) { <p class="own">@L["Store.MaxOwn"]</p> }
+            <table class="tbl">
+                <thead><tr><th>@L["Store.Included"]</th><th class="own">@L["Store.Own"]</th><th>@L["Store.Value"]</th></tr></thead>
+                <tbody>
+                    @foreach (var l in bundle.Lines)
+                    {
+                        <tr><td><AssetSlot Name="store-thumb" Width="30" Height="30" Class="thumb" /> @(l.Count)x <a href="/store/item/@l.ItemId">@l.Name ()</a></td><td class="own">@l.Owned</td><td>@l.Value em$</td></tr>
+                    }
+                </tbody>
+            </table>
+            <p class="total">@L["Store.BundlePrice"] <b>@bundle.Price em$</b></p>
+            <p class="total save">@L["Store.YouSave"] <b>@(bundle.Lines.Sum(l => l.Value) - bundle.Price) em$</b></p>
+        </article>
+    }
+    else if (loaded) { <p class="text">@L["Store.None"]</p> }
+    else { <div class="skeleton skeleton-page"></div> }
+</StoreFrame>
+
+@code {
+    StoreBundle? bundle;
+    bool loaded, signedIn;
+
+    [Parameter] public int Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        signedIn = await Sessions.CurrentAsync() is not null;
+        bundle = await Service.BundleAsync(Id);
+        loaded = true;
+    }
+
+    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = bundle!.Id, ["Name"] = bundle.Name, ["Ems"] = bundle.Price, ["Bundle"] = true });
+}

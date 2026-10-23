@@ -1,0 +1,66 @@
+@page "/missions/daily"
+@inject IMissionsService Service
+@inject ModalService Modal
+
+<PageTitle>@L["Mis.Daily"]</PageTitle>
+
+<div class="page-min">
+<Tabs Items="tabs" Active="/missions/daily" HelpHref="/help/day-mission" />
+@if (d is not null)
+{
+    <div class="calendar">
+        @foreach (var day in d.Days)
+        {
+            <div class="card @(day.Number == d.Today ? "today" : "") @(day.Stars > 1 ? "big" : "")">
+                <h6>@Label(day.Number)</h6>
+                <div class="body">
+                    <AssetSlot Name="paw-badge" Width="80" Height="80" Class="badge" />
+                    <div class="stars" aria-label="@day.Stars">@string.Concat(Enumerable.Repeat("★", day.Stars))</div>
+                    <div class="gms">@day.Gms gm$</div>
+                </div>
+            </div>
+        }
+    </div>
+    var m = d.Selected;
+    <section class="detail">
+        <span class="ribbon">@L[m.Frozen ? "Mis.Inactive" : "Mis.Completed"]</span>
+        <h2>@m.Title</h2>
+        <div class="who"><AssetSlot Name="mission-giver" Width="150" Height="150" /><div><h3>@L["Mis.Description"]</h3><p>@m.Description</p></div></div>
+        <AssetSlot Name="mission-picture" Width="250" Height="250" Class="pic" />
+        <h3>@L["Mis.Objectives"]</h3>
+        <ol>@foreach (var o in m.Objectives) { <li><span class="box"></span> @o</li> }</ol>
+        <h3>@L["Mis.Reserves"]</h3>
+        <p class="indent">@m.Reserve</p>
+        <h3>@L["Mis.Rewards"]</h3>
+        <ul>@foreach (var r in m.Rewards) { <li>@r</li> }</ul>
+        @if (m.Frozen)
+        {
+            <p class="broken">@L["Mis.Broken"]</p>
+            <p class="broken">@L["Mis.BrokenNote"]</p>
+            <button type="button" class="btn btn-primary" id="activate-dm" @onclick="Activate">@L["Mis.Activate"]</button>
+        }
+    </section>
+}
+else { <div class="skeleton skeleton-page"></div> }
+</div>
+
+@code {
+    DailyCalendar? d;
+    IReadOnlyList<(string, string)> tabs = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
+        d = await Service.DailyAsync();
+    }
+
+    string Label(int day) => L["Mis.Day", day] + (day == d!.Today ? $" ({L["Mis.Today"]})" : day == d.Today + 1 ? $" ({L["Mis.Tomorrow"]})" : "");
+
+    // activating is fake in the mock: the page is read again
+    async Task Activate()
+    {
+        var r = await Service.ActivateAsync(-1);
+        Modal.Alert(r.Ok ? L["Mis.ActivationDone"] + " " + L["Mis.Enjoy"] : L["Mis.Failed"]);
+        d = await Service.DailyAsync();
+    }
+}

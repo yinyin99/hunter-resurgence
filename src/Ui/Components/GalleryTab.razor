@@ -1,0 +1,58 @@
+@inject IProfileService Service
+@inject ModalService Modal
+
+@if (Sub == "download")
+{
+    <div class="empty">
+        <p>@(done ? L["Prof.GalleryReady"] : L["Prof.GalleryGenerating"] + " (" + progress + "%)")</p>
+        @if (done) { <button class="btn btn-primary" disabled>@L["Prof.DownloadGallery"]</button> }
+        else { <p class="small">@L["Prof.GalleryKeepOpen"]</p> }
+    </div>
+}
+else if (photos is not null)
+{
+    @if (Own && photos.Rows.Count > 0) { <p class="dl"><a class="btn btn-primary" href="/profile/@Handle/gallery/download">@L["Prof.DownloadGallery"]</a></p> }
+    @if (photos.Rows.Count == 0) { <p class="empty">@L["Prof.GalleryEmpty"]</p> }
+    <ul class="grid">
+        @foreach (var ph in photos.Rows)
+        {
+            <li>
+                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(ph)" @onclick:preventDefault><AssetSlot Name="photo" Width="210" Height="118" /></a>
+                <span>@ph.Animal @Fmt.Score(ph.Score)</span>
+                @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
+            </li>
+        }
+    </ul>
+    <PrevNext Page="photos.Number" Pages="photos.Pages" Base="@("/profile/" + Handle + "/gallery")" />
+}
+
+@code {
+    Page<Photo>? photos;
+    bool done;
+    int progress;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public bool Own { get; set; }
+    [Parameter] public string? Sub { get; set; }
+    [Parameter] public int? Arg { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Sub == "download")
+        {
+            // the gallery file is not made in the mock: the progress runs through and the button stays off
+            done = false;
+            for (progress = 0; progress < 100; progress += 20) { StateHasChanged(); await Task.Delay(300); }
+            done = true;
+        }
+        else photos = await Service.GalleryAsync(Handle, int.TryParse(Sub, out var n) ? n : 1);
+    }
+
+    void Open(Photo p) => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = $"{p.Animal}: {Fmt.Score(p.Score)}", ["Slot"] = "photo" });
+
+    async Task Delete(Photo p)
+    {
+        if (!await Modal.Confirm(L["Prof.GalleryDelete"])) return;
+        photos = photos! with { Rows = photos.Rows.Where(x => x != p).ToList() };
+    }
+}

@@ -1,0 +1,44 @@
+@inherits PatchWatcher
+@inject Branding Brand
+
+@if (Status.State != PatchState.Ready)
+{
+<div class="well" role="status">
+    <div class="text">@Text</div>
+    @if (Bar is { } width)
+    {
+        <div class="track"><div class="fill" style="width:@(width)%"></div></div>
+        @if (Percent is { } percent) { <div class="number">@percent%</div> }
+    }
+    @if (Status.State == PatchState.Extracting)
+    {
+        <div class="dots" aria-hidden="true"><i class="@(Tick % 3 == 0 ? "on" : "")"></i><i class="@(Tick % 3 == 1 ? "on" : "")"></i><i class="@(Tick % 3 == 2 ? "on" : "")"></i></div>
+    }
+</div>
+}
+
+@code {
+    // the texts are English in every language, as in the old installer
+    string Text => Status.State switch
+    {
+        PatchState.Downloading => L[Status.Kind == DownloadKind.Full ? "Installer.DownloadingGame" : "Installer.DownloadingUpdate"],
+        PatchState.Verifying => L["Installer.Verifying"],
+        PatchState.Extracting => L["Installer.Installing"],
+        PatchState.Patching when Status.Step is PatchStep.Checksum or PatchStep.Files => L["Installer.Updating", Status.Done, Status.Total],
+        PatchState.Patching => L["Installer.UpdateComplete"],
+        _ => L["Installer.Ready"],
+    };
+
+    /// <summary>Width of the green bar in percent; null hides the track. A download of unknown size and the verification show it full.</summary>
+    int? Bar => Status.State switch
+    {
+        PatchState.Downloading => Status.Progress < 0 ? 100 : Pct,
+        PatchState.Verifying => 100,
+        PatchState.Patching when Status.Step is PatchStep.Checksum or PatchStep.Files => Pct,
+        _ => null,
+    };
+
+    int? Percent => Status.State is PatchState.Downloading && Status.Progress >= 0 || Status.State == PatchState.Patching && Status.Step is PatchStep.Checksum or PatchStep.Files ? Pct : null;
+
+    int Pct => (int)(100 * Math.Clamp(Status.Progress, 0, 1));
+}

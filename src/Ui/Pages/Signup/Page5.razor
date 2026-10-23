@@ -1,0 +1,17 @@
+@page "/signup/page5"
+@layout SignupLayout
+@inherits PatchWatcher
+
+<PageTitle>@L["Signup.P5.Title"]</PageTitle>
+
+<SignupCard Title="@L["Signup.P5.Title"]" Art="signup-bg-1" Class="p5">
+    <div class="su-gift"><AssetSlot Name="gift-frame" Width="561" Height="288" /></div>
+    <Paper X="621" Y="202">@L["Signup.P5.Text"]</Paper>
+    @* the single player map is the place to start hunting *@
+    <a class="su-btn medium su-hunt @(ready ? "" : "disabled")" href="/launch-map/1" aria-disabled="@(ready ? null : "true")" tabindex="@(ready ? 0 : -1)">@L["Signup.P5.Hunt"]</a>
+</SignupCard>
+
+@code {
+    // like the tutorial button of page4, the hunt starts once the game is installed and patched
+    bool ready => Status.State is PatchState.Ready or PatchState.Done;
+}

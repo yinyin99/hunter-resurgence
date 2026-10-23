@@ -1,0 +1,65 @@
+@using System.ComponentModel.DataAnnotations
+@inject ISessionService Sessions
+
+<form class="su-form" @onsubmit="Send" novalidate>
+    @if (!codeSent)
+    {
+        @if (Dialog && email.Length == 0 && touched) { <span class="su-required">@L["Dialog.EmailRequired"]</span> }
+        <input @ref="box" class="su-input" type="email" name="email" required autocomplete="email" placeholder="@L[Placeholder]" @bind="email" @bind:event="oninput" @onfocus="() => error = null" />
+    }
+    else
+    {
+        <input @ref="box" class="su-input" type="text" name="code" required pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" placeholder="@L["Signin.Code"]" @bind="code" @bind:event="oninput" @onfocus="() => error = null" />
+    }
+    <div class="su-msgs">
+        @if (codeSent) { <p class="su-hint">@L["Signin.Sent", email]</p> }
+        @if (error is not null) { <div class="su-login-error" role="alert">@L[error]</div> }
+        @if (codeSent) { <a href="#" class="su-link" @onclick="Back" @onclick:preventDefault>@L["Signin.Back"]</a> }
+    </div>
+    <div class="su-actions">
+        <button type="submit" class="su-btn @(Dialog ? "medium" : "large")" disabled="@(!valid || busy)">@L[SubmitText]</button>
+        @Cancel
+    </div>
+</form>
+
+@code {
+    ElementReference box;
+    bool codeSent, busy, touched, focus = true;
+    string email = "", code = "";
+    string? error;
+
+    /// <summary>Localisation keys of the e-mail placeholder and of the submit button, which differ between the page and the dialog.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Signup.Email";
+    [Parameter] public string SubmitText { get; set; } = "Signup.Continue";
+    /// <summary>The dialog variant: a medium button, "required" text, a cancel button next to it.</summary>
+    [Parameter] public bool Dialog { get; set; }
+    /// <summary>The account is new (the registration): the session starts without a username.</summary>
+    [Parameter] public bool Register { get; set; }
+    [Parameter] public RenderFragment? Cancel { get; set; }
+    [Parameter] public EventCallback Done { get; set; }
+
+    bool valid => codeSent ? code.Length == 6 && code.All(char.IsAsciiDigit) : new EmailAddressAttribute().IsValid(email);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!focus) return;
+        focus = false;
+        await box.FocusAsync();
+    }
+
+    /// <summary>Step 1 asks for the e-mail address, step 2 for the one-time code; a good code signs in.</summary>
+    async Task Send()
+    {
+        touched = true;
+        if (!valid || busy) return;
+        busy = true;
+        var result = codeSent ? await Sessions.SignInAsync(email, code, Register) : await Sessions.RequestCodeAsync(email);
+        busy = false;
+        error = result.Error;
+        if (!result.Ok) return;
+        if (codeSent) await Done.InvokeAsync();
+        else (codeSent, focus) = (true, true);
+    }
+
+    void Back() => (codeSent, code, focus) = (false, "", true);
+}

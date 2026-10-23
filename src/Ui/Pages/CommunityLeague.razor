@@ -1,0 +1,33 @@
+@page "/community-league"
+@page "/community-league/{Id:int}"
+
+<PageTitle>@L["Comp.Tab.League"]</PageTitle>
+
+<div class="page-min">
+<Tabs Items="main" Active="/community-league" />
+<h2 class="page-title">@L["League.Title"]</h2>
+<div class="intro">
+    <p>@L["League.P1"]</p>
+    <p>@L["League.P2"]</p>
+    <p>@L["League.P3"]</p>
+    <p>@L["League.P4"]</p>
+    <p>@L["League.P5"]</p>
+    <p>@L["League.P6"]</p>
+</div>
+
+<h4 class="enrolled">@L["Comp.Enrolled"] (0)</h4>
+<CompetitionTable Enrolled="[]" />
+<p class="notice">@L["League.NotEnrolled"]</p>
+
+<CompetitionTable Rows="[]" Details="/community-league/" />
+<h4 class="part">@L["League.Monthly"]</h4>
+<h4 class="part">@L["League.Season"]</h4>
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    IReadOnlyList<(string, string)> main = [];
+
+    protected override void OnInitialized() => main = [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
+}

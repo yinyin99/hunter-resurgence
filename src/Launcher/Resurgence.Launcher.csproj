@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- the versioned TFM adds the Windows SDK projection that the WebView2 WPF control loads at startup -->
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
+    <!-- must not collide with any exe of the game -->
+    <AssemblyName>resurgence-launcher</AssemblyName>
+    <RootNamespace>Resurgence.Launcher</RootNamespace>
+    <Version>0.0.0-dev</Version>
+    <UseWPF>true</UseWPF>
+    <!-- Program.Main runs the self-test (selftest argument) before any WPF type is touched -->
+    <StartupObject>Resurgence.Launcher.Program</StartupObject>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ui\Resurgence.Ui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.120" />
+    <!-- the WPF SDK drops System.IO from the implicit usings -->
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- placeholders only; build output only; a real settings.json is never committed (git-ignored) -->
+    <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

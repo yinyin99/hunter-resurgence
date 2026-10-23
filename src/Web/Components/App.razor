@@ -1,0 +1,17 @@
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject HostMode Mode
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["Resurgence.Web.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/Resurgence.Ui/theme.css"]" />
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+    <Routes Launcher="Mode.Launcher" Dev="Mode.Dev" Mock="@Mode.Mock" @rendermode="InteractiveServer" />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+</html>

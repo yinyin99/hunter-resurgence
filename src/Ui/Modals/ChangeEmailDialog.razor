@@ -1,0 +1,47 @@
+@using System.ComponentModel.DataAnnotations
+@inject ModalService Modal
+@inject ISignupService Signup
+
+<div class="su-dialog" role="dialog" aria-labelledby="su-dlg">
+    <h2 id="su-dlg">@L["Dialog.Change.Title"]</h2>
+    <form class="su-form" @onsubmit="Save" novalidate>
+        @if (message is not null) { <div class="su-alert" role="alert">@L[message]</div> }
+        <input @ref="box" class="su-input" type="email" name="email" required autocomplete="email" placeholder="@L["Dialog.Email"]" value="@email" @oninput="Typed" />
+        <div class="su-actions">
+            <button type="submit" class="su-btn medium" disabled="@(!valid)">@L["Dialog.Change.Submit"]</button>
+            <button type="button" class="su-btn medium" @onclick="Modal.Close">@L["Dialog.Cancel"]</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    ElementReference box;
+    string email = "";
+    string? failed;
+    bool dirty;
+
+    /// <summary>Raised with the new address once it is saved.</summary>
+    [Parameter] public EventCallback<string> Changed { get; set; }
+
+    bool valid => new EmailAddressAttribute().IsValid(email);
+    string? message => failed ?? (!dirty ? null : email.Length == 0 ? "Dialog.EmailRequired" : valid ? null : "Dialog.EmailInvalid");
+
+    protected override async Task OnInitializedAsync() => email = await Signup.EmailAsync();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await box.FocusAsync();
+    }
+
+    void Typed(ChangeEventArgs e) => (email, dirty, failed) = ((string?)e.Value ?? "", true, null);
+
+    async Task Save()
+    {
+        if (!valid) return;
+        var result = await Signup.ChangeEmailAsync(email);
+        failed = result.Error;
+        if (!result.Ok) return;
+        await Changed.InvokeAsync(email);
+        Modal.Show<MessageDialog>(backdrop: "none");
+    }
+}

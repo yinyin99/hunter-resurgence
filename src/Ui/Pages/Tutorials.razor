@@ -1,0 +1,39 @@
+@page "/tutorials"
+@inject IServersService Service
+@inject ModalService Modal
+@inject IGameSettingsService GameSettings
+@inject Branding Brand
+
+<PageTitle>@L["Menu.Tutorials"]</PageTitle>
+
+<div class="tutorials">
+<p class="intro">@L["Tut.Intro"]</p>
+<div class="cards">
+    @foreach (var t in tutorials)
+    {
+        <section>
+            <h4>@t.Title</h4>
+            <p>@Brand.Expand(t.Description)</p>
+            <p class="where">@L["Tut.Location", reserves.GetValueOrDefault(t.Reserve, "")]</p>
+            <button class="btn btn-primary btn-large btn-block" @onclick="() => Start(t)">@L["Tut.Start"]</button>
+        </section>
+    }
+</div>
+</div>
+
+@code {
+    IReadOnlyList<Tutorial> tutorials = [];
+    Dictionary<int, string> reserves = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        reserves = (await Service.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
+        tutorials = await Service.TutorialsAsync();
+    }
+
+    async Task Start(Tutorial t)
+    {
+        if (!await Modal.SetUpFirst(GameSettings)) return;
+        if (!(await Service.StartTutorialAsync(t.Id)).Ok) Modal.Alert(L["Launch.Failed"]);
+    }
+}

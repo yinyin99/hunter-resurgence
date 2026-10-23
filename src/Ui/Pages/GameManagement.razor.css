@@ -1,0 +1,29 @@
+.tabs { display: flex; gap: 2px; margin: 0 0 0 20px; padding-top: 0; }
+.tabs a { display: block; width: 150px; padding: 0; background: var(--surface-4); font-size: 14px; line-height: 28px; text-align: center; color: #fff; }
+.tabs a.on { background: var(--surface-6); }
+.screen { position: relative; height: 570px; margin: 0 20px; background: #000; }
+.card { position: absolute; left: 74px; box-sizing: border-box; width: 792px; padding: 20px; background: var(--surface-5); color: #8c8c8c; }
+.card h4 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; color: #8c8c8c; }
+.card p { margin: 0; font-size: 14px; line-height: 20px; }
+.home { top: 270px; height: 100px; }
+.home p { margin-top: 20px; }
+.lodge { top: 108px; height: 440px; }
+.lodge p { margin-top: 20px; }
+.bait { top: 267px; padding-bottom: 20px; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; margin: 4px 0 40px; }
+.head h4 { font-size: 16px; }
+.head label { font-size: 16px; line-height: 24px; }
+.head input { width: 46px; height: 20px; padding: 0 2px; border: 0; background: #fff; font-size: 14px; }
+h5 { margin: 0 0 14px; font-size: 16px; line-height: 22px; font-weight: 700; color: #8c8c8c; }
+.site { display: flex; gap: 20px; padding: 6px 20px 8px; background: #5e5e5e; }
+.site ::deep .asset-slot { flex: none; }
+.where { flex: 1; font-size: 14px; line-height: 19px; }
+.where b { display: block; }
+.where span { display: block; }
+.meter { display: grid; grid-template-columns: 80px 212px; gap: 6px 10px; align-items: center; font-size: 14px; }
+.bar { position: relative; height: 26px; background: var(--surface-5); }
+.bar i { position: absolute; inset: 0 auto 0 0; background: #1f7aa5; }
+.bar b { position: relative; display: block; line-height: 26px; text-align: center; font-weight: 400; color: #fff; }
+.state { height: 26px; border-radius: var(--r-2); background: #8ab04c; line-height: 26px; text-align: center; font-weight: 700; color: #fff; }
+.state.off { background: #555; }
+.refill { grid-column: 2; width: 120px; justify-self: end; height: 28px; border: 2px solid #999; background: #6a6a6a; font-size: 14px; color: var(--text-3); cursor: pointer; }

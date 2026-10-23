@@ -1,0 +1,23 @@
+@page "/email/verify"
+@page "/email/confirm"
+@page "/email/change"
+@layout BrowserLayout
+@inject HostMode Mode
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+@* the confirmation call of the old page is held open; the mock answers after a wait, and there is no failure text (as the old) *@
+<BrowserNotice Text="@L[done ? "Browser.EmailDone" : "Browser.EmailProgress"]" />
+
+@code {
+    bool done;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // dev hook ?mock=browser:hold keeps the progress state (for the comparison)
+        if (!firstRender || Mode.Mock == "browser:hold") return;
+        await Task.Delay(3000);
+        done = true;
+        StateHasChanged();
+    }
+}

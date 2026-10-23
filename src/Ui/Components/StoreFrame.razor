@@ -1,0 +1,35 @@
+@inject IStoreService Service
+
+<div class="page-min">
+    <h2 class="page-title">@L["Menu.Store"]</h2>
+    <div class="cols">
+        <nav class="menu" aria-label="@L["Menu.Store"]">
+            @foreach (var c in categories)
+            {
+                var open = c.Key == Active || c.Children.Any(x => x.Key == Active);
+                <a href="/store/@c.Key" class="top @(c.Key is "sales" or "all" or "bundles" ? "lead" : "") @(open ? "open" : "")">@Name(c)</a>
+                @if (open)
+                {
+                    @foreach (var (x, n) in c.Children.Select((x, n) => (x, n)))
+                    {
+                        <a href="/store/@x.Key" class="sub @(x.Key == Active || (c.Key == Active && n == 0 && c.Key != x.Key) ? "active" : "")">@Name(x)</a>
+                    }
+                }
+            }
+        </nav>
+        <div class="main">@ChildContent</div>
+    </div>
+</div>
+
+@code {
+    IReadOnlyList<StoreCategory> categories = [];
+
+    /// <summary>Key of the category (or sub-category) shown.</summary>
+    [Parameter, EditorRequired] public string Active { get; set; } = "all";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override async Task OnInitializedAsync() => categories = await Service.CategoriesAsync();
+
+    // the category texts come from the resx where the old app translated them; sub-categories are shown as given
+    string Name(StoreCategory c) => L["Store.Cat." + c.Key] is { ResourceNotFound: false } s ? s.Value : c.Name;
+}

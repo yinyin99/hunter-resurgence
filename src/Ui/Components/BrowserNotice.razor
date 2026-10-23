@@ -1,0 +1,10 @@
+@* a notice on the torn paper under the logo, on the picture of the browser pages of the old app *@
+<div class="art">
+    <AssetSlot Name="browser-bg" Width="1280" Height="760" Class="bg" />
+    <AssetSlot Name="logo-large" Width="654" Height="164" Class="logo" />
+    <Paper X="256" Y="330" Width="762" Height="136">@Text</Paper>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Text { get; set; } = "";
+}

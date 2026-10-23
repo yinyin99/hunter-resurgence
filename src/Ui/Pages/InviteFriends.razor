@@ -1,0 +1,49 @@
+@page "/invite-friends"
+@inject IAccountService Service
+
+<PageTitle>@L["Invite.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@L["Invite.Title"]</h2>
+    <section class="hero">
+        <AssetSlot Name="recruit-hero" Width="940" Height="310" Class="art" />
+        <h1>@L["Invite.How"]</h1>
+        <div class="steps">
+            <div class="step"><h5><b>1</b>@L["Invite.Step1"]</h5><p>@L["Invite.Step1Text"]</p></div>
+            <div class="step"><h5><b>2</b>@L["Invite.Step2"]</h5><p>@((MarkupString)L["Invite.Step2Text", "<em>", "</em>"].Value)</p></div>
+            <div class="step"><h5><b>3</b>@L["Invite.Step3"]</h5><p>@L["Invite.Step3Text"]<br /><a href="#rewards">@L["Invite.SeeRewards"]</a></p></div>
+        </div>
+        <button type="button" id="invite" class="btn btn-primary" @onclick="() => link = !link">@L["Invite.Button"] <Icon Name="chevron-right" /></button>
+        @if (link && data is not null) { <p class="link"><span>@L["Invite.LinkText"]</span> <input class="field-light" type="text" readonly value="@data.Link" /></p> }
+    </section>
+    @if (data is not null)
+    {
+        <h3 id="rewards">@L["Invite.Rewards"]</h3>
+        <p class="note">@L["Invite.Note1"]<br />@L["Invite.Note2"]</p>
+        <table class="tbl">
+            <thead><tr><th>@L["Invite.Purchases"]</th><th>@L["Invite.YouGet"]</th><th>@L["Invite.OneTime"]</th></tr></thead>
+            <tbody>
+                @foreach (var r in data.Rewards)
+                {
+                    <tr><td>@r.Purchase</td><td>@List(r.YouGet)</td><td>@List(r.OneTime)</td></tr>
+                }
+            </tbody>
+        </table>
+        <h3>@L["Invite.Recruits"]</h3>
+        <table class="recruits tbl">
+            <thead><tr><th>@L["Invite.User"]</th><th>@L["Invite.Joined"]</th><th>@L["Invite.Reward"]</th></tr></thead>
+            <tbody>@foreach (var c in data.Recruits) { <tr><td><a href="/profile/@c.Handle">@c.Handle</a></td><td>@c.Joined.ToString("yyyy-MM-dd")</td><td>@c.Reward</td></tr> }</tbody>
+        </table>
+    }
+</div>
+
+@code {
+    Recruiting? data;
+    bool link;
+
+    protected override async Task OnInitializedAsync() => data = await Service.RecruitingAsync();
+
+    RenderFragment List(IReadOnlyList<RewardItem> items) => @<ul>
+        @foreach (var i in items) { <li>@if (i.ItemId is { } id) { <a href="/store/item/@id">@i.Text</a> } else { @i.Text }</li> }
+    </ul>;
+}

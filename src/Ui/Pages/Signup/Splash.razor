@@ -1,0 +1,23 @@
+@page "/splash"
+@layout SignupLayout
+@inject NavigationManager Nav
+@inject HostMode Mode
+@inject Branding Brand
+
+<PageTitle>Loading</PageTitle>
+
+<div class="su-splash">
+    <div class="logo @(Error is null ? "" : "error")"><AssetSlot Name="logo-splash" Width="483" Height="65" /></div>
+    @if (Error is not null) { <div class="message"><h1>Error</h1><div>@Brand.Expand(Error)</div></div> }
+</div>
+
+@code {
+    /// <summary>The launcher tells why it cannot go on as "code: message" (a missing game, no Steam); the splash then stays.</summary>
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+
+    // the old launcher shows a local splash before the signup page loads; here it is the first paint of the start (mock start:hold keeps it for the comparison)
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && Error is null && Mode.Mock != "start:hold") Nav.NavigateTo("/signup/start", replace: true);
+    }
+}

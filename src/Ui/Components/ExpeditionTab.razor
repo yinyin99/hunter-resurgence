@@ -1,0 +1,12 @@
+@inject IProfileService Service
+
+@if (hunt is not null) { <HuntStats Hunt="hunt" Handle="@Handle" /> }
+
+@code {
+    Expedition? hunt;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public long Id { get; set; }
+
+    protected override async Task OnParametersSetAsync() => hunt = await Service.ExpeditionAsync(Handle, Id);
+}

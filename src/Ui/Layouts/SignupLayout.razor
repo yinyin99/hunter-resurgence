@@ -1,0 +1,46 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject HostMode Mode
+@inject NavigationManager Nav
+@inject ModalService Modal
+@inject ISessionService Sessions
+
+@if (Mode.Launcher)
+{
+    <div class="su @(needsLogin ? "blank" : "")">
+        @if (!needsLogin)
+        {
+            <AssetSlot Name="frame-leather" Width="1280" Height="760" Class="su-leather" />
+            @Body
+        }
+        <ModalHost />
+    </div>
+}
+
+@code {
+    Session? session;
+    bool needsLogin;
+    Action? changed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // the signup screens exist in the launcher only
+        if (!Mode.Launcher) { Nav.NavigateTo("/feed", replace: true); return; }
+        session = await Sessions.CurrentAsync();
+        Sessions.Changed += changed = async () => await InvokeAsync(async () =>
+        {
+            session = await Sessions.CurrentAsync();
+            StateHasChanged();
+        });
+    }
+
+    protected override void OnParametersSet()
+    {
+        // the pages after the first one need the account: without a session the sign-in dialog opens on a black page (L14)
+        var path = Nav.ToBaseRelativePath(Nav.Uri);
+        needsLogin = session is null && path.StartsWith("signup/page", StringComparison.OrdinalIgnoreCase) && !path.StartsWith("signup/page0", StringComparison.OrdinalIgnoreCase);
+        if (needsLogin && Modal.Type is null) Modal.Show<LoginDialog>(backdrop: "none");
+    }
+
+    public void Dispose() => Sessions.Changed -= changed;
+}

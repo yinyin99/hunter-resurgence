@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+@inject HostMode Mode
+@inject NavigationManager Nav
+
+@* the pages the old app showed in the user's normal browser: no chrome, only a notice; they exist in the website host only *@
+<div class="bp">@Body</div>
+<ModalHost />
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (Mode.Launcher) Nav.NavigateTo("/feed", replace: true);
+    }
+}

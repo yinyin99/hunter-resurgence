@@ -1,0 +1,22 @@
+table { font-size: 13px; }
+th, td { padding: 8px; }
+.bank th:nth-child(1) { width: 96px; }
+.bank th:nth-child(2) { width: 261px; }
+.bank th:nth-child(3) { width: 176px; }
+.bank th:nth-child(4) { width: 92px; }
+.bank th:nth-child(5) { width: 135px; }
+.entries th:nth-child(1) { width: 147px; }
+.entries th:nth-child(2) { width: 121px; }
+.entries th:nth-child(3) { width: 127px; }
+.entries th:nth-child(4) { width: 115px; }
+.sum { margin: 0 0 18px; font-size: 14px; }
+.sum th, .sum td { width: 50%; }
+.sum th { padding-top: 5px; }
+.panel { margin: 0 0 20px; padding: 20px 20px 40px; min-height: 640px; background: var(--surface-3); }
+.panel h3 { margin: 15px 0 20px 0; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
+.panel .note td { border: 0; }
+.desc { margin: -14px 0 16px 8px; font-size: 13px; line-height: 20px; color: var(--text-2); }
+.none { margin: 0; font-size: 14px; color: var(--text-3); }
+.load-more-button { margin-top: 16px; }
+.page-min ::deep .tabs.strip a { color: var(--text-2); }
+.page-min ::deep .tabs.strip a:hover { color: #fff; }

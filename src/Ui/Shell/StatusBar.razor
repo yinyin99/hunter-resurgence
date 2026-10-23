@@ -1,0 +1,61 @@
+@inject HostMode Mode
+@inject ISessionService Sessions
+@inject NavigationManager Nav
+@inject IWalletService Wallet
+@inject IFriendsService Friends
+@inject IMessagesService Messages
+
+<header class="bar @(Mode.Launcher ? "" : "web")">
+    <div class="row">
+        <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">@L["Statusbar.Launcher"]</span> }</a>
+        <div class="left">
+            <button class="section friends" popovertarget="friends" data-tip="@L["Tip.Friends"]" aria-label="@L["Tip.Friends"]" @onclick="() => friendsLoaded = true"><Icon Name="user" /></button>
+            <a class="section" href="/messages" data-tip="@L["Tip.Messages"]" aria-label="@L["Tip.Messages"]"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
+            <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
+            <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
+            <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Statusbar.Days", balances.AmmoDays]</span></span>
+            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Statusbar.Days", balances.FuelDays]</span></span>
+        </div>
+        <div class="right">
+            <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>
+            <div class="section settings">
+                <a href="/settings">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
+                <div class="menu"><SettingsMenu /></div>
+            </div>
+            <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
+            <div class="user">
+                <a href="/profile/@session?.Handle" data-tip="@L["Tip.Profile"]"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a>
+                <a href="/profile/@session?.Handle" class="name">@session?.Handle</a>
+            </div>
+        </div>
+    </div>
+    @* the list is built the first time the button is pressed, then kept; the browser opens, closes and light-dismisses it *@
+    <div id="friends" class="friends-pos" popover>@if (friendsLoaded) { <FriendsDropdown /> }</div>
+    @if (Quick) { <MenuBar InBar="true" /> }
+</header>
+
+@code {
+    /// <summary>After scrolling the menu bar's items are shown inside this bar (quick-nav).</summary>
+    [Parameter] public bool Quick { get; set; }
+
+    /// <summary>The signed-in player (the website shows the public bar without one).</summary>
+    [Parameter] public Session? Session { get; set; }
+
+    Session? session => Session;
+    Balances balances = new(0, 0, 0, 0);
+    int unread;
+    bool friendsLoaded;
+
+    async Task SignOut()
+    {
+        await Sessions.SignOutAsync();
+        Nav.NavigateTo(Mode.Launcher ? "/signup/start" : "/feed");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        balances = await Wallet.BalancesAsync();
+        unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
+    }
+}
