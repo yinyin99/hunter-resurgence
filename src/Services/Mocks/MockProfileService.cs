@@ -1,7 +1,7 @@
 namespace Resurgence.Services.Mocks;
 
-/// <summary>Hunter01 is the signed-in player (empty bars, as in the old capture); any other handle is a top player with full bars.</summary>
-public sealed class MockProfileService : IProfileService
+/// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies, as in the old capture); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.</summary>
+public sealed class MockProfileService(string? mock = null) : IProfileService
 {
     const string Own = "Hunter01";
 
@@ -56,6 +56,26 @@ public sealed class MockProfileService : IProfileService
     public Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind) => Task.FromResult<IReadOnlyList<Skill>>(kind == "weapons"
         ? Enumerable.Range(0, 30).Select(i => new Skill($"Weapon {(char)('A' + i % 26)}{i / 26 + 1} (Standard)", WeaponTypes[i / 3], [new("Shooting", 1, 0)])).ToList()
         : Names.Species.Select(s => new Skill(s.Name, null, [new("Spotting", 1, 0), new("Tracking", 1, 0)])).ToList());
+
+    static Page<T> Slice<T>(IReadOnlyList<T> all, int page, int size)
+    {
+        var pages = Math.Max(1, (all.Count + size - 1) / size);
+        var n = Math.Clamp(page, 1, pages);
+        return new(all.Skip((n - 1) * size).Take(size).ToList(), n, pages);
+    }
+
+    public Task<Page<Photo>> GalleryAsync(string handle, int page) => Task.FromResult(Slice<Photo>(
+        handle != Own || mock == "profile:photos" ? Enumerable.Range(0, 30).Select(i => new Photo(5473102 + i, Names.Species[i * 3 % Names.Species.Length].Name, 10.5 + i * 1.25)).ToList() : [], page, 24));
+
+    public Task<Page<Trophy>> TrophiesAsync(string handle, int page) => Task.FromResult(Slice<Trophy>(
+        handle == Own ? [] : Enumerable.Range(0, 26).Select(i => i % 3 == 0 ? new Trophy($"Competition Trophy {i}", new(2026, 9, 1 + i), 100 + i, $"Competition {i}") : new Trophy($"Trophy {i}", new(2026, 9, 1 + i), null, null)).ToList(), page, 24));
+
+    public Task<IReadOnlyList<Dog>> DogsAsync(string handle) => Task.FromResult<IReadOnlyList<Dog>>(handle == Own ? []
+        : [new("Rex", "Hound (Brown)", 3, ["Scent Tracking", "Retrieve"]), new("Doggie", "Retriever (Golden)", 1, [])]);
+
+    public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => Task.FromResult(Slice<ProfileFriend>(handle == Own
+        ? [new("Ranger_Test", 181), new("Moss_Walker", 115000), new("Hunter02", 7076)]
+        : Enumerable.Range(1, 45).Select(i => new ProfileFriend($"Friend_{i:00}", i * 311 % 9000)).ToList(), page, 20));
 
     static readonly string[] Reserves = ["Reserve 01", "Reserve 02", "Reserve 03"], Lodges = ["Lodge A", "Lodge B", "Lodge C"];
     const long Latest = 135232661;

@@ -817,4 +817,17 @@
   <data name="Stat.Range" xml:space="preserve"><value>Distance</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Précédent</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Suivant</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>No images to display.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>No trophies to display.</value></data>
+  <data name="Prof.DogsEmpty" xml:space="preserve"><value>This hunter does not have any dogs.</value></data>
+  <data name="Prof.FriendsEmpty" xml:space="preserve"><value>No friends to display.</value></data>
+  <data name="Prof.DownloadGallery" xml:space="preserve"><value>Télécharger la galerie</value></data>
+  <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Generating the gallery to download</value></data>
+  <data name="Prof.GalleryReady" xml:space="preserve"><value>Votre galerie est prête à être téléchargée !</value></data>
+  <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Merci de ne pas fermer cette fenêtre</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Êtes-vous sûr(e) de vouloir supprimer cette image ? Cette opération est irréversible !</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Lvl:</value></data>
+  <data name="Prof.DogSkills" xml:space="preserve"><value>Compétences</value></data>
+  <data name="Prof.DogNoSkills" xml:space="preserve"><value>This dog has not unlocked any skills yet.</value></data>
+  <data name="Prof.Delete" xml:space="preserve"><value>Supprimer</value></data>
 </root>

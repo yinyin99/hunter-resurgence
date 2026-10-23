@@ -32,6 +32,12 @@ public sealed record BestRow(string Species, double Score, double Range);
 /// <param name="Status">disabled, queued, building, empty (no expeditions) or done</param>
 public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 
+public sealed record Photo(long Id, string Animal, double Score);
+/// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
+public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition);
+public sealed record Dog(string Name, string Type, int Level, IReadOnlyList<string> Skills);
+public sealed record ProfileFriend(string Handle, int HunterScore);
+
 public interface IProfileService
 {
     Task<Profile?> ProfileAsync(string handle);
@@ -44,6 +50,13 @@ public interface IProfileService
     /// <param name="kind">species or weapons</param>
     Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind);
     Task<Totals> TotalsAsync(string handle);
+    /// <summary>The gallery, 24 photos a page.</summary>
+    Task<Page<Photo>> GalleryAsync(string handle, int page);
+    /// <summary>The trophies, 24 a page.</summary>
+    Task<Page<Trophy>> TrophiesAsync(string handle, int page);
+    Task<IReadOnlyList<Dog>> DogsAsync(string handle);
+    /// <summary>The friends of a hunter, 20 a page.</summary>
+    Task<Page<ProfileFriend>> FriendsAsync(string handle, int page);
     /// <param name="id">Null for the latest expedition.</param>
     Task<Expedition?> ExpeditionAsync(string handle, long? id);
     /// <summary>The expedition list, 40 a page.</summary>
