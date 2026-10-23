@@ -830,4 +830,14 @@
   <data name="Prof.DogSkills" xml:space="preserve"><value>Skills</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>This dog has not unlocked any skills yet.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Login in progress...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Login Complete!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>This page opened because {game} needs to log you in.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Please wait...</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>You can close this window/tab now if you like.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>This might take a few seconds...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Email confirmation in progress...</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>Email confirmation complete!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
 </root>

@@ -830,4 +830,14 @@
   <data name="Prof.DogSkills" xml:space="preserve"><value>Compétences</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>This dog has not unlocked any skills yet.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Connexion en cours...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Connexion terminée !</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>Cette page s'est ouverte car {game} a besoin que vous vous connectiez.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Veuillez patienter...</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>Vous pouvez fermer cette fenêtre/onglet maintenant si vous le souhaitez.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>Cela peut prendre quelques secondes...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Email confirmation in progress...</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>Email vérifié !</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Thank you for joining! Continue in {game} launcher to start playing!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Logout complete</value></data>
 </root>
