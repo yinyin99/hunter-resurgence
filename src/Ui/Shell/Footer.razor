@@ -1,0 +1,35 @@
+@inject ModalService Modal
+
+<footer class="footer">
+    <div class="columns">
+        <section>
+            <h4>@L["Footer.DevelopedBy"]</h4>
+            <ExternalLink Key="developer"><AssetSlot Name="logo-dev" Width="200" Height="71" /></ExternalLink>
+        </section>
+        <section>
+            <h4>@L["Footer.Follow"]</h4>
+            <div class="follow">
+                <ExternalLink Key="facebook"><Icon Name="square-facebook" /></ExternalLink>
+                <ExternalLink Key="twitter"><Icon Name="square-twitter" /></ExternalLink>
+                <ExternalLink Key="youtube"><Icon Name="square-youtube" /></ExternalLink>
+                <ExternalLink Key="instagram"><Icon Name="square-instagram" /></ExternalLink>
+                <ExternalLink Key="discord"><Icon Name="discord" /></ExternalLink>
+                <ExternalLink Key="steam_community"><Icon Name="square-steam" /></ExternalLink>
+            </div>
+        </section>
+        <section>
+            <h4>@L["Footer.Ratings"]</h4>
+            <div class="ratings">
+                @foreach (var n in new[] { 1, 2, 3, 4 }) { <AssetSlot Name="@($"logo-rating-{n}")" Width="62" Height="82" /> }
+            </div>
+        </section>
+    </div>
+    <div class="legal">
+        <a href="#" @onclick='() => Modal.Show<LegalModal>(Title("Footer.Privacy.Title"))' @onclick:preventDefault>@L["Footer.Privacy"]</a>
+        <a href="#" @onclick='() => Modal.Show<LegalModal>(Title("Footer.Eula.Title"))' @onclick:preventDefault>@L["Footer.Eula"]</a>
+    </div>
+</footer>
+
+@code {
+    static Dictionary<string, object?> Title(string key) => new() { ["Title"] = key };
+}

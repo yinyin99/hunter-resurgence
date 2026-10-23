@@ -1,0 +1,5 @@
+.settings-menu { margin: 0; padding: 10px 0 0; list-style: none; text-align: left; background: #000; box-shadow: var(--shadow-dropdown); }
+li a { display: block; padding: 10px 20px; color: #fff; font-size: 16px; line-height: 20px; }
+li a:hover { background: var(--accent); }
+.launcher-item { margin-top: 10px; border-top: 1px solid #333; }
+.launcher-item a { padding-top: 20px; }

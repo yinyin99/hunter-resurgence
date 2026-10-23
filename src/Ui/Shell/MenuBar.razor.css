@@ -1,0 +1,30 @@
+.menu { position: relative; z-index: 2; height: 51px; margin-top: 10px; border-radius: var(--radius); background: var(--bg-menu); font-size: var(--fs-menu); }
+.menu-space { height: 61px; }
+.menu > * { position: absolute; }
+.menu ::deep .hunt, .hunt-now > a { display: block; position: absolute; top: 9px; left: 15px; box-sizing: border-box; padding: 6px 17px; border-radius: var(--radius); background: var(--primary); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
+.hunt-now { top: 0; left: 0; }
+.hunt-now > a { left: 15px; }
+.hunt-now:hover > a, .menu ::deep .hunt:hover { background: linear-gradient(#333, #222); border-radius: 3px 3px 0 0; color: #fff; }
+.hunt-now ul { display: none; position: absolute; top: 40px; left: 15px; width: 300px; margin: 0; padding: 0; list-style: none; background: #222; border-radius: 0 3px 3px 3px; box-shadow: 0 5px 14px rgba(0, 0, 0, .6); z-index: 200; }
+.hunt-now:hover ul { display: block; }
+.hunt-now li a { display: block; padding: 5px 10px; color: #fff; font-size: 16px; line-height: 20px; }
+.hunt-now li a:hover { background: var(--accent); }
+.ems, .store { display: block; top: 10px; height: 30px; box-sizing: border-box; padding: 5px 17px 5px 38px; border-radius: var(--radius); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; }
+.ems { left: 176px; background: var(--ems-green); }
+.store { left: 323px; background: var(--store-blue); }
+.ems:hover, .store:hover { background: linear-gradient(#333, #222); color: #fff; }
+.ems ::deep .coin, .store ::deep .coin { position: absolute; left: -23px; top: -8px; border-radius: 50%; }
+.items { display: flex; left: 439px; top: 0; margin: 0; padding: 0; list-style: none; line-height: 51px; white-space: nowrap; }
+.items li { margin-right: 10px; }
+.hunt .icon, .hunt-now .icon { font-size: 17px; vertical-align: -3px; }
+.hunt ::deep .icon { font-size: 17px; vertical-align: -3px; }
+.items a, .items ::deep a, .items ::deep span { color: #fff; letter-spacing: var(--ls-menu); text-transform: uppercase; text-shadow: 0 1px 2px #666; }
+.items a:hover, .items ::deep a:hover, .items a.active { color: var(--accent); }
+.in-bar { margin-top: 0; height: 55px; border-radius: 0; background: #000; font-size: 18px; }
+.in-bar .hunt-now > a, .in-bar ::deep .hunt { left: 10px; }
+.in-bar .hunt-now ul { left: 10px; }
+.in-bar .ems { left: 181px; }
+.in-bar .store { left: 325px; }
+.in-bar .items { left: 441px; line-height: 55px; }
+.in-bar .hunt-now > a, .in-bar ::deep .hunt { padding: 8px 17px; font-size: 16px; }
+.in-bar .ems, .in-bar .store { height: 34px; padding-top: 7px; font-size: 16px; }

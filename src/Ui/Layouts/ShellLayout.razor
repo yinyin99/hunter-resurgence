@@ -1,0 +1,62 @@
+@inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject HostMode Mode
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject ModalService Modal
+
+<div class="shell @(Mode.Launcher ? "launcher" : "web")">
+    <StatusBar Quick="quick" />
+    <div class="page">
+        <MenuBar Hidden="quick" />
+        <div class="body">
+            <main>@Body</main>
+            <aside class="sidebar"></aside>
+        </div>
+        <Footer />
+    </div>
+    <ModalHost />
+</div>
+
+@code {
+    IJSObjectReference? module;
+    DotNetObjectReference<ShellLayout>? self;
+    bool quick, alerted;
+
+    [SupplyParameterFromQuery(Name = "alert")] public string? DevAlert { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Mode.Dev && DevAlert is not null && !alerted) { alerted = true; Modal.Alert(DevAlert); }
+        // launcher-only routes are not served by the website: back to the feed
+        if (!Mode.Launcher && LauncherGuard.Blocks(Nav.ToBaseRelativePath(Nav.Uri))) Nav.NavigateTo("/feed", replace: true);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !Mode.Launcher) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
+    }
+
+    /// <summary>Called by shell.js when the scroll position crosses 200 px.</summary>
+    [JSInvokable]
+    public void Scrolled(bool past)
+    {
+        if (quick == past) return;
+        quick = past;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        self?.Dispose();
+        if (module is null) return;
+        try
+        {
+            await module.InvokeVoidAsync("unwatchScroll");
+            await module.DisposeAsync();
+        }
+        catch (JSDisconnectedException) { } // the circuit is already gone: nothing to clean up in the browser
+    }
+}

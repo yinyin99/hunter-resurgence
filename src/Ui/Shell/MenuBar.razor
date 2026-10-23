@@ -1,0 +1,64 @@
+@inject HostMode Mode
+@inject NavigationManager Nav
+@inject ILauncherBridge Bridge
+
+@if (Hidden)
+{
+    <div class="menu-space"></div>
+}
+else
+{
+    <nav class="menu @(InBar ? "in-bar" : "")" aria-label="@L["Menu.Label"]">
+        @if (Mode.Launcher)
+        {
+            <div class="hunt-now">
+                <a class="hunt" href="/dashboard">@L["Menu.HuntNow"] <Icon Name="chevron-down" /></a>
+                <ul>
+                    <li><a href="/dashboard">@L["Menu.Dashboard"]</a></li>
+                    <li><a href="/launch-map/1">@L["Menu.Single"]</a></li>
+                    <li><a href="/launch-map/0">@L["Menu.Multi"]</a></li>
+                    <li><a href="/servers">@L["Menu.Find"]</a></li>
+                    <li><a href="/tutorials">@L["Menu.Tutorials"]</a></li>
+                </ul>
+            </div>
+        }
+        else
+        {
+            <ExternalLink Key="steam_store" Class="hunt">@L["Menu.HuntNow"] <Icon Name="chevron-right" /></ExternalLink>
+        }
+        <a class="ems" href="/bank/ems" data-tip="@L["Menu.GetEmsTip"]"><AssetSlot Name="coin-ems" Width="46" Height="46" Class="coin" /><span>@L["Menu.GetEms"]</span></a>
+        <a class="store" href="/store"><AssetSlot Name="icon-store" Width="46" Height="46" Class="coin" /><span>@L["Menu.Store"]</span></a>
+        <ul class="items">
+            @if (Mode.Launcher)
+            {
+                <li><a href="/feed" class="@Active("feed")">@L["Menu.News"]</a></li>
+            }
+            <li><a href="/competitions" class="@Active("competitions")">@L["Menu.Competitions"]</a></li>
+            <li><a href="/leaderboards" class="@Active("leaderboards")">@L["Menu.Leaderboards"]</a></li>
+            <li><a href="/missions/daily" class="@Active("missions")">@L["Menu.Missions"]</a></li>
+            @if (!Mode.Launcher)
+            {
+                <li><a href="/download" class="@Active("download")">@L["Menu.Downloads"]</a></li>
+            }
+            <li><a href="/help" class="@Active("help")">@L["Menu.Help"]</a></li>
+            @if (!Mode.Launcher || !Bridge.IsSteam)
+            {
+                <li><ExternalLink Key="forum">@L["Menu.Forum"]</ExternalLink></li>
+            }
+        </ul>
+    </nav>
+}
+
+@code {
+    /// <summary>The page's own menu bar leaves an empty space while the items live in the status bar (quick-nav).</summary>
+    [Parameter] public bool Hidden { get; set; }
+    /// <summary>Rendered inside the status bar after scrolling.</summary>
+    [Parameter] public bool InBar { get; set; }
+
+    /// <summary>The item whose route the current path starts with is orange.</summary>
+    string? Active(string route)
+    {
+        var path = Nav.ToBaseRelativePath(Nav.Uri);
+        return path.StartsWith(route, StringComparison.OrdinalIgnoreCase) || route == "feed" && (path.Length == 0 || path[0] == '?') ? "active" : null;
+    }
+}

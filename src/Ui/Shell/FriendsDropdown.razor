@@ -1,0 +1,78 @@
+@inject IFriendsService Friends
+@inject ModalService Modal
+
+<div class="friends-dropdown">
+    <div class="top">
+        <div class="title">@L["Friends.Title", friends.Count]</div>
+        <div class="search"><Icon Name="magnifying-glass" /><input type="text" placeholder="@L["Friends.Search"]" @oninput="Search" /></div>
+    </div>
+    @if (found is null)
+    {
+        <ul class="list">
+            @foreach (var f in friends)
+            {
+                <li>
+                    <AssetSlot Name="avatar" Width="40" Height="40" />
+                    <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
+                    @if (f.Online) { <span class="online" aria-hidden="true"></span> }
+                    <span class="buttons">
+                        <a class="btn btn-primary" href="/new-message/@f.Handle">@L["Friends.SendMessage"]</a>
+                        <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
+                    </span>
+                </li>
+            }
+            @if (friends.Count == 0) { <li class="empty">@L["Friends.None"]</li> }
+        </ul>
+    }
+    else
+    {
+        <div class="results">
+            <div class="title">@L["Friends.Results", found.Count]</div>
+            @if (found.Count == 0) { <div class="notice">@L["Friends.NoHunters"]</div> }
+            <ul class="list">
+                @foreach (var f in found)
+                {
+                    <li>
+                        <AssetSlot Name="avatar" Width="40" Height="40" />
+                        <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
+                        <span class="buttons">
+                            @if (friends.Any(x => x.Handle == f.Handle))
+                            {
+                                <a class="btn btn-primary" href="/new-message/@f.Handle">@L["Friends.SendMessage"]</a>
+                                <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
+                            }
+                            else if (sent.Contains(f.Handle))
+                            {
+                                <button class="btn btn-inverse" disabled>@L["Friends.RequestSent"]</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" @onclick="() => sent.Add(f.Handle)">@L["Friends.SendRequest"]</button>
+                            }
+                        </span>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    IReadOnlyList<Friend> friends = [];
+    IReadOnlyList<Friend>? found;
+    readonly HashSet<string> sent = [];
+
+    protected override async Task OnInitializedAsync() => friends = await Friends.FriendsAsync();
+
+    /// <summary>From 3 characters; shorter text shows the friends list again.</summary>
+    async Task Search(ChangeEventArgs e)
+    {
+        var text = e.Value?.ToString() ?? "";
+        found = text.Length >= 3 ? await Friends.SearchAsync(text) : null;
+    }
+
+    async Task Remove(Friend f)
+    {
+        if (await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle])) friends = friends.Where(x => x != f).ToList();
+    }
+}

@@ -1,0 +1,9 @@
+.footer { margin-top: 20px; padding: 26px 20px 75px; background: var(--bg-footer); color: var(--fg-heading); }
+.columns { display: flex; padding-top: 30px; border-top: 1px solid #202020; }
+section { width: 393px; }
+h4 { margin: 0 0 10px; font-size: 17.5px; line-height: 20px; text-transform: uppercase; }
+.follow { display: flex; gap: 19px; font-size: 36px; color: #888; }
+.follow ::deep a:hover { color: #fff; }
+.ratings { display: flex; gap: 6px; margin-top: 21px; }
+.legal { margin-top: 27px; padding: 15px 0 0 777px; border-top: 1px solid #202020; }
+.legal a { display: block; line-height: 30px; }
