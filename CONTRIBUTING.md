@@ -9,7 +9,6 @@ These apply to every file and every commit message:
 - Only README.md names the game, in plain text (tagline and disclaimer). Everywhere else, say "the game".
 - No real hostnames or domains of the publisher, no user ids, handles, tokens or email addresses of real people. Use placeholders (`<api-host>`, `<client-exe>`, ...).
 - No game files and no game data (assets, captures, dumps, saved replies of real accounts). Never patch, ship or download game files: the client is redirected with the hosts file and a local certificate (for now; the method may change).
-- No money: do not add donation or sponsor links, a funding file, ads, paid features, or sales of items or currency. Pull requests that do are closed.
 - Nothing about how knowledge of the game or its servers was obtained: no reverse-engineering notes, addresses, tool names, capture or live-session logs, nothing about a person's account or runs.
 
 Real values for a build (hosts, consumer key, exe name) live in a `settings.json` that is never committed (it is git-ignored). Releases read them from repository secrets.
