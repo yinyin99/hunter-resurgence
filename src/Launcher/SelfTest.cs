@@ -99,7 +99,7 @@ static class SelfTest
         Check(p is { Language: "fr", GameFolder: @"C:\x y", CloseOnGameStart: true }, "launcher.json round trip");
         File.WriteAllText(path, "{ not json");
         Check(Prefs.Load(path).Language == "", "damaged launcher.json: defaults");
-        Check(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("de", "en") == "en" && App.Pick("", "ja") == "en" && App.Pick(null, "de") == "en", "language: saved choice, else Windows language, else English (only en and fr)");
+        Check(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("pt-BR", "en") == "pt-BR" && App.Pick("", "de-AT") == "de" && App.Pick("", "pt-PT") == "pt-BR" && App.Pick("", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "es-MX") == "es", "language: saved choice, else Windows language (any region), else English");
     }
 
     /// <summary>Strings.fr.resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime); {game} tokens are not holes.</summary>
@@ -112,7 +112,7 @@ static class SelfTest
         static string Plain(string s) => Regex.Replace(s, "{(game|GAME|game_full)}", "x");
         var en = Read(CultureInfo.InvariantCulture);
         var bad = new List<string>();
-        foreach (var (_, culture) in App.Languages.Where(l => l.Code != "en"))
+        foreach (var culture in Resurgence.Ui.Languages.All.Where(l => l.Code != "en").Select(l => l.Code))
         {
             var tr = Read(CultureInfo.GetCultureInfo(culture));
             bad.AddRange(en.Keys.Except(tr.Keys).Select(k => $"{culture}: missing {k}"));
@@ -124,7 +124,7 @@ static class SelfTest
             }
         }
         if (bad.Count > 0) throw new Exception("FAIL translations: " + string.Join("; ", bad));
-        Check(true, $"{App.Languages.Length - 1} translation has the {en.Count} keys and placeholders of Strings.resx");
+        Check(true, $"{Resurgence.Ui.Languages.All.Length - 1} translations have the {en.Count} keys and placeholders of Strings.resx");
     }
 
     /// <summary>{game} tokens: expanded from settings.json values, "the game" and no link without them, placeholders ignored.</summary>

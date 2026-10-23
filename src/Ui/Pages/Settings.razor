@@ -47,7 +47,7 @@
                         break;
                     case "language":
                         <form @onsubmit="SaveLocale" @onsubmit:preventDefault>
-                            <label>@L["Set.Language"]<select class="field-sel" id="locale" @bind="language"><option value="en">@L["Language.English"]</option><option value="fr">@L["Language.French"]</option></select></label>
+                            <label>@L["Set.Language"]<select class="field-sel" id="locale" @bind="language">@foreach (var l in Languages.All) { <option value="@l.Code">@l.Name</option> }</select></label>
                             <label>@L["Set.Country"]<select class="field-sel" id="country" @bind="country"><option value="">@L["Set.CountryChoose"]</option>@foreach (var c in choices.Countries) { <option value="@c">@c</option> }</select></label>
                             <label>@L["Set.TimeZone"]<select class="field-sel" id="timezone" @bind="timeZone">@foreach (var z in choices.TimeZones) { <option value="@z">@z.Replace('_', ' ')</option> }</select></label>
                             <button type="submit" class="btn btn-primary">@L["Set.Save"]</button>
