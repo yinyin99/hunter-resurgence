@@ -168,7 +168,7 @@
   <data name="Servers.Medium" xml:space="preserve"><value>Medium distance</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Long distance</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>No games found</value></data>
-  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We couldn't find any public multiplayer games that you are allowed to join</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We couldn't find any public multiplayer games that you are allowed to join.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOST YOUR OWN GAME</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>This game is password protected</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Server location: {0}</value></data>
@@ -197,8 +197,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scene Complexity</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scene complexity handles vegetation density and render distance. For render distance, Low settings will grant 220m maximum horizontal vision. Medium settings will grant 270m. High/Very High will grant 320m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texture Quality</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures requires 512MB video card memory in single player and 768MB in multiplayer.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0}MB of video memory</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures require 512 MB video card memory in single player and 768 MB in multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0} MB of video memory</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow Quality</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic Filtering</value></data>
@@ -290,9 +290,9 @@
   <data name="Launcher.Error.16002" xml:space="preserve"><value>Could not connect to game server. Please try again.</value></data>
   <data name="Launcher.Error.16003" xml:space="preserve"><value>Invalid OS.</value></data>
   <data name="Launcher.Error.16004" xml:space="preserve"><value>Start game from the website.</value></data>
-  <data name="Launcher.Error.16005" xml:space="preserve"><value>The game has crashed (We will investigate).</value></data>
-  <data name="Launcher.Error.16006" xml:space="preserve"><value>User does not have access</value></data>
-  <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>The game has crashed (we will investigate).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>User does not have access.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running.</value></data>
   <data name="Launcher.Error.16008" xml:space="preserve"><value>Wrong settings file version. Please go into settings and reconfigure.</value></data>
   <data name="Launcher.Error.16009" xml:space="preserve"><value>Graphics card does not support D3DQUERYTYPE_EVENT.</value></data>
   <data name="Signup.Trying" xml:space="preserve"><value>Hang on, we're trying to sign you in...</value></data>
@@ -313,7 +313,7 @@
   <data name="Signup.P2.Title" xml:space="preserve"><value>GET YOUR FIRST WEAPON</value></data>
   <data name="Signup.P2.Text" xml:space="preserve"><value>You've made it so far, awesome! Here is a welcome gift from us - your first weapon, the shiny 12GA Single Shot Shotgun with free replenishable ammo. With this rugged beauty you can ethically hunt all animals in the game, except Bison.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>ENJOY YOUR HUNTING LICENSES</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>It's almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals are rotating weekly. Paying members can hunt all the species, check our Membership store if you want to become one.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>It's almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals that rotate weekly. Paying members can hunt all the species; check our Membership store if you want to become one.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRM YOUR EMAIL</value></data>
   <data name="Signup.P4.Text" xml:space="preserve"><value>Good things come to those who confirm their emails! Please check your inbox for a message from us and follow the instructions in it. Your current email is {0}. If it's not correct, please change it below and click "Resend email".</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>YOUR REWARD</value></data>
@@ -469,7 +469,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automatically activate only favourite missions</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>You can reset your missions for a fee at the store.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Go to store</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>You have completed {0} of {1} missions and a total {2} of {3} mission packs.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>You have completed {0} of {1} missions and {2} of {3} mission packs.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filter in</value></data>
   <data name="Mis.All" xml:space="preserve"><value>All</value></data>
@@ -685,18 +685,18 @@
   <data name="GM.Active" xml:space="preserve"><value>Active</value></data>
   <data name="GM.Refill" xml:space="preserve"><value>Refill</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
-  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0} your brand new {game} account has been created!</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0}, your brand new {game} account has been created!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>If you have already downloaded and installed the game launcher and client, you are ready to start playing! If you are new to {game} we recommend playing through the tutorials before going on your first real hunt. The tutorials will teach you everything you need to know to make it on your own in the Evergreen Hunting Reserve. Get started below.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Do you have a retail code?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>If you have bought a retail version of {game}, {0}click here{1} to activate your retail code.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Go to tutorials</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Go Hunting</value></data>
-  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with {game} or if you are just too eager to get out there</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with {game} or if you are just too eager to get out there.</value></data>
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Start a new game</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Downloads</value></data>
-  <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>To downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your email address, language settings or your player avatar you can do so on the settings page.</value></data>
@@ -705,12 +705,12 @@
   <data name="Welcome.ProfileText" xml:space="preserve"><value>All of your progress in {game} is shown on your profile page, there you will find detailed stats for all of your previous hunts.</value></data>
   <data name="Welcome.ProfileGo" xml:space="preserve"><value>View my profile</value></data>
   <data name="Welcome.Help" xml:space="preserve"><value>Help</value></data>
-  <data name="Welcome.HelpText" xml:space="preserve"><value>Need help getting started? Check out the help section and our great community managed resources</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Need help getting started? Check out the help section and our great community managed resources.</value></data>
   <data name="Welcome.HelpGo" xml:space="preserve"><value>View help section</value></data>
   <data name="Invite.Title" xml:space="preserve"><value>Recruit a friend</value></data>
   <data name="Invite.How" xml:space="preserve"><value>How to recruit a friend</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Send an invite</value></data>
-  <data name="Invite.Step1Text" xml:space="preserve"><value>Click the button below to get your referral link and send it to a friend you would like to invite to {game}</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Click the button below to get your referral link and send it to a friend you would like to invite to {game}.</value></data>
   <data name="Invite.Step2" xml:space="preserve"><value>Play {game} together</value></data>
   <data name="Invite.Step2Text" xml:space="preserve"><value>When your friend registers an account {0}using your link{1}, they receive 200 em$, a 5x30mm Rangefinder, a Moose caller and a scent eliminator!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Get rewarded</value></data>
@@ -808,7 +808,7 @@
   <data name="Stat.BestDisabled" xml:space="preserve"><value>Personal best function is currently disabled.</value></data>
   <data name="Stat.BestQueued" xml:space="preserve"><value>Personal best for {0} and season {1} is queued to be calculated. Check back soon.</value></data>
   <data name="Stat.BestBuilding" xml:space="preserve"><value>Personal best for {0} and season {1} is being calculated and will soon be available.</value></data>
-  <data name="Stat.BestNone" xml:space="preserve"><value>{0} didn't go for any expeditions in season {1}</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} didn't go for any expeditions in season {1}.</value></data>
   <data name="Stat.BestAllQueued" xml:space="preserve"><value>All Time personal best for {0} is queued to be calculated. Check back soon.</value></data>
   <data name="Stat.BestAllBuilding" xml:space="preserve"><value>All Time personal best for {0} is being calculated and will soon be available.</value></data>
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} didn't go for any expeditions yet to calculate All Time personal best.</value></data>
@@ -978,9 +978,9 @@
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}m</value></data>
   <data name="Fmt.Seconds" xml:space="preserve"><value>{0}s</value></data>
-  <data name="Fmt.Gb" xml:space="preserve"><value>{0} Gb</value></data>
-  <data name="Fmt.Mb" xml:space="preserve"><value>{0} Mb</value></data>
-  <data name="Fmt.Kb" xml:space="preserve"><value>{0} Kb</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} GB</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} MB</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} KB</value></data>
   <data name="Fmt.Bytes" xml:space="preserve"><value>{0} bytes</value></data>
   <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} miles)</value></data>
   <data name="Fmt.AgoSeconds" xml:space="preserve"><value>a few seconds ago</value></data>
@@ -1099,7 +1099,7 @@
   <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
   <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
   <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256 MB on board memory (for low &amp; medium). 512 - 768 MB on board memory (for high, depending on number of players).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 or better). ATI X1900 (or better). 256 MB on board memory (for low &amp; medium). 512 MB on board memory (for high)</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 or better). ATI X1900 (or better). 256 MB on board memory (for low &amp; medium). 512 MB on board memory (for high).</value></data>
   <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>At least 1024x768</value></data>
   <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps Up &amp; Down</value></data>
   <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps Up &amp; Down (depending on number of players)</value></data>

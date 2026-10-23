@@ -23,7 +23,7 @@ public static class Fmt
     static string Units(IStringLocalizer l, int d, int h, string m, string s) =>
         (d > 0 ? l["Fmt.Days", d] + " " : "") + (d > 0 || h > 0 ? l["Fmt.Hours", h] + " " : "") + l["Fmt.Minutes", m] + " " + l["Fmt.Seconds", s];
 
-    /// <summary>117.74 Mb: binary units, two decimals for Gb and Mb, none below.</summary>
+    /// <summary>117.74 MB: binary units, two decimals for GB and MB, none below.</summary>
     public static string Size(this IStringLocalizer l, long bytes) => bytes switch
     {
         >= 1L << 30 => l["Fmt.Gb", ((double)bytes / (1L << 30)).ToString("0.00")],
