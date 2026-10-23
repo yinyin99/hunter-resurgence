@@ -3,3 +3,4 @@
 .arrow { display: flex; align-items: center; justify-content: center; width: 37px; height: 100%; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--surface-7); color: #fff; }
 .arrow ::deep .icon { transition: transform var(--t-base) var(--ease); }
 .field:has(+ .pop:popover-open) .arrow ::deep .icon { transform: rotate(180deg); }
+.pop { box-shadow: var(--shadow-dropdown); }

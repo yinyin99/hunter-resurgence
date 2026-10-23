@@ -2,7 +2,7 @@
 .page-title { font-size: 30px; font-weight: 300; letter-spacing: 0; }
 .row { display: flex; gap: 20px; margin-bottom: 20px; }
 .block { position: relative; width: 380px; flex: none; }
-.block::before { content: ""; position: absolute; inset: -8px; z-index: -1; border-radius: var(--r-3); background: var(--surface-2); box-shadow: var(--ring); }
+.block::before { content: ""; position: absolute; inset: -8px; z-index: -1; border-radius: var(--r-3); background: var(--surface-2); }
 .block + .block { width: 540px; }
 h3 { margin: 3px 0 7px; font-size: 22px; line-height: 40px; font-weight: 300; text-transform: uppercase; }
 .progress h3, .wide h3 { margin-top: -2px; font-size: 24px; text-transform: none; }
@@ -10,8 +10,7 @@ h3 { margin: 3px 0 7px; font-size: 22px; line-height: 40px; font-weight: 300; te
 .content p { margin: 0; line-height: 20px; }
 .names { font-weight: 500; color: var(--text-2); }
 .names ::deep a { color: var(--accent); }
-.friend { display: inline-block; margin-right: 6px; border-radius: var(--r-2); transition: box-shadow var(--t-fast) var(--ease); }
-.friend:hover { box-shadow: 0 0 0 2px var(--accent); }
+.friend { display: inline-block; margin-right: 6px; border-radius: var(--r-2); }
 .action { position: absolute; left: 0; right: 0; bottom: 0; }
 .group { display: flex; }
 .group .btn:first-child { width: 337px; box-sizing: border-box; border-radius: var(--r-2) 0 0 var(--r-2); text-align: center; }
@@ -20,7 +19,7 @@ h3 { margin: 3px 0 7px; font-size: 22px; line-height: 40px; font-weight: 300; te
 .who { display: flex; gap: 12px; margin: 10px 0 14px; }
 .who p { margin: 0; }
 .score { color: var(--text-1); }
-.bar { width: 240px; height: 10px; margin: 4px 0; border-radius: var(--r-pill); background: var(--surface-6); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .5); overflow: hidden; }
+.bar { width: 240px; height: 10px; margin: 4px 0; border-radius: var(--r-pill); background: var(--surface-6); overflow: hidden; }
 .bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); animation: fill var(--t-slow) var(--ease); }
 @keyframes fill { from { width: 0; } }
 .numbers { font-size: 12px; color: var(--fg-muted-2); }
@@ -32,7 +31,7 @@ h4 { margin: 0 0 4px; font-size: var(--fs-h5); font-weight: 500; text-transform:
 .servers ul { height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--fg-muted-3) transparent; }
 ul { margin: 0; padding: 0; list-style: none; }
 li { position: relative; isolation: isolate; display: flex; align-items: center; height: 51px; border-bottom: 1px solid transparent; padding-right: 34px; }
-li::before { content: ""; position: absolute; inset: 2px 0; z-index: -1; border-radius: var(--r-3); background: var(--surface-3); box-shadow: var(--ring); transition: background-color var(--t-fast) var(--ease); }
+li::before { content: ""; position: absolute; inset: 2px 0; z-index: -1; border-radius: var(--r-3); background: var(--surface-3); transition: background-color var(--t-fast) var(--ease); }
 li:hover::before { background: var(--surface-4); }
 li ::deep .dot { position: absolute; left: 7px; top: 11px; }
 li ::deep .flag { margin: 0 10px 0 27px; flex: none; }

@@ -1,4 +1,4 @@
-.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; min-width: var(--w-container); background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .07), 0 4px 18px rgba(0, 0, 0, .6); font-size: var(--fs-statusbar); color: var(--fg-muted); }
+.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; min-width: var(--w-container); background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: var(--shadow-bar); font-size: var(--fs-statusbar); color: var(--fg-muted); }
 .row { position: relative; height: var(--h-statusbar); }
 .web .row { width: var(--w-container); margin: 0 auto; }
 .web .left { left: 192px; }
@@ -12,7 +12,7 @@
 .section .icon { font-size: 18px; vertical-align: -3px; }
 .service { padding: 4px 8px 0; line-height: 40px; white-space: nowrap; }
 .inf { font-size: 24px; vertical-align: -2px; }
-.pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--r-pill); background: var(--pill-balance-fg); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
+.pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--r-pill); background: var(--pill-balance-fg); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
 .pill.ems { background: var(--pill-ems); }
 .count { position: absolute; right: 0; top: 4px; min-width: 12px; padding: 0 3px; border: 1px solid #000; border-radius: var(--r-pill); background: var(--badge); color: #fff; font-size: 11px; line-height: 14px; text-align: center; }
 .settings .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base); position: absolute; top: 44px; right: -2px; width: 200px; z-index: 5; }
