@@ -11,6 +11,8 @@ static class Names
         (16, "Eurasian Lynx"), (17, "European Rabbit"), (18, "Fallow Deer"), (20, "Feral Goat"), (21, "Feral Hog"), (22, "Gadwall"), (24, "Grey Wolf"), (25, "Grizzly Bear"),
         (26, "Magpie Goose"), (27, "Mallard"), (29, "Moose"), (30, "Mule Deer (Typical)"), (31, "Northern Pintail"), (32, "Pheasant"), (33, "Polar Bear"), (34, "Puma"),
         (35, "Red Deer"), (36, "Red Fox"), (37, "Reindeer"), (38, "Rock Ptarmigan"), (39, "Roe Deer"), (40, "Turkey"), (41, "Whitetail Deer (Typical)"), (42, "Wood Grouse"),
+        (43, "Red Kangaroo"), (44, "Rocky Mountain Elk"), (45, "Roosevelt Elk"), (46, "Rusa Deer"), (47, "Sambar Deer"), (48, "Sitka Deer"), (49, "Snow Goose"), (50, "Snowshoe Hare"),
+        (51, "Water Buffalo"), (52, "White-tailed Ptarmigan"), (53, "Wild Boar"), (54, "Willow Ptarmigan"),
     ];
 
     static readonly string[] First = ["Quiet", "Wild", "Grey", "Silent", "North", "Moss", "Pine", "River"];

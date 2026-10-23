@@ -1,6 +1,7 @@
 namespace Resurgence.Services;
 
-public sealed record Ranked(int Rank, string Handle, double Value);
+/// <param name="Sheet">Id of the kill (or antler) sheet the value links to; 0 for the boards without one.</param>
+public sealed record Ranked(int Rank, string Handle, double Value, int Sheet = 0);
 
 /// <summary>One group of an overview: a species (or an antler type) and its best players.</summary>
 public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);

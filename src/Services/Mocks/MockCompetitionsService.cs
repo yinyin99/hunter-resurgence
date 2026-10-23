@@ -6,7 +6,7 @@ public sealed class MockCompetitionsService : ICompetitionsService
     static readonly DateTime Starts = new(2026, 10, 23, 7, 0, 0), Ends = new(2026, 10, 25, 7, 0, 0);
     static readonly (string Tier, string Needs)[] Tiers = [("Elite", "Over 500"), ("Intermediate", "51 to 500"), ("Starter", "Max 50")];
     // the first species have several competitions, the last ones none (greyed in the filter)
-    static readonly int[] Counts = [1, 2, 4, 2, 4, 5, 2, 5, 2, 1, 1, 1, 1, 6, 1, 1, 2, 1, 1, 3, 2, 4, 1, 1, 1, 2, 3, 1, 1, 2, 3, 0, 0, 2, 1, 1, 0, 0, 3];
+    static readonly int[] Counts = [1, 2, 4, 2, 4, 5, 2, 5, 2, 1, 1, 1, 1, 6, 1, 1, 2, 1, 1, 3, 2, 4, 1, 1, 1, 2, 3, 1, 1, 2, 3, 0, 0, 2, 1, 1, 0, 0, 3, 2, 1, 2, 3, 1, 1, 2, 1, 2, 1, 2, 1];
 
     static Competition Make(int id, string sp, int i, int j, bool active) => Make(id, sp, i % 2 == 0 ? "board" : "weight", Tiers[j % 3], (i * 3 + j) % 4 == 0, 2 + (i * 7 + j * 3) % 20, active);
 
@@ -24,7 +24,7 @@ public sealed class MockCompetitionsService : ICompetitionsService
         .. Names.Species.SelectMany((s, i) => Enumerable.Range(0, i < Counts.Length ? Counts[i] : 0).Select(j => Make(180200 + i * 10 + j, s.Name, i, j, false))),
     ];
 
-    static readonly Competition[] Previous = Enumerable.Range(0, 70).Select(n => Make(170000 + n, Names.Species[n % 40].Name, n % 2 == 0 ? "board" : "weight", Tiers[n % 3], false, 2 + n * 7 % 30, false) with { Start = null, End = null, Status = null }).ToArray();
+    static readonly Competition[] Previous = Enumerable.Range(0, 70).Select(n => Make(170000 + n, Names.Species[n % Names.Species.Length].Name, n % 2 == 0 ? "board" : "weight", Tiers[n % 3], false, 2 + n * 7 % 30, false) with { Start = null, End = null, Status = null }).ToArray();
 
     public Task<IReadOnlyList<Enrolled>> EnrolledAsync() => Task.FromResult<IReadOnlyList<Enrolled>>(Active.Select(c => new Enrolled(c, 10, 10, null)).ToList());
 
@@ -54,8 +54,12 @@ public sealed class MockCompetitionsService : ICompetitionsService
     public Task<IReadOnlyList<Participant>> ParticipantsAsync(int id) =>
         Task.FromResult<IReadOnlyList<Participant>>([new(1, Names.Handle(17), "164.9212"), new(2, Names.Handle(25), "151.2301")]);
 
+    static readonly string[] Months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    // one run a month, two now and then, newest first: 2026 up to September, then 2025
     public Task<IReadOnlyList<HistoryMonth>> HistoryAsync(int id) => Task.FromResult<IReadOnlyList<HistoryMonth>>(
-        Enumerable.Range(0, 4).Select(m => new HistoryMonth(2026, new[] { "September", "August", "July", "June" }[m], [(29 - m, id - 500 - m * 40), (22 - m, id - 600 - m * 40), (15 - m, id - 700 - m * 40), (8 - m, id - 800 - m * 40)])).ToList());
+        Enumerable.Range(0, 15).Select(n => (Year: 2026 - (n + 3) / 12, Month: (8 - n % 12 + 12) % 12)).Select((m, n) =>
+            new HistoryMonth(m.Year, Months[m.Month], n % 4 == 0 ? [(29 - n % 9, id - 100 * n), (5 + n % 7, id - 100 * n - 50)] : [(8 + n * 7 % 20, id - 100 * n)])).ToList());
 
     public Task<Result> JoinAsync(int id) => Task.FromResult(Result.Success);
 

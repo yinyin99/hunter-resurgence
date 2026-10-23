@@ -3,7 +3,6 @@ namespace Resurgence.Services.Mocks;
 /// <summary>Boards computed from fixed formulas: the same names and values on every call. Nobody is ranked except for the hunter score, where the player is far down.</summary>
 public sealed class MockLeaderboardsService : ILeaderboardsService
 {
-    const int PageSize = 25;
     static readonly string[] Antlers = ["Axis Deer Antler", "Blacktail Deer Antler", "Blacktail Deer Non-Typical Antler", "Fallow Deer Antler", "Moose Antler", "Mule Deer Antler", "Red Deer Antler", "Whitetail Deer Antler"];
 
     // value of the n-th place (n from 1): falls a little more than 0.2 per place
@@ -22,7 +21,7 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
         return kind is "hunterscore" or "lanebandit" or "bustthrough" ? Math.Round(start - (n - 1) * (kind == "hunterscore" ? 0 : 37)) : Math.Round(start - n * 0.2373 - n * n % 7 * 0.01, 4);
     }
 
-    static Ranked Row(string kind, int id, int n) => new(n, Names.Handle(id * 5 + n * 3), Value(kind, id, n));
+    static Ranked Row(string kind, int id, int n) => new(n, Names.Handle(id * 5 + n * 3), Value(kind, id, n), kind is "hunterscore" or "lanebandit" or "bustthrough" ? 0 : 1_100_000_000 + id * 1000 + n);
 
     static IReadOnlyList<(int Id, string Name)> Groups(string kind) => kind switch
     {
@@ -33,18 +32,22 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
     public Task<int> SeasonAsync() => Task.FromResult(46);
 
     public Task<IReadOnlyList<Board>> BoardsAsync(string kind) => Task.FromResult<IReadOnlyList<Board>>(
-        Groups(kind).Select(g => new Board(g.Id, g.Name, Enumerable.Range(1, kind.StartsWith("antlers") ? 8 : 5).Select(n => Row(kind, g.Id, n)).ToList())).ToList());
+        Groups(kind).Select(g => new Board(g.Id, g.Name, Enumerable.Range(1, kind.StartsWith("antlers") ? 10 : 5).Select(n => Row(kind, g.Id, n)).ToList())).ToList());
 
     public Task<Page<Ranked>> RowsAsync(string kind, int id, int page)
     {
-        var pages = kind == "hunterscore" ? 20 : 4;
+        // the tables of the hunter score and of the two games show 30 rows, those of a species or an antler 50
+        var (size, pages) = kind is "hunterscore" or "lanebandit" or "bustthrough" ? (30, kind == "hunterscore" ? 20 : 4) : (50, 4);
         page = Math.Clamp(page, 1, pages);
-        return Task.FromResult(new Page<Ranked>(Enumerable.Range((page - 1) * PageSize + 1, PageSize).Select(n => Row(kind, id, n)).ToList(), page, pages));
+        return Task.FromResult(new Page<Ranked>(Enumerable.Range((page - 1) * size + 1, size).Select(n => Row(kind, id, n)).ToList(), page, pages));
     }
 
     public Task<Ranked?> MyRankAsync(string kind, int id) => Task.FromResult<Ranked?>(kind == "hunterscore" ? new(238892, "Hunter01", 74) : null);
 
     public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>(
         Names.Species.OrderBy(s => s.Name).Where(s => season > 1 || s.Name is "Mule Deer (Typical)" or "Turkey" or "Whitetail Deer (Typical)")
-            .Select(s => new HallEntry(s.Name, Row("score", s.Id + season, 1), Row("range", s.Id + season, 1))).ToList());
+            .Select(s => new HallEntry(s.Name, Anonymous(Row("score", s.Id + season, 1), season), Anonymous(Row("range", s.Id + season, 1), season))).ToList());
+
+    // the first season has the values but not the players
+    static Ranked Anonymous(Ranked r, int season) => season > 1 ? r : r with { Handle = "", Sheet = 0 };
 }
