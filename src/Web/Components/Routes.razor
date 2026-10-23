@@ -1,4 +1,5 @@
 @inject HostMode Mode
+@inject ISessionService Sessions
 
 <Router AppAssembly="typeof(Program).Assembly"
         AdditionalAssemblies="new[] { typeof(Strings).Assembly }"
@@ -12,6 +13,11 @@
     /// <summary>The launcher flag decided by the request (development ?mode=) reaches the interactive circuit as a parameter.</summary>
     [Parameter] public bool Launcher { get; set; }
     [Parameter] public bool Dev { get; set; }
+    [Parameter] public string? Mock { get; set; }
 
-    protected override void OnParametersSet() => (Mode.Launcher, Mode.Dev) = (Launcher, Dev);
+    protected override async Task OnInitializedAsync()
+    {
+        (Mode.Launcher, Mode.Dev, Mode.Mock) = (Launcher, Dev, Mock);
+        if (Dev && Mock == "session:out") await Sessions.SignOutAsync();
+    }
 }

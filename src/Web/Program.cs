@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.WebUtilities;
+using Resurgence.Services;
+using Resurgence.Services.Mocks;
 using Resurgence.Ui;
 using Resurgence.Ui.Modals;
 using Resurgence.Web;
@@ -10,6 +14,8 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddUiLocalization(Path.Combine(builder.Environment.ContentRootPath, "settings.json"));
 builder.Services.AddMockServices();
 builder.Services.AddScoped<HostMode>();
+// one mock session per browser circuit, so signing in or out in one tab does not change the others
+builder.Services.AddScoped<ISessionService, MockSessionService>();
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 
@@ -26,18 +32,26 @@ app.UseRequestLocalization(o =>
     o.SetDefaultCulture("en").AddSupportedCultures("en", "fr").AddSupportedUICultures("en", "fr");
     o.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider { QueryStringKey = "lang", UIQueryStringKey = "lang" });
 });
-// development only: ?mode=launcher|web picks the shell and is remembered in a cookie, so the launcher screens can be opened in a browser
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+// development only, after the status code pages so the re-executed /not-found request (new scope) gets it too:
+// ?mode=launcher|web picks the shell and ?mock=session:out the signed-out site; both are remembered in cookies
 if (app.Environment.IsDevelopment())
     app.Use((ctx, next) =>
     {
-        var m = ctx.Request.Query["mode"].ToString();
+        // a 404 is re-executed as /not-found without its query string: read the original one
+        var original = ctx.Features.Get<IStatusCodeReExecuteFeature>()?.OriginalQueryString;
+        var query = original is null ? null : QueryHelpers.ParseQuery(original);
+        string Q(string key) => (query is null ? ctx.Request.Query[key] : query.GetValueOrDefault(key)).ToString();
+        var m = Q("mode");
         if (m is "launcher" or "web") ctx.Response.Cookies.Append("mode", m);
         else m = ctx.Request.Cookies["mode"];
         var host = ctx.RequestServices.GetRequiredService<HostMode>();
         (host.Launcher, host.Dev) = (m == "launcher", true);
+        var mock = Q("mock");
+        if (mock.Length > 0) ctx.Response.Cookies.Append("mock", mock); else mock = ctx.Request.Cookies["mock"] ?? "";
+        host.Mock = mock == "none" ? null : mock;
         return next();
     });
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode().AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
