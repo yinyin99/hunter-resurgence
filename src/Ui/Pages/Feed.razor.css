@@ -2,7 +2,7 @@
 .hero ::deep .asset-slot { display: flex; }
 .hero ::deep .hero-logo { position: absolute; left: 248px; top: 115px; }
 .hero ::deep .hero-button { position: absolute; left: 343px; top: 323px; width: 294px; height: 42px; box-sizing: border-box; border-radius: var(--radius); background: var(--primary); color: #fff; font-size: 17.5px; font-weight: 500; line-height: 42px; text-align: center; }
-.hero ::deep .hero-button:hover { background: var(--primary-hover); }
+.hero ::deep .hero-button:hover { filter: brightness(1.12); }
 .hero ::deep .icon { width: 13px; }
 .latest { margin: 0 0 20px; font-size: var(--fs-page-title); letter-spacing: 1px; line-height: 40px; text-transform: uppercase; }
 .latest.after-hero { margin-top: 25px; }

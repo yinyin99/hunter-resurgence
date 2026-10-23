@@ -211,12 +211,11 @@ a:hover { color: var(--accent-hover); }
     box-shadow: var(--depth);
     transition: background-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
-.btn:hover { background-color: #fff; color: var(--btn-fg); box-shadow: var(--lift); }
+.btn:hover { color: var(--btn-fg); filter: brightness(1.12); box-shadow: var(--lift); }
 .btn:active { transform: translateY(1px); filter: brightness(.9); box-shadow: inset 0 2px 4px rgba(0, 0, 0, .45); }
 .btn-primary { background-color: var(--primary); color: #fff; }
-.btn-primary:hover { background-color: var(--primary-hover); color: #fff; }
 .btn-inverse { background-color: var(--surface-7); color: #fff; }
-.btn-inverse:hover { background-color: #555; color: #fff; }
+.btn-primary:hover, .btn-inverse:hover { color: #fff; }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
@@ -224,9 +223,6 @@ a:hover { color: var(--accent-hover); }
 .btn-large { padding: 11px 19px; font-size: var(--fs-btn-lg); line-height: 20px; }
 .btn-block { display: block; box-sizing: border-box; width: 100%; text-align: center; }
 .btn:disabled, .btn.disabled { opacity: .65; cursor: default; box-shadow: none; transform: none; filter: none; background-image: none; }
-.btn:disabled:hover, .btn.disabled:hover { background-color: var(--btn-bg); }
-.btn-primary:disabled:hover, .btn-primary.disabled:hover { background-color: var(--primary); }
-.btn-inverse:disabled:hover { background-color: var(--surface-7); }
 
 :focus-visible { outline: var(--focus); outline-offset: 2px; }
 a { transition: color var(--t-fast) var(--ease); }
