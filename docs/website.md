@@ -39,4 +39,6 @@ An unknown player, hunt, kill or address answers with HTTP 404 and the "Page not
 
 ## Languages
 
-All texts are .NET resources in `src/Ui/Strings.resx` (English, the fallback), with one `Strings.<culture>.resx` per added language. The website follows the browser's `Accept-Language` header.
+The website speaks English, French, Spanish, Portuguese (Brazil), German and Russian. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and one `Strings.<culture>.resx` per language, shared with the launcher. The website follows the browser's `Accept-Language` header and falls back to English.
+
+The launcher's selftest checks that every translation has the same keys and the same `{0}` placeholders as the English file. Native speakers are welcome to check `src/Ui/Strings.*.resx`.

@@ -48,7 +48,7 @@ The official servers close on 2026-11-11. The game needs them even for single-pl
 
 A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip, and the Steam account recorded by a backup made in **My account** mode, prove that the backup is yours. Keep the zip private.
 
-**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`). Open an issue or a pull request.
+**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx` and `src/Ui/Strings.*.resx`). Open an issue or a pull request.
 
 ## Build
 

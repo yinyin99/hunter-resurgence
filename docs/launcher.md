@@ -89,4 +89,8 @@ Game settings, Launcher settings (game folder, Steam account shown read-only, op
 
 ## Languages
 
-All texts are .NET resources in `src/Ui/Strings.resx` (English, the fallback), with one `Strings.<culture>.resx` per added language. The language chosen in Launcher settings is saved in `launcher.json`.
+The launcher speaks English, French, Spanish, Portuguese (Brazil), German and Russian. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and one `Strings.<culture>.resx` per language.
+
+At start the launcher uses the language saved in `launcher.json` (set in Launcher settings), else the Windows display language when it is one of the six, else English. A change in Launcher settings applies after a restart.
+
+The selftest checks that every translation has the same keys and the same `{0}` placeholders as the English file. Native speakers are welcome to check `src/Ui/Strings.*.resx`.
