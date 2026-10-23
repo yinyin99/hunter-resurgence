@@ -39,7 +39,7 @@
   <data name="Tip.SignOut" xml:space="preserve"><value>Cerrar la sesión</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tu Puntuación del Cazador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>
-  <data name="Settings.Account" xml:space="preserve"><value>Configuración de cuenta</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Configuración de la cuenta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Administración del juego</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Configuración del juego</value></data>
@@ -110,8 +110,8 @@
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Ningún logro conseguido</value></data>
   <data name="Hunt.Competitions" xml:space="preserve"><value>Competiciones</value></data>
   <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Competiciones en las que participas:</value></data>
-  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Ver próximas competiciones</value></data>
-  <data name="Launch.TitleSingle" xml:space="preserve"><value>CREAR PARTIDA DE UN JUGADOR</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Ver las próximas competiciones</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>CREAR UNA PARTIDA DE UN JUGADOR</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>CREAR UNA PARTIDA MULTIJUGADOR</value></data>
   <data name="Launch.Intro1" xml:space="preserve"><value>Elige desde dónde empezar tu sesión de caza. Haz clic en uno de los 12 logotipos de reservas de abajo para ver el mapa de la reserva correspondiente, y haz clic en los refugios (los símbolos con forma de casa) para saber qué especies se pueden encontrar en esa zona. También puedes recorrer el mapa del mundo haciendo clic y arrastrando sobre él, y acercarlo o alejarlo con la rueda del ratón.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Algunos de los entornos naturales más magníficos del mundo y 45 especies de animales diferentes te esperan. ¡Feliz cacería!</value></data>
@@ -124,7 +124,7 @@
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Acercar</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Alejar</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Inicio en {0}</value></data>
-  <data name="Launch.Info" xml:space="preserve"><value>Información del juego y Punto de partida</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Información de la partida y punto de partida</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nombre de la partida:</value></data>
   <data name="Launch.GameOf" xml:space="preserve"><value>Partida de {0}</value></data>
   <data name="Launch.Description" xml:space="preserve"><value>Introduce una descripción de la partida (opcional)</value></data>
@@ -141,7 +141,7 @@
   <data name="Launch.Create" xml:space="preserve"><value>Crear partida</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Algo salió mal al crear tu sesión de juego. Vuelve a cargar la lista de servidores e intenta unirte a otra partida.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ENCONTRAR UNA PARTIDA MULTIJUGADOR</value></data>
-  <data name="Servers.Search" xml:space="preserve"><value>Encontrar una partida o host…</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Busca una partida o un host…</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Borrar</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Actualizar</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Mostrar solo partidas a las que puedo unirme</value></data>
@@ -157,12 +157,12 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserva:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Tiempo de juego:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Puntuación mín. del Cazador:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Puntuación máx. del Cazador:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Puntuación del Cazador mínima:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Puntuación del Cazador máxima:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Jugadores ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Información sobre conexiones multijugador</value></data>
-  <data name="Servers.Info" xml:space="preserve"><value>Jugar en multijugador con personas que se encuentran a grandes distancias de ti puede causar problemas de conexión o lag. Se recomienda unirse a partidas cuyo host esté cerca de ti. Los puntos de colores junto a las banderas de la lista de servidores te indican a qué distancia estás del host de la partida.</value></data>
-  <data name="Servers.InfoLink" xml:space="preserve"><value>Haz clic aquí para más información sobre las conexiones</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Jugar en multijugador con personas que se encuentran a grandes distancias de ti puede causar problemas de conexión o de latencia. Se recomienda unirse a partidas cuyo host esté cerca de ti. Los puntos de colores junto a las banderas de la lista de servidores te indican a qué distancia estás del host de la partida.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Haz clic aquí para obtener más información sobre las conexiones</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Corta distancia</value></data>
   <data name="Servers.Medium" xml:space="preserve"><value>Media distancia</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Larga distancia</value></data>
@@ -196,7 +196,7 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Complejidad de la escena</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>La complejidad de la escena controla la densidad de la vegetación y la distancia de renderizado. En cuanto a la distancia de renderizado, el ajuste Bajo ofrece una visión horizontal máxima de 220 m, el Medio de 270 m y el Alto/Muy alto de 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Calidad de texturas</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Las texturas de calidad alta requieren 512 MB de memoria de la tarjeta gráfica en un jugador y 768 MB en multijugador.</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Las texturas de calidad alta requieren 512 MB de memoria de la tarjeta gráfica en el modo de un jugador y 768 MB en multijugador.</value></data>
   <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Tienes {0} MB de memoria de vídeo</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Calidad de sombras</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Antialiasing multimuestra</value></data>
@@ -292,7 +292,7 @@
   <data name="Launcher.Error.16005" xml:space="preserve"><value>El juego se ha cerrado inesperadamente (lo investigaremos).</value></data>
   <data name="Launcher.Error.16006" xml:space="preserve"><value>El usuario no tiene acceso.</value></data>
   <data name="Launcher.Error.16007" xml:space="preserve"><value>El juego ya se está ejecutando.</value></data>
-  <data name="Launcher.Error.16008" xml:space="preserve"><value>Versión incorrecta del archivo de configuración. Ve a la configuración y vuelve a configurar.</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Versión incorrecta del archivo de configuración. Ve a la configuración y vuelve a configurar las opciones.</value></data>
   <data name="Launcher.Error.16009" xml:space="preserve"><value>La tarjeta gráfica no admite D3DQUERYTYPE_EVENT.</value></data>
   <data name="Signup.Trying" xml:space="preserve"><value>Un momento, estamos intentando iniciar tu sesión…</value></data>
   <data name="Signup.SteamIntro" xml:space="preserve"><value>Hola. Estás iniciando el juego desde Steam, pero no hemos podido comprobar si tienes una cuenta. Elige una de las opciones siguientes:</value></data>
@@ -310,7 +310,7 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Avatar anterior</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Avatar siguiente</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>CONSIGUE TU PRIMERA ARMA</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>¡Has llegado hasta aquí, genial! Este es un regalo de bienvenida de nuestra parte: tu primera arma, la reluciente escopeta monotiro del calibre 12 con munición gratuita y reponible. Con esta robusta belleza podrás cazar éticamente a todos los animales del juego, excepto al bisonte.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>¡Has llegado hasta aquí, genial! Este es un regalo de bienvenida de nuestra parte: tu primera arma, la reluciente escopeta monotiro del calibre 12 con munición gratuita y reponible. Con esta robusta belleza podrás cazar éticamente a todos los animales del juego, excepto el bisonte.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>DISFRUTA DE TUS LICENCIAS DE CAZA</value></data>
   <data name="Signup.P3.Text" xml:space="preserve"><value>¡Ya casi es hora de tu primera cacería! ¿Qué vas a cazar? Como jugador invitado, tienes licencias de caza gratuitas y de por vida para el ciervo de cola blanca, el conejo europeo y el faisán, además de otros dos animales gratuitos que cambian cada semana. Los miembros de pago pueden cazar todas las especies; echa un vistazo a nuestra tienda de membresías si quieres serlo.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRMA TU CORREO ELECTRÓNICO</value></data>
@@ -331,7 +331,7 @@
   <data name="Dialog.EmailRequired" xml:space="preserve"><value>Se requiere una dirección de email</value></data>
   <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Dirección de email no válida</value></data>
   <data name="Dialog.EmailTaken" xml:space="preserve"><value>Esa dirección de email no está disponible</value></data>
-  <data name="Dialog.Change.Title" xml:space="preserve"><value>Cambiar correo electrónico</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Cambiar email</value></data>
   <data name="Dialog.Change.Submit" xml:space="preserve"><value>Cambiar</value></data>
   <data name="Dialog.Sent.Title" xml:space="preserve"><value>Email enviado</value></data>
   <data name="Dialog.Sent.Text" xml:space="preserve"><value>Te hemos enviado un nuevo email con un enlace para confirmar tu dirección de email.</value></data>
@@ -389,7 +389,7 @@
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Puntuación a batir</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Resumen</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Clasificación</value></data>
-  <data name="Comp.History" xml:space="preserve"><value>Historia</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>Historial</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Premios</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofeo</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Reglas y condiciones</value></data>
@@ -440,7 +440,7 @@
   <data name="Board.GetLane" xml:space="preserve"><value>Conseguir Lane Bandit</value></data>
   <data name="Board.TopBust" xml:space="preserve"><value>Mejores puntuaciones de Bust Through</value></data>
   <data name="Board.BustInfo" xml:space="preserve"><value>¡Bust Through es un genial juego arcade retro que puedes jugar en tu Huntermate para entretenerte mientras esperas a que aparezca ese trofeo!</value></data>
-  <data name="Board.SP" xml:space="preserve"><value>Un jugador</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Solo</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Anterior</value></data>
   <data name="Pager.Next" xml:space="preserve"><value>Siguiente</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Páginas</value></data>
@@ -486,7 +486,7 @@
   <data name="Mis.Progress" xml:space="preserve"><value>Progreso:</value></data>
   <data name="Mis.FavouriteTip" xml:space="preserve"><value>Haz clic para añadir o quitar de favoritos</value></data>
   <data name="Mis.NoFavourites" xml:space="preserve"><value>Actualmente no tienes ninguna misión favorita</value></data>
-  <data name="Mis.NoActive" xml:space="preserve"><value>Actualmente no tienes ninguna misión activada. Activa una misión disponible de abajo para empezar.</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Actualmente no tienes ninguna misión activada. Activa una de las misiones disponibles de abajo para empezar.</value></data>
   <data name="Mis.NoAvailable" xml:space="preserve"><value>No hay misiones disponibles</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Necesitas completar las siguientes misiones para desbloquear {0}:</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Algo ha fallado y no has recibido tu objeto. Lo sentimos. ¡Inténtalo de nuevo!</value></data>
@@ -511,7 +511,7 @@
   <data name="Store.Buy" xml:space="preserve"><value>COMPRAR</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>No se puede comprar</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Inicia sesión y compra</value></data>
-  <data name="Store.Own" xml:space="preserve"><value>Posees:</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Tienes:</value></data>
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>días</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTA</value></data>
@@ -520,15 +520,15 @@
   <data name="Store.Value" xml:space="preserve"><value>Valor</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Precio del paquete</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Nivel de ocupación</value></data>
-  <data name="Store.CantBuy" xml:space="preserve"><value>No es posible comprar este artículo</value></data>
-  <data name="Store.MaxOwn" xml:space="preserve"><value>No es posible comprar este paquete. Has alcanzado el límite de posesión de al menos uno de los artículos incluidos</value></data>
-  <data name="Store.None" xml:space="preserve"><value>No hay artículos en esta categoría</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>No es posible comprar este objeto</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>No es posible comprar este paquete. Has alcanzado el límite de posesión de al menos uno de los objetos incluidos</value></data>
+  <data name="Store.None" xml:space="preserve"><value>No hay objetos en esta categoría</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Detalles</value></data>
   <data name="Store.ClickMore" xml:space="preserve"><value>Haz clic para ver los detalles</value></data>
   <data name="Store.Confirm" xml:space="preserve"><value>Confirmar la compra</value></data>
   <data name="Store.BuyEms" xml:space="preserve"><value>COMPRAR con em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>COMPRAR con gm$</value></data>
-  <data name="Store.NotEnoughGms" xml:space="preserve"><value>No hay suficientes gm$</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>No tienes suficientes gm$</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Consigue más em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Incluye</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>¡Compra completada!</value></data>
@@ -571,9 +571,9 @@
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Con la moneda del juego (em$) puedes comprar armas, tiendas de campaña, ropa, licencias de caza y mucho más.</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Comprar como regalo</value></data>
   <data name="Bank.Compare" xml:space="preserve"><value>* En comparación con 500 em$</value></data>
-  <data name="Bank.Save" xml:space="preserve"><value>Ahorra {0}%*</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Ahorra {0}&#160;%*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Paquetes de inicio</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Consigue todo lo que necesitas para empezar a cazar cualquier animal en la Evergreen Hunting Reserve. Nuestros paquetes de inicio incluyen una membresía básica que te da una licencia para cazar todos los animales del juego y una selección especial de objetos para que empieces con buen pie tu camino hacia la maestría en la caza.</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Consigue todo lo que necesitas para empezar a cazar cualquier animal en la Evergreen Hunting Reserve. Nuestros paquetes de inicio incluyen una membresía básica que te da una licencia para cazar todos los animales del juego y una selección especial de objetos para que emprendas con buen pie tu camino para convertirte en un maestro cazador.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Paquetes especiales</value></data>
   <data name="Bank.SpecialDesc" xml:space="preserve"><value>Elige uno de nuestros paquetes especiales para conseguir todo lo que necesitas para cazar los animales más populares de {game}. Todos estos paquetes incluyen una membresía básica que te da una licencia para cazar todas las especies del juego y una selección de objetos recomendados para centrarte en animales concretos y en su jugabilidad de caza.</value></data>
   <data name="Bank.Basic" xml:space="preserve"><value>Membresías básicas</value></data>
@@ -688,7 +688,7 @@
   <data name="Welcome.Retail" xml:space="preserve"><value>¿Tienes un código de compra?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Si has comprado una versión física de {game}, {0}haz clic aquí{1} para activar tu código de compra.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutoriales</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Deja que el Doc, el guarda residente de la Evergreen Hunting Reserve, te enseñe todo lo que necesitas saber para jugar a {game}.</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Deja que Doc, el guarda residente de la Evergreen Hunting Reserve, te enseñe todo lo que necesitas saber para jugar a {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Ir a tutoriales</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Ir de caza</value></data>
   <data name="Welcome.HuntingText" xml:space="preserve"><value>Empieza una cacería de verdad si ya conoces {game} o si tienes demasiadas ganas de salir ahí fuera.</value></data>
@@ -709,7 +709,7 @@
   <data name="Invite.How" xml:space="preserve"><value>Cómo reclutar a un amigo</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Envía una invitación</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Haz clic en el botón de abajo para obtener tu enlace de reclutamiento y enviárselo a un amigo al que quieras invitar a {game}.</value></data>
-  <data name="Invite.Step2" xml:space="preserve"><value>Jugar juntos a {game}</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Juega a {game} con tu amigo</value></data>
   <data name="Invite.Step2Text" xml:space="preserve"><value>Cuando tu amigo registre una cuenta {0}usando tu enlace{1}, recibirá 200 em$, un telémetro 5x30mm, un reclamo de alces y un eliminador de olor.</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Recibe tu recompensa</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Si tu amigo compra em$, ¡recibirás una recompensa!</value></data>
@@ -766,7 +766,7 @@
   <data name="Prof.Statistics" xml:space="preserve"><value>Estadísticas</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Última cacería</value></data>
   <data name="Stat.Lifetime" xml:space="preserve"><value>Estadísticas generales</value></data>
-  <data name="Stat.History" xml:space="preserve"><value>Historia de caza</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>Historial de caza</value></data>
   <data name="Stat.Best" xml:space="preserve"><value>Récords personales</value></data>
   <data name="Stat.Misc" xml:space="preserve"><value>Varios</value></data>
   <data name="Stat.Antlers" xml:space="preserve"><value>Cornamentas coleccionables</value></data>
@@ -995,7 +995,7 @@
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Tutoriales en vídeo</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Webs de comunidades locales</value></data>
   <data name="Help.Support.Intro" xml:space="preserve"><value>{game} cuenta con varios canales de soporte oficiales. En nuestra página Wiki, mantenida por la comunidad, encontrarás mucha información sobre cómo jugar y cómo solucionar problemas. Nuestros foros oficiales de {game} son muy activos: muchos de nuestros jugadores los visitan a diario y están encantados de ayudar a los principiantes.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Si no encuentras respuesta a tus preguntas en el foro o en la wiki, puedes abrir un ticket en nuestro sistema de soporte, ¡y trataremos de ayudarte lo antes posible!</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Si no encuentras respuesta a tus preguntas en el foro o en la wiki, puedes abrir una solicitud en nuestro sistema de soporte, ¡y trataremos de ayudarte lo antes posible!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Soporte de {game}</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>Foro de {game}</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki de {game}</value></data>
@@ -1050,7 +1050,7 @@
   <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Misiones completadas</value></data>
   <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Recompensas especiales</value></data>
   <data name="DayHelp.Rewards.1" xml:space="preserve"><value>A medida que avanzas en tu racha de MD, recibirás recompensas especiales por completar MD difíciles.</value></data>
-  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Las recompensas especiales son:</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Las recompensas especiales pueden ser:</value></data>
   <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>objetos</value></data>
   <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trofeos</value></data>
   <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Los objetos y los trofeos son recompensas exclusivas que solo se pueden ganar completando MD (es decir, ¡no hay ninguna otra forma de conseguirlos!). Tus recompensas solo se mostrarán al empezar una nueva partida.</value></data>
