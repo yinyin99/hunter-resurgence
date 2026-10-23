@@ -12,6 +12,9 @@
   "link_support": "<url>",
   "link_support_connections": "<url>",
   "link_wiki": "<url>",
+  "link_wiki_de": "<url>",
+  "link_wiki_fr": "<url>",
+  "link_wiki_es": "<url>",
   "link_steam_store": "<url>",
   "link_steam_community": "<url>",
   "link_developer": "<url>",
@@ -19,5 +22,11 @@
   "link_facebook": "<url>",
   "link_youtube": "<url>",
   "link_instagram": "<url>",
-  "link_discord": "<url>"
+  "link_discord": "<url>",
+  "link_fps_tool": "<url>",
+  "link_health_utility": "<url>",
+  "link_support_request": "<url>",
+  "link_guide_1": "<url>",
+  "link_video_v1": "<url>",
+  "link_community_1": "<url>"
 }
