@@ -26,7 +26,7 @@ dotnet run --project src/Web
 
 The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`) and the library they share (`src/Ui`). Each selftest exits 0 when every check is ok: the backup tool's uses a fake HTTP handler and a fake process, the launcher's uses temporary files only. The last command starts the website on `http://localhost:5080`.
 
-Both the launcher and the backup tool read a `settings.json` next to their exe, with real values that are never committed. Start from `src/Launcher/settings.example.json` or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md) and [docs/backup.md](docs/backup.md).
+The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md) and [docs/backup.md](docs/backup.md).
 
 To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 
