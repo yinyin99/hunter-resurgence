@@ -94,7 +94,7 @@
 
     string InfoText => Status.State switch
     {
-        PatchState.Downloading => L["Patch.Downloading", L[Status.Kind switch { DownloadKind.Full => "Patch.KindFull", DownloadKind.Launcher => "Patch.KindLauncher", _ => "Patch.KindPatch" }].Value, Status.File, Fmt.Size(Status.Bytes), Fmt.Size(Status.Rate)],
+        PatchState.Downloading => L["Patch.Downloading", L[Status.Kind switch { DownloadKind.Full => "Patch.KindFull", DownloadKind.Launcher => "Patch.KindLauncher", _ => "Patch.KindPatch" }].Value, Status.File, Fmt.Size(L, Status.Bytes), Fmt.Size(L, Status.Rate)],
         PatchState.Verifying => L["Patch.Verifying"],
         PatchState.Extracting => L["Patch.Extracting"],
         PatchState.Patching => Status.Step switch

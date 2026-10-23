@@ -12,7 +12,7 @@
         <h5>@L["Servers.Details"]</h5>
         <p class="line">@L["Servers.HostLabel"] <a href="/profile/@Server.Host" @onclick="Modal.Close">@Server.Host</a></p>
         <p class="line">@L["Servers.ReserveLabel"] @reserve</p>
-        <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(Server.Seconds)</p>
+        <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(L, Server.Seconds)</p>
         <h5 class="players-title">@L["Servers.PlayerList", Server.Players, Server.Max]</h5>
         @foreach (var (p, i) in Server.Roster.Select((p, i) => (p, i)))
         {

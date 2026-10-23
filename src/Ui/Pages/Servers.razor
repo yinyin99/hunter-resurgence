@@ -66,7 +66,7 @@
             <h5>@L["Servers.Details"]</h5>
             <p class="line">@L["Servers.HostLabel"] <a href="/profile/@s.Host">@s.Host</a></p>
             <p class="line">@L["Servers.ReserveLabel"] @reserves.GetValueOrDefault(s.Reserve)</p>
-            <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(s.Seconds)</p>
+            <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(L, s.Seconds)</p>
             <p class="line gap">@L["Servers.MinScore"] @s.MinScore</p>
             <p class="line">@L["Servers.MaxScore"] @s.MaxScore</p>
             <h5 class="players-title">@L["Servers.PlayerList", s.Players, s.Max]</h5>

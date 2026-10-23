@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Localization;
 
 namespace Resurgence.Ui;
 
@@ -11,20 +12,24 @@ public static class Fmt
     public static string MonthDay(DateTime d) => $"{d.ToString("MMM", English)} {d.Day}{(d.Day % 100 is >= 11 and <= 13 ? "th" : (d.Day % 10) switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th" })}";
 
     /// <summary>21m 39s, with days and hours in front when needed. The old code zero-pads only the values 1 to 8 (kept).</summary>
-    public static string Elapsed(int seconds)
+    public static string Elapsed(this IStringLocalizer l, int seconds)
     {
         static string Pad(int n) => n is >= 1 and <= 8 ? "0" + n : n.ToString();
         var (d, h, m, s) = (seconds / 86400, seconds / 3600 % 24, seconds / 60 % 60, seconds % 60);
-        return (d > 0 ? $"{d}d " : "") + (d > 0 || h > 0 ? $"{h}h " : "") + $"{Pad(m)}m {Pad(s)}s";
+        return Units(l, d, h, Pad(m), Pad(s));
     }
 
+    // 1d 16h 5m 32s with the unit texts of the language; days and hours only when needed
+    static string Units(IStringLocalizer l, int d, int h, string m, string s) =>
+        (d > 0 ? l["Fmt.Days", d] + " " : "") + (d > 0 || h > 0 ? l["Fmt.Hours", h] + " " : "") + l["Fmt.Minutes", m] + " " + l["Fmt.Seconds", s];
+
     /// <summary>117.74 Mb: binary units, two decimals for Gb and Mb, none below.</summary>
-    public static string Size(long bytes) => bytes switch
+    public static string Size(this IStringLocalizer l, long bytes) => bytes switch
     {
-        >= 1L << 30 => $"{(double)bytes / (1L << 30):0.00} Gb",
-        >= 1 << 20 => $"{(double)bytes / (1 << 20):0.00} Mb",
-        >= 1 << 10 => $"{bytes >> 10} Kb",
-        _ => $"{bytes} bytes",
+        >= 1L << 30 => l["Fmt.Gb", ((double)bytes / (1L << 30)).ToString("0.00")],
+        >= 1 << 20 => l["Fmt.Mb", ((double)bytes / (1 << 20)).ToString("0.00")],
+        >= 1 << 10 => l["Fmt.Kb", bytes >> 10],
+        _ => l["Fmt.Bytes", bytes],
     };
 
     /// <summary>Oct 21st 07:00 UTC</summary>
@@ -48,29 +53,26 @@ public static class Fmt
     public static string Purchase(DateTime d) => d.ToString("yyyy-MM-dd HH:mm", English);
 
     /// <summary>The "fromNow" wording of the old pages: a minute ago, an hour ago, 3 days ago.</summary>
-    public static string Ago(TimeSpan a) => a.TotalSeconds switch
+    public static string Ago(this IStringLocalizer l, TimeSpan a) => a.TotalSeconds switch
     {
-        < 45 => "a few seconds ago",
-        < 90 => "a minute ago",
-        < 45 * 60 => $"{Math.Round(a.TotalMinutes)} minutes ago",
-        < 90 * 60 => "an hour ago",
-        < 22 * 3600 => $"{Math.Round(a.TotalHours)} hours ago",
-        < 36 * 3600 => "a day ago",
-        _ => $"{Math.Round(a.TotalDays)} days ago",
+        < 45 => l["Fmt.AgoSeconds"],
+        < 90 => l["Fmt.AgoMinute"],
+        < 45 * 60 => l["Fmt.AgoMinutes", Math.Round(a.TotalMinutes)],
+        < 90 * 60 => l["Fmt.AgoHour"],
+        < 22 * 3600 => l["Fmt.AgoHours", Math.Round(a.TotalHours)],
+        < 36 * 3600 => l["Fmt.AgoDay"],
+        _ => l["Fmt.AgoDays", Math.Round(a.TotalDays)],
     };
 
     /// <summary>1d 16h 5m 32s: minutes are not padded, seconds have two digits.</summary>
-    public static string Duration(int seconds)
-    {
-        var (d, h, m, s) = (seconds / 86400, seconds / 3600 % 24, seconds / 60 % 60, seconds % 60);
-        return (d > 0 ? $"{d}d " : "") + (d > 0 || h > 0 ? $"{h}h " : "") + $"{m}m {s:00}s";
-    }
+    public static string Duration(this IStringLocalizer l, int seconds) =>
+        Units(l, seconds / 86400, seconds / 3600 % 24, (seconds / 60 % 60).ToString(), (seconds % 60).ToString("00"));
 
     /// <summary>124.53m (408.56ft)</summary>
     public static string Metres(double m) => $"{m.ToString("0.00", English)}m ({(m * 3.28084).ToString("0.00", English)}ft)";
 
     /// <summary>102.89 km (63.93 miles)</summary>
-    public static string Kilometres(double km) => $"{km.ToString("0.00", English)} km ({(km * 0.621371192).ToString("0.00", English)} miles)";
+    public static string Kilometres(this IStringLocalizer l, double km) => l["Fmt.Kilometres", km.ToString("0.00", English), (km * 0.621371192).ToString("0.00", English)];
 
     /// <summary>79.31%: always with a point, in every language.</summary>
     public static string Pct(double v) => v.ToString("0.00", English) + "%";

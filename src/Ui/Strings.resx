@@ -974,4 +974,20 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Collectables</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handguns</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Crossbows</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0}m</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0}s</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} Gb</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} Mb</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} Kb</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} bytes</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} miles)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>a few seconds ago</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>a minute ago</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>{0} minutes ago</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>an hour ago</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>{0} hours ago</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>a day ago</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>{0} days ago</value></data>
 </root>

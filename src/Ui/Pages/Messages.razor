@@ -44,7 +44,7 @@
                     {
                         <div class="@(m.Mine ? "me" : "you")">
                             <a href="/profile/@(m.Mine ? me : current)" class="h">@(m.Mine ? me : current)</a>
-                            <div class="body"><AssetSlot Name="avatar-default" Width="60" Height="60" Class="av" /><div class="msg"><p>@m.Text</p><small>@L["Msg.Sent", Fmt.Ago(m.Ago)]</small></div></div>
+                            <div class="body"><AssetSlot Name="avatar-default" Width="60" Height="60" Class="av" /><div class="msg"><p>@m.Text</p><small>@L["Msg.Sent", Fmt.Ago(L, m.Ago)]</small></div></div>
                         </div>
                     }
                 </div>

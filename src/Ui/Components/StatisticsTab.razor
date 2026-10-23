@@ -18,8 +18,8 @@
             <CollectableTable Rows="totals.Collectables" />
             <h4>@L["Stat.Misc"]</h4>
             <table class="misc tbl"><tbody>
-                <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(totals.DistanceKm)</td></tr>
-                <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(totals.HuntSeconds)</td></tr>
+                <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(L, totals.DistanceKm)</td></tr>
+                <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(L, totals.HuntSeconds)</td></tr>
             </tbody></table>
         }
         break;
@@ -29,7 +29,7 @@
         {
             <table class="hist tbl">
                 <thead><tr><th>@L["Stat.Start"]</th><th>@L["Stat.Dur"]</th><th>@L["Stat.Reserve"]</th><th>@L["Stat.Lodge"]</th><th>@L["Stat.CollectablesCol"]</th><th>@L["Stat.KillsCol"]</th></tr></thead>
-                <tbody>@foreach (var r in history.Rows) { <tr><td><a href="/profile/@Handle/expedition/@r.Id">@r.Start.ToString("yyyy-MM-dd HH:mm")</a></td><td>@Fmt.Duration(r.Seconds)</td><td>@r.Reserve</td><td>@r.Lodge</td><td>@r.Collectables</td><td>@r.Kills</td></tr> }</tbody>
+                <tbody>@foreach (var r in history.Rows) { <tr><td><a href="/profile/@Handle/expedition/@r.Id">@r.Start.ToString("yyyy-MM-dd HH:mm")</a></td><td>@Fmt.Duration(L, r.Seconds)</td><td>@r.Reserve</td><td>@r.Lodge</td><td>@r.Collectables</td><td>@r.Kills</td></tr> }</tbody>
             </table>
             <PrevNext Page="history.Number" Pages="history.Pages" Base="@("/profile/" + Handle + "/statistics/history")" />
         }
