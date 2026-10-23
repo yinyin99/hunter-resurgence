@@ -185,4 +185,114 @@
   <data name="Tut.Intro" xml:space="preserve"><value>It's recommended that you play through the basic tutorials before you start your first real hunt in the first reserve. In these tutorials you will meet the resident warden of that reserve. He will take you through the basics and teach you what you need to know to be successful in {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Start tutorial</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Location: {0}</value></data>
+  <data name="GameSettings.Title" xml:space="preserve"><value>Game settings</value></data>
+  <data name="GameSettings.Initial" xml:space="preserve"><value>Initial setup</value></data>
+  <data name="GameSettings.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="GameSettings.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Start game</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertical Sync</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Screen Resolution</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Scene Complexity</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scene complexity handles vegetation density and render distance. For render distance, Low settings will grant 220m maximum horizontal vision. Medium settings will grant 270m. High/Very High will grant 320m.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Texture Quality</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures requires 512MB video card memory in singleplayer and 768MB in multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0}MB of video memory</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow Quality</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic Filtering</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Contextual Help</value></data>
+  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Extended Audio Memory</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Low</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Medium</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>High</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Very High</value></data>
+  <data name="GameSettings.Off" xml:space="preserve"><value>Off</value></data>
+  <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Not configured: settings.json has no entry for these files.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Start the game once so it creates its settings files.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>A settings file has a format the launcher does not know, so it is left untouched.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>The game is running. Close it before saving: it rewrites these files itself.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>The settings could not be saved.</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>Got it!</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>New game patch</value></data>
+  <data name="Patch.NewText" xml:space="preserve"><value>A new game patch has been released. Your game will be patched automatically and you will be able to start a new expedition as soon as it's done! In the meantime you may browse around freely.</value></data>
+  <data name="Patch.FullTitle" xml:space="preserve"><value>Downloading {game}</value></data>
+  <data name="Patch.FullText" xml:space="preserve"><value>A full installation of {game} is being downloaded to your computer. You will be able to start playing as soon as it's done. In the meantime you may browse around freely.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>The launcher is updating</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>The launcher needs to update. The update will be downloaded automatically. Once the launcher has been updated it will need to be restarted.</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Game update required</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>There is an update for {game} available. You need to update {game} on Steam before you can play. You need to close the launcher in order to update.</value></data>
+  <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} is Steam only</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>From now on you need to play the game via Steam platform!</value></data>
+  <data name="Patch.GoToSteam" xml:space="preserve"><value>Go to Steam</value></data>
+  <data name="Patch.ErrorTitle" xml:space="preserve"><value>An error occurred</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Please see the {0} for more information.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>support section</value></data>
+  <data name="Patch.StateDownloading" xml:space="preserve"><value>DOWNLOADING</value></data>
+  <data name="Patch.StateVerifying" xml:space="preserve"><value>VERIFYING</value></data>
+  <data name="Patch.StateExtracting" xml:space="preserve"><value>EXTRACTING</value></data>
+  <data name="Patch.StatePatching" xml:space="preserve"><value>PATCHING</value></data>
+  <data name="Patch.StateReady" xml:space="preserve"><value>READY</value></data>
+  <data name="Patch.Downloading" xml:space="preserve"><value>Downloading {0}: {1} ({2}). {3}/s</value></data>
+  <data name="Patch.KindFull" xml:space="preserve"><value>full installation</value></data>
+  <data name="Patch.KindPatch" xml:space="preserve"><value>update</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>launcher update</value></data>
+  <data name="Patch.Verifying" xml:space="preserve"><value>Please wait while verifying downloaded files.</value></data>
+  <data name="Patch.Extracting" xml:space="preserve"><value>Please wait while running the installer.</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Verifying checksum of file: {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Patching file: {0} / {1}</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Finishing up...</value></data>
+  <data name="Patch.PatchError" xml:space="preserve"><value>Error!</value></data>
+  <data name="Patch.Done" xml:space="preserve"><value>You are now ready to start the game.</value></data>
+  <data name="Installer.DownloadingGame" xml:space="preserve"><value>Downloading game...</value></data>
+  <data name="Installer.DownloadingUpdate" xml:space="preserve"><value>Downloading update...</value></data>
+  <data name="Installer.Verifying" xml:space="preserve"><value>Verifying</value></data>
+  <data name="Installer.Installing" xml:space="preserve"><value>Installing</value></data>
+  <data name="Installer.Updating" xml:space="preserve"><value>Updating: {0}/{1} files</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Update complete - finish the wizard to begin playing.</value></data>
+  <data name="Installer.Ready" xml:space="preserve"><value>{game} is ready to play!</value></data>
+  <data name="Launcher.Error.Unknown" xml:space="preserve"><value>An unknown error occurred (code {0}).</value></data>
+  <data name="Launcher.Error.1" xml:space="preserve"><value>Registry key missing.</value></data>
+  <data name="Launcher.Error.2" xml:space="preserve"><value>No server specified. Please start the game from the website.</value></data>
+  <data name="Launcher.Error.3" xml:space="preserve"><value>Server query failed (invalid session id or server inaccessible).</value></data>
+  <data name="Launcher.Error.4" xml:space="preserve"><value>Incompatible hardware.</value></data>
+  <data name="Launcher.Error.5" xml:space="preserve"><value>Invalid server URL in command line argument.</value></data>
+  <data name="Launcher.Error.6" xml:space="preserve"><value>Missing game executable file.</value></data>
+  <data name="Launcher.Error.7" xml:space="preserve"><value>Failed to start game client.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Failed to write torrent file.</value></data>
+  <data name="Launcher.Error.9" xml:space="preserve"><value>Download failed.</value></data>
+  <data name="Launcher.Error.10" xml:space="preserve"><value>Download of torrent data failed.</value></data>
+  <data name="Launcher.Error.11" xml:space="preserve"><value>Invalid .torrent file.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Invalid launcher file location.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>Failed to extract NSIS sfx archive.</value></data>
+  <data name="Launcher.Error.14" xml:space="preserve"><value>Patch error.</value></data>
+  <data name="Launcher.Error.15" xml:space="preserve"><value>Missing or incorrect manifest file.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Failed to start updated launcher.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Launcher is not responding.</value></data>
+  <data name="Launcher.Error.18" xml:space="preserve"><value>Unable to create game directory.</value></data>
+  <data name="Launcher.Error.19" xml:space="preserve"><value>Unable to create torrent directory.</value></data>
+  <data name="Launcher.Error.20" xml:space="preserve"><value>Unable to create patch directory.</value></data>
+  <data name="Launcher.Error.21" xml:space="preserve"><value>Unable to create directory.</value></data>
+  <data name="Launcher.Error.22" xml:space="preserve"><value>Unable to copy files.</value></data>
+  <data name="Launcher.Error.27" xml:space="preserve"><value>Warning! Not enough disk space.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>Cannot apply patch, your current installation is modified or corrupt. Downloading full game instead.</value></data>
+  <data name="Launcher.Error.49" xml:space="preserve"><value>Failed to create Direct3D object.</value></data>
+  <data name="Launcher.Error.50" xml:space="preserve"><value>Failed to retrieve current display mode.</value></data>
+  <data name="Launcher.Error.51" xml:space="preserve"><value>No appropriate display modes found.</value></data>
+  <data name="Launcher.Error.52" xml:space="preserve"><value>Unable to determine supported display modes of video card.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>Unable to get device capabilities of video card.</value></data>
+  <data name="Launcher.Error.16001" xml:space="preserve"><value>Invalid session, start a new game.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>Could not connect to game server. Please try again.</value></data>
+  <data name="Launcher.Error.16003" xml:space="preserve"><value>Invalid OS.</value></data>
+  <data name="Launcher.Error.16004" xml:space="preserve"><value>Start game from the website.</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>The game has crashed (We will investigate).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>User does not have access</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Game already running</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Wrong settings file version. Please go into settings and reconfigure.</value></data>
+  <data name="Launcher.Error.16009" xml:space="preserve"><value>Graphics card does not support D3DQUERYTYPE_EVENT.</value></data>
 </root>

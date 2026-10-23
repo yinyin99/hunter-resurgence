@@ -18,3 +18,10 @@ export function watchScroll(ref, threshold) {
 export function unwatchScroll() {
     window.removeEventListener('scroll', handler);
 }
+
+// Calls ref.Moved() once, at the next mouse move; returns what cancels the wait.
+export function onceMouse(ref) {
+    const h = () => { document.removeEventListener('mousemove', h); ref.invokeMethodAsync('Moved'); };
+    document.addEventListener('mousemove', h);
+    return () => document.removeEventListener('mousemove', h);
+}
