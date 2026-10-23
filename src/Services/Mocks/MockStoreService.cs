@@ -53,7 +53,7 @@ public sealed class MockStoreService : IStoreService
         return Task.FromResult(new Page<StoreItem>(hits.Skip((n - 1) * PageSize).Take(PageSize).ToList(), n, pages));
     }
 
-    // none at capture time of the old app: the bundle list was empty
+    // no bundles in the mock
     public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>([]);
 
     public Task<StoreItem?> ItemAsync(int id) => Task.FromResult(Items.FirstOrDefault(i => i.Id == id));

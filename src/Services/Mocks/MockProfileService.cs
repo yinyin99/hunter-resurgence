@@ -1,6 +1,6 @@
 namespace Resurgence.Services.Mocks;
 
-/// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies, as in the old capture); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.</summary>
+/// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.</summary>
 public sealed class MockProfileService(string? mock = null) : IProfileService
 {
     const string Own = "Hunter01";
@@ -112,7 +112,7 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
 
     static Expedition Make(long id, int n)
     {
-        // the latest expedition is empty, as in the old capture; the others have shots and kills
+        // the latest expedition is empty; the others have shots and kills
         var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
         if (id == Latest) return new(id, Reserves[0], Lodges[0], start, start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
         var species = Names.Species[(n * 5) % Names.Species.Length].Name;
@@ -129,7 +129,7 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         return Task.FromResult(new Page<HistoryRow>(all.Skip((n - 1) * 40).Take(40).ToList(), n, 2));
     }
 
-    // the old capture of the own bests was blocked and shows only the disabled box; another hunter's bests are built from the source notes
+    // the own bests show only the disabled box; another hunter's bests are made up
     public Task<PersonalBest> BestAsync(string handle, int season) => Task.FromResult(handle == Own ? new PersonalBest("disabled", [])
         : season == 3 ? new("queued", []) : season == 4 ? new("building", []) : season == 5 ? new("empty", [])
         : new("done", Names.Species.Take(12).Select((s, i) => new BestRow(s.Name, 8.5 + i * 1.3, 60 + i * 11.7)).ToList()));

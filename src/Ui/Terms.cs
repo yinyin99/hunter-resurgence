@@ -6,8 +6,8 @@ using Microsoft.Extensions.Localization;
 namespace Resurgence.Ui;
 
 /// <summary>
-/// Game vocabulary (species, categories, ...) shown from service data. The texts are the resx keys <c>Term.&lt;kind&gt;.&lt;old id&gt;</c>, one per old id and language
-/// (imported from the old app's own per-language table). A real service passes the id; the mocks pass the English name, which is found again through the English text.
+/// Game vocabulary (species, categories, ...) shown from service data. The texts are the resx keys <c>Term.&lt;kind&gt;.&lt;old id&gt;</c>, one per old id and language.
+/// A real service passes the id; the mocks pass the English name, which is found again through the English text.
 /// A text without a term stays as it is.
 /// </summary>
 public static class Terms

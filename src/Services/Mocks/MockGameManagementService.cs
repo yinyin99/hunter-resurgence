@@ -2,7 +2,7 @@ namespace Resurgence.Services.Mocks;
 
 public sealed class MockGameManagementService : IGameManagementService
 {
-    // no lodges, as in the old capture
+    // no lodges
     public Task<IReadOnlyList<ManagedItem>> TrophyLodgeAsync() => Task.FromResult<IReadOnlyList<ManagedItem>>([]);
 
     public Task<IReadOnlyList<BaitSite>> BaitSitesAsync() =>

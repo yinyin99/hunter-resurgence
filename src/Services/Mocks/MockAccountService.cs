@@ -64,7 +64,7 @@ public sealed class MockAccountService(string? mock = null) : IAccountService
     static RewardItem I(string text, int id) => new(text, id);
     static RewardItem Em(int n) => new($"{n} Em$", null);
 
-    // no recruits yet, as in the old capture
+    // no recruits yet
     public Task<Recruiting> RecruitingAsync() => Task.FromResult(new Recruiting("https://example.com/signup?ref=Hunter01",
     [
         new("500 Em$", [Em(50)], [I("Scent Spray - 10 Uses", 161)]),
