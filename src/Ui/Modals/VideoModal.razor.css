@@ -1,0 +1,4 @@
+.video { position: absolute; top: 60px; left: calc(50% - 450px); width: 900px; outline: 0; color: #fff; }
+.close { position: absolute; right: -4px; top: -44px; border: 0; background: none; font-size: 36px; line-height: 40px; color: #fff; cursor: pointer; }
+.frame ::deep .asset-slot { display: block; }
+p { margin: 10px 0 0; font-size: 16px; text-align: center; }

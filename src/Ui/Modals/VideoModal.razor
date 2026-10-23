@@ -1,0 +1,21 @@
+@inject ModalService Modal
+
+<div class="video" role="dialog" aria-modal="true" tabindex="0" @onkeydown="Key" @ref="box">
+    <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+    <div class="frame"><AssetSlot Name="video" Width="900" Height="506" /></div>
+    <p>@Title</p>
+</div>
+
+@code {
+    ElementReference box;
+
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    // Escape closes the video, as in the old app
+    void Key(KeyboardEventArgs e) { if (e.Key == "Escape") Modal.Close(); }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await box.FocusAsync();
+    }
+}
