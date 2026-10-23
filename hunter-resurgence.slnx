@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="src/Launcher/Resurgence.Launcher.csproj" />
   <Project Path="src/Ui/Resurgence.Ui.csproj" />
+  <Project Path="src/Web/Resurgence.Web.csproj" />
   <Project Path="tools/backup/backup.csproj" />
 </Solution>
