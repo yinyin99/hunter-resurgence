@@ -1,0 +1,24 @@
+@inject INewsService News
+
+@if (widget is not null)
+{
+    <section class="discord">
+        <div class="head"><Icon Name="discord" /> <b>Discord</b> <span>@L["Discord.Online", widget.Online]</span></div>
+        <div class="body">
+            <div class="label">@L["Discord.Members"]</div>
+            <ul>
+                @foreach (var m in widget.Members)
+                {
+                    <li><AssetSlot Name="avatar-discord" Width="18" Height="18" Class="dot" /> <span>@m.Name</span> @if (m.Playing is not null) { <em>@m.Playing</em> }</li>
+                }
+            </ul>
+        </div>
+        <div class="foot"><span>@L["Discord.Hangout"]</span> <ExternalLink Key="discord" Class="join">@L["Discord.Join"]</ExternalLink></div>
+    </section>
+}
+
+@code {
+    DiscordInfo? widget;
+
+    protected override async Task OnInitializedAsync() => widget = await News.DiscordAsync();
+}

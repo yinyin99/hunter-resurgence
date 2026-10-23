@@ -1,0 +1,57 @@
+@implements IDisposable
+@inject INewsService News
+
+@if (slides.Count > 0)
+{
+    var cur = slides[index];
+    <div class="carousel">
+        <div class="slide">
+            <AssetSlot Name="@($"news-featured-{index + 1}")" Width="805" Height="380" Class="image" />
+            <span class="date">@Fmt.MonthDay(cur.When)</span>
+            <div class="caption">
+                <h2>@cur.Title</h2>
+                <p>
+                    @cur.Lead @(" ")
+                    @if (cur.Target.StartsWith("news:"))
+                    {
+                        <ExternalLink Key="news" Path="@cur.Target[5..]">@cur.LinkText</ExternalLink>
+                    }
+                    else
+                    {
+                        <a href="@cur.Target">@cur.LinkText</a>
+                    }
+                    <Icon Name="chevron-right" />
+                </p>
+            </div>
+        </div>
+        <div class="thumbs">
+            @for (var i = 0; i < slides.Count; i++)
+            {
+                var n = i;
+                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => index = n"><AssetSlot Name="@($"news-thumb-{i + 1}")" Width="175" Height="95" /></button>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    IReadOnlyList<Featured> slides = [];
+    int index;
+    PeriodicTimer? timer;
+
+    protected override async Task OnInitializedAsync() => slides = await News.FeaturedAsync();
+
+    /// <summary>The slides change every 18 seconds, as in the old feed.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || slides.Count < 2) return;
+        timer = new(TimeSpan.FromSeconds(18));
+        while (await timer.WaitForNextTickAsync())
+        {
+            index = (index + 1) % slides.Count;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose() => timer?.Dispose();
+}
