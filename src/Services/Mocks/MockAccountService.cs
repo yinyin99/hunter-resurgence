@@ -60,4 +60,17 @@ public sealed class MockAccountService(string? mock = null) : IAccountService
     public Task<Result> SaveHeaderAsync(string selected) { header = selected; return Task.FromResult(Result.Success); }
 
     public Task<Result> DisconnectSteamAsync() => Task.FromResult(Result.Success);
+
+    static RewardItem I(string text, int id) => new(text, id);
+    static RewardItem Em(int n) => new($"{n} Em$", null);
+
+    // no recruits yet, as in the old capture
+    public Task<Recruiting> RecruitingAsync() => Task.FromResult(new Recruiting("https://example.com/signup?ref=Hunter01",
+    [
+        new("500 Em$", [Em(50)], [I("Scent Spray - 10 Uses", 161)]),
+        new("1000 Em$", [Em(100), I("Camp Supplies - 10 Pack", 75)], [I("Scent Spray - 10 Uses", 161)]),
+        new("2000 Em$", [Em(200), I("Camp Supplies - 15 Pack", 76)], [I("Scent Spray - 10 Uses", 161), I("Carved Call", 77)]),
+        new("3000 Em$", [Em(300), I("Camp Supplies - 50 Pack", 78)], [I("Scent Spray - 10 Uses", 161), I("Deer Caller", 79), I("Tree Stand - Forest Camo", 80)]),
+        new("5000 Em$", [Em(500), I("Camp Supplies - 50 Pack x 2", 78)], [I("Scent Spray - 10 Uses", 161), I("Deer Rattle", 81), I("Tree Stand - Forest Camo", 80), I("Rifle - Engraved", 82), I("Hunting Tower - Woodland", 83)]),
+    ], []));
 }

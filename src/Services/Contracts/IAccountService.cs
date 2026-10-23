@@ -11,6 +11,13 @@ public sealed record HeaderGroup(string Name, IReadOnlyList<HeaderImage> Images)
 public sealed record Headers(string Selected, IReadOnlyList<HeaderGroup> Groups);
 public sealed record LocaleChoices(IReadOnlyList<string> Countries, IReadOnlyList<string> TimeZones);
 
+/// <summary>A line of the recruit rewards: an item with a store page, or plain text such as 50 Em$.</summary>
+public sealed record RewardItem(string Text, int? ItemId);
+public sealed record RewardRow(string Purchase, IReadOnlyList<RewardItem> YouGet, IReadOnlyList<RewardItem> OneTime);
+public sealed record Recruit(string Handle, DateOnly Joined, string Reward);
+/// <summary>The recruit page: the player's referral link, the reward table and the friends who joined.</summary>
+public sealed record Recruiting(string Link, IReadOnlyList<RewardRow> Rewards, IReadOnlyList<Recruit> Recruits);
+
 public interface IAccountService
 {
     Task<Account> AccountAsync();
@@ -28,4 +35,5 @@ public interface IAccountService
     Task<Result> SaveHeaderAsync(string selected);
     /// <summary>Disconnects the Steam account; the player is signed out and the launcher closes.</summary>
     Task<Result> DisconnectSteamAsync();
+    Task<Recruiting> RecruitingAsync();
 }
