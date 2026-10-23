@@ -77,4 +77,7 @@ public static class Fmt
 
     /// <summary>12.3456</summary>
     public static string Score(double v) => v.ToString("0.0000", English);
+
+    /// <summary>A number with a point, in every language.</summary>
+    public static string Num(double v, string format) => v.ToString(format, English);
 }

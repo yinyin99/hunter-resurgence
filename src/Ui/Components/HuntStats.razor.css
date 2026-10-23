@@ -1,5 +1,5 @@
 .head { display: flex; justify-content: space-between; margin: 0 0 10px; font-size: 26px; line-height: 38px; font-weight: 300; color: #aaa; }
-h4 { margin: 0 0 2px; font-size: 16px; line-height: 22px; font-weight: 400; color: #fff; }
+h4 { margin: 0 0 6px; font-size: 17px; line-height: 24px; font-weight: 400; color: #fff; }
 p { margin: 0 0 10px; font-size: 13px; line-height: 20px; color: #ddd; }
 ul { margin: 0 0 14px; padding-left: 20px; font-size: 14px; color: #ddd; }
 .misc { width: 100%; margin: 0 0 20px; border-collapse: collapse; font-size: 14px; color: #ddd; }

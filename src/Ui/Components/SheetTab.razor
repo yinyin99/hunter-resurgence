@@ -1,0 +1,100 @@
+@* The scoring sheet of a kill: a light page of its own inside the profile, as the old app showed it (server-made, English only) *@
+@inject IProfileService Service
+
+@if (sheet is not null)
+{
+    var typical = sheet.Kind == "score";
+    <div class="sheet">
+        <div class="logo"><AssetSlot Name="sheet-logo" Width="460" Height="64" />@if (typical) { <AssetSlot Name="sheet-medal" Width="84" Height="84" Class="medal" /> }</div>
+        <div class="guide @(typical ? "" : "big")">
+            <span class="species">@sheet.Species</span>
+            <AssetSlot Name="@(typical ? "antler-diagram" : "antler-guide")" Width="@(typical ? 380 : 560)" Height="@(typical ? 220 : 460)" />
+            @if (typical)
+            {
+                <table class="abn">
+                    <thead><tr><th colspan="2">Abnormal Points</th></tr><tr><th>Right Antler</th><th>Left Antler</th></tr></thead>
+                    <tbody>
+                        @foreach (var a in sheet.Abnormal) { <tr><td>@Fmt.Score(a.Right)</td><td>@Fmt.Score(a.Left)</td></tr> }
+                        <tr class="sub"><td>Subtotals</td><td>0</td></tr>
+                        <tr class="sub"><td>Total E</td><td><b>0.0000</b></td></tr>
+                    </tbody>
+                </table>
+            }
+        </div>
+        @if (typical)
+        {
+            <table class="facts"><tbody>
+                @for (var i = 0; i < sheet.Facts.Count; i += 2)
+                {
+                    var f = sheet.Facts[i];
+                    <tr>
+                        <th>@f.Label</th><td>@Fmt.Num(f.Value, f.Value % 1 == 0 ? "0" : "0.0000")</td>
+                        @if (i + 1 < sheet.Facts.Count) { var g = sheet.Facts[i + 1]; <th>@g.Label</th><td>@Fmt.Num(g.Value, g.Value % 1 == 0 ? "0" : "0.0000")</td> }
+                        else { <th>SPREAD CREDIT MAY EQUAL BUT NOT EXCEED LONGER MAIN BEAM</th><td>@Fmt.Score(sheet.Sums[0].Value)</td> }
+                    </tr>
+                }
+            </tbody></table>
+        }
+        <table class="rows">
+            <thead>
+                @if (typical) { <tr><th></th><th>Column 2</th><th>Column 3</th><th>Column 4</th></tr><tr><th></th><th>Right Antler</th><th>Left Antler</th><th>Difference</th></tr> }
+                else { <tr><th></th><th>Left</th><th>Right</th><th>Points</th></tr> }
+            </thead>
+            <tbody>
+                @foreach (var r in sheet.Rows) { <tr><th>@r.Label</th><td>@Cell(r.A)</td><td>@Cell(r.B)</td><td>@Cell(r.C)</td></tr> }
+            </tbody>
+        </table>
+        @if (typical)
+        {
+            <table class="sums"><tbody>
+                @foreach (var s in sheet.Sums) { <tr><th>@s.Label</th><td>@Fmt.Score(s.Value)</td></tr> }
+            </tbody></table>
+        }
+        <table class="shot">
+            <thead><tr><th>#</th><th>Hunter:</th><th>Weapon</th><th>Scope</th><th>Ammunition</th><th>Shot Distance</th><th>Animal State</th><th>Body Part</th><th>Stance</th><th>Platform</th></tr></thead>
+            <tbody><tr>
+                <td>1</td><td><a href="/profile/@Handle">@Handle</a></td><td>@(sheet.Weapon.Length > 0 ? sheet.Weapon : "")</td><td>@(sheet.Scope ? "✓" : "")</td><td>@sheet.Ammo</td>
+                <td>@(sheet.DistanceM > 0 ? $"{Fmt.Num(sheet.DistanceM, "0.000")} m ({Fmt.Num(sheet.DistanceM * 3.28084, "0.0")} ft)" : "")</td><td>@sheet.State</td><td>@sheet.BodyPart</td><td>@sheet.Stance</td><td>@sheet.Platform</td>
+            </tr></tbody>
+        </table>
+        <div class="info">
+            <dl>
+                <div><dt>Weight:</dt><dd>@Fmt.Num(sheet.WeightKg, "0.000") kg (@(Fmt.Num(sheet.WeightKg * 2.20462, "0.0")) lbs)</dd></div>
+                <div><dt>Type:</dt><dd>@sheet.Type</dd></div>
+                <div><dt>Wound time:</dt><dd>@(sheet.WoundTime > 0 ? Fmt.Num(sheet.WoundTime, "0.000") : "N/A")</dd></div>
+                <div><dt>Trophy integrity:</dt><dd>@sheet.Integrity%</dd></div>
+                <div><dt>Player's Shot Location:</dt><dd>@sheet.ShotLocation</dd></div>
+                <div><dt>Shots:</dt><dd>@sheet.Shots</dd></div>
+                <div><dt>Harvest Time:</dt><dd><a href="/profile/@Handle/expedition/@sheet.ExpeditionId">@sheet.When.ToString("yyyy-MM-dd HH:mm")</a></dd></div>
+                <div><dt>Hunter:</dt><dd>@Handle</dd></div>
+            </dl>
+            <div class="aside">
+                <button type="button" id="scoremapbutton" class="map-btn" @onclick="() => map = !map">Map</button>
+                <div class="final"><span>FINAL SCORE</span></div>
+                <p><b>Trophy score: @Fmt.Score(sheet.Score)</b><b>Harvest value: @(sheet.HarvestValue is { } v ? Fmt.Num(v, "0.000") : "N/A")</b></p>
+            </div>
+        </div>
+        @if (map)
+        {
+            <div class="map">
+                <button type="button" class="x" aria-label="@L["Store.Close"]" @onclick="() => map = false">&times;</button>
+                <MapPlaceholder Height="360" Zoom="false" Markers="markers" />
+            </div>
+        }
+        @if (typical) { <div class="sponsor"><AssetSlot Name="sheet-sponsor" Width="116" Height="82" /></div> }
+    </div>
+}
+
+@code {
+    static readonly MapMarker[] markers = [new(1, MarkerKind.Interest, "Player", 42, 58), new(2, MarkerKind.Interest, "Animal", 55, 40)];
+    ScoreSheet? sheet;
+    bool map;
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter, EditorRequired] public string Kind { get; set; } = "";
+    [Parameter] public long Id { get; set; }
+
+    protected override async Task OnParametersSetAsync() { sheet = await Service.SheetAsync(Handle, Kind, Id); map = false; }
+
+    static string Cell(double? v) => v is { } x ? Fmt.Score(x) : "";
+}

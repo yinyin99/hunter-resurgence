@@ -32,7 +32,7 @@
         <ul class="tabs">
             @foreach (var (key, label, icon) in tabs)
             {
-                <li class="@(key == tab ? "on" : "")"><a href="/profile/@profile.Handle/@key"><Icon Name="@icon" /> @L[label]</a></li>
+                <li class="@(key == marked ? "on" : "")"><a href="/profile/@profile.Handle/@key"><Icon Name="@icon" /> @L[label]</a></li>
             }
         </ul>
         @switch (tab)
@@ -44,6 +44,8 @@
             case "trophies": <TrophiesTab Handle="@profile.Handle" Sub="@Sub" />; break;
             case "dogs": <DogsTab Handle="@profile.Handle" />; break;
             case "friends": <FriendsTab Handle="@profile.Handle" Own="@profile.Own" Sub="@Sub" />; break;
+            case "expedition": <ExpeditionTab Handle="@profile.Handle" Id="@id" />; break;
+            case "score" or "antler": <SheetTab Handle="@profile.Handle" Kind="@Tab" Id="@id" />; break;
             case "statistics": <StatisticsTab Handle="@profile.Handle" Sub="@Sub" Arg="@Arg" />; break;
         }
     </div>
@@ -64,7 +66,10 @@
     [Parameter] public string? Tab { get; set; }
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "ranks";
+    string tab => tabs.Any(t => t.Key == Tab) || Tab is "expedition" or "score" or "antler" ? Tab! : "ranks";
+    /// <summary>The tab shown as open: an expedition belongs to Statistics, a scoring sheet to none.</summary>
+    string? marked => tab is "score" or "antler" ? null : tab == "expedition" ? "statistics" : tab;
+    long id => long.TryParse(Sub, out var n) ? n : 0;
 
     protected override async Task OnParametersSetAsync()
     {
