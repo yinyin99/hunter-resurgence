@@ -203,28 +203,26 @@
   <data name="GameSettings.Opt.VeryHigh" xml:space="preserve"><value>Very high</value></data>
   <data name="GameSettings.Opt.Ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="GameSettings.Opt.Custom" xml:space="preserve"><value>Custom</value></data>
+  <data name="GameSettings.Opt.Default" xml:space="preserve"><value>Default</value></data>
   <data name="GameSettings.Opt.Off" xml:space="preserve"><value>Off</value></data>
   <data name="GameSettings.Opt.X2" xml:space="preserve"><value>2x</value></data>
   <data name="GameSettings.Opt.X4" xml:space="preserve"><value>4x</value></data>
   <data name="GameSettings.Opt.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.Opt.X16" xml:space="preserve"><value>16x</value></data>
-  <data name="GameSettings.Opt.Red" xml:space="preserve"><value>Red</value></data>
-  <data name="GameSettings.Opt.Blue" xml:space="preserve"><value>Blue</value></data>
   <data name="GameSettings.Preset" xml:space="preserve"><value>Quality preset</value></data>
   <data name="GameSettings.Preset.Hint" xml:space="preserve"><value>Choosing a preset sets the quality options below. Changing one of them switches to Custom.</value></data>
   <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Fullscreen</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Resolution</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} @ {2} Hz</value></data>
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scene complexity</value></data>
   <data name="GameSettings.Scene.Hint" xml:space="preserve"><value>Controls vegetation density and render distance: Low 220 m, Medium 270 m, High and Very high 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texture quality</value></data>
-  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>High textures need 512 MB of video memory in single player and 768 MB in multiplayer. You have {0} MB of video memory.</value></data>
+  <data name="GameSettings.Texture.Hint" xml:space="preserve"><value>High textures need 512 MB of video memory in single player and 768 MB in multiplayer.</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow quality</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Anti-aliasing (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic filtering</value></data>
   <data name="GameSettings.Scope" xml:space="preserve"><value>Scope quality</value></data>
-  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Extended audio memory</value></data>
-  <data name="GameSettings.AudioMemory.Hint" xml:space="preserve"><value>Keeps more sounds loaded. Uses more memory.</value></data>
   <data name="GameSettings.MasterVolume" xml:space="preserve"><value>Master volume</value></data>
   <data name="GameSettings.InvertMouse" xml:space="preserve"><value>Invert mouse</value></data>
   <data name="GameSettings.LookSpeed" xml:space="preserve"><value>Look speed</value></data>
@@ -232,8 +230,6 @@
   <data name="GameSettings.BinocularSpeed" xml:space="preserve"><value>Binocular speed</value></data>
   <data name="GameSettings.Gamepad" xml:space="preserve"><value>Use gamepad</value></data>
   <data name="GameSettings.Gamma" xml:space="preserve"><value>Gamma</value></data>
-  <data name="GameSettings.Outline" xml:space="preserve"><value>Track outline colour</value></data>
-  <data name="GameSettings.Outline.Hint" xml:space="preserve"><value>Colour used to outline animal tracks.</value></data>
   <data name="GameSettings.PlayerNames" xml:space="preserve"><value>Show player names</value></data>
   <data name="GameSettings.StatusBar" xml:space="preserve"><value>Status bar</value></data>
   <data name="GameSettings.PlayerSpotting" xml:space="preserve"><value>Player spotting</value></data>
@@ -243,9 +239,14 @@
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Contextual help</value></data>
   <data name="GameSettings.AutoReload" xml:space="preserve"><value>Auto reload</value></data>
   <data name="GameSettings.GlassesShader" xml:space="preserve"><value>Glasses shader</value></data>
-  <data name="GameSettings.Reset" xml:space="preserve"><value>Reset to current</value></data>
-  <data name="GameSettings.Defaults" xml:space="preserve"><value>Restore defaults</value></data>
+  <data name="GameSettings.Reset" xml:space="preserve"><value>Undo changes</value></data>
   <data name="GameSettings.Saved" xml:space="preserve"><value>Saved</value></data>
+  <data name="GameSettings.NothingToSave" xml:space="preserve"><value>Nothing changed.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Could not save: {0}</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Not configured: settings.json has no entry for this file.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Start the game once so it creates this file.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>This file has a format the launcher does not know, so it is left untouched.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>The game is running. Close it before saving: it rewrites these files itself.</value></data>
   <data name="AppSettings.Summary" xml:space="preserve"><value>Language, game folder, accounts and servers of this launcher.</value></data>
   <data name="AppSettings.General" xml:space="preserve"><value>General</value></data>
   <data name="AppSettings.Language" xml:space="preserve"><value>Language</value></data>

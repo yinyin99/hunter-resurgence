@@ -31,7 +31,7 @@ dotnet build hunter-resurgence.slnx -c Release
 dotnet run --project src/Launcher -c Release -- --selftest
 ```
 
-The launcher reads a `settings.json` next to its exe (start from `src/Launcher/settings.example.json`; it needs `steam_app_id` and `client_exe`, the real values are never committed). Without them it still starts and says the game is not configured. The player's own choices are saved in `%APPDATA%\hunter-resurgence\launcher.json`.
+The launcher reads a `settings.json` next to its exe (start from `src/Launcher/settings.example.json`; the real values are never committed). `steam_app_id` and `client_exe` locate the game; `graphics_file`, `options_file` (both relative to `%APPDATA%`) and `options_key_prefix` let Game settings edit the game's two settings files. Any missing or placeholder value only disables its own part: the launcher still starts and says what is not configured. Game settings changes only the values you edit, keeps a one-time copy of each file as `<file>.resurgence-backup`, and refuses to save while the game runs. The player's own choices are saved in `%APPDATA%\hunter-resurgence\launcher.json`.
 
 To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 

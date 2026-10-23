@@ -1,4 +1,7 @@
 {
   "steam_app_id": "<steam-app-id>",
-  "client_exe": "<client-dir>\\<client-exe>"
+  "client_exe": "<client-dir>\\<client-exe>",
+  "graphics_file": "<graphics-file>",
+  "options_file": "<options-file>",
+  "options_key_prefix": "<key-prefix>"
 }

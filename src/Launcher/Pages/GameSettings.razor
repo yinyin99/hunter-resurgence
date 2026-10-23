@@ -1,7 +1,13 @@
 @page "/settings/game"
 @using Resurgence.Launcher.Components
+@inject LauncherEnv Env
 
 <PageHeader Title="@L["Nav.GameSettings"]" Lead="@L["GameSettings.Lead"]" />
+
+@if (running)
+{
+    <p role="alert"><span class="badge warn">@L["GameSettings.ClientRunning"]</span></p>
+}
 
 <div class="tabs" role="tablist" aria-label="@L["GameSettings.Tabs"]">
     @for (var i = 0; i < TabNames.Length; i++)
@@ -14,58 +20,64 @@
 </div>
 
 <div id="gs-panel" role="tabpanel" aria-labelledby="gs-tab-@tab">
-    @switch (tab)
+    @if (tab == 0 && gfx is null)
     {
-        case 0:
-            <SettingsSelect Label="@L["GameSettings.Preset"]" Hint="@L["GameSettings.Preset.Hint"]"
-                            Options="@(PresetIndex == Custom ? Opts(PresetNames) : Opts(PresetNames[..Custom]))"
-                            Value="@PresetIndex" ValueChanged="SetPreset" />
-            <SettingsSwitch Label="@L["GameSettings.Fullscreen"]" @bind-Value="cfg.Fullscreen" />
-            <SettingsSwitch Label="@L["GameSettings.Vsync"]" @bind-Value="cfg.Vsync" />
-            <SettingsSelect Label="@L["GameSettings.Resolution"]" Options="Resolutions" @bind-Value="cfg.Resolution" />
-            <SettingsSelect Label="@L["GameSettings.Scene"]" Hint="@L["GameSettings.Scene.Hint"]"
-                            Options="@Opts(Levels4)" @bind-Value="cfg.Scene" />
-            <SettingsSelect Label="@L["GameSettings.Texture"]" Hint="@L["GameSettings.Texture.Hint", SampleData.VideoMemoryMb]"
-                            Options="@Opts(Levels3)" @bind-Value="cfg.Texture" />
-            <SettingsSelect Label="@L["GameSettings.Shadow"]" Options="@Opts(Levels4)" @bind-Value="cfg.Shadow" />
-            <SettingsSelect Label="@L["GameSettings.Msaa"]" Options="@Opts(Msaa)" @bind-Value="cfg.Msaa" />
-            <SettingsSelect Label="@L["GameSettings.Aniso"]" Options="@Opts(Aniso)" @bind-Value="cfg.Aniso" />
-            <SettingsSelect Label="@L["GameSettings.Scope"]" Options="@Opts(Scope)" @bind-Value="cfg.Scope" />
-            <SettingsSwitch Label="@L["GameSettings.AudioMemory"]" Hint="@L["GameSettings.AudioMemory.Hint"]"
-                            @bind-Value="cfg.ExtendedAudioMemory" />
-            break;
-        case 1:
-            <SettingsSlider Label="@L["GameSettings.MasterVolume"]" @bind-Value="cfg.MasterVolume" />
-            break;
-        case 2:
-            <SettingsSwitch Label="@L["GameSettings.InvertMouse"]" @bind-Value="cfg.InvertMouse" />
-            <SettingsSlider Label="@L["GameSettings.LookSpeed"]" @bind-Value="cfg.LookSpeed" />
-            <SettingsSlider Label="@L["GameSettings.AimSpeed"]" @bind-Value="cfg.AimSpeed" />
-            <SettingsSlider Label="@L["GameSettings.BinocularSpeed"]" @bind-Value="cfg.BinocularSpeed" />
-            <SettingsSwitch Label="@L["GameSettings.Gamepad"]" @bind-Value="cfg.UseGamepad" />
-            break;
-        default:
-            <SettingsSlider Label="@L["GameSettings.Gamma"]" @bind-Value="cfg.Gamma" />
-            <SettingsSelect Label="@L["GameSettings.Outline"]" Hint="@L["GameSettings.Outline.Hint"]"
-                            Options="@Opts(Outlines)" @bind-Value="cfg.Outline" />
-            <SettingsSwitch Label="@L["GameSettings.PlayerNames"]" @bind-Value="cfg.PlayerNames" />
-            <SettingsSwitch Label="@L["GameSettings.StatusBar"]" @bind-Value="cfg.StatusBar" />
-            <SettingsSwitch Label="@L["GameSettings.PlayerSpotting"]" @bind-Value="cfg.PlayerSpotting" />
-            <SettingsSwitch Label="@L["GameSettings.AnimalSpotting"]" @bind-Value="cfg.AnimalSpotting" />
-            <SettingsSwitch Label="@L["GameSettings.Chat"]" @bind-Value="cfg.Chat" />
-            <SettingsSwitch Label="@L["GameSettings.MapPopups"]" @bind-Value="cfg.MapPopups" />
-            <SettingsSwitch Label="@L["GameSettings.ContextHelp"]" @bind-Value="cfg.ContextHelp" />
-            <SettingsSwitch Label="@L["GameSettings.AutoReload"]" @bind-Value="cfg.AutoReload" />
-            <SettingsSwitch Label="@L["GameSettings.GlassesShader"]" @bind-Value="cfg.GlassesShader" />
-            break;
+        <p class="empty">@ProblemText(gfxProblem)</p>
+    }
+    else if (tab != 0 && opt is null)
+    {
+        <p class="empty">@ProblemText(optProblem)</p>
+    }
+    else if (tab == 0)
+    {
+        <SettingsSelect Label="@L["GameSettings.Preset"]" Hint="@L["GameSettings.Preset.Hint"]"
+                        Options="@(PresetIndex == Custom ? Opts(PresetNames) : Opts(PresetNames[..Custom]))"
+                        Value="@PresetIndex" ValueChanged="SetPreset" />
+        <SettingsSwitch Label="@L["GameSettings.Fullscreen"]" @bind-Value="gfx!.Fullscreen" />
+        <SettingsSwitch Label="@L["GameSettings.Vsync"]" @bind-Value="gfx!.Vsync" />
+        <SettingsSelect Label="@L["GameSettings.Resolution"]" Options="@(resolutions.Select(r => L["GameSettings.ResolutionFormat", r.W, r.H, r.Hz].Value).ToList())"
+                        Value="@ResolutionIndex" ValueChanged="SetResolution" />
+        <SettingsSelect Label="@L["GameSettings.Scene"]" Hint="@L["GameSettings.Scene.Hint"]" Options="@Opts(Levels4)" @bind-Value="gfx!.Scene" />
+        <SettingsSelect Label="@L["GameSettings.Texture"]" Hint="@L["GameSettings.Texture.Hint"]" Options="@Opts(Levels3)" @bind-Value="gfx!.Texture" />
+        <SettingsSelect Label="@L["GameSettings.Shadow"]" Options="@Opts(Levels4)" @bind-Value="gfx!.Shadow" />
+        <SettingsSelect Label="@L["GameSettings.Msaa"]" Options="@Opts(Msaa)" @bind-Value="gfx!.Msaa" />
+        <SettingsSelect Label="@L["GameSettings.Aniso"]" Options="@Opts(Aniso)" @bind-Value="gfx!.Aniso" />
+        @if (opt?.Has(ScopeKey) == true)
+        {
+            <SettingsSelect Label="@L["GameSettings.Scope"]" Options="@Opts(Scope)" Value="@opt!.Get(ScopeKey)" ValueChanged="SetScope" />
+        }
+    }
+    else if (tab == 1)
+    {
+        @Slider("MasterVolume", "GameSettings.MasterVolume")
+    }
+    else if (tab == 2)
+    {
+        @Toggle("InvertedMouse", "GameSettings.InvertMouse")
+        @Slider("LookSpeed", "GameSettings.LookSpeed")
+        @Slider("AimSpeed", "GameSettings.AimSpeed")
+        @Slider("BinocularSpeed", "GameSettings.BinocularSpeed")
+        @Toggle("UseGamepad", "GameSettings.Gamepad")
+    }
+    else
+    {
+        @Slider("Gamma", "GameSettings.Gamma")
+        @Toggle("ShowPlayerNames", "GameSettings.PlayerNames")
+        @Toggle("ShowStatusBar", "GameSettings.StatusBar")
+        @Toggle("ShowPlayerSpotting", "GameSettings.PlayerSpotting")
+        @Toggle("ShowAnimalSpotting", "GameSettings.AnimalSpotting")
+        @Toggle("ShowChat", "GameSettings.Chat")
+        @Toggle("ShowMapPopups", "GameSettings.MapPopups")
+        @Toggle("ContextualHelp", "GameSettings.ContextHelp")
+        @Toggle("AutoReload", "GameSettings.AutoReload")
+        @Toggle("ShowGlassesShader", "GameSettings.GlassesShader")
     }
 </div>
 
 <div class="actions row">
-    <button type="button" class="btn" @onclick="Save">@L["Common.Save"]</button>
-    <button type="button" class="btn btn-secondary" @onclick="ResetToSaved">@L["GameSettings.Reset"]</button>
-    <button type="button" class="btn btn-secondary" @onclick="RestoreDefaults">@L["GameSettings.Defaults"]</button>
-    <span class="muted" role="status">@(saved ? L["GameSettings.Saved"] : "")</span>
+    <button type="button" class="btn" disabled="@(gfx is null && opt is null)" @onclick="Save">@L["Common.Save"]</button>
+    <button type="button" class="btn btn-secondary" @onclick="Undo">@L["GameSettings.Reset"]</button>
+    <span class="muted" role="status">@message</span>
 </div>
 
 @code {
@@ -75,89 +87,126 @@
     private static readonly string[] Levels3 = ["Low", "Medium", "High"];
     private static readonly string[] Levels4 = ["Low", "Medium", "High", "VeryHigh"];
     private static readonly string[] Msaa = ["Off", "X2", "X4", "X8"];
-    private static readonly string[] Aniso = ["Off", "X2", "X4", "X8", "X16"];
+    private static readonly string[] Aniso = ["Default", "Off", "X2", "X4", "X8", "X16"];
     private static readonly string[] Scope = ["High", "Low"];
-    private static readonly string[] Outlines = ["Red", "Blue"];
-    private static readonly string[] Resolutions =
-        ["1280 x 720 @ 60", "1600 x 900 @ 60", "1920 x 1080 @ 60", "1920 x 1080 @ 144", "2560 x 1440 @ 60", "2560 x 1440 @ 144"];
 
-    // quality presets, same order as Cfg.Quality: scene, texture, shadow, msaa, aniso, scope (indexes into the lists above)
+    // presets set only: scene, texture, shadow, msaa, aniso, vsync (never resolution or fullscreen)
     private static readonly int[][] Presets =
     [
-        [0, 0, 0, 0, 0, 1], // Low
-        [1, 1, 1, 0, 1, 0], // Medium
-        [2, 2, 2, 1, 2, 0], // High
-        [3, 2, 3, 3, 4, 0], // Ultra
+        [0, 0, 0, 0, 1, 0], // Low
+        [1, 1, 1, 1, 3, 1], // Medium
+        [2, 2, 2, 2, 4, 1], // High
+        [3, 2, 3, 3, 5, 1], // Ultra
     ];
     private const int Custom = 4;
 
-    private sealed class Cfg
-    {
-        public bool Fullscreen { get; set; } = true;
-        public bool Vsync { get; set; } = true;
-        public int Resolution { get; set; } = 2;
-        public int Scene { get; set; } = 2;
-        public int Texture { get; set; } = 2;
-        public int Shadow { get; set; } = 2;
-        public int Msaa { get; set; } = 1;
-        public int Aniso { get; set; } = 2;
-        public int Scope { get; set; }
-        public bool ExtendedAudioMemory { get; set; }
-        public int MasterVolume { get; set; } = 80;
-        public bool InvertMouse { get; set; }
-        public int LookSpeed { get; set; } = 50;
-        public int AimSpeed { get; set; } = 50;
-        public int BinocularSpeed { get; set; } = 50;
-        public bool UseGamepad { get; set; }
-        public int Gamma { get; set; } = 50;
-        public int Outline { get; set; }
-        public bool PlayerNames { get; set; } = true;
-        public bool StatusBar { get; set; } = true;
-        public bool PlayerSpotting { get; set; } = true;
-        public bool AnimalSpotting { get; set; } = true;
-        public bool Chat { get; set; } = true;
-        public bool MapPopups { get; set; } = true;
-        public bool ContextHelp { get; set; } = true;
-        public bool AutoReload { get; set; }
-        public bool GlassesShader { get; set; } = true;
+    private GraphicsSettings? gfx, gfxSaved;
+    private OptionsSettings? opt, optSaved;
+    private FileProblem gfxProblem, optProblem;
+    private List<(int W, int H, int Hz)> resolutions = [];
+    private const string ScopeKey = "ScopeQuality";
+    private int tab;
+    private bool running;
+    private string? message;
 
-        public int[] Quality => [Scene, Texture, Shadow, Msaa, Aniso, Scope];
-        public void SetQuality(int[] q) => (Scene, Texture, Shadow, Msaa, Aniso, Scope) = (q[0], q[1], q[2], q[3], q[4], q[5]);
-        public Cfg Clone() => (Cfg)MemberwiseClone();
+    private string? GfxPath => Env.Settings.GraphicsFile is { } f ? Path.Combine(GameFiles.AppData, f) : null;
+    private string? OptPath => Env.Settings.OptionsFile is { } f && Env.Settings.OptionsKeyPrefix is not null ? Path.Combine(GameFiles.AppData, f) : null;
+
+    protected override void OnInitialized() => Load();
+
+    private void Load()
+    {
+        (gfx, gfxProblem) = GfxPath is { } gp ? GameFiles.ReadGraphics(gp) : (null, FileProblem.NotConfigured);
+        (opt, optProblem) = OptPath is { } op ? GameFiles.ReadOptions(op, Env.Settings.OptionsKeyPrefix!) : (null, FileProblem.NotConfigured);
+        gfxSaved = gfx is null ? null : gfx with { };
+        optSaved = opt?.Clone();
+        resolutions = [.. GameFiles.DisplayModes()];
+        if (gfx is not null && !resolutions.Contains((gfx.Width, gfx.Height, gfx.Hz)))
+        {
+            resolutions.Add((gfx.Width, gfx.Height, gfx.Hz));
+            resolutions.Sort();
+        }
+        running = GameFiles.ClientRunning(Env.Settings.ClientExe);
     }
 
-    private Cfg cfg = new();
-    private Cfg snapshot = new(); // what "Save" last stored (UI-only, nothing is persisted)
-    private int tab;
-    private bool saved;
-    private int saveCount;
+    private LocalizedString ProblemText(FileProblem p) => L[p switch
+    {
+        FileProblem.NotConfigured => "GameSettings.NotConfigured",
+        FileProblem.BadFormat => "GameSettings.BadFormat",
+        _ => "GameSettings.Missing",
+    }];
+
+    private RenderFragment Slider(string key, string label)
+    {
+        var o = opt!;
+        return o.Has(key) ? @<SettingsSlider Label="@L[label]" Value="@o.Get(key)" ValueChanged="v => o.Set(key, v)" /> : @<text></text>;
+    }
+
+    private RenderFragment Toggle(string key, string label)
+    {
+        var o = opt!;
+        return o.Has(key) ? @<SettingsSwitch Label="@L[label]" Value="@(o.Get(key) != 0)" ValueChanged="v => o.Set(key, v ? 1 : 0)" /> : @<text></text>;
+    }
+
+    private string[] Opts(string[] names) => names.Select(n => L[$"GameSettings.Opt.{n}"].Value).ToArray();
+
+    private int[] Quality => [gfx!.Scene, gfx.Texture, gfx.Shadow, gfx.Msaa, gfx.Aniso, gfx.Vsync ? 1 : 0];
 
     // the preset is derived: any edit that no longer matches a preset reads as Custom
     private int PresetIndex
     {
         get
         {
-            var i = Array.FindIndex(Presets, p => p.SequenceEqual(cfg.Quality));
+            var i = Array.FindIndex(Presets, p => p.SequenceEqual(Quality));
             return i < 0 ? Custom : i;
         }
     }
 
-    private string[] Opts(string[] names) => names.Select(n => L[$"GameSettings.Opt.{n}"].Value).ToArray();
-
     private void SetPreset(int i)
     {
-        if (i < Custom) cfg.SetQuality(Presets[i]);
+        if (i >= Custom) return;
+        var p = Presets[i];
+        (gfx!.Scene, gfx.Texture, gfx.Shadow, gfx.Msaa, gfx.Aniso, gfx.Vsync) = (p[0], p[1], p[2], p[3], p[4], p[5] == 1);
     }
 
-    private async Task Save()
+    private void SetScope(int v) => opt!.Set(ScopeKey, v);
+
+    private int ResolutionIndex => resolutions.IndexOf((gfx!.Width, gfx.Height, gfx.Hz));
+
+    private void SetResolution(int i) => (gfx!.Width, gfx.Height, gfx.Hz) = resolutions[i];
+
+    private void Say(string key, params object[] args) => message = L[key, args];
+
+    private void Save()
     {
-        snapshot = cfg.Clone();
-        var n = ++saveCount;
-        saved = true;
-        await Task.Delay(2500);
-        if (n == saveCount) saved = false;
+        // the client reads the files once at start and rewrites them itself: never touch them while it runs
+        running = GameFiles.ClientRunning(Env.Settings.ClientExe);
+        if (running) { Say("GameSettings.ClientRunning"); return; }
+        try
+        {
+            var wrote = false;
+            if (gfx is not null && GfxPath is { } gp && gfx != gfxSaved)
+            {
+                GameFiles.WriteGraphics(gp, gfx);
+                gfxSaved = gfx with { };
+                wrote = true;
+            }
+            if (opt is not null && OptPath is { } op && !opt.SameAs(optSaved!))
+            {
+                GameFiles.WriteOptions(op, Env.Settings.OptionsKeyPrefix!, opt);
+                optSaved = opt.Clone();
+                wrote = true;
+            }
+            Say(wrote ? "GameSettings.Saved" : "GameSettings.NothingToSave");
+        }
+        catch (InvalidDataException) { Say("GameSettings.BadFormat"); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { Say("GameSettings.SaveFailed", e.Message); }
     }
 
-    private void ResetToSaved() => cfg = snapshot.Clone();
-    private void RestoreDefaults() => cfg = new Cfg();
+    // back to what the files hold now
+    private void Undo()
+    {
+        message = null;
+        Load();
+    }
 }
