@@ -1,0 +1,195 @@
+/* Theme variables of the old interface (values 1:1); components use the variables, never literals. */
+
+@font-face { font-family: Roboto; font-weight: 300; font-display: swap; src: url(fonts/roboto-300.woff2) format("woff2"); }
+@font-face { font-family: Roboto; font-weight: 400; font-display: swap; src: url(fonts/roboto-400.woff2) format("woff2"); }
+@font-face { font-family: Roboto; font-weight: 500; font-display: swap; src: url(fonts/roboto-500.woff2) format("woff2"); }
+@font-face { font-family: "Open Sans"; font-weight: 400; font-display: swap; src: url(fonts/open-sans-400.woff2) format("woff2"); }
+@font-face { font-family: "Open Sans"; font-weight: 700; font-display: swap; src: url(fonts/open-sans-700.woff2) format("woff2"); }
+
+:root {
+    /* surfaces */
+    --bg-page: #000;
+    --bg-column: #111;
+    --bg-sidebar: #161616;
+    --bg-block: #191919;
+    --bg-block-2: #1c1c1c;
+    --bg-block-3: #1a1a1a;
+    --bg-dropdown: #1f1f1f;
+    --bg-dropdown-2: #222;
+    --bg-footer: #101010;
+    --bg-bar-top: #252423;
+    --bg-bar-bottom: #141312;
+    --bg-menu: rgba(0, 0, 0, .49);
+    --bg-backdrop: rgba(0, 0, 0, .75);
+    --bg-patch: rgba(0, 0, 0, .85);
+    --bg-patch-modal: rgba(0, 0, 0, .8);
+    --bg-tooltip: rgba(0, 0, 0, .8);
+    --shadow-dropdown: 0 2px 10px #000;
+    --shadow-bar: 0 1px 10px rgba(0, 0, 0, .6);
+
+    /* text */
+    --fg-body: #BBB;
+    --fg-heading: #EEE;
+    --fg-muted: #999;
+    --fg-muted-2: #888;
+    --fg-muted-3: #666;
+
+    /* accents, controls, status */
+    --accent: #F9560D;
+    --accent-hover: #fb8a58;
+    --primary: #f9370d;
+    --primary-hover: #e72d06;
+    --launcher-accent: #ff4700;
+    --menu-hover-from: #333;
+    --menu-hover-to: #222;
+    --ems-green: #4c9e20;
+    --store-blue: #00a3ce;
+    --buy-green: #A6E918;
+    --pill-ems: #E7BE3D;
+    --pill-balance-fg: #CCC;
+    --badge: #F00;
+    --online: #95D338;
+    --online-2: #7CB37A;
+    --success: #7ECE28;
+    --success-2: #25c600;
+    --link-blue: #7aaffa;
+    --notice-from: #60ADC2;
+    --notice-to: #275179;
+    --tab-fg: #AAA;
+    --tab-active: #fbcb36;
+    --dist-short: #47DD01;
+    --dist-mid: #FFFF00;
+    --dist-long: #FD0000;
+    --btn-bg: #EEE;
+    --btn-fg: #333;
+    --btn-ui-bg: #3c3c3c;
+    --btn-inverse-bg: #444;
+    --field-bg: #1c1c1c;
+    --field-bd: #444;
+    --select-bg: #444;
+    --select-fg: #FFF;
+    --check-bg: #444;
+    --check-tick: #F9560D;
+    --warn: #FF5200;
+    --radius: 3px;
+    --radius-md: 4px;
+    --radius-balance: 10px;
+    --radius-pill: 15px;
+
+    /* typography */
+    --font-body: Roboto, Arial, sans-serif;
+    --font-heading: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-signup: "Open Sans", Arial, sans-serif;
+    --fs-body: 14px;
+    --lh-body: 20px;
+    --fs-h1: 38.5px;
+    --fs-h2: 31.5px;
+    --fs-h3: 24.5px;
+    --fs-h4: 17.5px;
+    --fs-h5: 14px;
+    --fs-h6: 11.9px;
+    --fs-page-title: 28px;
+    --fs-menu: 15px;
+    --ls-menu: 2px;
+    --fs-statusbar: 16px;
+    --fs-btn: 14px;
+    --fs-btn-lg: 17.5px;
+    --fs-btn-sm: 11.9px;
+    --fs-tooltip: 11px;
+
+    /* layout */
+    --w-container: 1220px;
+    --w-main: 980px;
+    --w-sidebar: 240px;
+    --h-statusbar: 70px;
+    --h-patchbar: 75px;
+    --w-modal: 980px;
+    --w-modal-confirm: 450px;
+    --w-modal-confirm-wide: 550px;
+    --w-modal-alert: 300px;
+    --w-gamesettings: 610px;
+    --space: 5px;
+
+    /* signup card */
+    --su-bg: #000;
+    --su-btn: linear-gradient(#ffbb8e 0%, #f60 39%, #f60 100%);
+    --su-btn-hover: linear-gradient(#ffcb9e 0%, #ff7610 39%, #ff7610 100%);
+    --su-btn-border: rgba(64, 52, 33, .83);
+    --su-btn-disabled: linear-gradient(#ccc 0%, #808080 50%, #505050 100%);
+    --su-link: #de5900;
+    --su-link-hover: #913a00;
+    --su-focus: #f60;
+    --su-focus-glow: rgba(255, 102, 0, .6);
+    --su-invalid: red;
+    --su-invalid-glow: rgba(255, 0, 0, .6);
+    --su-valid: #0c0;
+    --su-input-bg: hsla(0, 0%, 100%, .95);
+    --su-input-fg: #444;
+    --su-input-bd: #444;
+    --su-placeholder: #aaa;
+    --su-dialog-bg: rgba(58, 49, 40, .91);
+    --su-dialog-bd: #000;
+    --su-dialog-rule: #655b4c;
+    --su-dialog-head: #eee;
+    --su-error: #e65656;
+    --su-login-error: rgba(255, 50, 50, .8);
+    --su-link-button: #005826;
+    --su-progress-well: rgba(0, 0, 0, .5);
+    --su-progress-bar: #5cb85c;
+    --su-radius-btn: 6px;
+    --su-radius-input: 4px;
+}
+
+html { overflow-y: scroll; overflow-x: auto; }
+
+body {
+    margin: 0;
+    background: var(--bg-page);
+    color: var(--fg-body);
+    font: 400 var(--fs-body)/var(--lh-body) var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6, th {
+    font-family: var(--font-heading);
+    font-weight: 100;
+    color: var(--fg-heading);
+    margin: 0 0 10px;
+}
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+h4 { font-size: var(--fs-h4); }
+h5 { font-size: var(--fs-h5); }
+h6 { font-size: var(--fs-h6); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--fs-btn);
+    cursor: pointer;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); color: #fff; }
+
+.icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
+
+.asset-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid var(--field-bd);
+    background:
+        linear-gradient(to top right, transparent calc(50% - 1px), var(--field-bd) 50%, transparent calc(50% + 1px)),
+        linear-gradient(to bottom right, transparent calc(50% - 1px), var(--field-bd) 50%, transparent calc(50% + 1px)),
+        #2a2a2a;
+    color: var(--fg-muted-2);
+    font-size: 11px;
+}
