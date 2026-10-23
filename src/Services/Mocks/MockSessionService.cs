@@ -11,10 +11,10 @@ public sealed class MockSessionService : ISessionService
     public Task<Result> RequestCodeAsync(string email) =>
         Task.FromResult(email.Contains('@') ? Result.Success : Result.Fail("Validation.Email.Invalid"));
 
-    public Task<Result> SignInAsync(string email, string code)
+    public Task<Result> SignInAsync(string email, string code, bool register = false)
     {
         if (code.Length != 6 || !code.All(char.IsAsciiDigit)) return Task.FromResult(Result.Fail("Validation.Code.Invalid"));
-        session = new("Hunter01", 74);
+        session = register ? new("", 0) : new("Hunter01", 74);
         Changed?.Invoke();
         return Task.FromResult(Result.Success);
     }
@@ -24,5 +24,18 @@ public sealed class MockSessionService : ISessionService
         session = null;
         Changed?.Invoke();
         return Task.CompletedTask;
+    }
+
+    public Task<Result> SetHandleAsync(string handle)
+    {
+        session = new(handle, 0);
+        Changed?.Invoke();
+        return Task.FromResult(Result.Success);
+    }
+
+    public async Task<StartOutcome> StartAsync()
+    {
+        await Task.Delay(1200);
+        return session is null ? StartOutcome.LoggedOut : session.Handle.Length == 0 ? StartOutcome.NeedsSignup : StartOutcome.LoggedIn;
     }
 }

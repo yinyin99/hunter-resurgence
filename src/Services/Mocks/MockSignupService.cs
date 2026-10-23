@@ -1,18 +1,28 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockSignupService : ISignupService
+/// <summary>names starting with "taken" are in use and taken@... the one address. Mock "signup:confirmed" is an account whose e-mail is already confirmed.</summary>
+public sealed class MockSignupService(string? mock = null) : ISignupService
 {
-    public Task<bool> UsernameAvailableAsync(string name) => Task.FromResult(!name.Equals("taken", StringComparison.OrdinalIgnoreCase));
+    string email = "hunter@example.com";
+
+    public Task<bool> UsernameAvailableAsync(string name) => Task.FromResult(!name.StartsWith("taken", StringComparison.OrdinalIgnoreCase));
 
     public Task<IReadOnlyList<string>> AvatarsAsync() =>
         Task.FromResult<IReadOnlyList<string>>(Enumerable.Range(1, 8).Select(i => $"avatar-{i:00}").ToList());
 
-    public Task<IReadOnlyList<Choice>> FirstWeaponsAsync() =>
-        Task.FromResult<IReadOnlyList<Choice>>([new("w1", "Rifle Model A"), new("w2", "Shotgun Model B"), new("w3", "Bow Model C")]);
+    public Task<IReadOnlyList<string>> SuggestNamesAsync() =>
+        Task.FromResult<IReadOnlyList<string>>(["QuietBuck_71", "WildFalcon", "GreyFox_09", "SilentOak", "NorthWind_3"]);
 
-    public Task<IReadOnlyList<Choice>> LicensesAsync() =>
-        Task.FromResult<IReadOnlyList<Choice>>([new("l1", "Licence One"), new("l2", "Licence Two"), new("l3", "Licence Three")]);
+    public Task<string> EmailAsync() => Task.FromResult(email);
 
-    public Task<Result> ChangeEmailAsync(string email) =>
-        Task.FromResult(email.Contains('@') ? Result.Success : Result.Fail("Validation.Email.Invalid"));
+    public Task<bool> EmailConfirmedAsync() => Task.FromResult(mock == "signup:confirmed");
+
+    public Task<Result> ResendEmailAsync() => Task.FromResult(Result.Success);
+
+    public Task<Result> ChangeEmailAsync(string address)
+    {
+        if (address.StartsWith("taken@", StringComparison.OrdinalIgnoreCase)) return Task.FromResult(Result.Fail("Dialog.EmailTaken"));
+        email = address;
+        return Task.FromResult(Result.Success);
+    }
 }
