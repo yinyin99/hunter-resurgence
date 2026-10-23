@@ -4,13 +4,21 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @inject ModalService Modal
+@inject ISessionService Sessions
 
 <div class="shell @(Mode.Launcher ? "launcher" : "web")">
-    <StatusBar Quick="quick" />
-    <div class="page">
-        <MenuBar Hidden="quick" />
+    @if (isPublic)
+    {
+        <PublicBar />
+    }
+    else
+    {
+        <StatusBar Session="session" Quick="quick" />
+    }
+    <div class="page @(isPublic ? "public" : "")">
+        @if (!isPublic) { <MenuBar Hidden="quick" /> }
         <div class="body">
-            <main>@Body</main>
+            <main @key="isPublic">@Body</main>
             <aside class="sidebar"></aside>
         </div>
         <Footer />
@@ -22,14 +30,30 @@
     IJSObjectReference? module;
     DotNetObjectReference<ShellLayout>? self;
     bool quick, alerted;
+    Session? session;
+    Action? changed;
+
+    /// <summary>The website without a session shows the public top bar and no menu.</summary>
+    bool isPublic => !Mode.Launcher && session is null;
 
     [SupplyParameterFromQuery(Name = "alert")] public string? DevAlert { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        session = await Sessions.CurrentAsync();
+        Sessions.Changed += changed = async () => await InvokeAsync(async () =>
+        {
+            session = await Sessions.CurrentAsync();
+            StateHasChanged();
+        });
+    }
 
     protected override void OnParametersSet()
     {
         if (Mode.Dev && DevAlert is not null && !alerted) { alerted = true; Modal.Alert(DevAlert); }
-        // launcher-only routes are not served by the website: back to the feed
-        if (!Mode.Launcher && LauncherGuard.Blocks(Nav.ToBaseRelativePath(Nav.Uri))) Nav.NavigateTo("/feed", replace: true);
+        // launcher-only routes and signed-in routes are not served to the public website: back to the feed
+        var path = Nav.ToBaseRelativePath(Nav.Uri);
+        if (!Mode.Launcher && (LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path))) Nav.NavigateTo("/feed", replace: true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -50,6 +74,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        Sessions.Changed -= changed;
         self?.Dispose();
         if (module is null) return;
         try

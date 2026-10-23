@@ -1,5 +1,6 @@
 @inject HostMode Mode
 @inject ISessionService Sessions
+@inject NavigationManager Nav
 @inject IWalletService Wallet
 @inject IFriendsService Friends
 @inject IMessagesService Messages
@@ -17,7 +18,7 @@
             <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Statusbar.Days", balances.FuelDays]</span></span>
         </div>
         <div class="right">
-            <a class="section" href="/logout" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]"><Icon Name="right-from-bracket" /></a>
+            <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>
             <div class="section settings">
                 <a href="/settings">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
                 <div class="menu"><SettingsMenu /></div>
@@ -41,14 +42,22 @@
     /// <summary>After scrolling the menu bar's items are shown inside this bar (quick-nav).</summary>
     [Parameter] public bool Quick { get; set; }
 
-    Session? session;
+    /// <summary>The signed-in player (the website shows the public bar without one).</summary>
+    [Parameter] public Session? Session { get; set; }
+
+    Session? session => Session;
     Balances balances = new(0, 0, 0, 0);
     int unread;
     bool friendsOpen;
 
+    async Task SignOut()
+    {
+        await Sessions.SignOutAsync();
+        Nav.NavigateTo(Mode.Launcher ? "/signup/start" : "/feed");
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        session = await Sessions.CurrentAsync();
         balances = await Wallet.BalancesAsync();
         unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
     }

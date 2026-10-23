@@ -1,5 +1,6 @@
 .shell { min-height: 100vh; padding-top: var(--h-statusbar); background: var(--bg-page); }
 .page { width: var(--w-container); margin: 0 auto; }
-.body { display: flex; align-items: flex-start; margin-top: 10px; }
+.body { display: flex; align-items: stretch; margin-top: 10px; }
+.public .body { margin-top: 40px; }
 main { box-sizing: border-box; width: var(--w-main); min-height: 800px; padding: 20px; background: var(--bg-column); }
 .sidebar { width: var(--w-sidebar); min-height: 800px; background: var(--bg-sidebar); }

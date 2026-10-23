@@ -2,7 +2,7 @@
 
 @if (Brand.Link(Key) is { } url)
 {
-    <a href="@url" target="_blank" rel="noopener" class="@Class">@ChildContent</a>
+    <a href="@(Path is null ? url : url.TrimEnd('/') + "/" + Path + "/")" target="_blank" rel="noopener" class="@Class">@ChildContent</a>
 }
 else
 {
@@ -12,6 +12,8 @@ else
 @code {
     /// <summary>Link key of settings.json (news, forum, facebook, ...); without a value the content shows as plain text.</summary>
     [Parameter, EditorRequired] public string Key { get; set; } = "";
+    /// <summary>Appended to the configured link, e.g. the slug of a news post.</summary>
+    [Parameter] public string? Path { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 }

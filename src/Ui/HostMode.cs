@@ -6,4 +6,6 @@ public sealed class HostMode
     public bool Launcher { get; set; }
     /// <summary>Development website only: enables the ?alert= preview used to compare the alert dialog.</summary>
     public bool Dev { get; set; }
+    /// <summary>Development website only: mock state from ?mock= (session:out shows the public site).</summary>
+    public string? Mock { get; set; }
 }
