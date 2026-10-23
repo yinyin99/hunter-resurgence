@@ -1,0 +1,11 @@
+.cols { display: flex; gap: 10px; margin: 0 0 20px; }
+.menu { flex: none; width: 220px; }
+.main { flex: 1; min-width: 0; }
+.page-title { margin-bottom: 18px; }
+.menu a { display: block; box-sizing: border-box; min-height: 42px; padding: 9px 10px; border-bottom: 1px solid #111; background: #181818; font-size: 18px; line-height: 24px; color: #777; }
+.menu a.lead { font-weight: 700; }
+.menu a:not(.lead):not(.open) { font-weight: 300; font-size: 17px; }
+.menu a.open { background: #262626; color: #fff; }
+.menu a.sub { min-height: 33px; padding: 4px 20px; border: 0; background: #232323; font-size: 15px; line-height: 24px; color: #777; }
+.menu a.sub.active { border-left: 4px solid var(--accent); padding-left: 16px; color: #fff; }
+.menu a:hover { color: #fff; }
