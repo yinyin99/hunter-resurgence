@@ -1,0 +1,5 @@
+.person { display: flex; align-items: center; gap: .75rem; padding: .85rem 1rem; }
+.who { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.who .dot { margin-right: .35rem; }
+.message { margin: 0; align-self: center; }
+.error { color: #f0897a; }

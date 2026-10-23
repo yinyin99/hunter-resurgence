@@ -1,0 +1,55 @@
+@page "/kills/{Id:int}"
+@using Resurgence.Ui.Players
+
+@if (kill is null || hunt is null)
+{
+    <NotFoundNotice />
+}
+else
+{
+    <Breadcrumb>
+        <li><a href="/players/@hunt.Handle">@hunt.Handle</a></li>
+        <li><a href="/players/@hunt.Handle/hunts">@L["Players.Tab.Hunts"]</a></li>
+        <li><a href="/hunts/@hunt.Id">@hunt.Date.ToString("d")</a></li>
+        <li aria-current="page">@kill.Species</li>
+    </Breadcrumb>
+    <PageHeader Title="@L["Kill.Sheet", kill.Species]" Lead="@L["Kill.Context", hunt.Handle, hunt.Date.ToString("d"), hunt.Reserve]" />
+
+    <div class="card sheet">
+        <div class="score">
+            <span class="value mono">@kill.Score</span>
+            <span class="muted">@L["Kill.Score"]</span>
+            <div class="row">
+                @if (kill.Harvested) { <span class="badge ok">@L["Kill.Harvested"]</span> } else { <span class="badge warn">@L["Kill.NotHarvested"]</span> }
+                @if (kill.Ethical) { <span class="badge ok">@L["Kill.Ethical"]</span> } else { <span class="badge warn">@L["Kill.NotEthical"]</span> }
+            </div>
+        </div>
+        <dl>
+            <dt>@L["Kill.Species"]</dt><dd>@kill.Species</dd>
+            <dt>@L["Kill.Gender"]</dt><dd>@kill.Gender</dd>
+            <dt>@L["Kill.Weight"]</dt><dd class="mono">@L["Players.Kg", kill.WeightKg]</dd>
+            <dt>@L["Kill.Distance"]</dt><dd class="mono">@L["Players.Meters", kill.DistanceM]</dd>
+            <dt>@L["Kill.Weapon"]</dt><dd>@kill.Weapon</dd>
+            <dt>@L["Kill.Ammo"]</dt><dd>@kill.Ammo</dd>
+            <dt>@L["Kill.Placement"]</dt><dd>@kill.Placement</dd>
+        </dl>
+    </div>
+
+    <p class="row">
+        <a class="btn btn-secondary" href="/hunts/@hunt.Id">@L["Kill.ToHunt"]</a>
+        <a class="btn btn-secondary" href="/players/@hunt.Handle">@L["Kill.ToPlayer", hunt.Handle]</a>
+    </p>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    KillRecord? kill;
+    HuntRecord? hunt;
+
+    protected override void OnParametersSet()
+    {
+        kill = SampleData.FindKill(Id);
+        hunt = kill is null ? null : SampleData.FindHunt(kill.HuntId);
+    }
+}

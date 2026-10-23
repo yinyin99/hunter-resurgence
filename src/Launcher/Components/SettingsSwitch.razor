@@ -1,0 +1,14 @@
+<SettingsRow Label="@Label" Hint="@Hint">
+    <label class="switch">
+        <input id="@context" type="checkbox" role="switch" checked="@Value"
+               @onchange="e => ValueChanged.InvokeAsync((bool)e.Value!)" />
+        <span class="switch-track"></span>
+    </label>
+</SettingsRow>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+}

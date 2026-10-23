@@ -1,0 +1,8 @@
+<nav aria-label="@L["Players.Breadcrumb"]">
+    <ol>@ChildContent</ol>
+</nav>
+
+@code {
+    /// <summary>One &lt;li&gt; per step; the last one holds plain text.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

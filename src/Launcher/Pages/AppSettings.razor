@@ -1,0 +1,124 @@
+@page "/settings/app"
+@using Resurgence.Launcher.Components
+
+<PageHeader Title="@L["Nav.AppSettings"]" Lead="@L["AppSettings.Summary"]" />
+
+<section class="card" aria-labelledby="as-general">
+    <h2 id="as-general">@L["AppSettings.General"]</h2>
+    <SettingsSelect Label="@L["AppSettings.Language"]" Hint="@L["AppSettings.Language.Hint"]"
+                    Options="Languages" @bind-Value="language" />
+    <SettingsSwitch Label="@L["AppSettings.CloseOnStart"]" @bind-Value="closeOnStart" />
+</section>
+
+<section class="card stack" aria-labelledby="as-folder">
+    <h2 id="as-folder">@L["AppSettings.Folder"]</h2>
+    <div class="field">
+        <label for="as-folder-path">@L["AppSettings.Folder.Path"]</label>
+        <input id="as-folder-path" class="input mono" readonly value="@SampleData.GameFolder" />
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-secondary">@L["AppSettings.Browse"]</button>
+        <button type="button" class="btn btn-secondary" @onclick="() => checkedAt = DateTime.Now">@L["AppSettings.Detect"]</button>
+        <span class="muted" role="status">
+            @(checkedAt is { } at ? L["AppSettings.Folder.Checked", at] : L["AppSettings.Folder.NotChecked"])
+        </span>
+    </div>
+</section>
+
+<section class="card stack" aria-labelledby="as-steam">
+    <h2 id="as-steam">@L["AppSettings.Steam"]</h2>
+    <p class="hint">@L["AppSettings.Steam.Hint"]</p>
+    <div class="row">
+        @if (steamLinked)
+        {
+            <span class="badge ok">@L["AppSettings.Steam.Linked"]</span>
+            <button type="button" class="btn btn-secondary" @onclick="() => steamLinked = false">@L["AppSettings.Steam.Unlink"]</button>
+        }
+        else
+        {
+            <span class="badge">@L["AppSettings.Steam.NotLinked"]</span>
+            <button type="button" class="btn" @onclick="() => steamLinked = true">@L["AppSettings.Steam.Link"]</button>
+        }
+    </div>
+</section>
+
+<section class="card stack" aria-labelledby="as-servers">
+    <h2 id="as-servers">@L["AppSettings.Servers"]</h2>
+    <p class="hint">@L["AppSettings.Servers.Hint"]</p>
+    @if (servers.Count == 0)
+    {
+        <p class="empty">@L["AppSettings.Servers.Empty"]</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th scope="col">@L["AppSettings.Servers.Name"]</th>
+                        <th scope="col">@L["AppSettings.Servers.Address"]</th>
+                        <th scope="col"><span class="visually-hidden">@L["AppSettings.Servers.Actions"]</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in servers)
+                    {
+                        <tr>
+                            <td>@s.Name</td>
+                            <td class="mono muted">@s.Address</td>
+                            <td class="num">
+                                <button type="button" class="btn btn-sm btn-secondary" aria-label="@L["AppSettings.Servers.RemoveNamed", s.Name]"
+                                        @onclick="() => servers.Remove(s)">@L["AppSettings.Servers.Remove"]</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <form class="toolbar" @onsubmit="AddServer">
+        <div class="field">
+            <label for="as-server-address">@L["AppSettings.Servers.AddLabel"]</label>
+            <input id="as-server-address" class="input mono" placeholder="@L["AppSettings.Servers.Placeholder"]"
+                   @bind="newAddress" @bind:event="oninput" />
+        </div>
+        <button type="submit" class="btn btn-secondary">@L["AppSettings.Servers.Add"]</button>
+    </form>
+</section>
+
+<section class="card stack" aria-labelledby="as-tools">
+    <h2 id="as-tools">@L["AppSettings.Tools"]</h2>
+    <div class="row">
+        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.GameFolder"]</button>
+        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.LogFolder"]</button>
+        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.Screenshots"]</button>
+        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.ClearCache"]</button>
+    </div>
+</section>
+
+<section class="card stack" aria-labelledby="as-about">
+    <h2 id="as-about">@L["AppSettings.About"]</h2>
+    <p>@L["AppSettings.About.Version", SampleData.LauncherVersion]</p>
+    <p>@L["AppSettings.About.Licence"]</p>
+    <p><a href="https://github.com/yinyin99/hunter-resurgence" target="_blank" rel="noopener">@L["AppSettings.About.Repo"]</a></p>
+</section>
+
+@code {
+    // native names, never translated
+    private static readonly string[] Languages = ["English", "Français", "Español", "Português", "Deutsch", "Русский"];
+
+    private int language;
+    private bool closeOnStart;
+    private DateTime? checkedAt;
+    private bool steamLinked;
+    private readonly List<ServerInfo> servers = [.. SampleData.Servers];
+    private string newAddress = "";
+
+    private void AddServer()
+    {
+        var a = newAddress.Trim();
+        if (a.Length == 0 || servers.Any(s => s.Address == a)) return;
+        servers.Add(new(a, a, "", 0, 0, 0, "", ServerStatus.Offline));
+        newAddress = "";
+    }
+}

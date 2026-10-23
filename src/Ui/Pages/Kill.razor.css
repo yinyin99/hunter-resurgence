@@ -1,0 +1,10 @@
+.sheet { display: grid; grid-template-columns: minmax(10rem, 14rem) 1fr; gap: 1.5rem 2rem; align-items: start; }
+.score { display: flex; flex-direction: column; gap: .5rem; padding-right: 2rem; border-right: 1px solid var(--border); }
+.score .value { font-size: 3.5rem; font-weight: 700; line-height: 1; color: var(--accent); }
+dl { display: grid; grid-template-columns: auto 1fr; gap: .6rem 2rem; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; }
+@media (max-width: 700px) {
+    .sheet { grid-template-columns: 1fr; }
+    .score { padding: 0 0 1rem; border-right: 0; border-bottom: 1px solid var(--border); }
+}

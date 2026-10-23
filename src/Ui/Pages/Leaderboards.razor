@@ -1,0 +1,101 @@
+@page "/leaderboards"
+
+<PageHeader Title="@L["Nav.Leaderboards"]" Lead="@L["Leaderboards.Lead"]" />
+
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="species">@L["Leaderboards.Species"]</label>
+        <select id="species" name="species" class="input">
+            <option value="">@L["Common.All"]</option>
+            @foreach (var s in SampleData.SpeciesNames)
+            {
+                <option value="@s" selected="@(s == species)">@s</option>
+            }
+        </select>
+    </div>
+    <div class="field">
+        <label for="weapon">@L["Leaderboards.WeaponClass"]</label>
+        <select id="weapon" name="weapon" class="input">
+            <option value="">@L["Common.All"]</option>
+            @foreach (var w in SampleData.WeaponClasses)
+            {
+                <option value="@w" selected="@(w == weapon)">@w</option>
+            }
+        </select>
+    </div>
+    <div class="field">
+        <label for="season">@L["Leaderboards.Season"]</label>
+        <select id="season" name="season" class="input">
+            @foreach (var s in SampleData.Seasons)
+            {
+                <option value="@s" selected="@(s == season)">@s</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn">@L["Common.Apply"]</button>
+</form>
+
+@if (rows.Count == 0)
+{
+    <p class="empty">@L["Leaderboards.None"]</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th scope="col">@L["Leaderboards.Rank"]</th>
+                    <th scope="col">@L["Leaderboards.Hunter"]</th>
+                    <th scope="col" class="num">@L["Leaderboards.Score"]</th>
+                    <th scope="col" class="num">@L["Leaderboards.Kills"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < rows.Count; i++)
+                {
+                    var r = rows[i];
+                    var isMe = r.Handle == Me;
+                    <tr class="@RowClass(i, isMe)">
+                        <td class="rank mono">@(i + 1)</td>
+                        <td>
+                            <a href="/players/@r.Handle">@r.Handle</a>
+                            @if (isMe) { <span class="badge accent">@L["Leaderboards.You"]</span> }
+                        </td>
+                        <td class="num mono">@r.Score.ToString("N0")</td>
+                        <td class="num mono">@r.Kills</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    /// <summary>Handle to highlight: the launcher cascades the signed-in player, the website none.</summary>
+    [CascadingParameter(Name = "Me")] public string? Me { get; set; }
+
+    [SupplyParameterFromQuery(Name = "species")] public string? Species { get; set; }
+    [SupplyParameterFromQuery(Name = "weapon")] public string? Weapon { get; set; }
+    [SupplyParameterFromQuery(Name = "season")] public string? Season { get; set; }
+
+    // unknown query values fall back to "no filter" (season: the newest one)
+    string? species, weapon, season;
+    IReadOnlyList<LeaderboardRow> rows = [];
+
+    protected override void OnParametersSet()
+    {
+        species = Species is not null && SampleData.SpeciesNames.Contains(Species) ? Species : null;
+        weapon = Weapon is not null && SampleData.WeaponClasses.Contains(Weapon) ? Weapon : null;
+        season = Season is not null && SampleData.Seasons.Contains(Season) ? Season : SampleData.Seasons[0];
+        rows = SampleData.Leaderboard(species, weapon, season);
+    }
+
+    static string? RowClass(int index, bool isMe) => (isMe, index) switch
+    {
+        (true, < 3) => $"me top-{index + 1}",
+        (true, _) => "me",
+        (_, < 3) => $"top-{index + 1}",
+        _ => null,
+    };
+}

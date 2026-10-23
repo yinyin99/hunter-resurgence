@@ -1,0 +1,67 @@
+@page "/hunts/{Id:int}"
+@using Resurgence.Ui.Players
+
+@if (hunt is null)
+{
+    <NotFoundNotice />
+}
+else
+{
+    <Breadcrumb>
+        <li><a href="/players/@hunt.Handle">@hunt.Handle</a></li>
+        <li><a href="/players/@hunt.Handle/hunts">@L["Players.Tab.Hunts"]</a></li>
+        <li aria-current="page">@hunt.Date.ToString("d")</li>
+    </Breadcrumb>
+    <PageHeader Title="@L["Hunt.Title", hunt.Reserve]" Lead="@L["Hunt.Lead", hunt.Date.ToString("d"), hunt.Handle]" />
+
+    <div class="tiles">
+        <div class="tile"><span class="value mono">@L["Hunts.Minutes", hunt.DurationMin]</span><span class="caption">@L["Hunts.Duration"]</span></div>
+        <div class="tile"><span class="value mono">@hunt.Kills.Count</span><span class="caption">@L["Hunts.Kills"]</span></div>
+        <div class="tile"><span class="value mono">@hunt.BestScore</span><span class="caption">@L["Hunts.BestScore"]</span></div>
+        <div class="tile"><span class="value mono">@L["Players.Km", hunt.DistanceKm]</span><span class="caption">@L["Players.Stat.Distance"]</span></div>
+    </div>
+
+    <h2 class="section section-title">@L["Hunt.Kills"]</h2>
+    @if (hunt.Kills.Count == 0)
+    {
+        <p class="empty">@L["Hunt.NoKills"]</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Kill.Species"]</th>
+                        <th scope="col">@L["Kill.Gender"]</th>
+                        <th scope="col" class="num">@L["Kill.Weight"]</th>
+                        <th scope="col" class="num">@L["Kill.Score"]</th>
+                        <th scope="col" class="num">@L["Kill.Distance"]</th>
+                        <th scope="col">@L["Kill.Weapon"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in hunt.Kills)
+                    {
+                        <tr>
+                            <td><a href="/kills/@k.Id">@k.Species</a></td>
+                            <td>@k.Gender</td>
+                            <td class="num mono">@L["Players.Kg", k.WeightKg]</td>
+                            <td class="num mono">@k.Score</td>
+                            <td class="num mono">@L["Players.Meters", k.DistanceM]</td>
+                            <td>@k.Weapon</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    HuntRecord? hunt;
+
+    protected override void OnParametersSet() => hunt = SampleData.FindHunt(Id);
+}

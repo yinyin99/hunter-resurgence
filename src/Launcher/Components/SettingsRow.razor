@@ -1,0 +1,19 @@
+<div class="setting">
+    <div class="info">
+        <label class="label" for="@id">@Label</label>
+        @if (!string.IsNullOrEmpty(Hint))
+        {
+            <p class="hint">@Hint</p>
+        }
+    </div>
+    <div class="control">@ChildContent(id)</div>
+</div>
+
+@code {
+    // the control inside gets this id so the label points at it
+    private readonly string id = "s" + Guid.NewGuid().ToString("N")[..8];
+
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string? Hint { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<string> ChildContent { get; set; } = null!;
+}

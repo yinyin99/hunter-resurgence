@@ -1,0 +1,163 @@
+@page "/settings/game"
+@using Resurgence.Launcher.Components
+
+<PageHeader Title="@L["Nav.GameSettings"]" Lead="@L["GameSettings.Lead"]" />
+
+<div class="tabs" role="tablist" aria-label="@L["GameSettings.Tabs"]">
+    @for (var i = 0; i < TabNames.Length; i++)
+    {
+        var t = i;
+        <button type="button" role="tab" id="gs-tab-@t" class="tab @(tab == t ? "active" : "")"
+                aria-selected="@(tab == t ? "true" : "false")" aria-controls="gs-panel"
+                @onclick="() => tab = t">@L[$"GameSettings.Tab.{TabNames[t]}"]</button>
+    }
+</div>
+
+<div id="gs-panel" role="tabpanel" aria-labelledby="gs-tab-@tab">
+    @switch (tab)
+    {
+        case 0:
+            <SettingsSelect Label="@L["GameSettings.Preset"]" Hint="@L["GameSettings.Preset.Hint"]"
+                            Options="@(PresetIndex == Custom ? Opts(PresetNames) : Opts(PresetNames[..Custom]))"
+                            Value="@PresetIndex" ValueChanged="SetPreset" />
+            <SettingsSwitch Label="@L["GameSettings.Fullscreen"]" @bind-Value="cfg.Fullscreen" />
+            <SettingsSwitch Label="@L["GameSettings.Vsync"]" @bind-Value="cfg.Vsync" />
+            <SettingsSelect Label="@L["GameSettings.Resolution"]" Options="Resolutions" @bind-Value="cfg.Resolution" />
+            <SettingsSelect Label="@L["GameSettings.Scene"]" Hint="@L["GameSettings.Scene.Hint"]"
+                            Options="@Opts(Levels4)" @bind-Value="cfg.Scene" />
+            <SettingsSelect Label="@L["GameSettings.Texture"]" Hint="@L["GameSettings.Texture.Hint", SampleData.VideoMemoryMb]"
+                            Options="@Opts(Levels3)" @bind-Value="cfg.Texture" />
+            <SettingsSelect Label="@L["GameSettings.Shadow"]" Options="@Opts(Levels4)" @bind-Value="cfg.Shadow" />
+            <SettingsSelect Label="@L["GameSettings.Msaa"]" Options="@Opts(Msaa)" @bind-Value="cfg.Msaa" />
+            <SettingsSelect Label="@L["GameSettings.Aniso"]" Options="@Opts(Aniso)" @bind-Value="cfg.Aniso" />
+            <SettingsSelect Label="@L["GameSettings.Scope"]" Options="@Opts(Scope)" @bind-Value="cfg.Scope" />
+            <SettingsSwitch Label="@L["GameSettings.AudioMemory"]" Hint="@L["GameSettings.AudioMemory.Hint"]"
+                            @bind-Value="cfg.ExtendedAudioMemory" />
+            break;
+        case 1:
+            <SettingsSlider Label="@L["GameSettings.MasterVolume"]" @bind-Value="cfg.MasterVolume" />
+            break;
+        case 2:
+            <SettingsSwitch Label="@L["GameSettings.InvertMouse"]" @bind-Value="cfg.InvertMouse" />
+            <SettingsSlider Label="@L["GameSettings.LookSpeed"]" @bind-Value="cfg.LookSpeed" />
+            <SettingsSlider Label="@L["GameSettings.AimSpeed"]" @bind-Value="cfg.AimSpeed" />
+            <SettingsSlider Label="@L["GameSettings.BinocularSpeed"]" @bind-Value="cfg.BinocularSpeed" />
+            <SettingsSwitch Label="@L["GameSettings.Gamepad"]" @bind-Value="cfg.UseGamepad" />
+            break;
+        default:
+            <SettingsSlider Label="@L["GameSettings.Gamma"]" @bind-Value="cfg.Gamma" />
+            <SettingsSelect Label="@L["GameSettings.Outline"]" Hint="@L["GameSettings.Outline.Hint"]"
+                            Options="@Opts(Outlines)" @bind-Value="cfg.Outline" />
+            <SettingsSwitch Label="@L["GameSettings.PlayerNames"]" @bind-Value="cfg.PlayerNames" />
+            <SettingsSwitch Label="@L["GameSettings.StatusBar"]" @bind-Value="cfg.StatusBar" />
+            <SettingsSwitch Label="@L["GameSettings.PlayerSpotting"]" @bind-Value="cfg.PlayerSpotting" />
+            <SettingsSwitch Label="@L["GameSettings.AnimalSpotting"]" @bind-Value="cfg.AnimalSpotting" />
+            <SettingsSwitch Label="@L["GameSettings.Chat"]" @bind-Value="cfg.Chat" />
+            <SettingsSwitch Label="@L["GameSettings.MapPopups"]" @bind-Value="cfg.MapPopups" />
+            <SettingsSwitch Label="@L["GameSettings.ContextHelp"]" @bind-Value="cfg.ContextHelp" />
+            <SettingsSwitch Label="@L["GameSettings.AutoReload"]" @bind-Value="cfg.AutoReload" />
+            <SettingsSwitch Label="@L["GameSettings.GlassesShader"]" @bind-Value="cfg.GlassesShader" />
+            break;
+    }
+</div>
+
+<div class="actions row">
+    <button type="button" class="btn" @onclick="Save">@L["Common.Save"]</button>
+    <button type="button" class="btn btn-secondary" @onclick="ResetToSaved">@L["GameSettings.Reset"]</button>
+    <button type="button" class="btn btn-secondary" @onclick="RestoreDefaults">@L["GameSettings.Defaults"]</button>
+    <span class="muted" role="status">@(saved ? L["GameSettings.Saved"] : "")</span>
+</div>
+
+@code {
+    private static readonly string[] TabNames = ["Graphics", "Audio", "Controls", "Interface"];
+    // option names; display text is the key GameSettings.Opt.{name}
+    private static readonly string[] PresetNames = ["Low", "Medium", "High", "Ultra", "Custom"];
+    private static readonly string[] Levels3 = ["Low", "Medium", "High"];
+    private static readonly string[] Levels4 = ["Low", "Medium", "High", "VeryHigh"];
+    private static readonly string[] Msaa = ["Off", "X2", "X4", "X8"];
+    private static readonly string[] Aniso = ["Off", "X2", "X4", "X8", "X16"];
+    private static readonly string[] Scope = ["High", "Low"];
+    private static readonly string[] Outlines = ["Red", "Blue"];
+    private static readonly string[] Resolutions =
+        ["1280 x 720 @ 60", "1600 x 900 @ 60", "1920 x 1080 @ 60", "1920 x 1080 @ 144", "2560 x 1440 @ 60", "2560 x 1440 @ 144"];
+
+    // quality presets, same order as Cfg.Quality: scene, texture, shadow, msaa, aniso, scope (indexes into the lists above)
+    private static readonly int[][] Presets =
+    [
+        [0, 0, 0, 0, 0, 1], // Low
+        [1, 1, 1, 0, 1, 0], // Medium
+        [2, 2, 2, 1, 2, 0], // High
+        [3, 2, 3, 3, 4, 0], // Ultra
+    ];
+    private const int Custom = 4;
+
+    private sealed class Cfg
+    {
+        public bool Fullscreen { get; set; } = true;
+        public bool Vsync { get; set; } = true;
+        public int Resolution { get; set; } = 2;
+        public int Scene { get; set; } = 2;
+        public int Texture { get; set; } = 2;
+        public int Shadow { get; set; } = 2;
+        public int Msaa { get; set; } = 1;
+        public int Aniso { get; set; } = 2;
+        public int Scope { get; set; }
+        public bool ExtendedAudioMemory { get; set; }
+        public int MasterVolume { get; set; } = 80;
+        public bool InvertMouse { get; set; }
+        public int LookSpeed { get; set; } = 50;
+        public int AimSpeed { get; set; } = 50;
+        public int BinocularSpeed { get; set; } = 50;
+        public bool UseGamepad { get; set; }
+        public int Gamma { get; set; } = 50;
+        public int Outline { get; set; }
+        public bool PlayerNames { get; set; } = true;
+        public bool StatusBar { get; set; } = true;
+        public bool PlayerSpotting { get; set; } = true;
+        public bool AnimalSpotting { get; set; } = true;
+        public bool Chat { get; set; } = true;
+        public bool MapPopups { get; set; } = true;
+        public bool ContextHelp { get; set; } = true;
+        public bool AutoReload { get; set; }
+        public bool GlassesShader { get; set; } = true;
+
+        public int[] Quality => [Scene, Texture, Shadow, Msaa, Aniso, Scope];
+        public void SetQuality(int[] q) => (Scene, Texture, Shadow, Msaa, Aniso, Scope) = (q[0], q[1], q[2], q[3], q[4], q[5]);
+        public Cfg Clone() => (Cfg)MemberwiseClone();
+    }
+
+    private Cfg cfg = new();
+    private Cfg snapshot = new(); // what "Save" last stored (UI-only, nothing is persisted)
+    private int tab;
+    private bool saved;
+    private int saveCount;
+
+    // the preset is derived: any edit that no longer matches a preset reads as Custom
+    private int PresetIndex
+    {
+        get
+        {
+            var i = Array.FindIndex(Presets, p => p.SequenceEqual(cfg.Quality));
+            return i < 0 ? Custom : i;
+        }
+    }
+
+    private string[] Opts(string[] names) => names.Select(n => L[$"GameSettings.Opt.{n}"].Value).ToArray();
+
+    private void SetPreset(int i)
+    {
+        if (i < Custom) cfg.SetQuality(Presets[i]);
+    }
+
+    private async Task Save()
+    {
+        snapshot = cfg.Clone();
+        var n = ++saveCount;
+        saved = true;
+        await Task.Delay(2500);
+        if (n == saveCount) saved = false;
+    }
+
+    private void ResetToSaved() => cfg = snapshot.Clone();
+    private void RestoreDefaults() => cfg = new Cfg();
+}

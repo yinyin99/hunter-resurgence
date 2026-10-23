@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- the versioned TFM adds the Windows SDK projection that the WebView2 WPF control loads at startup -->
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
+    <!-- must not collide with any exe of the game -->
+    <AssemblyName>resurgence-launcher</AssemblyName>
+    <RootNamespace>Resurgence.Launcher</RootNamespace>
+    <Version>0.0.0-dev</Version>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ui\Resurgence.Ui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.120" />
+  </ItemGroup>
+
+</Project>

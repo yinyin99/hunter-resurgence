@@ -1,0 +1,4 @@
+.player-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; }
+h1 { margin: 0 0 .25rem; overflow-wrap: anywhere; }
+.meta { margin: 0; gap: .25rem 1.25rem; }
+.meta .row { gap: .5rem; }

@@ -1,0 +1,14 @@
+<span class="status"><span class="dot @Status.ToString().ToLowerInvariant()" aria-hidden="true"></span><span class="@(Compact ? "visually-hidden" : null)">@Label</span></span>
+
+@code {
+    [Parameter, EditorRequired] public ServerStatus Status { get; set; }
+    /// <summary>Dot only for sighted users; the text stays for screen readers.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    LocalizedString Label => Status switch
+    {
+        ServerStatus.Online => L["Common.Online"],
+        ServerStatus.Busy => L["Launcher.Busy"],
+        _ => L["Common.Offline"],
+    };
+}

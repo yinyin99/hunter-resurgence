@@ -1,0 +1,21 @@
+.hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; background: linear-gradient(135deg, #1b2e23, var(--surface) 70%); }
+.hero h2 { margin: 0; font-size: 1.6rem; }
+.go { display: flex; align-items: center; }
+
+.facts { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin: 0; }
+.facts dt { font-size: .8rem; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; }
+
+.reserve { display: flex; flex-direction: column; gap: .5rem; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.reserve:hover { border-color: #3a4f44; }
+.reserve[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.reserve .art { aspect-ratio: 21 / 9; font-size: 1.6rem; }
+
+.card h3 { margin: 0 0 .15rem; font-size: 1.05rem; }
+article.card p { margin: .5rem 0 0; }
+
+/* row headers in data tables read as content, not as column headings */
+table.data tbody th { text-transform: none; letter-spacing: 0; font-size: 1rem; font-weight: 600; color: var(--text); background: none; }
+
+.picker ::deep .dialog { width: min(54rem, 100%); }
+.picker table.data th, .picker table.data td { padding: .55rem .7rem; }

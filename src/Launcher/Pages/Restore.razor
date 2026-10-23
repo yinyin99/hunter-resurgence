@@ -1,0 +1,129 @@
+@page "/restore"
+@using Microsoft.AspNetCore.Components.Forms
+@using Resurgence.Launcher.Components
+
+<PageHeader Title="@L["Nav.Restore"]" Lead="@L["Restore.Lead"]" />
+
+<section class="card">
+    <p>@L["Restore.Explain"]</p>
+    <p class="hint">
+        <a href="https://github.com/yinyin99/hunter-resurgence/blob/main/docs/backup.md#what-is-not-saved" target="_blank" rel="noopener">@L["Restore.NotRestored"]</a>
+    </p>
+</section>
+
+<ol class="stepper" aria-label="@L["Restore.Steps"]">
+    @for (var i = 0; i < StepNames.Length; i++)
+    {
+        <li class="step @(i < step || done ? "done" : i == step ? "current" : "")" aria-current="@(i == step && !done ? "step" : null)">
+            @L[$"Restore.Step.{StepNames[i]}"]
+        </li>
+    }
+</ol>
+
+<section class="card stack">
+    @switch (step)
+    {
+        case 0:
+            <div class="field">
+                <label for="rs-file">@L["Restore.File"]</label>
+                <InputFile id="rs-file" class="input" accept=".zip" OnChange="Picked" />
+                <p class="hint">@L["Restore.File.Hint"]</p>
+            </div>
+            @if (fileName is not null)
+            {
+                if (ValidFile)
+                {
+                    <p>@L["Restore.File.Chosen", fileName, FormatSize(fileSize)]</p>
+                }
+                else
+                {
+                    <p role="alert"><span class="badge warn">@L["Restore.File.NotZip"]</span></p>
+                }
+            }
+            break;
+        case 1:
+            <div class="field">
+                <label for="rs-key">@L["Restore.Key"]</label>
+                <input id="rs-key" class="input mono" autocomplete="off" spellcheck="false"
+                       placeholder="@L["Restore.Key.Placeholder"]" @bind="claimKey" @bind:event="oninput" />
+                <p class="hint">@L["Restore.Key.Hint"]</p>
+            </div>
+            <SettingsSwitch Label="@L["Restore.Steam"]" Hint="@L["Restore.Steam.Hint"]" @bind-Value="checkSteam" />
+            break;
+        case 2:
+            <div class="tiles">
+                @foreach (var g in SampleData.RestoreGroups)
+                {
+                    <div class="tile">
+                        <span class="value mono">@g.Count.ToString("N0")</span>
+                        <span class="caption">@L[$"Restore.Group.{g.Name}"]</span>
+                    </div>
+                }
+            </div>
+            break;
+        default:
+            <dl class="summary">
+                <dt>@L["Restore.Summary.File"]</dt>
+                <dd>@fileName <span class="muted">(@FormatSize(fileSize))</span></dd>
+                <dt>@L["Restore.Summary.Steam"]</dt>
+                <dd>@(checkSteam ? L["Common.Yes"] : L["Common.No"])</dd>
+                <dt>@L["Restore.Summary.Contents"]</dt>
+                <dd>@L["Restore.Summary.Groups", SampleData.RestoreGroups.Count]</dd>
+            </dl>
+            @if (done)
+            {
+                <p role="status"><span class="badge ok">@L["Restore.Done"]</span></p>
+            }
+            break;
+    }
+</section>
+
+<div class="row">
+    <button type="button" class="btn btn-secondary" disabled="@(step == 0 || done)" @onclick="() => step--">@L["Common.Back"]</button>
+    @if (step < StepNames.Length - 1)
+    {
+        <button type="button" class="btn" disabled="@(!CanNext)" @onclick="() => step++">@L["Common.Next"]</button>
+    }
+    else
+    {
+        <button type="button" class="btn" disabled="@done" @onclick="() => done = true">@L["Restore.Confirm"]</button>
+    }
+    @if (done)
+    {
+        <button type="button" class="btn btn-ghost" @onclick="StartOver">@L["Restore.StartOver"]</button>
+    }
+</div>
+
+@code {
+    private static readonly string[] StepNames = ["Upload", "Verify", "Preview", "Confirm"];
+
+    private int step;
+    private bool done;
+    private string? fileName;
+    private long fileSize;
+    private string claimKey = "";
+    private bool checkSteam;
+
+    private bool ValidFile => fileName?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true;
+    private bool CanNext => step switch
+    {
+        0 => ValidFile,
+        1 => claimKey.Trim().Length > 0,
+        _ => true,
+    };
+
+    // only name and size are read; the file itself is never opened
+    private void Picked(InputFileChangeEventArgs e)
+    {
+        var f = e.FileCount > 0 ? e.File : null;
+        (fileName, fileSize) = (f?.Name, f?.Size ?? 0);
+    }
+
+    private static string FormatSize(long bytes) =>
+        bytes < 1 << 20 ? $"{bytes / 1024.0:0.#} KB" : $"{bytes / 1048576.0:0.#} MB";
+
+    private void StartOver()
+    {
+        (step, done, fileName, fileSize, claimKey, checkSteam) = (0, false, null, 0, "", false);
+    }
+}
