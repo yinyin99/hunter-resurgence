@@ -38,6 +38,17 @@ public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, str
 public sealed record Dog(string Name, string Type, int Level, IReadOnlyList<string> Skills);
 public sealed record ProfileFriend(string Handle, int HunterScore);
 
+/// <summary>A line of a scoring sheet; the three values sit in the columns of the sheet kind (null stays empty).</summary>
+public sealed record SheetRow(string Label, double? A, double? B, double? C);
+public sealed record SheetFact(string Label, double Value);
+/// <summary>
+/// The scoring sheet of a kill. <see cref="Kind"/> is "score" (the big-game sheet: Facts, Abnormal points, Rows in right, left and difference columns, Sums) or "antler"
+/// (Rows in left, right and points columns).
+/// </summary>
+public sealed record ScoreSheet(string Kind, string Species, IReadOnlyList<SheetFact> Facts, IReadOnlyList<SheetRow> Rows, IReadOnlyList<(double Right, double Left)> Abnormal,
+    IReadOnlyList<SheetFact> Sums, string Weapon, bool Scope, string Ammo, double DistanceM, string State, string BodyPart, string Stance, string Platform,
+    double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, DateTime When, long ExpeditionId, double Score, double? HarvestValue);
+
 public interface IProfileService
 {
     Task<Profile?> ProfileAsync(string handle);
@@ -50,6 +61,8 @@ public interface IProfileService
     /// <param name="kind">species or weapons</param>
     Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind);
     Task<Totals> TotalsAsync(string handle);
+    /// <param name="kind">score or antler</param>
+    Task<ScoreSheet?> SheetAsync(string handle, string kind, long id);
     /// <summary>The gallery, 24 photos a page.</summary>
     Task<Page<Photo>> GalleryAsync(string handle, int page);
     /// <summary>The trophies, 24 a page.</summary>

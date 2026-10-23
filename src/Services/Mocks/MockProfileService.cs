@@ -77,6 +77,26 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         ? [new("Ranger_Test", 181), new("Moss_Walker", 115000), new("Hunter02", 7076)]
         : Enumerable.Range(1, 45).Select(i => new ProfileFriend($"Friend_{i:00}", i * 311 % 9000)).ToList(), page, 20));
 
+    static SheetRow R(string label, double? a, double? b) => new(label, a, b, a is { } x && b is { } y ? Math.Round(Math.Abs(x - y), 4) : null);
+
+    public Task<ScoreSheet?> SheetAsync(string handle, string kind, long id)
+    {
+        var when = new DateTime(2026, 10, 2, 13, 42, 0);
+        if (kind == "antler")
+            return Task.FromResult<ScoreSheet?>(new("antler", "Axis Deer", [],
+                [new("1. Length of Main Beam", 43.8976, 44.0945, 87.9921), new("2.1 Length of Typical Tines T-1", 13.6220, 13.5827, 27.2047), new("2.2 Length of Typical Tines T-2", 10.7480, 10.7480, 21.4961),
+                 new("2.3 Length of Typical Tines T-3", 0.7480, 0.7480, 1.4961), new("3. Circumference of Burr", 6.4961, 6.6142, 13.1102), new("4. Circumference of Main Beam", 6.2205, 5.9449, 12.1654),
+                 new("5. Inside Span of Main Beams", null, null, 46.2992)], [], [], "", false, "", 0, "", "", "", "", 0, "Common (M)", 0, 100, "Place B (3906, 11711)", 0, when.AddYears(-1), 131212595, 104.8819, null));
+        return Task.FromResult<ScoreSheet?>(new("score", "Mule Deer", [new("A. No. Points on Right Antler", 5), new("No. Points on Left Antler", 5), new("B. Tip to Tip Spread", 19.7244), new("C. Greatest Spread", 23.4646), new("D. Inside Spread of Main Beams", 22.0472)],
+            [R("F. Length of Main Beam", 21.8898, 27.2441), R("G-1. Length of First Point, if Present", 4.0551, 4.0551), R("G-2. Length of Second Point", 18.9370, 18.4252), R("G-3. Length of Third Point, if Present", 13.3858, 13.3071),
+             R("G-4. Length of Fourth Point, if Present", 14.1732, 14.1732), R("H-1. Circumference at Smallest Place Between Burr and First Point", 4.4094, 4.7244),
+             R("H-2. Circumference at Smallest Place Between First and Second Points", 4.2520, 4.6457), R("H-3. Circumference at Smallest Place Between Main Beam and Third Point", 4.4882, 4.2913),
+             R("H-4. Circumference at Smallest Place Between Second and Fourth Points", 4.0157, 4.0945), new("Total", 89.6062, 94.9606, 6.9292)],
+            [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)],
+            [new("Column 1", 22.0472), new("Column 2", 89.6062), new("Column 3", 94.9606), new("Subtotal", 206.6140), new("Subtract Column 4", 6.9292), new("Total", 199.6848)],
+            "Rifle A", true, "Ammo Type 1", 63.010, "Idle", "Body (Right Lung, Shoulder Blade)", "Prone", "None", 133.264, "Common (M)", 6.004, 100, "Place A (-9593, 8198)", 1, when, 135160843, 199.6848, 89.993));
+    }
+
     static readonly string[] Reserves = ["Reserve 01", "Reserve 02", "Reserve 03"], Lodges = ["Lodge A", "Lodge B", "Lodge C"];
     const long Latest = 135232661;
 
@@ -94,7 +114,7 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
     {
         // the latest expedition is empty, as in the old capture; the others have shots and kills
         var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
-        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, start.AddSeconds(90), [], [], [], [], 0, 90, [], []);
+        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
         var species = Names.Species[(n * 5) % Names.Species.Length].Name;
         return new(id, Reserves[n % 3], Lodges[n % 3], start, start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new("Common Mushroom", 1, 12, 12)], ["1 " + species],
             3.2 + n, (38 + n) * 60 + n * 17 % 60, [], [new(1109872882 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 124.53 + n, 12.3456 + n, 85.5 + n, start.AddMinutes(20))]);
