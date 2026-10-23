@@ -1,17 +1,35 @@
 @implements IDisposable
+@implements IAsyncDisposable
 @inject ModalService Modal
+@inject IJSRuntime JS
 
-@if (Modal.Type is { } type)
-{
-    <div class="modal-backdrop @Modal.Backdrop">
-        <DynamicComponent Type="type" Parameters="Modal.Parameters" />
-    </div>
-}
+@* one native <dialog> for every modal: the browser gives it the top layer, an inert page behind and focus handling (shell.js dialog).
+   The content is rendered once the dialog is open, so a dialog that focuses a field when it appears finds it visible. *@
+<dialog @ref="dialog" class="modal @Modal.Backdrop">@if (shown && Modal.Type is { } type) { <DynamicComponent Type="type" Parameters="Modal.Parameters" /> }</dialog>
 
 @code {
+    ElementReference dialog;
+    IJSObjectReference? module;
     Action? changed;
+    bool shown;
 
     protected override void OnInitialized() => Modal.Changed += changed = () => InvokeAsync(StateHasChanged);
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var open = Modal.Type is not null;
+        if (!open && module is null) return;
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await module.InvokeVoidAsync("dialog", dialog, open, Modal.Backdrop != "none");
+        if (open == shown) return;
+        shown = open;
+        if (open) StateHasChanged();
+    }
+
     public void Dispose() => Modal.Changed -= changed;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null) await module.DisposeAsync();
+    }
 }

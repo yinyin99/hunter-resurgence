@@ -4,4 +4,4 @@ h1 .icon { width: 18px; margin-right: 8px; }
 h4 { margin: 20px 0 10px; color: #fff; }
 p { font-size: 14px; line-height: 20px; margin: 0 0 12px; }
 .updated { margin-top: 8px; }
-.close { position: absolute; right: 12px; top: 0; border: 0; background: none; color: #fff; font-size: 32px; line-height: 56px; cursor: pointer; }
+.close { position: absolute; right: 12px; top: 0; color: #fff; font-size: 32px; line-height: 56px; }

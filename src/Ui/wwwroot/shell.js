@@ -25,3 +25,18 @@ export function onceMouse(ref) {
     document.addEventListener('mousemove', h);
     return () => document.removeEventListener('mousemove', h);
 }
+
+// Opens or closes the modal host's <dialog>. Modal: the page behind is inert and focus stays inside. Escape does nothing, as in the old app
+// (a dialog that wants it handles the key itself); a browser that closes the dialog anyway after repeated Escape gets it opened again.
+// Called after every render of the host: once the content is there and nothing inside has focus, the [autofocus] element gets it (no ring).
+export function dialog(el, want, modal) {
+    const show = () => (el.dataset.modal ? el.showModal() : el.show());
+    el.oncancel = (e) => e.preventDefault();
+    el.onclose = () => { if (el.dataset.want) show(); };
+    if (el.open && (el.dataset.modal === '1') !== modal) { delete el.dataset.want; el.close(); }
+    el.dataset.modal = modal ? '1' : '';
+    if (!want) { delete el.dataset.want; if (el.open) el.close(); return; }
+    el.dataset.want = '1';
+    if (!el.open) show();
+    if (!el.contains(document.activeElement) || document.activeElement === el) el.querySelector('[autofocus]')?.focus({ focusVisible: false });
+}

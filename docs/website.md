@@ -19,6 +19,8 @@ The development profile listens on `http://localhost:5080`.
 
 `settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). Without it the texts say "the game" and the links are left out. The real file is git-ignored.
 
+The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, menus, modals): use a current Chrome or Edge (the launcher's WebView2 runtime is one). Other browsers are not tested.
+
 ## Two views of one app
 
 The website is signed-in or public:

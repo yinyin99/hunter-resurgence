@@ -2,7 +2,7 @@
 @inject IStoreService Store
 @inject IWalletService Wallet
 
-<div class="buy" role="dialog" aria-modal="true">
+<div class="buy dialog-card" role="dialog" aria-modal="true">
     <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
     @if (state == 0)
     {

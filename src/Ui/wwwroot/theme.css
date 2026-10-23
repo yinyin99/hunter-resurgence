@@ -265,6 +265,12 @@ a { transition: color var(--t-fast) var(--ease); }
 .pop li button { display: block; box-sizing: border-box; width: 100%; padding: 3px 20px; border: 0; background: none; color: var(--fg-muted); font: inherit; line-height: 20px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
 .pop li button:hover, .pop li button:focus-visible { background: var(--accent); color: #fff; outline: 0; }
 
+/* the grey card of the small dialogs (alert, buy) and the x of every modal */
+.dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: var(--shadow-3); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+.close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
+.close:hover { opacity: 1; }
+
 /* an empty block of the final size while its data loads (the old app left the area empty) */
 .skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
 @keyframes skeleton { to { background-position: -150% 0; } }
@@ -300,7 +306,7 @@ a { transition: color var(--t-fast) var(--ease); }
 }
 
 /* scroll lock while a modal is open (old: html.openModal) */
-html:has(.modal-backdrop) { overflow: hidden; }
+html:has(dialog.modal[open]) { overflow: hidden; }
 
 /* tooltip below the element: <a data-tip="text"> */
 [data-tip] { position: relative; }

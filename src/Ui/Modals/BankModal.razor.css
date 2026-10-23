@@ -2,7 +2,7 @@
 header { position: relative; display: flex; height: 52px; background: #eee; border-bottom: 1px solid #ddd; }
 header a { padding: 0 15px; font-size: 14px; line-height: 50px; color: #777; }
 header a.on { background: #fdfdfd; color: #333; border-right: 1px solid #ddd; margin-bottom: -1px; height: 52px; }
-.close { position: absolute; right: 12px; top: 0; border: 0; background: none; font-size: 24px; line-height: 50px; color: #999; cursor: pointer; }
+.close { position: absolute; right: 12px; top: 0; font-size: 24px; line-height: 50px; color: #999; }
 .balance { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; height: 50px; padding: 0 15px; border-bottom: 1px solid #eee; font-size: 14px; }
 .balance b { font-weight: 400; color: #333; }
 .balance button { height: 28px; padding: 0 12px; border: 0; border-radius: 2px; background: #eee; font-size: 14px; color: #222; cursor: pointer; }

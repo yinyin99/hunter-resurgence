@@ -1,5 +1,4 @@
-.alert-panel { position: absolute; top: calc(50% - 90px); left: calc(50% - 170px); width: var(--w-modal-alert); background: #444; border-top: 1px solid #5a5a5a; border-radius: 3px; box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--fg-heading); text-align: center; }
-p { margin: 0; padding: 30px 20px; font-size: 16px; line-height: 20px; font-weight: 500; color: #eee; }
+.alert-panel { position: absolute; top: calc(50% - 90px); left: calc(50% - 170px); width: var(--w-modal-alert); text-align: center; }
+p { margin: 0; padding: 30px 20px; font-size: 16px; line-height: 20px; font-weight: 500; color: var(--text-1); }
 .buttons { padding: 12px 20px 11px 14px; text-align: right; border-top: 2px groove #4e4c50; }
 .btn { margin-left: 5px; padding: 6px 12px; font-weight: 500; }
-.btn-inverse { background: var(--btn-inverse-bg); color: #fff; }

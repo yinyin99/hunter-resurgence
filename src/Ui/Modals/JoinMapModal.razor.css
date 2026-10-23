@@ -3,7 +3,7 @@
 .hint { position: absolute; left: 14px; top: 8px; z-index: 5; margin: 0; font-size: 20px; line-height: 28px; color: #fff; text-shadow: 0 0 4px #000; }
 .hint ::deep .icon { width: 14px; margin-right: 8px; }
 aside { position: relative; flex: 1; padding: 30px 10px 0 10px; }
-.close { position: absolute; right: 12px; top: 6px; padding: 0; border: 0; background: none; color: #fff; font-size: 26px; line-height: 30px; cursor: pointer; }
+.close { position: absolute; right: 12px; top: 6px; padding: 0; color: #fff; font-size: 26px; line-height: 30px; }
 h2 { margin: 0 0 20px; font-size: 25px; line-height: 36px; font-weight: 300; color: #fff; }
 h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #444; font-size: 14px; font-weight: 500; color: #fff; }
 .line { margin: 0; line-height: 20px; font-weight: 500; color: #fff; }
