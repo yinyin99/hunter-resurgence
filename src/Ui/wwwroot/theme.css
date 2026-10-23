@@ -226,7 +226,7 @@ a { transition: color var(--t-fast) var(--ease); }
 /* a clickable card on a dark surface: a faint white tint on hover (an overlay, so the card keeps its own background; no size change) */
 .hover-tint { position: relative; }
 .hover-tint::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
-.hover-tint:hover::after { background: var(--tint-1); }
+.hover-tint:hover::after { background: var(--tint-2); }
 
 /* data table: one row line, a hover tint; cells are left aligned, .tbl-c centres every column but the first. Callers set widths and margins.
    :where keeps these rules weaker than any scoped override (theme.css loads after the scoped bundle, so equal specificity would win here). */
@@ -235,7 +235,7 @@ a { transition: color var(--t-fast) var(--ease); }
 :where(.tbl) th { padding: 8px 6px; color: var(--text-1); }
 :where(.tbl) td { padding: 6px; border-top: 1px solid var(--line); }
 :where(.tbl) tbody tr { transition: background-color var(--t-fast) var(--ease); }
-:where(.tbl) tbody tr:hover { background: var(--tint-1); }
+:where(.tbl) tbody tr:hover { background: var(--tint-2); }
 :where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
 :where(.tbl-c) :is(th, td):first-child { text-align: left; }
 
