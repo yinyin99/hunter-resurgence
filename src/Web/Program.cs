@@ -26,6 +26,8 @@ builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 
 var app = builder.Build();
+// every cookie is Secure (browsers accept it on http://localhost too)
+app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
 // ?lang=fr picks the language and remembers it in the culture cookie
 app.Use((ctx, next) =>
 {
