@@ -52,4 +52,4 @@ A restore can only bring back what the backup saved ([what is not saved](docs/ba
 
 ## Build
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). The launcher and the website are described in [docs/launcher.md](docs/launcher.md) and [docs/website.md](docs/website.md).
