@@ -92,4 +92,6 @@ Press Play in Steam. The game's own files stay untouched.
 
 English and French. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and `Strings.fr.resx`. The French texts are the original French of the old screens; the few new texts are in our own French.
 
+Game vocabulary (animal names, collectables and a few labels) is not written by hand: the resx keys `Term.species.<id>`, `Term.collectable.<id>` and `Term.ui.<name>` hold one text per old id and language, imported from the original per-language tables. A service passes the id (the mocks pass the English name, which is matched to its term); a text without a term is shown as it is. To add a language, import its table into `Strings.<lang>.resx` the same way.
+
 At start the launcher uses the language saved in `launcher.json`, else the Windows display language when it is French, else English. The selftest checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
