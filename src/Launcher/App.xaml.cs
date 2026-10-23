@@ -6,7 +6,7 @@ public partial class App : System.Windows.Application
 {
     /// <summary>Language code (also what launcher.json stores) and the culture of its Strings.&lt;culture&gt;.resx.</summary>
     public static readonly (string Code, string Culture)[] Languages =
-        [("en", "en"), ("fr", "fr"), ("es", "es"), ("pt", "pt-BR"), ("de", "de"), ("ru", "ru")];
+        [("en", "en"), ("fr", "fr")];
 
     /// <summary>The language this run uses (fixed at start; a changed choice applies after a restart).</summary>
     public static string Code { get; private set; } = "en";
@@ -19,7 +19,7 @@ public partial class App : System.Windows.Application
             CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(Languages.First(l => l.Code == Code).Culture);
     }
 
-    /// <summary>The saved choice when it is one of the six, else the Windows display language when it is, else English.</summary>
+    /// <summary>The saved choice when it is one of the two, else the Windows display language when it is, else English.</summary>
     public static string Pick(string? saved, string windows) =>
         Languages.Any(l => l.Code == saved) ? saved! : Languages.Any(l => l.Code == windows) ? windows : "en";
 }

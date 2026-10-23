@@ -3,5 +3,20 @@
   "client_exe": "<client-dir>\\<client-exe>",
   "graphics_file": "<graphics-file>",
   "options_file": "<options-file>",
-  "options_key_prefix": "<key-prefix>"
+  "options_key_prefix": "<key-prefix>",
+  "game_name": "<game-name>",
+  "game_full": "<game-name-with-edition>",
+  "link_news": "<url>",
+  "link_news_archive": "<url>",
+  "link_forum": "<url>",
+  "link_support": "<url>",
+  "link_wiki": "<url>",
+  "link_steam_store": "<url>",
+  "link_steam_community": "<url>",
+  "link_developer": "<url>",
+  "link_twitter": "<url>",
+  "link_facebook": "<url>",
+  "link_youtube": "<url>",
+  "link_instagram": "<url>",
+  "link_discord": "<url>"
 }

@@ -26,6 +26,7 @@ static class SelfTest
             Game(root);
             PrefsRoundTrip(root);
             Translations();
+            GameName();
             GameSettingsFiles(root);
             Zips(root);
             Console.WriteLine("selftest ok");
@@ -92,21 +93,22 @@ static class SelfTest
     {
         var path = Path.Combine(root, "prefs", "launcher.json");
         Check(Prefs.Load(path).Language == "", "no launcher.json: defaults");
-        new Prefs { Language = "de", GameFolder = @"C:\x y", CloseOnGameStart = true }.Save(path);
+        new Prefs { Language = "fr", GameFolder = @"C:\x y", CloseOnGameStart = true }.Save(path);
         var p = Prefs.Load(path);
-        Check(p is { Language: "de", GameFolder: @"C:\x y", CloseOnGameStart: true }, "launcher.json round trip");
+        Check(p is { Language: "fr", GameFolder: @"C:\x y", CloseOnGameStart: true }, "launcher.json round trip");
         File.WriteAllText(path, "{ not json");
         Check(Prefs.Load(path).Language == "", "damaged launcher.json: defaults");
-        Check(App.Pick("de", "fr") == "de" && App.Pick("", "fr") == "fr" && App.Pick("xx", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "pt") == "pt", "language: saved choice, else Windows language, else English");
+        Check(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("de", "en") == "en" && App.Pick("", "ja") == "en" && App.Pick(null, "de") == "en", "language: saved choice, else Windows language, else English (only en and fr)");
     }
 
-    /// <summary>Every language resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime).</summary>
+    /// <summary>Strings.fr.resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime); {game} tokens are not holes.</summary>
     static void Translations()
     {
         var rm = new ResourceManager("Resurgence.Ui.Strings", typeof(Resurgence.Ui.Strings).Assembly);
         Dictionary<string, string> Read(CultureInfo c) =>
             (rm.GetResourceSet(c, true, false) ?? throw new Exception($"FAIL no resources for '{c.Name}'")).Cast<DictionaryEntry>().ToDictionary(e => (string)e.Key, e => (string)e.Value!);
         static string Holes(string s) => string.Join(",", Regex.Matches(s, @"\{(\d+)").Select(m => m.Groups[1].Value).Order());
+        static string Plain(string s) => Regex.Replace(s, "{(game|GAME|game_full)}", "x");
         var en = Read(CultureInfo.InvariantCulture);
         var bad = new List<string>();
         foreach (var (_, culture) in App.Languages.Where(l => l.Code != "en"))
@@ -117,11 +119,29 @@ static class SelfTest
             foreach (var (k, v) in tr.Where(p => en.ContainsKey(p.Key)))
             {
                 if (Holes(v) != Holes(en[k])) bad.Add($"{culture}: {k} has placeholders {{{Holes(v)}}}, English has {{{Holes(en[k])}}}");
-                try { string.Format(v, "", "", "", ""); } catch (FormatException) { bad.Add($"{culture}: {k} is not a valid format string"); }
+                try { string.Format(Plain(v), "", "", "", ""); } catch (FormatException) { bad.Add($"{culture}: {k} is not a valid format string"); }
             }
         }
         if (bad.Count > 0) throw new Exception("FAIL translations: " + string.Join("; ", bad));
-        Check(true, $"{App.Languages.Length - 1} translations have the {en.Count} keys and placeholders of Strings.resx");
+        Check(true, $"{App.Languages.Length - 1} translation has the {en.Count} keys and placeholders of Strings.resx");
+    }
+
+    /// <summary>{game} tokens: expanded from settings.json values, "the game" and no link without them, placeholders ignored.</summary>
+    static void GameName()
+    {
+        var b = new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo", ["link_news"] = "https://example.test/n", ["link_forum"] = "<forum>" });
+        Check(b.Expand("{GAME} NEWS, {game}, {game_full}") == "FOO NEWS, Foo, Foo", "tokens expand to the configured name");
+        Check(b.Link("news") == "https://example.test/n" && b.Link("forum") is null && b.Link("wiki") is null, "links: configured, placeholder and missing");
+        Check(new Resurgence.Ui.Branding().Expand("FOLLOW {GAME} / {game}") == "FOLLOW THE GAME / the game", "no settings: the game");
+        var old = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+        try
+        {
+            var loc = new Resurgence.Ui.Loc(new Microsoft.Extensions.Localization.ResourceManagerStringLocalizerFactory(
+                Microsoft.Extensions.Options.Options.Create(new Microsoft.Extensions.Localization.LocalizationOptions()), Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance), b);
+            Check(loc["Feed.News"].Value == "FOO NEWS" && loc["Menu.News"].Value == "NEWS" && loc["No.Such.Key"].ResourceNotFound, "localizer expands the tokens and reports missing keys");
+        }
+        finally { CultureInfo.CurrentUICulture = old; }
     }
 
     static string Bytes(string path) => System.Text.Encoding.Latin1.GetString(File.ReadAllBytes(path));

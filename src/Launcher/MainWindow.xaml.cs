@@ -1,5 +1,6 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Resurgence.Ui;
 
 namespace Resurgence.Launcher;
 
@@ -9,7 +10,7 @@ public partial class MainWindow : Window
     {
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
-        services.AddLocalization();
+        services.AddUiLocalization(Settings.FilePath);
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         Resources.Add("services", services.BuildServiceProvider());
