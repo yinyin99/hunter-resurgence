@@ -13,7 +13,6 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-      - run: dotnet build tools/backup -c Release
+      - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet run --project tools/backup -c Release --no-build -- --selftest
-      - run: dotnet build src/Launcher -c Release
       - run: dotnet run --project src/Launcher -c Release --no-build -- --selftest
