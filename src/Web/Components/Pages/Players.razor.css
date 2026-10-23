@@ -1,4 +1,0 @@
-.results { list-style: none; margin: 0; padding: 0; }
-.person { display: flex; align-items: center; gap: .85rem; color: var(--text); text-decoration: none; }
-.card:hover { border-color: var(--accent); }
-.who { display: flex; flex-direction: column; min-width: 0; }
