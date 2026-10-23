@@ -649,7 +649,7 @@
   <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Go to tutorials</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Go Hunting</value></data>
-  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with the hunter or if you are just too eager to get out there</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with {game} or if you are just too eager to get out there</value></data>
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Start a new game</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Downloads</value></data>
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting</value></data>
