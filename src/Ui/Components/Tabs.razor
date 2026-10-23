@@ -1,0 +1,14 @@
+<ul class="tabs @Kind" role="navigation">
+    @foreach (var (label, href) in Items)
+    {
+        <li class="@(href == Active ? "active" : "")"><a href="@href" aria-current="@(href == Active ? "page" : null)">@label</a></li>
+    }
+</ul>
+
+@code {
+    /// <summary>main: the big page tabs; sub: the small tabs under a list; pills: the red pills of a detail page; strip: the leaderboard bar.</summary>
+    [Parameter] public string Kind { get; set; } = "main";
+    [Parameter, EditorRequired] public IReadOnlyList<(string Label, string Href)> Items { get; set; } = [];
+    /// <summary>The Href of the current item.</summary>
+    [Parameter] public string? Active { get; set; }
+}

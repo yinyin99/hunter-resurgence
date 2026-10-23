@@ -27,6 +27,20 @@ public static class Fmt
         _ => $"{bytes} bytes",
     };
 
+    /// <summary>Oct 21st 07:00 UTC</summary>
+    public static string Utc(DateTime d) => $"{MonthDay(d)} {d:HH:mm} UTC";
+
+    /// <summary>Oct 21st 2026, 07:00 UTC</summary>
+    public static string UtcLong(DateTime d) => $"{MonthDay(d)} {d.Year}, {d:HH:mm} UTC";
+
+    /// <summary>A leaderboard value: scores with 4 decimals, ranges as 508.8m (1669.3ft), the other boards whole numbers.</summary>
+    public static string Board(string kind, double v) => kind switch
+    {
+        "range" => $"{v.ToString("0.0", English)}m ({(v * 3.28084).ToString("0.0", English)}ft)",
+        "hunterscore" or "lanebandit" or "bustthrough" => v.ToString("0", English),
+        _ => v.ToString("0.0000", English),
+    };
+
     /// <summary>2026-08-19 15:26:35</summary>
     public static string DateTime(DateTime d) => d.ToString("yyyy-MM-dd HH:mm:ss", English);
 }

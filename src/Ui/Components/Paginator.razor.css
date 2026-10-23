@@ -1,0 +1,6 @@
+.pager { display: flex; justify-content: center; margin: 20px 0; }
+a { box-sizing: border-box; min-width: 33px; height: 30px; padding: 0 10px; border: 1px solid #ddd; border-width: 1px 0 1px 1px; background: #fff; font-size: 14px; line-height: 28px; text-align: center; color: var(--accent); }
+a:first-child { border-radius: 3px 0 0 3px; }
+a:last-child { border-right-width: 1px; border-radius: 0 3px 3px 0; }
+a:hover { background: #eee; color: var(--accent-hover); }
+a.active { background: #f5f5f5; color: #999; }

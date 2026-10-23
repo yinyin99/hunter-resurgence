@@ -192,6 +192,9 @@ a:hover { color: var(--accent-hover); }
 @keyframes loading-spin { to { transform: rotate(360deg); } }
 
 
+/* the old list pages are at least this tall */
+.page-min { min-height: 960px; }
+
 .asset-slot {
     display: inline-flex;
     align-items: center;

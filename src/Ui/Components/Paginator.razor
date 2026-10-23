@@ -1,0 +1,23 @@
+@if (Pages > 1)
+{
+    <nav class="pager" aria-label="@L["Pager.Label"]">
+        @if (Page > 1) { <a href="@Href(Page - 1)" aria-label="@L["Pager.Prev"]"><Icon Name="chevron-left" /></a> }
+        @for (var n = first; n < first + Math.Min(Window, Pages - first + 1); n++)
+        {
+            <a href="@Href(n)" class="@(n == Page ? "active" : "")" aria-current="@(n == Page ? "page" : null)">@n</a>
+        }
+        @if (Page < Pages) { <a href="@Href(Page + 1)" aria-label="@L["Pager.Next"]"><Icon Name="chevron-right" /></a> }
+    </nav>
+}
+
+@code {
+    const int Window = 7;
+
+    [Parameter] public int Page { get; set; } = 1;
+    [Parameter] public int Pages { get; set; } = 1;
+    /// <summary>The address of a page number.</summary>
+    [Parameter, EditorRequired] public Func<int, string> Href { get; set; } = _ => "";
+
+    // the numbers shown: up to seven around the current page
+    int first => Math.Clamp(Page - Window / 2, 1, Math.Max(1, Pages - Window + 1));
+}
