@@ -1,0 +1,30 @@
+<div class="multi">
+    <button type="button" class="btn" aria-haspopup="listbox" aria-expanded="@open" @onclick="() => open = !open">
+        <span>@(Selected.Count == 0 || Selected.Count == Options.Count ? L["Mis.AllSelected"] : L["Mis.NSelected", Selected.Count])</span><span class="caret"></span>
+    </button>
+    @if (open)
+    {
+        <div class="off" @onclick="() => open = false"></div>
+        <ul role="listbox">
+            @foreach (var o in Options)
+            {
+                <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @o</label></li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    bool open;
+
+    [Parameter, EditorRequired] public IReadOnlyList<string> Options { get; set; } = [];
+    /// <summary>The chosen options; empty means all.</summary>
+    [Parameter] public HashSet<string> Selected { get; set; } = [];
+    [Parameter] public EventCallback Changed { get; set; }
+
+    async Task Toggle(string option, bool on)
+    {
+        if (on) Selected.Add(option); else Selected.Remove(option);
+        await Changed.InvokeAsync();
+    }
+}

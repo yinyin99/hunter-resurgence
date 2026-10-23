@@ -21,3 +21,5 @@
 .tabs.strip a:hover { color: #fff; }
 .tabs.strip li.active { border: 1px solid #444; border-bottom: 0; background: #111; }
 .tabs.strip li.active a { color: #eee; }
+.tabs.main li { display: flex; align-items: center; }
+.tabs a.help { padding: 0 0 0 4px; color: #aaa; font-size: 18px; line-height: 28px; }
