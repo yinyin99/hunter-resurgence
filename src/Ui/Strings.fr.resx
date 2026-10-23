@@ -492,4 +492,50 @@
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Aucune mission disponible</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Vous devez accomplir les missions suivantes afin de débloquer {0} :</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Something went wrong and you didn’t get your item. Sorry. Please try again!</value></data>
+  <data name="Store.Sales" xml:space="preserve"><value>Sales</value></data>
+  <data name="Store.Cat.all" xml:space="preserve"><value>Tous les articles</value></data>
+  <data name="Store.Cat.bundles" xml:space="preserve"><value>Packs</value></data>
+  <data name="Store.Cat.0" xml:space="preserve"><value>Armes</value></data>
+  <data name="Store.Cat.10" xml:space="preserve"><value>Munitions</value></data>
+  <data name="Store.Cat.5" xml:space="preserve"><value>Viseurs</value></data>
+  <data name="Store.Cat.59" xml:space="preserve"><value>Chiens</value></data>
+  <data name="Store.Cat.15" xml:space="preserve"><value>Leurres</value></data>
+  <data name="Store.Cat.18" xml:space="preserve"><value>Vêtements</value></data>
+  <data name="Store.Cat.27" xml:space="preserve"><value>Améliorations</value></data>
+  <data name="Store.Cat.46" xml:space="preserve"><value>Services</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Poses pour photo de trophée</value></data>
+  <data name="Store.Cat.24" xml:space="preserve"><value>Équipement</value></data>
+  <data name="Store.Cat.29" xml:space="preserve"><value>Grand équipement</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Articles événementiels</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Loges à trophées</value></data>
+  <data name="Store.Cat.108" xml:space="preserve"><value>Véhicules</value></data>
+  <data name="Store.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>ACHETER</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>Inachetable</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Connectez-vous pour acheter</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Vous en possédez :</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>or</value></data>
+  <data name="Store.Days" xml:space="preserve"><value>jours</value></data>
+  <data name="Store.SaleTag" xml:space="preserve"><value>PROMO</value></data>
+  <data name="Store.BundleTag" xml:space="preserve"><value>PACK</value></data>
+  <data name="Store.Included" xml:space="preserve"><value>Inclus</value></data>
+  <data name="Store.Value" xml:space="preserve"><value>Valeur</value></data>
+  <data name="Store.BundlePrice" xml:space="preserve"><value>Prix du pack</value></data>
+  <data name="Store.Capacity" xml:space="preserve"><value>Coût en capacité</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>Vous ne pouvez pas acheter cet article</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>It's not possible to buy this bundle. Max own limit reached for at least one of the included items</value></data>
+  <data name="Store.None" xml:space="preserve"><value>No items in this category</value></data>
+  <data name="Store.Details" xml:space="preserve"><value>Détails</value></data>
+  <data name="Store.ClickMore" xml:space="preserve"><value>Cliquez pour afficher les détails</value></data>
+  <data name="Store.Confirm" xml:space="preserve"><value>Confirmer l'achat</value></data>
+  <data name="Store.BuyEms" xml:space="preserve"><value>ACHETER avec des em$</value></data>
+  <data name="Store.BuyGms" xml:space="preserve"><value>ACHETER avec des gm$</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>Pas assez de gm$</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Obtenez plus d'em$</value></data>
+  <data name="Store.Includes" xml:space="preserve"><value>Comprend</value></data>
+  <data name="Store.Complete" xml:space="preserve"><value>Purchase complete!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Enjoy your %s!</value></data>
+  <data name="Store.Oops" xml:space="preserve"><value>Oops.</value></data>
+  <data name="Store.Close" xml:space="preserve"><value>Fermer</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Vous économisez</value></data>
 </root>
