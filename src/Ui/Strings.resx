@@ -87,7 +87,7 @@
   <data name="Landing.Play" xml:space="preserve"><value>PLAY FOR FREE</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Continue reading →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>News Archive</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>{0} Members Online</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBERS ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join Discord</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Hang out with people who get it</value></data>
