@@ -767,4 +767,54 @@
   <data name="Prof.Shooting" xml:space="preserve"><value>Shooting</value></data>
   <data name="Prof.Lvl" xml:space="preserve"><value>Lvl</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>Statistics</value></data>
+  <data name="Stat.Last" xml:space="preserve"><value>Last Hunt</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Lifetime Statistics</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>Hunt History</value></data>
+  <data name="Stat.Best" xml:space="preserve"><value>Personal Bests</value></data>
+  <data name="Stat.Misc" xml:space="preserve"><value>Miscellaneous</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Antler Collectables</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Confirmed kills</value></data>
+  <data name="Stat.Weapon" xml:space="preserve"><value>Weapon</value></data>
+  <data name="Stat.Ammo" xml:space="preserve"><value>Ammunition</value></data>
+  <data name="Stat.Shots" xml:space="preserve"><value>Shots</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Hit accuracy</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Kills per hit</value></data>
+  <data name="Stat.Longest" xml:space="preserve"><value>Longest shot</value></data>
+  <data name="Stat.Species" xml:space="preserve"><value>Species</value></data>
+  <data name="Stat.Spotted" xml:space="preserve"><value>Spotted</value></data>
+  <data name="Stat.Tracked" xml:space="preserve"><value>Tracked</value></data>
+  <data name="Stat.Harvested" xml:space="preserve"><value>Harvested</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Stat.Collected" xml:space="preserve"><value>Collected</value></data>
+  <data name="Stat.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Stat.Max" xml:space="preserve"><value>Max</value></data>
+  <data name="Stat.Distance" xml:space="preserve"><value>Distance Travelled</value></data>
+  <data name="Stat.Duration" xml:space="preserve"><value>Hunt Duration</value></data>
+  <data name="Stat.NoShots" xml:space="preserve"><value>No shots fired</value></data>
+  <data name="Stat.NoShotsExp" xml:space="preserve"><value>No shots fired during this expedition.</value></data>
+  <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>No animal interactions during this expedition.</value></data>
+  <data name="Stat.NoCollectExp" xml:space="preserve"><value>No collectables collected during this expedition.</value></data>
+  <data name="Stat.NoAchExp" xml:space="preserve"><value>No achievements taken during this expedition.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>No antler collectables collected during this expedition.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>No confirmed kills during this expedition.</value></data>
+  <data name="Stat.NoExpeditions" xml:space="preserve"><value>This hunter hasn't been on any expeditions.</value></data>
+  <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Stat.Dur" xml:space="preserve"><value>Duration</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Reserve</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Lodge</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Collectables</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Kills</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>All Time</value></data>
+  <data name="Stat.Season" xml:space="preserve"><value>Season {0}</value></data>
+  <data name="Stat.BestDisabled" xml:space="preserve"><value>Personal best function is currently disabled.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Personal best for {0} and season {1} is queued to be calculated. Check back soon.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Personal best for {0} and season {1} is being calculated and will soon be available.</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} didn't go for any expeditions in season {1}</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>All Time personal best for {0} is queued to be calculated. Check back soon.</value></data>
+  <data name="Stat.BestAllBuilding" xml:space="preserve"><value>All Time personal best for {0} is being calculated and will soon be available.</value></data>
+  <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} didn't go for any expeditions yet to calculate All Time personal best.</value></data>
+  <data name="Stat.Score" xml:space="preserve"><value>Score</value></data>
+  <data name="Stat.Range" xml:space="preserve"><value>Range</value></data>
+  <data name="Stat.Previous" xml:space="preserve"><value>Previous</value></data>
+  <data name="Stat.Next" xml:space="preserve"><value>Next</value></data>
 </root>

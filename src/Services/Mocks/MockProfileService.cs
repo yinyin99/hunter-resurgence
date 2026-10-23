@@ -57,6 +57,43 @@ public sealed class MockProfileService : IProfileService
         ? Enumerable.Range(0, 30).Select(i => new Skill($"Weapon {(char)('A' + i % 26)}{i / 26 + 1} (Standard)", WeaponTypes[i / 3], [new("Shooting", 1, 0)])).ToList()
         : Names.Species.Select(s => new Skill(s.Name, null, [new("Spotting", 1, 0), new("Tracking", 1, 0)])).ToList());
 
+    static readonly string[] Reserves = ["Reserve 01", "Reserve 02", "Reserve 03"], Lodges = ["Lodge A", "Lodge B", "Lodge C"];
+    const long Latest = 135232661;
+
+    static readonly WeaponStat[] WeaponStats =
+    [
+        new("Rifle A", "Ammo Type 1", 29, 79.31, 17, 73.91, 124.53), new("Rifle B", "Ammo Type 2", 21, 95.24, 18, 90.00, 145.40), new("Rifle C", "Ammo Type 3", 1, 100, 0, 0, null),
+        new("Rifle D", "Ammo Type 4", 2, 50, 1, 100, 86.59), new("Shotgun A", "Ammo Type 5", 1, 100, 1, 100, 88.81),
+    ];
+
+    public Task<Totals> TotalsAsync(string handle) => Task.FromResult(new Totals(WeaponStats,
+        Names.Species.Take(24).Select((s, i) => new SpeciesStat(s.Name, i * 7 % 6, i * 5 % 21, i * 3 % 11)).ToList(),
+        [new("Common Mushroom", 1, 12, 12)], 102.89, 1 * 86400 + 16 * 3600 + 5 * 60 + 32));
+
+    static Expedition Make(long id, int n)
+    {
+        // the latest expedition is empty, as in the old capture; the others have shots and kills
+        var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
+        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, start.AddSeconds(90), [], [], [], [], 0, 90, [], []);
+        var species = Names.Species[(n * 5) % Names.Species.Length].Name;
+        return new(id, Reserves[n % 3], Lodges[n % 3], start, start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new("Common Mushroom", 1, 12, 12)], ["1 " + species],
+            3.2 + n, (38 + n) * 60 + n * 17 % 60, [], [new(1109872882 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 124.53 + n, 12.3456 + n, 85.5 + n, start.AddMinutes(20))]);
+    }
+
+    public Task<Expedition?> ExpeditionAsync(string handle, long? id) => Task.FromResult<Expedition?>(Make(id ?? Latest, id is null ? 0 : (int)(Latest - id.Value)));
+
+    public Task<Page<HistoryRow>> HistoryAsync(string handle, int page)
+    {
+        var all = Enumerable.Range(0, 55).Select(n => Make(Latest - n, n)).Select(e => new HistoryRow(e.Id, e.Start, e.Seconds, e.Reserve, e.Lodge, e.Collectables.Count, e.Kills.Count)).ToList();
+        var n = Math.Clamp(page, 1, 2);
+        return Task.FromResult(new Page<HistoryRow>(all.Skip((n - 1) * 40).Take(40).ToList(), n, 2));
+    }
+
+    // the old capture of the own bests was blocked and shows only the disabled box; another hunter's bests are built from the source notes
+    public Task<PersonalBest> BestAsync(string handle, int season) => Task.FromResult(handle == Own ? new PersonalBest("disabled", [])
+        : season == 3 ? new("queued", []) : season == 4 ? new("building", []) : season == 5 ? new("empty", [])
+        : new("done", Names.Species.Take(12).Select((s, i) => new BestRow(s.Name, 8.5 + i * 1.3, 60 + i * 11.7)).ToList()));
+
     public Task<Progress> ProgressAsync() => Task.FromResult(new Progress(74, 100, 12, new("Achievement One", "Placeholder description of the achievement.", new(2026, 7, 9))));
     public Task<int> ExpeditionCountAsync() => Task.FromResult(42);
 }

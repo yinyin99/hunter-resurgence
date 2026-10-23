@@ -17,6 +17,21 @@ public sealed record SkillRing(string Label, int Level, int Percent);
 /// <summary>A skill card; weapon skills have a <see cref="Group"/> (the weapon category).</summary>
 public sealed record Skill(string Name, string? Group, IReadOnlyList<SkillRing> Rings);
 
+/// <param name="Longest">The longest shot in metres, null when nothing was hit.</param>
+public sealed record WeaponStat(string Weapon, string Ammo, int Shots, double Accuracy, int Kills, double KillsPerHit, double? Longest);
+public sealed record SpeciesStat(string Name, int Spotted, int Tracked, int Harvested);
+public sealed record CollectableStat(string Name, int Collected, int Total, int Max);
+public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds);
+/// <summary>A confirmed kill of an expedition; <see cref="Id"/> opens its score sheet.</summary>
+public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When);
+/// <param name="End">Null while the expedition is not over.</param>
+public sealed record Expedition(long Id, string Reserve, string Lodge, DateTime Start, DateTime? End, IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals,
+    IReadOnlyList<CollectableStat> Collectables, IReadOnlyList<string> Achievements, double DistanceKm, int Seconds, IReadOnlyList<string> Antlers, IReadOnlyList<Kill> Kills);
+public sealed record HistoryRow(long Id, DateTime Start, int Seconds, string Reserve, string Lodge, int Collectables, int Kills);
+public sealed record BestRow(string Species, double Score, double Range);
+/// <param name="Status">disabled, queued, building, empty (no expeditions) or done</param>
+public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
+
 public interface IProfileService
 {
     Task<Profile?> ProfileAsync(string handle);
@@ -28,6 +43,13 @@ public interface IProfileService
     Task<IReadOnlyList<Challenge>> ChallengesAsync(string handle);
     /// <param name="kind">species or weapons</param>
     Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind);
+    Task<Totals> TotalsAsync(string handle);
+    /// <param name="id">Null for the latest expedition.</param>
+    Task<Expedition?> ExpeditionAsync(string handle, long? id);
+    /// <summary>The expedition list, 40 a page.</summary>
+    Task<Page<HistoryRow>> HistoryAsync(string handle, int page);
+    /// <param name="season">0 for all time</param>
+    Task<PersonalBest> BestAsync(string handle, int season);
     Task<Progress> ProgressAsync();
     /// <summary>The launcher opens the single player map while this is 10 or less.</summary>
     Task<int> ExpeditionCountAsync();
