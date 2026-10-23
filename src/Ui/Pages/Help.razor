@@ -1,0 +1,91 @@
+@page "/help"
+@page "/help/{Tab}"
+@page "/help/tutorials/{Section:int}"
+@inject IHelpService Service
+@inject Branding Brand
+@inject HostMode Mode
+@inject ModalService Modal
+
+<PageTitle>@L["Menu.Help"]</PageTitle>
+
+@* the help texts are static English in the old app in every language, so they stay inline *@
+<div class="page-min">
+    <h2 class="page-title">@L["Menu.Help"]</h2>
+    <Tabs Kind="strip" Items="tabs" Active="@("/help" + (tab == "support" ? "" : "/" + tab))" />
+    <div class="panel @(tab == "tutorials" ? "bare" : "")">
+        @switch (tab)
+        {
+            case "support":
+                <h3>@G("{game} support")</h3>
+                <p>@G("{game} has several official support channels. A lot of information on how to play the game as well as troubleshooting can be found on our community maintained Wiki page. Our official {game} forums are very active and visited daily by many of our players that are happy to help beginners.")</p>
+                <p>If you are unable to find an answer to your questions in the forum or wiki, you may open a ticket in our support system and we'll try to help you as quickly as possible!</p>
+                <ul class="links">
+                    <li><ExternalLink Key="support">@G("{game} Support")</ExternalLink></li>
+                    <li><ExternalLink Key="forum">@G("{game} Forum")</ExternalLink></li>
+                    <li><ExternalLink Key="wiki">@G("{game} Wiki")</ExternalLink> (also in <ExternalLink Key="wiki_de">German</ExternalLink>, <ExternalLink Key="wiki_fr">French</ExternalLink> and <ExternalLink Key="wiki_es">Spanish</ExternalLink> )</li>
+                    <li><ExternalLink Key="multiplayer_info">Information about multiplayer connections</ExternalLink></li>
+                </ul>
+                <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="245" /><b>@G("New to {game}?")</b><span>Check out some video tutorials &gt;</span></a>
+                break;
+            case "guides":
+                <h3>Community resources &amp; Guides</h3>
+                <p>@G("{game} has a large community, check out some of these great resources created by our members.")</p>
+                <h4>Guides &amp; Tutorials</h4>
+                <ul class="links">@foreach (var (g, i) in guides.Select((g, i) => (g, i + 1))) { <li><ExternalLink Key="@("guide_" + i)">@g.Title</ExternalLink></li> }</ul>
+                break;
+            case "day-mission":
+                <DayMissionHelp />
+                break;
+            case "tutorials":
+                <Tabs Kind="pills" Items="pills" Active="@("/help/tutorials/" + section)" />
+                @if (current is not null)
+                {
+                    <div class="hero">
+                        <AssetSlot Name="help-hero" Width="940" Height="250" />
+                        <h1>@current.Title</h1>
+                        <p>@if (current.Id == 1) { <text>Learn the basics of how to play @G("{game}"). Make sure to go through the </text>@if (Mode.Launcher) { <a href="/tutorials">playable tutorials</a> } else { <text>playable tutorials</text> }<text> as well before going on your first hunt in the EHR!</text> } else { @G(current.Description) }</p>
+                    </div>
+                    <ul class="videos">
+                        @foreach (var v in current.Videos)
+                        {
+                            <li>
+                                @if (Mode.Launcher) { <ExternalLink Key="@("video_" + v.Id)" Class="vt">@v.Title</ExternalLink> }
+                                else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title })' @onclick:preventDefault>@v.Title</a> }
+                                <span>By</span>&nbsp;@v.Author
+                            </li>
+                        }
+                    </ul>
+                }
+                break;
+            case "community":
+                <h3>Local Community Websites</h3>
+                <p>@G("{game} has a vibrant community and many of our players hang out in local communities with players from their region! Check out these local {game} community fan sites!")</p>
+                <ul class="where">@foreach (var (c, i) in communities.Select((c, i) => (c, i + 1))) { <li>@c.Country: <ExternalLink Key="@("community_" + i)">@c.Name</ExternalLink></li> }</ul>
+                break;
+        }
+    </div>
+</div>
+
+@code {
+    IReadOnlyList<(string, string)> tabs = [], pills = [];
+    IReadOnlyList<Guide> guides = [];
+    IReadOnlyList<TutorialSection> sections = [];
+    IReadOnlyList<Community> communities = [];
+    TutorialSection? current;
+
+    [Parameter] public string? Tab { get; set; }
+    [Parameter] public int? Section { get; set; }
+    string tab => Section is not null ? "tutorials" : Tab is "guides" or "day-mission" or "tutorials" or "community" ? Tab! : "support";
+    int section => Section ?? 1;
+
+    string G(string text) => Brand.Expand(text);
+
+    protected override async Task OnInitializedAsync()
+    {
+        tabs = [(G("{game} support"), "/help"), ("Daily Missions", "/help/day-mission"), ("Guides & Tutorials", "/help/guides"), ("Video Tutorials", "/help/tutorials"), ("Local community websites", "/help/community")];
+        (guides, sections, communities) = (await Service.GuidesAsync(), await Service.TutorialsAsync(), await Service.CommunitiesAsync());
+        pills = sections.Select(s => (s.Title, "/help/tutorials/" + s.Id)).ToList();
+    }
+
+    protected override void OnParametersSet() => current = sections.FirstOrDefault(s => s.Id == section);
+}
