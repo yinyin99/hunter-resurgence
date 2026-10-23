@@ -28,6 +28,7 @@ static class SelfTest
             Translations();
             GameName();
             GameSettingsFiles(root);
+            Signup();
             Zips(root);
             Console.WriteLine("selftest ok");
             return 0;
@@ -127,8 +128,22 @@ static class SelfTest
     }
 
     /// <summary>{game} tokens: expanded from settings.json values, "the game" and no link without them, placeholders ignored.</summary>
-    static void GameName()
+    /// <summary>The mock account service the signup screens run on: where the start goes for each kind of session, and the rules the screens rely on.</summary>
+    static void Signup()
     {
+        var s = new Resurgence.Services.Mocks.MockSessionService();
+        s.SignOutAsync().Wait();
+        Check(s.StartAsync().Result == Resurgence.Services.StartOutcome.LoggedOut, "start without a session goes to the sign-in");
+        Check(s.SignInAsync("a@b.test", "12").Result.Error == "Validation.Code.Invalid" && s.RequestCodeAsync("nope").Result.Error == "Validation.Email.Invalid", "a short code and an address without @ are refused");
+        s.SignInAsync("a@b.test", "123456", register: true).Wait();
+        Check(s.StartAsync().Result == Resurgence.Services.StartOutcome.NeedsSignup, "a new account without a username goes to the username page");
+        s.SetHandleAsync("Name").Wait();
+        Check(s.StartAsync().Result == Resurgence.Services.StartOutcome.LoggedIn, "an account with a username is logged in");
+        var u = new Resurgence.Services.Mocks.MockSignupService();
+        Check(!u.UsernameAvailableAsync("Taken_1").Result && u.UsernameAvailableAsync("Free").Result && u.ChangeEmailAsync("taken@x.test").Result.Error == "Dialog.EmailTaken", "taken names and addresses are refused");
+    }
+
+    static void GameName()    {
         var b = new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo", ["link_news"] = "https://example.test/n", ["link_forum"] = "<forum>" });
         Check(b.Expand("{GAME} NEWS, {game}, {game_full}") == "FOO NEWS, Foo, Foo", "tokens expand to the configured name");
         Check(b.Link("news") == "https://example.test/n" && b.Link("forum") is null && b.Link("wiki") is null, "links: configured, placeholder and missing");

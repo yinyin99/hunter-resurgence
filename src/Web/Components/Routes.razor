@@ -18,6 +18,6 @@
     protected override async Task OnInitializedAsync()
     {
         (Mode.Launcher, Mode.Dev, Mode.Mock) = (Launcher, Dev, Mock);
-        if (Dev && Mock == "session:out") await Sessions.SignOutAsync();
+        if (Dev) await Mode.ApplyMockSessionAsync(Sessions);
     }
 }
