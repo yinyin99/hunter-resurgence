@@ -353,4 +353,96 @@
   <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Qualité des ombres</value></data>
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Détails des textures</value></data>
   <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Competitions</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
+  <data name="Comp.Title" xml:space="preserve"><value>COMPÉTITIONS</value></data>
+  <data name="Comp.Enrolled" xml:space="preserve"><value>Compétitions activées</value></data>
+  <data name="Comp.Name" xml:space="preserve"><value>Compétition</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Tentatives</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Position</value></data>
+  <data name="Comp.Starts" xml:space="preserve"><value>Début</value></data>
+  <data name="Comp.Ends" xml:space="preserve"><value>Fin</value></data>
+  <data name="Comp.Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="Comp.Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Comp.Players" xml:space="preserve"><value>Joueurs</value></data>
+  <data name="Comp.Activate" xml:space="preserve"><value>Activer</value></data>
+  <data name="Comp.Deactivate" xml:space="preserve"><value>Désactiver</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>Impossible de rejoindre</value></data>
+  <data name="Comp.Single" xml:space="preserve"><value>Simple joueur</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Multijoueur</value></data>
+  <data name="Comp.Requirements" xml:space="preserve"><value>Conditions :</value></data>
+  <data name="Comp.Upcoming" xml:space="preserve"><value>Compétitions en cours</value></data>
+  <data name="Comp.Previous" xml:space="preserve"><value>Compétitions précédentes</value></data>
+  <data name="Comp.Filter" xml:space="preserve"><value>Cliquez pour filtrer par espèce :</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>No competitions found, try changing the filter settings</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Signup</value></data>
+  <data name="Comp.StatusStarted" xml:space="preserve"><value>En cours</value></data>
+  <data name="Comp.StatusFinished" xml:space="preserve"><value>Terminée</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>N/D</value></data>
+  <data name="Comp.Join" xml:space="preserve"><value>REJOINDRE</value></data>
+  <data name="Comp.Leave" xml:space="preserve"><value>QUITTER</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Competition status: {0}</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Sign up</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Ended</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Starts in</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Ends in</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Votre position</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Score à battre</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Leaderboard</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>History</value></data>
+  <data name="Comp.Prizes" xml:space="preserve"><value>Prix</value></data>
+  <data name="Comp.Trophy" xml:space="preserve"><value>Trophée</value></data>
+  <data name="Comp.Rules" xml:space="preserve"><value>Règles et conditions</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Species: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Reserves: {0}</value></data>
+  <data name="Comp.Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Weapons</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Scoring</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Special Requirements</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Gamemode</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Une tentative est décomptée à chaque fois qu'une chasse est lancée dans une réserve où une compétition est active. Les compétitions ne peuvent pas être activées durant une partie, les modifications apportées pendant celle-ci ne prendront effet que lors de votre prochaine chasse.</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Participants with a result ({0})</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Player</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Result</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>No results to display</value></data>
+  <data name="League.Title" xml:space="preserve"><value>COMMUNITY LEAGUE</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Welcome to the {game} Community League which will be replacing our current weekend competition format.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>Every Friday, hunt a different animal in the assigned reserve (animals hunted outside that reserve won't count). You have a full week and 7 attempts to make an entry. The competition is activated and deactivated like usual. For the week that an animal is being hunted, all regular competitions dedicated to that animal will be suspended. And yes, sales will now run for a full week. Rewards per League Competition will match the weekend competitions they're replacing.</value></data>
+  <data name="League.P3" xml:space="preserve"><value>Events will not be affected by the League.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>All competitions will be Single Player only except any Duck or Goose competition.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Every 4 weeks, we go to a new reserve, and every 3 reserves is a Season.</value></data>
+  <data name="League.P6" xml:space="preserve"><value>You do not have to participate in every single League Competition to qualify for the monthly or Season prizes, but there are obvious advantages to throwing your hat in the ring as often as you can.</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>You aren't enrolled in any competitions</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Monthly Leaderboard</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Season Leaderboard</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>CLASSEMENTS</value></data>
+  <data name="Board.Score" xml:space="preserve"><value>Score</value></data>
+  <data name="Board.Range" xml:space="preserve"><value>Distance</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
+  <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
+  <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Single Antler</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Double Antlers</value></data>
+  <data name="Board.TopScores" xml:space="preserve"><value>Meilleurs scores de la saison {0}</value></data>
+  <data name="Board.TopRanges" xml:space="preserve"><value>Meilleures distances de la saison {0}</value></data>
+  <data name="Board.Full" xml:space="preserve"><value>Voir le classement complet</value></data>
+  <data name="Board.YourRank" xml:space="preserve"><value>Votre rang</value></data>
+  <data name="Board.NoRank" xml:space="preserve"><value>Vous n'êtes pas classé(e) dans cette catégorie actuellement</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Meilleurs Hunter Scores</value></data>
+  <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>
+  <data name="Board.Hunter" xml:space="preserve"><value>Chasseur</value></data>
+  <data name="Board.Hunterscore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.Past" xml:space="preserve"><value>Hall of Fame des saisons précédentes</value></data>
+  <data name="Board.SeasonN" xml:space="preserve"><value>Saison {0}</value></data>
+  <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit - Meilleurs scores</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit est un petit jeu d'arcade rétro auquel vous pouvez jouer sur votre HunterMate pour vous divertir en attendant que les animaux ne daignent se montrer !</value></data>
+  <data name="Board.GetLane" xml:space="preserve"><value>Acheter Lane Bandit</value></data>
+  <data name="Board.TopBust" xml:space="preserve"><value>Bust Through - Meilleurs scores</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through est un petit jeu d'arcade rétro auquel vous pouvez jouer sur votre HunterMate pour vous divertir en attendant que les animaux ne daignent se montrer !</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>SP</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Prev</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Next</value></data>
 </root>
