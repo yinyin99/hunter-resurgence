@@ -75,4 +75,21 @@
   <data name="Legal.Section" xml:space="preserve"><value>INTRODUCTION</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Placeholder heading</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Signin.Code" xml:space="preserve"><value>Code</value></data>
+  <data name="Signin.SendCode" xml:space="preserve"><value>Send code</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Use another e-mail address</value></data>
+  <data name="Signin.Sent" xml:space="preserve"><value>We sent a 6-digit code to {0}.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Please enter a valid e-mail address.</value></data>
+  <data name="Validation.Code.Invalid" xml:space="preserve"><value>Incorrect code. Please try again.</value></data>
+  <data name="Landing.Play" xml:space="preserve"><value>PLAY FOR FREE</value></data>
+  <data name="Feed.ContinueReading" xml:space="preserve"><value>Continue reading →</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>News Archive</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>{0} Members Online</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>MEMBERS ONLINE</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Join Discord</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Hangout with people who get it</value></data>
 </root>
