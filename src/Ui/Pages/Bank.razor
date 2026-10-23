@@ -1,0 +1,18 @@
+@page "/bank"
+@page "/bank/{Tab}"
+@implements IDisposable
+@inject ModalService Modal
+
+@* the bank is a modal over the news page, as in the old app *@
+<Feed />
+
+@code {
+    [Parameter] public string? Tab { get; set; }
+
+    protected override void OnParametersSet() => Modal.Show<BankModal>(new Dictionary<string, object?> { ["Tab"] = Tab is "memberships" or "help" ? Tab : "ems" });
+
+    public void Dispose()
+    {
+        if (Modal.Type == typeof(BankModal)) Modal.Close();
+    }
+}
