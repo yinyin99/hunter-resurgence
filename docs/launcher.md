@@ -65,6 +65,8 @@ Real today:
 
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
+The bank exists, but buying with money is disabled: its buy buttons are inert and show no price, and its notice says em$ cannot be bought with money on this server.
+
 ## Files on the PC
 
 | File | Who writes it | Content |

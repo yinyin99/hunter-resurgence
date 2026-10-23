@@ -313,7 +313,7 @@
   <data name="Signup.P2.Title" xml:space="preserve"><value>GET YOUR FIRST WEAPON</value></data>
   <data name="Signup.P2.Text" xml:space="preserve"><value>You’ve made it so far, awesome! Here is a welcome gift from us - your first weapon, the shiny 12GA Single Shot Shotgun with free replenishable ammo. With this rugged beauty you can ethically hunt all animals in the game, except Bison.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>ENJOY YOUR HUNTING LICENSES</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>It’s almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals are rotating weekly. Paying members can hunt all the species, check our Membership store if you want to become one.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>It’s almost time for your first hunt! What will you go after? As a guest player, you get free lifetime hunting licenses for Whitetail Deer, European Rabbit and Pheasant, plus two more free animals are rotating weekly.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRM YOUR EMAIL</value></data>
   <data name="Signup.P4.Text" xml:space="preserve"><value>Good things come to those who confirm their emails! Please check your inbox for a message from us and follow the instructions in it. Your current email is {0}. If it’s not correct, please change it below and click "Resend the confirmation email".</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>YOUR REWARD</value></data>
@@ -570,9 +570,7 @@
   <data name="Bank.Invalid" xml:space="preserve"><value>The discount code you entered is invalid or expired</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>In-game currency</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Weapons, tents, clothing, hunting licenses and much more can be purchased with in-game currency (em$).</value></data>
-  <data name="Bank.Gift" xml:space="preserve"><value>Purchase as a Gift</value></data>
-  <data name="Bank.Compare" xml:space="preserve"><value>* Compared to 500 em$</value></data>
-  <data name="Bank.Save" xml:space="preserve"><value>Save {0}%*</value></data>
+  <data name="Bank.NoBuy" xml:space="preserve"><value>em$ cannot be bought with money on this server.</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Starter Bundles</value></data>
   <data name="Bank.StarterDesc" xml:space="preserve"><value>Get everything you need to start hunting any animal in the Evergreen Hunting Reserve. Our starter bundles include a Basic Membership that gives you a license to hunt every animal in the game, and a special selection of items to get you right on track to becoming a master hunter.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Special Bundles</value></data>
@@ -585,18 +583,11 @@
   <data name="Bank.Other" xml:space="preserve"><value>+ {0} other items</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Items included in a membership or bought separately are kept even if your membership expires</value></data>
-  <data name="Bank.ComparePrize" xml:space="preserve"><value>* Compared to 3 months {game} Membership</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game} Store Questions &amp; Answers</value></data>
   <data name="Bank.Q1" xml:space="preserve"><value>What are em$?</value></data>
   <data name="Bank.A1" xml:space="preserve"><value>em$ is {game}'s virtual currency that can be used to purchase items in the Store, such as weapons, equipment, clothing and much more.</value></data>
-  <data name="Bank.Q2" xml:space="preserve"><value>How do I buy em$ as a gift to a friend?</value></data>
-  <data name="Bank.A2" xml:space="preserve"><value>In the "Buy em$" tab of this window, check the "Purchase as a gift" check box and then click on the "BUY" button of the currency amount you wish to purchase. You will be taken to a purchase summary on the Steam website. Click on the "Authorize" button. You will be taken to a confirmation page (thank you for your purchase). Click on your em$ balance on the top of the screen (where it says "em$ XXXX") and check your {0}Purchase History{1}. The most recent entry in your Purchase History should read "Purchased as gift. Gift code:", followed by the gift code. Copy the code and send it to the friend you want to give it as a gift. Your friend will then have to redeem the code in order for the em$ gift to be added to their balance.</value></data>
   <data name="Bank.Q3" xml:space="preserve"><value>How do I redeem a gift code?</value></data>
   <data name="Bank.A3" xml:space="preserve"><value>Click on the "Redeem a discount code" button on the top-right corner of this window, then paste your gift code there and click on the "OK" button. A confirmation message will appear, click on the "Click here to redeem this gift" button. A message will appear confirming that your gift has been added to your account. Click OK and enjoy your gift!</value></data>
-  <data name="Bank.Q4" xml:space="preserve"><value>I missed a sale price, can I still get the discount?</value></data>
-  <data name="Bank.A4" xml:space="preserve"><value>Once a sale or discount has expired we are unable to offer the discounted price.</value></data>
-  <data name="Bank.Q5" xml:space="preserve"><value>Refund Policy</value></data>
-  <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Disclaimer</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
   <data name="Bank.Extra" xml:space="preserve"><value>{0} extra weapons</value></data>

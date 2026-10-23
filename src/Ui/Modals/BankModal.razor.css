@@ -14,20 +14,14 @@ section { padding: 20px 20px 40px; }
 h2 { margin: 0 0 8px; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 30px; line-height: 36px; font-weight: 700; color: #666; }
 section > .cards + h2, .cards + h2 { margin-top: 30px; }
 .desc { margin: 0 0 24px; font-size: 14px; line-height: 18px; color: #aaa; }
-.gift { display: block; margin: 0 0 36px; text-align: center; font-size: 16px; font-weight: 700; color: #3d9a1e; }
-.gift input { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }
 .packs { display: flex; gap: 16px; padding-left: 10px; }
 .pack { width: 140px; text-align: center; }
-.pack h3 { margin: 20px 0 0; font-size: 22px; line-height: 28px; font-weight: 300; color: #777; }
-.price { margin: 0; font-size: 24px; line-height: 30px; color: #888; }
-.pack .price { margin-top: 44px; }
-.save { height: 20px; margin: 0 0 12px; font-size: 16px; line-height: 20px; color: #e03030; }
+.pack h3 { margin: 20px 0 20px; font-size: 22px; line-height: 28px; font-weight: 300; color: #777; }
 .buy { display: block; box-sizing: border-box; width: 100%; height: 52px; border: 0; border-radius: 2px; background: #a8e817; font-size: 22px; font-weight: 700; color: #fff; cursor: pointer; }
-.compare { margin: 12px 0 0; text-align: center; font-size: 14px; color: #999; }
+.buy:disabled { background: #ccc; cursor: not-allowed; }
 .cards { display: flex; flex-wrap: wrap; gap: 20px; }
 .card { box-sizing: border-box; width: 300px; padding: 20px 10px 10px; border: 1px solid #ccc; text-align: center; }
 .card > :first-child { margin: 0 auto; }
-.card .price { margin: 30px 0 22px; font-size: 28px; }
 .what { margin: 0 -10px 20px; padding: 10px 0; background: #eee; }
 .what p { margin: 0; font-size: 14px; line-height: 20px; color: #777; }
 .what a { color: var(--accent); }
@@ -36,4 +30,4 @@ section > .cards + h2, .cards + h2 { margin-top: 30px; }
 .buy ::deep .icon { width: 22px; height: 22px; vertical-align: -3px; }
 .balance button ::deep .icon { width: 12px; height: 12px; vertical-align: -1px; }
 section.ms { padding-top: 33px; }
-.done { margin: 0; padding: 10px 15px; background: #eaf7dd; font-size: 14px; color: #3d9a1e; }
+.notice { margin: 0; padding: 10px 15px; background: #f4f4f4; font-size: 14px; color: #777; }
