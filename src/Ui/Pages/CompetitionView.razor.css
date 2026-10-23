@@ -1,0 +1,35 @@
+.hero { position: relative; height: 340px; margin: -13px 0 22px; }
+.hero ::deep .art { position: absolute; left: 0; top: 0; }
+.chips { position: absolute; left: 22px; top: 18px; display: flex; gap: 8px; }
+.chips span { padding: 8px 10px; border-radius: 6px; background: rgba(0, 0, 0, .55); font-size: 12px; line-height: 16px; color: #ddd; }
+h1 { position: absolute; left: 25px; bottom: 92px; margin: 0; font-size: var(--fs-h1); line-height: 46px; font-weight: 400; color: #fff; }
+.hero p { position: absolute; left: 25px; bottom: 68px; margin: 0; font-size: 14px; line-height: 20px; color: #eee; }
+.leave { position: absolute; left: 25px; bottom: 19px; box-sizing: border-box; width: 97px; height: 50px; padding: 0; background: #eee; font-size: 18px; line-height: 50px; font-weight: 300; color: #444; }
+.leave:disabled { background: #555; color: #bbb; font-size: 14px; }
+.stats { display: flex; margin: 0 0 20px; padding: 0 26px; }
+.stats div { width: 196px; }
+.stats div:first-child { width: 120px; }
+.stats .wide { width: 273px; }
+.stats div:last-child { width: auto; }
+dt { font-size: 18px; line-height: 26px; font-weight: 300; color: #aaa; }
+dd { margin: 0; font-size: 30px; line-height: 40px; font-weight: 300; color: #ddd; }
+h3 { margin: 18px 0 10px; font-size: var(--fs-h3); line-height: 34px; font-weight: 400; color: #eee; }
+h4 { margin: 28px 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--primary); }
+p { margin: 0 0 6px; font-size: 14px; line-height: 20px; color: #ccc; }
+.prizes { display: flex; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.prizes li { width: 240px; line-height: 24px; }
+.medal { display: inline-block; width: 30px; margin-right: 6px; border-radius: 2px; font-size: 12px; line-height: 18px; text-align: center; color: #333; background: linear-gradient(#ecc84f, #b78d1c); }
+.medal.m2 { background: linear-gradient(#ddd, #888); }
+.medal.m3 { background: linear-gradient(#b9a08f, #6e5a4c); }
+.when { margin: 29px 0 0; }
+.when p { margin: 0 0 9px; }
+.year { margin: 12px 0 6px; font-size: 12px; line-height: 18px; font-weight: 400; color: #ccc; }
+.month { margin: 0 0 7px 14px; font-size: 12px; line-height: 18px; }
+.month b { color: #ddd; }
+.month a { margin-left: 4px; }
+.board { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px; }
+.board th { padding: 8px; font-weight: 100; color: #eee; text-align: left; }
+.board td { padding: 8px; border-top: 1px solid #222; text-align: center; }
+.board th:nth-child(1) { width: 215px; }
+.board th:nth-child(2) { width: 262px; }
+.board td:last-child { text-align: left; }
