@@ -36,7 +36,7 @@
   <data name="Statusbar.Days" xml:space="preserve"><value>{0} jours</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Amis</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
-  <data name="Tip.Wallet" xml:space="preserve"><value>Mon portefeuille / Historique des achats</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>Porte-monnaie / Historique des achats</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Déconnexion</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Votre Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Votre profil</value></data>
@@ -182,7 +182,7 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Saisissez le mot de passe</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Rejoindre</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Fermer</value></data>
-  <data name="Tut.Intro" xml:space="preserve"><value>Il est recommandé de jouer les tutoriels de base avant de commencer votre première vraie chasse dans la première réserve. Dans ces tutoriels, vous rencontrerez le gardien de cette réserve. Il vous expliquera les bases et vous apprendra ce qu'il faut savoir pour réussir dans {game}.</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Il est recommandé de jouer aux tutoriels de base avant de commencer votre première vraie chasse dans la première réserve. Dans ces tutoriels, vous rencontrerez le gardien de cette réserve. Il vous expliquera les bases et vous apprendra ce qu'il faut savoir pour réussir dans {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Lancer le tutoriel</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Localisation : {0}</value></data>
   <data name="GameSettings.Title" xml:space="preserve"><value>Paramètres de jeu</value></data>
@@ -216,7 +216,7 @@
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Non configuré : settings.json n’a pas d’entrée pour ces fichiers.</value></data>
   <data name="GameSettings.Missing" xml:space="preserve"><value>Lancez le jeu une fois pour qu’il crée ses fichiers de paramètres.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un fichier de paramètres a un format inconnu du lanceur ; il est laissé intact.</value></data>
-  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Le jeu est en cours. Fermez-le avant d’enregistrer : il réécrit lui-même ces fichiers.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Le jeu est en cours d’exécution. Fermez-le avant d’enregistrer : il réécrit lui-même ces fichiers.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Les paramètres n’ont pas pu être enregistrés.</value></data>
   <data name="Patch.GotIt" xml:space="preserve"><value>Got it!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>New game patch</value></data>
@@ -313,7 +313,7 @@
   <data name="Signup.P2.Title" xml:space="preserve"><value>Votre première arme</value></data>
   <data name="Signup.P2.Text" xml:space="preserve"><value>Voici un cadeau de bienvenue de notre part - votre première arme - le fusil monocoup cal. 12. Avec cette beauté, vous pouvez éthiquement chasser tous les animaux (bison exclu).</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>Profitez de vos licences de chasse</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>Il est presque temps de partir à votre première chasse ! Que traquerez-vous ? En tant que joueur invité, vous obtenez gratuitement des licences de chasse à vie pour le cerf de Virginie, le lapin européen et le faisan, et deux autres animaux gratuits changent chaque semaine. Les membres payants peuvent chasser toutes les espèces ; consultez notre boutique d’abonnement si vous souhaitez le devenir.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Il est presque temps de partir à votre première chasse ! Que traquerez-vous ? En tant que joueur invité, vous obtenez gratuitement des licences de chasse à vie pour le cerf de Virginie, le lapin de garenne et le faisan, et deux autres animaux gratuits changent chaque semaine. Les membres payants peuvent chasser toutes les espèces ; consultez notre boutique d’abonnement si vous souhaitez le devenir.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>Confirmez votre adresse e-mail</value></data>
   <data name="Signup.P4.Text" xml:space="preserve"><value>Une bonne chose n'arrive jamais seule. Confirmez votre adresse email pour recevoir une autre récompense ! Nous vous avons envoyé un message, veuillez consulter votre boîte de réception et suivre les instructions. Votre adresse email actuelle est {0}. Si elle est incorrecte, veuillez la changer ci-dessous.</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>Votre récompense</value></data>
@@ -354,7 +354,7 @@
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Détails des textures</value></data>
   <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertical sync</value></data>
   <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Compétitions</value></data>
-  <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Ligue communautaire</value></data>
   <data name="Comp.Title" xml:space="preserve"><value>COMPÉTITIONS</value></data>
   <data name="Comp.Enrolled" xml:space="preserve"><value>Compétitions activées</value></data>
   <data name="Comp.Name" xml:space="preserve"><value>Compétition</value></data>
@@ -373,39 +373,39 @@
   <data name="Comp.Upcoming" xml:space="preserve"><value>Compétitions en cours</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Compétitions précédentes</value></data>
   <data name="Comp.Filter" xml:space="preserve"><value>Cliquez pour filtrer par espèce :</value></data>
-  <data name="Comp.NoneFound" xml:space="preserve"><value>No competitions found, try changing the filter settings</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>Aucune compétition trouvée, essayez de modifier les filtres</value></data>
   <data name="Comp.StatusSignup" xml:space="preserve"><value>Inscriptions</value></data>
   <data name="Comp.StatusStarted" xml:space="preserve"><value>En cours</value></data>
   <data name="Comp.StatusFinished" xml:space="preserve"><value>Terminée</value></data>
   <data name="Comp.NA" xml:space="preserve"><value>N/A</value></data>
   <data name="Comp.Join" xml:space="preserve"><value>REJOINDRE</value></data>
   <data name="Comp.Leave" xml:space="preserve"><value>QUITTER</value></data>
-  <data name="Comp.ChipStatus" xml:space="preserve"><value>Competition status: {0}</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Statut de la compétition : {0}</value></data>
   <data name="Comp.StateSignUp" xml:space="preserve"><value>Inscriptions</value></data>
-  <data name="Comp.StateOngoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>En cours</value></data>
   <data name="Comp.StateEnded" xml:space="preserve"><value>Terminée</value></data>
-  <data name="Comp.StartsIn" xml:space="preserve"><value>Starts in</value></data>
-  <data name="Comp.EndsIn" xml:space="preserve"><value>Ends in</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Début dans</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Fin dans</value></data>
   <data name="Comp.YourPosition" xml:space="preserve"><value>Votre position</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Score à battre</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Vue d'ensemble</value></data>
-  <data name="Comp.Leaderboard" xml:space="preserve"><value>Leaderboard</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Classement</value></data>
   <data name="Comp.History" xml:space="preserve"><value>Historique</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Prix</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trophée</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Règles et conditions</value></data>
-  <data name="Comp.Species" xml:space="preserve"><value>Species: {0}</value></data>
-  <data name="Comp.Reserves" xml:space="preserve"><value>Reserves: {0}</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Espèces : {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Réserves : {0}</value></data>
   <data name="Comp.Description" xml:space="preserve"><value>Description</value></data>
   <data name="Comp.Weapons" xml:space="preserve"><value>Armes</value></data>
-  <data name="Comp.Scoring" xml:space="preserve"><value>Scoring</value></data>
-  <data name="Comp.Special" xml:space="preserve"><value>Special Requirements</value></data>
-  <data name="Comp.Gamemode" xml:space="preserve"><value>Gamemode</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Calcul du score</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Conditions spéciales</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Mode de jeu</value></data>
   <data name="Comp.Disclaimer" xml:space="preserve"><value>Une tentative est décomptée à chaque fois qu'une chasse est lancée dans une réserve où une compétition est active. Les compétitions ne peuvent pas être activées durant une partie, les modifications apportées pendant celle-ci ne prendront effet que lors de votre prochaine chasse.</value></data>
-  <data name="Comp.Participants" xml:space="preserve"><value>Participants with a result ({0})</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Participants ayant obtenu un résultat ({0})</value></data>
   <data name="Comp.Player" xml:space="preserve"><value>Joueur</value></data>
   <data name="Comp.Result" xml:space="preserve"><value>Résultat</value></data>
-  <data name="Comp.NoResults" xml:space="preserve"><value>No results to display</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>Aucun résultat à afficher</value></data>
   <data name="League.Title" xml:space="preserve"><value>COMMUNITY LEAGUE</value></data>
   <data name="League.P1" xml:space="preserve"><value>Welcome to {game} Community League which will be replacing our current weekend competition format.</value></data>
   <data name="League.P2" xml:space="preserve"><value>Every Friday, hunt a different animal in the assigned reserve (animals hunted outside that reserve won't count). You have a full week and 7 attempts to make an entry. The competition is activated and deactivated like usual. For the week that an animal is being hunted, all regular competitions dedicated to that animal will be suspended. And yes, sales will now run for a full week. Rewards per League Competition will match the weekend competitions they're replacing.</value></data>
@@ -479,8 +479,8 @@
   <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Espèces</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
-  <data name="Mis.AllSelected" xml:space="preserve"><value>All selected</value></data>
-  <data name="Mis.NSelected" xml:space="preserve"><value>{0} sélectionnés</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>Toutes</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>{0} sélectionnées</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Hide completed</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Search</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -550,14 +550,14 @@
   <data name="Wal.Item" xml:space="preserve"><value>article</value></data>
   <data name="Wal.Amount" xml:space="preserve"><value>Montant</value></data>
   <data name="Wal.Provider" xml:space="preserve"><value>Provider</value></data>
-  <data name="Wal.EmsDesc" xml:space="preserve"><value>This page lists all of the purchases you have made using {0}</value></data>
-  <data name="Wal.NoneVirtual" xml:space="preserve"><value>You haven't made any purchases using {0} yet.</value></data>
-  <data name="Wal.NoneBank" xml:space="preserve"><value>You haven't made any purchases yet.</value></data>
-  <data name="Wal.AmountOf" xml:space="preserve"><value>Amount ({0})</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>Cette page liste tous les achats que vous avez effectués avec {0}</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>Vous n'avez effectué aucun achat en {0} pour le moment.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>Vous n'avez effectué aucun achat pour le moment.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Montant ({0})</value></data>
   <data name="Wal.Before" xml:space="preserve"><value>Solde avant</value></data>
   <data name="Wal.After" xml:space="preserve"><value>Solde après</value></data>
   <data name="Wal.Items" xml:space="preserve"><value>Articles</value></data>
-  <data name="Wal.More" xml:space="preserve"><value>Show more</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Afficher plus</value></data>
   <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Purchased as gift. Redeemed {0}.</value></data>
   <data name="Wal.GiftCode" xml:space="preserve"><value>Purchased as gift. Gift code: {0}</value></data>
   <data name="Bank.BuyEms" xml:space="preserve"><value>Buy em$</value></data>
@@ -635,9 +635,9 @@
   <data name="Set.EmailFailed" xml:space="preserve"><value>Une erreur est survenue lors de la mise à jour de votre adresse email</value></data>
   <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmer l’adresse email</value></data>
   <data name="Set.EmailChanged" xml:space="preserve"><value>Votre adresse email a été modifiée.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Resend confirmation</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Resend email successfull</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Renvoyer un email de confirmation</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>L'email a bien été renvoyé</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Le renvoi de l'email a échoué. Veuillez réessayer ou contacter le support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Pays</value></data>
   <data name="Set.CountryChoose" xml:space="preserve"><value>Choisissez un pays</value></data>
@@ -650,8 +650,8 @@
   <data name="Set.WalletLink" xml:space="preserve"><value>Cliquez ici pour voir votre porte-monnaie</value></data>
   <data name="Set.BansTitle" xml:space="preserve"><value>Joueurs bannis</value></data>
   <data name="Set.BansNone" xml:space="preserve"><value>Vous n'avez banni aucun joueur pour le moment</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Unban</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Gracier</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Êtes-vous sûr(e) de vouloir gracier {0} ?</value></data>
   <data name="Set.FacebookText" xml:space="preserve"><value>Vous pouvez connecter votre compte Facebook pour pouvoir vous identifier plus facilement.</value></data>
   <data name="Set.Connect" xml:space="preserve"><value>Se connecter</value></data>
   <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
@@ -670,8 +670,8 @@
   <data name="Set.GroupEvents" xml:space="preserve"><value>Événements</value></data>
   <data name="Set.GroupMissions" xml:space="preserve"><value>Missions quotidiennes</value></data>
   <data name="Set.SaveProfile" xml:space="preserve"><value>Appliquer</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Paramètres du profil enregistrés</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>L'enregistrement du profil a échoué. Veuillez réessayer ou contacter le support.</value></data>
   <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Bait Sites</value></data>
   <data name="GM.Home" xml:space="preserve"><value>HOME</value></data>
@@ -825,7 +825,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Votre galerie est prête à être téléchargée !</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Merci de ne pas fermer cette fenêtre</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Êtes-vous sûr(e) de vouloir supprimer cette image ? Cette opération est irréversible !</value></data>
-  <data name="Prof.DogLvl" xml:space="preserve"><value>Lvl:</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Niveau :</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Compétences</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>This dog has not unlocked any skills yet.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Supprimer</value></data>
