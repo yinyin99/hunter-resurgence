@@ -99,7 +99,7 @@ static class SelfTest
         Check(p is { Language: "fr", GameFolder: @"C:\x y", CloseOnGameStart: true }, "launcher.json round trip");
         File.WriteAllText(path, "{ not json");
         Check(Prefs.Load(path).Language == "", "damaged launcher.json: defaults");
-        Check(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("pt-BR", "en") == "pt-BR" && App.Pick("", "de-AT") == "de" && App.Pick("", "pt-PT") == "pt-BR" && App.Pick("", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "es-MX") == "es", "language: saved choice, else Windows language (any region), else English");
+        Check(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("pt-BR", "en") == "pt-BR" && App.Pick("", "de-AT") == "de" && App.Pick("", "pt-PT") == "pt-PT" && App.Pick("", "pt") == "pt-BR" && App.Pick("", "nb-NO") == "nb" && App.Pick("", "no") == "nb" && App.Pick("", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "es-MX") == "es", "language: saved choice, else Windows language (any region), else English");
     }
 
     /// <summary>Strings.fr.resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime); {game} tokens are not holes.</summary>
