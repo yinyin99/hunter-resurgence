@@ -408,7 +408,7 @@
   <data name="Comp.Result" xml:space="preserve"><value>Result</value></data>
   <data name="Comp.NoResults" xml:space="preserve"><value>No results to display</value></data>
   <data name="League.Title" xml:space="preserve"><value>COMMUNITY LEAGUE</value></data>
-  <data name="League.P1" xml:space="preserve"><value>Welcome to the {game} Community League which will be replacing our current weekend competition format.</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Welcome to {game} Community League which will be replacing our current weekend competition format.</value></data>
   <data name="League.P2" xml:space="preserve"><value>Every Friday, hunt a different animal in the assigned reserve (animals hunted outside that reserve won't count). You have a full week and 7 attempts to make an entry. The competition is activated and deactivated like usual. For the week that an animal is being hunted, all regular competitions dedicated to that animal will be suspended. And yes, sales will now run for a full week. Rewards per League Competition will match the weekend competitions they're replacing.</value></data>
   <data name="League.P3" xml:space="preserve"><value>Events will not be affected by the League.</value></data>
   <data name="League.P4" xml:space="preserve"><value>All competitions will be Single Player only except any Duck or Goose competition.</value></data>
@@ -434,7 +434,7 @@
   <data name="Board.AllTime" xml:space="preserve"><value>Meilleurs Hunter Scores</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Chasseur</value></data>
-  <data name="Board.Hunterscore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Hall of Fame des saisons précédentes</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Saison {0}</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit - Meilleurs scores</value></data>
@@ -445,4 +445,7 @@
   <data name="Board.SP" xml:space="preserve"><value>SP</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Prev</value></data>
   <data name="Pager.Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Pager.Label" xml:space="preserve"><value>Pages</value></data>
+  <data name="Board.Avatar" xml:space="preserve"><value>Avatar de {0}</value></data>
+  <data name="Comp.Failed" xml:space="preserve"><value>La compétition n’a pas pu être modifiée. Veuillez réessayer.</value></data>
 </root>
