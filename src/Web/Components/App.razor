@@ -1,3 +1,5 @@
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject HostMode Mode
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +8,10 @@
     <base href="/" />
     <link rel="stylesheet" href="@Assets["Resurgence.Web.styles.css"]" />
     <link rel="stylesheet" href="@Assets["_content/Resurgence.Ui/theme.css"]" />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 <body>
-    <Routes />
+    <Routes Launcher="Mode.Launcher" Dev="Mode.Dev" @rendermode="InteractiveServer" />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>

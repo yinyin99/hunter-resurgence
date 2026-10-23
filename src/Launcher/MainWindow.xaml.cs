@@ -1,6 +1,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Ui;
+using Resurgence.Ui.Modals;
 
 namespace Resurgence.Launcher;
 
@@ -14,6 +15,8 @@ public partial class MainWindow : Window
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         services.AddSingleton(new HostMode { Launcher = true });
+        services.AddSingleton<ModalService>();
+        services.AddSingleton<ILanguageSwitcher, LauncherLanguageSwitcher>();
         Resources.Add("services", services.BuildServiceProvider());
         InitializeComponent();
         // dev aid: resurgence-launcher.exe --route=/store opens that route first
