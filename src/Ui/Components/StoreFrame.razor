@@ -30,6 +30,6 @@
 
     protected override async Task OnInitializedAsync() => categories = await Service.CategoriesAsync();
 
-    // the category texts come from the resx where the old app translated them; sub-categories are shown as given
+    // the category texts come from the resx (incl. the Sights sub-categories); other sub-categories fall back to the name as given
     string Name(StoreCategory c) => L["Store.Cat." + c.Key] is { ResourceNotFound: false } s ? s.Value : c.Name;
 }

@@ -495,6 +495,11 @@
   <data name="Store.Cat.0" xml:space="preserve"><value>Armas</value></data>
   <data name="Store.Cat.10" xml:space="preserve"><value>Munições</value></data>
   <data name="Store.Cat.5" xml:space="preserve"><value>Miras</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Rifle Sights</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Handgun Sights</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Shotgun Sights</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Bow &amp; Crossbow Sights</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Muzzleloader Sights</value></data>
   <data name="Store.Cat.59" xml:space="preserve"><value>Cães</value></data>
   <data name="Store.Cat.15" xml:space="preserve"><value>Chamarizes</value></data>
   <data name="Store.Cat.18" xml:space="preserve"><value>Vestuário</value></data>
