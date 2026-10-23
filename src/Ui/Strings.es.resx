@@ -1,0 +1,1121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Página no encontrada</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>Esta página no existe.</value></data>
+  <data name="Menu.HuntNow" xml:space="preserve"><value>CAZAR AHORA</value></data>
+  <data name="Menu.GetEms" xml:space="preserve"><value>CONSIGUE EM$</value></data>
+  <data name="Menu.News" xml:space="preserve"><value>NOTICIAS</value></data>
+  <data name="Menu.Competitions" xml:space="preserve"><value>COMPETICIONES</value></data>
+  <data name="Menu.Leaderboards" xml:space="preserve"><value>CLASIFICACIONES</value></data>
+  <data name="Menu.Missions" xml:space="preserve"><value>MISIONES</value></data>
+  <data name="Feed.LatestNews" xml:space="preserve"><value>ÚLTIMAS NOTICIAS</value></data>
+  <data name="Feed.News" xml:space="preserve"><value>NOTICIAS DE {GAME}</value></data>
+  <data name="Footer.DevelopedBy" xml:space="preserve"><value>DESARROLLADO POR</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>SIGUE A {GAME}</value></data>
+  <data name="Menu.Label" xml:space="preserve"><value>Menú principal</value></data>
+  <data name="Menu.Store" xml:space="preserve"><value>TIENDA</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>AYUDA</value></data>
+  <data name="Menu.Forum" xml:space="preserve"><value>FORO</value></data>
+  <data name="Menu.Downloads" xml:space="preserve"><value>DESCARGAS</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Panel</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Partida de un jugador</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Partida multijugador</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Encontrar una partida multijugador</value></data>
+  <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriales</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>Los em$ son la moneda virtual de {game} que se puede usar para comprar objetos en la tienda, como armas, equipamiento, ropa y mucho más.</value></data>
+  <data name="Statusbar.Launcher" xml:space="preserve"><value>Lanzador</value></data>
+  <data name="Statusbar.Settings" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>munición:</value></data>
+  <data name="Statusbar.Fuel" xml:space="preserve"><value>combustible:</value></data>
+  <data name="Tip.Friends" xml:space="preserve"><value>Amigos</value></data>
+  <data name="Tip.Messages" xml:space="preserve"><value>Mensajes</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>Mi cartera / Historial de compras</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Cerrar la sesión</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Tu Puntuación del Cazador</value></data>
+  <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Configuración de cuenta</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Administración del juego</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Settings.GameSettings" xml:space="preserve"><value>Configuración del juego</value></data>
+  <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Registros</value></data>
+  <data name="Settings.GameFolder" xml:space="preserve"><value>Carpeta del juego</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Borrar caché del lanzador</value></data>
+  <data name="Settings.ClearGameCache" xml:space="preserve"><value>Borrar caché del juego</value></data>
+  <data name="Friends.Title" xml:space="preserve"><value>Amigos ({0})</value></data>
+  <data name="Friends.Search" xml:space="preserve"><value>Buscar otros cazadores…</value></data>
+  <data name="Friends.SendMessage" xml:space="preserve"><value>Enviar mensaje</value></data>
+  <data name="Friends.Remove" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="Friends.RemoveConfirm" xml:space="preserve"><value>¿Seguro que quieres eliminar a {0} de tu lista de amigos?</value></data>
+  <data name="Friends.None" xml:space="preserve"><value>Aún no tienes amigos</value></data>
+  <data name="Friends.Results" xml:space="preserve"><value>Resultados de búsqueda ({0})</value></data>
+  <data name="Friends.NoHunters" xml:space="preserve"><value>Ningún cazador encontrado</value></data>
+  <data name="Friends.SendRequest" xml:space="preserve"><value>Enviar solicitud de amistad</value></data>
+  <data name="Friends.RequestSent" xml:space="preserve"><value>Solicitud de amistad enviada</value></data>
+  <data name="Language.Title" xml:space="preserve"><value>Selecciona tu idioma</value></data>
+  <data name="Language.English" xml:space="preserve"><value>Inglés</value></data>
+  <data name="Language.French" xml:space="preserve"><value>Francés</value></data>
+  <data name="Alert.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Alert.Yes" xml:space="preserve"><value>Sí</value></data>
+  <data name="Alert.No" xml:space="preserve"><value>No</value></data>
+  <data name="Alert.Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="Footer.Ratings" xml:space="preserve"><value>CLASIFICACIÓN POR EDADES</value></data>
+  <data name="Footer.Privacy" xml:space="preserve"><value>Política de privacidad</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>Contrato de licencia de usuario final</value></data>
+  <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLÍTICA DE PRIVACIDAD</value></data>
+  <data name="Footer.Eula.Title" xml:space="preserve"><value>CONTRATO DE LICENCIA DE USUARIO FINAL</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Última actualización: texto provisional</value></data>
+  <data name="Legal.Section" xml:space="preserve"><value>INTRODUCCIÓN</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Encabezado provisional</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Texto provisional. El operador de este servicio proporciona el texto legal real.</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>¿Ya eres cazador?</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Inicia sesión</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Signin.Code" xml:space="preserve"><value>Código</value></data>
+  <data name="Signin.SendCode" xml:space="preserve"><value>Enviar código</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Inicia sesión</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Usar otra dirección de correo</value></data>
+  <data name="Signin.Sent" xml:space="preserve"><value>Hemos enviado un código de 6 dígitos a {0}.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Introduce una dirección de correo válida.</value></data>
+  <data name="Validation.Code.Invalid" xml:space="preserve"><value>Código incorrecto. Inténtalo de nuevo.</value></data>
+  <data name="Landing.Play" xml:space="preserve"><value>JUEGA GRATIS</value></data>
+  <data name="Feed.ContinueReading" xml:space="preserve"><value>Seguir leyendo →</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>Archivo de noticias</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>En línea: {0}</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>MIEMBROS EN LÍNEA</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Unirse a Discord</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Pasa el rato con gente que te entiende</value></data>
+  <data name="Hunt.Go" xml:space="preserve"><value>Ir de caza</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>UN JUGADOR</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>MULTIJUGADOR CO-OP</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Misiones activas:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>No tienes ninguna misión activa. Activa misiones en la {0}página de misiones{1}.</value></data>
+  <data name="Hunt.MoreMissions" xml:space="preserve"><value>y {0} más…</value></data>
+  <data name="Hunt.NoFriends" xml:space="preserve"><value>Ninguno de tus amigos está en línea</value></data>
+  <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Amigos en línea:</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Iniciar una partida de un jugador</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Iniciar una partida multijugador</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>O únete a una</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Entrada rápida</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Tu progreso</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Puntuación del Cazador</value></data>
+  <data name="Hunt.Rank" xml:space="preserve"><value>Rango</value></data>
+  <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Último logro</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Ningún logro conseguido</value></data>
+  <data name="Hunt.Competitions" xml:space="preserve"><value>Competiciones</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Competiciones en las que participas:</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Ver próximas competiciones</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>CREAR PARTIDA DE UN JUGADOR</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>CREAR UNA PARTIDA MULTIJUGADOR</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Elige desde dónde empezar tu sesión de caza. Haz clic en uno de los 12 logotipos de reservas de abajo para ver el mapa de la reserva correspondiente, y haz clic en los refugios (los símbolos con forma de casa) para saber qué especies se pueden encontrar en esa zona. También puedes recorrer el mapa del mundo haciendo clic y arrastrando sobre él, y acercarlo o alejarlo con la rueda del ratón.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Algunos de los entornos naturales más magníficos del mundo y 45 especies de animales diferentes te esperan. ¡Feliz cacería!</value></data>
+  <data name="Launch.StartTime" xml:space="preserve"><value>Hora de inicio:</value></data>
+  <data name="Launch.StartGame" xml:space="preserve"><value>Iniciar partida</value></data>
+  <data name="Launch.Patching" xml:space="preserve"><value>Parcheando</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Refugios:</value></data>
+  <data name="Launch.Tents" xml:space="preserve"><value>Tiendas:</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>No tienes ninguna tienda de campaña en esta reserva. Las tiendas de campaña que colocas en una reserva funcionan como puntos de aparición portátiles y como puntos de acceso al inventario. Consigue tus tiendas de campaña en la {0}tienda{1}.</value></data>
+  <data name="Launch.ZoomIn" xml:space="preserve"><value>Acercar</value></data>
+  <data name="Launch.ZoomOut" xml:space="preserve"><value>Alejar</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Inicio en {0}</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Información del juego y Punto de partida</value></data>
+  <data name="Launch.GameName" xml:space="preserve"><value>Nombre de la partida:</value></data>
+  <data name="Launch.GameOf" xml:space="preserve"><value>Partida de {0}</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Introduce una descripción de la partida (opcional)</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>¿Quién puede unirse?</value></data>
+  <data name="Launch.FriendsOnly" xml:space="preserve"><value>Solo personas de mi lista de amigos</value></data>
+  <data name="Launch.Anyone" xml:space="preserve"><value>Cualquiera</value></data>
+  <data name="Launch.Password" xml:space="preserve"><value>Proteger con contraseña</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Contraseña de partida</value></data>
+  <data name="Launch.MaxPlayers" xml:space="preserve"><value>Máx. de jugadores</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitar Puntuación del Cazador</value></data>
+  <data name="Launch.Min" xml:space="preserve"><value>Mínimo:</value></data>
+  <data name="Launch.Max" xml:space="preserve"><value>Máximo:</value></data>
+  <data name="Launch.Start" xml:space="preserve"><value>Inicio</value></data>
+  <data name="Launch.Create" xml:space="preserve"><value>Crear partida</value></data>
+  <data name="Launch.Failed" xml:space="preserve"><value>Algo salió mal al crear tu sesión de juego. Vuelve a cargar la lista de servidores e intenta unirte a otra partida.</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>ENCONTRAR UNA PARTIDA MULTIJUGADOR</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Encontrar una partida o host…</value></data>
+  <data name="Servers.Clear" xml:space="preserve"><value>Borrar</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Mostrar solo partidas a las que puedo unirme</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Partidas mostradas: {0}</value></data>
+  <data name="Servers.GameName" xml:space="preserve"><value>Partida</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Reserva</value></data>
+  <data name="Servers.Players" xml:space="preserve"><value>Jugadores</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
+  <data name="Servers.Country" xml:space="preserve"><value>País</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jugadores: {1}/{2} - Host: {3}</value></data>
+  <data name="Servers.Details" xml:space="preserve"><value>Detalles de la partida</value></data>
+  <data name="Servers.Join" xml:space="preserve"><value>Entrar</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserva:</value></data>
+  <data name="Servers.GameTime" xml:space="preserve"><value>Tiempo de juego:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Puntuación mín. del Cazador:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Puntuación máx. del Cazador:</value></data>
+  <data name="Servers.PlayerList" xml:space="preserve"><value>Jugadores ({0}/{1})</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Información sobre conexiones multijugador</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Jugar en multijugador con personas que se encuentran a grandes distancias de ti puede causar problemas de conexión o lag. Se recomienda unirse a partidas cuyo host esté cerca de ti. Los puntos de colores junto a las banderas de la lista de servidores te indican a qué distancia estás del host de la partida.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Haz clic aquí para más información sobre las conexiones</value></data>
+  <data name="Servers.Short" xml:space="preserve"><value>Corta distancia</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Media distancia</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Larga distancia</value></data>
+  <data name="Servers.NoGames" xml:space="preserve"><value>No se han encontrado partidas</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>No hemos encontrado ninguna partida multijugador pública a la que puedas unirte.</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>CREA TU PROPIA PARTIDA</value></data>
+  <data name="Servers.Locked" xml:space="preserve"><value>Esta partida está protegida con contraseña</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Ubicación del servidor: {0}</value></data>
+  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Norteamérica</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Sudamérica</value></data>
+  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
+  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanía</value></data>
+  <data name="Join.Hint" xml:space="preserve"><value>Haz clic en un punto de partida del mapa para unirte a esta partida</value></data>
+  <data name="Join.Password" xml:space="preserve"><value>Introduce la contraseña para unirte a esta partida:</value></data>
+  <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Escribe la contraseña</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Entrar</value></data>
+  <data name="Join.Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Se recomienda completar los tutoriales básicos antes de empezar tu primera cacería de verdad en la primera reserva. En ellos conocerás al guarda residente de esa reserva, que te explicará lo básico y te enseñará lo que necesitas saber para tener éxito en {game}.</value></data>
+  <data name="Tut.Start" xml:space="preserve"><value>Iniciar tutorial</value></data>
+  <data name="Tut.Location" xml:space="preserve"><value>Ubicación: {0}</value></data>
+  <data name="GameSettings.Title" xml:space="preserve"><value>Configuración del juego</value></data>
+  <data name="GameSettings.Initial" xml:space="preserve"><value>Configuración inicial</value></data>
+  <data name="GameSettings.Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="GameSettings.Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Iniciar partida</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Pantalla completa</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Sincronización vertical</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Resolución de pantalla</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Complejidad de la escena</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>La complejidad de la escena controla la densidad de la vegetación y la distancia de renderizado. En cuanto a la distancia de renderizado, el ajuste Bajo ofrece una visión horizontal máxima de 220 m, el Medio de 270 m y el Alto/Muy alto de 320 m.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Calidad de texturas</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Las texturas de calidad alta requieren 512 MB de memoria de la tarjeta gráfica en un jugador y 768 MB en multijugador.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Tienes {0} MB de memoria de vídeo</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Calidad de sombras</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Antialiasing multimuestra</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrado anisotrópico</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ayuda contextual</value></data>
+  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memoria de audio ampliada</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Bajo</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Medio</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>Alto</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Muy alto</value></data>
+  <data name="GameSettings.Off" xml:space="preserve"><value>Desactivado</value></data>
+  <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Sin configurar: settings.json no tiene ninguna entrada para estos archivos.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Inicia el juego una vez para que cree sus archivos de configuración.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un archivo de configuración tiene un formato que el lanzador no reconoce, así que se deja sin modificar.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>El juego se está ejecutando. Ciérralo antes de guardar: él mismo reescribe estos archivos.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>No se pudo guardar la configuración.</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>¡Entendido!</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>Nuevo parche del juego</value></data>
+  <data name="Patch.NewText" xml:space="preserve"><value>Se ha publicado un nuevo parche del juego. Tu juego se actualizará automáticamente y podrás empezar una nueva expedición en cuanto termine. Mientras tanto, puedes navegar libremente.</value></data>
+  <data name="Patch.FullTitle" xml:space="preserve"><value>Descargando {game}</value></data>
+  <data name="Patch.FullText" xml:space="preserve"><value>Se está descargando en tu ordenador una instalación completa de {game}. Podrás empezar a jugar en cuanto termine. Mientras tanto, puedes navegar libremente.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>El lanzador se está actualizando</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>El lanzador necesita actualizarse. La actualización se descargará automáticamente. Cuando el lanzador se haya actualizado, habrá que reiniciarlo.</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Actualización del juego necesaria</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Hay una actualización de {game} disponible. Debes actualizar {game} en Steam antes de poder jugar. Tienes que cerrar el lanzador para actualizar.</value></data>
+  <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} es solo para Steam</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>¡A partir de ahora tienes que jugar a través de la plataforma Steam!</value></data>
+  <data name="Patch.GoToSteam" xml:space="preserve"><value>Ir a Steam</value></data>
+  <data name="Patch.ErrorTitle" xml:space="preserve"><value>Se ha producido un error</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Consulta la {0} para obtener más información.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>sección de soporte</value></data>
+  <data name="Patch.StateDownloading" xml:space="preserve"><value>DESCARGANDO</value></data>
+  <data name="Patch.StateVerifying" xml:space="preserve"><value>VERIFICANDO</value></data>
+  <data name="Patch.StateExtracting" xml:space="preserve"><value>EXTRAYENDO</value></data>
+  <data name="Patch.StatePatching" xml:space="preserve"><value>PARCHEANDO</value></data>
+  <data name="Patch.StateReady" xml:space="preserve"><value>LISTO</value></data>
+  <data name="Patch.Downloading" xml:space="preserve"><value>Descargando {0}: {1} ({2}). {3}/s</value></data>
+  <data name="Patch.KindFull" xml:space="preserve"><value>instalación completa</value></data>
+  <data name="Patch.KindPatch" xml:space="preserve"><value>actualización</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>actualización del lanzador</value></data>
+  <data name="Patch.Verifying" xml:space="preserve"><value>Espera mientras se verifican los archivos descargados.</value></data>
+  <data name="Patch.Extracting" xml:space="preserve"><value>Espera mientras se ejecuta el instalador.</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Verificando suma de comprobación del archivo: {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Parcheando archivo: {0} / {1}</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Terminando…</value></data>
+  <data name="Patch.PatchError" xml:space="preserve"><value>¡Error!</value></data>
+  <data name="Patch.Done" xml:space="preserve"><value>Ya puedes iniciar el juego.</value></data>
+  <data name="Installer.DownloadingGame" xml:space="preserve"><value>Descargando el juego…</value></data>
+  <data name="Installer.DownloadingUpdate" xml:space="preserve"><value>Descargando la actualización…</value></data>
+  <data name="Installer.Verifying" xml:space="preserve"><value>Verificando</value></data>
+  <data name="Installer.Installing" xml:space="preserve"><value>Instalando</value></data>
+  <data name="Installer.Updating" xml:space="preserve"><value>Actualizando: {0}/{1} archivos</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Actualización completada: termina el asistente para empezar a jugar.</value></data>
+  <data name="Installer.Ready" xml:space="preserve"><value>¡Ya puedes jugar a {game}!</value></data>
+  <data name="Launcher.Error.Unknown" xml:space="preserve"><value>Se ha producido un error desconocido (código {0}).</value></data>
+  <data name="Launcher.Error.1" xml:space="preserve"><value>Falta una clave del registro.</value></data>
+  <data name="Launcher.Error.2" xml:space="preserve"><value>No se ha especificado ningún servidor. Inicia el juego desde el sitio web.</value></data>
+  <data name="Launcher.Error.3" xml:space="preserve"><value>Error en la consulta al servidor (ID de sesión no válido o servidor inaccesible).</value></data>
+  <data name="Launcher.Error.4" xml:space="preserve"><value>Hardware incompatible.</value></data>
+  <data name="Launcher.Error.5" xml:space="preserve"><value>URL del servidor no válida en el argumento de la línea de comandos.</value></data>
+  <data name="Launcher.Error.6" xml:space="preserve"><value>Falta el archivo ejecutable del juego.</value></data>
+  <data name="Launcher.Error.7" xml:space="preserve"><value>Error al iniciar el cliente del juego.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Error al escribir el archivo torrent.</value></data>
+  <data name="Launcher.Error.9" xml:space="preserve"><value>Error de descarga.</value></data>
+  <data name="Launcher.Error.10" xml:space="preserve"><value>Error en la descarga de los datos del torrent.</value></data>
+  <data name="Launcher.Error.11" xml:space="preserve"><value>Archivo .torrent no válido.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Ubicación del archivo del lanzador no válida.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>Error al extraer el archivo NSIS sfx.</value></data>
+  <data name="Launcher.Error.14" xml:space="preserve"><value>Error del parche.</value></data>
+  <data name="Launcher.Error.15" xml:space="preserve"><value>Falta el archivo de manifiesto o es incorrecto.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Error al iniciar el lanzador actualizado.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>El lanzador no responde.</value></data>
+  <data name="Launcher.Error.18" xml:space="preserve"><value>No se pudo crear el directorio del juego.</value></data>
+  <data name="Launcher.Error.19" xml:space="preserve"><value>No se pudo crear el directorio de torrents.</value></data>
+  <data name="Launcher.Error.20" xml:space="preserve"><value>No se pudo crear el directorio de parches.</value></data>
+  <data name="Launcher.Error.21" xml:space="preserve"><value>No se pudo crear el directorio.</value></data>
+  <data name="Launcher.Error.22" xml:space="preserve"><value>No se pudieron copiar los archivos.</value></data>
+  <data name="Launcher.Error.27" xml:space="preserve"><value>¡Advertencia! No hay suficiente espacio en disco.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>No se puede aplicar el parche: tu instalación actual está modificada o dañada. Se descargará el juego completo.</value></data>
+  <data name="Launcher.Error.49" xml:space="preserve"><value>Error al crear el objeto Direct3D.</value></data>
+  <data name="Launcher.Error.50" xml:space="preserve"><value>Error al recuperar el modo de visualización actual.</value></data>
+  <data name="Launcher.Error.51" xml:space="preserve"><value>No se han encontrado modos de visualización adecuados.</value></data>
+  <data name="Launcher.Error.52" xml:space="preserve"><value>No se han podido determinar los modos de visualización admitidos por la tarjeta gráfica.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>No se han podido obtener las capacidades del dispositivo de la tarjeta gráfica.</value></data>
+  <data name="Launcher.Error.16001" xml:space="preserve"><value>Sesión no válida: inicia una partida nueva.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>No se pudo conectar con el servidor del juego. Inténtalo de nuevo.</value></data>
+  <data name="Launcher.Error.16003" xml:space="preserve"><value>Sistema operativo no válido.</value></data>
+  <data name="Launcher.Error.16004" xml:space="preserve"><value>Inicia el juego desde el sitio web.</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>El juego se ha cerrado inesperadamente (lo investigaremos).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>El usuario no tiene acceso.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>El juego ya se está ejecutando.</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Versión incorrecta del archivo de configuración. Ve a la configuración y vuelve a configurar.</value></data>
+  <data name="Launcher.Error.16009" xml:space="preserve"><value>La tarjeta gráfica no admite D3DQUERYTYPE_EVENT.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Un momento, estamos intentando iniciar tu sesión…</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Hola. Estás iniciando el juego desde Steam, pero no hemos podido comprobar si tienes una cuenta. Elige una de las opciones siguientes:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Inicia sesión a continuación para vincular tu cuenta con Steam.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Vincular una cuenta existente con Steam</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Registrar una cuenta nueva de {game}</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>- o -</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Dirección de email</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Continuar</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>NOMBRE DE USUARIO Y AVATAR</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Elige un nombre</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Obligatorio</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Nombre de usuario no disponible</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Sugerir nombres</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Avatar anterior</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Avatar siguiente</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>CONSIGUE TU PRIMERA ARMA</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>¡Has llegado hasta aquí, genial! Este es un regalo de bienvenida de nuestra parte: tu primera arma, la reluciente escopeta monotiro del calibre 12 con munición gratuita y reponible. Con esta robusta belleza podrás cazar éticamente a todos los animales del juego, excepto al bisonte.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>DISFRUTA DE TUS LICENCIAS DE CAZA</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>¡Ya casi es hora de tu primera cacería! ¿Qué vas a cazar? Como jugador invitado, tienes licencias de caza gratuitas y de por vida para el ciervo de cola blanca, el conejo europeo y el faisán, además de otros dos animales gratuitos que cambian cada semana. Los miembros de pago pueden cazar todas las especies; echa un vistazo a nuestra tienda de membresías si quieres serlo.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRMA TU CORREO ELECTRÓNICO</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>¡Las cosas buenas llegan a quienes confirman su correo electrónico! Revisa tu bandeja de entrada: encontrarás un mensaje nuestro con las instrucciones que debes seguir. Tu correo electrónico actual es {0}. Si no es correcto, cámbialo más abajo y haz clic en «Reenviar email».</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>TU RECOMPENSA</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Gracias por confirmar tu correo electrónico.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Actualizar dirección de email</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Reenviar email</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Iniciar tutorial</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Configuración del juego</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>TODO LISTO PARA LA CAZA MAYOR</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Puedes volver a ejecutar los tutoriales con el botón CAZAR AHORA.</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>¡Cazar ahora!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Inicia sesión</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Dirección de email</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Inicia sesión</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Se requiere una dirección de email</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Dirección de email no válida</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>Esa dirección de email no está disponible</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Cambiar correo electrónico</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Cambiar</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>Email enviado</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>Te hemos enviado un nuevo email con un enlace para confirmar tu dirección de email.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Iniciar tutorial</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Guardar e iniciar</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Calidad de los gráficos</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Ajustes bajos</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Ajustes medios</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Ajustes altos</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ajustes ultra</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Ajustes personalizados</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Filtrado anisotrópico</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Modo de pantalla</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Pantalla completa</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Complejidad de la escena</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Calidad de sombras</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Calidad de texturas</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Sincronización vertical</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Competiciones</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Liga de la comunidad</value></data>
+  <data name="Comp.Title" xml:space="preserve"><value>COMPETICIONES</value></data>
+  <data name="Comp.Enrolled" xml:space="preserve"><value>Competiciones inscritas</value></data>
+  <data name="Comp.Name" xml:space="preserve"><value>Nombre de la competición</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Intentos</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Posición</value></data>
+  <data name="Comp.Starts" xml:space="preserve"><value>Inicio</value></data>
+  <data name="Comp.Ends" xml:space="preserve"><value>Fin</value></data>
+  <data name="Comp.Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="Comp.Action" xml:space="preserve"><value>Acción</value></data>
+  <data name="Comp.Players" xml:space="preserve"><value>Jugadores</value></data>
+  <data name="Comp.Activate" xml:space="preserve"><value>Activar</value></data>
+  <data name="Comp.Deactivate" xml:space="preserve"><value>Desactivar</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>No puedes unirte</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Multijugador</value></data>
+  <data name="Comp.Requirements" xml:space="preserve"><value>Requisitos:</value></data>
+  <data name="Comp.Upcoming" xml:space="preserve"><value>Competiciones próximas</value></data>
+  <data name="Comp.Previous" xml:space="preserve"><value>Competiciones anteriores</value></data>
+  <data name="Comp.Filter" xml:space="preserve"><value>Haz clic para filtrar por especie:</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>No se han encontrado competiciones; prueba a cambiar los filtros</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Inscripción</value></data>
+  <data name="Comp.StatusStarted" xml:space="preserve"><value>Iniciado</value></data>
+  <data name="Comp.StatusFinished" xml:space="preserve"><value>Finalizado</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>N/D</value></data>
+  <data name="Comp.Join" xml:space="preserve"><value>UNIRSE</value></data>
+  <data name="Comp.Leave" xml:space="preserve"><value>SALIR</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Estado de la competición: {0}</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Inscripción</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>En curso</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Finalizado</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Empieza en</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Acaba en</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Tu posición</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Puntuación a batir</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Resumen</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Clasificación</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>Historia</value></data>
+  <data name="Comp.Prizes" xml:space="preserve"><value>Premios</value></data>
+  <data name="Comp.Trophy" xml:space="preserve"><value>Trofeo</value></data>
+  <data name="Comp.Rules" xml:space="preserve"><value>Reglas y condiciones</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Especies: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Reservas: {0}</value></data>
+  <data name="Comp.Description" xml:space="preserve"><value>Descripción</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Puntuación</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Requisitos especiales</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Modo de juego</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Se resta un intento cada vez que se inicia una cacería en una reserva donde hay una competición activa. Las competiciones no se pueden activar durante la partida; los cambios realizados durante la partida solo surtirán efecto la próxima vez que se inicie una cacería.</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Participantes con resultado ({0})</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Jugador</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Resultado</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>No hay resultados que mostrar</value></data>
+  <data name="League.Title" xml:space="preserve"><value>LIGA DE LA COMUNIDAD</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Te damos la bienvenida a la Liga de la Comunidad de {game}, que sustituirá al formato actual de competiciones de fin de semana.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>Cada viernes, caza un animal distinto en la reserva asignada (los animales cazados fuera de esa reserva no cuentan). Tienes una semana completa y 7 intentos para participar. La competición se activa y se desactiva como siempre. Durante la semana en que se caza un animal, se suspenden todas las competiciones habituales dedicadas a ese animal. Y sí, las ofertas ahora durarán una semana completa. Las recompensas de cada competición de la Liga serán las mismas que las de las competiciones de fin de semana a las que sustituyen.</value></data>
+  <data name="League.P3" xml:space="preserve"><value>Los eventos no se verán afectados por la Liga.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Todas las competiciones serán solo de un jugador, salvo las de patos o gansos.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Cada 4 semanas pasamos a una nueva reserva, y cada 3 reservas forman una temporada.</value></data>
+  <data name="League.P6" xml:space="preserve"><value>No tienes que participar en todas las competiciones de la Liga para optar a los premios mensuales o de temporada, pero participar tan a menudo como puedas tiene ventajas evidentes.</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>No te has inscrito en ninguna competición</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Clasificación mensual</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Clasificación de la temporada</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>CLASIFICACIONES</value></data>
+  <data name="Board.Score" xml:space="preserve"><value>Puntuación</value></data>
+  <data name="Board.Range" xml:space="preserve"><value>Alcance</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Mejor Puntuación del Cazador</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Salón de la Fama</value></data>
+  <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
+  <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Cuerna</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Doble cuerna</value></data>
+  <data name="Board.TopScores" xml:space="preserve"><value>Mejores puntuaciones de la temporada {0}</value></data>
+  <data name="Board.TopRanges" xml:space="preserve"><value>Mejores distancias de la temporada {0}</value></data>
+  <data name="Board.Full" xml:space="preserve"><value>Ver la clasificación completa</value></data>
+  <data name="Board.YourRank" xml:space="preserve"><value>Tu posición</value></data>
+  <data name="Board.NoRank" xml:space="preserve"><value>Actualmente no tienes clasificación en esta categoría</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Mejores Puntuaciones del Cazador de todos los tiempos</value></data>
+  <data name="Board.Rank" xml:space="preserve"><value>Rango</value></data>
+  <data name="Board.Hunter" xml:space="preserve"><value>Cazador</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Puntuación del Cazador</value></data>
+  <data name="Board.Past" xml:space="preserve"><value>Salón de la Fama de la temporada pasada</value></data>
+  <data name="Board.SeasonN" xml:space="preserve"><value>Temporada {0}</value></data>
+  <data name="Board.TopLane" xml:space="preserve"><value>Mejores puntuaciones de Lane Bandit</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>¡Lane Bandit es un genial juego arcade retro que puedes jugar en tu Huntermate para entretenerte mientras esperas a que aparezca ese trofeo!</value></data>
+  <data name="Board.GetLane" xml:space="preserve"><value>Conseguir Lane Bandit</value></data>
+  <data name="Board.TopBust" xml:space="preserve"><value>Mejores puntuaciones de Bust Through</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>¡Bust Through es un genial juego arcade retro que puedes jugar en tu Huntermate para entretenerte mientras esperas a que aparezca ese trofeo!</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Un jugador</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Siguiente</value></data>
+  <data name="Pager.Label" xml:space="preserve"><value>Páginas</value></data>
+  <data name="Board.Avatar" xml:space="preserve"><value>Avatar de {0}</value></data>
+  <data name="Comp.Failed" xml:space="preserve"><value>No se pudo cambiar la competición. Inténtalo de nuevo.</value></data>
+  <data name="Mis.Daily" xml:space="preserve"><value>Misiones diarias</value></data>
+  <data name="Mis.Regular" xml:space="preserve"><value>Misiones normales</value></data>
+  <data name="Mis.Help" xml:space="preserve"><value>Haz clic para obtener ayuda</value></data>
+  <data name="Mis.Day" xml:space="preserve"><value>Día {0}</value></data>
+  <data name="Mis.Today" xml:space="preserve"><value>hoy</value></data>
+  <data name="Mis.Tomorrow" xml:space="preserve"><value>mañana</value></data>
+  <data name="Mis.Description" xml:space="preserve"><value>Descripción</value></data>
+  <data name="Mis.Objectives" xml:space="preserve"><value>Objetivos</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Reservas</value></data>
+  <data name="Mis.Rewards" xml:space="preserve"><value>Recompensas</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Inactivo</value></data>
+  <data name="Mis.Completed" xml:space="preserve"><value>Completado</value></data>
+  <data name="Mis.Activate" xml:space="preserve"><value>ACTIVAR</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Tu racha se ha roto. Pulsa ACTIVAR para empezar una nueva o COMPRA/USA Reanudar racha para continuar con tu última racha.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Las misiones diarias permanecerán inactivas hasta que decidas activar o reanudar una racha.</value></data>
+  <data name="Mis.ActivationDone" xml:space="preserve"><value>¡Activación completada!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>¡Disfruta del servicio!</value></data>
+  <data name="Mis.ActivateAll" xml:space="preserve"><value>Activar todas</value></data>
+  <data name="Mis.Auto" xml:space="preserve"><value>Activar automáticamente las nuevas misiones disponibles</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activar automáticamente solo las misiones favoritas</value></data>
+  <data name="Mis.ResetDesc" xml:space="preserve"><value>Puedes restablecer tus misiones pagando en la tienda.</value></data>
+  <data name="Mis.GoToStore" xml:space="preserve"><value>Ir a la tienda</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Has completado {0} de {1} misiones y {2} de {3} paquetes de misiones.</value></data>
+  <data name="Mis.Filters" xml:space="preserve"><value>Filtros</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrar por</value></data>
+  <data name="Mis.All" xml:space="preserve"><value>Todas</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Favoritas</value></data>
+  <data name="Mis.Active" xml:space="preserve"><value>Activas</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Paquetes de misiones</value></data>
+  <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
+  <data name="Mis.Species" xml:space="preserve"><value>Especies</value></data>
+  <data name="Mis.Weapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>Todo seleccionado</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>Seleccionados: {0}</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Ocultar completadas</value></data>
+  <data name="Mis.Search" xml:space="preserve"><value>Buscar</value></data>
+  <data name="Mis.Filter" xml:space="preserve"><value>Filtrar</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Progreso:</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Haz clic para añadir o quitar de favoritos</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>Actualmente no tienes ninguna misión favorita</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Actualmente no tienes ninguna misión activada. Activa una misión disponible de abajo para empezar.</value></data>
+  <data name="Mis.NoAvailable" xml:space="preserve"><value>No hay misiones disponibles</value></data>
+  <data name="Mis.Unlock" xml:space="preserve"><value>Necesitas completar las siguientes misiones para desbloquear {0}:</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Algo ha fallado y no has recibido tu objeto. Lo sentimos. ¡Inténtalo de nuevo!</value></data>
+  <data name="Store.Sales" xml:space="preserve"><value>Ofertas</value></data>
+  <data name="Store.Cat.all" xml:space="preserve"><value>Todos</value></data>
+  <data name="Store.Cat.bundles" xml:space="preserve"><value>Paquetes</value></data>
+  <data name="Store.Cat.0" xml:space="preserve"><value>Armas</value></data>
+  <data name="Store.Cat.10" xml:space="preserve"><value>Munición</value></data>
+  <data name="Store.Cat.5" xml:space="preserve"><value>Visores</value></data>
+  <data name="Store.Cat.59" xml:space="preserve"><value>Perros</value></data>
+  <data name="Store.Cat.15" xml:space="preserve"><value>Reclamos</value></data>
+  <data name="Store.Cat.18" xml:space="preserve"><value>Ropa</value></data>
+  <data name="Store.Cat.27" xml:space="preserve"><value>Mejoras</value></data>
+  <data name="Store.Cat.46" xml:space="preserve"><value>Servicios</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Poses de foto de trofeo</value></data>
+  <data name="Store.Cat.24" xml:space="preserve"><value>Equipamiento</value></data>
+  <data name="Store.Cat.29" xml:space="preserve"><value>Equipamiento grande</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Objetos de evento</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Salones de trofeos</value></data>
+  <data name="Store.Cat.108" xml:space="preserve"><value>Vehículos</value></data>
+  <data name="Store.Search" xml:space="preserve"><value>Buscar</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>COMPRAR</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>No se puede comprar</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Inicia sesión y compra</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Posees:</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>o</value></data>
+  <data name="Store.Days" xml:space="preserve"><value>días</value></data>
+  <data name="Store.SaleTag" xml:space="preserve"><value>OFERTA</value></data>
+  <data name="Store.BundleTag" xml:space="preserve"><value>PAQUETE</value></data>
+  <data name="Store.Included" xml:space="preserve"><value>Incluido</value></data>
+  <data name="Store.Value" xml:space="preserve"><value>Valor</value></data>
+  <data name="Store.BundlePrice" xml:space="preserve"><value>Precio del paquete</value></data>
+  <data name="Store.Capacity" xml:space="preserve"><value>Nivel de ocupación</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>No es posible comprar este artículo</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>No es posible comprar este paquete. Has alcanzado el límite de posesión de al menos uno de los artículos incluidos</value></data>
+  <data name="Store.None" xml:space="preserve"><value>No hay artículos en esta categoría</value></data>
+  <data name="Store.Details" xml:space="preserve"><value>Detalles</value></data>
+  <data name="Store.ClickMore" xml:space="preserve"><value>Haz clic para ver los detalles</value></data>
+  <data name="Store.Confirm" xml:space="preserve"><value>Confirmar la compra</value></data>
+  <data name="Store.BuyEms" xml:space="preserve"><value>COMPRAR con em$</value></data>
+  <data name="Store.BuyGms" xml:space="preserve"><value>COMPRAR con gm$</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>No hay suficientes gm$</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Consigue más em$</value></data>
+  <data name="Store.Includes" xml:space="preserve"><value>Incluye</value></data>
+  <data name="Store.Complete" xml:space="preserve"><value>¡Compra completada!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>¡Disfruta de {0}!</value></data>
+  <data name="Store.Oops" xml:space="preserve"><value>¡Vaya!</value></data>
+  <data name="Store.Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Ahorras</value></data>
+  <data name="Wal.MyWallet" xml:space="preserve"><value>Mi cartera</value></data>
+  <data name="Wal.History" xml:space="preserve"><value>Historial de compras</value></data>
+  <data name="Wal.Balance" xml:space="preserve"><value>Saldo actual</value></data>
+  <data name="Wal.Spent" xml:space="preserve"><value>Total gastado</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>Historial de compras del banco</value></data>
+  <data name="Wal.TabEms" xml:space="preserve"><value>Historial de compras en em$</value></data>
+  <data name="Wal.TabGms" xml:space="preserve"><value>Historial de compras en gm$</value></data>
+  <data name="Wal.Type" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Wal.Date" xml:space="preserve"><value>Fecha</value></data>
+  <data name="Wal.Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="Wal.Item" xml:space="preserve"><value>Objeto</value></data>
+  <data name="Wal.Amount" xml:space="preserve"><value>Cantidad</value></data>
+  <data name="Wal.Provider" xml:space="preserve"><value>Proveedor</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>En esta página se enumeran todas las compras que has realizado con {0}</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>Aún no has realizado ninguna compra con {0}.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>Aún no has realizado ninguna compra.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Cantidad ({0})</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Saldo anterior</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Saldo posterior</value></data>
+  <data name="Wal.Items" xml:space="preserve"><value>Objetos</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Mostrar más</value></data>
+  <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Comprado como regalo. Canjeado: {0}.</value></data>
+  <data name="Wal.GiftCode" xml:space="preserve"><value>Comprado como regalo. Código de regalo: {0}</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>Comprar em$</value></data>
+  <data name="Bank.Help" xml:space="preserve"><value>Ayuda</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>Historial de compras</value></data>
+  <data name="Bank.Balance" xml:space="preserve"><value>Tu saldo de em$:</value></data>
+  <data name="Bank.Redeem" xml:space="preserve"><value>Canjea un código de descuento</value></data>
+  <data name="Bank.EnterCode" xml:space="preserve"><value>Introduce tu código de descuento</value></data>
+  <data name="Bank.Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Bank.Invalid" xml:space="preserve"><value>El código de descuento que has introducido no es válido o ha caducado</value></data>
+  <data name="Bank.InGame" xml:space="preserve"><value>Moneda del juego</value></data>
+  <data name="Bank.EmsDesc" xml:space="preserve"><value>Con la moneda del juego (em$) puedes comprar armas, tiendas de campaña, ropa, licencias de caza y mucho más.</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Comprar como regalo</value></data>
+  <data name="Bank.Compare" xml:space="preserve"><value>* En comparación con 500 em$</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Ahorra {0}%*</value></data>
+  <data name="Bank.Starter" xml:space="preserve"><value>Paquetes de inicio</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Consigue todo lo que necesitas para empezar a cazar cualquier animal en la Evergreen Hunting Reserve. Nuestros paquetes de inicio incluyen una membresía básica que te da una licencia para cazar todos los animales del juego y una selección especial de objetos para que empieces con buen pie tu camino hacia la maestría en la caza.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Paquetes especiales</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Elige uno de nuestros paquetes especiales para conseguir todo lo que necesitas para cazar los animales más populares de {game}. Todos estos paquetes incluyen una membresía básica que te da una licencia para cazar todas las especies del juego y una selección de objetos recomendados para centrarte en animales concretos y en su jugabilidad de caza.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Membresías básicas</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>{0} meses de membresía</value></data>
+  <data name="Bank.Animals" xml:space="preserve"><value>Licencia para cazar todos los animales</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Acceso a todas las reservas</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Munición básica ilimitada</value></data>
+  <data name="Bank.Details" xml:space="preserve"><value>Detalles</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Los objetos incluidos en una membresía o comprados por separado se conservan aunque tu membresía venza</value></data>
+  <data name="Bank.ComparePrize" xml:space="preserve"><value>* En comparación con la membresía de 3 meses de {game}</value></data>
+  <data name="Bank.HelpTitle" xml:space="preserve"><value>Preguntas y respuestas sobre la tienda de {game}</value></data>
+  <data name="Bank.Q1" xml:space="preserve"><value>¿Qué son los em$?</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>Los em$ son la moneda virtual de {game} que se puede usar para comprar objetos en la tienda, como armas, equipamiento, ropa y mucho más.</value></data>
+  <data name="Bank.Q2" xml:space="preserve"><value>¿Cómo compro em$ para regalárselos a un amigo?</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>En la pestaña «Comprar em$» de esta ventana, marca la casilla «Comprar como regalo» y haz clic en el botón «COMPRAR» de la cantidad de moneda que quieras comprar. Se te llevará a un resumen de compra en el sitio web de Steam. Haz clic en el botón «Autorizar». Se te llevará a una página de confirmación (gracias por tu compra). Haz clic en tu saldo de em$ en la parte superior de la pantalla (donde pone «em$ XXXX») y consulta tu {0}historial de compras{1}. La entrada más reciente de tu historial de compras debería decir «Comprado como regalo. Código de regalo:», seguido del código de regalo. Copia el código y envíaselo al amigo al que quieras regalárselo. Tu amigo tendrá que canjear el código para que los em$ del regalo se añadan a su saldo.</value></data>
+  <data name="Bank.Q3" xml:space="preserve"><value>¿Cómo puedo canjear un código de regalo?</value></data>
+  <data name="Bank.A3" xml:space="preserve"><value>Haz clic en el botón «Canjea un código de descuento» de la esquina superior derecha de esta ventana, pega allí tu código de regalo y haz clic en el botón «OK». Aparecerá un mensaje de confirmación: haz clic en el botón «Haz clic aquí para canjear este regalo». Aparecerá un mensaje que confirma que tu regalo se ha añadido a tu cuenta. Haz clic en «OK» y ¡disfruta de tu regalo!</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>Me he perdido un precio de oferta, ¿puedo conseguir el descuento igualmente?</value></data>
+  <data name="Bank.A4" xml:space="preserve"><value>Una vez que una oferta o un descuento han caducado, no podemos ofrecer el precio rebajado.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Política de reembolso</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>Como ocurre con la mayoría de las monedas digitales, no ofrecemos reembolsos por las compras de em$. El juego se puede descargar y probar gratis: comprueba que funciona en tu ordenador y que es lo que esperas antes de comprar em$.</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Descargo de responsabilidad</value></data>
+  <data name="Bank.A6" xml:space="preserve"><value>Ten en cuenta que los em$ no se pueden vender ni transferir, ni canjear por dinero en efectivo ni por nada que no sea el contenido real de {game}. Los em$ no son reembolsables. Los em$ no tienen valor monetario y no constituyen moneda ni propiedad de ningún tipo.</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Armas adicionales: {0}, otros objetos: {1}</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} meses</value></data>
+  <data name="Msg.Title" xml:space="preserve"><value>Mensajes</value></data>
+  <data name="Msg.OnlyFriends" xml:space="preserve"><value>Permitir solo mensajes de amigos</value></data>
+  <data name="Msg.New" xml:space="preserve"><value>Nuevo mensaje</value></data>
+  <data name="Msg.Conversations" xml:space="preserve"><value>Conversaciones</value></data>
+  <data name="Msg.Text" xml:space="preserve"><value>Texto del mensaje</value></data>
+  <data name="Msg.Send" xml:space="preserve"><value>Enviar mensaje</value></data>
+  <data name="Msg.To" xml:space="preserve"><value>Para:</value></data>
+  <data name="Msg.Sent" xml:space="preserve"><value>Enviado {0}</value></data>
+  <data name="Msg.Empty" xml:space="preserve"><value>Aún no has enviado ni recibido ningún mensaje. Cuando inicies un chat con otro cazador, aparecerá aquí.</value></data>
+  <data name="Msg.NoUser" xml:space="preserve"><value>No existe ese usuario.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>No puedes enviar mensajes a tu propia cuenta.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>Se ha producido un error al enviar tu mensaje.</value></data>
+  <data name="Set.Title" xml:space="preserve"><value>Configuración de la cuenta</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Email de la cuenta</value></data>
+  <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Idioma y zona horaria</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Expulsiones multijugador</value></data>
+  <data name="Set.TabFacebook" xml:space="preserve"><value>Configuración de Facebook</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Configuración de Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Configuración del perfil</value></data>
+  <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar del jugador</value></data>
+  <data name="Set.AvatarInfo" xml:space="preserve"><value>El avatar que elijas te representará tanto en el juego como en la web</value></data>
+  <data name="Set.AvatarCurrent" xml:space="preserve"><value>Tu avatar actual</value></data>
+  <data name="Set.AvatarSelect" xml:space="preserve"><value>Selecciona un nuevo avatar</value></data>
+  <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatares desbloqueables</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Este avatar está bloqueado. Puedes desbloquearlo comprándolo en la tienda.</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>Email:</value></data>
+  <data name="Set.EmailAddress" xml:space="preserve"><value>Dirección de email</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Actualizar email</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Se ha enviado un email de confirmación a tu nueva dirección de email. Confírmala para activar la nueva dirección.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>Esa dirección de email no está disponible</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Algo ha fallado al intentar actualizar tu email.</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmar email</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Tu dirección de email se ha cambiado.</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Reenviar confirmación</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>Email de confirmación reenviado.</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>No se pudo reenviar el email. Inténtalo de nuevo o ponte en contacto con el soporte.</value></data>
+  <data name="Set.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Set.Country" xml:space="preserve"><value>País</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Elige un país</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Zona horaria:</value></data>
+  <data name="Set.Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historial de compras de la cuenta</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Todas las transacciones que realices, tanto a través del {0} como de la {1}, se guardan en tu cartera.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>banco</value></data>
+  <data name="Set.Store" xml:space="preserve"><value>tienda</value></data>
+  <data name="Set.WalletLink" xml:space="preserve"><value>Haz clic aquí para ver tu cartera</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Jugadores expulsados</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>No has expulsado a ningún jugador de tus partidas</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Readmitir</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>¿Seguro que quieres readmitir a {0} en tus partidas?</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>Puedes conectar tu cuenta con Facebook para iniciar sesión más fácilmente.</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Conectar</value></data>
+  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>Tu cuenta de {game} {0} está conectada con tu cuenta de Steam. Si quieres conectar esta cuenta de {game} con otra cuenta de Steam, o conectar la cuenta de Steam con otra cuenta de {game}, primero debes desconectar las dos cuentas que ya están conectadas.</value></data>
+  <data name="Set.Warning" xml:space="preserve"><value>Advertencia</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>Al desconectar tu cuenta de Steam se cerrará tu sesión en {game} y se cerrará el lanzador. No podrás volver a jugar a {game} en Steam hasta que te conectes con otra cuenta.</value></data>
+  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Lo entiendo y quiero desconectar mi cuenta de Steam</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagen de cabecera</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Las imágenes de cabecera se desbloquean cuando alcanzas nuevos niveles en tres categorías de Logros distintas: Maestro de Animales, Maestro de Armas y Maestro de Exploración. Una vez desbloqueadas, las imágenes de cabecera permanecen disponibles para siempre.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Descubre más detalles sobre los niveles de Logro Maestro.</value></data>
+  <data name="Set.HeaderNone" xml:space="preserve"><value>Ninguna</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>Más reciente</value></data>
+  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animales</value></data>
+  <data name="Set.GroupWeapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Set.GroupExploration" xml:space="preserve"><value>Exploración</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>Eventos</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Misiones diarias</value></data>
+  <data name="Set.SaveProfile" xml:space="preserve"><value>Guardar configuración del perfil</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Configuración del perfil guardada</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>No se pudo guardar el perfil. Inténtalo de nuevo o ponte en contacto con el soporte.</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Salón de trofeos</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Cebaderos</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>INICIO</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Elige una sección.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>SELECCIÓN DEL SALÓN DE TROFEOS</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Actualmente no tienes ningún salón de trofeos.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>ADMINISTRADOR DE CEBADEROS</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Rellenar el cebadero hasta:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Cebo</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Activo</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Rellenar</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Te damos la bienvenida a {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>¡Enhorabuena, {0}! Tu nueva cuenta de {game} ya está creada.</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Si ya has descargado e instalado el lanzador y el cliente del juego, ¡ya puedes empezar a jugar! Si es la primera vez que juegas a {game}, te recomendamos completar los tutoriales antes de salir a tu primera cacería de verdad. Los tutoriales te enseñarán todo lo que necesitas saber para defenderte por tu cuenta en la Evergreen Hunting Reserve. Empieza aquí abajo.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>¿Tienes un código de compra?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>Si has comprado una versión física de {game}, {0}haz clic aquí{1} para activar tu código de compra.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutoriales</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Deja que el Doc, el guarda residente de la Evergreen Hunting Reserve, te enseñe todo lo que necesitas saber para jugar a {game}.</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Ir a tutoriales</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>Ir de caza</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Empieza una cacería de verdad si ya conoces {game} o si tienes demasiadas ganas de salir ahí fuera.</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Empezar una nueva partida</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Descargas</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si aún no has descargado el lanzador y el cliente del juego, tendrás que hacerlo antes de poder empezar a cazar.</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Ir a descargas</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si quieres cambiar tu dirección de email, la configuración de idioma o tu avatar de jugador, puedes hacerlo en la página de configuración.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Cambiar configuración de la cuenta</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Perfil</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Todo tu progreso en {game} se muestra en tu página de perfil, donde encontrarás estadísticas detalladas de todas tus cacerías anteriores.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>Ver mi perfil</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Ayuda</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>¿Necesitas ayuda para empezar? Echa un vistazo a la sección de ayuda y a nuestros estupendos recursos gestionados por la comunidad.</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>Ver sección de ayuda</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Recluta a un amigo</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>Cómo reclutar a un amigo</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Envía una invitación</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Haz clic en el botón de abajo para obtener tu enlace de reclutamiento y enviárselo a un amigo al que quieras invitar a {game}.</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Jugar juntos a {game}</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Cuando tu amigo registre una cuenta {0}usando tu enlace{1}, recibirá 200 em$, un telémetro 5x30mm, un reclamo de alces y un eliminador de olor.</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Recibe tu recompensa</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>Si tu amigo compra em$, ¡recibirás una recompensa!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>Consulta las recompensas más abajo</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Haz clic aquí para invitar a un amigo</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Recompensas</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* La recompensa por reclutamiento se concede la primera vez que un amigo reclutado compra em$. Solo recibirás esta recompensa una vez por CADA amigo reclutado.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** La recompensa por primera compra se concede la primera vez que CUALQUIERA de tus amigos reclutados compra esa cantidad de em$. Solo cobrarás cada una de estas recompensas una vez, no por cada compra.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>Si tu amigo compra</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>Obtienes*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>Recompensa única**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Mis reclutas</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>Usuario</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>Se unió</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Recompensa</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>Este es tu enlace de reclutamiento: cópialo y envíaselo a quien quieras invitar a {game}:</value></data>
+  <data name="Prof.Title" xml:space="preserve"><value>Perfil de {0}</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Rangos</value></data>
+  <data name="Prof.TabAchievements" xml:space="preserve"><value>Logros</value></data>
+  <data name="Prof.TabSkills" xml:space="preserve"><value>Habilidades</value></data>
+  <data name="Prof.TabStats" xml:space="preserve"><value>Estadísticas</value></data>
+  <data name="Prof.TabGallery" xml:space="preserve"><value>Galería</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Trofeos</value></data>
+  <data name="Prof.TabDogs" xml:space="preserve"><value>Perros</value></data>
+  <data name="Prof.TabFriends" xml:space="preserve"><value>Amigos</value></data>
+  <data name="Prof.Membership" xml:space="preserve"><value>Cazador</value></data>
+  <data name="Prof.Rank" xml:space="preserve"><value>Rango {0}</value></data>
+  <data name="Prof.Online" xml:space="preserve"><value>En línea</value></data>
+  <data name="Prof.TipMembership" xml:space="preserve"><value>Tipo de membresía de {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>Puntuación del Cazador de {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Posición de {0} según la Puntuación del Cazador</value></data>
+  <data name="Prof.TipOnline" xml:space="preserve"><value>{0} está en línea</value></data>
+  <data name="Prof.Request" xml:space="preserve"><value>Enviar solicitud de amistad</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Solicitud de amistad pendiente</value></data>
+  <data name="Prof.Overview" xml:space="preserve"><value>Resumen</value></data>
+  <data name="Prof.Animals" xml:space="preserve"><value>Animales</value></data>
+  <data name="Prof.Weapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Coleccionables</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Progreso</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Puntuación del Cazador</value></data>
+  <data name="Prof.Categories" xml:space="preserve"><value>Categorías</value></data>
+  <data name="Prof.Unlocked" xml:space="preserve"><value>Desbloqueado</value></data>
+  <data name="Prof.Exploration" xml:space="preserve"><value>Exploración</value></data>
+  <data name="Prof.DailyMissions" xml:space="preserve"><value>Misiones diarias</value></data>
+  <data name="Prof.Challenges" xml:space="preserve"><value>Desafíos</value></data>
+  <data name="Prof.AchUnlocked" xml:space="preserve"><value>Logros desbloqueados</value></data>
+  <data name="Prof.AchRecent" xml:space="preserve"><value>Logros recientes</value></data>
+  <data name="Prof.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Prof.Species" xml:space="preserve"><value>Especies</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Marcar</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Seguimiento</value></data>
+  <data name="Prof.Shooting" xml:space="preserve"><value>Disparar</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Nivel</value></data>
+  <data name="Prof.Statistics" xml:space="preserve"><value>Estadísticas</value></data>
+  <data name="Stat.Last" xml:space="preserve"><value>Última cacería</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Estadísticas generales</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>Historia de caza</value></data>
+  <data name="Stat.Best" xml:space="preserve"><value>Récords personales</value></data>
+  <data name="Stat.Misc" xml:space="preserve"><value>Varios</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Cornamentas coleccionables</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Muertes confirmadas</value></data>
+  <data name="Stat.Weapon" xml:space="preserve"><value>Arma</value></data>
+  <data name="Stat.Ammo" xml:space="preserve"><value>Munición</value></data>
+  <data name="Stat.Shots" xml:space="preserve"><value>Disparos</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Precisión de tiro</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Muertes por tiro</value></data>
+  <data name="Stat.Longest" xml:space="preserve"><value>Tiro más largo</value></data>
+  <data name="Stat.Species" xml:space="preserve"><value>Especies</value></data>
+  <data name="Stat.Spotted" xml:space="preserve"><value>Marcado</value></data>
+  <data name="Stat.Tracked" xml:space="preserve"><value>Seguimiento</value></data>
+  <data name="Stat.Harvested" xml:space="preserve"><value>Capturado</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Stat.Collected" xml:space="preserve"><value>Recogidos</value></data>
+  <data name="Stat.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Stat.Max" xml:space="preserve"><value>Máx.</value></data>
+  <data name="Stat.Distance" xml:space="preserve"><value>Distancia recorrida</value></data>
+  <data name="Stat.Duration" xml:space="preserve"><value>Duración de la cacería</value></data>
+  <data name="Stat.NoShots" xml:space="preserve"><value>No hubo disparos</value></data>
+  <data name="Stat.NoShotsExp" xml:space="preserve"><value>No se efectuaron disparos durante esta expedición.</value></data>
+  <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Sin interacción con animales durante esta expedición.</value></data>
+  <data name="Stat.NoCollectExp" xml:space="preserve"><value>No se recogió ningún coleccionable durante esta expedición.</value></data>
+  <data name="Stat.NoAchExp" xml:space="preserve"><value>Ningún logro conseguido durante esta expedición.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>No se recogió ninguna cornamenta coleccionable durante esta expedición.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ninguna muerte confirmada durante esta expedición.</value></data>
+  <data name="Stat.NoExpeditions" xml:space="preserve"><value>Este cazador no ha realizado ninguna expedición.</value></data>
+  <data name="Stat.Start" xml:space="preserve"><value>Inicio</value></data>
+  <data name="Stat.Dur" xml:space="preserve"><value>Duración</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Reserva</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Refugio</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Coleccionables</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Muertes</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>Histórico</value></data>
+  <data name="Stat.Season" xml:space="preserve"><value>Temporada {0}</value></data>
+  <data name="Stat.BestDisabled" xml:space="preserve"><value>La función de récords personales está desactivada actualmente.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>El récord personal de {0} para la temporada {1} está en cola para calcularse. Vuelve a comprobarlo pronto.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Se está calculando el récord personal de {0} para la temporada {1}; estará disponible en breve.</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} no ha realizado ninguna expedición en la temporada {1}.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>El récord personal histórico de {0} está en cola para calcularse. Vuelve a comprobarlo pronto.</value></data>
+  <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Se está calculando el récord personal histórico de {0}; estará disponible en breve.</value></data>
+  <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} aún no ha realizado ninguna expedición, así que no se puede calcular el récord personal histórico.</value></data>
+  <data name="Stat.Score" xml:space="preserve"><value>Puntuación</value></data>
+  <data name="Stat.Range" xml:space="preserve"><value>Alcance</value></data>
+  <data name="Stat.Previous" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Stat.Next" xml:space="preserve"><value>Siguiente</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>No hay imágenes que mostrar.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>No hay trofeos que mostrar.</value></data>
+  <data name="Prof.DogsEmpty" xml:space="preserve"><value>Este cazador no tiene ningún perro.</value></data>
+  <data name="Prof.FriendsEmpty" xml:space="preserve"><value>No hay amigos que mostrar.</value></data>
+  <data name="Prof.DownloadGallery" xml:space="preserve"><value>Descargar galería</value></data>
+  <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Generando la galería para descargar</value></data>
+  <data name="Prof.GalleryReady" xml:space="preserve"><value>¡Tu galería está lista para descargar!</value></data>
+  <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>No cierres la ventana, por favor</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>¿Seguro que quieres eliminar esta imagen? ¡Esta acción no se puede deshacer!</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Nivel:</value></data>
+  <data name="Prof.DogSkills" xml:space="preserve"><value>Habilidades</value></data>
+  <data name="Prof.DogNoSkills" xml:space="preserve"><value>Este perro aún no ha desbloqueado ninguna habilidad.</value></data>
+  <data name="Prof.Delete" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Iniciando sesión…</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>¡Sesión iniciada!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>Se ha abierto esta página porque {game} necesita iniciar tu sesión.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Espera, por favor…</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>Ya puedes cerrar esta ventana o pestaña si quieres.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>Esto puede tardar unos segundos…</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Confirmación de email en curso…</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>¡Confirmación de email completada!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>¡Gracias por unirte! ¡Continúa en el lanzador de {game} para empezar a jugar!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Sesión cerrada</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Íbice alpino</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>Ánade sombrío americano</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Zorro ártico</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Ciervo axis</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Banteng</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Muflón canadiense</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Bisonte</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Oso negro</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Ciervo de cola negra (atípico)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Ciervo de cola negra (típico)</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Lince</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Oso pardo</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Ganso de Canadá</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Conejo de cola de algodón</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Coyote</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Carnero de Dall</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Lince boreal</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>Conejo europeo</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Gamo</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Cabra salvaje</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Cerdo salvaje</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Ánade friso</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Lobo gris</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Oso grizzly</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Ganso urraca</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Ánade real</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Alce</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Ciervo mulo (atípico)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Ciervo mulo (típico)</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Ánade rabudo</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Faisán</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Oso polar</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Puma</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Ciervo rojo</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Zorro rojo</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Canguro rojo</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Reno</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Perdiz nival</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Wapití de las Rocosas</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Corzo</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Corzonejo</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Wapití de Roosevelt</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Ciervo de Timor</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Ciervo sambar</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Ciervo sitka</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Ganso nival</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Liebre americana</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Pavo</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Tiranosaurio rex</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Búfalo de agua</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Wendigo</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Hombre lobo</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Hombre lobo</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>Perdiz de cola blanca</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Ciervo de cola blanca (atípico)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Ciervo de cola blanca (típico)</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Jabalí</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Perdiz nival de la tundra</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Urogallo</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Amanita muscaria</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>Boleto comestible</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Rebozuelo dorado</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Seta común</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Rúsula amarilla de pantano</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Vasija nórdica</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Moneda bizantina</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Cornamenta de gamo</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Regalo verde</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Regalo azul</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Regalo rojo</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Regalo morado</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Regalo plateado</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Calavera verde</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Rosa rosada</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>Rosa blanca</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Rosa roja</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Huevo dorado</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Tortita de frutas</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Calavera azul</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Tortita con helado</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Tortita deluxe</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Calavera roja</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Calavera morada</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Cornamenta de ciervo axis</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>Rosa blanca de San Valentín</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Ritual oscuro</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Osito de peluche marrón de San Valentín</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Rosa roja de San Valentín</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Globo dorado de San Valentín</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Cornamenta de ciervo de cola blanca (atípica)</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Regalo dorado</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Cornamenta de ciervo de cola blanca</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Cornamenta de ciervo mulo</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Cornamenta de wapití de Roosevelt</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Cornamenta de ciervo mulo (atípica)</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Cornamenta de ciervo de cola negra</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Cornamenta de ciervo de cola negra (atípica)</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Cornamenta de alce</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Osito de peluche rojo de San Valentín</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Cornamenta de corzo</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Cornamenta de ciervo rojo</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Tortita con pepitas de chocolate</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Cornamenta de reno</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Tortita con mantequilla y sirope</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>Seta 1UP</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Pepita de oro</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Cornamenta de ciervo sitka</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Huevo plateado</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Huevo de bronce</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Calabaza naranja</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Calabaza marrón</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Calabaza amarilla</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Olla de oro</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Antiguo cuchillo aborigen</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Antiguo cuchillo aborigen</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Antiguo cuchillo aborigen</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Globo de hematita de San Valentín</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Globo plateado de San Valentín</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Cornamenta de wapití de las Rocosas</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Moneda de dólar de plata</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Fósil de amonita</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Fósil de diente de tiburón</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Pluma de águila</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Pluma de cuervo</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Cornamenta de ciervo de Timor</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Cornamenta de ciervo sambar</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Osito de peluche plateado de San Valentín</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Rosa rosada de San Valentín</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Un jugador</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Animales</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Coleccionables</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Armas de mano</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Ballestas</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0} d</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0} s</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} GB</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} MB</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} KB</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} bytes</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} millas)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>hace unos segundos</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>hace un minuto</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>hace {0} minutos</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>hace una hora</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>hace {0} horas</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>hace un día</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>hace {0} días</value></data>
+  <data name="Splash.Loading" xml:space="preserve"><value>Cargando</value></data>
+  <data name="Splash.Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>Soporte de {game}</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guías y tutoriales</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Tutoriales en vídeo</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Webs de comunidades locales</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} cuenta con varios canales de soporte oficiales. En nuestra página Wiki, mantenida por la comunidad, encontrarás mucha información sobre cómo jugar y cómo solucionar problemas. Nuestros foros oficiales de {game} son muy activos: muchos de nuestros jugadores los visitan a diario y están encantados de ayudar a los principiantes.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Si no encuentras respuesta a tus preguntas en el foro o en la wiki, puedes abrir un ticket en nuestro sistema de soporte, ¡y trataremos de ayudarte lo antes posible!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Soporte de {game}</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Foro de {game}</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki de {game}</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (también en {1}, {2} y {3})</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>alemán</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>francés</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>español</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Información sobre conexiones multijugador</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>¿Primera vez en {game}?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Echa un vistazo a algunos tutoriales en vídeo &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Recursos y guías de la comunidad</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>{game} tiene una gran comunidad; echa un vistazo a estos estupendos recursos creados por nuestros miembros.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Aprende lo básico sobre cómo jugar a {game}. ¡Asegúrate de completar también los {0}tutoriales jugables{1} antes de salir a tu primera cacería en la Evergreen Hunting Reserve!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>Por {0}</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Sitios web de comunidades locales</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game} tiene una comunidad muy activa, ¡y muchos de nuestros jugadores se reúnen en comunidades locales con jugadores de su región! ¡Echa un vistazo a estos sitios de fans locales de {game}!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>ÍNDICE</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Servicios de misiones diarias</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Reanudar racha</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Reanudar una racha</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Las misiones diarias son una novedad del sistema de misiones de {game}, y se encuentran en la {0}sección de Misiones{1} del lanzador o del sitio web.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Como están pensadas para completarse en un día, las misiones diarias son bastante sencillas y la mayoría no requerirán armas ni equipamiento concretos. Las misiones diarias difíciles pueden ser a veces una excepción, ¡pero no te desanimes! Puedes completar las diarias en multijugador si quieres.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>La nueva interfaz de misiones diarias</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>¿Cómo funciona?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Cada día, cada jugador recibe una nueva misión diaria para completar. Los distintos jugadores reciben misiones diarias distintas (en adelante, MD).</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Completar una MD aumenta en 1 tu racha de MD. Una {0}racha{1} es una serie de MD consecutivas completadas.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Saltarte una MD o no completarla «romperá tu racha» y te devolverá al día uno.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>Si rompes tu racha, las misiones diarias quedarán inactivas hasta que las actives para empezar una nueva racha o reanudes tu última racha. Una racha rota se puede recuperar con el servicio {0}Reanudar racha{1} de la tienda para continuar desde tu última misión diaria completada.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Niveles de dificultad</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>Las MD tienen tres niveles de dificultad:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Fácil</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Media</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Difícil</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Cada nivel de dificultad tiene su propio color: una MD fácil se representa con un icono verde, una media con un icono azul y una difícil con un icono rojo.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Además de los colores, cada nivel de dificultad tiene un número distinto de estrellas: 1 estrella para las fáciles, 2 para las medias y 3 para las difíciles.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Cada nivel de dificultad ofrece recompensas base distintas: {0}100 gm$ por las fáciles, 500 gm$ por las medias y 1000 gm$ por las difíciles{1}, respectivamente.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Las recompensas aumentan a medida que se alarga tu racha de MD; más información abajo.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Progresión</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Tu primera MD siempre será fácil. Si la completas, las MD de distintos niveles de dificultad se irán alternando según un patrón que llamamos {0}ciclo{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>Un ciclo tiene este aspecto:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Como puedes ver, un ciclo dura 16 días, siempre que, por supuesto, sigas completando día tras día las MD que se te asignan.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Una vez completado el primer ciclo, empieza uno nuevo con {0}las recompensas en gm$ aumentadas un 10 %{1} (fácil = 110 gm$, media = 550 gm$, difícil = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>Con cada ciclo posterior, las recompensas aumentan otro 10 % adicional, hasta un máximo del doble de las recompensas base (un aumento del 100 %).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>Así, por ejemplo, si consigues completar 10 ciclos seguidos sin romper tu racha, recibirás una recompensa x2 por cada misión, y se mantendrá así hasta que rompas tu racha.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Diferencias con las misiones normales</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>A diferencia de las misiones normales, para que una captura sea válida en las MD el animal tendrás que abatirlo tú. Eso sí, tus amigos pueden ayudarte a {0}encontrar{1} el animal necesario en una sesión multijugador.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>A diferencia de las misiones normales, las misiones diarias no hace falta activarlas. Una misión diaria siempre está activa durante el tiempo que dura (24 horas).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Puedes conseguir logros completando MD. Puedes consultar tus logros de MD en la sección Logros del perfil de tu jugador:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Completar MD cuenta para 3 tipos de logros distintos, uno por cada nivel de dificultad.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Esta tabla muestra los hitos de cada nivel de dificultad:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Dificultad</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Misiones completadas</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Recompensas especiales</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>A medida que avanzas en tu racha de MD, recibirás recompensas especiales por completar MD difíciles.</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Las recompensas especiales son:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>objetos</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trofeos</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Los objetos y los trofeos son recompensas exclusivas que solo se pueden ganar completando MD (es decir, ¡no hay ninguna otra forma de conseguirlos!). Tus recompensas solo se mostrarán al empezar una nueva partida.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}IMPORTANTE:{1} ¡Todas las recompensas especiales de las MD solo se pueden ganar una vez! Si rompes tu racha y empiezas una nueva, seguirás recibiendo gm$, pero tendrás que superar tu racha anterior para conseguir nuevas recompensas especiales.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Podrás ver las recompensas especiales en la sección Recompensas de tu MD:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Esta práctica tabla muestra cómo funciona:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Número de MD difíciles completadas seguidas (racha)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Recompensa especial</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Gorra de caza</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Patrón de camuflaje A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Camiseta básica</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Héroe de las misiones diarias</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Rifle de cerrojo</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Patrón de camuflaje B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Chaqueta de cuero</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hard Core Hunting</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Rifle de palanca</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Grabado</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Trofeo único (3 meses)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Trofeo único (6 meses)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Trofeo único ({0} MD difíciles)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Trofeo único (1 año)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Como indica su nombre, este servicio te permite reanudar la racha de MD. Por ejemplo, si tienes una larga racha de MD completadas y después te saltas o fallas una, puedes usar este servicio para reanudar tu racha y continuar desde tu última MD completada.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>Lo bueno es que no importa cuánto tiempo haya pasado desde que rompiste tu racha: siempre podrás reanudarla, incluso si la rompiste, digamos, hace un año.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>Este servicio se puede comprar por adelantado y activar cuando haga falta. No hay límite en el número de estas tarjetas que puedes comprar o tener.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Puedes comprar este servicio directamente en la página de MD: en cuanto rompas tu racha, aparecerá a la izquierda de tu MD del «Día 1» un botón que te invitará a comprarlo (o a usarlo, si ya tienes al menos uno).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>También puedes comprarlo en la {0}tienda{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Una vez comprado, podrás usar este servicio directamente en la página de MD:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Cómo descargar y jugar a {game}</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Requisitos para multijugador</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Requisitos para un jugador</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Sistemas operativos compatibles:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Sistema operativo:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Memoria:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Tarjeta gráfica:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Resolución gráfica:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Conexión a internet:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS del host:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 y Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 y Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Procesador de doble núcleo (2 GHz)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA serie 8 (8800 o superior), ATI Radeon HD serie 2000 (2400 o superior). 256 MB de memoria integrada en la tarjeta (para ajustes bajos y medios). 512 - 768 MB de memoria integrada en la tarjeta (para ajustes altos, según el número de jugadores).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA serie 7 (7600 o superior). ATI X1900 (o superior). 256 MB de memoria integrada en la tarjeta (para ajustes bajos y medios). 512 MB de memoria integrada en la tarjeta (para ajustes altos).</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Al menos 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Cliente: 512 kbps de subida y bajada</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps de subida y bajada (según el número de jugadores)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Si el host no ejecuta el juego al menos a 25-30 fps (fotogramas por segundo), la física producirá errores. Los jugadores con ordenadores de gama baja deberían intentar reducir los ajustes para poder ejecutar el juego con tantos fps como sea posible. {0}30 FPS{1} es el valor mínimo recomendado. Los FPS se pueden medir con herramientas gratuitas disponibles en internet.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Buscar herramienta</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Descarga el juego (unos 12 GB).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Haz clic aquí para descargar</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Paso {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ejecuta el juego cuando termine la instalación.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Haz clic en el botón {0} de la página web para iniciar una nueva partida.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Solución de problemas</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>La utilidad de solución de problemas comprueba automáticamente la configuración de tu juego, detecta los problemas habituales y recomienda soluciones para que vuelvas a jugar cuanto antes.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Descarga la utilidad de solución de problemas.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Colócala en la carpeta de tu juego, junto al ejecutable del juego.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Carpeta del juego]\game\&lt;utilidad&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Ejecuta la herramienta para analizar problemas de configuración y rendimiento.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Aplica las soluciones sugeridas durante el análisis.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Si las soluciones propuestas no ayudan, descarga el archivo de registro generado y envíaselo a nuestro {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>equipo de soporte</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Descargar utilidad</value></data>
+</root>
