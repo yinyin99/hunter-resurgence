@@ -26,13 +26,13 @@ builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 
 var app = builder.Build();
-// every cookie is Secure (browsers accept it on http://localhost too)
+// the antiforgery cookie too; the Appends below set Secure themselves for code scanning (browsers accept it on http://localhost)
 app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
 // ?lang=fr picks the language and remembers it in the culture cookie
 app.Use((ctx, next) =>
 {
     var lang = ctx.Request.Query["lang"].ToString();
-    if (lang is "en" or "fr") ctx.Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new(lang)));
+    if (lang is "en" or "fr") ctx.Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new(lang)), new CookieOptions { Secure = true });
     return next();
 });
 app.UseRequestLocalization(o =>
@@ -51,12 +51,12 @@ if (app.Environment.IsDevelopment())
         var query = original is null ? null : QueryHelpers.ParseQuery(original);
         string Q(string key) => (query is null ? ctx.Request.Query[key] : query.GetValueOrDefault(key)).ToString();
         var m = Q("mode");
-        if (m is "launcher" or "web") ctx.Response.Cookies.Append("mode", m);
+        if (m is "launcher" or "web") ctx.Response.Cookies.Append("mode", m, new CookieOptions { Secure = true });
         else m = ctx.Request.Cookies["mode"];
         var host = ctx.RequestServices.GetRequiredService<HostMode>();
         (host.Launcher, host.Dev) = (m == "launcher", true);
         var mock = Q("mock");
-        if (mock.Length > 0) ctx.Response.Cookies.Append("mock", mock); else mock = ctx.Request.Cookies["mock"] ?? "";
+        if (mock.Length > 0) ctx.Response.Cookies.Append("mock", mock, new CookieOptions { Secure = true }); else mock = ctx.Request.Cookies["mock"] ?? "";
         host.Mock = mock == "none" ? null : mock;
         return next();
     });
