@@ -43,7 +43,7 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
         return Task.FromResult(new Page<Ranked>(Enumerable.Range((page - 1) * size + 1, size).Select(n => Row(kind, id, n)).ToList(), page, pages));
     }
 
-    public Task<Ranked?> MyRankAsync(string kind, int id) => Task.FromResult<Ranked?>(kind == "hunterscore" ? new(238892, "Hunter01", 74) : null);
+    public Task<Ranked?> MyRankAsync(string kind, int id) => Task.FromResult<Ranked?>(kind == "hunterscore" ? new(200000, "Hunter01", 50) : null);
 
     public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>(
         Names.Species.OrderBy(s => s.Name).Where(s => season > 1 || s.Name is "Mule Deer (Typical)" or "Turkey" or "Whitetail Deer (Typical)")

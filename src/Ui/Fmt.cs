@@ -44,7 +44,7 @@ public static class Fmt
     /// <summary>2026-08-19 15:26:35</summary>
     public static string DateTime(DateTime d) => d.ToString("yyyy-MM-dd HH:mm:ss", English);
 
-    /// <summary>A wallet row date: 2021-02-21 16:16.</summary>
+    /// <summary>A wallet row date: 2026-10-15 12:00.</summary>
     public static string Purchase(DateTime d) => d.ToString("yyyy-MM-dd HH:mm", English);
 
     /// <summary>The "fromNow" wording of the old pages: a minute ago, an hour ago, 3 days ago.</summary>

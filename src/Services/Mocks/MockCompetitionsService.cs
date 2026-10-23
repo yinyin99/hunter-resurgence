@@ -50,12 +50,12 @@ public sealed class MockCompetitionsService : ICompetitionsService
     {
         var c = Active.Concat(Upcoming).Concat(Previous).FirstOrDefault(c => c.Id == id);
         var sp = c?.Tags[0] ?? "";
-        return Task.FromResult(c is null ? null : new CompetitionDetails(c, enrolled.Any(a => a.Id == id), c.Description.Split(". ")[0].TrimEnd('.') + ".", 17407, null, "164.9212", 10, 10, ["Trophy", "Trophy", "Trophy"],
+        return Task.FromResult(c is null ? null : new CompetitionDetails(c, enrolled.Any(a => a.Id == id), c.Description.Split(". ")[0].TrimEnd('.') + ".", 17000, null, "160.0000", 10, 10, ["Trophy", "Trophy", "Trophy"],
             sp, "Reserve 01", "Harvest the highest scoring " + sp + " to win.", "Any permitted.", "Highest score.", "None.", "Singleplayer only."));
     }
 
     public Task<IReadOnlyList<Participant>> ParticipantsAsync(int id) =>
-        Task.FromResult<IReadOnlyList<Participant>>([new(1, Names.Handle(17), "164.9212"), new(2, Names.Handle(25), "151.2301")]);
+        Task.FromResult<IReadOnlyList<Participant>>([new(1, Names.Handle(17), "160.0000"), new(2, Names.Handle(25), "150.0000")]);
 
     static readonly string[] Months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 

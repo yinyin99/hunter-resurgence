@@ -19,14 +19,14 @@ public sealed class MockWalletService : IWalletService
         return rows;
     }
 
-    static readonly IReadOnlyList<WalletEntry> Ems = Chain(35, 4, i => (2 + i * 7 % 28, EmItems[i % EmItems.Length], "In-game payment.", true));
-    static readonly IReadOnlyList<WalletEntry> Gms = Chain(43, 1163, i => (4 + i * 37 % 140, i % 6 == 5 ? EmItems[i % EmItems.Length] : "", i % 6 == 5 ? "In-game payment." : $"Reward (Id: {1110544551 - i * 1873})", i % 6 == 5));
+    static readonly IReadOnlyList<WalletEntry> Ems = Chain(35, 100, i => (2 + i * 7 % 28, EmItems[i % EmItems.Length], "In-game payment.", true));
+    static readonly IReadOnlyList<WalletEntry> Gms = Chain(43, 1000, i => (4 + i * 37 % 140, i % 6 == 5 ? EmItems[i % EmItems.Length] : "", i % 6 == 5 ? "In-game payment." : $"Reward (Id: {1110544551 - i * 1873})", i % 6 == 5));
 
-    public Task<Balances> BalancesAsync() => Task.FromResult(new Balances(4, 1078, 159, 0));
+    public Task<Balances> BalancesAsync() => Task.FromResult(new Balances(100, 1000, 150, 0));
 
-    public Task<WalletSummary> SummaryAsync() => Task.FromResult(new WalletSummary(4, 1078, 196, 680));
+    public Task<WalletSummary> SummaryAsync() => Task.FromResult(new WalletSummary(100, 1000, 200, 700));
 
-    public Task<IReadOnlyList<BankPayment>> BankAsync(int offset) => Task.FromResult<IReadOnlyList<BankPayment>>(offset > 0 ? [] : [new(new(2021, 2, 21, 16, 16, 0), "Gift", "Completed", "em$", 11.01m, "STEAM", new(2021, 2, 21, 16, 18, 36), null)]);
+    public Task<IReadOnlyList<BankPayment>> BankAsync(int offset) => Task.FromResult<IReadOnlyList<BankPayment>>(offset > 0 ? [] : [new(new(2026, 10, 15, 12, 0, 0), "Gift", "Completed", "em$", 10.00m, "Provider", new(2026, 10, 15, 12, 5, 0), null)]);
 
     public Task<IReadOnlyList<WalletEntry>> EntriesAsync(bool gms, int offset) => Task.FromResult<IReadOnlyList<WalletEntry>>((gms ? Gms : Ems).Skip(offset).Take(IWalletService.PageSize).ToList());
 }
