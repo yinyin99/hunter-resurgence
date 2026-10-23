@@ -1,0 +1,205 @@
+@page "/settings"
+@page "/settings/{Tab}"
+@inject IAccountService Service
+@inject ISessionService Sessions
+@inject ModalService Modal
+@inject ILanguageSwitcher Language
+@inject NavigationManager Nav
+
+<PageTitle>@L["Set.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Set.Title"].Value.ToUpperInvariant())</h2>
+    <div class="cols">
+        <nav class="menu">
+            <h3>@handle</h3>
+            <ul>
+                @foreach (var (key, label) in tabs)
+                {
+                    <li class="@(key == tab ? "on" : "")"><a href="/settings/@key">@L[label]</a></li>
+                }
+            </ul>
+        </nav>
+        <section class="panel">
+            <h4 class="bar">@L[Title]</h4>
+            <div class="pane">
+                @if (message is not null) { <p class="alert @(ok ? "ok" : "bad")" role="alert">@L[message]</p> }
+                @switch (tab)
+                {
+                    case "avatar":
+                        <p class="info">@L["Set.AvatarInfo"]</p>
+                        <h5>@L["Set.AvatarCurrent"]</h5>
+                        <div class="cur"><AssetSlot Name="avatar-current" Width="150" Height="150" /></div>
+                        <h5>@L["Set.AvatarSelect"]</h5>
+                        <div class="avatars">
+                            @foreach (var a in avatars.Where(a => !a.Locked))
+                            {
+                                <button type="button" class="pick @(a.Id == account?.Avatar ? "on" : "")" title="@a.Name" @onclick="() => Pick(a.Id)"><AssetSlot Name="@a.Id" Width="60" Height="60" /></button>
+                            }
+                        </div>
+                        <h5>@L["Set.AvatarUnlockable"]</h5>
+                        <div class="avatars">
+                            @foreach (var a in avatars.Where(a => a.Locked))
+                            {
+                                <a class="pick locked" href="/store/item/224" title="@L["Set.AvatarLocked"]"><AssetSlot Name="@a.Id" Width="60" Height="60" /><Icon Name="lock" /><span>@a.Name</span></a>
+                            }
+                        </div>
+                        break;
+                    case "language":
+                        <form @onsubmit="SaveLocale" @onsubmit:preventDefault>
+                            <label>@L["Set.Language"]<select id="locale" @bind="language"><option value="en">@L["Language.English"]</option><option value="fr">@L["Language.French"]</option></select></label>
+                            <label>@L["Set.Country"]<select id="country" @bind="country"><option value="">@L["Set.CountryChoose"]</option>@foreach (var c in choices.Countries) { <option value="@c">@c</option> }</select></label>
+                            <label>@L["Set.TimeZone"]<select id="timezone" @bind="timeZone">@foreach (var z in choices.TimeZones) { <option value="@z">@z.Replace('_', ' ')</option> }</select></label>
+                            <button type="submit" class="btn btn-primary">@L["Set.Save"]</button>
+                        </form>
+                        break;
+                    case "email":
+                        <form @onsubmit="Email" @onsubmit:preventDefault>
+                            @if (!codeSent)
+                            {
+                                <label>@L["Set.EmailAddress"]<input id="email" type="email" name="email" @bind="email" @bind:event="oninput" /></label>
+                                <button type="submit" class="btn btn-primary">@L["Set.EmailUpdate"]</button>
+                            }
+                            else
+                            {
+                                <p class="info">@L["Signin.Sent", email]</p>
+                                <label>@L["Signin.Code"]<input id="code" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" @bind="code" @bind:event="oninput" /></label>
+                                <button type="submit" class="btn btn-primary">@L["Set.EmailConfirm"]</button>
+                                <a href="#" class="resend" @onclick="Resend" @onclick:preventDefault>@L["Set.EmailResend"]</a>
+                            }
+                        </form>
+                        break;
+                    case "purchases":
+                        <p class="info">@purchases[0]<a href="/bank/ems">@L["Set.Bank"]</a>@purchases[1]<a href="/store">@L["Set.Store"]</a>@purchases[2]</p>
+                        <p class="center"><a href="/wallet">@L["Set.WalletLink"]</a></p>
+                        break;
+                    case "bans":
+                        @if (bans.Count == 0) { <p class="info">@L["Set.BansNone"]</p> }
+                        @foreach (var b in bans)
+                        {
+                            <div class="player"><a href="/profile/@b.Handle">@b.Handle</a><button type="button" class="btn btn-primary" @onclick="() => Unban(b)">@L["Set.Unban"]</button></div>
+                        }
+                        break;
+                    case "facebook":
+                        <p class="info">@L["Set.FacebookText"] <a href="#" id="fb_connect" @onclick:preventDefault>@L["Set.Connect"]</a></p>
+                        break;
+                    case "steam":
+                        <p class="info">@steam[0]<b>@handle</b>@steam[1]</p>
+                        <div class="warn"><h5>@L["Set.Warning"]</h5><p>@L["Set.SteamWarning"]</p></div>
+                        <button type="button" class="btn btn-primary" @onclick="Disconnect">@L["Set.SteamDisconnect"]</button>
+                        break;
+                    case "profile":
+                        <h2>@L["Set.HeaderTitle"]</h2>
+                        <p class="info">@L["Set.HeaderText"]<br /><a href="https://example.com/achievement-master" target="_blank" rel="noopener">@L["Set.HeaderLink"]</a></p>
+                        <div class="none">
+                            <button type="button" class="@(headers?.Selected == "none" ? "on" : "")" @onclick='() => Choose("none")'>@L["Set.HeaderNone"]</button>
+                            <button type="button" class="@(headers?.Selected == "recent" ? "on" : "")" @onclick='() => Choose("recent")'>@L["Set.HeaderRecent"]</button>
+                        </div>
+                        @foreach (var g in headers?.Groups ?? [])
+                        {
+                            <h3>@Group(g.Name)</h3>
+                            <div class="heads">
+                                @foreach (var i in g.Images)
+                                {
+                                    <button type="button" class="head @(i.Unlocked ? "" : "locked") @(headers?.Selected == i.Id ? "on" : "")" disabled="@(!i.Unlocked)" @onclick="() => Choose(i.Id)"><AssetSlot Name="@i.Id" Width="240" Height="50" /></button>
+                                }
+                            </div>
+                        }
+                        <button type="button" id="profile-header-image-set" class="btn btn-primary save" @onclick="SaveHeader">@L["Set.SaveProfile"]</button>
+                        break;
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    static readonly (string Key, string Label)[] tabs =
+    [
+        ("email", "Set.TabEmail"), ("avatar", "Set.TabAvatar"), ("language", "Set.TabLocale"), ("purchases", "Wal.History"), ("bans", "Set.TabBans"),
+        ("facebook", "Set.TabFacebook"), ("steam", "Set.TabSteam"), ("profile", "Set.TabProfile"),
+    ];
+
+    Account? account;
+    IReadOnlyList<AvatarChoice> avatars = [];
+    IReadOnlyList<BannedPlayer> bans = [];
+    Headers? headers;
+    LocaleChoices choices = new([], []);
+    string handle = "", email = "", code = "", language = "en", country = "", timeZone = "";
+    string? message;
+    bool ok, codeSent;
+
+    [Parameter] public string? Tab { get; set; }
+    string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "avatar";
+    string Title => tab switch { "avatar" => "Set.AvatarTitle", "email" => "Set.EmailTitle", "language" => "Set.TabLocale", "purchases" => "Set.PurchasesTitle", "bans" => "Set.BansTitle", "facebook" => "Set.TabFacebook", "steam" => "Set.SteamTitle", _ => "Set.TabProfile" };
+    // the sentences with a link or the handle in the middle are cut at marker characters
+    string[] purchases => L["Set.PurchasesText", "\u0001", "\u0002"].Value.Split('\u0001', '\u0002');
+    string[] steam => L["Set.SteamText", "\u0001"].Value.Split('\u0001');
+
+    string Group(string name) => name switch { "Animals" => L["Set.GroupAnimals"], "Weapons" => L["Set.GroupWeapons"], "Exploration" => L["Set.GroupExploration"], "Events" => L["Set.GroupEvents"], _ => L["Set.GroupMissions"] };
+
+    protected override async Task OnInitializedAsync()
+    {
+        handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+        account = await Service.AccountAsync();
+        (email, language, country, timeZone) = (account.Email, account.Language, account.Country, account.TimeZone);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        (message, codeSent, code) = (null, false, "");
+        switch (tab)
+        {
+            case "avatar": avatars = await Service.AvatarsAsync(); break;
+            case "language": choices = await Service.LocaleChoicesAsync(); break;
+            case "bans": bans = await Service.BansAsync(); break;
+            case "profile": headers = await Service.HeadersAsync(); break;
+        }
+    }
+
+    void Say(Result r, string success, string? failure = null) => (ok, message) = (r.Ok, r.Ok ? success : failure ?? r.Error);
+
+    async Task Pick(string id)
+    {
+        await Service.SetAvatarAsync(id);
+        account = await Service.AccountAsync();
+    }
+
+    async Task SaveLocale()
+    {
+        // as in the old app the page reloads with the new language
+        if ((await Service.SaveLocaleAsync(language, country, timeZone)).Ok) Language.Set(language);
+    }
+
+    async Task Email()
+    {
+        var r = codeSent ? await Service.ConfirmEmailChangeAsync(email, code.Trim()) : await Service.RequestEmailChangeAsync(email.Trim());
+        message = null;
+        if (!r.Ok) { Say(r, ""); return; }
+        if (!codeSent) { (codeSent, ok, message) = (true, true, "Set.EmailCodeSent"); return; }
+        (codeSent, code) = (false, "");
+        account = await Service.AccountAsync();
+        (ok, message) = (true, "Set.EmailChanged");
+    }
+
+    async Task Resend() => Say(await Service.RequestEmailChangeAsync(email.Trim()), "Set.EmailResent");
+
+    async Task Unban(BannedPlayer b)
+    {
+        if (!await Modal.Confirm(L["Set.UnbanConfirm", b.Handle])) return;
+        await Service.UnbanAsync(b.Id);
+        bans = await Service.BansAsync();
+    }
+
+    // the player is signed out and the launcher (or the page) is left, as in the old app
+    async Task Disconnect()
+    {
+        if (!(await Service.DisconnectSteamAsync()).Ok) return;
+        await Sessions.SignOutAsync();
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+
+    void Choose(string id) { headers = headers! with { Selected = id }; }
+
+    async Task SaveHeader() => Say(await Service.SaveHeaderAsync(headers!.Selected), "Set.ProfileSaved", "Set.ProfileFailed");
+}
