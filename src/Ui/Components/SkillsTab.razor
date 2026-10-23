@@ -1,0 +1,43 @@
+@inject IProfileService Service
+
+<SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/skills")" />
+@if (sub == "")
+{
+    <div class="cards">
+        @foreach (var s in skills)
+        {
+            <section class="card">
+                <h4>@s.Name</h4>
+                <AssetSlot Name="skill-species" Width="80" Height="90" Class="pic" />
+                <div class="rings">@foreach (var r in s.Rings) { @Ring(r) }</div>
+            </section>
+        }
+    </div>
+}
+else
+{
+    @foreach (var g in skills.GroupBy(s => s.Group))
+    {
+        <h4 class="group">@g.Key</h4>
+        @foreach (var s in g)
+        {
+            <div class="item"><span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>
+        }
+    }
+}
+
+@code {
+    static readonly (string Key, string Label)[] subs = [("", "Prof.Species"), ("weapons", "Prof.Weapons")];
+    IReadOnlyList<Skill> skills = [];
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public string? Sub { get; set; }
+    string sub => Sub == "weapons" ? "weapons" : "";
+
+    protected override async Task OnParametersSetAsync() => skills = await Service.SkillsAsync(Handle, sub == "" ? "species" : "weapons");
+
+    RenderFragment Ring(SkillRing r) => @<div class="ring">
+        <span class="lab">@L["Prof." + r.Label]</span>
+        <div class="dial" style="--p:@(r.Percent)%"><div><small>@L["Prof.Lvl"]</small><b>@r.Level</b><small>@r.Percent%</small></div></div>
+    </div>;
+}

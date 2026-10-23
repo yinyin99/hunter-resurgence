@@ -1,0 +1,14 @@
+<ul class="pills">
+    @foreach (var (key, label) in Items)
+    {
+        <li class="@(key == Active ? "on" : "")"><a href="@(Base + (key == "" ? "" : "/" + key))">@L[label]</a></li>
+    }
+</ul>
+
+@code {
+    /// <summary>The pills of a profile tab: the route part (empty for the first) and the text key.</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<(string Key, string Label)> Items { get; set; } = [];
+    [Parameter] public string Active { get; set; } = "";
+    /// <summary>The address of the tab; a pill adds its key.</summary>
+    [Parameter, EditorRequired] public string Base { get; set; } = "";
+}

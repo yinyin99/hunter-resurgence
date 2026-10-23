@@ -1,11 +1,6 @@
 @inject IProfileService Service
 
-<ul class="pills">
-    @foreach (var (key, label) in subs)
-    {
-        <li class="@(key == sub ? "on" : "")"><a href="/profile/@Handle/ranks@(key == "" ? "" : "/" + key)">@L[label]</a></li>
-    }
-</ul>
+<SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/ranks")" />
 @if (sub == "")
 {
     <h4>@L["Prof.Progress"]</h4>
@@ -26,12 +21,12 @@ else
 }
 
 @code {
-    static readonly (string, string)[] subs = [("", "Prof.Overview"), ("animals", "Prof.Animals"), ("weapons", "Prof.Weapons"), ("collectables", "Prof.Collectables")];
+    static readonly (string Key, string Label)[] subs = [("", "Prof.Overview"), ("animals", "Prof.Animals"), ("weapons", "Prof.Weapons"), ("collectables", "Prof.Collectables")];
     IReadOnlyList<RankBar> bars = [];
 
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
-    string sub => subs.Any(s => s.Item1 == Sub) ? Sub! : "";
+    string sub => subs.Any(s => s.Key == Sub) ? Sub! : "";
 
     protected override async Task OnParametersSetAsync() => bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
 

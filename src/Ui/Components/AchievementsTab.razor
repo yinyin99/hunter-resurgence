@@ -1,0 +1,75 @@
+@inject IProfileService Service
+
+<SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/achievements")" />
+@if (sub == "")
+{
+    <h4>@L["Prof.Progress"]</h4>
+    <h5>@L["Prof.Categories"]</h5>
+    @if (summary is not null)
+    {
+        @foreach (var b in summary.Categories)
+        {
+            <div class="ov">
+                <Icon Name="@(b.Name == "Animals" ? "dog" : b.Name == "Weapons" ? "bullseye" : "location-dot")" />
+                <div class="bar"><i style="width:@(100 * b.Done / b.Total)%"></i></div>
+            </div>
+        }
+        <h4 class="gap">@L["Prof.Statistics"]</h4>
+        <p class="line">@L["Prof.AchUnlocked"]: @summary.Unlocked</p>
+        <h4 class="recent">@L["Prof.AchRecent"]</h4>
+        @foreach (var a in summary.Recent) { @Item(a.Title, a.Description, a.Date) }
+    }
+}
+else if (sub == "challenges") { @foreach (var a in challenges) { @Item(a.Title, a.Description, null) } }
+else
+{
+    @foreach (var m in milestones)
+    {
+        <div class="row">
+            <AssetSlot Name="@("ach-" + sub)" Width="100" Height="100" Class="badge" />
+            <div class="what">
+                <h4>@m.Title</h4>
+                <div class="steps">
+                    <i style="width:@Fill(m).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></i>
+                    @foreach (var (s, i) in m.Steps.Select((s, i) => (s, i))) { <span class="@(i < m.Done ? "got" : "")">@s</span> }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    static readonly (string Key, string Label)[] subs =
+    [
+        ("", "Prof.Overview"), ("animals", "Prof.Animals"), ("weapons", "Prof.Weapons"), ("exploration", "Prof.Exploration"), ("day-mission", "Prof.DailyMissions"), ("challenges", "Prof.Challenges"),
+    ];
+    AchievementSummary? summary;
+    IReadOnlyList<Milestone> milestones = [];
+    IReadOnlyList<Challenge> challenges = [];
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public string? Sub { get; set; }
+    string sub => Sub == "summary" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (sub == "") summary = await Service.AchievementSummaryAsync(Handle);
+        else if (sub == "challenges") challenges = await Service.ChallengesAsync(Handle);
+        else milestones = await Service.MilestonesAsync(Handle, sub);
+    }
+
+    // the blue fill reaches the steps done and a part of the next one
+    static double Fill(Milestone m)
+    {
+        if (m.Steps.Count == 0) return 0;
+        var prev = m.Done == 0 ? 0 : m.Steps[m.Done - 1];
+        var part = m.Done >= m.Steps.Count ? 0 : (double)(m.Value - prev) / (m.Steps[m.Done] - prev);
+        return 100 * (m.Done + Math.Clamp(part, 0, 1)) / m.Steps.Count;
+    }
+
+    RenderFragment Item(string title, string text, DateOnly? date) => @<div class="item">
+        <AssetSlot Name="ach-badge" Width="90" Height="90" Class="badge" />
+        <div class="text"><b>@title</b><span>@text</span></div>
+        @if (date is { } d) { <time>@d.ToString("yyyy-MM-dd")</time> }
+    </div>;
+}
