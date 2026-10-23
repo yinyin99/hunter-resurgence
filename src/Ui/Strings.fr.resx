@@ -614,4 +614,63 @@
   <data name="Msg.NoUser" xml:space="preserve"><value>No such user.</value></data>
   <data name="Msg.Self" xml:space="preserve"><value>You cant send messages to yourself.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>An error occured while sending your message.</value></data>
+  <data name="Set.Title" xml:space="preserve"><value>Paramètres du compte</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Adresse email</value></data>
+  <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Langue &amp; fuseau horaire</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer bans</value></data>
+  <data name="Set.TabFacebook" xml:space="preserve"><value>Paramètres Facebook</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Paramètres Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Paramètres du profil</value></data>
+  <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar du joueur</value></data>
+  <data name="Set.AvatarInfo" xml:space="preserve"><value>L'avatar définit à la fois votre apparence dans le jeu ainsi que sur le site</value></data>
+  <data name="Set.AvatarCurrent" xml:space="preserve"><value>Votre avatar actuel</value></data>
+  <data name="Set.AvatarSelect" xml:space="preserve"><value>Sélectionnez un nouvel avatar</value></data>
+  <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatars à débloquer</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Cet avatar est verrouillé. Vous pouvez le déverrouiller en l'achetant dans la boutique.</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>Email :</value></data>
+  <data name="Set.EmailAddress" xml:space="preserve"><value>Adresse email</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Mettre à jour l'adresse email</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Un email de confirmation a été envoyé à votre nouvelle adresse email. Veuillez le confirmer afin d’activer la nouvelle adresse email.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>Cette adresse email n'est pas disponible</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Une erreur est survenue lors de la mise à jour de votre adresse email</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmer l’adresse email</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Votre adresse email a été modifiée.</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Resend confirmation</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>Resend email successfull</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.Language" xml:space="preserve"><value>Langue</value></data>
+  <data name="Set.Country" xml:space="preserve"><value>Pays</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Choisissez un pays</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Fuseau horaire :</value></data>
+  <data name="Set.Save" xml:space="preserve"><value>Appliquer</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historique des achats du compte</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Toutes les transactions effectuées via la {0} et la {1} sont enregistrées dans votre porte-monnaie.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>banque</value></data>
+  <data name="Set.Store" xml:space="preserve"><value>boutique</value></data>
+  <data name="Set.WalletLink" xml:space="preserve"><value>Cliquez ici pour voir votre porte-monnaie</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Joueurs bannis</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Vous n’avez banni aucun joueur de vos parties</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Unban</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>Vous pouvez connecter votre compte Facebook pour pouvoir vous identifier plus facilement.</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Connecter</value></data>
+  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>Your {game} account {0} is connected to your Steam account. If you want to connect this {game} account to another Steam account, or connect the Steam account to another account on {game}, you must first disconnect the two accounts that are already connected.</value></data>
+  <data name="Set.Warning" xml:space="preserve"><value>Avertissement</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>Disconnecting your Steam account will log you out of {game} and close the launcher. You won't be able to play {game} on Steam again until you connect to another account.</value></data>
+  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Je comprends et souhaite déconnecter mon compte Steam</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannière</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Header images get unlocked when you reach new levels in three different Achievement categories - Animals Master, Weapons Master and Exploration Master. Once unlocked, header images remain available forever.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>En savoir plus.</value></data>
+  <data name="Set.HeaderNone" xml:space="preserve"><value>Aucune</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>La plus récente</value></data>
+  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animaux</value></data>
+  <data name="Set.GroupWeapons" xml:space="preserve"><value>Armes</value></data>
+  <data name="Set.GroupExploration" xml:space="preserve"><value>Exploration</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>Events</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Daily Missions</value></data>
+  <data name="Set.SaveProfile" xml:space="preserve"><value>Appliquer</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
 </root>
