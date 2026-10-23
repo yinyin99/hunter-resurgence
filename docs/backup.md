@@ -61,7 +61,7 @@ The app shows a short version of this list in its window.
 ## Privacy
 
 - The session token is never written to a file, the log, the manifest or the zip. It is sent only to the API host, as the form field the website uses.
-- In My account mode the manifest has `steam_id64`: the Steam account signed in on this PC. The app reads the value `ActiveUser` under `HKCU\Software\Valve\Steam\ActiveProcess` from the registry, read-only; nothing else from Steam, no Steam API, no network. It is stored only in the player's own folder and zip and is never sent anywhere by the app. If nobody is signed in the field is omitted. Public profile mode never writes it. A community server can use it to check that the Steam account signing in owns the backup.
+- In My account mode the manifest has `steam_id64`: the Steam account signed in on this PC. The app reads the value `ActiveUser` under `HKCU\Software\Valve\Steam\ActiveProcess` from the registry, read-only; nothing else from Steam, no Steam API, no network. It is stored only in the player's own folder and zip and is never sent anywhere by the app. If nobody is signed in the field is omitted. Public profile mode never writes it. A community server can use it as a hint that the Steam account signing in owns the backup, not as proof.
 - Keep the zip private: it holds the account's data, the Steam id and `claim.key`.
 
 ## How the token is found
