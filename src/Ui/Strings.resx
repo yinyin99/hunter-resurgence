@@ -673,4 +673,60 @@
   <data name="Set.SaveProfile" xml:space="preserve"><value>Save Profile Settings</value></data>
   <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
   <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Bait Sites</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>HOME</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Please choose a section.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>TROPHY LODGE SELECTION</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>You currently don't own any lodges.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>BAIT SITE MANAGEMENT</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Fill feeder up to:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Bait</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Active</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Refill</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0} your brand new {game} account has been created!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>If you have already downloaded and installed the game launcher and client, you are ready to start playing! If you are new to {game} we recommend playing through the tutorials before going on your first real hunt. The tutorials will teach you everything you need to know to make it on your own in the Evergreen Hunting Reserve. Get started below.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>Do you have a retail code?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>If you have bought a retail version of {game}, {0}click here{1} to activate your retail code.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutorials</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Let the Doc, the resident warden of the Evergreen Hunting Reserve, teach you all you need to know about playing {game}</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Go to tutorials</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>Go Hunting</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Start a real hunt if you are already familiar with the hunter or if you are just too eager to get out there</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Start a new game</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>To downloads</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your e-mail address, language settings or your player avatar you can do so on the settings page.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Change account settings</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Profile</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>All of your progress in {game} is shown on your profile page, there you will find detailed stats for all of your previous hunts.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>View my profile</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Need help getting started? Check out the help section and our great community managed resources</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>View help section</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Recruit a friend</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>How to recruit a friend</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Send an invite</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Click the button below to get your referral link and send it to a friend you would like to invite to {game}</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Play {game} together</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>When your friend registers an account {0}using your link{1}, they receive 200 em$, a 5x30mm Rangefinder, a Moose caller and a scent eliminator!</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Get rewarded</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>If your friend purchases em$, you will be rewarded!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>See rewards below</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Click here to invite a friend</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Rewards</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* The referral reward is given the first time a referred friend purchases em$. You will only be rewarded this once for EACH referral.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** The first-time purchased reward is given the first time ANY of your referred friends purchases that amount of em$. You will only collect these rewards once EACH, not per purchase.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>If your friend purchases</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>You get*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>One time reward**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>My recruits</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>User</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>Joined</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Reward</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>This is your referral link, copy and send it to anyone you would like to invite to {game}:</value></data>
 </root>

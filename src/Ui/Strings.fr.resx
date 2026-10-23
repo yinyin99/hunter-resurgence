@@ -673,4 +673,60 @@
   <data name="Set.SaveProfile" xml:space="preserve"><value>Appliquer</value></data>
   <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
   <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Bait Sites</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>HOME</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Please choose a section.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>SÉLECTION DE LA LOGE DES TROPHÉES</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Vous ne possédez actuellement aucune loge des trophées.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>GESTIONNAIRE DES CONTENEURS</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Fill feeder up to:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Appâts</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Actif</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Réapprovisionner</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0} your brand new {game} account has been created!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Si vous avez déjà téléchargé et installé le lanceur et le client du jeu, vous êtes prêt(e) à jouer ! Si vous êtes nouveau ou nouvelle sur {game}, nous vous recommandons de faire les tutoriels avant de lancer votre première vraie chasse. Les tutoriels vous apprendront tout ce que vous devez savoir pour vous débrouiller seul(e) dans la réserve de chasse d'Evergreen.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>Vous possédez un code d'activation ?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>Si vous avez acheté une version commerciale de {game}, {0}cliquez ici{1} pour utiliser votre code d'activation.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutoriels</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Laissez Doc, le gardien de la réserve de chasse d'Evergreen, vous apprendre tout ce que vous devez savoir pour jouer à {game}</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Jouer aux tutoriels</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>Chasser</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Démarrez une vraie chasse si vous êtes déjà familier avec {game} ou si vous êtes simplement trop impatient(e) de vous lancer</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Commencer une nouvelle partie</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Téléchargement</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si vous n'avez pas encore téléchargé le lanceur ainsi que le client du jeu, faites-le maintenant afin de pouvoir commencer à chasser</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Télécharger</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si vous souhaitez modifier votre adresse email, votre langue d'affichage ou votre avatar, vous pouvez le faire sur la page des paramètres.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modifier les paramètres</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Votre progression dans {game} est visible sur votre page de profil. C'est là que vous trouverez les statistiques détaillées de toutes vos anciennes chasses.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>Voir mon profil</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Aide</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Besoin d'aide pour commencer ? Consultez la rubrique aide et les ressources gérées par notre géniale communauté</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>Consulter la rubrique Aide</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Recruter un ami</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>Comment recruter un ami</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Envoyez une invitation</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Cliquez sur le bouton ci-dessous pour obtenir votre lien de parrainage et envoyez-le à un(e) ami(e) pour lui faire découvrir {game}</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Jouez à {game} ensemble</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Quand votre ami(e) s'inscrit {0}en utilisant votre lien{1}, il/elle reçoit 200 em$, un télémètre 5x30mm, un appeau à élan et un éliminateur d'odeur !</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Soyez récompensé(e)</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>If your friend purchases em$, you will be rewarded!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>Voir les récompenses ci-dessous</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Cliquez ici pour inviter un ami</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Récompenses</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* The referral reward is given the first time a referred friend purchases em$. You will only be rewarded this once for EACH referral.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** The first-time purchased reward is given the first time ANY of your referred friends purchases that amount of em$. You will only collect these rewards once EACH, not per purchase.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>  Si votre ami(e) achète</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>Vous obtenez*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>Récompense unique**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Mes recrues</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>Utilisateur</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>Joined</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Récompense</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>Voici votre lien de parrainage, copiez-le et envoyez-le à vos proches pour les inviter à jouer à {game} :</value></data>
 </root>
