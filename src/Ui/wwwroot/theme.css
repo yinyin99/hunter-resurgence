@@ -160,8 +160,6 @@
     --r-2: 4px;
     --r-3: 8px;
     --r-pill: 999px;
-    --tint-1: rgba(255, 255, 255, .025);
-    --tint-2: rgba(255, 255, 255, .06);
     --t-fast: 100ms;
     --t-base: 160ms;
     --t-slow: 240ms;
@@ -205,11 +203,10 @@ a:hover { color: var(--accent-hover); }
     cursor: pointer;
     transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
-.btn:hover { color: var(--btn-fg); filter: brightness(1.12); }
 .btn:active { transform: translateY(1px); filter: brightness(.9); }
 .btn-primary { background-color: var(--primary); color: #fff; }
 .btn-inverse { background-color: var(--surface-7); color: #fff; }
-.btn-primary:hover, .btn-inverse:hover { color: #fff; }
+.btn-primary:hover { background-color: var(--primary-hover); color: #fff; }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
@@ -231,7 +228,6 @@ a { transition: color var(--t-fast) var(--ease); }
 :where(.tbl) th { padding: 8px 6px; color: var(--text-1); }
 :where(.tbl) td { padding: 6px; border-top: 1px solid var(--line); }
 :where(.tbl) tbody tr { transition: background-color var(--t-fast) var(--ease); }
-:where(.tbl) tbody tr:hover { background: var(--tint-1); }
 :where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
 :where(.tbl-c) :is(th, td):first-child { text-align: left; }
 
@@ -266,13 +262,11 @@ a { transition: color var(--t-fast) var(--ease); }
 .tick:disabled { opacity: .5; cursor: default; }
 
 /* an empty block of the final size while its data loads (the old app left the area empty) */
-.skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
-@keyframes skeleton { to { background-position: -150% 0; } }
+.skeleton { border-radius: var(--r-3); background: var(--surface-2); }
 .skeleton-page { min-height: 600px; }
 
 @media (prefers-reduced-motion: reduce) {
     * { transition-duration: 0s !important; }
-    .skeleton { animation: none; }
 }
 
 /* h2.page-title of the old pages */
