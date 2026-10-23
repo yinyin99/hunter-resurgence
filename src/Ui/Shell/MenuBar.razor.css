@@ -1,24 +1,24 @@
-.menu { position: relative; z-index: 2; display: flex; align-items: flex-start; height: 51px; margin-top: 10px; border-radius: var(--radius); background: var(--bg-menu); font-size: var(--fs-menu); }
+.menu { position: relative; z-index: 2; display: flex; align-items: flex-start; height: 51px; margin-top: 10px; border-radius: var(--r-3); background: rgba(22, 22, 22, .7); backdrop-filter: blur(10px); box-shadow: var(--ring), 0 6px 20px rgba(0, 0, 0, .45); font-size: var(--fs-menu); }
 .menu-space { height: 61px; }
 .hunt-now { position: relative; margin: 9px 0 0 15px; }
-.hunt-now > a, .menu ::deep .hunt { display: block; box-sizing: border-box; padding: 6px 17px; border-radius: var(--radius); background: var(--primary); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
+.hunt-now > a, .menu ::deep .hunt { display: block; box-sizing: border-box; padding: 6px 17px; border-radius: var(--r-2); background-color: var(--primary); background-image: var(--sheen); box-shadow: var(--depth); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; transition: box-shadow var(--t-base) var(--ease); }
 .menu ::deep .hunt { margin: 9px 0 0 15px; }
 .hunt-now:hover > a, .menu ::deep .hunt:hover { background: linear-gradient(#333, #222); border-radius: 3px 3px 0 0; color: #fff; }
 .hunt-now ul { display: none; position: absolute; top: 31px; left: 0; width: 300px; margin: 0; padding: 0; list-style: none; background: #222; border-radius: 0 3px 3px 3px; box-shadow: 0 5px 14px rgba(0, 0, 0, .6); z-index: 200; }
 .hunt-now:hover ul { display: block; }
 .hunt-now li a { display: block; padding: 5px 10px; color: #fff; font-size: 16px; line-height: 20px; }
 .hunt-now li a:hover { background: var(--accent); }
-.ems, .store { position: relative; display: block; box-sizing: border-box; height: 30px; margin-top: 10px; padding: 5px 17px 5px 38px; border-radius: var(--radius); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
-.ems { margin-left: 29px; background: var(--ems-green); }
-.store { margin-left: 30px; background: var(--store-blue); }
+.ems, .store { position: relative; display: block; box-sizing: border-box; height: 30px; margin-top: 10px; padding: 5px 17px 5px 38px; border-radius: var(--r-2); background-image: var(--sheen); box-shadow: var(--depth); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; transition: box-shadow var(--t-base) var(--ease); }
+.ems { margin-left: 29px; background-color: var(--ems-green); }
+.store { margin-left: 30px; background-color: var(--store-blue); }
 .ems:hover, .store:hover { background: linear-gradient(#333, #222); color: #fff; }
 .ems ::deep .coin, .store ::deep .coin { position: absolute; left: -23px; top: -8px; border-radius: 50%; }
 .items { display: flex; margin: 0 0 0 15px; padding: 0; list-style: none; line-height: 51px; white-space: nowrap; }
 .items li { margin-right: 10px; }
-.items a, .items ::deep a, .items ::deep span { color: #fff; letter-spacing: var(--ls-menu); text-transform: uppercase; text-shadow: 0 1px 2px #666; }
-.items a:hover, .items ::deep a:hover, .items a.active { color: var(--accent); }
+.items a, .items ::deep a, .items ::deep span { background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0 2px no-repeat; color: #fff; letter-spacing: var(--ls-menu); text-transform: uppercase; text-shadow: 0 1px 2px #666; transition: color var(--t-fast) var(--ease), background-size var(--t-base) var(--ease); }
+.items a:hover, .items ::deep a:hover, .items a.active { background-size: 100% 2px; color: var(--accent); }
 .hunt .icon, .hunt-now .icon, .hunt ::deep .icon { font-size: 17px; vertical-align: -3px; }
-.in-bar { height: 55px; margin-top: 0; border-radius: 0; background: #000; font-size: 18px; }
+.in-bar { height: 55px; margin-top: 0; border-radius: 0; background: #000; backdrop-filter: none; box-shadow: none; font-size: 18px; }
 .in-bar .hunt-now { margin-left: 10px; }
 .in-bar .hunt-now > a, .in-bar ::deep .hunt { padding: 8px 17px; font-size: 18px; }
 .in-bar .ems, .in-bar .store { height: 34px; padding-top: 7px; font-size: 18px; }
