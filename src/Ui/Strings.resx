@@ -489,7 +489,7 @@
   <data name="Mis.NoAvailable" xml:space="preserve"><value>No available missions</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>You need to complete the following missions to unlock {0}:</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Something went wrong and you didn't get your item. Sorry. Please try again!</value></data>
-  <data name="Store.Sales" xml:space="preserve"><value>Sales</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Sales</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>All Items</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Bundles</value></data>
   <data name="Store.Cat.0" xml:space="preserve"><value>Weapons</value></data>

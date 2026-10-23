@@ -489,7 +489,7 @@
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Нет доступных миссий</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Чтобы открыть {0}, нужно выполнить следующие миссии:</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Что-то пошло не так, и вы не получили предмет. Приносим извинения. Попробуйте ещё раз!</value></data>
-  <data name="Store.Sales" xml:space="preserve"><value>Скидки</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Скидки</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>Все товары</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Комплекты</value></data>
   <data name="Store.Cat.0" xml:space="preserve"><value>Оружие</value></data>

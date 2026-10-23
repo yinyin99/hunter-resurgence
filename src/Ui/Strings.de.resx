@@ -489,7 +489,7 @@
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Keine Missionen verfügbar</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Sie müssen die folgenden Missionen abschließen, um {0} freizuschalten:</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Etwas ist schiefgelaufen, und Sie haben Ihren Gegenstand nicht erhalten. Das tut uns leid. Bitte versuchen Sie es erneut!</value></data>
-  <data name="Store.Sales" xml:space="preserve"><value>Angebote</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Angebote</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>Alle Artikel</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Pakete</value></data>
   <data name="Store.Cat.0" xml:space="preserve"><value>Waffen</value></data>
