@@ -2,6 +2,7 @@
 @inject IServersService Service
 @inject ISessionService Sessions
 @inject IPatchService Patch
+@inject IGameSettingsService GameSettings
 @inject ModalService Modal
 
 <PageTitle>@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</PageTitle>
@@ -127,6 +128,7 @@ else
 
     async Task Go()
     {
+        if (!await Modal.SetUpFirst(GameSettings)) return;
         var result = single
             ? await Service.StartSingleAsync(reserve, marker, hour * 60)
             : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,

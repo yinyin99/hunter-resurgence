@@ -8,8 +8,7 @@
     <li><a href="#" @onclick="() => Modal.Show<LanguageModal>()" @onclick:preventDefault>@L["Settings.Language"]</a></li>
     @if (Mode.Launcher)
     {
-        @* Game settings opens the game settings modal (built with the launcher overlays) *@
-        <li class="launcher-item"><a href="#" @onclick:preventDefault>@L["Settings.GameSettings"]</a></li>
+        <li class="launcher-item"><a href="#" id="game-settings" @onclick="() => Modal.Show<GameSettingsModal>()" @onclick:preventDefault>@L["Settings.GameSettings"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("screenshots")' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("logs")' @onclick:preventDefault>@L["Settings.Logfiles"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("game")' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>

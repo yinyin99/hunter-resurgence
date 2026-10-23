@@ -1,5 +1,6 @@
 @inject ModalService Modal
 @inject IServersService Servers
+@inject IGameSettingsService GameSettings
 
 <div class="join" role="dialog" aria-modal="true">
     <MapPlaceholder Markers="markers" Height="608" Zoom="false" OnPick="Pick">
@@ -58,6 +59,7 @@
 
     async Task Join(MapMarker marker, string? pass)
     {
+        if (!await Modal.SetUpFirst(GameSettings)) return;
         var result = await Servers.JoinAsync(Server.Id, marker.Id, pass);
         if (result.Ok) Modal.Close(); else Modal.Alert(L["Launch.Failed"]);
     }

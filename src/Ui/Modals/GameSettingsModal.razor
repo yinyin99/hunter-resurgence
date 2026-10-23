@@ -1,0 +1,81 @@
+@inject ModalService Modal
+@inject IGameSettingsService Service
+
+<div class="gs" role="dialog" aria-modal="true" aria-labelledby="gs-title">
+    <h1 id="gs-title">@L[FirstStart ? "GameSettings.Initial" : "GameSettings.Title"]</h1>
+    @if (settings is not null)
+    {
+        <div class="rows">
+            <label class="row"><span>@L["GameSettings.Fullscreen"]</span><input type="checkbox" id="fullscreen" @bind="fullscreen" /></label>
+            <label class="row"><span>@L["GameSettings.Vsync"]</span><input type="checkbox" id="vsync" @bind="vsync" /></label>
+            <label class="row"><span>@L["GameSettings.Resolution"]</span>
+                <select id="display_mode" @bind="resolution">
+                    @for (var i = 0; i < settings.Resolutions.Count; i++)
+                    {
+                        var r = settings.Resolutions[i];
+                        <option value="@i">@L["GameSettings.ResolutionFormat", r.Width, r.Height, r.Hz]</option>
+                    }
+                </select>
+            </label>
+            <label class="row"><span>@L["GameSettings.Scene"]</span><select id="scene_complexity" @bind="scene">@Levels(4)</select><small>@L["GameSettings.SceneHelp"]</small></label>
+            <label class="row"><span>@L["GameSettings.Texture"]</span><select id="texture_quality" @bind="texture">@Levels(3)</select>
+                <small>@L["GameSettings.TextureHelp"]@(settings.VideoMemoryMb > 0 ? " " + L["GameSettings.TextureMemory", settings.VideoMemoryMb] : "")</small></label>
+            <label class="row"><span>@L["GameSettings.Shadow"]</span><select id="shadow_quality" @bind="shadow">@Levels(4)</select></label>
+            <label class="row"><span>@L["GameSettings.Msaa"]</span><select id="msaa" @bind="msaa">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")</select></label>
+            <label class="row"><span>@L["GameSettings.Aniso"]</span><select id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
+            @if (contextual is not null) { <label class="row"><span>@L["GameSettings.ContextHelp"]</span><input type="checkbox" id="contextual_help" @bind="contextual" /></label> }
+            @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input type="checkbox" id="extended_audio" @bind="audio" /></label> }
+        </div>
+        @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
+        <div class="buttons">
+            <button class="btn btn-primary btn-large" @onclick="Save">@L[FirstStart ? "GameSettings.StartGame" : "GameSettings.Save"]</button>
+            @if (!FirstStart) { <button class="btn btn-large" @onclick="Cancel">@L["GameSettings.Cancel"]</button> }
+        </div>
+    }
+</div>
+
+@code {
+    GameSettings? settings;
+    bool fullscreen, vsync;
+    bool? contextual, audio;
+    int resolution, scene, texture, shadow, msaa, aniso;
+    string? error;
+
+    /// <summary>The "Initial setup" variant: only a Start game button, the pending game start goes on when it is pressed.</summary>
+    [Parameter] public bool FirstStart { get; set; }
+    /// <summary>Completed with true when the settings were saved (the first-start flow waits for it).</summary>
+    [Parameter] public TaskCompletionSource<bool>? Done { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await Service.ReadAsync();
+        // the files cannot be read: tell why and show nothing to edit
+        if (settings.Error is { } problem) { Modal.Alert(L[problem]); return; }
+        var o = settings.Options;
+        (fullscreen, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
+            (o.Fullscreen, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
+    }
+
+    RenderFragment Levels(int count) => b =>
+    {
+        string[] names = ["Low", "Medium", "High", "VeryHigh"];
+        // three levels are Low, Medium, High; four add Very High
+        for (var i = 0; i < count; i++) b.AddContent(0, Option(i, names[i]));
+    };
+
+    RenderFragment Option(int value, string name) => @<option value="@value">@L[$"GameSettings.{name}"]</option>;
+
+    async Task Save()
+    {
+        var result = await Service.SaveAsync(new(fullscreen, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio));
+        if (!result.Ok) { error = result.Error; return; }
+        Done?.SetResult(true);
+        Modal.Close();
+    }
+
+    void Cancel()
+    {
+        Done?.SetResult(false);
+        Modal.Close();
+    }
+}

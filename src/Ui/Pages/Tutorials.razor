@@ -1,6 +1,7 @@
 @page "/tutorials"
 @inject IServersService Service
 @inject ModalService Modal
+@inject IGameSettingsService GameSettings
 @inject Branding Brand
 
 <PageTitle>@L["Menu.Tutorials"]</PageTitle>
@@ -32,6 +33,7 @@
 
     async Task Start(Tutorial t)
     {
+        if (!await Modal.SetUpFirst(GameSettings)) return;
         if (!(await Service.StartTutorialAsync(t.Id)).Ok) Modal.Alert(L["Launch.Failed"]);
     }
 }

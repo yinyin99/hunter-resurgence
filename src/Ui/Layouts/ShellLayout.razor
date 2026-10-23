@@ -24,6 +24,7 @@
         <Footer />
     </div>
     <ModalHost />
+    @if (Mode.Launcher) { <PatchPanel /> }
 </div>
 
 @code {
@@ -37,6 +38,8 @@
     bool isPublic => !Mode.Launcher && session is null;
 
     [SupplyParameterFromQuery(Name = "alert")] public string? DevAlert { get; set; }
+    /// <summary>Development only: ?modal=settings or ?modal=initial opens the game settings dialog (as the first start does).</summary>
+    [SupplyParameterFromQuery(Name = "modal")] public string? DevModal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,6 +54,7 @@
     protected override void OnParametersSet()
     {
         if (Mode.Dev && DevAlert is not null && !alerted) { alerted = true; Modal.Alert(DevAlert); }
+        if (Mode.Dev && DevModal is "settings" or "initial" && !alerted) { alerted = true; Modal.Show<GameSettingsModal>(new Dictionary<string, object?> { [nameof(GameSettingsModal.FirstStart)] = DevModal == "initial" }); }
         // launcher-only routes and signed-in routes are not served to the public website: back to the feed
         var path = Nav.ToBaseRelativePath(Nav.Uri);
         if (!Mode.Launcher && (LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path))) Nav.NavigateTo("/feed", replace: true);
