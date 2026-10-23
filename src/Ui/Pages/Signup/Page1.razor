@@ -89,7 +89,7 @@
     {
         if (!ok) return;
         await Sessions.SetHandleAsync(name);
-        await Account.SaveAsync("avatar", new Dictionary<string, string> { ["avatar"] = avatars[sel] });
+        await Account.SetAvatarAsync(avatars[sel]);
         Nav.NavigateTo("/signup/page2");
     }
 

@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
+        services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<ModalService>();
         services.AddSingleton<ILanguageSwitcher, LauncherLanguageSwitcher>();
         Resources.Add("services", services.BuildServiceProvider());
