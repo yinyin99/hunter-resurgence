@@ -34,21 +34,25 @@ gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 
 ## Roadmap
 
-The official servers close on 2026-11-11. The game needs them even for single-player hunts, so after that date it can be played again once step 4 is done. The order is fixed; there are no dates, because each step needs the one before.
+The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play offline again, with the server on your own PC or local network, as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
+
+Solo means a single-player hunt on a server; multiplayer means hunting with others; offline means the server runs on your own PC or local network.
 
 | Step | What it brings | State |
 |---|---|---|
-| Now | **Profile backup**: saves your profile while the official servers are still up | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
-| 1 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC. One-time setup; the game's files stay unchanged | First, after the shutdown |
-| 2 | **Community server**: the server code in this repository. Anyone can run a server with the data of their own game install; none of the game's files are in this repository | Planned |
-| 3 | **Accounts and restore**: sign in with your email (a one-time code, no password), optionally link your Steam account; upload your backup zip to get your inventory, trophies, statistics, skills, missions and wallet back | Planned |
-| 4 | **New launcher, play again**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it | Planned |
-| 5 | **New website**: profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only, nothing sold for real money), missions and friends | Planned |
+| Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and do not run any setup tool before the shutdown if you still want the official servers | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
+| 1 | **Offline play**: run the server on your own PC (or another PC on your local network) with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
+| 2 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC | After step 1 |
+| 3 | **Community server, accounts and restore**: a community server (the same code you can run yourself), sign in with your Steam account (email sign-in may follow), upload your backup zip to get your inventory, trophies, statistics, skills and wallet back; missions later | Planned |
+| 4 | **New launcher**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it once you set a Steam launch option | Planned |
+| 5 | **New website**: profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only; no money, ever: no donations, no ads, nothing is sold), missions and friends | Planned |
 | Later | Trophy lodge and bait-site pages inside the game, multiplayer, competitions | - |
 
-A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip, and the Steam account recorded by a backup made in **My account** mode, prove that the backup is yours. Keep the zip private.
+A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the zip private.
 
-**Help wanted now:** native speakers who can check the backup app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`) and the launcher and website French texts (`src/Ui/Strings.fr.resx`). Open an issue or a pull request.
+**No money, ever.** This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
+
+**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`) and the launcher and website French texts (`src/Ui/Strings.fr.resx`). Open an issue or a pull request.
 
 ## Build
 
