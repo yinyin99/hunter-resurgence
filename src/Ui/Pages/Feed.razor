@@ -1,0 +1,24 @@
+@page "/"
+@page "/feed"
+@inject HostMode Mode
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+@* Probe page for the foundation: proves theme, fonts, icons, tokens and the host mode. Replaced by the real news feed. *@
+<div class="probe">
+    <div class="probe-main">
+        <p class="probe-mode">@(Mode.Launcher ? "launcher mode" : "web mode")</p>
+        <h2>@L["Feed.LatestNews"]</h2>
+        <h3>@L["Feed.News"]</h3>
+        <p>
+            <a class="btn btn-primary" href="#">@L["Menu.HuntNow"] <Icon Name="angle-down" /></a>
+            <a href="#">@L["Menu.News"]</a> <a href="#">@L["Menu.Competitions"]</a> <a href="#">@L["Menu.Leaderboards"]</a> <a href="#">@L["Menu.Missions"]</a>
+        </p>
+        <p class="probe-icons">
+            <Icon Name="gear" /> <Icon Name="envelope" /> <Icon Name="credit-card" /> <Icon Name="trophy" /> <Icon Name="paw" />
+            <Icon Name="star" /> <Icon Name="star-regular" /> <Icon Name="square-regular" /> <Icon Name="square-steam" /> <Icon Name="discord" />
+        </p>
+        <AssetSlot Name="news-01" Width="300" Height="150" />
+        <p>@L["Footer.DevelopedBy"] &middot; @L["Footer.Follow"]</p>
+    </div>
+</div>

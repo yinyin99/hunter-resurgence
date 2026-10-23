@@ -4,8 +4,8 @@
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         xmlns:web="clr-namespace:Microsoft.AspNetCore.Components.Web;assembly=Microsoft.AspNetCore.Components.Web"
         xmlns:local="clr-namespace:Resurgence.Launcher"
-        Title="Hunter Resurgence" Width="1280" Height="760" MinWidth="900" MinHeight="560"
-        Background="#0D1411" WindowStartupLocation="CenterScreen">
+        Title="Hunter Resurgence" Width="1296" Height="799" MinWidth="1000" MinHeight="600"
+        Background="#000" WindowStartupLocation="CenterScreen">
     <blazor:BlazorWebView x:Name="Blazor" HostPage="wwwroot\index.html" Services="{DynamicResource services}">
         <blazor:BlazorWebView.RootComponents>
             <blazor:RootComponent Selector="head::after" ComponentType="{x:Type web:HeadOutlet}" />
