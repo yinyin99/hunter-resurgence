@@ -92,4 +92,97 @@
   <data name="Discord.Members" xml:space="preserve"><value>MEMBERS ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join Discord</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Hangout with people who get it</value></data>
+  <data name="Hunt.Go" xml:space="preserve"><value>Go Hunting</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Active missions:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>You don't have any active missions. Activate missions on the &lt;a href="/missions"&gt;missions page&lt;/a&gt;</value></data>
+  <data name="Hunt.MoreMissions" xml:space="preserve"><value>and {0} more...</value></data>
+  <data name="Hunt.NoFriends" xml:space="preserve"><value>None of your friends are online</value></data>
+  <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Friends online:</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Start a single player game</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Start a multiplayer game</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>Or join one</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Quick Join</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Your progress</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Hunt.Rank" xml:space="preserve"><value>Rank</value></data>
+  <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Latest achievement</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>No achievements taken</value></data>
+  <data name="Hunt.Competitions" xml:space="preserve"><value>Competitions</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Competitions you are in:</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>View upcoming competitions</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>CREATE SINGLE PLAYER GAME</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>CREATE A MULTIPLAYER GAME</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Choose where to start your hunting session from. Click on one of the 12 reserve logos below to see a map of the corresponding reserve, and click on the lodges (the house symbols) to learn what species can be found in that area. You can also browse the world's map by clicking and dragging on it and zoom in and out using the mouse wheel.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Some of the world's most magnificent natural environments as well as 45 different species of animals are waiting for you, happy hunting!</value></data>
+  <data name="Launch.StartTime" xml:space="preserve"><value>Start time:</value></data>
+  <data name="Launch.StartGame" xml:space="preserve"><value>Start Game</value></data>
+  <data name="Launch.Patching" xml:space="preserve"><value>Patching</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Lodges:</value></data>
+  <data name="Launch.Tents" xml:space="preserve"><value>Tents:</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at &lt;a href="/store?category=8&amp;type=30"&gt;the store&lt;/a&gt;</value></data>
+  <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Starting at {0}</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Game info &amp; Starting point</value></data>
+  <data name="Launch.GameName" xml:space="preserve"><value>Game name:</value></data>
+  <data name="Launch.GameOf" xml:space="preserve"><value>{0}'s game</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Enter a game description (optional)</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>Who can join?</value></data>
+  <data name="Launch.FriendsOnly" xml:space="preserve"><value>Only people in my friends list</value></data>
+  <data name="Launch.Anyone" xml:space="preserve"><value>Anyone</value></data>
+  <data name="Launch.Password" xml:space="preserve"><value>Password protect</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Game password</value></data>
+  <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max players</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limit hunterscore</value></data>
+  <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
+  <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
+  <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Launch.Create" xml:space="preserve"><value>Create Game</value></data>
+  <data name="Launch.Failed" xml:space="preserve"><value>Something went wrong when creating your game session. Please reload the server list and try joining another game.</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>FIND A MULTIPLAYER GAME</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Find a game or host...</value></data>
+  <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Show only games I'm allowed to join</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Showing {0} games</value></data>
+  <data name="Servers.GameName" xml:space="preserve"><value>Game name</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Reserve</value></data>
+  <data name="Servers.Players" xml:space="preserve"><value>Players</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
+  <data name="Servers.Country" xml:space="preserve"><value>Country</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Players: {1}/{2} - Host: </value></data>
+  <data name="Servers.Details" xml:space="preserve"><value>Game details</value></data>
+  <data name="Servers.Join" xml:space="preserve"><value>Join Game</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserve:</value></data>
+  <data name="Servers.GameTime" xml:space="preserve"><value>Game time:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min hunterscore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max hunterscore:</value></data>
+  <data name="Servers.PlayerList" xml:space="preserve"><value>Players ({0}/{1})</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Information about multiplayer connections</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Playing multiplayer with people that are long distances away from you may cause connection problems or lag. It is recommended that you join games where the host is close to you. The colored dots next to the flags in the server list will give you an indication of how far away from the game's host you are.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Click here for more info about connections</value></data>
+  <data name="Servers.Short" xml:space="preserve"><value>Short distance</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Medium distance</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Long distance</value></data>
+  <data name="Servers.NoGames" xml:space="preserve"><value>No games found</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We couldn't find any public multiplayer games that you are allowed to join</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>HOST YOUR OWN GAME</value></data>
+  <data name="Servers.Locked" xml:space="preserve"><value>This game is password protected</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Server location: {0}</value></data>
+  <data name="Servers.Europe" xml:space="preserve"><value>Europe</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>North america</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>South america</value></data>
+  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
+  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
+  <data name="Join.Hint" xml:space="preserve"><value>Click a starting location on the map to join this game</value></data>
+  <data name="Join.Password" xml:space="preserve"><value>Enter password to join this game:</value></data>
+  <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Enter password</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Join game</value></data>
+  <data name="Join.Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>It's recommended that you play through the basic tutorials before you start your first real hunt in the first reserve. In these tutorials you will meet the resident warden of that reserve. He will take you through the basics and teach you what you need to know to be successful in {game}.</value></data>
+  <data name="Tut.Start" xml:space="preserve"><value>Start tutorial</value></data>
+  <data name="Tut.Location" xml:space="preserve"><value>Location: {0}</value></data>
 </root>

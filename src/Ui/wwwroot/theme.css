@@ -180,6 +180,18 @@ a:hover { color: var(--accent-hover); }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
+.btn-large { padding: 11px 19px; font-size: var(--fs-btn-lg); line-height: 20px; }
+.btn-block { display: block; box-sizing: border-box; width: 100%; text-align: center; }
+.btn:disabled, .btn.disabled { opacity: .65; cursor: default; }
+
+/* h2.page-title of the old pages */
+.page-title { margin: 0 0 22px; font-size: var(--fs-page-title); line-height: 40px; letter-spacing: 1px; }
+
+/* spinner of the old .loading boxes */
+.loading { width: 44px; height: 44px; margin: 40px auto; border-radius: 50%; background: repeating-conic-gradient(#ddd 0 16deg, transparent 16deg 45deg); -webkit-mask: radial-gradient(circle, transparent 14px, #000 15px, #000 21px, transparent 22px); mask: radial-gradient(circle, transparent 14px, #000 15px, #000 21px, transparent 22px); animation: loading-spin .8s steps(8) infinite; }
+@keyframes loading-spin { to { transform: rotate(360deg); } }
+
+
 .asset-slot {
     display: inline-flex;
     align-items: center;
