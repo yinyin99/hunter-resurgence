@@ -160,6 +160,8 @@
     --r-2: 4px;
     --r-3: 8px;
     --r-pill: 999px;
+    --tint-1: rgba(255, 255, 255, .025);
+    --tint-2: rgba(255, 255, 255, .06);
     --t-fast: 100ms;
     --t-base: 160ms;
     --t-slow: 240ms;
@@ -228,6 +230,7 @@ a { transition: color var(--t-fast) var(--ease); }
 :where(.tbl) th { padding: 8px 6px; color: var(--text-1); }
 :where(.tbl) td { padding: 6px; border-top: 1px solid var(--line); }
 :where(.tbl) tbody tr { transition: background-color var(--t-fast) var(--ease); }
+:where(.tbl) tbody tr:hover { background: var(--tint-1); }
 :where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
 :where(.tbl-c) :is(th, td):first-child { text-align: left; }
 
