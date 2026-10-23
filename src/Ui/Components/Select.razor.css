@@ -1,0 +1,7 @@
+.select { position: relative; display: inline-block; }
+.field { display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; width: 100%; height: 28px; padding: 0 0 0 12px; border: 0; border-radius: var(--radius); background: var(--field-bg); color: var(--fg-muted); font: inherit; cursor: pointer; }
+.arrow { display: flex; align-items: center; justify-content: center; width: 37px; height: 100%; border-radius: 0 var(--radius) var(--radius) 0; background: var(--select-bg); color: var(--select-fg); }
+.off { position: fixed; inset: 0; z-index: 9; }
+ul { position: absolute; top: 33px; left: 2px; z-index: 10; box-sizing: border-box; min-width: 158px; margin: 0; padding: 6px 0; list-style: none; border-radius: var(--radius-md); background: var(--field-bg); box-shadow: var(--shadow-dropdown); }
+li a { display: block; padding: 3px 20px; color: var(--fg-muted); line-height: 20px; }
+li a:hover { background: var(--accent); color: #fff; }

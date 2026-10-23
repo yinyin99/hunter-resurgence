@@ -1,0 +1,45 @@
+<div class="map" style="height:@(Height)px">
+    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5))">
+        @foreach (var m in Markers)
+        {
+            var pickable = m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
+            <button type="button" class="marker @(m.Id == Selected ? "selected" : "")" style="left:@(m.X)%;top:@(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
+                <Icon Name="@IconOf(m.Kind)" />
+            </button>
+        }
+    </div>
+    <span class="slot">map-bg</span>
+    @if (Zoom)
+    {
+    <div class="zoom">
+        <button type="button" data-tip="@L["Launch.ZoomIn"]" aria-label="@L["Launch.ZoomIn"]" disabled="@(zoomLevel == 2)" @onclick="() => zoomLevel++"><Icon Name="plus" /></button>
+        <button type="button" data-tip="@L["Launch.ZoomOut"]" aria-label="@L["Launch.ZoomOut"]" disabled="@(zoomLevel == 0)" @onclick="() => zoomLevel--"><Icon Name="minus" /></button>
+    </div>
+    }
+    @ChildContent
+</div>
+
+@code {
+    int zoomLevel;
+
+    /// <summary>Stand-in for the Leaflet map of a reserve: markers sit at fixed percent positions, zoom scales them.</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<MapMarker> Markers { get; set; } = [];
+    [Parameter] public int Height { get; set; } = 750;
+    [Parameter] public int? Selected { get; set; }
+    /// <summary>The zoom buttons; the join map of the old interface has none.</summary>
+    [Parameter] public bool Zoom { get; set; } = true;
+    /// <summary>Raised when a lodge or tent marker is clicked.</summary>
+    [Parameter] public EventCallback<MapMarker> OnPick { get; set; }
+    /// <summary>Extra layer over the map (the start label, the join hint).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    static string IconOf(MarkerKind kind) => kind switch
+    {
+        MarkerKind.Lodge => "house",
+        MarkerKind.Tent => "campground",
+        MarkerKind.Campsite => "fire",
+        MarkerKind.Tower => "tower-observation",
+        MarkerKind.Bait => "bucket",
+        _ => "location-dot",
+    };
+}
