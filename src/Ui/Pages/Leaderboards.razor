@@ -34,7 +34,7 @@
             <div class="tiles four">
                 @foreach (var h in hall)
                 {
-                    <section class="tile hof">
+                    <section class="tile panel hof">
                         <h4>@L.Term(h.Species)</h4>
                         <AssetSlot Name="species" Width="135" Height="135" />
                         <h6>@L["Board.Score"]</h6>
@@ -74,10 +74,10 @@
                 <div class="tiles two">
                     @foreach (var b in boards)
                     {
-                        <section class="tile">
+                        <section class="tile panel">
                             <h4>@L.Term(b.Name)</h4>
                             <table class="board small"><tbody>@foreach (var r in b.Top) { <RankRow R="r" Kind="@kind" Small="true" /> }</tbody></table>
-                            <a class="btn full" href="/leaderboards/@(kind.Replace("-", "/"))/@b.Id">@L["Board.Full"] <Icon Name="chevron-right" /></a>
+                            <a class="btn btn-inverse full" href="/leaderboards/@(kind.Replace("-", "/"))/@b.Id">@L["Board.Full"] <Icon Name="chevron-right" /></a>
                         </section>
                     }
                 </div>
@@ -96,6 +96,11 @@
             }
             break;
     }
+}
+else
+{
+    <div class="skeleton wait"></div>
+    <div class="tiles two">@for (var i = 0; i < 4; i++) { <div class="skeleton wait-tile"></div> }</div>
 }
 </div>
 

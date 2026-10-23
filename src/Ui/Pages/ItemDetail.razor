@@ -8,7 +8,7 @@
 <StoreFrame Active="@(item?.Category ?? "all")">
     @if (item is not null)
     {
-        <article class="item">
+        <article class="item panel">
             @if (item.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
             <AssetSlot Name="store-item-large" Width="270" Height="197" Class="pic" />
             <div class="buy">
@@ -32,6 +32,7 @@
         </article>
     }
     else if (loaded) { <p class="text">@L["Store.None"]</p> }
+    else { <div class="skeleton wait"></div> }
 </StoreFrame>
 
 @code {

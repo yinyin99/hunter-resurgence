@@ -1,12 +1,12 @@
-.panel { margin: 0 0 20px; padding: 14px 10px 10px; background: #161616; }
-.panel h4 { margin: 0; font-size: var(--fs-h4); line-height: 30px; font-weight: 400; color: #fff; }
-.panel.info p { margin: 4px 0 0; font-size: 14px; line-height: 18px; color: #ccc; }
-.panel.species { display: flex; align-items: center; gap: 22px; height: 132px; padding: 0; overflow: hidden; }
-.panel.species ::deep .asset-slot { flex: none; }
-.panel.species h3 { margin: 48px 0 0; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
+.head { margin: 0 0 20px; padding: 14px 10px 10px; }
+.head h4 { margin: 0; font-size: var(--fs-h4); line-height: 30px; font-weight: 400; color: #fff; }
+.head.info p { margin: 4px 0 0; font-size: 14px; line-height: 18px; color: var(--text-2); }
+.head.species { display: flex; align-items: center; gap: 22px; height: 132px; padding: 0; overflow: hidden; }
+.head.species ::deep .asset-slot { flex: none; }
+.head.species h3 { margin: 48px 0 0; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
 .mine { margin: 0 0 21px; }
 .rank-label { display: inline-block; box-sizing: border-box; width: 140px; height: 35px; background: #b3dcf5; font-size: 14px; line-height: 35px; text-align: center; color: #6a8aa0; }
-.norank { margin: 0 0 20px; padding: 13px 0 8px; border-top: 1px solid #222; font-size: 22px; line-height: 30px; text-align: center; color: #ccc; }
+.norank { margin: 0 0 20px; padding: 13px 0 8px; border-top: 1px solid var(--line); font-size: 22px; line-height: 30px; text-align: center; color: var(--text-2); }
 .board { width: 100%; margin: 0 0 20px; border-collapse: collapse; }
 .board th { padding: 8px; font-size: 14px; line-height: 20px; font-weight: 100; color: #eee; text-align: center; }
 .board .hunter { text-align: left; }
@@ -15,9 +15,11 @@
 .tiles.two .tile { width: 460px; }
 .tiles.four .tile { width: 220px; }
 select { display: block; width: 160px; height: 24px; margin: 8px 0 4px; border: 1px solid #888; background: #eee; font: inherit; font-size: 14px; color: #000; }
-.tile { position: relative; box-sizing: border-box; padding: 10px 10px 48px; background: #161616; }
-.tile h4 { margin: 0 0 14px; padding: 6px 0 12px; border-bottom: 1px solid #222; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: #fff; }
-.tile .full { position: absolute; right: 10px; bottom: 10px; padding: 0 12px; border-radius: 2px; background: #444; font-size: 14px; line-height: 30px; color: #ddd; }
+.tile { position: relative; box-sizing: border-box; padding: 10px 10px 48px; }
+.tile h4 { margin: 0 0 14px; padding: 6px 0 12px; border-bottom: 1px solid var(--line); font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: #fff; }
+.tile .full { position: absolute; right: 10px; bottom: 10px; padding: 0 12px; font-size: 14px; line-height: 30px; }
+.wait { height: 59px; margin: 0 0 20px; }
+.wait-tile { width: 460px; height: 300px; }
 .hof { padding: 10px; }
 .hof h4 { margin: 0 0 20px; padding: 0; border: 0; }
 .hof h6 { margin: 10px 0 4px 30px; font-size: 18px; line-height: 20px; font-weight: 400; color: #ddd; }

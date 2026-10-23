@@ -1,13 +1,14 @@
-.item { position: relative; box-sizing: border-box; padding: 15px; background: #1c1c1c; min-height: 600px; }
-.item ::deep .pic { display: block; margin: 15px auto 0; }
-.buy { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0 0 12px; font-size: 18px; line-height: 40px; color: #888; }
+.item { position: relative; box-sizing: border-box; padding: 15px; background: var(--surface-3); min-height: 600px; }
+.wait { min-height: 600px; }
+.item ::deep .pic { display: block; margin: 15px auto 0; border-radius: var(--r-2); }
+.buy { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0 0 12px; font-size: 18px; line-height: 40px; color: var(--fg-muted-2); font-variant-numeric: tabular-nums; }
 .buy .gms { font-size: 16px; }
-.buy b { font-size: 20px; font-weight: 400; color: #ddd; }
+.buy b { font-size: 20px; font-weight: 400; color: var(--text-2); }
 .buy b.sale { color: #e01010; }
 .buy s { margin: 0 14px 0 0; text-decoration: none; }
 .buy .btn { height: 42px; padding: 0 20px; font-size: 16px; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
-h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: #aaa; }
+h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: var(--text-3); }
 .cap, .own { margin: 0 0 20px; font-size: 12px; line-height: 16px; }
 .own { color: #e0301e; margin-bottom: 8px; }
-.text { margin: 0; font-size: 12px; line-height: 20px; font-weight: 300; white-space: pre-line; color: #ddd; }
+.text { margin: 0; font-size: 12px; line-height: 20px; font-weight: 300; white-space: pre-line; color: var(--text-2); }
