@@ -11,7 +11,6 @@ public static class MockServices
         .AddSingleton<ISignupService, MockSignupService>()
         .AddSingleton<IWalletService, MockWalletService>()
         .AddSingleton<IStoreService, MockStoreService>()
-        .AddSingleton<IBankService, MockBankService>()
         .AddSingleton<IMissionsService, MockMissionsService>()
         .AddSingleton<ICompetitionsService, MockCompetitionsService>()
         .AddSingleton<ILeaderboardsService, MockLeaderboardsService>()

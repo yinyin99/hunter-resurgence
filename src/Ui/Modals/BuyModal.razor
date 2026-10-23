@@ -12,7 +12,7 @@
         {
             <div class="buttons">
                 @if (balances.Ems >= Ems) { <button class="btn btn-primary" @onclick="() => Pay(false)">@L["Store.BuyEms"]</button> }
-                else { <a class="btn btn-primary" href="/bank/ems" @onclick="Modal.Close">@L["Store.GetMoreEms"]</a> }
+                else { <button class="btn btn-primary" disabled>@L["Store.NotEnoughEms"]</button> }
                 @if (Gms > 0)
                 {
                     <button class="btn btn-primary" disabled="@(balances.Gms < Gms)" @onclick="() => Pay(true)">@(balances.Gms >= Gms ? L["Store.BuyGms"] + " (" + Gms + " gm$)" : L["Store.NotEnoughGms"])</button>

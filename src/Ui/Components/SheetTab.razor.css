@@ -38,5 +38,3 @@ dd { margin: 0; padding: 4px 8px; border: 1px solid #efe6d6; text-align: right; 
 .aside b { display: block; line-height: 20px; color: #333; }
 .map { position: relative; margin: 0 8px 12px; }
 .x { position: absolute; right: 6px; top: 4px; z-index: 5; border: 0; background: none; font-size: 28px; color: #fff; cursor: pointer; }
-.sponsor { padding: 0 0 16px; }
-.sponsor ::deep .asset-slot { margin: 0 auto; }

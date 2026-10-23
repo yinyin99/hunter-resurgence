@@ -12,7 +12,7 @@ Everything behind the screens is a **mock** for now: fixed, fictional data and f
 
 ## The service layer
 
-Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, news, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings.
+Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, news, servers, store, wallet, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings.
 
 ## Build and run
 
@@ -63,7 +63,7 @@ Real today:
 - **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip`: size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the selftest covers it.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the selftest; no screen shows the result yet.
 
-Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
+Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store and wallet, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
 ## Files on the PC
 

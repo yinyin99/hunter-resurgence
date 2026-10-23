@@ -70,7 +70,7 @@
                         </form>
                         break;
                     case "purchases":
-                        <p class="info">@purchases[0]<a href="/bank/ems">@L["Set.Bank"]</a>@purchases[1]<a href="/store">@L["Set.Store"]</a>@purchases[2]</p>
+                        <p class="info">@purchases[0]<a href="/store">@L["Set.Store"]</a>@purchases[1]</p>
                         <p class="center"><a href="/wallet">@L["Set.WalletLink"]</a></p>
                         break;
                     case "bans":
@@ -133,7 +133,7 @@
     string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "avatar";
     string Title => tab switch { "avatar" => "Set.AvatarTitle", "email" => "Set.EmailTitle", "language" => "Set.TabLocale", "purchases" => "Set.PurchasesTitle", "bans" => "Set.BansTitle", "facebook" => "Set.TabFacebook", "steam" => "Set.SteamTitle", _ => "Set.TabProfile" };
     // the sentences with a link or the handle in the middle are cut at marker characters
-    string[] purchases => L["Set.PurchasesText", "\u0001", "\u0002"].Value.Split('\u0001', '\u0002');
+    string[] purchases => L["Set.PurchasesText", "\u0001"].Value.Split('\u0001');
     string[] steam => L["Set.SteamText", "\u0001"].Value.Split('\u0001');
 
     string Group(string name) => name switch { "Animals" => L["Set.GroupAnimals"], "Weapons" => L["Set.GroupWeapons"], "Exploration" => L["Set.GroupExploration"], "Events" => L["Set.GroupEvents"], _ => L["Set.GroupMissions"] };
