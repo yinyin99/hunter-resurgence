@@ -495,11 +495,11 @@
   <data name="Store.Cat.0" xml:space="preserve"><value>Armes</value></data>
   <data name="Store.Cat.10" xml:space="preserve"><value>Munitions</value></data>
   <data name="Store.Cat.5" xml:space="preserve"><value>Viseurs</value></data>
-  <data name="Store.Cat.50" xml:space="preserve"><value>Rifle Sights</value></data>
-  <data name="Store.Cat.51" xml:space="preserve"><value>Handgun Sights</value></data>
-  <data name="Store.Cat.52" xml:space="preserve"><value>Shotgun Sights</value></data>
-  <data name="Store.Cat.53" xml:space="preserve"><value>Bow &amp; Crossbow Sights</value></data>
-  <data name="Store.Cat.54" xml:space="preserve"><value>Muzzleloader Sights</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Viseurs de carabine</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Viseurs d’arme de poing</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Viseurs de fusil</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Viseurs d’arc et arbalète</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Viseurs poudre noire</value></data>
   <data name="Store.Cat.59" xml:space="preserve"><value>Chiens</value></data>
   <data name="Store.Cat.15" xml:space="preserve"><value>Leurres</value></data>
   <data name="Store.Cat.18" xml:space="preserve"><value>Vêtements</value></data>
