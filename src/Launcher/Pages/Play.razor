@@ -1,12 +1,17 @@
 @page "/"
 @using Resurgence.Launcher.Components
 @inject LauncherState State
+@inject LauncherEnv Env
 
 <PageHeader Title="@L["Nav.Play"]" Lead="@L["Play.Lead"]" />
 
-@if (gameFound)
+@if (Env.Install is { } install)
 {
-    <p class="row"><span class="badge ok">@L["Play.GameFoundBadge"]</span> <span>@L["Play.GameFound", SampleData.GameFolder]</span></p>
+    <p class="row"><span class="badge ok">@L["Play.GameFoundBadge"]</span> <span class="mono">@install.Folder</span></p>
+}
+else if (!Env.Settings.Configured)
+{
+    <p class="row"><span class="badge warn">@L["Play.GameNotConfiguredBadge"]</span> <span>@L["Play.GameNotConfigured"]</span></p>
 }
 else
 {
@@ -27,7 +32,8 @@ else
         <div><button type="button" class="btn btn-secondary" @onclick="() => pickerOpen = true">@L["Play.ChangeServer"]</button></div>
     </div>
     <div class="go">
-        <button type="button" class="btn btn-lg" disabled="@(!gameFound || server.Status == ServerStatus.Offline)">@L["Play.HuntNow"]</button>
+        <button type="button" class="btn btn-lg" disabled aria-describedby="hunt-reason">@L["Play.HuntNow"]</button>
+        <p id="hunt-reason" class="hint">@(Env.Install is null ? L["Play.GameMissingBadge"] + ". " : "")@L["Play.NeedsServer"]</p>
     </div>
 </section>
 
@@ -68,7 +74,7 @@ else
                             <td>@g.Reserve</td>
                             <td class="mono">@g.Players / @g.MaxPlayers</td>
                             <td>@if (g.Locked) { <span class="badge accent">@L["Play.Password"]</span> } else { <span class="badge">@L["Play.Open"]</span> }</td>
-                            <td class="num"><button type="button" class="btn btn-sm" disabled="@(!gameFound || g.Players >= g.MaxPlayers)">@(g.Players >= g.MaxPlayers ? L["Play.Full"] : L["Play.Join"])</button></td>
+                            <td class="num"><button type="button" class="btn btn-sm" disabled title="@L["Play.NeedsServer"]">@(g.Players >= g.MaxPlayers ? L["Play.Full"] : L["Play.Join"])</button></td>
                         </tr>
                     }
                 </tbody>
@@ -194,8 +200,6 @@ else
     Mode mode;
     string reserve = SampleData.Reserves[0].Name;
     string gameName = "";
-    // a field, not the const itself: the compiler would flag the unused branch of the check
-    readonly bool gameFound = SampleData.GameFound;
     int maxPlayers = 4;
     bool isPublic = true;
     string password = "";

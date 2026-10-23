@@ -24,7 +24,16 @@ dotnet run --project tools/backup -c Release -- --selftest
 
 The selftest uses a fake HTTP handler and a fake process; it exits 0 when every check is ok.
 
-To build the distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
+The launcher builds with the rest of the solution and has its own selftest (a temporary Steam folder tree, a preferences round trip and backup zips; no real Steam or game files are read):
+
+```
+dotnet build hunter-resurgence.slnx -c Release
+dotnet run --project src/Launcher -c Release -- --selftest
+```
+
+The launcher reads a `settings.json` next to its exe (start from `src/Launcher/settings.example.json`; it needs `steam_app_id` and `client_exe`, the real values are never committed). Without them it still starts and says the game is not configured. The player's own choices are saved in `%APPDATA%\hunter-resurgence\launcher.json`.
+
+To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 
 ```
 tools\backup\publish.cmd path\to\settings.json

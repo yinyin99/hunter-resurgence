@@ -8,10 +8,6 @@ public sealed record ServerInfo(string Name, string Address, string Region, int 
 public static partial class SampleData
 {
     public const int WalletCredits = 12_450;
-    public const string LauncherVersion = "0.0.0-dev";
-    // game install detected by the launcher (sample); GameFound = false shows the "not found" state
-    public const string GameFolder = @"C:\Games\SampleGame";
-    public const bool GameFound = true;
 
     public static readonly IReadOnlyList<ServerInfo> Servers =
     [

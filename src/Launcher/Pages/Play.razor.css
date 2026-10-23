@@ -1,6 +1,7 @@
 .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; background: linear-gradient(135deg, #1b2e23, var(--surface) 70%); }
 .hero h2 { margin: 0; font-size: 1.6rem; }
-.go { display: flex; align-items: center; }
+.go { display: flex; flex-direction: column; align-items: center; gap: .5rem; max-width: 16rem; text-align: center; }
+.go .hint { margin: 0; }
 
 .facts { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin: 0; }
 .facts dt { font-size: .8rem; color: var(--muted); }

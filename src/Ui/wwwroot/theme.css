@@ -277,3 +277,4 @@ table.data tr.top-3 td.rank, table.data tr.top-3 td:nth-child(2) { color: #d08a5
 .card > :last-child { margin-bottom: 0; }
 table.data tr.top-1 td a, table.data tr.top-2 td a, table.data tr.top-3 td a { color: inherit; }
 .stack > :is(h1, h2, h3, p, ol, ul, pre) { margin-block: 0; }
+h2[id] { scroll-margin-top: 5rem; }

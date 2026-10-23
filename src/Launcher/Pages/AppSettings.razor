@@ -1,44 +1,71 @@
 @page "/settings/app"
 @using Resurgence.Launcher.Components
+@inject LauncherEnv Env
 
 <PageHeader Title="@L["Nav.AppSettings"]" Lead="@L["AppSettings.Summary"]" />
+
+@if (Env.SaveFailed)
+{
+    <p role="alert"><span class="badge warn">@L["AppSettings.SaveFailed"]</span></p>
+}
 
 <section class="card" aria-labelledby="as-general">
     <h2 id="as-general">@L["AppSettings.General"]</h2>
     <SettingsSelect Label="@L["AppSettings.Language"]" Hint="@L["AppSettings.Language.Hint"]"
-                    Options="Languages" @bind-Value="language" />
-    <SettingsSwitch Label="@L["AppSettings.CloseOnStart"]" @bind-Value="closeOnStart" />
+                    Options="Languages" Value="LanguageIndex" ValueChanged="SetLanguage" />
+    <SettingsSwitch Label="@L["AppSettings.CloseOnStart"]" Value="Env.Prefs.CloseOnGameStart" ValueChanged="SetCloseOnStart" />
 </section>
 
 <section class="card stack" aria-labelledby="as-folder">
     <h2 id="as-folder">@L["AppSettings.Folder"]</h2>
     <div class="field">
         <label for="as-folder-path">@L["AppSettings.Folder.Path"]</label>
-        <input id="as-folder-path" class="input mono" readonly value="@SampleData.GameFolder" />
+        <input id="as-folder-path" class="input mono" readonly value="@Env.Install?.Folder" placeholder="@L["AppSettings.Folder.None"]" />
     </div>
+    <p class="row" role="status">
+        @if (Env.Install is not null)
+        {
+            <span class="badge ok">@L["Play.GameFoundBadge"]</span>
+            @if (Env.ChosenFolderInUse) { <span class="muted">@L["AppSettings.Folder.Chosen"]</span> }
+        }
+        else if (!Env.Settings.Configured)
+        {
+            <span class="badge warn">@L["Play.GameNotConfiguredBadge"]</span> <span class="muted">@L["Play.GameNotConfigured"]</span>
+        }
+        else
+        {
+            <span class="badge warn">@L["Play.GameMissingBadge"]</span>
+        }
+        @if (message is not null) { <span class="muted">@message</span> }
+        @if (checkedAt is { } at) { <span class="muted">@L["AppSettings.Folder.Checked", at]</span> }
+    </p>
     <div class="row">
-        <button type="button" class="btn btn-secondary">@L["AppSettings.Browse"]</button>
-        <button type="button" class="btn btn-secondary" @onclick="() => checkedAt = DateTime.Now">@L["AppSettings.Detect"]</button>
-        <span class="muted" role="status">
-            @(checkedAt is { } at ? L["AppSettings.Folder.Checked", at] : L["AppSettings.Folder.NotChecked"])
-        </span>
+        <button type="button" class="btn btn-secondary" disabled="@(!Env.Settings.Configured)" @onclick="Browse">@L["AppSettings.Browse"]</button>
+        <button type="button" class="btn btn-secondary" @onclick="Detect">@L["AppSettings.Detect"]</button>
+        @if (Env.Prefs.GameFolder is not null)
+        {
+            <button type="button" class="link-btn" @onclick="UseAutomatic">@L["AppSettings.Folder.Automatic"]</button>
+        }
     </div>
 </section>
 
 <section class="card stack" aria-labelledby="as-steam">
     <h2 id="as-steam">@L["AppSettings.Steam"]</h2>
     <p class="hint">@L["AppSettings.Steam.Hint"]</p>
-    <div class="row">
-        @if (steamLinked)
+    <p role="status">
+        @if (Env.SteamId64 is { } id)
         {
-            <span class="badge ok">@L["AppSettings.Steam.Linked"]</span>
-            <button type="button" class="btn btn-secondary" @onclick="() => steamLinked = false">@L["AppSettings.Steam.Unlink"]</button>
+            <span class="badge ok">@L["AppSettings.Steam.Signed"]</span> <span class="mono">@id</span>
         }
         else
         {
-            <span class="badge">@L["AppSettings.Steam.NotLinked"]</span>
-            <button type="button" class="btn" @onclick="() => steamLinked = true">@L["AppSettings.Steam.Link"]</button>
+            <span class="badge">@L["AppSettings.Steam.NoUser"]</span>
         }
+    </p>
+    <div class="row">
+        <button type="button" class="btn" disabled aria-describedby="as-steam-needs">@L["AppSettings.Steam.Link"]</button>
+        <button type="button" class="btn btn-secondary" disabled aria-describedby="as-steam-needs">@L["AppSettings.Steam.Unlink"]</button>
+        <span id="as-steam-needs" class="muted">@L["Play.NeedsServer"]</span>
     </div>
 </section>
 
@@ -89,30 +116,70 @@
 <section class="card stack" aria-labelledby="as-tools">
     <h2 id="as-tools">@L["AppSettings.Tools"]</h2>
     <div class="row">
-        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.GameFolder"]</button>
-        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.LogFolder"]</button>
-        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.Screenshots"]</button>
-        <button type="button" class="btn btn-secondary">@L["AppSettings.Tools.ClearCache"]</button>
+        <button type="button" class="btn btn-secondary" disabled="@(!Directory.Exists(Env.Install?.Folder))" @onclick="() => LauncherEnv.OpenFolder(Env.Install?.Folder)">@L["AppSettings.Tools.GameFolder"]</button>
+        <button type="button" class="btn btn-secondary" disabled="@(!Directory.Exists(Env.ClientFolder))" @onclick="() => LauncherEnv.OpenFolder(Env.ClientFolder)">@L["AppSettings.Tools.LogFolder"]</button>
+        <button type="button" class="btn btn-secondary" disabled="@(!Directory.Exists(Env.ScreenshotsFolder))" @onclick="() => LauncherEnv.OpenFolder(Env.ScreenshotsFolder)">@L["AppSettings.Tools.Screenshots"]</button>
     </div>
 </section>
 
 <section class="card stack" aria-labelledby="as-about">
     <h2 id="as-about">@L["AppSettings.About"]</h2>
-    <p>@L["AppSettings.About.Version", SampleData.LauncherVersion]</p>
+    <p>@L["AppSettings.About.Version", Env.Version]</p>
     <p>@L["AppSettings.About.Licence"]</p>
     <p><a href="https://github.com/yinyin99/hunter-resurgence" target="_blank" rel="noopener">@L["AppSettings.About.Repo"]</a></p>
 </section>
 
 @code {
-    // native names, never translated
+    // native names, never translated; Codes is the same order
     private static readonly string[] Languages = ["English", "Français", "Español", "Português", "Deutsch", "Русский"];
+    private static readonly string[] Codes = ["en", "fr", "es", "pt", "de", "ru"];
 
-    private int language;
-    private bool closeOnStart;
     private DateTime? checkedAt;
-    private bool steamLinked;
+    private string? message;
     private readonly List<ServerInfo> servers = [.. SampleData.Servers];
     private string newAddress = "";
+
+    private int LanguageIndex => Math.Max(0, Array.IndexOf(Codes, Env.Prefs.Language));
+
+    private void SetLanguage(int i)
+    {
+        Env.Prefs.Language = Codes[i];
+        Env.Save();
+    }
+
+    private void SetCloseOnStart(bool on)
+    {
+        Env.Prefs.CloseOnGameStart = on;
+        Env.Save();
+    }
+
+    private void Browse()
+    {
+        if (Env.PickFolder() is not { } folder) return;
+        if (GameFinder.Check(Env.Settings, folder) is null)
+        {
+            message = L["AppSettings.Folder.Wrong"];
+            return;
+        }
+        message = null;
+        Env.Prefs.GameFolder = folder;
+        Env.Save();
+        Env.Detect();
+    }
+
+    private void Detect()
+    {
+        message = null;
+        Env.Detect();
+        checkedAt = DateTime.Now;
+    }
+
+    private void UseAutomatic()
+    {
+        Env.Prefs.GameFolder = null;
+        Env.Save();
+        Detect();
+    }
 
     private void AddServer()
     {

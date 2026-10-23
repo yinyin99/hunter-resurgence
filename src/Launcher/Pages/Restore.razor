@@ -1,6 +1,5 @@
 @page "/restore"
-@using Microsoft.AspNetCore.Components.Forms
-@using Resurgence.Launcher.Components
+@inject LauncherEnv Env
 
 <PageHeader Title="@L["Nav.Restore"]" Lead="@L["Restore.Lead"]" />
 
@@ -14,7 +13,7 @@
 <ol class="stepper" aria-label="@L["Restore.Steps"]">
     @for (var i = 0; i < StepNames.Length; i++)
     {
-        <li class="step @(i < step || done ? "done" : i == step ? "current" : "")" aria-current="@(i == step && !done ? "step" : null)">
+        <li class="step @(i < step ? "done" : i == step ? "current" : "")" aria-current="@(i == step ? "step" : null)">
             @L[$"Restore.Step.{StepNames[i]}"]
         </li>
     }
@@ -24,73 +23,101 @@
     @switch (step)
     {
         case 0:
-            <div class="field">
-                <label for="rs-file">@L["Restore.File"]</label>
-                <InputFile id="rs-file" class="input" accept=".zip" OnChange="Picked" />
-                <p class="hint">@L["Restore.File.Hint"]</p>
+            <p class="hint">@L["Restore.File.Hint"]</p>
+            <div class="row">
+                <button type="button" class="btn btn-secondary" @onclick="Choose">@L["Restore.Choose"]</button>
+                @if (zipPath is not null) { <span class="mono">@Path.GetFileName(zipPath)</span> }
             </div>
-            @if (fileName is not null)
+            @if (result?.Error is { } error)
             {
-                if (ValidFile)
-                {
-                    <p>@L["Restore.File.Chosen", fileName, FormatSize(fileSize)]</p>
-                }
-                else
-                {
-                    <p role="alert"><span class="badge warn">@L["Restore.File.NotZip"]</span></p>
-                }
+                <p role="alert"><span class="badge warn">@L[$"Restore.Error.{error}"]</span></p>
+            }
+            else if (info is not null)
+            {
+                <p role="status"><span class="badge ok">@L["Restore.Valid"]</span></p>
+                <dl class="summary">
+                    <dt>@L["Restore.Uid"]</dt><dd class="mono">@info.Uid</dd>
+                    <dt>@L["Restore.Handle"]</dt><dd>@(info.Handle ?? "-")</dd>
+                    <dt>@L["Restore.ToolVersion"]</dt><dd>@info.ToolVersion</dd>
+                    <dt>@L["Restore.Date"]</dt><dd>@info.StartedUtc.ToLocalTime().ToString("g")</dd>
+                    <dt>@L["Restore.Groups"]</dt><dd>@string.Join(", ", info.Groups.Select(GroupName))</dd>
+                </dl>
             }
             break;
         case 1:
-            <div class="field">
-                <label for="rs-key">@L["Restore.Key"]</label>
-                <input id="rs-key" class="input mono" autocomplete="off" spellcheck="false"
-                       placeholder="@L["Restore.Key.Placeholder"]" @bind="claimKey" @bind:event="oninput" />
-                <p class="hint">@L["Restore.Key.Hint"]</p>
-            </div>
-            <SettingsSwitch Label="@L["Restore.Steam"]" Hint="@L["Restore.Steam.Hint"]" @bind-Value="checkSteam" />
+            <p><span class="badge ok">@L["Restore.Claim.Ok"]</span></p>
+            <p class="hint">@L["Restore.Claim.Hint"]</p>
+            <h2>@L["Restore.Steam"]</h2>
+            @if (info!.SteamId64 is null)
+            {
+                <p><span class="badge">@L["Restore.Steam.None"]</span></p>
+            }
+            else if (Env.SteamId64 is null)
+            {
+                <p><span class="badge">@L["Restore.Steam.NotRunning"]</span></p>
+            }
+            else if (Env.SteamId64 == info.SteamId64)
+            {
+                <p><span class="badge ok">@L["Restore.Steam.Same"]</span></p>
+            }
+            else
+            {
+                <p><span class="badge warn">@L["Restore.Steam.Differs"]</span></p>
+            }
+            <p class="hint">@L["Restore.Steam.Hint"]</p>
             break;
         case 2:
             <div class="tiles">
-                @foreach (var g in SampleData.RestoreGroups)
-                {
-                    <div class="tile">
-                        <span class="value mono">@g.Count.ToString("N0")</span>
-                        <span class="caption">@L[$"Restore.Group.{g.Name}"]</span>
-                    </div>
-                }
+                <div class="tile"><span class="value mono">@info!.Files.ToString("N0")</span><span class="caption">@L["Restore.Files"]</span></div>
+                <div class="tile"><span class="value mono">@((info.Files - info.Failed).ToString("N0"))</span><span class="caption">@L["Restore.FilesSaved"]</span></div>
+                <div class="tile"><span class="value mono">@info.Failed.ToString("N0")</span><span class="caption">@L["Restore.FilesFailed"]</span></div>
+                <div class="tile"><span class="value mono">@info.Groups.Count</span><span class="caption">@L["Restore.Groups"]</span></div>
+            </div>
+            <p>@string.Join(", ", info.Groups.Select(GroupName))</p>
+            <div class="table-wrap">
+                <table class="data">
+                    <thead>
+                        <tr>
+                            <th scope="col">@L["Restore.Endpoint"]</th>
+                            <th scope="col" class="num">@L["Restore.Files"]</th>
+                            <th scope="col" class="num">@L["Restore.FilesFailed"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in info.Endpoints)
+                        {
+                            <tr>
+                                <td class="mono">@e.Endpoint</td>
+                                <td class="num mono">@e.Files</td>
+                                <td class="num mono">@e.Failed</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
             break;
         default:
             <dl class="summary">
-                <dt>@L["Restore.Summary.File"]</dt>
-                <dd>@fileName <span class="muted">(@FormatSize(fileSize))</span></dd>
-                <dt>@L["Restore.Summary.Steam"]</dt>
-                <dd>@(checkSteam ? L["Common.Yes"] : L["Common.No"])</dd>
-                <dt>@L["Restore.Summary.Contents"]</dt>
-                <dd>@L["Restore.Summary.Groups", SampleData.RestoreGroups.Count]</dd>
+                <dt>@L["Restore.Summary.File"]</dt><dd class="mono">@Path.GetFileName(zipPath)</dd>
+                <dt>@L["Restore.Uid"]</dt><dd class="mono">@info!.Uid</dd>
+                <dt>@L["Restore.Handle"]</dt><dd>@(info.Handle ?? "-")</dd>
+                <dt>@L["Restore.Files"]</dt><dd>@info.Files.ToString("N0")</dd>
             </dl>
-            @if (done)
-            {
-                <p role="status"><span class="badge ok">@L["Restore.Done"]</span></p>
-            }
+            <p class="hint">@L["Restore.Offline"]</p>
             break;
     }
 </section>
 
 <div class="row">
-    <button type="button" class="btn btn-secondary" disabled="@(step == 0 || done)" @onclick="() => step--">@L["Common.Back"]</button>
+    <button type="button" class="btn btn-secondary" disabled="@(step == 0)" @onclick="() => step--">@L["Common.Back"]</button>
     @if (step < StepNames.Length - 1)
     {
-        <button type="button" class="btn" disabled="@(!CanNext)" @onclick="() => step++">@L["Common.Next"]</button>
+        <button type="button" class="btn" disabled="@(info is null)" @onclick="() => step++">@L["Common.Next"]</button>
     }
     else
     {
-        <button type="button" class="btn" disabled="@done" @onclick="() => done = true">@L["Restore.Confirm"]</button>
-    }
-    @if (done)
-    {
-        <button type="button" class="btn btn-ghost" @onclick="StartOver">@L["Restore.StartOver"]</button>
+        <button type="button" class="btn" disabled aria-describedby="restore-needs">@L["Restore.Confirm"]</button>
+        <span id="restore-needs" class="muted">@L["Play.NeedsServer"]</span>
     }
 </div>
 
@@ -98,32 +125,18 @@
     private static readonly string[] StepNames = ["Upload", "Verify", "Preview", "Confirm"];
 
     private int step;
-    private bool done;
-    private string? fileName;
-    private long fileSize;
-    private string claimKey = "";
-    private bool checkSteam;
+    private string? zipPath;
+    private BackupResult? result;
 
-    private bool ValidFile => fileName?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true;
-    private bool CanNext => step switch
-    {
-        0 => ValidFile,
-        1 => claimKey.Trim().Length > 0,
-        _ => true,
-    };
+    private BackupInfo? info => result?.Info;
 
-    // only name and size are read; the file itself is never opened
-    private void Picked(InputFileChangeEventArgs e)
+    // the zip is read in place (read-only); nothing is copied or sent
+    private void Choose()
     {
-        var f = e.FileCount > 0 ? e.File : null;
-        (fileName, fileSize) = (f?.Name, f?.Size ?? 0);
+        if (LauncherEnv.PickZip() is not { } path) return;
+        zipPath = path;
+        result = BackupZip.Read(path);
     }
 
-    private static string FormatSize(long bytes) =>
-        bytes < 1 << 20 ? $"{bytes / 1024.0:0.#} KB" : $"{bytes / 1048576.0:0.#} MB";
-
-    private void StartOver()
-    {
-        (step, done, fileName, fileSize, claimKey, checkSteam) = (0, false, null, 0, "", false);
-    }
+    private string GroupName(string g) => L[$"Restore.Group.{g}"].ResourceNotFound ? g : L[$"Restore.Group.{g}"];
 }

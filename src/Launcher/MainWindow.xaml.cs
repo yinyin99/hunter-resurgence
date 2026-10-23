@@ -11,6 +11,7 @@ public partial class MainWindow : Window
         services.AddWpfBlazorWebView();
         services.AddLocalization();
         services.AddSingleton<LauncherState>();
+        services.AddSingleton<LauncherEnv>();
         Resources.Add("services", services.BuildServiceProvider());
         InitializeComponent();
         // dev aid: resurgence-launcher.exe --route=/store opens that route first

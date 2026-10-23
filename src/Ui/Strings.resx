@@ -34,7 +34,7 @@
   <data name="Store.Lead" xml:space="preserve"><value>Spend your in-game currency.</value></data>
   <data name="Missions.Lead" xml:space="preserve"><value>Your active and finished missions.</value></data>
   <data name="Friends.Lead" xml:space="preserve"><value>Your friends and requests.</value></data>
-  <data name="Restore.Lead" xml:space="preserve"><value>Upload a backup zip to restore your profile.</value></data>
+  <data name="Restore.Lead" xml:space="preserve"><value>Check a backup zip and see what it contains.</value></data>
   <data name="GameSettings.Lead" xml:space="preserve"><value>Graphics, controls and audio of the game.</value></data>
 
   <!-- LauncherMain -->
@@ -57,9 +57,11 @@
   <data name="SignIn.UseAnotherEmail" xml:space="preserve"><value>Use another email</value></data>
   <data name="SignIn.SteamNote" xml:space="preserve"><value>Linking a Steam account is optional and can be done later in the launcher settings.</value></data>
   <data name="Play.GameFoundBadge" xml:space="preserve"><value>Game found</value></data>
-  <data name="Play.GameFound" xml:space="preserve"><value>{0}</value></data>
   <data name="Play.GameMissingBadge" xml:space="preserve"><value>Game not found</value></data>
   <data name="Play.GameMissing" xml:space="preserve"><value>Set the game folder in the launcher settings.</value></data>
+  <data name="Play.GameNotConfiguredBadge" xml:space="preserve"><value>Game not configured</value></data>
+  <data name="Play.GameNotConfigured" xml:space="preserve"><value>Fill in settings.json next to the launcher (steam_app_id and client_exe).</value></data>
+  <data name="Play.NeedsServer" xml:space="preserve"><value>Needs a community server.</value></data>
   <data name="Play.GameMissingLink" xml:space="preserve"><value>Open launcher settings</value></data>
   <data name="Play.Server" xml:space="preserve"><value>Community server</value></data>
   <data name="Play.Region" xml:space="preserve"><value>Region</value></data>
@@ -151,30 +153,45 @@
   <data name="Restore.Step.Verify" xml:space="preserve"><value>Verify ownership</value></data>
   <data name="Restore.Step.Preview" xml:space="preserve"><value>Preview</value></data>
   <data name="Restore.Step.Confirm" xml:space="preserve"><value>Confirm</value></data>
-  <data name="Restore.File" xml:space="preserve"><value>Backup file (.zip)</value></data>
-  <data name="Restore.File.Hint" xml:space="preserve"><value>Only the file name and size are shown here; the file is not opened or uploaded.</value></data>
-  <data name="Restore.File.Chosen" xml:space="preserve"><value>Selected: {0} ({1})</value></data>
-  <data name="Restore.File.NotZip" xml:space="preserve"><value>This is not a .zip file.</value></data>
-  <data name="Restore.Key" xml:space="preserve"><value>Claim key from your backup</value></data>
-  <data name="Restore.Key.Placeholder" xml:space="preserve"><value>Paste the claim key</value></data>
-  <data name="Restore.Key.Hint" xml:space="preserve"><value>Enter the claim key that came with your backup. It proves that the backup is yours.</value></data>
-  <data name="Restore.Steam" xml:space="preserve"><value>Check my Steam account</value></data>
-  <data name="Restore.Steam.Hint" xml:space="preserve"><value>Optional. Also proves ownership with the Steam account linked in the launcher settings.</value></data>
-  <data name="Restore.Group.Inventory" xml:space="preserve"><value>Inventory items</value></data>
-  <data name="Restore.Group.Trophies" xml:space="preserve"><value>Trophies</value></data>
-  <data name="Restore.Group.Hunts" xml:space="preserve"><value>Hunts</value></data>
-  <data name="Restore.Group.Statistics" xml:space="preserve"><value>Statistics</value></data>
-  <data name="Restore.Group.Skills" xml:space="preserve"><value>Skills</value></data>
-  <data name="Restore.Group.Missions" xml:space="preserve"><value>Missions</value></data>
-  <data name="Restore.Group.Wallet" xml:space="preserve"><value>Wallet credits</value></data>
-  <data name="Restore.Group.Friends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Choose backup zip</value></data>
+  <data name="Restore.File.Hint" xml:space="preserve"><value>Choose the zip made by the backup tool. It is read on this PC only; nothing is sent anywhere.</value></data>
+  <data name="Restore.Valid" xml:space="preserve"><value>Valid backup</value></data>
+  <data name="Restore.Uid" xml:space="preserve"><value>Account id</value></data>
+  <data name="Restore.Handle" xml:space="preserve"><value>Handle</value></data>
+  <data name="Restore.ToolVersion" xml:space="preserve"><value>Backup tool version</value></data>
+  <data name="Restore.Date" xml:space="preserve"><value>Made on</value></data>
+  <data name="Restore.Groups" xml:space="preserve"><value>Groups</value></data>
+  <data name="Restore.Claim.Ok" xml:space="preserve"><value>The claim key matches the backup's manifest.</value></data>
+  <data name="Restore.Claim.Hint" xml:space="preserve"><value>The community server checks this key again before anything is restored.</value></data>
+  <data name="Restore.Steam" xml:space="preserve"><value>Steam account</value></data>
+  <data name="Restore.Steam.None" xml:space="preserve"><value>This backup has no Steam account recorded.</value></data>
+  <data name="Restore.Steam.NotRunning" xml:space="preserve"><value>Steam is not running here, so the accounts cannot be compared.</value></data>
+  <data name="Restore.Steam.Same" xml:space="preserve"><value>Same Steam account as the one signed in on this PC.</value></data>
+  <data name="Restore.Steam.Differs" xml:space="preserve"><value>A different Steam account is signed in on this PC.</value></data>
+  <data name="Restore.Steam.Hint" xml:space="preserve"><value>Optional extra proof of ownership; the community server decides.</value></data>
+  <data name="Restore.Files" xml:space="preserve"><value>Files</value></data>
+  <data name="Restore.FilesSaved" xml:space="preserve"><value>Saved</value></data>
+  <data name="Restore.FilesFailed" xml:space="preserve"><value>Without result</value></data>
+  <data name="Restore.Endpoint" xml:space="preserve"><value>Endpoint</value></data>
+  <data name="Restore.Group.profile" xml:space="preserve"><value>Profile</value></data>
+  <data name="Restore.Group.inventory" xml:space="preserve"><value>Inventory and dogs</value></data>
+  <data name="Restore.Group.trophies" xml:space="preserve"><value>Trophies and lodges</value></data>
+  <data name="Restore.Group.hunts" xml:space="preserve"><value>Hunt history</value></data>
+  <data name="Restore.Group.kills" xml:space="preserve"><value>Kill pages and photos</value></data>
+  <data name="Restore.Group.account" xml:space="preserve"><value>Account</value></data>
+  <data name="Restore.Group.friends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Restore.Group.photos" xml:space="preserve"><value>Photos</value></data>
+  <data name="Restore.Group.messages" xml:space="preserve"><value>Messages</value></data>
   <data name="Restore.Summary.File" xml:space="preserve"><value>Backup file</value></data>
-  <data name="Restore.Summary.Steam" xml:space="preserve"><value>Steam account checked</value></data>
-  <data name="Restore.Summary.Contents" xml:space="preserve"><value>Contents</value></data>
-  <data name="Restore.Summary.Groups" xml:space="preserve"><value>{0} groups, as listed in the preview</value></data>
+  <data name="Restore.Offline" xml:space="preserve"><value>Nothing has been sent. Restoring needs the community server.</value></data>
   <data name="Restore.Confirm" xml:space="preserve"><value>Restore</value></data>
-  <data name="Restore.Done" xml:space="preserve"><value>Restore finished (sample)</value></data>
-  <data name="Restore.StartOver" xml:space="preserve"><value>Start over</value></data>
+  <data name="Restore.Error.TooBig" xml:space="preserve"><value>The file is larger than 512 MB.</value></data>
+  <data name="Restore.Error.Unreadable" xml:space="preserve"><value>The file could not be read.</value></data>
+  <data name="Restore.Error.NotZip" xml:space="preserve"><value>This is not a zip file.</value></data>
+  <data name="Restore.Error.NoManifest" xml:space="preserve"><value>manifest.json is missing: this is not a backup made by the backup tool.</value></data>
+  <data name="Restore.Error.BadManifest" xml:space="preserve"><value>manifest.json cannot be read.</value></data>
+  <data name="Restore.Error.NoClaimKey" xml:space="preserve"><value>claim.key is missing from the backup.</value></data>
+  <data name="Restore.Error.ClaimMismatch" xml:space="preserve"><value>claim.key does not match the manifest: the backup was changed or is damaged.</value></data>
   <data name="GameSettings.Tabs" xml:space="preserve"><value>Settings groups</value></data>
   <data name="GameSettings.Tab.Graphics" xml:space="preserve"><value>Graphics</value></data>
   <data name="GameSettings.Tab.Audio" xml:space="preserve"><value>Audio</value></data>
@@ -237,13 +254,17 @@
   <data name="AppSettings.Folder" xml:space="preserve"><value>Game folder</value></data>
   <data name="AppSettings.Folder.Path" xml:space="preserve"><value>Folder the game is installed in</value></data>
   <data name="AppSettings.Folder.Checked" xml:space="preserve"><value>Last checked: {0}</value></data>
-  <data name="AppSettings.Folder.NotChecked" xml:space="preserve"><value>Not checked in this session.</value></data>
+  <data name="AppSettings.Folder.None" xml:space="preserve"><value>Not found</value></data>
+  <data name="AppSettings.Folder.Chosen" xml:space="preserve"><value>Folder chosen by hand.</value></data>
+  <data name="AppSettings.Folder.Automatic" xml:space="preserve"><value>Use automatic detection</value></data>
+  <data name="AppSettings.Folder.Wrong" xml:space="preserve"><value>That folder does not contain the game client.</value></data>
+  <data name="AppSettings.SaveFailed" xml:space="preserve"><value>Your choices could not be saved.</value></data>
   <data name="AppSettings.Browse" xml:space="preserve"><value>Browse</value></data>
   <data name="AppSettings.Detect" xml:space="preserve"><value>Detect again</value></data>
   <data name="AppSettings.Steam" xml:space="preserve"><value>Steam account</value></data>
   <data name="AppSettings.Steam.Hint" xml:space="preserve"><value>Optional. Only used to prove that you own a backup when restoring it.</value></data>
-  <data name="AppSettings.Steam.Linked" xml:space="preserve"><value>Linked</value></data>
-  <data name="AppSettings.Steam.NotLinked" xml:space="preserve"><value>Not linked</value></data>
+  <data name="AppSettings.Steam.Signed" xml:space="preserve"><value>Signed in on this PC</value></data>
+  <data name="AppSettings.Steam.NoUser" xml:space="preserve"><value>Steam is not running or nobody is signed in.</value></data>
   <data name="AppSettings.Steam.Link" xml:space="preserve"><value>Link Steam account</value></data>
   <data name="AppSettings.Steam.Unlink" xml:space="preserve"><value>Unlink</value></data>
   <data name="AppSettings.Servers" xml:space="preserve"><value>Community servers</value></data>
@@ -259,9 +280,8 @@
   <data name="AppSettings.Servers.Add" xml:space="preserve"><value>Add</value></data>
   <data name="AppSettings.Tools" xml:space="preserve"><value>Tools</value></data>
   <data name="AppSettings.Tools.GameFolder" xml:space="preserve"><value>Open game folder</value></data>
-  <data name="AppSettings.Tools.LogFolder" xml:space="preserve"><value>Open log folder</value></data>
-  <data name="AppSettings.Tools.Screenshots" xml:space="preserve"><value>Open screenshots folder</value></data>
-  <data name="AppSettings.Tools.ClearCache" xml:space="preserve"><value>Clear game cache</value></data>
+  <data name="AppSettings.Tools.LogFolder" xml:space="preserve"><value>Open client folder (logs)</value></data>
+  <data name="AppSettings.Tools.Screenshots" xml:space="preserve"><value>Open Steam screenshots folder</value></data>
   <data name="AppSettings.About" xml:space="preserve"><value>About</value></data>
   <data name="AppSettings.About.Version" xml:space="preserve"><value>Launcher version {0}</value></data>
   <data name="AppSettings.About.Licence" xml:space="preserve"><value>Free software, licensed under the GNU AGPL-3.0.</value></data>

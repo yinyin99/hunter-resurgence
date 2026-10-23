@@ -1,0 +1,4 @@
+{
+  "steam_app_id": "<steam-app-id>",
+  "client_exe": "<client-dir>\\<client-exe>"
+}
