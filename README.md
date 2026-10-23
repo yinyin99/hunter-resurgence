@@ -34,12 +34,14 @@ gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 
 ## Roadmap
 
-The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play alone again on your own PC as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
+The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play offline again, with the server on your own PC or local network, as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
+
+Solo means a single-player hunt on a server; multiplayer means hunting with others; offline means the server runs on your own PC or local network.
 
 | Step | What it brings | State |
 |---|---|---|
 | Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and do not run any setup tool before the shutdown if you still want the official servers | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
-| 1 | **Play alone**: run the server on your own PC with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
+| 1 | **Offline play**: run the server on your own PC (or another PC on your local network) with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
 | 2 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC | After step 1 |
 | 3 | **Community server, accounts and restore**: a community server (the same code you can run yourself), sign in with your Steam account (email sign-in may follow), upload your backup zip to get your inventory, trophies, statistics, skills and wallet back; missions later | Planned |
 | 4 | **New launcher**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it once you set a Steam launch option | Planned |
