@@ -23,7 +23,7 @@
             @if (invalid) { <span class="invalid">@L["Bank.Invalid"]</span> }
         </form>
     }
-    <p class="notice" role="status">@L["Bank.NoBuy"]</p>
+    @if (bought) { <p class="done" role="status">@L["Store.Complete"]</p> }
     @if (catalog is not null)
     {
         @if (Tab == "ems")
@@ -31,16 +31,20 @@
             <section>
                 <h2>@L["Bank.InGame"]</h2>
                 <p class="desc">@L["Bank.EmsDesc"]</p>
+                <label class="gift"><input type="checkbox" id="is_gift_steam" /> @L["Bank.Gift"]</label>
                 <div class="packs">
-                    @foreach (var p in catalog.EmPacks)
+                    @foreach (var (p, i) in catalog.EmPacks.Select((p, i) => (p, i)))
                     {
                         <div class="pack">
                             <AssetSlot Name="em-pack" Width="100" Height="80" />
                             <h3>@p.Ems Em$</h3>
-                            <button type="button" class="buy" disabled>@L["Store.Buy"] <Icon Name="chevron-right" /></button>
+                            <p class="price">@p.Price.ToString("0.00") @catalog.Currency</p>
+                            <p class="save">@if (p.Save > 0) { @L["Bank.Save", p.Save] }</p>
+                            <button type="button" class="buy" @onclick='() => Buy("ems", i)'>@L["Store.Buy"] <Icon Name="chevron-right" /></button>
                         </div>
                     }
                 </div>
+                <p class="compare">@L["Bank.Compare"]</p>
             </section>
         }
         else if (Tab == "help") { <section class="help">@Help()</section> }
@@ -48,12 +52,13 @@
         {
             <section class="ms">
                 <h2>@L["Bank.Starter"]</h2><p class="desc">@L["Bank.StarterDesc"]</p>
-                <div class="cards">@foreach (var m in catalog.Starter) { @Card(m) }</div>
+                <div class="cards">@foreach (var (m, i) in catalog.Starter.Select((m, i) => (m, i))) { @Card(m, "starter", i) }</div>
                 <h2>@L["Bank.Special"]</h2><p class="desc">@L["Bank.SpecialDesc"]</p>
-                <div class="cards">@foreach (var m in catalog.Special) { @Card(m) }</div>
+                <div class="cards">@foreach (var (m, i) in catalog.Special.Select((m, i) => (m, i))) { @Card(m, "special", i) }</div>
                 <h2>@L["Bank.Basic"]</h2>
-                <div class="cards">@foreach (var m in catalog.Basic) { @Card(m) }</div>
+                <div class="cards">@foreach (var (m, i) in catalog.Basic.Select((m, i) => (m, i))) { @Card(m, "basic", i) }</div>
                 <p class="compare">@L["Bank.Kept"]</p>
+                <p class="compare">@L["Bank.ComparePrize"]</p>
             </section>
         }
     }
@@ -62,7 +67,7 @@
 @code {
     BankCatalog? catalog;
     Balances? balances;
-    bool asking, invalid;
+    bool asking, invalid, bought;
     string code = "";
 
     /// <summary>ems, memberships or help.</summary>
@@ -73,24 +78,28 @@
         (catalog, balances) = (await Bank.CatalogAsync(), await Wallet.BalancesAsync());
     }
 
-    RenderFragment Card(Membership m) => @<div class="card">
+    RenderFragment Card(Membership m, string kind, int i) => @<div class="card">
         <AssetSlot Name="membership-card" Width="100" Height="70" />
+        <p class="price">@m.Price.ToString("0.00") @catalog!.Currency</p>
         <div class="what">
             <p>@(m.Name.Length == 0 ? L["Bank.MonthsOnly", m.Months] : L["Bank.Months", m.Months])</p>
             <p>@L["Bank.Animals"]</p><p>@L["Bank.Reserves"]</p><p>@L["Bank.Ammo"]</p>
             @if (m.OtherItems > 0) { <p>@L["Bank.Extra", m.ExtraWeapons] @L["Bank.Other", m.OtherItems] <a href="#" @onclick:preventDefault>@L["Bank.Details"] <Icon Name="chevron-right" /></a></p> }
         </div>
-        <button type="button" class="buy" disabled>@L["Store.Buy"] <Icon Name="chevron-right" /></button>
+        <button type="button" class="buy" @onclick="() => Buy(kind, i)">@L["Store.Buy"] <Icon Name="chevron-right" /></button>
     </div>;
 
     RenderFragment Help() => @<div>
         <h2>@L["Bank.HelpTitle"]</h2>
-        @foreach (var n in new[] { 1, 3, 6 })
+        @foreach (var n in Enumerable.Range(1, 6))
         {
             <h4>@L["Bank.Q" + n]</h4>
-            <p>@L["Bank.A" + n]</p>
+            <p>@(n == 2 ? new MarkupString(L["Bank.A2", "<a href=\"/wallet\">", "</a>"]) : new MarkupString(System.Net.WebUtility.HtmlEncode(L["Bank.A" + n])))</p>
         }
     </div>;
+
+    // the payment itself belongs to the platform, the mock only reports it
+    async Task Buy(string kind, int i) => bought = (await Bank.BuyAsync(kind, i)).Ok;
 
     async Task Apply()
     {
