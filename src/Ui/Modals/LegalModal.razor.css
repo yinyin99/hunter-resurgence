@@ -1,4 +1,4 @@
-.legal-modal { position: absolute; top: 80px; left: calc(50% - 495px); width: 980px; color: #eee; }
+.legal-modal { position: absolute; top: 80px; left: calc(50% - 495px); width: 980px; color: var(--text-1); }
 h1 { position: relative; margin: 0 0 10px; font-size: 38.5px; line-height: 56px; font-weight: 200; color: #fff; text-transform: uppercase; }
 h1 .icon { width: 18px; margin-right: 8px; }
 h4 { margin: 20px 0 10px; color: #fff; }

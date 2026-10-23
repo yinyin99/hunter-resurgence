@@ -139,8 +139,7 @@
     --su-radius-btn: 6px;
     --su-radius-input: 4px;
 
-    /* tokens of the UI refactor (docs/ui/UI_REFACTOR.md in the private repo): neutral names, values from what the screens already use */
-    --text-hi: #fff;
+    /* UI scale: neutral token names, values taken from what the screens use (text and surface greys, lines, radii, shadows, motion) */
     --text-1: #eee;
     --text-2: #ddd;
     --text-3: #bbb;
@@ -157,19 +156,10 @@
     --line: #222;
     --line-2: #333;
     --line-3: #444;
-    --sp-1: 4px;
-    --sp-2: 8px;
-    --sp-3: 10px;
-    --sp-4: 12px;
-    --sp-5: 16px;
-    --sp-6: 20px;
-    --sp-7: 24px;
-    --sp-8: 32px;
     --r-1: 2px;
     --r-2: 4px;
     --r-3: 8px;
     --r-pill: 999px;
-    --shadow-1: 0 1px 3px rgba(0, 0, 0, .5);
     --shadow-2: 0 2px 10px #000;
     --shadow-3: 0 15px 35px rgba(0, 0, 0, .6);
     --ring: inset 0 0 0 1px var(--line);
@@ -290,6 +280,7 @@ a { transition: color var(--t-fast) var(--ease); }
 /* an empty block of the final size while its data loads (the old app left the area empty) */
 .skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
 @keyframes skeleton { to { background-position: -150% 0; } }
+.skeleton-page { min-height: 600px; }
 
 @media (prefers-reduced-motion: reduce) {
     * { transition-duration: 0s !important; }

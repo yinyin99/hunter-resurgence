@@ -1,8 +1,8 @@
 .panel { padding: 20px; min-height: 420px; }
 h3 { margin: 0 0 20px; font-size: 28px; line-height: 36px; font-weight: 400; color: #fff; }
 h4 { margin: 40px 0 8px; font-size: 17.5px; line-height: 24px; font-weight: 400; color: #fff; }
-.panel p { margin: 0 0 14px; font-size: 14px; line-height: 20px; color: #ddd; }
-.links, .where { margin: 0 0 14px; padding: 0; list-style: none; font-size: 14px; line-height: 20px; color: #ddd; }
+.panel p { margin: 0 0 14px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.links, .where { margin: 0 0 14px; padding: 0; list-style: none; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .panel ::deep a, .panel ::deep .vt, .links ::deep span, .where ::deep span { color: var(--primary); }
 .banner { position: relative; display: block; margin: 0 0 8px; }
 .banner ::deep .asset-slot { display: block; }
@@ -12,8 +12,8 @@ h4 { margin: 40px 0 8px; font-size: 17.5px; line-height: 24px; font-weight: 400;
 .hero ::deep .asset-slot { display: block; }
 .hero h1 { position: absolute; left: 18px; bottom: 100px; margin: 0; font-size: 36px; line-height: 44px; font-weight: 400; color: #fff; }
 .hero p { position: absolute; left: 18px; right: 18px; bottom: 24px; margin: 0; font-size: 22px; line-height: 28px; color: #fff; }
-.videos { margin: 0; padding: 0; list-style: none; font-size: 16px; line-height: 28px; color: #ddd; }
-.videos span { color: #888; }
-.videos ::deep .vt { color: #ddd; }
+.videos { margin: 0; padding: 0; list-style: none; font-size: 16px; line-height: 28px; color: var(--text-2); }
+.videos span { color: var(--fg-muted-2); }
+.videos ::deep .vt { color: var(--text-2); }
 .panel.bare { padding: 0; background: none; box-shadow: none; }
 .bare ::deep .tabs { margin: 12px 0 14px; }

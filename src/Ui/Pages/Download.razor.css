@@ -2,7 +2,7 @@
 .box h3 { margin: 0 0 8px; font-size: 25px; line-height: 32px; font-weight: 400; color: #fff; }
 .box h3 + p + h3 { margin-top: 12px; }
 .box p { margin: 0 0 12px; }
-.box p b { color: #ccc; }
+.box p b { color: var(--text-2); }
 .box ul { margin: 0 0 8px; padding-left: 40px; }
 .box a, .box ::deep a { color: var(--primary); }
 .box ::deep span { color: var(--primary); }

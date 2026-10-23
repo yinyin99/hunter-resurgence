@@ -1,6 +1,6 @@
 .dogs { margin: 0; padding: 0; list-style: none; }
-.dogs li { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #222; font-size: 14px; color: #ddd; }
+.dogs li { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--text-2); }
 .dogs ::deep .asset-slot { display: block; flex: none; }
 .dogs b { display: block; font-size: 18px; font-weight: 400; color: #fff; }
 .dogs span { display: block; line-height: 22px; }
-.empty { margin: 80px 0; text-align: center; font-size: 22px; font-weight: 300; color: #bbb; }
+.empty { margin: 80px 0; text-align: center; font-size: 22px; font-weight: 300; color: var(--text-3); }

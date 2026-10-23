@@ -1,8 +1,8 @@
 .tutorials { min-height: 1000px; }
-.intro { margin: -1px 0 20px; line-height: 20px; color: #ccc; }
+.intro { margin: -1px 0 20px; line-height: 20px; color: var(--text-2); }
 .cards { display: flex; flex-wrap: wrap; gap: 21px 20px; }
-section { position: relative; box-sizing: border-box; width: 300px; height: 201px; padding: 10px 0 0; background: #161616; }
+section { position: relative; box-sizing: border-box; width: 300px; height: 201px; padding: 10px 0 0; background: var(--surface-2); }
 h4 { margin: 0 10px 12px; font-size: var(--fs-h4); line-height: 20px; font-weight: 400; color: #fff; }
-p { margin: 0 10px 10px; line-height: 20px; color: #ccc; }
+p { margin: 0 10px 10px; line-height: 20px; color: var(--text-2); }
 .where { margin: 0 10px; }
 section .btn { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; margin: 0; border-radius: 0; }

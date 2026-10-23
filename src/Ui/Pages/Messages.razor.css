@@ -1,4 +1,4 @@
-.check { display: block; margin: 0 0 16px; font-size: 14px; line-height: 20px; color: #ddd; }
+.check { display: block; margin: 0 0 16px; font-size: 14px; line-height: 20px; color: var(--text-2); }
 input[type=checkbox] { width: 18px; height: 18px; margin: 0 8px 0 0; vertical-align: -3px; }
 .new { display: inline-block; margin: 0 0 6px; padding: 5px 12px; font-size: 14px; line-height: 20px; }
 .cols { display: flex; gap: 20px; }
@@ -7,19 +7,19 @@ section { flex: 1; min-width: 0; }
 h3, h4 { margin: 0 0 10px; font-size: 17.5px; line-height: 24px; font-weight: 400; color: #fff; }
 h3 { margin-top: 8px; font-size: 22px; }
 ul { margin: 0; padding: 0; list-style: none; }
-li a { position: relative; display: block; height: 64px; box-sizing: border-box; padding: 12px 8px 8px 66px; background: #1c1c1c; font-size: 14px; line-height: 20px; color: #ddd; }
-li.on a { background: #232323; }
+li a { position: relative; display: block; height: 64px; box-sizing: border-box; padding: 12px 8px 8px 66px; background: var(--surface-3); font-size: 14px; line-height: 20px; color: var(--text-2); }
+li.on a { background: var(--surface-4); }
 li a ::deep .av { position: absolute; left: 8px; top: 12px; }
 li { margin: 0 0 6px; }
 .who { display: block; color: var(--primary); }
 .last { display: block; }
 .dot { position: absolute; right: 8px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
-.empty { margin: 0; font-size: 14px; line-height: 18px; color: #bbb; }
+.empty { margin: 0; font-size: 14px; line-height: 18px; color: var(--text-3); }
 textarea { display: block; width: 100%; height: 58px; padding: 8px 10px; font: 300 14px Roboto, sans-serif; resize: none; }
 .to { display: block; width: 270px; height: 36px; margin: 0 0 12px; padding: 0 8px; font: 300 14px Roboto, sans-serif; }
-.send { margin: 10px 0 0; padding: 4px 8px; border: 0; border-radius: 2px; background: #b3301a; font-size: 14px; line-height: 20px; color: #fff; cursor: pointer; }
+.send { margin: 10px 0 0; padding: 4px 8px; border: 0; border-radius: var(--r-1); background: #b3301a; font-size: 14px; line-height: 20px; color: #fff; cursor: pointer; }
 .send:disabled { opacity: .7; cursor: default; }
-.count { float: right; margin-top: 10px; font-size: 13px; line-height: 16px; color: #ddd; }
+.count { float: right; margin-top: 10px; font-size: 13px; line-height: 16px; color: var(--text-2); }
 .error { clear: both; margin: 8px 0 0; font-size: 12px; color: var(--primary); }
 .thread { clear: both; padding-top: 20px; }
 .you, .me { margin: 0 0 18px; }
@@ -27,8 +27,8 @@ textarea { display: block; width: 100%; height: 58px; padding: 8px 10px; font: 3
 .you .h { text-align: right; }
 .body { position: relative; display: flex; align-items: flex-start; gap: 12px; }
 .msg { flex: 1; }
-.body p { margin: 0; padding: 8px 12px; background: #1c1c1c; font-size: 14px; line-height: 20px; color: #ddd; }
-.body small { display: block; margin-top: 8px; font-size: 11px; color: #666; }
+.body p { margin: 0; padding: 8px 12px; background: var(--surface-3); font-size: 14px; line-height: 20px; color: var(--text-2); }
+.body small { display: block; margin-top: 8px; font-size: 11px; color: var(--text-5); }
 .you small { text-align: right; }
 .you .body { flex-direction: row-reverse; }
 .me .body { flex-direction: row; }

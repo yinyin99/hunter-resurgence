@@ -1,6 +1,6 @@
-.intro { margin: 0 0 10px; line-height: 20px; color: #ccc; }
+.intro { margin: 0 0 10px; line-height: 20px; color: var(--text-2); }
 .muted { display: block; margin: 0 0 4px; font-size: 13px; line-height: 18px; color: var(--fg-muted-2); }
-h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text-transform: none; color: #bbb; }
+h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text-transform: none; color: var(--text-3); }
 .options { display: flex; margin: 3px 0 33px; }
 .col { flex: none; }
 .info { width: 300px; margin-right: 20px; }
@@ -18,26 +18,26 @@ h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text
 .check input { margin: 0 4px -3px 0; }
 .range { display: grid; grid-template-columns: 58px 58px; gap: 0 4px; }
 .range input { width: 56px; height: 36px; padding: 0 8px; }
-.slider { position: relative; height: 22px; margin: 12px 0 0; border-radius: 3px; background: #1c1c1c; }
+.slider { position: relative; height: 22px; margin: 12px 0 0; border-radius: var(--r-2); background: var(--surface-3); }
 .slider.off { opacity: .5; }
 .slider input { appearance: none; position: absolute; left: 0; top: 0; width: 100%; height: 22px; margin: 0; background: none; pointer-events: none; }
-.slider input::-webkit-slider-thumb { appearance: none; width: 20px; height: 22px; border-radius: 3px; background: #444; pointer-events: auto; cursor: pointer; }
-.slider input::-moz-range-thumb { width: 20px; height: 22px; border: 0; border-radius: 3px; background: #444; pointer-events: auto; cursor: pointer; }
+.slider input::-webkit-slider-thumb { appearance: none; width: 20px; height: 22px; border-radius: var(--r-2); background: var(--surface-7); pointer-events: auto; cursor: pointer; }
+.slider input::-moz-range-thumb { width: 20px; height: 22px; border: 0; border-radius: var(--r-2); background: var(--surface-7); pointer-events: auto; cursor: pointer; }
 .start { width: 220px; margin-left: 0; }
 .start .btn { margin-top: 12px; padding-left: 6px; padding-right: 6px; white-space: nowrap; }
 .badges { display: flex; margin: 0 0 6px; }
 .badges button { box-sizing: border-box; width: 78px; height: 84px; padding: 7px 4px; border: 0; background: none; cursor: pointer; }
 .badges button.current { background: #1f1f1f; box-shadow: 0 0 0 1px #2a2a2a; }
-.stage { display: flex; width: 927px; height: 750px; border: 1px solid #2a2a2a; box-sizing: content-box; }
+.stage { display: flex; width: 927px; height: 750px; border: 1px solid var(--line); box-sizing: content-box; }
 .pane { box-sizing: border-box; width: 190px; flex: none; padding: 10px 10px 0; background: #1a1a1a; }
 .pane .go { margin: 10px 0 20px; padding-left: 6px; padding-right: 6px; white-space: nowrap; }
-.pane h3 { margin: 12px 0 14px; font-size: 18px; color: #bbb; }
-.legend { margin: 0 0 6px; line-height: 26px; color: #bbb; }
-.legend ::deep .icon { margin-right: 6px; color: #888; }
+.pane h3 { margin: 12px 0 14px; font-size: 18px; color: var(--text-3); }
+.legend { margin: 0 0 6px; line-height: 26px; color: var(--text-3); }
+.legend ::deep .icon { margin-right: 6px; color: var(--fg-muted-2); }
 .pane ul { margin: 0 -10px 12px; padding: 0; list-style: none; }
 .pane li a { display: block; position: relative; padding: 0 10px; font-size: 13px; line-height: 40px; }
-.pane li.current a { background: #333; }
-.pane li.current a::after { content: ""; position: absolute; right: -8px; top: 12px; border: 8px solid transparent; border-left-color: #333; border-right: 0; }
-.no-tents { margin: 0; font-size: 12px; line-height: 20px; color: #888; }
+.pane li.current a { background: var(--surface-6); }
+.pane li.current a::after { content: ""; position: absolute; right: -8px; top: 12px; border: 8px solid transparent; border-left-color: var(--line-2); border-right: 0; }
+.no-tents { margin: 0; font-size: 12px; line-height: 20px; color: var(--fg-muted-2); }
 .stage > ::deep .map { flex: 1; }
-.start-label { position: absolute; z-index: 4; margin: -14px 0 0 18px; padding: 5px 12px; border-radius: 3px; background: #222; color: #eee; white-space: nowrap; }
+.start-label { position: absolute; z-index: 4; margin: -14px 0 0 18px; padding: 5px 12px; border-radius: var(--r-2); background: var(--surface-4); color: var(--text-1); white-space: nowrap; }

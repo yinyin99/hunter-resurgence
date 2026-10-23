@@ -5,7 +5,7 @@
 aside { position: relative; flex: 1; padding: 30px 10px 0 10px; }
 .close { position: absolute; right: 12px; top: 6px; padding: 0; color: #fff; font-size: 26px; line-height: 30px; }
 h2 { margin: 0 0 20px; font-size: 25px; line-height: 36px; font-weight: 300; color: #fff; }
-h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #444; font-size: 14px; font-weight: 500; color: #fff; }
+h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line-3); font-size: 14px; font-weight: 500; color: #fff; }
 .line { margin: 0; line-height: 20px; font-weight: 500; color: #fff; }
 .players-title { margin-top: 20px; }
 .player { display: flex; align-items: center; gap: 10px; margin-top: 5px; border-left: 5px solid; color: #fff; }
@@ -13,4 +13,4 @@ h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #444; font-s
 .player a { color: #fff; font-weight: 500; }
 .password { position: absolute; left: 150px; top: 230px; z-index: 6; width: 360px; padding: 20px; background: var(--bg-dropdown); box-shadow: var(--shadow-dropdown); }
 .password label { display: block; margin-bottom: 8px; }
-.password input { box-sizing: border-box; width: 100%; margin-bottom: 10px; padding: 6px 10px; border: 1px solid var(--field-bd); background: var(--field-bg); color: #ddd; font: inherit; }
+.password input { box-sizing: border-box; width: 100%; margin-bottom: 10px; padding: 6px 10px; border: 1px solid var(--field-bd); background: var(--field-bg); color: var(--text-2); font: inherit; }

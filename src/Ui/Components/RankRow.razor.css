@@ -15,5 +15,5 @@ tr.small { border: 0; background: none; }
 tr.small:hover { background: var(--tint-2); }
 tr.small td { padding: 2px 0; }
 tr.small .handle { padding-left: 14px; }
-tr.small .handle a { color: #eee; }
+tr.small .handle a { color: var(--text-1); }
 tr.small .value { padding-right: 10px; font-size: 18px; }
