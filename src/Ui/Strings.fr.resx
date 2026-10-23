@@ -448,4 +448,48 @@
   <data name="Pager.Label" xml:space="preserve"><value>Pages</value></data>
   <data name="Board.Avatar" xml:space="preserve"><value>Avatar de {0}</value></data>
   <data name="Comp.Failed" xml:space="preserve"><value>La compétition n’a pas pu être modifiée. Veuillez réessayer.</value></data>
+  <data name="Mis.Daily" xml:space="preserve"><value>Missions quotidiennes</value></data>
+  <data name="Mis.Regular" xml:space="preserve"><value>Missions régulières</value></data>
+  <data name="Mis.Help" xml:space="preserve"><value>Click for help</value></data>
+  <data name="Mis.Day" xml:space="preserve"><value>Jour {0}</value></data>
+  <data name="Mis.Today" xml:space="preserve"><value>aujourd’hui</value></data>
+  <data name="Mis.Tomorrow" xml:space="preserve"><value>demain</value></data>
+  <data name="Mis.Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Mis.Objectives" xml:space="preserve"><value>Objectifs</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Réserves</value></data>
+  <data name="Mis.Rewards" xml:space="preserve"><value>Récompenses</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Inactif</value></data>
+  <data name="Mis.Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="Mis.Activate" xml:space="preserve"><value>ACTIVATE</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Your Streak is broken. Press ACTIVATE to start a new one or BUY/USE Resume Streak to continue your last streak.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Daily Missions will remain inactive until you choose to activate or resume a streak.</value></data>
+  <data name="Mis.ActivationDone" xml:space="preserve"><value>Activation complete!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>Enjoy your service!</value></data>
+  <data name="Mis.ActivateAll" xml:space="preserve"><value>Activate All</value></data>
+  <data name="Mis.Auto" xml:space="preserve"><value>Automatically activate new available missions</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automatically activate only favourite missions</value></data>
+  <data name="Mis.ResetDesc" xml:space="preserve"><value>Vous pouvez réinitialiser vos missions en échange d'une certaine somme dans la boutique.</value></data>
+  <data name="Mis.GoToStore" xml:space="preserve"><value>Se rendre dans la boutique</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Vous avez accompli {0} des {1} missions et un total de {2} pack(s) de missions sur {3}.</value></data>
+  <data name="Mis.Filters" xml:space="preserve"><value>Filters</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Filter in</value></data>
+  <data name="Mis.All" xml:space="preserve"><value>All</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Favourite</value></data>
+  <data name="Mis.Active" xml:space="preserve"><value>Actives</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Mission Packs</value></data>
+  <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
+  <data name="Mis.Species" xml:space="preserve"><value>Espèces</value></data>
+  <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>All selected</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>{0} sélectionnés</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Hide completed</value></data>
+  <data name="Mis.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Progression :</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Click to Favourite/Un-favourite</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>You currently have no favourite missions</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Vous n'avez actuellement aucune mission activée. Activez une mission disponible ci-dessous pour commencer.</value></data>
+  <data name="Mis.NoAvailable" xml:space="preserve"><value>Aucune mission disponible</value></data>
+  <data name="Mis.Unlock" xml:space="preserve"><value>Vous devez accomplir les missions suivantes afin de débloquer {0} :</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Something went wrong and you didn’t get your item. Sorry. Please try again!</value></data>
 </root>
