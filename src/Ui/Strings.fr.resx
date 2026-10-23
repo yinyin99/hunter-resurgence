@@ -534,8 +534,72 @@
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Obtenez plus d'em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Comprend</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Purchase complete!</value></data>
-  <data name="Store.Enjoy" xml:space="preserve"><value>Enjoy your %s!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Enjoy your {0}!</value></data>
   <data name="Store.Oops" xml:space="preserve"><value>Oops.</value></data>
   <data name="Store.Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Store.YouSave" xml:space="preserve"><value>Vous économisez</value></data>
+  <data name="Wal.MyWallet" xml:space="preserve"><value>Porte-monnaie</value></data>
+  <data name="Wal.History" xml:space="preserve"><value>Historique des achats</value></data>
+  <data name="Wal.Balance" xml:space="preserve"><value>Solde actuel</value></data>
+  <data name="Wal.Spent" xml:space="preserve"><value>Total dépensé</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>Historique des achats (argent réel)</value></data>
+  <data name="Wal.TabEms" xml:space="preserve"><value>Historique des achats (em$)</value></data>
+  <data name="Wal.TabGms" xml:space="preserve"><value>Historique des achats (gm$)</value></data>
+  <data name="Wal.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Wal.Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Wal.Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="Wal.Item" xml:space="preserve"><value>article</value></data>
+  <data name="Wal.Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="Wal.Provider" xml:space="preserve"><value>Provider</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>This page lists all of the purchases you have made using {0}</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>You haven't made any purchases using {0} yet.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>You haven't made any purchases yet.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Amount ({0})</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Solde avant</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Solde après</value></data>
+  <data name="Wal.Items" xml:space="preserve"><value>Articles</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Show more</value></data>
+  <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Purchased as gift. Redeemed {0}.</value></data>
+  <data name="Wal.GiftCode" xml:space="preserve"><value>Purchased as gift. Gift code: {0}</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>Buy em$</value></data>
+  <data name="Bank.Help" xml:space="preserve"><value>Aide</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>Historique des achats</value></data>
+  <data name="Bank.Balance" xml:space="preserve"><value>Votre solde d'em$ :</value></data>
+  <data name="Bank.Redeem" xml:space="preserve"><value>Redeem a discount code</value></data>
+  <data name="Bank.EnterCode" xml:space="preserve"><value>Enter your discount code</value></data>
+  <data name="Bank.Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Bank.Invalid" xml:space="preserve"><value>The discount code you entered is invalid or expired</value></data>
+  <data name="Bank.InGame" xml:space="preserve"><value>Monnaie du jeu</value></data>
+  <data name="Bank.EmsDesc" xml:space="preserve"><value>Les armes, les tentes, les vêtements, les licences de chasse et bien plus encore, peuvent être achetés avec la monnaie du jeu (em$).</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Purchase as a Gift</value></data>
+  <data name="Bank.Compare" xml:space="preserve"><value>* Comparé avec le prix des 500 em$</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Économisez {0}%*</value></data>
+  <data name="Bank.Starter" xml:space="preserve"><value>Starter Bundles</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Get everything you need to start hunting any animal in the Evergreen Hunting Reserve. Our starter bundles include a Basic Membership that gives you a license to hunt every animal in the game, and a special selection of items to get you right on track to becoming a master hunter.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Special Bundles</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Select one of our special bundles to get everything you need to hunt the most popular animals in {game}. These bundles all include a Basic membership giving you a license to hunt every species in the game, and a selection of recommended items to focus on specific animals and their hunting gameplay.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Basic Memberships</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>{0} mois d'abonnement</value></data>
+  <data name="Bank.Animals" xml:space="preserve"><value>Licence pour chasser tous les animaux</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Accès à toutes les réserves</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Munitions classiques illimitées</value></data>
+  <data name="Bank.Other" xml:space="preserve"><value>+ {0} autre(s) article(s)</value></data>
+  <data name="Bank.Details" xml:space="preserve"><value>Détails</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Les articles inclus dans un abonnement ou achetés séparément sont conservés, même si votre abonnement expire</value></data>
+  <data name="Bank.ComparePrize" xml:space="preserve"><value>* Compared to 3 months {game} Membership</value></data>
+  <data name="Bank.HelpTitle" xml:space="preserve"><value>Boutique {game} - Questions &amp; réponses</value></data>
+  <data name="Bank.Q1" xml:space="preserve"><value>À quoi servent les em$ ?</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>L'em$ est une monnaie virtuelle qui peut être utilisée pour acheter des articles dans la boutique tels que les équipements, les armes, les vêtements et plus encore.</value></data>
+  <data name="Bank.Q2" xml:space="preserve"><value>How do I buy em$ as a gift to a friend?</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>In the "Buy em$" tab of this window, check the "Purchase as a gift" check box and then click on the "BUY" button of the currency amount you wish to purchase. You will be taken to a purchase summary on the Steam website. Click on the "Authorize" button. You will be taken to a confirmation page (thank you for your purchase). Click on your em$ balance on the top of the screen (where it says "em$ XXXX") and check your {0}Purchase History{1}. The most recent entry in your Purchase History should read "Purchased as gift. Gift code:", followed by the gift code. Copy the code and send it to the friend you want to give it as a gift. Your friend will then have to redeem the code in order for the em$ gift to be added to their balance.</value></data>
+  <data name="Bank.Q3" xml:space="preserve"><value>How do I redeem a gift code?</value></data>
+  <data name="Bank.A3" xml:space="preserve"><value>Click on the "Redeem a discount code" button on the top-right corner of this window, then paste your gift code there and click on the "OK" button. A confirmation message will appear, click on the "Click here to redeem this gift" button. A message will appear confirming that your gift has been added to your account. Click OK and enjoy your gift!</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>I missed a sale price, can I still get the discount?</value></data>
+  <data name="Bank.A4" xml:space="preserve"><value>Once a sale or discount has expired we are unable to offer the discounted price.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Politique de remboursement</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>As with most digital currencies, we do not offer refunds for purchases of em$. The game is free to download and try out, please verify it does work on your computer and it is what you expect before purchasing em$.</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Avertissement</value></data>
+  <data name="Bank.A6" xml:space="preserve"><value>Please note that em$ cannot be sold or transferred, and cannot be exchanged for cash or anything else except for the actual {game} content. em$ are non-refundable. em$ have no monetary value and do not constitute currency or property of any type.</value></data>
+  <data name="Bank.Extra" xml:space="preserve"><value>{0} armes en plus</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
 </root>
