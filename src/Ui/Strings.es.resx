@@ -29,7 +29,6 @@
   <data name="Menu.Find" xml:space="preserve"><value>Encontrar una partida multijugador</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriales</value></data>
   <data name="Menu.GetEmsTip" xml:space="preserve"><value>Los em$ son la moneda virtual de {game} que se puede usar para comprar objetos en la tienda, como armas, equipamiento, ropa y mucho más.</value></data>
-  <data name="Statusbar.Launcher" xml:space="preserve"><value>Lanzador</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Configuración</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munición:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>combustible:</value></data>

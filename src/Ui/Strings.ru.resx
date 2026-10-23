@@ -29,7 +29,6 @@
   <data name="Menu.Find" xml:space="preserve"><value>Найти многопользовательскую игру</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Обучение</value></data>
   <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ — виртуальная валюта {game}. В магазине за неё можно купить оружие, снаряжение, одежду и многое другое.</value></data>
-  <data name="Statusbar.Launcher" xml:space="preserve"><value>Лаунчер</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Настройки</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>боеприпасы:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>топливо:</value></data>

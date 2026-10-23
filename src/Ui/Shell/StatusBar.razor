@@ -7,7 +7,7 @@
 
 <header class="bar @(Mode.Launcher ? "" : "web")">
     <div class="row">
-        <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">@L["Statusbar.Launcher"]</span> }</a>
+        <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">Launcher</span> }</a>
         <div class="left">
             <button class="section friends" popovertarget="friends" data-tip="@L["Tip.Friends"]" aria-label="@L["Tip.Friends"]" @onclick="() => friendsLoaded = true"><Icon Name="user" /></button>
             <a class="section" href="/messages" data-tip="@L["Tip.Messages"]" aria-label="@L["Tip.Messages"]"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
