@@ -139,7 +139,7 @@
     --su-radius-btn: 6px;
     --su-radius-input: 4px;
 
-    /* UI scale: neutral token names, values taken from what the screens use (text and surface greys, lines, radii, shadows, motion) */
+    /* UI scale: neutral token names, values taken from what the screens use (text and surface greys, lines, radii, motion) */
     --text-1: #eee;
     --text-2: #ddd;
     --text-3: #bbb;
@@ -160,10 +160,6 @@
     --r-2: 4px;
     --r-3: 8px;
     --r-pill: 999px;
-    --shadow-2: 0 2px 10px #000;
-    --shadow-3: 0 15px 35px rgba(0, 0, 0, .6);
-    --ring: inset 0 0 0 1px var(--line);
-    --depth: 0 1px 0 rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .22);
     --tint-1: rgba(255, 255, 255, .025);
     --tint-2: rgba(255, 255, 255, .06);
     --t-fast: 100ms;
@@ -199,7 +195,6 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); }
 
 .btn {
-    --lift: 0 1px 0 rgba(0, 0, 0, .45), 0 4px 12px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .3);
     display: inline-block;
     padding: 6px 12px;
     border: 0;
@@ -208,27 +203,30 @@ a:hover { color: var(--accent-hover); }
     color: var(--btn-fg);
     font-size: var(--fs-btn);
     cursor: pointer;
-    box-shadow: var(--depth);
-    transition: background-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
+    transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
-.btn:hover { color: var(--btn-fg); filter: brightness(1.12); box-shadow: var(--lift); }
-.btn:active { transform: translateY(1px); filter: brightness(.9); box-shadow: inset 0 2px 4px rgba(0, 0, 0, .45); }
+.btn:active { transform: translateY(1px); filter: brightness(.9); }
 .btn-primary { background-color: var(--primary); color: #fff; }
 .btn-inverse { background-color: var(--surface-7); color: #fff; }
-.btn-primary:hover, .btn-inverse:hover { color: #fff; }
+.btn-primary:hover { background-color: var(--primary-hover); color: #fff; }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
 .btn-tall { height: 42px; padding: 0 20px; font-size: 16px; }
 .btn-large { padding: 11px 19px; font-size: var(--fs-btn-lg); line-height: 20px; }
 .btn-block { display: block; box-sizing: border-box; width: 100%; text-align: center; }
-.btn:disabled, .btn.disabled { opacity: .65; cursor: default; box-shadow: none; transform: none; filter: none; background-image: none; }
+.btn:disabled, .btn.disabled { opacity: .65; cursor: default; transform: none; filter: none; }
 
 :focus-visible { outline: var(--focus); outline-offset: 2px; }
 a { transition: color var(--t-fast) var(--ease); }
 
-/* a dark surface; the ring is an inset shadow so it never changes the box size */
-.panel { background: var(--surface-2); border-radius: var(--r-3); box-shadow: var(--ring); }
+/* a dark surface */
+.panel { background: var(--surface-2); border-radius: var(--r-3); }
+
+/* a clickable card on a dark surface: a faint white tint on hover (an overlay, so the card keeps its own background; no size change) */
+.hover-tint { position: relative; }
+.hover-tint::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
+.hover-tint:hover::after { background: var(--tint-2); }
 
 /* data table: one row line, a hover tint; cells are left aligned, .tbl-c centres every column but the first. Callers set widths and margins.
    :where keeps these rules weaker than any scoped override (theme.css loads after the scoped bundle, so equal specificity would win here). */
@@ -237,7 +235,7 @@ a { transition: color var(--t-fast) var(--ease); }
 :where(.tbl) th { padding: 8px 6px; color: var(--text-1); }
 :where(.tbl) td { padding: 6px; border-top: 1px solid var(--line); }
 :where(.tbl) tbody tr { transition: background-color var(--t-fast) var(--ease); }
-:where(.tbl) tbody tr:hover { background: var(--tint-1); }
+:where(.tbl) tbody tr:hover { background: var(--tint-2); }
 :where(.tbl-c) th, :where(.tbl-c) td { text-align: center; }
 :where(.tbl-c) :is(th, td):first-child { text-align: left; }
 
@@ -245,13 +243,13 @@ a { transition: color var(--t-fast) var(--ease); }
 [popover] { color: inherit; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), overlay var(--t-base) allow-discrete, display var(--t-base) allow-discrete; }
 [popover]:popover-open { opacity: 1; transform: none; }
 @starting-style { [popover]:popover-open { opacity: 0; transform: translateY(-4px); } }
-.pop { position: fixed; position-anchor: auto; inset: auto; top: anchor(bottom); left: anchor(left); min-width: max(158px, anchor-size(width)); margin: 4px 0 0; padding: 6px 0; border: 0; border-radius: var(--r-2); background: var(--surface-3); box-shadow: var(--shadow-2); overflow: auto; }
+.pop { position: fixed; position-anchor: auto; inset: auto; top: anchor(bottom); left: anchor(left); min-width: max(158px, anchor-size(width)); margin: 4px 0 0; padding: 6px 0; border: 0; border-radius: var(--r-2); background: var(--surface-3); overflow: auto; }
 .pop li { margin: 0; padding: 0; list-style: none; }
 .pop li button { display: block; box-sizing: border-box; width: 100%; padding: 3px 20px; border: 0; background: none; color: var(--fg-muted); font: inherit; line-height: 20px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
 .pop li button:hover, .pop li button:focus-visible { background: var(--accent); color: #fff; outline: 0; }
 
 /* the grey card of the small dialogs (alert, buy) and the x of every modal */
-.dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: var(--shadow-3); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
+.dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
 .close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
 .close:hover { opacity: 1; }
@@ -272,13 +270,11 @@ a { transition: color var(--t-fast) var(--ease); }
 .tick:disabled { opacity: .5; cursor: default; }
 
 /* an empty block of the final size while its data loads (the old app left the area empty) */
-.skeleton { border-radius: var(--r-3); background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-4) 50%, var(--surface-2) 70%) 0 0 / 300% 100%; animation: skeleton 1.4s linear infinite; }
-@keyframes skeleton { to { background-position: -150% 0; } }
+.skeleton { border-radius: var(--r-3); background: var(--surface-2); }
 .skeleton-page { min-height: 600px; }
 
 @media (prefers-reduced-motion: reduce) {
-    * { transition-duration: 0s !important; }
-    .skeleton { animation: none; }
+    *, .hover-tint::after, .servers li::after { transition-duration: 0s !important; }
 }
 
 /* h2.page-title of the old pages */
