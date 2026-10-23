@@ -1,0 +1,44 @@
+@inject IProfileService Service
+
+<ul class="pills">
+    @foreach (var (key, label) in subs)
+    {
+        <li class="@(key == sub ? "on" : "")"><a href="/profile/@Handle/ranks@(key == "" ? "" : "/" + key)">@L[label]</a></li>
+    }
+</ul>
+@if (sub == "")
+{
+    <h4>@L["Prof.Progress"]</h4>
+    <h5>@L["Prof.HunterScore"]</h5>
+    @if (bars.Count > 0) { @Overview(bars[0], "paw") }
+    <h5>@L["Prof.Categories"]</h5>
+    @foreach (var b in bars.Skip(1)) { @Overview(b, b.Name == "Animals" ? "dog" : b.Name == "Weapons" ? "bullseye" : "bucket") }
+}
+else
+{
+    @foreach (var b in bars)
+    {
+        <div class="row">
+            <AssetSlot Name="@("rank-" + sub)" Width="110" Height="110" Class="badge" />
+            <div class="what"><h4>@b.Name</h4><div class="bar"><i style="width:@Pct(b)%"></i><b>@b.Level</b></div></div>
+        </div>
+    }
+}
+
+@code {
+    static readonly (string, string)[] subs = [("", "Prof.Overview"), ("animals", "Prof.Animals"), ("weapons", "Prof.Weapons"), ("collectables", "Prof.Collectables")];
+    IReadOnlyList<RankBar> bars = [];
+
+    [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    [Parameter] public string? Sub { get; set; }
+    string sub => subs.Any(s => s.Item1 == Sub) ? Sub! : "";
+
+    protected override async Task OnParametersSetAsync() => bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
+
+    int Pct(RankBar b) => b.Total == 0 ? 0 : 100 * b.Done / b.Total;
+
+    RenderFragment Overview(RankBar b, string icon) => @<div class="ov">
+        <Icon Name="@icon" />
+        <div class="bar big"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @b.Done / @b.Total (@Pct(b)%)</b> }</div>
+    </div>;
+}

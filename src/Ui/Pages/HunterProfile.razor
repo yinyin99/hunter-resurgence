@@ -1,0 +1,54 @@
+@page "/profile/{Handle}"
+@page "/profile/{Handle}/{Tab}"
+@page "/profile/{Handle}/{Tab}/{Sub}"
+@page "/profile/{Handle}/{Tab}/{Sub}/{Arg:int}"
+@inject IProfileService Service
+
+<PageTitle>@L["Prof.Title", Handle]</PageTitle>
+
+<div class="page-min">
+@if (profile is not null)
+{
+    <header class="head">
+        <AssetSlot Name="profile-banner" Width="940" Height="200" Class="banner" />
+        <div class="polaroid"><AssetSlot Name="avatar-profile" Width="170" Height="185" /><Icon Name="paw" /></div>
+        <h1>@profile.Handle</h1>
+        <p class="sub">
+            <span data-tip="@L["Prof.TipMembership", profile.Handle]">@profile.Membership</span>
+            <span data-tip="@L["Prof.TipScore", profile.Handle]"><Icon Name="paw" /> @profile.HunterScore</span>
+            <a href="/leaderboards/hunterscore" data-tip="@L["Prof.TipRank", profile.Handle]"><Icon Name="asterisk" /> @L["Prof.Rank", profile.Rank]</a>
+            @if (profile.Online) { <span class="online" data-tip="@L["Prof.TipOnline", profile.Handle]"><i></i>@L["Prof.Online"]</span> }
+        </p>
+    </header>
+    <div class="body">
+        <ul class="tabs">
+            @foreach (var (key, label, icon) in tabs)
+            {
+                <li class="@(key == tab ? "on" : "")"><a href="/profile/@profile.Handle/@key"><Icon Name="@icon" /> @L[label]</a></li>
+            }
+        </ul>
+        @switch (tab)
+        {
+            case "ranks": <RanksTab Handle="@profile.Handle" Sub="@Sub" />; break;
+        }
+    </div>
+}
+</div>
+
+@code {
+    static readonly (string Key, string Label, string Icon)[] tabs =
+    [
+        ("ranks", "Prof.TabRanks", "bars"), ("achievements", "Prof.TabAchievements", "bookmark"), ("skills", "Prof.TabSkills", "star"), ("statistics", "Prof.TabStats", "chart-simple"),
+        ("gallery", "Prof.TabGallery", "camera"), ("trophies", "Prof.TabTrophies", "trophy"), ("dogs", "Prof.TabDogs", "dog"), ("friends", "Prof.TabFriends", "user"),
+    ];
+
+    Profile? profile;
+
+    [Parameter] public string Handle { get; set; } = "";
+    [Parameter] public string? Tab { get; set; }
+    [Parameter] public string? Sub { get; set; }
+    [Parameter] public int? Arg { get; set; }
+    string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "ranks";
+
+    protected override async Task OnParametersSetAsync() => profile = await Service.ProfileAsync(Handle);
+}
