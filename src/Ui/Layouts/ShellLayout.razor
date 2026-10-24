@@ -5,6 +5,7 @@
 @inject IJSRuntime JS
 @inject ModalService Modal
 @inject ISessionService Sessions
+@inject ILauncherBridge Bridge
 
 <div class="shell @(Mode.Launcher ? "launcher" : "web")">
     @if (isPublic)
@@ -65,7 +66,12 @@
         if (!firstRender) return;
         module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
         await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
+        if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
     }
+
+    /// <summary>Called by shell.js on Ctrl+D in the launcher window.</summary>
+    [JSInvokable]
+    public void DevTools() => Bridge.ToggleDevTools();
 
     /// <summary>Called by shell.js when the scroll position crosses 200 px.</summary>
     [JSInvokable]

@@ -22,6 +22,15 @@ export function watchScroll(ref, threshold) {
 
 export function unwatchScroll() {
     window.removeEventListener('scroll', handler);
+    document.removeEventListener('keyup', keys);
+}
+
+// Ctrl+D in the launcher window opens or closes the developer tools, as the old launcher did (on key up); calls ref.DevTools().
+let keys;
+
+export function watchKeys(ref) {
+    keys = (e) => { if (e.ctrlKey && e.key.toLowerCase() === 'd') ref.invokeMethodAsync('DevTools'); };
+    document.addEventListener('keyup', keys);
 }
 
 // Calls ref.Moved() once, at the next mouse move; returns what cancels the wait.

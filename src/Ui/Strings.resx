@@ -227,10 +227,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Got it!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>New game patch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>A new game patch has been released. Your game will be patched automatically and you will be able to start a new expedition as soon as it's done! In the meantime you may browse around freely.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Update Notes</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Update {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>View changelog</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Downloading {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>A full installation of {game} is being downloaded to your computer. You will be able to start playing as soon as it's done. In the meantime you may browse around freely.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>The launcher is updating</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>The launcher needs to update. The update will be downloaded automatically. Once the launcher has been updated it will need to be restarted.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Updating done. The launcher has to restart.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Game update required</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>There is an update for {game} available. You need to update {game} on Steam before you can play. You need to close the launcher in order to update.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} is Steam only</value></data>

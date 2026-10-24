@@ -17,3 +17,8 @@
 .state { font-size: 28px; line-height: 40px; font-weight: 700; text-transform: uppercase; color: var(--primary); }
 .info { margin-top: 0; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .percent { position: absolute; right: 10px; top: 24px; font-size: 40px; line-height: 50px; font-weight: 700; color: var(--primary); }
+.notes { max-height: 400px; margin-bottom: 14px; overflow-y: auto; text-align: left; }
+.notes h1 { margin: 0 0 6px; font-size: 22px; line-height: 26px; text-align: center; }
+.changelog-header { font-size: 18px; line-height: 27px; cursor: pointer; }
+.changelog-header .view { float: right; }
+.changelog-body { padding-bottom: 8px; font-size: 14px; line-height: 20px; white-space: pre-line; }

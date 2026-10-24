@@ -227,10 +227,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Compris !</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nouveau correctif du jeu</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Un nouveau correctif du jeu est disponible. Votre jeu sera mis à jour automatiquement et vous pourrez lancer une nouvelle expédition dès que ce sera terminé ! En attendant, vous pouvez parcourir le site librement.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Notes de mise à jour</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Mise à jour {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Voir les modifications</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Téléchargement de {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Une installation complète de {game} est en cours de téléchargement sur votre ordinateur. Vous pourrez commencer à jouer dès qu’elle sera terminée. En attendant, vous pouvez parcourir le site librement.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Mise à jour du lanceur</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Le lanceur doit être mis à jour. La mise à jour sera téléchargée automatiquement. Une fois le lanceur mis à jour, il devra être redémarré.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Mise à jour effectuée. Le lanceur doit redémarrer.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Mise à jour du jeu requise</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Une mise à jour de {game} est disponible. Vous devez mettre à jour {game} sur Steam avant de pouvoir jouer. Vous devez fermer le lanceur pour effectuer la mise à jour.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} est uniquement disponible sur Steam</value></data>

@@ -227,10 +227,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Понятно!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Новое обновление игры</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Вышло новое обновление игры. Оно установится автоматически, и как только это завершится, вы сможете начать новую охоту! А пока можете свободно осматриваться.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Описание обновления</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Обновлено {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Показать изменения</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Загрузка {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Полная установка {game} загружается на ваш компьютер. Вы сможете начать играть сразу после её завершения. А пока можете свободно осматриваться.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Лаунчер обновляется</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Лаунчеру требуется обновление. Оно будет загружено автоматически. После обновления лаунчер нужно будет перезапустить.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Обновление завершено. Лаунчер должен перезапуститься.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Требуется обновление игры</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Для {game} доступно обновление. Чтобы играть, сначала обновите {game} в Steam. Для обновления нужно закрыть лаунчер.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} — только в Steam</value></data>

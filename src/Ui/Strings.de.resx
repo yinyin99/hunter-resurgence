@@ -227,10 +227,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Verstanden!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Neuer Spielpatch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Ein neuer Spiel-Patch wurde veröffentlicht. Ihr Spiel wird automatisch gepatcht, und sobald das abgeschlossen ist, können Sie eine neue Jagd starten! In der Zwischenzeit können Sie sich frei umsehen.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Hinweise zum Update</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Update {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Änderungen anzeigen</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>{game} wird heruntergeladen</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Eine vollständige Installation von {game} wird auf Ihren Computer heruntergeladen. Sobald der Vorgang abgeschlossen ist, können Sie mit dem Spielen beginnen. In der Zwischenzeit können Sie sich frei umsehen.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Der Launcher wird aktualisiert</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Der Launcher muss aktualisiert werden. Das Update wird automatisch heruntergeladen. Nach der Aktualisierung muss der Launcher neu gestartet werden.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Update durchgeführt. Der Launcher muss neu starten.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spielupdate erforderlich</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Für {game} ist ein Update verfügbar. Sie müssen {game} über Steam aktualisieren, bevor Sie spielen können. Dazu müssen Sie den Launcher schließen.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} gibt es nur auf Steam</value></data>

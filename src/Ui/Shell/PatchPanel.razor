@@ -1,6 +1,7 @@
 @inherits PatchWatcher
 @inject IJSRuntime JS
 @inject Branding Brand
+@inject ILauncherBridge Bridge
 
 @if (Notice is { } notice)
 {
@@ -29,6 +30,10 @@
                     <p>@L["Patch.LauncherText"]</p>
                     <div class="cogs"><Icon Name="gear" /><Icon Name="gear" /><Icon Name="gear" /></div>
                     break;
+                case "launcher-ready":
+                    <p>@L["Patch.LauncherReady"]</p>
+                    <button class="btn btn-primary btn-large" autofocus @onclick="Restart">@L["Alert.Ok"]</button>
+                    break;
                 case "full":
                     <Icon Name="download" />
                     <h1>@L["Patch.FullTitle"]</h1>
@@ -38,6 +43,20 @@
                 default:
                     <h1>@L["Patch.NewTitle"]</h1>
                     <p>@L["Patch.NewText"]</p>
+                    @if (Status.Notes is { Count: > 0 } notes)
+                    {
+                        @* each patch folds its notes open and shut, as the old list did *@
+                        <div class="notes">
+                            <h1>@L["Patch.UpdateNotes"]</h1>
+                            @foreach (var n in notes)
+                            {
+                                <details class="changelog">
+                                    <summary class="changelog-header">@L["Patch.UpdateTitle", n.Version]<span class="view">@L["Patch.ViewChangelog"]</span></summary>
+                                    <div class="changelog-body">@n.Message</div>
+                                </details>
+                            }
+                        </div>
+                    }
                     <button class="btn btn-primary btn-large" @onclick="Dismiss">@L["Patch.GotIt"]</button>
                     break;
             }
@@ -71,6 +90,7 @@
                 LauncherNotice.SteamOnly => "steam-only",
                 LauncherNotice.SteamUpdate => "steam-update",
                 LauncherNotice.Error => "error",
+                LauncherNotice.LauncherReady => "launcher-ready",
                 _ when Status.State == PatchState.Downloading => Status.Kind switch { DownloadKind.Launcher => "launcher", DownloadKind.Full => "full", _ => "patch" },
                 _ => null,
             };
@@ -115,6 +135,13 @@
     RenderFragment SupportLink() => @<ExternalLink Key="support">@L["Patch.SupportSection"]</ExternalLink>;
 
     void Dismiss() => dismissed.Add(Notice!);
+
+    // the old launcher alerted that it had updated, then started the new one
+    void Restart()
+    {
+        Bridge.RestartLauncher();
+        Dismiss();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
