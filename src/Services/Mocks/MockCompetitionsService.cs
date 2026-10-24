@@ -2,7 +2,8 @@ namespace Resurgence.Services.Mocks;
 
 /// <summary>Competitions generated from the species list: three tiers per species at most. Dates are relative to the start of the host, so the countdowns run.
 /// Ids 179583, 179580 and 179577 are the activated ones.</summary>
-public sealed class MockCompetitionsService : ICompetitionsService
+/// <param name="mock">Development state "competitions:many": 45 entrants on the details leaderboard (three pages); otherwise the two of the capture.</param>
+public sealed class MockCompetitionsService(string? mock = null) : ICompetitionsService
 {
     static readonly DateTime Now = new(DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, DateTimeKind.Utc);
     static readonly DateTime Starts = Now.AddHours(26), Ends = Now.AddDays(3).AddHours(2);
@@ -86,10 +87,10 @@ public sealed class MockCompetitionsService : ICompetitionsService
             sp, "Reserve 01", "Harvest the highest scoring " + sp + " to win.", "Any permitted.", "Highest score.", "None.", "Singleplayer only."));
     }
 
-    // 45 entrants in the order of their results
+    // entrants in the order of their results
     public Task<Page<Participant>> ParticipantsAsync(int id, int page)
     {
-        var all = Enumerable.Range(1, 45).Select(n => new Participant(n, Names.Handle(17 + n * 8 % 64), (160 - (n - 1) * 0.9 - id % 7 * 0.01).ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture))).ToList();
+        var all = Enumerable.Range(1, mock == "competitions:many" ? 45 : 2).Select(n => new Participant(n, Names.Handle(17 + (n - 1) * 8 % 64), (160 - (n - 1) * (mock == "competitions:many" ? 0.9 : 10)  - (mock == "competitions:many" ? id % 7 * 0.01 : 0)).ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture))).ToList();
         var pages = (all.Count + ICompetitionsService.ParticipantsPageSize - 1) / ICompetitionsService.ParticipantsPageSize;
         page = Math.Clamp(page, 1, pages);
         return Task.FromResult(new Page<Participant>(all.Skip((page - 1) * ICompetitionsService.ParticipantsPageSize).Take(ICompetitionsService.ParticipantsPageSize).ToList(), page, pages, all.Count));

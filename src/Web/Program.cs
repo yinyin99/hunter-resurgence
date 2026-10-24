@@ -21,6 +21,7 @@ builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequi
 builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetRequiredService<ILogger<MockServersService>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();
