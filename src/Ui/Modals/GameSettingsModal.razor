@@ -19,7 +19,8 @@
             </label>
             <label class="row"><span>@L["GameSettings.Scene"]</span><select class="field-sel" id="scene_complexity" @bind="scene">@Levels(4)</select><small>@L["GameSettings.SceneHelp"]</small></label>
             <label class="row"><span>@L["GameSettings.Texture"]</span><select class="field-sel" id="texture_quality" @bind="texture">@Levels(3)</select>
-                <small>@L["GameSettings.TextureHelp"]@(settings.VideoMemoryMb > 0 ? " " + L["GameSettings.TextureMemory", settings.VideoMemoryMb] : "")</small></label>
+                @* the warning shows only while High is chosen *@
+                @if (texture == 2) { <small id="highQualityTextureWarning">@L["GameSettings.TextureHelp"]@(settings.VideoMemoryMb > 0 ? " " + L["GameSettings.TextureMemory", settings.VideoMemoryMb] : "")</small> }</label>
             <label class="row"><span>@L["GameSettings.Shadow"]</span><select class="field-sel" id="shadow_quality" @bind="shadow">@Levels(4)</select></label>
             <label class="row"><span>@L["GameSettings.Msaa"]</span><select class="field-sel" id="msaa" @bind="msaa">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")</select></label>
             <label class="row"><span>@L["GameSettings.Aniso"]</span><select class="field-sel" id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
