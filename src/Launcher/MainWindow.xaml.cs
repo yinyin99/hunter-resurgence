@@ -23,6 +23,9 @@ public partial class MainWindow : Window
         services.AddSingleton<IPatchService>(new MockPatchService(mock));
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
+        services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));
+        services.AddSingleton<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), mock));
+        services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<INewsService>(new MockNewsService(mock));

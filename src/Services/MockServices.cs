@@ -9,6 +9,7 @@ public static class MockServices
     public static IServiceCollection AddMockServices(this IServiceCollection s) => s
         .AddSingleton<ISessionService, MockSessionService>()
         .AddSingleton<ISignupService, MockSignupService>()
+        .AddSingleton<MockWalletState>()
         .AddSingleton<IWalletService, MockWalletService>()
         .AddSingleton<IStoreService, MockStoreService>()
         .AddSingleton<IBankService, MockBankService>()

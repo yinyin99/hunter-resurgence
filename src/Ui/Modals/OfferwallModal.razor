@@ -1,0 +1,19 @@
+@inject ModalService Modal
+@inject NavigationManager Nav
+@inject IBankService Bank
+
+<div class="offer dialog-card" role="dialog" aria-modal="true" aria-label="@L["Menu.GetEms"]">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Close">&times;</button>
+    @if (!loaded) { <div class="skeleton frame"></div> }
+    else if (url is null) { <p class="error">@L["Bank.Unavailable"]</p> }
+    else { <iframe class="offerwall frame" src="@url" title="@L["Menu.GetEms"]"></iframe> }
+</div>
+
+@code {
+    string? url;
+    bool loaded;
+
+    protected override async Task OnInitializedAsync() => (url, loaded) = (await Bank.OfferwallUrlAsync(), true);
+
+    void Close() { Modal.Close(); Nav.NavigateTo("/"); }
+}

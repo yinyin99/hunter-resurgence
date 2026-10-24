@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
@@ -24,6 +25,12 @@ builder.Services.AddScoped<IMissionsService>(sp => new MockMissionsService(sp.Ge
 builder.Services.AddScoped<IFriendsService>(sp => new MockFriendsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IMessagesService>(sp => new MockMessagesService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()));
+// one wallet per circuit: what the store and the bank buy shows in the wallet and the status bar
+// (Replace, because the singleton mocks of AddMockServices would otherwise be validated against the scoped state)
+builder.Services.Replace(ServiceDescriptor.Scoped<MockWalletState, MockWalletState>());
+builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
+builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
+builder.Services.Replace(ServiceDescriptor.Scoped<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();

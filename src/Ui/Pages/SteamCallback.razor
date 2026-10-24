@@ -1,0 +1,33 @@
+@page "/steam_callback/{Id}"
+@inject IBankService Bank
+
+<PageTitle>@L["Menu.GetEms"]</PageTitle>
+
+<div class="page-min">
+    @if (result is { Completed: true })
+    {
+        <section class="panel">
+            <h1>@L["Bank.SteamThanks"]</h1>
+            <p>@L.Frag("Bank.SteamDone", Bold(result.Product))</p>
+            <a class="btn btn-primary btn-tall" href="/dashboard">@L["Bank.HuntNow"]</a>
+        </section>
+    }
+    else if (result is not null)
+    {
+        <section class="panel">
+            <h1>@L["Bank.SteamFailed"]</h1>
+            <p>@L["Bank.SteamAborted"]</p>
+            <a class="btn btn-primary btn-tall" href="/bank/ems">@L["Bank.BuyEms"]</a>
+        </section>
+    }
+</div>
+
+@code {
+    BankTransaction? result;
+
+    [Parameter] public string Id { get; set; } = "";
+
+    protected override async Task OnParametersSetAsync() => result = await Bank.VerifyTransactionAsync(Id);
+
+    static RenderFragment Bold(string text) => @<strong>@text</strong>;
+}
