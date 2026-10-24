@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Je e-mailadres is gewijzigd.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Bevestiging opnieuw sturen</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Bevestigingsmail opnieuw verstuurd.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Opnieuw versturen van de e-mail mislukt. Probeer het opnieuw of neem contact op met de support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Taal</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Waarschuwing</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Als je je Steam-account loskoppelt, word je uitgelogd bij {game} en wordt de launcher gesloten. Je kunt {game} pas weer op Steam spelen nadat je een ander account hebt gekoppeld.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ik begrijp het en wil mijn Steam-account loskoppelen</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Headerafbeelding</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Headerafbeeldingen worden ontgrendeld wanneer je nieuwe niveaus bereikt in drie verschillende prestatiecategorieën: Dierenmeester, Wapenmeester en Verkenningsmeester. Eenmaal ontgrendeld blijven headerafbeeldingen voor altijd beschikbaar.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Lees meer over de meesterniveaus van de prestaties.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} heeft nog geen expedities gedaan om een persoonlijk record aller tijden te berekenen.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Afstand</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tijd van de oogst</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistieken zullen worden bijgewerkt wanneer de expeditie is beëindigd.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Vorige</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Volgende</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Geen afbeeldingen om weer te geven.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Niv.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Vaardigheden</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Deze hond heeft nog geen vaardigheden ontgrendeld.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Hondje</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Share this trophy shot</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Image URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Image BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Inloggen...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Inloggen voltooid!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Deze pagina is geopend omdat {game} je moet inloggen.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Verzamelobjecten</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pistolen</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Kruisbogen</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blood Tracking</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>This skill governs how well a dog can find blood tracks.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>This skill governs how well a dog can detect different species of animals.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}u</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}m</value></data>

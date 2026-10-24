@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Tu dirección de email se ha cambiado.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Reenviar confirmación</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Email de confirmación reenviado.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Reenviar el email de confirmación. Tienes que hacer clic en el enlace del correo electrónico.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Reenviar email de confirmación</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>No se pudo reenviar el email. Inténtalo de nuevo o ponte en contacto con el soporte.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Set.Country" xml:space="preserve"><value>País</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Advertencia</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Al desconectar tu cuenta de Steam se cerrará tu sesión en {game} y se cerrará el lanzador. No podrás volver a jugar a {game} en Steam hasta que te conectes con otra cuenta.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Lo entiendo y quiero desconectar mi cuenta de Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagen de cabecera</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Las imágenes de cabecera se desbloquean cuando alcanzas nuevos niveles en tres categorías de Logros distintas: Maestro de Animales, Maestro de Armas y Maestro de Exploración. Una vez desbloqueadas, las imágenes de cabecera permanecen disponibles para siempre.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Descubre más detalles sobre los niveles de Logro Maestro.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} aún no ha realizado ninguna expedición, así que no se puede calcular el récord personal histórico.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Puntuación</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Alcance</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Fecha de captura</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Refrescar</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Las estadísticas se actualizan cuando la expedición ha terminado.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Anterior</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Siguiente</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>No hay imágenes que mostrar.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Nivel:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Habilidades</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Este perro aún no ha desbloqueado ninguna habilidad.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Perrito</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Comparte esta foto de trofeo</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copia la URL o el BBCode para compartir esta foto de trofeo con tus amigos en el foro oficial de {game} o en las redes sociales.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>URL de la Imagen</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>BBCode de la imagen</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Iniciando sesión…</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>¡Sesión iniciada!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Se ha abierto esta página porque {game} necesita iniciar tu sesión.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Coleccionables</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Armas de mano</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Ballestas</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Rastreo de sangre</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Esta habilidad determina la aptitud del perro de encontrar pistas de sangre.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detección</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Esta habilidad determina cómo un perro puede detectar diferentes especies de animales.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

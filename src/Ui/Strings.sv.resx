@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Din e-postadress har ändrats.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Skicka bekräftelse igen</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Bekräftelsemejlet har skickats igen.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Skicka om e-postbekräftelsen</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Det gick inte att skicka e-postmeddelandet igen. Försök igen eller kontakta supporten.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Språk</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Varning</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Om du kopplar bort ditt Steam-konto loggas du ut från {game} och launchern stängs. Du kan inte spela {game} via Steam igen förrän du kopplar det till ett annat konto.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jag förstår och vill koppla bort mitt Steam-konto</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Rubrikbild</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Rubrikbilder låses upp när du når nya nivåer i tre olika prestationskategorier – Djurmästare, Vapenmästare och Utforskarmästare. När en rubrikbild väl är upplåst finns den kvar för alltid.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Läs mer om prestationsmästarnivåerna.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} har inte varit ute på några expeditioner ännu, så personligt rekord genom tiderna kan inte beräknas.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Poäng</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Avstånd</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tidpunkt</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Uppdatera</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistiken kommer att uppdateras när expeditionen har avslutats.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Föregående</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Nästa</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Inga bilder att visa.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Nv:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Färdigheter</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Den här hunden har inte låst upp några färdigheter ännu.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Vovve</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Ta bort</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Dela denna Trofé bilden</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>bild URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Bild BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Loggar in...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Inloggningen är klar!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Den här sidan öppnades eftersom {game} behöver logga in dig.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Samlarföremål</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handvapen</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Armborst</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blodspårning</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Denna färdighet styr hur väl en hund kan hitta blodspår.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Upptäckt</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Denna färdighet styr hur väl en hund kan upptäcka olika djurarter.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}min</value></data>

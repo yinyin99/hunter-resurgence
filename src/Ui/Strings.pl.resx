@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Twój adres e-mail został zmieniony.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Wyślij potwierdzenie ponownie</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Ponownie wysłano e-mail z potwierdzeniem.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Wyślij ponownie wiadomość e-mail z potwierdzeniem. Należy kliknąć link w wiadomości e-mail.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Wyślij ponownie e-mail potwierdzenia</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Nie udało się ponownie wysłać e-maila. Spróbuj ponownie lub skontaktuj się z pomocą techniczną.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Język</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Kraj</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Ostrzeżenie</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Odłączenie konta Steam wyloguje Cię z gry {game} i zamknie launcher. Nie będzie można grać w {game} przez Steam, dopóki nie połączysz innego konta.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Rozumiem i chcę odłączyć swoje konto Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Zdjęcie nagłówkowe</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Zdjęcia nagłówkowe są odblokowywane po osiągnięciu nowych poziomów w trzech kategoriach osiągnięć – Mistrz Zwierząt, Mistrz Broni i Mistrz Eksploracji. Po odblokowaniu zdjęcia nagłówkowe pozostają dostępne na zawsze.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Dowiedz się więcej o poziomach osiągnięć mistrzowskich.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>Użytkownik {0}: brak wypraw, aby obliczyć rekordy osobiste ze wszystkich sezonów.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Punktacja</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Odległość</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Data upolowania</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Odśwież</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statystki zostaną zaktualizowane po zakończeniu wyprawy.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Poprzedni</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Następny</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Brak zdjęć do wyświetlenia.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Poziom:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Umiejętności</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ten pies nie odblokował jeszcze żadnych umiejętności.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Pies</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Usuń</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Udostępnij to zdjęcie trofeum</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Skopiuj adres URL lub BBCode, aby udostępnić to trofeum znajomym na oficjalnym forum {game} lub w mediach społecznościowych.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>URL obrazu</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>BBCode obrazu</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Logowanie...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Logowanie zakończone!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Ta strona została otwarta, ponieważ {game} musi Cię zalogować.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Kolekcje</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Broń krótka</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Kusze</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Tropienie po krwi</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Ta umiejętność określa jak dobrze pies znajduje ślady krwi.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Wykrywanie</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Ta umiejętność określa jak dobrze pies wykrywa różne gatunki zwierząt.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} godz.</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

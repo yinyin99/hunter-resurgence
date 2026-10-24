@@ -50,3 +50,12 @@ export function dialog(el, want, modal) {
 export function scrollToPack(id) {
     requestAnimationFrame(() => document.querySelector(`[data-pack="${id}"]`)?.scrollIntoView({ block: 'start' }));
 }
+
+// Saves a file made in the app through the browser (a stream from the server side).
+export async function save(name, stream) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([await stream.arrayBuffer()]));
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}

@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Az e-mail címed megváltozott.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Megerősítés újraküldése</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>A megerősítő e-mail újra elküldve.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Megerősítő email újraküldése. Kattints az emailben lévő linkre.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Megerősítő email újraküldése</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Az e-mail újraküldése nem sikerült. Kérjük, próbáld újra, vagy fordulj az ügyfélszolgálathoz.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Nyelv</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Ország</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Figyelmeztetés</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>A Steam-fiókod leválasztása kijelentkeztet a játékból ({game}), és bezárja a launchert. Amíg nem kapcsolódsz egy másik fiókhoz, nem játszhatsz ezzel a játékkal a Steamen: {game}.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Megértettem, és le akarom választani a Steam-fiókomat</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Fejléckép</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>A fejlécképek akkor oldódnak fel, ha három különböző eredménykategóriában – Vadak mestere, Fegyverek mestere és Felfedezés mestere – új szintet érsz el. A feloldott fejlécképek örökre elérhetők maradnak.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Tudj meg többet az Eredménymester-szintekről.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} még nem vett részt egyetlen vadászaton sem, így az összesített egyéni legjobbak nem számíthatók ki.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Pontszám</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Távolság</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Elejtés dátuma</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Frissítés</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>A statisztika a vadászat befejezésével frissül.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Előző</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Következő</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Nincs megjeleníthető kép.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Szint:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Készségek</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ez a kutya még nem oldott fel egyetlen készséget sem.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Kutyusok</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Törlés</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Trófea kép megosztása</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Másold be az URL vagy BB kódot, hogy megoszthasd a trófea képedet a barátaiddal a {game} forumon vagy a közösségi médiában.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Kép URL-je</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Kép BBkódja</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Bejelentkezés...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>A bejelentkezés kész!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Ez az oldal azért nyílt meg, mert a játéknak ({game}) be kell jelentkeztetnie téged.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Gyűjtendők</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pisztolyok</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Számszeríjak</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Vérnyom követés</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Ez a képesség határozza meg, hogy mennyire sikeresen találja meg a vérnyomokat.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Észlelés</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Ez a képesség azt mutatja mennyire észleli a kutya a különböző állat fajokat.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}n</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}ó</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}p</value></data>

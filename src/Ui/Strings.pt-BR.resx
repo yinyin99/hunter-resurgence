@@ -646,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Seu endereço de e-mail foi alterado.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Reenviar confirmação</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>E-mail de confirmação reenviado.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Reenvia o e-Mail de Confirmação. Você precisa clicar no link enviado para o e-Mail.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Reenviar e-Mail de Confirmação</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Falha ao reenviar o e-mail. Tente novamente ou entre em contato com o suporte.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Set.Country" xml:space="preserve"><value>País</value></data>
@@ -668,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Aviso</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Ao desconectar sua conta da Steam, você será desconectado de {game} e o launcher será fechado. Você não poderá jogar {game} na Steam novamente até se conectar a outra conta.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Entendi e quero desconectar minha conta da Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagem de cabeçalho</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>As imagens de cabeçalho são desbloqueadas quando você alcança novos níveis em três categorias de Conquistas: Mestre de Animais, Mestre de Armas e Mestre de Exploração. Depois de desbloqueadas, elas ficam disponíveis para sempre.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Veja mais detalhes sobre os níveis de Mestre de Conquistas.</value></data>
@@ -823,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} ainda não saiu em nenhuma expedição, então não é possível calcular os recordes pessoais de todas as temporadas.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Pontuação</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Distância</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Hora do Abate</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Atualizar</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>As estatísticas serão atualizadas quando a expedição terminar.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Anterior</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Próxima</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Nenhuma imagem para exibir.</value></data>
@@ -837,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Nív.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Habilidades</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Este cão ainda não desbloqueou nenhuma habilidade.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Cão</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Excluir</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Compartilhar Foto</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copie a URL ou o BBCode para compartilhar esta foto com seus amigos no fórum oficial {game} ou nas mídias sociais.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>URL da Imagem</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>BBCode da Imagem</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Fazendo login…</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Login concluído!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Esta página foi aberta porque {game} precisa fazer seu login.</value></data>
@@ -983,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Colecionáveis</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Revólveres</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Bestas</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Rastrear Sangue</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Determina a habilidade de um cão em encontrar rastros de sangue.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detecção</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Determina a habilidade de um cão em detectar diferentes espécies de animais.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}min</value></data>
