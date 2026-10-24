@@ -35,7 +35,7 @@
   <data name="Tip.Friends" xml:space="preserve"><value>Vrienden</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Berichten</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mijn portemonnee / Aankoopgeschiedenis</value></data>
-  <data name="Tip.SignOut" xml:space="preserve"><value>Afmelden</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
@@ -69,10 +69,10 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licentieovereenkomst voor eindgebruikers</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACYBELEID</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENTIEOVEREENKOMST VOOR EINDGEBRUIKERS</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Laatst bijgewerkt op: plaatsvervangende tekst</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Laatst bijgewerkt op: voorbeeldtekst</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INLEIDING</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Plaatsvervangende kop</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Plaatsvervangende tekst. De beheerder van deze dienst levert de echte juridische tekst.</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Voorbeeldkop</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Voorbeeldtekst. De beheerder van deze dienst levert de echte juridische tekst.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Al een jager?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Inloggen</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -88,8 +88,8 @@
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Nieuwsarchief</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>LEDEN ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Discord joinen</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Hang out met mensen die het snappen</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Doe mee op Discord</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Kom chillen met mensen die het snappen</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Op jacht gaan</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLEPLAYER</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
@@ -100,7 +100,7 @@
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Vrienden online:</value></data>
   <data name="Hunt.StartSingle" xml:space="preserve"><value>Een singleplayerspel starten</value></data>
   <data name="Hunt.StartMulti" xml:space="preserve"><value>Een multiplayerspel starten</value></data>
-  <data name="Hunt.OrJoin" xml:space="preserve"><value>Of neem deel aan een spel</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>Of doe mee</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Snel meedoen</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Jouw voortgang</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
@@ -112,17 +112,17 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Komende wedstrijden bekijken</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>SINGLEPLAYERSPEL MAKEN</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>EEN MULTIPLAYERSPEL MAKEN</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Kies waar je jachtsessie begint. Klik op een van de 12 reservelogo's hieronder om een kaart van de bijbehorende reserve te zien en klik op de jachthutten (de huissymbolen) om te ontdekken welke soorten in dat gebied voorkomen. Je kunt ook over de wereldkaart bladeren door te klikken en te slepen, en in- en uitzoomen met het muiswiel.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Kies waar je jachtsessie begint. Klik op een van de 12 reservaatlogo's hieronder om een kaart van het bijbehorende reservaat te zien en klik op de jachthutten (de huissymbolen) om te ontdekken welke soorten in dat gebied voorkomen. Je kunt ook de wereldkaart verkennen door te klikken en te slepen, en in- en uitzoomen met het muiswiel.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Enkele van de mooiste natuurgebieden ter wereld en 45 verschillende diersoorten wachten op je. Veel jachtplezier!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttijd:</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Spel starten</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patchen</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Jachthutten:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Tenten:</value></data>
-  <data name="Launch.NoTents" xml:space="preserve"><value>Je hebt geen tenten in deze reserve. Tenten die je in een reserve plaatst, fungeren als draagbare spawnpunten en toegangspunten tot je inventaris. Koop je tenten in de {0}winkel{1}.</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>Je hebt geen tenten in dit reservaat. Tenten die je in een reservaat plaatst, fungeren als draagbare spawnpunten en toegangspunten tot je inventaris. Koop je tenten in de {0}winkel{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Inzoomen</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Uitzoomen</value></data>
-  <data name="Launch.StartingAt" xml:space="preserve"><value>Begint om {0}</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Start bij {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spelinfo en startpunt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spelnaam:</value></data>
   <data name="Launch.GameOf" xml:space="preserve"><value>Spel van {0}</value></data>
@@ -146,7 +146,7 @@
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Alleen spellen tonen waaraan ik mag meedoen</value></data>
   <data name="Servers.Showing" xml:space="preserve"><value>Getoonde spellen: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Spelnaam</value></data>
-  <data name="Servers.Reserve" xml:space="preserve"><value>Reserve</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Reservaat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelers</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
   <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
@@ -154,7 +154,7 @@
   <data name="Servers.Details" xml:space="preserve"><value>Speldetails</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Meespelen</value></data>
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
-  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserve:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reservaat:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Speltijd:</value></data>
   <data name="Servers.MinScore" xml:space="preserve"><value>Min. Hunter Score:</value></data>
   <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Hunter Score:</value></data>
@@ -180,7 +180,7 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Voer wachtwoord in</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Meespelen</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Sluiten</value></data>
-  <data name="Tut.Intro" xml:space="preserve"><value>Het is aan te raden de basislessen te doorlopen voordat je je eerste echte jacht in de eerste reserve begint. In deze lessen maak je kennis met de vaste boswachter van die reserve. Hij loodst je door de basis en leert je wat je moet weten om succesvol te zijn in {game}.</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Het is aan te raden de basislessen te doorlopen voordat je je eerste echte jacht in het eerste reservaat begint. In deze lessen maak je kennis met de vaste jachtopziener van dat reservaat. Hij loodst je door de basis en leert je wat je moet weten om succesvol te zijn in {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Les starten</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Locatie: {0}</value></data>
   <data name="GameSettings.Title" xml:space="preserve"><value>Spelinstellingen</value></data>
@@ -189,7 +189,7 @@
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Spel starten</value></data>
   <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Volledig scherm</value></data>
-  <data name="GameSettings.Vsync" xml:space="preserve"><value>Verticale synchronisatie</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Verticale sync</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Schermresolutie</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
   <data name="GameSettings.Scene" xml:space="preserve"><value>Omgevingscomplexiteit</value></data>
@@ -308,10 +308,10 @@
   <data name="Signup.P1.Dice" xml:space="preserve"><value>Namen voorstellen</value></data>
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Vorige avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Volgende avatar</value></data>
-  <data name="Signup.P2.Title" xml:space="preserve"><value>KRIJG JE EERSTE WAPEN</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>ONTVANG JE EERSTE WAPEN</value></data>
   <data name="Signup.P2.Text" xml:space="preserve"><value>Je bent al zo ver gekomen, geweldig! Hier is een welkomstcadeau van ons: je eerste wapen, het glimmende 12GA enkelschotsgeweer met gratis aanvulbare munitie. Met dit robuuste schoonheidje kun je alle dieren in het spel weidelijk bejagen, behalve de bizon.</value></data>
-  <data name="Signup.P3.Title" xml:space="preserve"><value>GENIET VAN JE JACHTAKTEN</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>Het is bijna tijd voor je eerste jacht! Waar ga je op jagen? Als gastspeler krijg je gratis jachtlicenties voor het leven voor witstaarthert, Europees konijn en fazant, plus nog twee gratis dieren die wekelijks wisselen. Betalende leden kunnen alle soorten bejagen; bekijk onze lidmaatschapswinkel als je lid wilt worden.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>GENIET VAN JE JACHTLICENTIES</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Het is bijna tijd voor je eerste jacht! Waar ga je op jagen? Als gastspeler krijg je gratis levenslange jachtlicenties voor witstaarthert, Europees konijn en fazant, plus nog twee gratis dieren die wekelijks wisselen. Betalende leden kunnen alle soorten bejagen; bekijk onze lidmaatschapswinkel als je lid wilt worden.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>BEVESTIG JE E-MAILADRES</value></data>
   <data name="Signup.P4.Text" xml:space="preserve"><value>Wie bevestigt, wordt beloond! Controleer je inbox op een bericht van ons en volg de instructies erin. Je huidige e-mailadres is {0}. Als dat niet klopt, wijzig het dan hieronder en klik op "E-mail opnieuw sturen".</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>JOUW BELONING</value></data>
@@ -350,7 +350,7 @@
   <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Omgevingscomplexiteit</value></data>
   <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Kwaliteit schaduwen</value></data>
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Kwaliteit textures</value></data>
-  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Verticale synchronisatie</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Verticale sync</value></data>
   <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Wedstrijden</value></data>
   <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
   <data name="Comp.Title" xml:space="preserve"><value>WEDSTRIJDEN</value></data>
@@ -365,7 +365,7 @@
   <data name="Comp.Players" xml:space="preserve"><value>Spelers</value></data>
   <data name="Comp.Activate" xml:space="preserve"><value>Activeren</value></data>
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deactiveren</value></data>
-  <data name="Comp.CantJoin" xml:space="preserve"><value>Meedoen niet mogelijk</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>Kan niet meedoen</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Vereisten:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Komende wedstrijden</value></data>
@@ -393,23 +393,23 @@
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofee</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Regels en voorwaarden</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Soorten: {0}</value></data>
-  <data name="Comp.Reserves" xml:space="preserve"><value>Reserves: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Reservaten: {0}</value></data>
   <data name="Comp.Description" xml:space="preserve"><value>Beschrijving</value></data>
   <data name="Comp.Weapons" xml:space="preserve"><value>Wapens</value></data>
   <data name="Comp.Scoring" xml:space="preserve"><value>Puntentelling</value></data>
   <data name="Comp.Special" xml:space="preserve"><value>Speciale vereisten</value></data>
   <data name="Comp.Gamemode" xml:space="preserve"><value>Spelmodus</value></data>
-  <data name="Comp.Disclaimer" xml:space="preserve"><value>Er gaat een poging af telkens wanneer je een jacht start in een reserve waar een wedstrijd actief is. Wedstrijden kunnen niet worden geactiveerd terwijl je in het spel zit; wijzigingen die je in het spel aanbrengt, gelden pas de volgende keer dat je een jacht start.</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Er gaat een poging af telkens wanneer je een jacht start in een reservaat waar een wedstrijd actief is. Wedstrijden kunnen niet worden geactiveerd terwijl je in het spel zit; wijzigingen die je in het spel aanbrengt, gelden pas de volgende keer dat je een jacht start.</value></data>
   <data name="Comp.Participants" xml:space="preserve"><value>Deelnemers met een resultaat ({0})</value></data>
   <data name="Comp.Player" xml:space="preserve"><value>Speler</value></data>
   <data name="Comp.Result" xml:space="preserve"><value>Resultaat</value></data>
   <data name="Comp.NoResults" xml:space="preserve"><value>Geen resultaten om weer te geven</value></data>
   <data name="League.Title" xml:space="preserve"><value>COMMUNITY LEAGUE</value></data>
-  <data name="League.P1" xml:space="preserve"><value>Welkom bij de {game} Community League, die ons huidige weekendwedstrijdformat vervangt.</value></data>
-  <data name="League.P2" xml:space="preserve"><value>Jaag elke vrijdag op een ander dier in de aangewezen reserve (dieren die buiten die reserve worden geschoten, tellen niet mee). Je hebt een hele week en 7 pogingen om een resultaat in te leveren. De wedstrijd wordt zoals gewoonlijk geactiveerd en gedeactiveerd. Tijdens de week waarin een dier wordt bejaagd, worden alle reguliere wedstrijden voor dat dier opgeschort. En ja, de aanbiedingen lopen nu een hele week. De beloningen per Leaguewedstrijd komen overeen met die van de weekendwedstrijden die ze vervangen.</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Welkom bij de {game} Community League, die onze huidige weekendwedstrijden vervangt.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>Jaag elke vrijdag op een ander dier in het aangewezen reservaat (dieren die buiten dat reservaat worden geschoten, tellen niet mee). Je hebt een hele week en 7 pogingen om een resultaat in te leveren. De wedstrijd wordt zoals gewoonlijk geactiveerd en gedeactiveerd. Tijdens de week waarin een dier wordt bejaagd, worden alle reguliere wedstrijden voor dat dier opgeschort. En ja, de aanbiedingen lopen nu een hele week. De beloningen per Leaguewedstrijd komen overeen met die van de weekendwedstrijden die ze vervangen.</value></data>
   <data name="League.P3" xml:space="preserve"><value>Evenementen worden niet beïnvloed door de League.</value></data>
   <data name="League.P4" xml:space="preserve"><value>Alle wedstrijden zijn alleen singleplayer, behalve wedstrijden voor eenden of ganzen.</value></data>
-  <data name="League.P5" xml:space="preserve"><value>Elke 4 weken gaan we naar een nieuwe reserve en elke 3 reserves vormen een seizoen.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Elke 4 weken gaan we naar een nieuw reservaat en elke 3 reservaten vormen een seizoen.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Je hoeft niet aan elke Leaguewedstrijd mee te doen om in aanmerking te komen voor de maand- of seizoensprijzen, maar het levert duidelijk voordeel op om zo vaak mogelijk mee te doen.</value></data>
   <data name="League.NotEnrolled" xml:space="preserve"><value>Je bent niet ingeschreven voor wedstrijden</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Maandranglijst</value></data>
@@ -421,8 +421,8 @@
   <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
-  <data name="Board.Single" xml:space="preserve"><value>Enkel gewei</value></data>
-  <data name="Board.Double" xml:space="preserve"><value>Dubbel gewei</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Enkele geweistang</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Paar geweistangen</value></data>
   <data name="Board.TopScores" xml:space="preserve"><value>Topscores voor seizoen {0}</value></data>
   <data name="Board.TopRanges" xml:space="preserve"><value>Topafstanden voor seizoen {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Volledige ranglijst bekijken</value></data>
@@ -453,7 +453,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beschrijving</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Doelen</value></data>
-  <data name="Mis.Reserves" xml:space="preserve"><value>Reserves</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Reservaten</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Beloningen</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inactief</value></data>
   <data name="Mis.Completed" xml:space="preserve"><value>Voltooid</value></data>
@@ -479,7 +479,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Wapens</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alles geselecteerd</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} geselecteerd</value></data>
-  <data name="Mis.HideCompleted" xml:space="preserve"><value>Voltooide verbergen</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Voltooide missies verbergen</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Zoeken</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
   <data name="Mis.Progress" xml:space="preserve"><value>Voortgang:</value></data>
@@ -489,7 +489,7 @@
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Geen beschikbare missies</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Je moet de volgende missies voltooien om {0} te ontgrendelen:</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Er is iets misgegaan en je hebt je item niet gekregen. Sorry. Probeer het opnieuw!</value></data>
-  <data name="Store.Cat.sales" xml:space="preserve"><value>Acties</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Aanbiedingen</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>Alle items</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Bundels</value></data>
   <data name="Store.Cat.0" xml:space="preserve"><value>Wapens</value></data>
@@ -505,10 +505,10 @@
   <data name="Store.Cat.18" xml:space="preserve"><value>Kleding</value></data>
   <data name="Store.Cat.27" xml:space="preserve"><value>Upgrades</value></data>
   <data name="Store.Cat.46" xml:space="preserve"><value>Diensten</value></data>
-  <data name="Store.Cat.114" xml:space="preserve"><value>Trofeeposes</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Trofeefoto-poses</value></data>
   <data name="Store.Cat.24" xml:space="preserve"><value>Uitrusting</value></data>
   <data name="Store.Cat.29" xml:space="preserve"><value>Grote uitrusting</value></data>
-  <data name="Store.Cat.57" xml:space="preserve"><value>Eventitems</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Evenementitems</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trofeehutten</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Voertuigen</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Zoeken</value></data>
@@ -525,7 +525,7 @@
   <data name="Store.BundlePrice" xml:space="preserve"><value>Bundelprijs</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Capaciteitskosten</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Dit item kan niet worden gekocht</value></data>
-  <data name="Store.MaxOwn" xml:space="preserve"><value>Deze bundel kan niet worden gekocht. De maximale bezitslimiet is bereikt voor minstens één van de meegeleverde items</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Deze bundel kan niet worden gekocht. Voor minstens één van de inbegrepen items is het maximumaantal dat je mag bezitten al bereikt</value></data>
   <data name="Store.None" xml:space="preserve"><value>Geen items in deze categorie</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Store.ClickMore" xml:space="preserve"><value>Klik om details te bekijken</value></data>
@@ -557,8 +557,8 @@
   <data name="Wal.NoneVirtual" xml:space="preserve"><value>Je hebt nog geen aankopen gedaan met {0}.</value></data>
   <data name="Wal.NoneBank" xml:space="preserve"><value>Je hebt nog geen aankopen gedaan.</value></data>
   <data name="Wal.AmountOf" xml:space="preserve"><value>Bedrag ({0})</value></data>
-  <data name="Wal.Before" xml:space="preserve"><value>Saldo vooraf</value></data>
-  <data name="Wal.After" xml:space="preserve"><value>Saldo achteraf</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Saldo voor</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Saldo na</value></data>
   <data name="Wal.Items" xml:space="preserve"><value>Items</value></data>
   <data name="Wal.More" xml:space="preserve"><value>Meer tonen</value></data>
   <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Gekocht als cadeau. Ingewisseld op {0}.</value></data>
@@ -583,8 +583,8 @@
   <data name="Bank.Basic" xml:space="preserve"><value>Basislidmaatschappen</value></data>
   <data name="Bank.Months" xml:space="preserve"><value>Lidmaatschap van {0} maanden</value></data>
   <data name="Bank.Animals" xml:space="preserve"><value>Licentie om op alle dieren te jagen</value></data>
-  <data name="Bank.Reserves" xml:space="preserve"><value>Toegang tot alle reserves</value></data>
-  <data name="Bank.Ammo" xml:space="preserve"><value>Onbeperkt basismunitie</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Toegang tot alle reservaten</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Onbeperkte basismunitie</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Items die bij een lidmaatschap zijn inbegrepen of apart zijn gekocht, behoud je ook als je lidmaatschap verloopt</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Vergeleken met 3 maanden {game}-lidmaatschap</value></data>
@@ -679,7 +679,7 @@
   <data name="GM.Home" xml:space="preserve"><value>STARTPAGINA</value></data>
   <data name="GM.Choose" xml:space="preserve"><value>Kies een sectie.</value></data>
   <data name="GM.LodgeTitle" xml:space="preserve"><value>KEUZE TROFEEHUT</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Je bezit momenteel geen hutten.</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Je bezit momenteel geen trofeehutten.</value></data>
   <data name="GM.BaitTitle" xml:space="preserve"><value>BEHEER VAN LOKAASLOCATIES</value></data>
   <data name="GM.Fill" xml:space="preserve"><value>Voerplaats vullen tot:</value></data>
   <data name="GM.BaitCol" xml:space="preserve"><value>Lokaas</value></data>
@@ -692,7 +692,7 @@
   <data name="Welcome.Retail" xml:space="preserve"><value>Heb je een retailcode?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Als je een retailversie van {game} hebt gekocht, {0}klik dan hier{1} om je retailcode te activeren.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Lessen</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Laat de Doc, de vaste boswachter van het Evergreen Hunting Reserve, je alles leren wat je moet weten over het spelen van {game}.</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Laat Doc, de vaste jachtopziener van het Evergreen Hunting Reserve, je alles leren wat je moet weten over het spelen van {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Naar de lessen</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Op jacht gaan</value></data>
   <data name="Welcome.HuntingText" xml:space="preserve"><value>Start een echte jacht als je al bekend bent met {game} of als je gewoon niet kunt wachten om erop uit te trekken.</value></data>
@@ -713,19 +713,19 @@
   <data name="Invite.How" xml:space="preserve"><value>Zo nodig je een vriend uit</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Verstuur een uitnodiging</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Klik op de knop hieronder om je verwijzingslink te krijgen en stuur die naar een vriend die je voor {game} wilt uitnodigen.</value></data>
-  <data name="Invite.Step2" xml:space="preserve"><value>Speel samen {game}</value></data>
-  <data name="Invite.Step2Text" xml:space="preserve"><value>Wanneer je vriend een account registreert {0}via jouw link{1}, krijgt hij 200 em$, een 5x30mm-afstandsmeter, een eland-lokfluit en een geurneutralisator!</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Speel {game} samen</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Wanneer je vriend een account registreert {0}via jouw link{1}, ontvangt je vriend 200 em$, een 5x30mm-afstandsmeter, een elandlokfluit en een geurneutralisator!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Word beloond</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Als je vriend em$ koopt, word je beloond!</value></data>
   <data name="Invite.SeeRewards" xml:space="preserve"><value>Zie de beloningen hieronder</value></data>
   <data name="Invite.Button" xml:space="preserve"><value>Klik hier om een vriend uit te nodigen</value></data>
   <data name="Invite.Rewards" xml:space="preserve"><value>Beloningen</value></data>
   <data name="Invite.Note1" xml:space="preserve"><value>* De verwijzingsbeloning krijg je de eerste keer dat een uitgenodigde vriend em$ koopt. Je wordt hiervoor maar één keer beloond voor ELKE verwijzing.</value></data>
-  <data name="Invite.Note2" xml:space="preserve"><value>** De beloning voor de eerste aankoop krijg je de eerste keer dat WILLEKEURIG WELKE uitgenodigde vriend dat bedrag aan em$ koopt. Je verzamelt deze beloningen slechts één keer per stuk, niet per aankoop.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** De beloning voor de eerste aankoop krijg je de eerste keer dat EEN VAN je uitgenodigde vrienden dat bedrag aan em$ koopt. Je ontvangt elk van deze beloningen slechts één keer, niet per aankoop.</value></data>
   <data name="Invite.Purchases" xml:space="preserve"><value>Als je vriend koopt</value></data>
   <data name="Invite.YouGet" xml:space="preserve"><value>Jij krijgt*</value></data>
   <data name="Invite.OneTime" xml:space="preserve"><value>Eenmalige beloning**</value></data>
-  <data name="Invite.Recruits" xml:space="preserve"><value>Mijn rekruten</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Mijn uitgenodigde vrienden</value></data>
   <data name="Invite.User" xml:space="preserve"><value>Gebruiker</value></data>
   <data name="Invite.Joined" xml:space="preserve"><value>Aangemeld</value></data>
   <data name="Invite.Reward" xml:space="preserve"><value>Beloning</value></data>
@@ -747,11 +747,11 @@
   <data name="Prof.TipRank" xml:space="preserve"><value>Rang van {0} voor Hunter Score</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} is online</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Vriendschapsverzoek sturen</value></data>
-  <data name="Prof.RequestPending" xml:space="preserve"><value>Vriendschapsverzoek in behandeling</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Vriendschapsverzoek in afwachting</value></data>
   <data name="Prof.Overview" xml:space="preserve"><value>Overzicht</value></data>
   <data name="Prof.Animals" xml:space="preserve"><value>Dieren</value></data>
   <data name="Prof.Weapons" xml:space="preserve"><value>Wapens</value></data>
-  <data name="Prof.Collectables" xml:space="preserve"><value>Verzamelingen</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Verzamelobjecten</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Voortgang</value></data>
   <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Categorieën</value></data>
@@ -764,22 +764,22 @@
   <data name="Prof.Total" xml:space="preserve"><value>Totaal</value></data>
   <data name="Prof.Species" xml:space="preserve"><value>Soorten</value></data>
   <data name="Prof.Spotting" xml:space="preserve"><value>Spotten</value></data>
-  <data name="Prof.Tracking" xml:space="preserve"><value>Sporen</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Volgen</value></data>
   <data name="Prof.Shooting" xml:space="preserve"><value>Schieten</value></data>
   <data name="Prof.Lvl" xml:space="preserve"><value>Niv.</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>Statistieken</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Laatste jacht</value></data>
-  <data name="Stat.Lifetime" xml:space="preserve"><value>Statistieken over alle tijd</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Totale statistieken</value></data>
   <data name="Stat.History" xml:space="preserve"><value>Jachtgeschiedenis</value></data>
   <data name="Stat.Best" xml:space="preserve"><value>Persoonlijke records</value></data>
   <data name="Stat.Misc" xml:space="preserve"><value>Overig</value></data>
-  <data name="Stat.Antlers" xml:space="preserve"><value>Geweiverzamelingen</value></data>
-  <data name="Stat.Kills" xml:space="preserve"><value>Bevestigde kills</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Verzamelbare geweien</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Bevestigd afschot</value></data>
   <data name="Stat.Weapon" xml:space="preserve"><value>Wapen</value></data>
   <data name="Stat.Ammo" xml:space="preserve"><value>Munitie</value></data>
   <data name="Stat.Shots" xml:space="preserve"><value>Schoten</value></data>
-  <data name="Stat.Accuracy" xml:space="preserve"><value>Treffernauwkeurigheid</value></data>
-  <data name="Stat.PerHit" xml:space="preserve"><value>Kills per treffer</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Trefzekerheid</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Afschot per treffer</value></data>
   <data name="Stat.Longest" xml:space="preserve"><value>Langste schot</value></data>
   <data name="Stat.Species" xml:space="preserve"><value>Soorten</value></data>
   <data name="Stat.Spotted" xml:space="preserve"><value>Gespot</value></data>
@@ -796,16 +796,16 @@
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Geen interacties met dieren tijdens deze expeditie.</value></data>
   <data name="Stat.NoCollectExp" xml:space="preserve"><value>Geen verzamelobjecten verzameld tijdens deze expeditie.</value></data>
   <data name="Stat.NoAchExp" xml:space="preserve"><value>Geen prestaties behaald tijdens deze expeditie.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Geen geweiverzamelingen verzameld tijdens deze expeditie.</value></data>
-  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Geen bevestigde kills tijdens deze expeditie.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Geen verzamelbare geweien verzameld tijdens deze expeditie.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Geen bevestigd afschot tijdens deze expeditie.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Deze jager heeft nog geen expedities gedaan.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>
   <data name="Stat.Dur" xml:space="preserve"><value>Duur</value></data>
-  <data name="Stat.Reserve" xml:space="preserve"><value>Reserve</value></data>
-  <data name="Stat.Lodge" xml:space="preserve"><value>Hut</value></data>
-  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Verzamelingen</value></data>
-  <data name="Stat.KillsCol" xml:space="preserve"><value>Kills</value></data>
-  <data name="Stat.AllTime" xml:space="preserve"><value>Alle tijd</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Reservaat</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Jachthut</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Verzamelobjecten</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Afschot</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>Aller tijden</value></data>
   <data name="Stat.Season" xml:space="preserve"><value>Seizoen {0}</value></data>
   <data name="Stat.BestDisabled" xml:space="preserve"><value>De functie voor persoonlijke records is momenteel uitgeschakeld.</value></data>
   <data name="Stat.BestQueued" xml:space="preserve"><value>Het persoonlijk record voor {0} en seizoen {1} staat in de wachtrij om te worden berekend. Kom binnenkort terug.</value></data>
@@ -930,14 +930,14 @@
   <data name="Term.collectable.1020" xml:space="preserve"><value>Bruine valentijnsteddybeer</value></data>
   <data name="Term.collectable.1025" xml:space="preserve"><value>Rode valentijnsroos</value></data>
   <data name="Term.collectable.1014" xml:space="preserve"><value>Gouden valentijnsballon</value></data>
-  <data name="Term.collectable.2039" xml:space="preserve"><value>Gewei van niet-typische witstaarthert</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Niet-typisch witstaarthertgewei</value></data>
   <data name="Term.collectable.1037" xml:space="preserve"><value>Gouden cadeau</value></data>
   <data name="Term.collectable.2000" xml:space="preserve"><value>Witstaarthertgewei</value></data>
   <data name="Term.collectable.2001" xml:space="preserve"><value>Muildierhertgewei</value></data>
   <data name="Term.collectable.2003" xml:space="preserve"><value>Roosevelt-wapitigewei</value></data>
-  <data name="Term.collectable.2040" xml:space="preserve"><value>Gewei van niet-typische muildierhert</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Niet-typisch muildierhertgewei</value></data>
   <data name="Term.collectable.2006" xml:space="preserve"><value>Zwartstaarthertgewei</value></data>
-  <data name="Term.collectable.2041" xml:space="preserve"><value>Gewei van niet-typische zwartstaarthert</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Niet-typisch zwartstaarthertgewei</value></data>
   <data name="Term.collectable.2008" xml:space="preserve"><value>Elandgewei</value></data>
   <data name="Term.collectable.1021" xml:space="preserve"><value>Rode valentijnsteddybeer</value></data>
   <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
@@ -954,7 +954,7 @@
   <data name="Term.collectable.1005" xml:space="preserve"><value>Oranje pompoen</value></data>
   <data name="Term.collectable.1006" xml:space="preserve"><value>Bruine pompoen</value></data>
   <data name="Term.collectable.1007" xml:space="preserve"><value>Gele pompoen</value></data>
-  <data name="Term.collectable.1008" xml:space="preserve"><value>Pot goud</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Pot met goud</value></data>
   <data name="Term.collectable.1009" xml:space="preserve"><value>Oud aboriginalmes</value></data>
   <data name="Term.collectable.1010" xml:space="preserve"><value>Oud aboriginalmes</value></data>
   <data name="Term.collectable.1011" xml:space="preserve"><value>Oud aboriginalmes</value></data>
@@ -973,7 +973,7 @@
   <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Singleplayer</value></data>
   <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Dieren</value></data>
   <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Wapens</value></data>
-  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Verzamelingen</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Verzamelobjecten</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pistolen</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Kruisbogen</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
