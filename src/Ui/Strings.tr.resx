@@ -138,6 +138,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>En fazla:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Başlat</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Oyun Oluştur</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Oyun oturumunuz oluşturulurken bir sorun oluştu. Lütfen sunucu listesini yeniden yükleyin ve başka bir oyuna katılmayı deneyin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ÇOK OYUNCULU OYUN BUL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Oyun veya kurucu ara...</value></data>
@@ -169,6 +171,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Katılabileceğiniz herkese açık çok oyunculu oyun bulamadık.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>KENDİ OYUNUNUZU KURUN</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Bu oyun şifre korumalıdır</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parola gerekli</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Yama uygulanıyor...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Avrupa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Kuzey Amerika</value></data>
@@ -180,6 +184,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Şifre girin</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Oyuna Katıl</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Kapat</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Yanlış parola. Lütfen tekrar deneyin.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Şimdilik avı bitirdin mi?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Av istatistiklerini görüntüle</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>HEMEN AVLAN</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Başka bir oyun başlatmak için bu pencereyi kapatın ve {0} düğmesine tekrar tıklayın.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Bağlantı sorunu mu vardı?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Çok oyunculu modda arkadaşlarınıza bağlanırken sorun mu yaşıyorsunuz? Bunun birçok nedeni olabilir ve hepsi doğrudan oyunla ilgili olmayabilir. Daha fazla bilgi için sorun giderme kılavuzundaki {0} bölümüne göz atın.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>bağlantı sorunları</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Oyun özellikleri hakkında daha fazla bilgiye mi ihtiyacın var?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Avını bulamıyor musun? Belirli bir ekipmanın nasıl kullanılacağını mı çözemedin? Hangi av sahasının sana en uygun olduğunu mu merak ediyorsun? Daha fazla bilgi için {0} sayfasına göz at. Wiki topluluk tarafından oluşturulur ve yönetilir; sorunun cevabını orada bulamazsan {1} üzerinden sormaktan çekinme.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Başka teknik sorunların mı var?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Oyunu başlatırken bir sorun mu oldu? Garip bir hata mesajı mı aldın? {0} sayfasına göz at; sorununun cevabını bulamazsan {1} ekibimize bir mesaj gönder.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>sorun giderme kılavuzu</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>destek</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>İlk rezervde ilk gerçek avınıza başlamadan önce temel eğitimleri oynamanız önerilir. Bu eğitimlerde o rezervin yerleşik bekçisiyle tanışacaksınız. Size temel bilgileri gösterecek ve {game} oyununda başarılı olmak için bilmeniz gerekenleri öğretecek.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Eğitimi başlat</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Konum: {0}</value></data>
@@ -367,6 +387,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Devre dışı bırak</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Katılınamıyor</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Çok oyunculu</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Çoklu tür</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Gereksinimler:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Yaklaşan yarışmalar</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Geçmiş yarışmalar</value></data>
@@ -391,6 +412,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Geçmiş</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Ödüller</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Kupa</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ ve bir kupa</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ ve bir kupa</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Kurallar ve Koşullar</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Türler: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Rezervler: {0}</value></data>
@@ -414,6 +439,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Hiçbir yarışmaya kayıtlı değilsiniz</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Aylık Sıralama</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sezon Sıralaması</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Puan</value></data>
   <data name="Board.Title" xml:space="preserve"><value>SIRALAMALAR</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Skor</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Mesafe</value></data>

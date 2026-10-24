@@ -138,6 +138,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Skapa spel</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>start upplägg</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>senast använd utrustning</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Något gick fel när din spelsession skulle skapas. Ladda om serverlistan och försök gå med i ett annat spel.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>HITTA ETT FLERSPELARSPEL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Hitta ett spel eller en värd...</value></data>
@@ -169,6 +171,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Vi hittade inga offentliga flerspelarspel som du får gå med i.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>STARTA ETT EGET SPEL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Det här spelet är lösenordsskyddat</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Lösenord krävs</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Uppdaterar...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverplats: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
@@ -180,6 +184,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Ange lösenord</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Gå med i spel</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Stäng</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Fel lösenord. Försök igen.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Klar med jakten för tillfället?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Visa jaktstatistik</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>JAGA NU</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>För att starta ett nytt spel, stäng det här fönstret och klicka på knappen {0} igen.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Var det ett anslutningsproblem?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Har du problem att ansluta till dina vänner i multiplayer? Det kan finnas många orsaker och inte allt behöver ha direkt med spelet att göra. Läs avsnittet om {0} i felsökningsguiden för mer information.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>anslutningsproblem</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Behöver du mer information om spelets funktioner?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Hittar du inte ditt byte? Kommer du inte på hur en viss utrustning används? Undrar du vilket jaktområde som passar dig bäst? Kolla in {0} för mer information. Wikin skapas och drivs av communityn, och om du inte hittar svar på din fråga där, fråga gärna i {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game}-wikin</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forumet</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Har du andra tekniska problem?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Uppstod det ett problem när spelet skulle starta? Fick du ett konstigt felmeddelande? Gå till {0}, och om du inte hittar svaret på ditt problem, skicka ett meddelande till vår {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>felsökningsguiden</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>support</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Vi rekommenderar att du går igenom de grundläggande guiderna innan du ger dig ut på din första riktiga jakt i det första jaktområdet. I guiderna träffar du områdets uppsyningsman, som går igenom grunderna och lär dig det du behöver veta för att lyckas i {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Starta guide</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Plats: {0}</value></data>
@@ -367,6 +387,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Inaktivera</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Kan ej delta</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Flerspelarläge</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Flera arter</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Krav:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Kommande tävlingar</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Tidigare tävlingar</value></data>
@@ -391,6 +412,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Historik</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Priser</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofé</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ och en trofé</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ och en trofé</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Regler och villkor</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Arter: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Jaktområden: {0}</value></data>
@@ -414,6 +439,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Du är inte anmäld till några tävlingar</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Månadstopplista</value></data>
   <data name="League.Season" xml:space="preserve"><value>Säsongstopplista</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Poäng</value></data>
   <data name="Board.Title" xml:space="preserve"><value>TOPPLISTOR</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Poäng</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Avstånd</value></data>
