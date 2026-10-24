@@ -1,0 +1,38 @@
+@inject ModalService Modal
+
+@* confirms the use of an item that activates something (the resume item of a broken daily streak); the mock uses up one *@
+<div class="buy dialog-card" role="dialog" aria-modal="true">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+    @if (state == 0)
+    {
+        <h2>@L["Mis.ConfirmActivation"]</h2>
+        <p class="line">@Item.Name</p>
+        <p class="line">@L["Store.Own"] @Item.Owned</p>
+        <div class="buttons"><button class="btn btn-primary" id="activate-item" disabled="@busy" @onclick="Go">@L["Mis.Activate"]</button></div>
+    }
+    else if (state == 1) { <h2>@L["Mis.ActivationDone"]</h2><p class="line">@L["Mis.Enjoy"]</p> }
+    else { <h2>@L["Store.Oops"]</h2><p class="line">@L["Mis.Failed"]</p><div class="buttons"><button class="btn btn-primary" @onclick="Modal.Close">@L["Alert.Ok"]</button></div> }
+</div>
+
+@code {
+    int state;
+    bool busy;
+
+    [Parameter, EditorRequired] public ResumeItem Item { get; set; } = null!;
+    /// <summary>Uses the item.</summary>
+    [Parameter, EditorRequired] public Func<Task<Result>> Activate { get; set; } = null!;
+    /// <summary>Called when the success note has gone, so the page can read its data again.</summary>
+    [Parameter, EditorRequired] public Func<Task> Done { get; set; } = null!;
+
+    async Task Go()
+    {
+        busy = true;
+        state = (await Activate()).Ok ? 1 : 2;
+        busy = false;
+        if (state != 1) return;
+        StateHasChanged();
+        await Task.Delay(2000);
+        Modal.Close();
+        await Done();
+    }
+}

@@ -3,7 +3,12 @@
 <div class="video" role="dialog" aria-modal="true" tabindex="0" @onkeydown="Key" @ref="box">
     <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
     <div class="frame"><AssetSlot Name="@Slot" Width="900" Height="506" /></div>
-    <p>@Title</p>
+    @if (Titles.Count > 1)
+    {
+        <button type="button" class="nav prev" aria-label="@L["Pager.Prev"]" @onclick="Prev"><Icon Name="chevron-left" /></button>
+        <button type="button" class="nav next" aria-label="@L["Pager.Next"]" @onclick="Next"><Icon Name="chevron-right" /></button>
+    }
+    <p>@(Titles.Count > 0 ? Titles[Index] : Title)</p>
 </div>
 
 @code {
@@ -12,9 +17,20 @@
     [Parameter, EditorRequired] public string Title { get; set; } = "";
     /// <summary>The picture slot: a video, or a gallery photo in the same lightbox.</summary>
     [Parameter] public string Slot { get; set; } = "video";
+    /// <summary>The captions of a row of pictures: the arrows and the arrow keys go through them in a circle (a gallery page).</summary>
+    [Parameter] public IReadOnlyList<string> Titles { get; set; } = [];
+    [Parameter] public int Index { get; set; }
+
+    void Prev() => Index = (Index + Titles.Count - 1) % Titles.Count;
+    void Next() => Index = (Index + 1) % Titles.Count;
 
     // Escape closes the video, as in the old app
-    void Key(KeyboardEventArgs e) { if (e.Key == "Escape") Modal.Close(); }
+    void Key(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape") Modal.Close();
+        else if (Titles.Count > 1 && e.Key == "ArrowLeft") Prev();
+        else if (Titles.Count > 1 && e.Key == "ArrowRight") Next();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

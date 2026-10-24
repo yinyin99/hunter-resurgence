@@ -1,8 +1,14 @@
 @* the statistics of one expedition: the last hunt of a hunter, or one expedition of the history *@
 <div class="head">
     <span class="where">@Hunt.Reserve</span>
-    <span class="when">@Hunt.Start.ToString("yyyy-MM-dd HH:mm") UTC - @(Hunt.End is { } e ? e.ToString("yyyy-MM-dd HH:mm") + " UTC" : "")</span>
+    <span class="when">@Hunt.Start.ToString("yyyy-MM-dd HH:mm") UTC - @(Hunt.End is { } e ? e.ToString("yyyy-MM-dd HH:mm") + " UTC" : L["Stat.Ongoing"])</span>
 </div>
+@if (Hunt.End is null)
+{
+    // the old page shows nothing else until the expedition is over
+    <p>@L["Stat.WhenEnded"]</p>
+    return;
+}
 <h4>@L["Prof.Weapons"]</h4>
 @if (Hunt.Weapons.Count == 0) { <p>@L["Stat.NoShotsExp"]</p> }
 else { <WeaponTable Weapons="Hunt.Weapons" /> }
@@ -28,8 +34,8 @@ else { <ul>@foreach (var a in Hunt.Antlers) { <li>@a</li> } </ul> }
 else
 {
     <table class="kills tbl">
-        <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td></tr> }</tbody>
+        <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th>@if (Hunt.Kills.Any(k => k.Taxidermy is not null)) { <th></th> }</tr></thead>
+        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td>@if (k.Taxidermy is { } t) { <td><TaxidermyButton Kill="k" Offer="t" /></td> }</tr> }</tbody>
     </table>
 }
 

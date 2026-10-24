@@ -1,7 +1,29 @@
+@implements IDisposable
 @inject IFriendsService Friends
 @inject ModalService Modal
+@inject IJSRuntime JS
 
 <div class="friends-dropdown">
+    @if (requests.Count > 0)
+    {
+        var handle = requests[Math.Min(active, requests.Count - 1)];
+        <div class="requests">
+            <div class="top cycle-bar">
+                <button type="button" class="cycle left" aria-label="@L["Friends.Previous"]" @onclick="() => Cycle(-1)"><Icon Name="caret-right" /></button>
+                <div class="title">@L["Friends.Request", active + 1, requests.Count]</div>
+                <button type="button" class="cycle right" aria-label="@L["Friends.Next"]" @onclick="() => Cycle(1)"><Icon Name="caret-right" /></button>
+            </div>
+            <div class="request">
+                <AssetSlot Name="avatar" Width="40" Height="40" />
+                <span class="handle">@handle</span>
+                <div class="content">@L.Frag("Friends.WantsToBe", HandleLink(handle))</div>
+                <div class="answer">
+                    <button class="btn btn-primary" @onclick="() => Answer(handle, true)">@L["Friends.Accept"]</button>
+                    <button class="btn btn-inverse" @onclick="() => Answer(handle, false)">@L["Friends.Decline"]</button>
+                </div>
+            </div>
+        </div>
+    }
     <div class="top">
         <div class="title">@L["Friends.Title", friends.Count]</div>
         <div class="search"><Icon Name="magnifying-glass" /><input class="field" type="text" placeholder="@L["Friends.Search"]" @oninput="Search" /></div>
@@ -16,7 +38,7 @@
                     <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
                     @if (f.Online) { <span class="online" aria-hidden="true"></span> }
                     <span class="buttons">
-                        <a class="btn btn-primary" href="/new-message/@f.Handle">@L["Friends.SendMessage"]</a>
+                        <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a>
                         <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
                     </span>
                 </li>
@@ -38,16 +60,16 @@
                         <span class="buttons">
                             @if (friends.Any(x => x.Handle == f.Handle))
                             {
-                                <a class="btn btn-primary" href="/new-message/@f.Handle">@L["Friends.SendMessage"]</a>
+                                <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a>
                                 <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
                             }
-                            else if (sent.Contains(f.Handle))
+                            else if (pending.Contains(f.Handle))
                             {
-                                <button class="btn btn-inverse" disabled>@L["Friends.RequestSent"]</button>
+                                <button class="btn btn-inverse" disabled>@L[sentNow.Contains(f.Handle) ? "Friends.RequestSent" : "Prof.RequestPending"]</button>
                             }
                             else
                             {
-                                <button class="btn btn-primary" @onclick="() => sent.Add(f.Handle)">@L["Friends.SendRequest"]</button>
+                                <button class="btn btn-primary" @onclick="() => SendRequest(f.Handle)">@L["Friends.SendRequest"]</button>
                             }
                         </span>
                     </li>
@@ -58,21 +80,71 @@
 </div>
 
 @code {
+    readonly HashSet<string> sentNow = [];
+    readonly CancellationTokenSource stop = new();
+    CancellationTokenSource? typing;
     IReadOnlyList<Friend> friends = [];
     IReadOnlyList<Friend>? found;
-    readonly HashSet<string> sent = [];
+    IReadOnlyList<string> requests = [], pending = [];
+    int active;
 
-    protected override async Task OnInitializedAsync() => friends = await Friends.FriendsAsync();
+    /// <summary>Raised after a request is answered, so the status bar's count follows.</summary>
+    [Parameter] public EventCallback Changed { get; set; }
 
-    /// <summary>From 3 characters; shorter text shows the friends list again.</summary>
+    protected override async Task OnInitializedAsync()
+    {
+        (friends, requests, pending) = (await Friends.FriendsAsync(), await Friends.RequestsAsync(), await Friends.PendingAsync());
+    }
+
+    RenderFragment HandleLink(string handle) => @<a href="/profile/@handle">@handle</a>;
+
+    void Cycle(int step) => active = (active + step + requests.Count) % requests.Count;
+
+    async Task Answer(string handle, bool accept)
+    {
+        await (accept ? Friends.AcceptAsync(handle) : Friends.DeclineAsync(handle));
+        (friends, requests, active) = (await Friends.FriendsAsync(), await Friends.RequestsAsync(), 0);
+        await Changed.InvokeAsync();
+    }
+
+    /// <summary>From 3 characters, 0.4 s after the last key (a slower answer to an older text is dropped); shorter text shows the friends list again.</summary>
     async Task Search(ChangeEventArgs e)
     {
+        typing?.Cancel();
         var text = e.Value?.ToString() ?? "";
-        found = text.Length >= 3 ? await Friends.SearchAsync(text) : null;
+        if (text.Length < 3) { found = null; return; }
+        var mine = typing = CancellationTokenSource.CreateLinkedTokenSource(stop.Token);
+        try { await Task.Delay(400, mine.Token); }
+        catch (OperationCanceledException) { return; }
+        var list = await Friends.SearchAsync(text);
+        if (!mine.IsCancellationRequested) found = list;
+    }
+
+    async Task SendRequest(string handle)
+    {
+        await Friends.SendRequestAsync(handle);
+        pending = [.. pending, handle];
+        sentNow.Add(handle);
     }
 
     async Task Remove(Friend f)
     {
-        if (await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle])) friends = friends.Where(x => x != f).ToList();
+        var yes = await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle]);
+        // the dialog took the page's focus and the browser closed the list: it stays open as it did in the old app
+        await Popover("showPopover");
+        if (!yes) return;
+        await Friends.RemoveAsync(f.Handle);
+        friends = await Friends.FriendsAsync();
     }
+
+    /// <summary>"Send message" closes the list (the link goes on to the page).</summary>
+    Task Close() => Popover("hidePopover");
+
+    async Task Popover(string function)
+    {
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await shell.InvokeVoidAsync(function, "friends");
+    }
+
+    public void Dispose() => stop.Cancel();
 }

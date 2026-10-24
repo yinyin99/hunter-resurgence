@@ -1,5 +1,6 @@
 @page "/missions/daily"
 @inject IMissionsService Service
+@implements IDisposable
 @inject ModalService Modal
 
 <PageTitle>@L["Mis.Daily"]</PageTitle>
@@ -11,19 +12,22 @@
     <div class="calendar">
         @foreach (var day in d.Days)
         {
-            <div class="card @(day.Number == d.Today ? "today" : "") @(day.Stars > 1 ? "big" : "")">
-                <h6>@Label(day.Number)</h6>
+            var n = day.Number;
+            <button type="button" class="card hover-tint @(n == sel ? "active" : "") @(day.Stars > 1 ? "big" : "")" aria-pressed="@(n == sel ? "true" : "false")" @onclick="() => sel = n">
+                <h6>@Label(n)</h6>
                 <div class="body">
                     <AssetSlot Name="paw-badge" Width="80" Height="80" Class="badge" />
                     <div class="stars" aria-label="@day.Stars">@string.Concat(Enumerable.Repeat("★", day.Stars))</div>
                     <div class="gms">@day.Gms gm$</div>
                 </div>
-            </div>
+            </button>
         }
     </div>
-    var m = d.Selected;
+    var m = d.Missions[sel - 1];
+    var frozen = m.Frozen;
     <section class="detail">
-        <span class="ribbon">@L[m.Frozen ? "Mis.Inactive" : "Mis.Completed"]</span>
+        @if (frozen) { <span class="ribbon">@L["Mis.Inactive"]</span> }
+        else if (sel < d.Today) { <span class="ribbon">@L["Mis.Completed"]</span> }
         <h2>@m.Title</h2>
         <div class="who"><AssetSlot Name="mission-giver" Width="150" Height="150" /><div><h3>@L["Mis.Description"]</h3><p>@m.Description</p></div></div>
         <AssetSlot Name="mission-picture" Width="250" Height="250" Class="pic" />
@@ -33,11 +37,22 @@
         <p class="indent">@m.Reserve</p>
         <h3>@L["Mis.Rewards"]</h3>
         <ul>@foreach (var r in m.Rewards) { <li>@r</li> }</ul>
-        @if (m.Frozen)
+        @if (frozen)
         {
             <p class="broken">@L["Mis.Broken"]</p>
             <p class="broken">@L["Mis.BrokenNote"]</p>
-            <button type="button" class="btn btn-primary" id="activate-dm" @onclick="Activate">@L["Mis.Activate"]</button>
+            <div class="actions">
+                <button type="button" class="btn btn-primary" id="activate-dm" @onclick="Activate">@L["Mis.Activate"]</button>
+                @if (d.Resume is { } item)
+                {
+                    @if (item.Owned > 0) { <button type="button" class="btn btn-primary" id="bottom-block-resume-streak" @onclick="() => Resume(item)">@L["Mis.Use"]</button> }
+                    else { <a class="btn btn-primary" id="buy-resume-streak" href="/store/item/@item.Id">@L["Mis.Buy"]</a> }
+                }
+            </div>
+        }
+        else if (sel == d.Today)
+        {
+            <p class="timer">@L[left > 0 ? "Mis.EndsIn" : "Mis.Ended"] <b>@Fmt.Elapsed(L, Math.Max(left, 0))</b></p>
         }
     </section>
 }
@@ -47,20 +62,49 @@ else { <div class="skeleton skeleton-page"></div> }
 @code {
     DailyCalendar? d;
     IReadOnlyList<(string, string)> tabs = [];
+    int sel, left;
+    PeriodicTimer? timer;
 
     protected override async Task OnInitializedAsync()
     {
         tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
-        d = await Service.DailyAsync();
+        await Read();
     }
+
+    async Task Read()
+    {
+        d = await Service.DailyAsync();
+        sel = sel == 0 ? d.Today : sel;
+        left = d.EndsIn;
+    }
+
+    // the day counts down once a second and the page is read again at 0, as the old page reloads
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        timer = new(TimeSpan.FromSeconds(1));
+        while (await timer.WaitForNextTickAsync())
+        {
+            if (--left <= 0) await Read();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose() => timer?.Dispose();
 
     string Label(int day) => L["Mis.Day", day] + (day == d!.Today ? $" ({L["Mis.Today"]})" : day == d.Today + 1 ? $" ({L["Mis.Tomorrow"]})" : "");
 
-    // activating is fake in the mock: the page is read again
     async Task Activate()
     {
         var r = await Service.ActivateAsync(-1);
         Modal.Alert(r.Ok ? L["Mis.ActivationDone"] + " " + L["Mis.Enjoy"] : L["Mis.Failed"]);
-        d = await Service.DailyAsync();
+        await Read();
+    }
+
+    void Resume(ResumeItem item)
+    {
+        Func<Task<Result>> activate = Service.ResumeStreakAsync;
+        Func<Task> done = Read;
+        Modal.Show<ConfirmActivateModal>(new Dictionary<string, object?> { ["Item"] = item, ["Activate"] = activate, ["Done"] = done });
     }
 }

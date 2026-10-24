@@ -37,7 +37,7 @@
     default:
         <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
             <option value="0">@L["Stat.AllTime"]</option>
-            @foreach (var n in Enumerable.Range(1, 15)) { <option value="@n">@L["Stat.Season", n]</option> }
+            @foreach (var n in Enumerable.Range(1, seasons)) { <option value="@n">@L["Stat.Season", n]</option> }
         </select>
         @if (best is not null) { @Best() }
         break;
@@ -50,6 +50,7 @@
     Page<HistoryRow>? history;
     PersonalBest? best;
     int season;
+    int seasons;
 
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
@@ -64,11 +65,15 @@
             case "": last = await Service.ExpeditionAsync(Handle, null); break;
             case "lifetime": totals = await Service.TotalsAsync(Handle); break;
             case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
-            default: best = await Service.BestAsync(Handle, season); break;
+            default: (best, seasons) = (await Service.BestAsync(Handle, season), await Seasons.SeasonAsync()); break;
         }
     }
 
     [Inject] NavigationManager Nav { get; set; } = null!;
+    [Inject] ILeaderboardsService Seasons { get; set; } = null!;
+
+    // a list that is still being made can be read again: the service moves it on
+    async Task Refresh() => best = await Service.BestAsync(Handle, season);
 
     void Season(ChangeEventArgs e) => Nav.NavigateTo($"/profile/{Handle}/statistics/best/{e.Value}");
 
@@ -76,13 +81,13 @@
         @switch (best!.Status)
         {
             case "disabled": <p>@L["Stat.BestDisabled"]</p>; break;
-            case "queued": <p>@(season == 0 ? L["Stat.BestAllQueued", Handle] : L["Stat.BestQueued", Handle, season])</p>; break;
-            case "building": <p>@(season == 0 ? L["Stat.BestAllBuilding", Handle] : L["Stat.BestBuilding", Handle, season])</p>; break;
+            case "queued": <p>@(season == 0 ? L["Stat.BestAllQueued", Handle] : L["Stat.BestQueued", Handle, season])</p><button type="button" class="btn btn-primary" @onclick="Refresh">@L["Stat.Refresh"]</button>; break;
+            case "building": <p>@(season == 0 ? L["Stat.BestAllBuilding", Handle] : L["Stat.BestBuilding", Handle, season])</p><button type="button" class="btn btn-primary" @onclick="Refresh">@L["Stat.Refresh"]</button>; break;
             case "empty": <p>@(season == 0 ? L["Stat.BestAllNone", Handle] : L["Stat.BestNone", Handle, season])</p>; break;
             default:
                 <table class="hist tbl">
-                    <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@Fmt.Score(r.Score)</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
+                    <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.TimeOfHarvest"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
+                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@r.Weapon</td><td>@r.When.ToString("yyyy-MM-dd HH:mm")</td><td><a href="/profile/@Handle/score/@r.Kill">@Fmt.Score(r.Score)</a></td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
                 </table>
                 break;
         }

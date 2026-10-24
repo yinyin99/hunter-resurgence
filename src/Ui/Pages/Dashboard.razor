@@ -68,6 +68,14 @@
         </section>
         <section class="block servers">
             @if (games is null) { <div class="loading"></div> }
+            else if (games.Count == 0)
+            {
+                <div class="empty">
+                    <h4>@L["Servers.NoGames"]</h4>
+                    <p>@L["Servers.NoGamesDesc"]</p>
+                    <a class="btn btn-primary" href="/launch-map/2">@L["Servers.HostOwn"]</a>
+                </div>
+            }
             else
             {
                 <ul>
@@ -77,7 +85,7 @@
                             <ServerWhere Server="g" />
                             <div class="info">
                                 <div class="name">@g.Name</div>
-                                <div class="meta">@L.Frag("Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), g.Players, g.Max, Host(g.Host))@if (g.Password) { <Icon Name="lock" /> }</div>
+                                <div class="meta">@L.Frag("Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), Players(g, g.Players), Players(g, g.Max), Host(g.Host))@if (g.Password) { <span data-tip="@L["Servers.Locked"]"><Icon Name="lock" /></span> }</div>
                             </div>
                             <button class="btn btn-primary quick-join" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = g })">@L["Hunt.QuickJoin"]</button>
                         </li>
@@ -103,6 +111,9 @@
     Dictionary<int, string> reserves = [];
 
     int Percent => progress is { Max: > 0 } p ? p.Score * 100 / p.Max : 0;
+
+    // the old players count has a tooltip with the handles of the hunters in the game
+    RenderFragment Players(GameServer g, int n) => @<span data-tip="@string.Join(", ", g.Roster.Select(p => p.Handle))">@n</span>;
 
     RenderFragment Host(string handle) => @<a href="/profile/@handle">@handle</a>;
 

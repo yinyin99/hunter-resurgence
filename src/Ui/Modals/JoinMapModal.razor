@@ -2,8 +2,10 @@
 @inject IServersService Servers
 @inject IGameSettingsService GameSettings
 
+@* the old container closes on a click beside the map and the details; the backdrop is a layer of its own as the dialog element belongs to the shell *@
+<div class="backdrop" @onclick="Modal.Close"></div>
 <div class="join" role="dialog" aria-modal="true">
-    <MapPlaceholder Markers="markers" Height="608" Zoom="false" OnPick="Pick">
+    <MapPlaceholder Markers="markers" Height="608" Zoom="false" OnPick="Pick" Players="Server.Roster" HoverPlayer="@hoverPlayer">
         <p class="hint"><Icon Name="caret-down" /> @L["Join.Hint"]</p>
     </MapPlaceholder>
     <aside>
@@ -13,10 +15,17 @@
         <p class="line">@L["Servers.HostLabel"] <a href="/profile/@Server.Host" @onclick="Modal.Close">@Server.Host</a></p>
         <p class="line">@L["Servers.ReserveLabel"] @reserve</p>
         <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(L, Server.Seconds)</p>
+        @if (Server.Limited)
+        {
+            <p class="line gap">@L["Servers.MinScore"] @Server.MinScore</p>
+            <p class="line">@L["Servers.MaxScore"] @Server.MaxScore</p>
+        }
+        @if (Server.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
+        <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="join-loadout" />
         <h5 class="players-title">@L["Servers.PlayerList", Server.Players, Server.Max]</h5>
         @foreach (var (p, i) in Server.Roster.Select((p, i) => (p, i)))
         {
-            <div class="player" style="border-color:@(i % 2 == 0 ? "#c0396b" : "#8e87d6")">
+            <div class="player" style="border-color:@(i % 2 == 0 ? "#c0396b" : "#8e87d6")" @onmouseenter="() => hoverPlayer = p.Handle" @onmouseleave="() => hoverPlayer = null">
                 <AssetSlot Name="avatar-default" Width="50" Height="50" />
                 <a href="/profile/@p.Handle" @onclick="Modal.Close">@p.Handle</a>
                 <span class="score"><Icon Name="paw" /> @p.HunterScore</span>
@@ -38,14 +47,21 @@
     IReadOnlyList<MapMarker> markers = [];
     string reserve = "";
     MapMarker? asking;
-    string? password;
+    string? password, hoverPlayer;
+    IReadOnlyList<Loadout> loadouts = [];
+    int loadout;
 
     /// <summary>The game to join; set by the dashboard's Quick Join and the server list's Join Game.</summary>
     [Parameter, EditorRequired] public GameServer Server { get; set; } = null!;
 
+    /// <summary>The loadout picked in the server list's preview.</summary>
+    [Parameter] public int Loadout { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        loadout = Loadout;
         markers = await Servers.MarkersAsync(Server.Reserve);
+        loadouts = await Servers.LoadoutsAsync();
         reserve = (await Servers.ReservesAsync()).FirstOrDefault(r => r.Id == Server.Reserve)?.Name ?? "";
     }
 
@@ -60,7 +76,8 @@
     async Task Join(MapMarker marker, string? pass)
     {
         if (!await Modal.SetUpFirst(GameSettings)) return;
-        var result = await Servers.JoinAsync(Server.Id, marker.Id, pass);
-        if (result.Ok) Modal.Close(); else Modal.Alert(L["Launch.Failed"]);
+        var result = await Servers.JoinAsync(Server.Id, marker.Id, pass, loadout);
+        // the map stays until the "Done hunting" window replaces it, as in the old app
+        if (result.Ok) { asking = null; Modal.GameStarted(); } else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
     }
 }

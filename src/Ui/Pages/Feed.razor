@@ -2,6 +2,8 @@
 @page "/feed"
 @inject ISessionService Sessions
 @inject INewsService News
+@inject ModalService Modal
+@inject Branding Brand
 
 <PageTitle>@L["App.Name"]</PageTitle>
 
@@ -10,7 +12,13 @@
     <section class="hero">
         <AssetSlot Name="bg-hero" Width="980" Height="550" />
         <AssetSlot Name="logo-hero" Width="485" Height="120" Class="hero-logo" />
+        @* a friend's invitation (?ref=<handle>) and the trailer link: texts hard-coded in English in the old page; the trailer is shown when settings.json has link_trailer *@
+        @if (!string.IsNullOrWhiteSpace(Ref))
+        {
+            <p class="referrer">@Brand.Expand($"You have been invited by your friend {Ref} to play {{game}}!")<br />@Ref sends you 200 em$ and three special items to help you get started in the most realistic hunting game online!</p>
+        }
         <ExternalLink Key="steam_store" Class="hero-button">@L["Landing.Play"] <Icon Name="chevron-right" /> <Icon Name="chevron-right" /></ExternalLink>
+        @if (Brand.Link("trailer") is not null) { <button type="button" class="trailer" @onclick="Trailer">Watch the trailer</button> }
     </section>
 }
 <h2 class="latest @(signedIn == false ? "after-hero" : "")">@L["Feed.LatestNews"]</h2>
@@ -32,6 +40,8 @@
 </div>
 
 @code {
+    [SupplyParameterFromQuery(Name = "ref")] public string? Ref { get; set; }
+
     bool? signedIn;
     IReadOnlyList<NewsPost> posts = [];
 
@@ -40,4 +50,6 @@
         signedIn = await Sessions.CurrentAsync() is not null;
         posts = await News.RecentAsync();
     }
+
+    void Trailer() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = "Watch the trailer" });
 }

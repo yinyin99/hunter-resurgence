@@ -49,7 +49,8 @@ else
 
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
-    string sub => Sub == "summary" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+    // the old addresses write the daily missions as day_mission as well
+    string sub => Sub == "summary" ? "" : Sub?.Replace('_', '-') is { } s && subs.Any(x => x.Key == s) ? s : "";
 
     protected override async Task OnParametersSetAsync()
     {

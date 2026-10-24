@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>strelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>gorivo:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Prijatelji</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Prijatelji ({0} novih prošenj)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Sporočila</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Sporočila ({0} novih)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Moja denarnica / zgodovina nakupov</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoje lovske točke</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ni najdenih lovcev</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Pošlji prošnjo za prijateljstvo</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Prošnja je poslana</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Prošnja za prijateljstvo {0} od {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} želi biti tvoj prijatelj!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Sprejmi</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Zavrni</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Prejšnja prošnja</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Naslednja prošnja</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Izberi jezik</value></data>
   <data name="Language.English" xml:space="preserve"><value>English</value></data>
   <data name="Language.French" xml:space="preserve"><value>Français</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licenčna pogodba za končnega uporabnika</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRAVILNIK O ZASEBNOSTI</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENČNA POGODBA ZA KONČNEGA UPORABNIKA</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Pred nadaljevanjem morate potrditi licenčno pogodbo za končnega uporabnika in pravilnik o zasebnosti.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>S klikom na gumb »Nadaljuj« se strinjate z naslednjim: {0} in {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Strinjam se z EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Strinjam se s Pravilnikom o zasebnosti</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Zadnja posodobitev: besedilo za zapolnitev</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>UVOD</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Naslov za zapolnitev</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Besedilo za zapolnitev. Pravo pravno besedilo zagotovi upravljavec te storitve.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>O obdelavi osebnih podatkov glejte: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Si že lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Prijava</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-naslov</value></data>
@@ -138,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Največ:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Začetek</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Ustvari igro</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pri ustvarjanju seje igre je prišlo do napake. Osveži seznam strežnikov in se poskusi pridružiti drugi igri.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>NAJDI SKUPINSKI LOV</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Poišči igro ali gostitelja ...</value></data>
@@ -169,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nismo našli nobene javne skupinske igre, ki se ji lahko pridružiš.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>GOSTI SVOJ LOV</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ta igra je zaščitena z geslom</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Potrebno geslo</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Nameščanje popravkov...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Lokacija strežnika: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severna Amerika</value></data>
@@ -180,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Vnesi geslo</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Pridruži se</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Zapri</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Napačno geslo. Poskusite znova.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Ste za zdaj končali z lovom?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Ogled statistike lova</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>NA LOV</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Za začetek nove igre zaprite to okno in znova kliknite gumb {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Je prišlo do težave s povezavo?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Imate težave s povezovanjem s prijatelji v igri za več igralcev? Vzrokov je lahko veliko in vsi niso nujno neposredno povezani z igro. Za več informacij si oglejte razdelek {0} v vodniku za odpravljanje težav.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>težave s povezavo</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Potrebujete več informacij o funkcijah igre?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Ne najdete plena? Ne veste, kako uporabiti določeno opremo? Se sprašujete, kateri lovski revir vam najbolj ustreza? Za več informacij si oglejte {0}. Wiki ustvarja in upravlja skupnost, če pa tam ne najdete odgovora na svoje vprašanje, se lahko obrnete na {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>wiki {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Imate druge tehnične težave?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Je prišlo do težave pri zagonu igre? Ste prejeli čudno sporočilo o napaki? Obiščite {0}, če pa ne najdete rešitve svoje težave, se obrnite na {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>vodnik za odpravljanje težav</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>podporo</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Priporočamo, da preden začneš prvi pravi lov v prvem rezervatu, opraviš osnovne vadnice. V njih spoznaš lovskega čuvaja tamkajšnjega rezervata, ki ti bo predstavil osnove in te naučil vsega, kar potrebuješ za uspeh v igri {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Začni vadnico</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Lokacija: {0}</value></data>
@@ -219,10 +253,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Razumem!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nova posodobitev igre</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Izšla je nova posodobitev igre. Igra se bo posodobila samodejno, nov lov pa lahko začneš takoj po koncu posodabljanja! Medtem se lahko prosto sprehajaš po strani.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Opombe posodobitve</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Posodobitev {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Ogled dnevnika sprememb</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Prenos igre {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Popolna namestitev igre {game} se prenaša v tvoj računalnik. Z igranjem lahko začneš takoj po koncu prenosa. Medtem se lahko prosto sprehajaš po strani.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Zaganjalnik se posodablja</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Zaganjalnik se mora posodobiti. Posodobitev se bo prenesla samodejno. Ko bo zaganjalnik posodobljen, ga bo treba znova zagnati.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Posodobitev končana. Zaganjalnik se mora ponovno zagnati.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Potrebna je posodobitev igre</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Na voljo je posodobitev za igro {game}. Igro {game} moraš pred igranjem posodobiti v Steamu. Za posodobitev moraš zapreti zaganjalnik.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} je samo za Steam</value></data>
@@ -367,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deaktiviraj</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Vstop ni možen</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Skupinski lov</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Več vrst</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Zahteve:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Prihajajoča tekmovanja</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Pretekla tekmovanja</value></data>
@@ -391,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Zgodovina</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Nagrade</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofeja</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ in trofeja</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ in trofeja</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Pravila in pogoji</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Živali: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Rezervati: {0}</value></data>
@@ -414,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Ne sodeluješ v nobenem tekmovanju</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Mesečna lestvica</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sezonska lestvica</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Točke</value></data>
   <data name="Board.Title" xml:space="preserve"><value>LESTVICE</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Rezultat</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Razdalja</value></data>
@@ -450,6 +494,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klikni za pomoč</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dan {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>danes</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Ended</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutri</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Naloge</value></data>
@@ -463,6 +510,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivacija je končana!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Lep lov!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiviraj vse</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KUPI</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Samodejno aktiviraj nove razpoložljive misije</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Samodejno aktiviraj samo priljubljene misije</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Misije lahko proti plačilu ponastaviš v trgovini.</value></data>
@@ -479,6 +529,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Orožje</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Vse izbrano</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Izbrano: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrij dokončane</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Iskanje</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -520,11 +571,21 @@
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITED</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NEW</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>COMMUNITY CHOICE</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Vključeno</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Vrednost</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Maks. lastništev</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Neomejeno</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Cena paketa</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Strošek kapacitete</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Dovoljeno za lov</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>Uporaba {0} pri lovu je etična: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Uporaba {0} pri lovu ni etična: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Tega predmeta ni mogoče kupiti</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Si že lastnik tega artikla</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Tega paketa ni mogoče kupiti. Za vsaj enega od vključenih predmetov je dosežena meja lastništva.</value></data>
   <data name="Store.None" xml:space="preserve"><value>V tej kategoriji ni predmetov</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Podrobnosti</value></data>
@@ -567,10 +628,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Pomoč</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Zgodovina nakupov</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Tvoje stanje em$:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Your membership type:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Poteče:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Nikoli</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Unovči kodo za popust</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Vnesi kodo za popust</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Prekliči</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Nazaj</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Vnesena koda za popust je neveljavna ali je potekla</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Code activated</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deactivate code</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Unovči svoje darilo</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Vnesena koda darila vsebuje</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Klikni tukaj, da unovčiš to darilo</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Darilo je bilo dodano v tvoj račun!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Valuta v igri</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Z valuto v igri (em$) lahko kupiš orožje, šotore, oblačila, lovske licence in še veliko več.</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Kupi kot darilo</value></data>
@@ -586,6 +657,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Dostop do vseh rezervatov</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Neomejeno osnovno strelivo</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Podrobnosti</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Weapons included:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Items included:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Predmeti, vključeni v članstvo ali kupljeni posebej, ostanejo tvoji, tudi ko članstvo poteče</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* V primerjavi s 3-mesečnim članstvom v igri {game}</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Trgovina {game}: vprašanja in odgovori</value></data>
@@ -603,6 +676,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Upoštevaj, da se em$ ne morejo prodati ali prenesti in jih ni mogoče zamenjati za gotovino ali karkoli drugega razen za dejansko vsebino igre {game}. em$ se ne vračajo. em$ nimajo denarne vrednosti in niso valuta ali lastnina katere koli vrste.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Dodatno orožje: {0}, drugi predmeti: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mes.</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Notranja napaka Steama, poskusi znova pozneje.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Pri povezavi s Steamom je prišlo do napake. Poskusi znova.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Hvala, ker uporabljaš trgovino {game}, tvoj račun je bil posodobljen s kupljenim predmetom.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Klikni Zapri v zgornjem desnem kotu, da se vrneš v {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Nekaj je šlo narobe. Poskusi znova. Če še vedno ne deluje, kontaktiraj podporo</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Hvala za nakup!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Tvoj nakup {0} prek Steama je zaključen, blago pa je bilo dodano v tvoj račun.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Nakup ni uspel</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Nekaj je šlo narobe in tvoj nakup prek Steama je bil prekinjen. Poskusi znova.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Na lov</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Sporočila</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Dovoli sporočila samo od prijateljev</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Novo sporočilo</value></data>
@@ -639,6 +722,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Tvoj e-naslov je bil spremenjen.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Ponovno pošlji potrditev</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Potrditveno e-sporočilo je ponovno poslano.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Ponovno pošiljanje ni uspelo. Poskusi znova ali se obrni na podporo.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Država</value></data>
@@ -661,6 +748,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Opozorilo</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Prekinitev povezave z računom Steam te bo odjavila iz igre {game} in zaprla zaganjalnik. Igranje igre {game} v Steamu ne bo mogoče, dokler se ne povežeš z drugim računom.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Razumem in želim prekiniti povezavo s svojim računom Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Naslovna slika</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Naslovne slike se odklenejo, ko dosežeš nove ravni v treh različnih kategorijah dosežkov: Mojster živali, Mojster orožja in Mojster raziskovanja. Ko so odklenjene, ostanejo na voljo za vedno.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Več podrobnosti o ravneh mojstrov dosežkov.</value></data>
@@ -816,6 +904,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>Uporabnik {0} še ni opravil nobene odprave, zato osebnega rekorda vseh časov ni mogoče izračunati.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Rezultat</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Razdalja</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas odstrela</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Osveži</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bo posodobljena, ko končaš z lovom.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Nazaj</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Naprej</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ni slik za prikaz.</value></data>
@@ -830,7 +923,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Raven:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Spretnosti</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ta pes še ni odklenil nobene spretnosti.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Doggie</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Izbriši</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Share this trophy shot</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Image URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Image BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Prijavljanje ...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Prijava je končana!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Ta stran se je odprla, ker te mora igra {game} prijaviti.</value></data>
@@ -976,6 +1075,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Zbirateljstvo</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pištole</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Samostreli</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blood Tracking</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>This skill governs how well a dog can find blood tracks.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>This skill governs how well a dog can detect different species of animals.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

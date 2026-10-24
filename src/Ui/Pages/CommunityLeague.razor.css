@@ -1,3 +1,5 @@
 .intro p { margin: 0 0 10px; font-size: 14px; line-height: 18px; color: var(--text-2); }
 .enrolled, .part { margin: 14px 0 10px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
 .notice { margin: 0 0 40px; padding: 10px; border-radius: var(--r-2); text-align: center; font-size: 14px; line-height: 20px; background: #d9edf7; color: #31708f; }
+.board { margin: 0 0 20px; }
+.board th, .board td { padding: 6px 8px; text-align: left; }

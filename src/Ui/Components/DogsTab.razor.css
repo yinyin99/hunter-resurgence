@@ -4,3 +4,8 @@
 .dogs b { display: block; font-size: 18px; font-weight: 400; color: #fff; }
 .dogs span { display: block; line-height: 22px; }
 .empty { margin: 80px 0; text-align: center; font-size: 22px; font-weight: 300; color: var(--text-3); }
+.dial { flex: none; width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#a9d4ff var(--p), #2e2e2e 0); }
+.dial div { position: relative; top: 10px; left: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 50%; background: var(--surface-2); }
+.dial small { font-size: 11px; line-height: 13px; color: var(--text-3); }
+.dial b { font-size: 22px; line-height: 24px; color: #fff; }
+.dogs em { display: inline-block; margin: 0 6px 0 0; padding: 0 8px; border-radius: var(--r-1); background: var(--surface-2); font-style: normal; cursor: default; }

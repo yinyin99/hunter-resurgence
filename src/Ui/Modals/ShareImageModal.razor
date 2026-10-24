@@ -1,0 +1,14 @@
+@inject ModalService Modal
+
+<div class="share dialog-card" role="dialog" aria-modal="true">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+    <h2>@L["Prof.ShareHeading"]</h2>
+    <p class="line">@L["Prof.ShareDesc"]</p>
+    <label>@L["Prof.ImageUrl"]<input readonly value="@Url" onclick="this.select()" /></label>
+    <label>@L["Prof.ImageBbcode"]<input readonly value='@($"[bigimg]{Url}[/bigimg]")' onclick="this.select()" /></label>
+    <div class="buttons"><button class="btn btn-primary" @onclick="Modal.Close">@L["Store.Close"]</button></div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Url { get; set; } = "";
+}

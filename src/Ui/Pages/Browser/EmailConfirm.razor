@@ -3,6 +3,8 @@
 @page "/email/change"
 @layout BrowserLayout
 @inject HostMode Mode
+@inject ISignupService Signup
+@inject NavigationManager Nav
 
 <PageTitle>@L["App.Name"]</PageTitle>
 
@@ -12,11 +14,19 @@
 @code {
     bool done;
 
+    // the link of the e-mail: ?code= (all three), ?uuid= and ?src= (a new account)
+    [SupplyParameterFromQuery] public string? Code { get; set; }
+    [SupplyParameterFromQuery] public string? Uuid { get; set; }
+    [SupplyParameterFromQuery] public string? Src { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // dev hook ?mock=browser:hold keeps the progress state (for the comparison)
         if (!firstRender || Mode.Mock == "browser:hold") return;
         await Task.Delay(3000);
+        // no failure text, as the old page: a call that fails leaves the notice in progress
+        var kind = Nav.ToBaseRelativePath(Nav.Uri).Split('?')[0].Split('/').Last();
+        if (!(await Signup.ConfirmEmailAsync(kind, Code, Uuid, Src)).Ok) return;
         done = true;
         StateHasChanged();
     }

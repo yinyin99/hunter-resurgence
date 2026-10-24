@@ -3,12 +3,14 @@
 @inject IStoreService Service
 @inject ISessionService Sessions
 @inject ModalService Modal
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <PageTitle>@L["Menu.Store"]</PageTitle>
 
 <StoreFrame Active="@key">
     <input id="store-category-search" type="text" placeholder="@L["Store.Search"]" @bind="search" @bind:event="oninput" @bind:after="Reload" />
-    @if (rows.Count == 0 && key != "bundles") { <p class="none">@L["Store.None"]</p> }
+    @if (rows.Count == 0 && bundles.Count == 0) { <p class="none">@L["Store.None"]</p> }
     <div class="grid">
         @foreach (var i in rows)
         {
@@ -21,10 +23,21 @@
                     @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
                     @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                 </p>
-                @if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
+                @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+                else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
                 @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!i.Buyable) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
+                else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
+            </div>
+        }
+        @foreach (var b in bundles)
+        {
+            <div class="card panel hover-tint">
+                <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
+                <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="store-bundle" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
+                <p class="price"><b>@b.Price em$</b></p>
+                <a href="/store/bundle/@b.Id" class="btn btn-primary">@L["Store.Details"]</a>
             </div>
         }
     </div>
@@ -33,9 +46,10 @@
 
 @code {
     IReadOnlyList<StoreItem> rows = [];
+    IReadOnlyList<StoreBundle> bundles = [];
     string search = "";
     int page = 1, pages = 1;
-    bool signedIn;
+    bool signedIn, rendered;
 
     [Parameter] public string? Key { get; set; }
     [SupplyParameterFromQuery(Name = "page")] public int? PageNo { get; set; }
@@ -44,18 +58,32 @@
     protected override async Task OnParametersSetAsync()
     {
         signedIn = await Sessions.CurrentAsync() is not null;
+        // no sale: the old store goes to its bundles instead
+        if (key == "sales" && !await Service.HasSalesAsync()) { Nav.NavigateTo("/store/bundles", replace: true); return; }
         page = PageNo ?? 1;
         await Load();
+        // a new page or category starts at the top, as in the old store
+        if (rendered) await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
     }
+
+    protected override void OnAfterRender(bool firstRender) => rendered = true;
 
     async Task Reload() { page = 1; await Load(); }
 
     async Task Load()
     {
-        if (key == "bundles") { rows = []; return; }
+        // the bundles come after the items of "all" (so on its last page) and are the whole of "bundles"
+        var words = search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var found = key is "all" or "bundles" ? (await Service.BundlesAsync()).Where(b => words.All(w => b.Name.Contains(w, StringComparison.OrdinalIgnoreCase))).ToList() : [];
+        if (key == "bundles") { (rows, bundles, pages) = ([], found, 1); return; }
         var p = await Service.ItemsAsync(key, search, page);
         (rows, page, pages) = (p.Rows, p.Number, p.Pages);
+        bundles = page == pages ? found : [];
     }
 
-    void Buy(StoreItem i) => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = i.Id, ["Name"] = i.Name, ["Ems"] = i.Ems, ["Gms"] = i.Gms });
+    void Buy(StoreItem i) => Modal.Show<BuyModal>(new Dictionary<string, object?>
+    {
+        ["Id"] = i.Id, ["Name"] = i.Name, ["Ems"] = i.Ems, ["Gms"] = i.Gms, ["Owned"] = i.Owned, ["DaysLeft"] = i.DaysLeft, ["Multi"] = i.MultiBuy,
+        ["Bought"] = EventCallback.Factory.Create(this, Load),
+    });
 }

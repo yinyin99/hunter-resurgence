@@ -1,7 +1,7 @@
 namespace Resurgence.Services;
 
-/// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs.</summary>
-public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend);
+/// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs, <see cref="RequestPending"/> a friend request of the signed-in player that is not answered yet.</summary>
+public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false);
 /// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one.</summary>
 public sealed record RankBar(string Name, int Level, int Done, int Total);
 public sealed record Achievement(string Title, string Description, DateOnly Date);
@@ -23,19 +23,26 @@ public sealed record SpeciesStat(string Name, int Spotted, int Tracked, int Harv
 public sealed record CollectableStat(string Name, int Collected, int Total, int Max);
 public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds);
 /// <summary>A confirmed kill of an expedition; <see cref="Id"/> opens its score sheet.</summary>
-public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When);
+/// <summary>The taxidermy of a kill of the first 24 hours: until when it can be bought and the prices.</summary>
+public sealed record TaxidermyOffer(DateTime End, int Ems, int Gms);
+public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When, TaxidermyOffer? Taxidermy = null);
 /// <param name="End">Null while the expedition is not over.</param>
 public sealed record Expedition(long Id, string Reserve, string Lodge, DateTime Start, DateTime? End, IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals,
     IReadOnlyList<CollectableStat> Collectables, IReadOnlyList<string> Achievements, double DistanceKm, int Seconds, IReadOnlyList<string> Antlers, IReadOnlyList<Kill> Kills);
 public sealed record HistoryRow(long Id, DateTime Start, int Seconds, string Reserve, string Lodge, int Collectables, int Kills);
-public sealed record BestRow(string Species, double Score, double Range);
+/// <param name="Kill">The kill sheet the row links to.</param>
+public sealed record BestRow(string Species, double Score, double Range, string Weapon, DateTime When, long Kill);
 /// <param name="Status">disabled, queued, building, empty (no expeditions) or done</param>
 public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 
-public sealed record Photo(long Id, string Animal, double Score);
+/// <param name="Url">The address of the picture, for the share window.</param>
+public sealed record Photo(long Id, string Animal, double Score, string Url);
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
 public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition);
-public sealed record Dog(string Name, string Type, int Level, IReadOnlyList<string> Skills);
+/// <summary>A skill the dog has unlocked; <see cref="Description"/> shows when the pointer rests on it.</summary>
+public sealed record DogSkill(string Title, string Description, int Level);
+/// <param name="Percent">Experience on the way to the next level.</param>
+public sealed record Dog(string Name, string Type, int Level, int Percent, IReadOnlyList<DogSkill> Skills, IReadOnlyList<string> Trophies);
 public sealed record ProfileFriend(string Handle, int HunterScore);
 
 /// <summary>A line of a scoring sheet; the three values sit in the columns of the sheet kind (null stays empty).</summary>
@@ -65,6 +72,10 @@ public interface IProfileService
     Task<ScoreSheet?> SheetAsync(string handle, string kind, long id);
     /// <summary>The gallery, 24 photos a page.</summary>
     Task<Page<Photo>> GalleryAsync(string handle, int page);
+    /// <summary>Deletes a picture of the player's own gallery.</summary>
+    Task<Result> DeleteGalleryImageAsync(long id);
+    /// <summary>The whole gallery as one zip file.</summary>
+    Task<byte[]> GalleryZipAsync(string handle);
     /// <summary>The trophies, 24 a page.</summary>
     Task<Page<Trophy>> TrophiesAsync(string handle, int page);
     Task<IReadOnlyList<Dog>> DogsAsync(string handle);

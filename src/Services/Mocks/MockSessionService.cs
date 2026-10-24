@@ -1,12 +1,26 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockSessionService : ISessionService
+/// <param name="mock">The development state, read when asked (the page reads it after this service is made): "membership" gives the signed-in player a membership.</param>
+public sealed class MockSessionService(Func<string?>? mock = null) : ISessionService
 {
     Session? session = new("Hunter01", 74);
 
     public event Action? Changed;
 
-    public Task<Session?> CurrentAsync() => Task.FromResult(session);
+    public Task<Session?> CurrentAsync() => Task.FromResult(session is { Handle.Length: > 0 } ? session with { Membership = mock?.Invoke() == "membership" } : session);
+
+    // the mock account has accepted; development hook ?mock=eula (HostMode) takes the acceptance back
+    bool licenseAccepted = true;
+
+    public void RequireLicense() => licenseAccepted = false;
+
+    public Task<bool> LicenseAcceptedAsync() => Task.FromResult(licenseAccepted);
+
+    public Task AcceptLicenseAsync()
+    {
+        licenseAccepted = true;
+        return Task.CompletedTask;
+    }
 
     public Task<Result> RequestCodeAsync(string email) =>
         Task.FromResult(email.Contains('@') ? Result.Success : Result.Fail("Validation.Email.Invalid"));
@@ -26,8 +40,10 @@ public sealed class MockSessionService : ISessionService
         return Task.CompletedTask;
     }
 
+    /// <summary>A name that starts with "race" is taken by someone else just before it is saved.</summary>
     public Task<Result> SetHandleAsync(string handle)
     {
+        if (handle.StartsWith("race", StringComparison.OrdinalIgnoreCase)) return Task.FromResult(Result.Fail("Signup.P1.Taken"));
         session = new(handle, 0);
         Changed?.Invoke();
         return Task.FromResult(Result.Success);

@@ -1,11 +1,23 @@
 <div class="map" style="height:@(Height)px">
-    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5))">
+    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan">
         @foreach (var m in Markers)
         {
             var pickable = m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
-            <button type="button" class="marker @(m.Id == Selected ? "selected" : "")" style="left:@(m.X)%;top:@(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
+            <button type="button" class="marker @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@(m.X)%;top:@(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
                 <Icon Name="@IconOf(m.Kind)" />
             </button>
+        }
+        @foreach (var (p, i) in Players.Select((p, i) => (p, i)))
+        {
+            <span class="hunter c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"></span>
+            @if (p.Handle == HoverPlayer)
+            {
+                <span class="hunter-label c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"><AssetSlot Name="avatar-default" Width="24" Height="24" /> @p.Handle</span>
+            }
+        }
+        @if (Markers.FirstOrDefault(m => m.Id == Hover) is { } at)
+        {
+            <span class="popup" style="left:@(at.X)%;top:@(at.Y)%">@at.Name</span>
         }
     </div>
     <span class="slot">map-bg</span>
@@ -21,17 +33,35 @@
 
 @code {
     int zoomLevel;
+    int? centred;
 
     /// <summary>Stand-in for the Leaflet map of a reserve: markers sit at fixed percent positions, zoom scales them.</summary>
     [Parameter, EditorRequired] public IReadOnlyList<MapMarker> Markers { get; set; } = [];
     [Parameter] public int Height { get; set; } = 750;
     [Parameter] public int? Selected { get; set; }
+    /// <summary>Marker whose label is shown (the hover of the old marker lists).</summary>
+    [Parameter] public int? Hover { get; set; }
+    /// <summary>Marker to bring to the middle of the map (the click of the old marker lists); the map zooms in once if it is not.</summary>
+    [Parameter] public int? Centre { get; set; }
+    /// <summary>Hunters of a game, drawn as dots (the join map).</summary>
+    [Parameter] public IReadOnlyList<GamePlayer> Players { get; set; } = [];
+    /// <summary>Hunter whose name label is shown.</summary>
+    [Parameter] public string? HoverPlayer { get; set; }
     /// <summary>The zoom buttons; the join map of the old interface has none.</summary>
     [Parameter] public bool Zoom { get; set; } = true;
     /// <summary>Raised when a lodge or tent marker is clicked.</summary>
     [Parameter] public EventCallback<MapMarker> OnPick { get; set; }
     /// <summary>Extra layer over the map (the start label, the join hint).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({50 - m.X}%, {50 - m.Y}%)" : "";
+
+    protected override void OnParametersSet()
+    {
+        if (Centre is null || Centre == centred) return;
+        centred = Centre;
+        if (Zoom && zoomLevel == 0) zoomLevel = 1;
+    }
 
     static string IconOf(MarkerKind kind) => kind switch
     {
@@ -40,6 +70,11 @@
         MarkerKind.Campsite => "fire",
         MarkerKind.Tower => "tower-observation",
         MarkerKind.Bait => "bucket",
+        MarkerKind.Feeder => "bucket",
+        MarkerKind.GroundBlind => "bullseye",
         _ => "location-dot",
     };
+
+    /// <summary>The icon of a marker kind, for the lists beside the map.</summary>
+    public static string IconFor(MarkerKind kind) => IconOf(kind);
 }

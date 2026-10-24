@@ -2,12 +2,13 @@ using System.Globalization;
 
 namespace Resurgence.Services.Mocks;
 
-/// <summary>Mock "account:bans" gives the account one banned player.</summary>
+/// <summary>Mock "account:bans" gives the account one banned player, "account:unconfirmed" an address that is not confirmed, "account:steamfail" a Steam disconnect that fails, "account:resendfail" an unconfirmed address whose resend fails.</summary>
 public sealed class MockAccountService(string? mock = null) : IAccountService
 {
     string email = "hunter@example.com", avatar = "avatar-05";
     (string Language, string Country, string TimeZone) locale = ("en", "", Choices.TimeZones.FirstOrDefault() ?? "UTC");
     string header = "recent";
+    public event Action? Changed;
     readonly List<BannedPlayer> bans = mock == "account:bans" ? [new(1, Names.Handle(11))] : [];
 
     // the six-digit mock code of every address change
@@ -26,13 +27,13 @@ public sealed class MockAccountService(string? mock = null) : IAccountService
 
     static IReadOnlyList<HeaderImage> Images(string group, int count, int unlocked) => Enumerable.Range(1, count).Select(i => new HeaderImage($"{group}-{i}", i <= unlocked)).ToList();
 
-    public Task<Account> AccountAsync() => Task.FromResult(new Account(email, avatar, locale.Language, locale.Country, locale.TimeZone));
+    public Task<Account> AccountAsync() => Task.FromResult(new Account(email, avatar, locale.Language, locale.Country, locale.TimeZone, mock is not ("account:unconfirmed" or "account:resendfail")));
 
     // 54 pictures and one locked one
     public Task<IReadOnlyList<AvatarChoice>> AvatarsAsync() =>
         Task.FromResult<IReadOnlyList<AvatarChoice>>([.. Enumerable.Range(1, 54).Select(i => new AvatarChoice($"avatar-{i:00}", $"Avatar {i}", false)), new("avatar-locked", "Locked Avatar", true)]);
 
-    public Task<Result> SetAvatarAsync(string id) { avatar = id; return Task.FromResult(Result.Success); }
+    public Task<Result> SetAvatarAsync(string id) { avatar = id; Changed?.Invoke(); return Task.FromResult(Result.Success); }
 
     public Task<LocaleChoices> LocaleChoicesAsync() => Task.FromResult(Choices);
 
@@ -59,7 +60,9 @@ public sealed class MockAccountService(string? mock = null) : IAccountService
 
     public Task<Result> SaveHeaderAsync(string selected) { header = selected; return Task.FromResult(Result.Success); }
 
-    public Task<Result> DisconnectSteamAsync() => Task.FromResult(Result.Success);
+    public Task<Result> DisconnectSteamAsync() => Task.FromResult(mock == "account:steamfail" ? Result.Fail("Mis.Failed") : Result.Success);
+
+    public Task<Result> ResendConfirmationAsync() => Task.FromResult(mock == "account:resendfail" ? Result.Fail("Set.ResendFailed") : Result.Success);
 
     static RewardItem I(string text, int id) => new(text, id);
     static RewardItem Em(int n) => new($"{n} Em$", null);
