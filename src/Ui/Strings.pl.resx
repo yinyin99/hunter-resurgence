@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Więcej informacji</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dzień {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>dziś</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Zakończył się</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>Nowa misja dzienna będzie dostępna za:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Kończy się za:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutro</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Cele</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktywacja zakończona!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Miłego korzystania z usługi!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktywuj wszystkie</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KUP</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>UŻYCIE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Automatycznie aktywuj nowe dostępne misje</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automatycznie aktywuj tylko ulubione misje</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Swoje misje możesz zresetować za opłatą w sklepie.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Bronie</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Wszystkie wybrane</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Wybrano: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Ukryj ukończone</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Szukaj</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtr</value></data>

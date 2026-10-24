@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Napsauta saadaksesi apua</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Päivä {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>tänään</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Päättynyt</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Loppuu:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivointi valmis!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Nauti palvelustasi!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivoi kaikki</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>Osta</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>KÄYTÄ</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktivoi uudet saatavilla olevat tehtävät automaattisesti</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Aseet</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Kaikki valittu</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Valittuja: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Piilota suoritetut</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Haku</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Suodatin</value></data>

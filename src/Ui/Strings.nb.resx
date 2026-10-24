@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klikk for hjelp</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dag {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>i dag</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Avsluttet</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>Et nytt Daglig Oppdrag blir tilgjengelig om:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Slutter om:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>i morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivelse</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktiveringen er fullført!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Nyt tjenesten din!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiver alle</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KJØP</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>BRUK</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktiver nye tilgjengelige oppdrag automatisk</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktiver bare favorittoppdrag automatisk</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan tilbakestille oppdragene dine mot betaling i butikken.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Våpen</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alle valgt</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} valgt</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skjul fullførte</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Søk</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>

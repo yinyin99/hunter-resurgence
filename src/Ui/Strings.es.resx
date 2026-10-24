@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Haz clic para obtener ayuda</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Día {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>hoy</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Finalizó</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>Una nueva misión diaria estará disponible en:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Acaba en:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>mañana</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Descripción</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Objetivos</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>¡Activación completada!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>¡Disfruta del servicio!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Activar todas</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>COMPRAR</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USO</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Activar automáticamente las nuevas misiones disponibles</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activar automáticamente solo las misiones favoritas</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Puedes restablecer tus misiones pagando en la tienda.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Armas</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Todo seleccionado</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Seleccionados: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Ocultar completadas</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Buscar</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrar</value></data>

@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klik voor hulp</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dag {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>vandaag</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>geëindigd</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beschrijving</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Doelen</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Activering voltooid!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Veel plezier ermee!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Alles activeren</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KOPEN</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>GEBRUIK</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Nieuwe beschikbare missies automatisch activeren</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Alleen favoriete missies automatisch activeren</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Je kunt je missies in de winkel tegen betaling resetten.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Wapens</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alles geselecteerd</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} geselecteerd</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Voltooide missies verbergen</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Zoeken</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>

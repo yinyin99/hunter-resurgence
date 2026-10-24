@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Yardım için tıklayın</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>{0}. gün</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>bugün</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Sona erdi</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>yarın</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Açıklama</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Hedefler</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Etkinleştirme tamamlandı!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Hizmetin keyfini çıkarın!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Tümünü etkinleştir</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>SATIN AL</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Yeni kullanılabilir görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Yalnızca favori görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Görevlerinizi mağazadan ücret karşılığında sıfırlayabilirsiniz.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Silahlar</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Tümü seçili</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} seçili</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Tamamlananları gizle</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Ara</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtre</value></data>

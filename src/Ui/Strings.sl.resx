@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klikni za pomoč</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dan {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>danes</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Ended</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutri</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Naloge</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivacija je končana!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Lep lov!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiviraj vse</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KUPI</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Samodejno aktiviraj nove razpoložljive misije</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Samodejno aktiviraj samo priljubljene misije</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Misije lahko proti plačilu ponastaviš v trgovini.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Orožje</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Vse izbrano</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Izbrano: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrij dokončane</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Iskanje</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
