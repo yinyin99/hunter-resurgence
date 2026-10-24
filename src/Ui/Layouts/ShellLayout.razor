@@ -14,15 +14,15 @@
     }
     else
     {
-        <StatusBar Session="session" Quick="quick" />
+        <StatusBar @key="eula" Session="session" Quick="quick" Minimal="eula" />
     }
     <div class="page @(isPublic ? "public" : "")">
-        @if (!isPublic) { <MenuBar Hidden="quick && Mode.Launcher" /> }
+        @if (!isPublic && !eula) { <MenuBar Hidden="quick && Mode.Launcher" /> }
         <div class="body">
             <main @key="isPublic">@Body</main>
-            <aside class="sidebar"></aside>
+            @if (!eula) { <aside class="sidebar"></aside> }
         </div>
-        <Footer />
+        @if (!eula) { <Footer /> }
     </div>
     <ModalHost />
     @if (Mode.Launcher) { <PatchPanel /> }
@@ -31,7 +31,7 @@
 @code {
     IJSObjectReference? module;
     DotNetObjectReference<ShellLayout>? self;
-    bool quick, alerted;
+    bool quick, alerted, eula;
     Session? session;
     Action? changed;
 
@@ -52,13 +52,16 @@
         });
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (Mode.Dev && DevAlert is not null && !alerted) { alerted = true; Modal.Alert(DevAlert); }
         if (Mode.Dev && DevModal is "settings" or "initial" && !alerted) { alerted = true; Modal.Show<GameSettingsModal>(new Dictionary<string, object?> { [nameof(GameSettingsModal.FirstStart)] = DevModal == "initial" }); }
         // launcher-only routes and signed-in routes are not served to the public website: back to the feed
         var path = Nav.ToBaseRelativePath(Nav.Uri);
         if (!Mode.Launcher && (LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path))) Nav.NavigateTo("/feed", replace: true);
+        // a signed-in hunter who has not accepted the current agreements is sent from the feed to the agreements page
+        eula = path.Split('?', '#')[0].Trim('/').Equals("eula", StringComparison.OrdinalIgnoreCase);
+        if (session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

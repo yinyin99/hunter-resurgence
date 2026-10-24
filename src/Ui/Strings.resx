@@ -77,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>End User License Agreement</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>END USER LICENSE AGREEMENT</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>You must confirm the EULA and Privacy Policy agreements before continuing.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>By clicking the "Continue" button you agree to the {0} and the {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>I agree to the EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I agree to the Privacy Policy</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Last updated on: placeholder text</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INTRODUCTION</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Placeholder heading</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>For how personal data is handled, see the {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>

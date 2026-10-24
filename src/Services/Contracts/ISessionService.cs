@@ -17,4 +17,7 @@ public interface ISessionService
     Task<Result> SetHandleAsync(string handle);
     Task<StartOutcome> StartAsync();
     Task SignOutAsync();
+    /// <summary>Accounts older than the current agreements have to accept them once before the feed shows; false until they have.</summary>
+    Task<bool> LicenseAcceptedAsync();
+    Task AcceptLicenseAsync();
 }

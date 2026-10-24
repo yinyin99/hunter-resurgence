@@ -77,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Contrato de Licença do Usuário Final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLÍTICA DE PRIVACIDADE</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>CONTRATO DE LICENÇA DO USUÁRIO FINAL</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Você precisa confirmar o Contrato de Licença do Usuário Final e a Política de Privacidade antes de continuar.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Ao clicar em "Continuar" você concorda com o {0} e com a {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>Contrato de licença</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Eu concordo com o Contrato de licença</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Eu concordo com a Política de Privacidade</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Última atualização em: texto provisório</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INTRODUÇÃO</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Título provisório</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Texto provisório. O operador deste serviço fornece o texto legal oficial.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Para saber como os dados pessoais são tratados, consulte a {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Já é um caçador?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Entrar</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>

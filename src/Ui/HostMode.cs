@@ -19,5 +19,6 @@ public sealed class HostMode
     {
         if (Mock == "session:out") await sessions.SignOutAsync();
         else if (Mock == "session:signup") await sessions.SignInAsync("dev@example.com", "000000", register: true);
+        else if (Mock == "eula" && sessions is Resurgence.Services.Mocks.MockSessionService mock) mock.RequireLicense();
     }
 }
