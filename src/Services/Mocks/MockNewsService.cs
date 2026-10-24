@@ -1,6 +1,7 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockNewsService : INewsService
+/// <summary>Mock "news:many" offers six featured slides (the feed shows four).</summary>
+public sealed class MockNewsService(string? mock = null) : INewsService
 {
     public Task<IReadOnlyList<NewsPost>> RecentAsync() =>
         Task.FromResult<IReadOnlyList<NewsPost>>(Enumerable.Range(1, 5)
@@ -12,6 +13,7 @@ public sealed class MockNewsService : INewsService
         Task.FromResult<IReadOnlyList<Featured>>([
             new("Featured post", "Message from the team", "Read it here", "news:featured-post", new(2026, 7, 9)),
             new("SALES", "Placeholder sales text!", "Check out the full list!", "/store/sales", new(2026, 7, 10)),
+            .. Enumerable.Range(3, mock == "news:many" ? 4 : 0).Select(i => new Featured($"Featured post {i}", "Message from the team", "Read it here", "news:featured-post-" + i, new(2026, 7, 10 + i))),
         ]);
 
     public Task<DiscordInfo> DiscordAsync() =>

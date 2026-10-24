@@ -16,3 +16,5 @@ p { margin: 0; }
 .excerpt { color: var(--fg-muted-2); }
 .archive { margin-top: 30px; }
 .news ::deep span { color: var(--accent); }
+.hero .referrer { position: absolute; left: 215px; top: 248px; width: 550px; text-align: center; font-size: 14px; line-height: 20px; color: #fff; }
+.hero .trailer { position: absolute; left: 343px; top: 380px; width: 294px; border: 0; background: none; font-size: 14px; color: #fff; cursor: pointer; text-decoration: underline; }
