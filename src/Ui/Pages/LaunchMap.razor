@@ -55,7 +55,7 @@ else
 <div class="badges">
     @foreach (var r in reserves)
     {
-        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve)" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
+        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve ? "true" : "false")" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
     }
 </div>
 <div class="stage">
