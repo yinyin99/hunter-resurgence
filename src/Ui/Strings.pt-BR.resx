@@ -577,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Ajuda</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Histórico de Compras</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Seu saldo de em$:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Tipo de Assinatura:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Expira em:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Nunca</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Resgatar um código de desconto</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Digite seu código de desconto</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Voltar</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>O código de desconto digitado é inválido ou expirou</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Código Ativado</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Desativar Código</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Resgate seu presente</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Você digitou um código de presente que contém</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Clique aqui para resgatar este presente</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Seu presente foi adicionado à sua conta!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Moeda do jogo</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Armas, tendas, roupas, licenças de caça e muito mais podem ser comprados com a moeda do jogo (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Comprar como presente</value></data>
@@ -596,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Acesso a todas as reservas</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Munição básica ilimitada</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Detalhes</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Armas Incluídas:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Itens Incluídos:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Os itens incluídos em uma assinatura ou comprados separadamente são mantidos mesmo que sua assinatura expire</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Em comparação com a Assinatura de 3 meses de {game}</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Perguntas e respostas sobre a loja de {game}</value></data>
@@ -613,6 +625,8 @@
   <data name="Bank.A6" xml:space="preserve"><value>Observe que os em$ não podem ser vendidos nem transferidos e não podem ser trocados por dinheiro nem por qualquer outra coisa além do conteúdo de {game}. Os em$ não são reembolsáveis. Os em$ não têm valor monetário e não constituem moeda nem propriedade de nenhum tipo.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Armas extras: {0}, outros itens: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} meses</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Erro interno da Steam, tente novamente mais tarde.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Ocorreu um erro ao conectar com a Steam. Tente novamente.</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Mensagens</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Permitir apenas mensagens de amigos</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Nova mensagem</value></data>

@@ -577,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Aide</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Historique des achats</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Votre solde d’em$ :</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Votre type d'abonnement :</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Expire le :</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Jamais</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Utiliser un code de réduction</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Saisissez votre code de réduction</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Retour</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Le code de réduction saisi est invalide ou expiré</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Code activé</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Désactiver le code</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Utiliser votre cadeau</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Vous avez saisi un code cadeau qui contient</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Cliquez ici pour utiliser ce cadeau</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Votre cadeau a été ajouté à votre compte !</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Monnaie du jeu</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Les armes, les tentes, les vêtements, les licences de chasse et bien plus encore, peuvent être achetés avec la monnaie du jeu (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Acheter en cadeau</value></data>
@@ -596,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Accès à toutes les réserves</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Munitions classiques illimitées</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Détails</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Armes incluses :</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Articles inclus :</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Les articles inclus dans un abonnement ou achetés séparément sont conservés, même si votre abonnement expire</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Par rapport à 3 mois d’abonnement à {game}</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Boutique {game} - Questions &amp; réponses</value></data>
@@ -613,6 +625,8 @@
   <data name="Bank.A6" xml:space="preserve"><value>Veuillez noter que les em$ ne peuvent être ni vendus ni transférés, et qu’ils ne peuvent être échangés ni contre de l’argent ni contre quoi que ce soit d’autre que du contenu de {game}. Les em$ ne sont pas remboursables. Les em$ n’ont aucune valeur monétaire et ne constituent ni une monnaie ni un bien de quelque nature que ce soit.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Armes supplémentaires : {0}, autres articles : {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Erreur interne de Steam, veuillez réessayer plus tard.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Une erreur est survenue lors de la connexion à Steam. Veuillez réessayer.</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>N’autoriser que les messages de mes amis</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Nouveau message</value></data>

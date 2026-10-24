@@ -33,10 +33,12 @@ public sealed class MockBankService(MockWalletState state, string? mock = null) 
         return Task.FromResult(Result.Success);
     }
 
-    public Task<Result> BuyAsync(string kind, int index, bool gift = false, string? code = null)
+    // the platform call takes a moment, so a second click while it runs can be tried
+    public async Task<Result> BuyAsync(string kind, int index, bool gift = false, string? code = null)
     {
-        if (mock == "bank:steam206") return Task.FromResult(Result.Fail("Bank.SteamInternal"));
-        if (mock == "bank:steamerror") return Task.FromResult(Result.Fail("Bank.SteamError"));
+        await Task.Delay(300);
+        if (mock == "bank:steam206") return Result.Fail("Bank.SteamInternal");
+        if (mock == "bank:steamerror") return Result.Fail("Bank.SteamError");
         var percent = code is null ? 0 : Find(code) is { Gift: false } d ? d.Percent : 0;
         decimal Price(decimal p) => Math.Round(p * (100 - percent) / 100, 2);
         var (item, price, ems, months) = kind switch
@@ -52,7 +54,7 @@ public sealed class MockBankService(MockWalletState state, string? mock = null) 
             if (months > 0) state.MembershipEnds = (state.MembershipEnds is { } e && e > DateTime.UtcNow ? e : DateTime.UtcNow.Date).AddMonths(months);
         }
         state.Payments.Insert(0, new(DateTime.UtcNow, gift ? "Gift" : "Purchase", "Completed", item, price, "Steam", null, gift ? Guid.NewGuid().ToString("N")[..12].ToUpperInvariant() : null));
-        return Task.FromResult(Result.Success);
+        return Result.Success;
     }
 
     public Task<BankTransaction> VerifyTransactionAsync(string reference) =>
