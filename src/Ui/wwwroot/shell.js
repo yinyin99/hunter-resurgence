@@ -45,3 +45,8 @@ export function dialog(el, want, modal) {
     if (!el.open) show();
     if (!el.contains(document.activeElement) || document.activeElement === el) el.querySelector('[autofocus]')?.focus({ focusVisible: false });
 }
+
+// Scrolls the pack of the missions page (data-pack) into view, once it is open.
+export function scrollToPack(id) {
+    requestAnimationFrame(() => document.querySelector(`[data-pack="${id}"]`)?.scrollIntoView({ block: 'start' }));
+}
