@@ -29,7 +29,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     static readonly string[] Species = ["Whitetail Deer", "Red Fox", "Mallard", "Moose", "Canada Goose"];
 
     // 46 items, nearly all on sale: four pages of twelve. Every 18th has an own limit of 3 (it starts at 3, so it is reached), the services are owned for days,
-    // one of them is disabled by the services, and a banner, the ammunition amounts, attachments and permitted ammunition are spread over the rest.
+    // one of them is disabled by the services, and banners (on the items that are not on sale), the ammunition amounts, attachments and permitted ammunition are spread over the rest.
     static readonly StoreItem[] Items = Enumerable.Range(0, 46).Select(i =>
     {
         var (key, name) = Leaves[i % Leaves.Length];
@@ -38,7 +38,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
         return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
             "Two-man item suitable for extremely cold conditions. Not recommended for use in warm reserves however.\n\nCharacteristics:\n* Establish a new permanent spawn point\n* Access your inventory\n* Up to 10 can be erected in each reserve at the same time\n* Can be dismantled and moved",
             DaysLeft: i switch { 9 => 12, 25 => 0.5, 41 => 0, _ => null }, OwnLimit: i % 18 == 4 ? 3 : 0, DisabledByServices: i == 41,
-            Banner: (i % 13) switch { 3 => "premium", 5 => "limited", 8 => "new", 11 => "community", _ => null }, MultiBuy: key == "10");
+            Banner: i switch { 3 or 43 => "premium", 10 => "limited", 21 => "new", 32 => "community", _ => null }, MultiBuy: key == "10");
     }).ToArray();
 
     static readonly StoreItem[] Sights = Items.Where(i => i.Category is "50" or "51").Take(3).ToArray();
@@ -57,7 +57,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     static readonly StoreBundle[] Bundles =
     [
         new(0, "Bait - Refill Pack", "Buy three bait, get one free!", 90, true, [new(137, "Bait", 4, 0, 120)]),
-        new(1, "Hunter Starter Pack", "A rifle, ammunition and a scope to start with.\nOne rifle per hunter.", 150, true,
+        new(1, "Hunter Starter Pack", "A rifle, ammunition and a scope to start with.\nOne rifle per hunter.", 80, true,
             [new(1226, "Rifle A", 1, 0, 120, "Engraved", 1), new(1225, "Rifle Ammo A", 2, 0, 40, "Black"), new(1225, "Rifle Ammo A", 3, 0, 60, "Black"), new(1224, "Rifle Scope A", 1, 0, 50, "Silver", 2)]),
     ];
 

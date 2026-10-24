@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>days</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SALE</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>BUNDLE</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITED</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NEW</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>COMMUNITY CHOICE</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Included</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Value</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Own limit</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Unlimited</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Bundle price</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Capacity cost</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Permitted for</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>It is ethical to use {0} when hunting {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>It is not ethical to use {0} when hunting {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>It isn't possible to buy this item</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>You already own this item</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>It's not possible to buy this bundle. Max own limit reached for at least one of the included items</value></data>
   <data name="Store.None" xml:space="preserve"><value>No items in this category</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Details</value></data>

@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>КОМПЛЕКТ</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>ПРЕМИУМ</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>ОГРАНИЧЕННЫЙ СРОК</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>НОВИНКА</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>Выбор сообщества</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Включает</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Стоимость</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Лимит собственности</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>неогр.</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Цена комплекта</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Занимаемое место</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Оружие разрешено для охоты на этих животных:</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>{0} разрешено для охоты: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>{0} не разрешено для охоты: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Этот предмет нельзя купить</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>У вас уже есть этот предмет.</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Этот комплект нельзя купить: достигнут предел владения хотя бы для одного из входящих в него предметов</value></data>
   <data name="Store.None" xml:space="preserve"><value>В этой категории нет предметов</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Детали</value></data>

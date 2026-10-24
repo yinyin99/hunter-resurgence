@@ -1,3 +1,7 @@
 .ribbon { position: absolute; left: -8px; top: -4px; width: 118px; height: 118px; overflow: hidden; pointer-events: none; }
 .ribbon span { position: absolute; left: -38px; top: 22px; width: 150px; transform: rotate(-45deg); background: linear-gradient(#d0003a, #a8002e); font-size: 14px; line-height: 38px; text-align: center; color: #fff; }
 .blue span { background: linear-gradient(#2a82d8, #1a62b0); }
+.premium span { background: linear-gradient(#f1b92f, #96570a); }
+.limited span { background: linear-gradient(#83b324, #547317); }
+.new span { background: linear-gradient(#85b525, #617518); }
+.community span { background: linear-gradient(#6d0594, #2b024a); font-size: 11px; }
