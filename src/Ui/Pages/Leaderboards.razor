@@ -63,7 +63,8 @@
                 <p>@L[kind == "lanebandit" ? "Board.LaneInfo" : "Board.BustInfo"] @if (kind == "lanebandit") { <a href="/store/item/66">@L["Board.GetLane"] <Icon Name="chevron-right" /></a> }</p>
             </section>
             <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
-            <p class="norank">@L["Board.NoRank"]</p>
+            @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
+            else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
             <table class="board"><tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody></table>
             <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind + "/" + n)" />
             break;

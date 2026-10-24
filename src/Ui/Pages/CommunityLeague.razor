@@ -1,5 +1,7 @@
 @page "/community-league"
-@page "/community-league/{Id:int}"
+@page "/community_league"
+@inject ICompetitionsService Service
+@inject ModalService Modal
 
 <PageTitle>@L["Comp.Tab.League"]</PageTitle>
 
@@ -15,19 +17,48 @@
     <p>@L["League.P6"]</p>
 </div>
 
-<h4 class="enrolled">@L["Comp.Enrolled"] (0)</h4>
-<CompetitionTable Enrolled="[]" />
-<p class="notice">@L["League.NotEnrolled"]</p>
+<h4 class="enrolled">@L["Comp.Enrolled"] (@enrolled.Count)</h4>
+<CompetitionTable Enrolled="enrolled" OnLeave="Leave" Details="/community-league/" />
+@if (enrolled.Count == 0) { <p class="notice">@L["League.NotEnrolled"]</p> }
 
-<CompetitionTable Rows="[]" Details="/community-league/" />
-<h4 class="part">@L["League.Monthly"]</h4>
-<h4 class="part">@L["League.Season"]</h4>
+<CompetitionTable Rows="rows" Details="/community-league/" OnJoin="Join" OnLeave="Leave" />
+@foreach (var (title, board) in boards)
+{
+    <h4 class="part">@L[title]</h4>
+    <table class="board tbl">
+        <thead><tr><th>@L["Board.Rank"]</th><th>@L["Board.Hunter"]</th><th>@L["League.Points"]</th></tr></thead>
+        <tbody>@foreach (var r in board) { <tr><td>@r.Rank</td><td><a href="/profile/@r.Handle">@r.Handle</a></td><td>@r.Value</td></tr> }</tbody>
+    </table>
+}
 </div>
 
 @code {
-    [Parameter] public int? Id { get; set; }
-
+    IReadOnlyList<Enrolled> enrolled = [];
+    IReadOnlyList<Competition> rows = [];
+    IReadOnlyList<(string, IReadOnlyList<Ranked>)> boards = [];
     IReadOnlyList<(string, string)> main = [];
 
-    protected override void OnInitialized() => main = [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
+    protected override async Task OnInitializedAsync()
+    {
+        main = [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
+        boards = [("League.Monthly", await Service.LeagueBoardAsync(false)), ("League.Season", await Service.LeagueBoardAsync(true))];
+        await Load();
+    }
+
+    async Task Load()
+    {
+        enrolled = await Service.LeagueEnrolledAsync();
+        rows = await Service.LeagueAsync();
+    }
+
+    // the lists are read again after the change
+    async Task Join(int id) => await Change(await Service.JoinAsync(id));
+
+    async Task Leave(int id) => await Change(await Service.LeaveAsync(id));
+
+    async Task Change(Result r)
+    {
+        if (!r.Ok) Modal.Alert(L[r.Error ?? "Comp.Failed"]);
+        else await Load();
+    }
 }

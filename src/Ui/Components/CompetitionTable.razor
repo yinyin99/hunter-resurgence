@@ -29,7 +29,8 @@
                     <td>@c.Players</td>
                     <td class="s">@Date(c.Start)</td><td class="s">@Date(c.End)</td><td class="s">@Status(c)</td>
                     <td class="action">
-                        @if (c.Joinable) { <button type="button" class="btn btn-primary" @onclick="() => OnJoin.InvokeAsync(c.Id)">@L["Comp.Activate"]</button> }
+                        @if (c.Enrolled) { <button type="button" class="btn leave" @onclick="() => OnLeave.InvokeAsync(c.Id)">@L["Comp.Deactivate"]</button> }
+                        else if (c.Joinable) { <button type="button" class="btn btn-primary" @onclick="() => OnJoin.InvokeAsync(c.Id)">@L["Comp.Activate"]</button> }
                         else { <button type="button" class="btn" disabled>@L["Comp.CantJoin"]</button> }
                     </td>
                 </tr>
