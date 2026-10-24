@@ -1,0 +1,21 @@
+@* "Starting Loadout" of the launch map, the server preview and the join map: nothing without saved loadouts, otherwise the last used equipment (id 0) first *@
+@if (Loadouts.Count > 0)
+{
+    <div class="loadout">
+        <label class="label" for="@Id">@L["Launch.Loadout"]</label>
+        <Select Id="@Id" Width="Width" Options="names" Value="@names[Loadouts.ToList().FindIndex(l => l.Id == Value) + 1]" ValueChanged="Pick" />
+    </div>
+}
+
+@code {
+    IReadOnlyList<string> names => [L["Launch.LoadoutCurrent"].Value, .. Loadouts.Select(l => l.Name)];
+
+    [Parameter, EditorRequired] public IReadOnlyList<Loadout> Loadouts { get; set; } = [];
+    /// <summary>Id of the chosen loadout; 0 is the last used equipment.</summary>
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public string Id { get; set; } = "loadout";
+    [Parameter] public int Width { get; set; } = 172;
+
+    Task Pick(string name) => ValueChanged.InvokeAsync(Loadouts.FirstOrDefault(l => l.Name == name)?.Id ?? 0);
+}

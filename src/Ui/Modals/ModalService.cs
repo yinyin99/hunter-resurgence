@@ -35,6 +35,9 @@ public sealed class ModalService
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
+    /// <summary>The old app opens "Done hunting for now?" five seconds after a game was started or joined, whatever else is open then.</summary>
+    public void GameStarted() => _ = Task.Delay(5000).ContinueWith(_ => Show<GameStartedModal>(), TaskScheduler.Default);
+
     /// <summary>Yes/No dialog; true for Yes.</summary>
     public Task<bool> Confirm(string text)
     {

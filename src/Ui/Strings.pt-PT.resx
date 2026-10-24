@@ -138,6 +138,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Máx.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Início</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Criar jogo</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Equipamento Inicial</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Último equipamento utilizado</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Algo correu mal ao criar a sessão do teu jogo. Recarrega a lista de servidores e tenta juntar-te a outro jogo.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>PROCURAR UM JOGO MULTIJOGADOR</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Procurar um jogo ou anfitrião…</value></data>
@@ -169,6 +171,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Não encontrámos nenhum jogo multijogador público em que possas entrar.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>CRIA O TEU PRÓPRIO JOGO</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Este jogo está protegido por palavra-passe</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Palavra-passe necessária</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>A atualizar...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Localização do servidor: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>América do Norte</value></data>
@@ -180,6 +184,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Introduz a palavra-passe</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Entrar no jogo</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Fechar</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Palavra-passe errada. Tenta novamente.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Já chega de caçar por agora?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Ver estatísticas de caça</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>CAÇAR AGORA</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Para iniciar outro jogo, fecha esta janela e clica novamente no botão {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Houve um problema de ligação?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Tens problemas em ligar-te aos teus amigos no modo multijogador? Pode haver muitas causas e nem tudo está diretamente relacionado com o jogo em si. Consulta a secção {0} no guia de resolução de problemas para mais informações.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>problemas de ligação</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Precisas de mais informações sobre as funcionalidades do jogo?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Não consegues encontrar a tua presa? Não sabes como usar um determinado equipamento? Queres saber qual a reserva de caça que mais te convém? Consulta {0} para mais informações. A wiki é criada e gerida pela comunidade e, se não encontrares lá resposta à tua pergunta, pergunta à vontade no {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>a wiki de {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>fórum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Tens outros problemas técnicos?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Houve um problema ao iniciar o jogo? Apareceu uma mensagem de erro estranha? Consulta o {0} e, se não encontrares a resposta ao teu problema, envia uma mensagem à nossa {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>guia de resolução de problemas</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>equipa de suporte</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Recomendamos que faças os tutoriais básicos antes de começares a tua primeira caçada a sério na primeira reserva. Nestes tutoriais vais conhecer o guarda residente dessa reserva. Ele vai explicar-te o essencial e ensinar-te o que precisas de saber para teres sucesso em {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Iniciar tutorial</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Local: {0}</value></data>
@@ -367,6 +387,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Desativar</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Não podes entrar</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multijogador</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Várias espécies</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Requisitos:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Próximas competições</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Competições anteriores</value></data>
@@ -391,6 +412,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Histórico</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Prémios</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Troféu</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ e um troféu</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ e um troféu</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Regras e condições</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Espécies: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Reservas: {0}</value></data>
@@ -414,6 +439,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Não estás inscrito em nenhuma competição</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Tabela de líderes mensal</value></data>
   <data name="League.Season" xml:space="preserve"><value>Tabela de líderes da Temporada</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Pontos</value></data>
   <data name="Board.Title" xml:space="preserve"><value>TABELAS DE LÍDERES</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pontuação</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Distância</value></data>

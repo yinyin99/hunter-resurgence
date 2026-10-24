@@ -138,6 +138,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Kezdés</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Játék létrehozása</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Kezdő Szett</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Legutóbbi felszerelés</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Hiba történt a játékmenet létrehozásakor. Kérjük, töltsd újra a szerverlistát, és próbálj meg egy másik játékhoz csatlakozni.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TÖBBJÁTÉKOS MÓD KERESÉSE</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Keress játékot vagy házigazdát...</value></data>
@@ -169,6 +171,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nem találtunk olyan nyilvános többjátékos játékot, amelyhez csatlakozhatnál.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>INDÍTS SAJÁT JÁTÉKOT</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ez a játék jelszóval védett</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Jelszó szükséges</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Frissítés...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Szerver helye: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Európa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Észak-Amerika</value></data>
@@ -180,6 +184,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Jelszó megadása</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Csatlakozás</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Bezár</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Hibás jelszó. Kérjük, próbáld újra.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Egyelőre befejezted a vadászatot?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Vadászati statisztikák megtekintése</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>VADÁSZAT INDÍTÁSA</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Újabb játék indításához zárd be ezt az ablakot, és kattints ismét a(z) {0} gombra.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Kapcsolódási probléma volt?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Gondod van a barátaiddal való kapcsolódással többjátékos módban? Ennek sok oka lehet, és nem biztos, hogy mindegyik közvetlenül a játékhoz kötődik. További információért nézd meg a hibaelhárítási útmutató {0} részét.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>kapcsolódási problémák</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Több információra van szükséged a játék funkcióiról?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nem találod a zsákmányod? Nem tudod, hogyan használj egy adott felszerelést? Azon tűnődsz, melyik vadászterület illik hozzád a legjobban? További információért nézd meg a(z) {0} oldalt. A wikit a közösség hozza létre és kezeli, és ha ott nem találod a választ a kérdésedre, nyugodtan kérdezz a {1}ban.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>fórum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Egyéb technikai problémád van?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Probléma volt a játék indításakor? Furcsa hibaüzenetet kaptál? Nézd meg a(z) {0} oldalt, és ha nem találod a választ a problémádra, küldj üzenetet a {1} csapatunknak.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>hibaelhárítási útmutató</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>támogatási</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Ajánlott végigjátszani az alapvető oktatójátékokat, mielőtt elkezded az első igazi vadászatodat az első vadászterületen. Ezekben az oktatójátékokban megismered a vadászterület helyi vadőrét. Ő végigvezet az alapokon, és megtanítja, mit kell tudnod ahhoz, hogy sikeres légy ebben a játékban ({game}).</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Oktatójáték indítása</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Helyszín: {0}</value></data>
@@ -367,6 +387,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Leiratkozás</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Nem lehet nevezni</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Többjátékos</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Többfajos</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Követelmények:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Soron következő versenyek</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Korábbi versenyek</value></data>
@@ -391,6 +412,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Előzmények</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Díjak</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trófea</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ és egy trófea</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ és egy trófea</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Szabályok és feltételek</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Fajok: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Vadászterületek: {0}</value></data>
@@ -414,6 +439,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Nem neveztél egyetlen versenyre sem</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Havi ranglista</value></data>
   <data name="League.Season" xml:space="preserve"><value>Szezonranglista</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Pontok</value></data>
   <data name="Board.Title" xml:space="preserve"><value>HELYEZÉSEK</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pontszám</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Távolság</value></data>

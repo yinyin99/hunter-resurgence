@@ -14,3 +14,6 @@ h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line-3
 .password { position: absolute; left: 150px; top: 230px; z-index: 6; width: 360px; padding: 20px; background: var(--bg-dropdown); box-shadow: var(--shadow-dropdown); }
 .password label { display: block; margin-bottom: 8px; }
 .password input { box-sizing: border-box; width: 100%; margin-bottom: 10px; padding: 6px 10px; border: 1px solid var(--field-bd); background: var(--field-bg); color: var(--text-2); font: inherit; }
+.backdrop { position: fixed; inset: 0; }
+.line.gap { margin-top: 8px; }
+.line ::deep .icon { width: 12px; margin-right: 4px; }
