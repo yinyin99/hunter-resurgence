@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-tr" viewBox="0 0 640 480">
+  <path fill="#e30a17" d="M0 0h640v480H0z"/>
+  <circle cx="260" cy="240" r="120" fill="#fff"/>
+  <circle cx="295" cy="240" r="96" fill="#e30a17"/>
+  <path fill="#fff" d="M400 240l-8 40 35-22h-43l35 22z" transform="translate(30 0)"/>
+</svg>
