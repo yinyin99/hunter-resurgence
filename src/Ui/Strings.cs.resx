@@ -102,7 +102,7 @@
   <data name="Hunt.StartMulti" xml:space="preserve"><value>Začít hru s ostatními</value></data>
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Nebo se připojte</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Rychlé připojení</value></data>
-  <data name="Hunt.Progress" xml:space="preserve"><value>Váš pokrok</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Váš postup</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Lovecké skóre</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Umístění</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Poslední achievement</value></data>
@@ -119,14 +119,14 @@
   <data name="Launch.Patching" xml:space="preserve"><value>Záplatování</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Myslivny:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Stany:</value></data>
-  <data name="Launch.NoTents" xml:space="preserve"><value>V této oboře nemáte žádné stany. Stany, které v oboře postavíte, slouží jako přenosná místa zrodu a přístupu k inventáři. Stany pořídíte v {0}obchodě{1}.</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>V této oboře nemáte žádné stany. Stany, které v oboře postavíte, slouží jako přenosná startovní místa (spawn pointy) s přístupem k inventáři. Stany pořídíte v {0}obchodě{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Přiblížit</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Oddálit</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Začátek: {0}</value></data>
-  <data name="Launch.Info" xml:space="preserve"><value>Informace o hře &amp; počáteční bod</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Informace o hře a počáteční bod</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Název hry:</value></data>
   <data name="Launch.GameOf" xml:space="preserve"><value>Hra: {0}</value></data>
-  <data name="Launch.Description" xml:space="preserve"><value>Zadat popis hry (volitelné)</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Zadejte popis hry (volitelné)</value></data>
   <data name="Launch.Who" xml:space="preserve"><value>Kdo se může připojit?</value></data>
   <data name="Launch.FriendsOnly" xml:space="preserve"><value>Pouze hráči v mém seznamu přátel</value></data>
   <data name="Launch.Anyone" xml:space="preserve"><value>Kdokoliv</value></data>
@@ -164,12 +164,12 @@
   <data name="Servers.InfoLink" xml:space="preserve"><value>Klikněte zde pro více informací o připojení</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Krátká vzdálenost</value></data>
   <data name="Servers.Medium" xml:space="preserve"><value>Střední vzdálenost</value></data>
-  <data name="Servers.Long" xml:space="preserve"><value>Velká vzdálenost</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Dlouhá vzdálenost</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>Žádná hra nenalezena</value></data>
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nepodařilo se najít žádnou veřejnou hru s ostatními, ke které se můžete připojit.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOSTOVAT VLASTNÍ HRU</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Tato hra je chráněna heslem</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Umístění serveru: {0}</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Poloha serveru: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severní Amerika</value></data>
   <data name="Servers.SouthAmerica" xml:space="preserve"><value>Jižní Amerika</value></data>
@@ -211,7 +211,7 @@
   <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
-  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Nenakonfigurováno: soubor settings.json neobsahuje záznam pro tyto soubory.</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Nenastaveno: soubor settings.json neobsahuje záznam pro tyto soubory.</value></data>
   <data name="GameSettings.Missing" xml:space="preserve"><value>Jednou hru spusťte, aby vytvořila své soubory s nastavením.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Soubor s nastavením má formát, který launcher nezná, proto zůstal beze změny.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Hra běží. Před uložením ji zavřete: tyto soubory si přepisuje sama.</value></data>
@@ -229,8 +229,8 @@
   <data name="Patch.SteamOnlyText" xml:space="preserve"><value>Odteď musíte hru spouštět přes platformu Steam!</value></data>
   <data name="Patch.GoToSteam" xml:space="preserve"><value>Přejít na Steam</value></data>
   <data name="Patch.ErrorTitle" xml:space="preserve"><value>Došlo k chybě</value></data>
-  <data name="Patch.PleaseSee" xml:space="preserve"><value>Další informace: {0}.</value></data>
-  <data name="Patch.SupportSection" xml:space="preserve"><value>sekce podpory</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Další informace najdete v {0}.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>sekci podpory</value></data>
   <data name="Patch.StateDownloading" xml:space="preserve"><value>STAHOVÁNÍ</value></data>
   <data name="Patch.StateVerifying" xml:space="preserve"><value>OVĚŘOVÁNÍ</value></data>
   <data name="Patch.StateExtracting" xml:space="preserve"><value>EXTRAHOVÁNÍ</value></data>
@@ -285,7 +285,7 @@
   <data name="Launcher.Error.52" xml:space="preserve"><value>Nelze zjistit podporované režimy zobrazení grafické karty.</value></data>
   <data name="Launcher.Error.53" xml:space="preserve"><value>Nelze zjistit schopnosti grafické karty.</value></data>
   <data name="Launcher.Error.16001" xml:space="preserve"><value>Neplatná relace, spusťte novou hru.</value></data>
-  <data name="Launcher.Error.16002" xml:space="preserve"><value>Nepodařilo se připojit k herního serveru. Zkuste to prosím znovu.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>Nepodařilo se připojit k hernímu serveru. Zkuste to prosím znovu.</value></data>
   <data name="Launcher.Error.16003" xml:space="preserve"><value>Neplatný operační systém.</value></data>
   <data name="Launcher.Error.16004" xml:space="preserve"><value>Spusťte hru z webu.</value></data>
   <data name="Launcher.Error.16005" xml:space="preserve"><value>Hra spadla (budeme to zkoumat).</value></data>
@@ -309,9 +309,9 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Předchozí avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Další avatar</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>ZÍSKEJTE SVOU PRVNÍ ZBRAŇ</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>Že jste to dotáhli až sem, je skvělé! Tady je uvítací dárek od nás – vaše první zbraň, třpytivá jednoranná brokovnice 12GA s bezplatnou doplňovanou municí. S touto drsnou krasavicí můžete eticky lovit všechna zvířata ve hře kromě bizona.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Dotáhli jste to až sem, skvělé! Tady je uvítací dárek od nás – vaše první zbraň, lesklá jednoranná brokovnice 12GA s bezplatně doplňovanou municí. S touto drsnou krasavicí můžete eticky lovit všechna zvířata ve hře kromě bizona.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>UŽIJTE SI SVÉ LOVECKÉ LICENCE</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>Už je skoro čas na váš první lov! Za čím se vydáte? Jako hostující hráč získáváte zdarma doživotní lovecké licence na jelence běloocasého, králíka divokého a bažanta, plus na další dvě zvířata, která se každý týden střídají. Platící členové mohou lovit všechny druhy; pokud se jím chcete stát, mrkněte do našeho obchodu s členstvím.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Už je skoro čas na váš první lov! Za čím se vydáte? Jako hostující hráč získáváte zdarma doživotní lovecké licence na jelence běloocasého, králíka divokého a bažanta, plus na další dvě zvířata, která se každý týden střídají. Platící členové mohou lovit všechny druhy; pokud se chcete stát členem, podívejte se do našeho obchodu s členstvím.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>POTVRĎTE SVŮJ E-MAIL</value></data>
   <data name="Signup.P4.Text" xml:space="preserve"><value>Kdo potvrdí e-mail, tomu se dobře daří! Zkontrolujte prosím svou schránku, měla by v ní být zpráva od nás s dalšími pokyny. Váš aktuální e-mail je {0}. Pokud není správný, změňte jej níže a klikněte na „Poslat e-mail znovu“.</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>VAŠE ODMĚNA</value></data>
@@ -320,7 +320,7 @@
   <data name="Signup.P4.Resend" xml:space="preserve"><value>Poslat e-mail znovu</value></data>
   <data name="Signup.P4.Launch" xml:space="preserve"><value>Spustit výuku</value></data>
   <data name="Signup.P4.Settings" xml:space="preserve"><value>Nastavení hry</value></data>
-  <data name="Signup.P5.Title" xml:space="preserve"><value>JSTE PŘIPRAVENI NA VELKOU ZVĚŘ</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>JSTE PŘIPRAVENI NA LOV VELKÉ ZVĚŘE</value></data>
   <data name="Signup.P5.Text" xml:space="preserve"><value>Výuku můžete znovu spustit tlačítkem JÍT LOVIT.</value></data>
   <data name="Signup.P5.Hunt" xml:space="preserve"><value>Jít lovit!</value></data>
   <data name="Dialog.Login.Title" xml:space="preserve"><value>Přihlásit se</value></data>
@@ -384,7 +384,7 @@
   <data name="Comp.StateEnded" xml:space="preserve"><value>Skončeno</value></data>
   <data name="Comp.StartsIn" xml:space="preserve"><value>Začíná za</value></data>
   <data name="Comp.EndsIn" xml:space="preserve"><value>Končí za</value></data>
-  <data name="Comp.YourPosition" xml:space="preserve"><value>Vaše pozice</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Vaše umístění</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Skóre k překonání</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Přehled</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Žebříček</value></data>
@@ -399,7 +399,7 @@
   <data name="Comp.Scoring" xml:space="preserve"><value>Bodování</value></data>
   <data name="Comp.Special" xml:space="preserve"><value>Zvláštní požadavky</value></data>
   <data name="Comp.Gamemode" xml:space="preserve"><value>Herní režim</value></data>
-  <data name="Comp.Disclaimer" xml:space="preserve"><value>Pokus se odečte při každém zahájení lovu v oboře, kde je aktivní soutěž. Soutěže nelze aktivovat přímo ve hře; změny provedené ve hře se projeví až při dalším zahájeném lovu.</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Pokus se odečte při každém zahájení lovu v oboře, kde je aktivní soutěž. Soutěže nelze aktivovat přímo ve hře; změny provedené ve hře se projeví až při dalším zahájení lovu.</value></data>
   <data name="Comp.Participants" xml:space="preserve"><value>Účastníci s výsledkem ({0})</value></data>
   <data name="Comp.Player" xml:space="preserve"><value>Hráč</value></data>
   <data name="Comp.Result" xml:space="preserve"><value>Výsledek</value></data>
@@ -421,8 +421,8 @@
   <data name="Board.HallOfFame" xml:space="preserve"><value>Síň slávy</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
-  <data name="Board.Single" xml:space="preserve"><value>Jeden paroh</value></data>
-  <data name="Board.Double" xml:space="preserve"><value>Dva parohy</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Jeden shoz</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Dva shozy</value></data>
   <data name="Board.TopScores" xml:space="preserve"><value>Nejlepší skóre – sezóna {0}</value></data>
   <data name="Board.TopRanges" xml:space="preserve"><value>Nejlepší vzdálenosti – sezóna {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Zobrazit celý žebříček</value></data>
@@ -461,7 +461,7 @@
   <data name="Mis.Broken" xml:space="preserve"><value>Vaše série je přerušena. Stiskněte AKTIVOVAT a začněte novou, nebo KOUPIT/POUŽÍT Obnovení série a pokračujte v poslední sérii.</value></data>
   <data name="Mis.BrokenNote" xml:space="preserve"><value>* Denní mise zůstanou neaktivní, dokud se nerozhodnete sérii aktivovat nebo obnovit.</value></data>
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivace dokončena!</value></data>
-  <data name="Mis.Enjoy" xml:space="preserve"><value>Užijte si svou službu!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>Lovu zdar!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivovat všechny</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Automaticky aktivovat nově dostupné mise</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automaticky aktivovat pouze oblíbené mise</value></data>
@@ -482,7 +482,7 @@
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrýt splněné</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Hledat</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrovat</value></data>
-  <data name="Mis.Progress" xml:space="preserve"><value>Průběh:</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Postup:</value></data>
   <data name="Mis.FavouriteTip" xml:space="preserve"><value>Kliknutím přidáte či odeberete z oblíbených</value></data>
   <data name="Mis.NoFavourites" xml:space="preserve"><value>Zatím nemáte žádné oblíbené mise</value></data>
   <data name="Mis.NoActive" xml:space="preserve"><value>Momentálně nemáte aktivované žádné mise. Začněte aktivací některé z dostupných misí níže.</value></data>
@@ -544,7 +544,7 @@
   <data name="Wal.History" xml:space="preserve"><value>Historie nákupů</value></data>
   <data name="Wal.Balance" xml:space="preserve"><value>Aktuální zůstatek</value></data>
   <data name="Wal.Spent" xml:space="preserve"><value>Celkem utraceno</value></data>
-  <data name="Wal.TabBank" xml:space="preserve"><value>Bankovní transakce</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>Historie bankovních nákupů</value></data>
   <data name="Wal.TabEms" xml:space="preserve"><value>Historie nákupů za em$</value></data>
   <data name="Wal.TabGms" xml:space="preserve"><value>Historie nákupů za gm$</value></data>
   <data name="Wal.Type" xml:space="preserve"><value>Typ</value></data>
@@ -577,7 +577,7 @@
   <data name="Bank.Compare" xml:space="preserve"><value>* Ve srovnání s 500 em$</value></data>
   <data name="Bank.Save" xml:space="preserve"><value>Ušetříte {0} %*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Startovací balíčky</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Získejte vše, co potřebujete k lovu kterékoli zvěře v Evergreen Hunting Reserve. Naše startovací balíčky obsahují základní členství, které vám dává licenci k lovu všech zvířat ve hře, a speciální výběr předmětů, které vás přivedou na cestu k mistrovství v lovu.</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Získejte vše, co potřebujete k lovu kterékoli zvěře v Evergreen Hunting Reserve. Naše startovací balíčky obsahují základní členství, které vám dává licenci k lovu všech zvířat ve hře, a speciální výběr předmětů, které vás nasměrují k tomu, abyste se stali mistrem lovu.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Speciální balíčky</value></data>
   <data name="Bank.SpecialDesc" xml:space="preserve"><value>Vyberte si jeden z našich speciálních balíčků a získejte vše potřebné k lovu nejoblíbenějších zvířat ve hře {game}. Všechny tyto balíčky zahrnují základní členství s licencí k lovu všech druhů ve hře a výběr doporučených předmětů zaměřených na konkrétní zvířata a jejich lov.</value></data>
   <data name="Bank.Basic" xml:space="preserve"><value>Základní členství</value></data>
@@ -599,7 +599,7 @@
   <data name="Bank.A4" xml:space="preserve"><value>Po skončení slevy či akce už nemůžeme zvýhodněnou cenu nabídnout.</value></data>
   <data name="Bank.Q5" xml:space="preserve"><value>Zásady vrácení peněz</value></data>
   <data name="Bank.A5" xml:space="preserve"><value>Stejně jako u většiny digitálních měn nevracíme peníze za nákupy em$. Hru si můžete zdarma stáhnout a vyzkoušet; před nákupem em$ si prosím ověřte, že na vašem počítači funguje a že odpovídá vašim očekáváním.</value></data>
-  <data name="Bank.Q6" xml:space="preserve"><value>Upozornění</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Vyloučení odpovědnosti</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Upozorňujeme, že em$ nelze prodat ani převést a nelze je vyměnit za hotovost ani za nic jiného než za samotný obsah hry {game}. Za em$ se peníze nevracejí. em$ nemají žádnou peněžní hodnotu a nepředstavují žádný druh měny ani majetku.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Další zbraně: {0}, ostatní předměty: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} měs.</value></data>
@@ -646,12 +646,12 @@
   <data name="Set.TimeZone" xml:space="preserve"><value>Časové pásmo:</value></data>
   <data name="Set.Save" xml:space="preserve"><value>Uložit</value></data>
   <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historie nákupů účtu</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Všechny transakce provedené v sekcích {0} a {1} se ukládají do vaší peněženky.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banka</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Všechny transakce, které provedete přes {0} a {1}, se ukládají do vaší peněženky.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>banku</value></data>
   <data name="Set.Store" xml:space="preserve"><value>obchod</value></data>
   <data name="Set.WalletLink" xml:space="preserve"><value>Kliknutím zobrazíte svou peněženku</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Blokovaní hráči</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Žádný hráč nemá ve vašich hrách blokaci</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Zablokovaní hráči</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Ve svých hrách jste zatím nezablokovali žádného hráče</value></data>
   <data name="Set.Unban" xml:space="preserve"><value>Odblokovat</value></data>
   <data name="Set.UnbanConfirm" xml:space="preserve"><value>Opravdu chcete odblokovat hráče {0} ve svých hrách?</value></data>
   <data name="Set.FacebookText" xml:space="preserve"><value>Svůj účet můžete propojit s Facebookem, aby bylo přihlašování snazší.</value></data>
@@ -681,7 +681,7 @@
   <data name="GM.LodgeTitle" xml:space="preserve"><value>VÝBĚR TROFEJNÍ MYSLIVNY</value></data>
   <data name="GM.NoLodges" xml:space="preserve"><value>Momentálně nevlastníte žádné myslivny.</value></data>
   <data name="GM.BaitTitle" xml:space="preserve"><value>PŘIKRMIŠTĚ – SPRÁVA</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Doplnit krmivo až na:</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Naplnit krmelec až na:</value></data>
   <data name="GM.BaitCol" xml:space="preserve"><value>Krmivo</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Stav</value></data>
   <data name="GM.Active" xml:space="preserve"><value>Aktivní</value></data>
@@ -704,7 +704,7 @@
   <data name="Welcome.SettingsText" xml:space="preserve"><value>E-mailovou adresu, jazyk nebo avatar hráče můžete změnit na stránce nastavení.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Změnit nastavení účtu</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
-  <data name="Welcome.ProfileText" xml:space="preserve"><value>Veškerý váš pokrok ve hře {game} najdete na stránce profilu, kde jsou i podrobné statistiky všech vašich předchozích lovů.</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Veškerý váš postup ve hře {game} najdete na stránce profilu, kde jsou i podrobné statistiky všech vašich předchozích lovů.</value></data>
   <data name="Welcome.ProfileGo" xml:space="preserve"><value>Zobrazit můj profil</value></data>
   <data name="Welcome.Help" xml:space="preserve"><value>Pomoc</value></data>
   <data name="Welcome.HelpText" xml:space="preserve"><value>Potřebujete pomoc se začátky? Podívejte se do sekce nápovědy a na naše skvělé zdroje spravované komunitou.</value></data>
@@ -714,7 +714,7 @@
   <data name="Invite.Step1" xml:space="preserve"><value>Pošlete pozvánku</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Kliknutím na tlačítko níže získáte svůj odkaz k doporučení a můžete ho poslat příteli, kterého chcete pozvat do hry {game}.</value></data>
   <data name="Invite.Step2" xml:space="preserve"><value>Hrajte {game} společně</value></data>
-  <data name="Invite.Step2Text" xml:space="preserve"><value>Když si váš přítel zaregistruje účet {0}přes váš odkaz{1}, dostane 200 em$, dálkoměr 5x30mm, vábničku na losa a eliminátor pachu!</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Když si váš přítel zaregistruje účet {0}přes váš odkaz{1}, dostane 200 em$, dálkoměr 5x30mm, vábničku na losa a neutralizátor zápachu!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Získejte odměnu</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Pokud váš přítel nakoupí em$, dostanete odměnu!</value></data>
   <data name="Invite.SeeRewards" xml:space="preserve"><value>Odměny viz níže</value></data>
@@ -752,7 +752,7 @@
   <data name="Prof.Animals" xml:space="preserve"><value>Zvířata</value></data>
   <data name="Prof.Weapons" xml:space="preserve"><value>Zbraně</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Sběratelské předměty</value></data>
-  <data name="Prof.Progress" xml:space="preserve"><value>Průběh</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Postup</value></data>
   <data name="Prof.HunterScore" xml:space="preserve"><value>Lovecké skóre</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorie</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Odemčeno</value></data>
@@ -867,7 +867,7 @@
   <data name="Term.species.37" xml:space="preserve"><value>Medvěd grizzly</value></data>
   <data name="Term.species.47" xml:space="preserve"><value>Husovec strakatý</value></data>
   <data name="Term.species.15" xml:space="preserve"><value>Kachna divoká</value></data>
-  <data name="Term.species.8" xml:space="preserve"><value>Los evropský</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Los</value></data>
   <data name="Term.species.101" xml:space="preserve"><value>Jelenec ušatý (netypický)</value></data>
   <data name="Term.species.1" xml:space="preserve"><value>Jelenec ušatý (typický)</value></data>
   <data name="Term.species.27" xml:space="preserve"><value>Ostralka štíhlá</value></data>
@@ -1045,7 +1045,7 @@
   <data name="DayHelp.Prog.5" xml:space="preserve"><value>S každým dalším cyklem se odměny zvýší o dalších 10 %, nejvýše však na dvojnásobek základních odměn (zvýšení o 100 %).</value></data>
   <data name="DayHelp.Prog.6" xml:space="preserve"><value>Pokud tedy například splníte 10 cyklů po sobě bez přerušení série, získáte za každou misi dvojnásobnou odměnu, která vám zůstane, dokud sérii nepřerušíte.</value></data>
   <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Rozdíly oproti běžným misím</value></data>
-  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Na rozdíl od běžných misí musíte u DM zvěř, aby se úlovek počítal, ulovit sami. Přátelé vám ale ve hře s ostatními mohou pomoci požadované zvíře {0}najít{1}.</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Aby byl úlovek u DM platný, musíte na rozdíl od běžných misí zvíře ulovit sami. Přátelé vám ale ve hře s ostatními mohou pomoci požadované zvíře {0}najít{1}.</value></data>
   <data name="DayHelp.Reg.2" xml:space="preserve"><value>Na rozdíl od běžných misí se denní mise nemusí aktivovat. Denní mise je po dobu své platnosti (24 hodin) vždy aktivní.</value></data>
   <data name="DayHelp.Ach.1" xml:space="preserve"><value>Plněním DM můžete získávat achievementy. Své achievementy za DM najdete v sekci Achievementy v profilu hráče:</value></data>
   <data name="DayHelp.Ach.2" xml:space="preserve"><value>Plnění DM se počítá do 3 různých typů achievementů, po jednom pro každou úroveň obtížnosti.</value></data>
@@ -1105,7 +1105,7 @@
   <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Alespoň 1024x768</value></data>
   <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kb/s příjem i odesílání</value></data>
   <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Mb/s příjem i odesílání (podle počtu hráčů)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Pokud hostitel nespouští hru alespoň na 25–30 fps (snímků za sekundu), fyzika bude produkovat chyby. Hráči se slabšími počítači by se měli pokusit snížit nastavení, aby hra běžela na co nejvyšších fps. {0}30 FPS{1} je nejnižší doporučená hodnota. FPS lze měřit zdarma dostupnými nástroji na internetu.</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Pokud hostitel nespouští hru alespoň na 25–30 fps (snímků za sekundu), dojde k chybám ve fyzice. Hráči se slabšími počítači by se měli pokusit snížit nastavení, aby hra běžela na co nejvyšších fps. {0}30 FPS{1} je nejnižší doporučená hodnota. FPS lze měřit zdarma dostupnými nástroji na internetu.</value></data>
   <data name="Download.Req.FpsTool" xml:space="preserve"><value>Hledat nástroj</value></data>
   <data name="Download.Size" xml:space="preserve"><value>Stáhněte si hru (asi 12 GB).</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Klikněte zde pro stažení</value></data>
@@ -1119,7 +1119,7 @@
   <data name="Download.Trouble.Path" xml:space="preserve"><value>[Složka hry]\game\&lt;nástroj&gt;</value></data>
   <data name="Download.Trouble.Step3" xml:space="preserve"><value>Spusťte nástroj a nechte jej analyzovat problémy s konfigurací a výkonem.</value></data>
   <data name="Download.Trouble.Step4" xml:space="preserve"><value>Použijte opravy navržené během analýzy.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Pokud navržená řešení nepomohou, stáhněte si vygenerovaný soubor protokolu a pošlete jej na kontakt: {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>tým podpory</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Pokud navržená řešení nepomohou, stáhněte si vygenerovaný soubor protokolu a pošlete jej našemu {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>týmu podpory</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Stáhnout nástroj</value></data>
 </root>
