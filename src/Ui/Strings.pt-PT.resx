@@ -88,7 +88,7 @@
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Arquivo de notícias</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBROS ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Juntar-se ao Discord</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Junta-te ao Discord</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Convive com quem percebe do assunto</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Caçar</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>UM JOGADOR</value></data>
@@ -216,7 +216,7 @@
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Um ficheiro de definições tem um formato que o launcher não reconhece, por isso foi deixado intacto.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>O jogo está em execução. Fecha-o antes de guardar: ele reescreve estes ficheiros por si próprio.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Não foi possível guardar as definições.</value></data>
-  <data name="Patch.GotIt" xml:space="preserve"><value>Percebido!</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>Entendido!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nova atualização do jogo</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Foi lançada uma nova atualização do jogo. O teu jogo será atualizado automaticamente e poderás iniciar uma nova expedição assim que terminar! Entretanto, podes navegar à vontade.</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>A transferir {game}</value></data>
@@ -387,7 +387,7 @@
   <data name="Comp.YourPosition" xml:space="preserve"><value>A tua posição</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Pontuação a superar</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Visão geral</value></data>
-  <data name="Comp.Leaderboard" xml:space="preserve"><value>Classificação</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Tabela de líderes</value></data>
   <data name="Comp.History" xml:space="preserve"><value>Histórico</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Prémios</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Troféu</value></data>
@@ -412,8 +412,8 @@
   <data name="League.P5" xml:space="preserve"><value>De 4 em 4 semanas passamos para uma nova reserva, e cada 3 reservas formam uma Temporada.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Não tens de participar em todas as Competições da Liga para te qualificares para os prémios mensais ou da Temporada, mas há vantagens óbvias em entrares na disputa sempre que puderes.</value></data>
   <data name="League.NotEnrolled" xml:space="preserve"><value>Não estás inscrito em nenhuma competição</value></data>
-  <data name="League.Monthly" xml:space="preserve"><value>Classificação mensal</value></data>
-  <data name="League.Season" xml:space="preserve"><value>Classificação da Temporada</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Tabela de líderes mensal</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Tabela de líderes da Temporada</value></data>
   <data name="Board.Title" xml:space="preserve"><value>TABELAS DE LÍDERES</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pontuação</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Distância</value></data>
@@ -435,13 +435,13 @@
   <data name="Board.Past" xml:space="preserve"><value>Hall da Fama de temporadas anteriores</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Temporada {0}</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Melhores pontuações do Lane Bandit</value></data>
-  <data name="Board.LaneInfo" xml:space="preserve"><value>O Lane Bandit é um fixe jogo de arcada retro que podes jogar no teu HunterMate para te entreteres enquanto esperas que aquele troféu apareça!</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>O Lane Bandit é um jogo de arcada retro fixe que podes jogar no teu HunterMate para te entreteres enquanto esperas que aquele troféu apareça!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Obter o Lane Bandit</value></data>
   <data name="Board.TopBust" xml:space="preserve"><value>Melhores pontuações do Bust Through</value></data>
-  <data name="Board.BustInfo" xml:space="preserve"><value>O Bust Through é um fixe jogo de arcada retro que podes jogar no teu HunterMate para te entreteres enquanto esperas que aquele troféu apareça!</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>O Bust Through é um jogo de arcada retro fixe que podes jogar no teu HunterMate para te entreteres enquanto esperas que aquele troféu apareça!</value></data>
   <data name="Board.SP" xml:space="preserve"><value>Solo</value></data>
-  <data name="Pager.Prev" xml:space="preserve"><value>Anter.</value></data>
-  <data name="Pager.Next" xml:space="preserve"><value>Seg.</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Seguinte</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Páginas</value></data>
   <data name="Board.Avatar" xml:space="preserve"><value>Avatar de {0}</value></data>
   <data name="Comp.Failed" xml:space="preserve"><value>Não foi possível alterar a competição. Tenta novamente.</value></data>
@@ -628,7 +628,7 @@
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>O teu avatar atual</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Seleciona um novo avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatares desbloqueáveis</value></data>
-  <data name="Set.AvatarLocked" xml:space="preserve"><value>Este avatar está bloqueado. Podes desbloqueá-lo comprando-o na loja.</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Este avatar está bloqueado. Podes desbloqueá-lo ao comprá-lo na loja.</value></data>
   <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
   <data name="Set.EmailAddress" xml:space="preserve"><value>Endereço de e-mail</value></data>
   <data name="Set.EmailUpdate" xml:space="preserve"><value>Atualizar e-mail</value></data>
@@ -712,8 +712,8 @@
   <data name="Invite.Title" xml:space="preserve"><value>Recrutar um amigo</value></data>
   <data name="Invite.How" xml:space="preserve"><value>Como recrutar um amigo</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Envia um convite</value></data>
-  <data name="Invite.Step1Text" xml:space="preserve"><value>Clica no botão abaixo para obteres a tua ligação de indicação e enviá-la a um amigo que gostasses de convidar para {game}.</value></data>
-  <data name="Invite.Step2" xml:space="preserve"><value>Joguem {game} juntos</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Clica no botão abaixo para obteres a tua ligação de indicação e enviá-la a um amigo que queiras convidar para {game}.</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Jogar {game} juntos</value></data>
   <data name="Invite.Step2Text" xml:space="preserve"><value>Quando o teu amigo registar uma conta {0}através da tua ligação{1}, recebe 200 em$, um telémetro 5x30mm, um chamariz de alce e um eliminador de odores!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Recebe a tua recompensa</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Se o teu amigo comprar em$, serás recompensado!</value></data>
@@ -764,12 +764,12 @@
   <data name="Prof.Total" xml:space="preserve"><value>Total</value></data>
   <data name="Prof.Species" xml:space="preserve"><value>Espécies</value></data>
   <data name="Prof.Spotting" xml:space="preserve"><value>Avistamento</value></data>
-  <data name="Prof.Tracking" xml:space="preserve"><value>Rastreamento</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Rastreio</value></data>
   <data name="Prof.Shooting" xml:space="preserve"><value>Tiro</value></data>
   <data name="Prof.Lvl" xml:space="preserve"><value>Nív.</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>Estatísticas</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Última caçada</value></data>
-  <data name="Stat.Lifetime" xml:space="preserve"><value>Estatísticas globais</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Estatísticas gerais</value></data>
   <data name="Stat.History" xml:space="preserve"><value>Histórico de caçadas</value></data>
   <data name="Stat.Best" xml:space="preserve"><value>Recordes pessoais</value></data>
   <data name="Stat.Misc" xml:space="preserve"><value>Diversos</value></data>
@@ -881,7 +881,7 @@
   <data name="Term.species.34" xml:space="preserve"><value>Lagópode-branco</value></data>
   <data name="Term.species.38" xml:space="preserve"><value>Wapiti-das-Montanhas-Rochosas</value></data>
   <data name="Term.species.11" xml:space="preserve"><value>Corço</value></data>
-  <data name="Term.species.53" xml:space="preserve"><value>Coelho-corço</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Coelho-chifrudo</value></data>
   <data name="Term.species.3" xml:space="preserve"><value>Wapiti-de-Roosevelt</value></data>
   <data name="Term.species.44" xml:space="preserve"><value>Veado-rusa</value></data>
   <data name="Term.species.45" xml:space="preserve"><value>Veado-sambar</value></data>
@@ -1105,7 +1105,7 @@
   <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Pelo menos 1024x768</value></data>
   <data name="Download.Req.InternetClient" xml:space="preserve"><value>Cliente: 512 kbps de upload e download</value></data>
   <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps de upload e download (consoante o número de jogadores)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Se o anfitrião não executar o jogo a pelo menos 25-30 fps (imagens por segundo), a física produzirá erros. Os jogadores com computadores menos potentes devem tentar baixar as definições para conseguirem executar o jogo com os fps mais altos possíveis. {0}30 FPS{1} é o valor mínimo recomendado. Os FPS podem ser medidos com ferramentas gratuitas disponíveis na Internet.</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Se o anfitrião não executar o jogo a pelo menos 25-30 fps (imagens por segundo), a física produzirá erros. Os jogadores com computadores menos potentes devem tentar reduzir as definições para conseguirem executar o jogo com os fps mais altos possíveis. {0}30 FPS{1} é o valor mínimo recomendado. Os FPS podem ser medidos com ferramentas gratuitas disponíveis na Internet.</value></data>
   <data name="Download.Req.FpsTool" xml:space="preserve"><value>Procurar ferramenta</value></data>
   <data name="Download.Size" xml:space="preserve"><value>Transfere o jogo (cerca de 12 GB).</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Clica aqui para transferir</value></data>
