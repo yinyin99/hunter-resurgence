@@ -627,6 +627,14 @@
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} мес.</value></data>
   <data name="Bank.SteamInternal" xml:space="preserve"><value>Внутренняя ошибка Steam, повторите попытку позже.</value></data>
   <data name="Bank.SteamError" xml:space="preserve"><value>Произошла ошибка при подключении к Steam. Повторите попытку.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Спасибо, что пользуетесь магазином {game}, купленный предмет добавлен на ваш аккаунт.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Нажмите «Закрыть» в правом верхнем углу, чтобы вернуться в {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Что-то пошло не так. Пожалуйста, повторите попытку. И если все равно не получится, обратитесь в службу техподдержки.</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Спасибо за покупку!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Ваша покупка {0} через Steam завершена, товары добавлены на ваш аккаунт.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Покупка не удалась</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Что-то пошло не так, и покупка в Steam была отменена. Повторите попытку.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Охота</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Сообщения</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Разрешить сообщения только от друзей</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Новое сообщение</value></data>

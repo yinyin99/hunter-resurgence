@@ -627,6 +627,14 @@
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mois</value></data>
   <data name="Bank.SteamInternal" xml:space="preserve"><value>Erreur interne de Steam, veuillez réessayer plus tard.</value></data>
   <data name="Bank.SteamError" xml:space="preserve"><value>Une erreur est survenue lors de la connexion à Steam. Veuillez réessayer.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Merci d’utiliser la boutique de {game}, votre compte a été mis à jour avec l’article acheté.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Cliquez sur « Fermer » en haut à droite pour retourner à {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Une erreur est survenue. Veuillez réessayer. Si cela ne fonctionne toujours pas, contactez le support.</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Merci pour votre achat !</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Votre achat de {0} via Steam est terminé et vos articles ont été ajoutés à votre compte.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Échec de l’achat</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Un problème est survenu et votre achat Steam a été annulé. Veuillez réessayer.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Chasser</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messages</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>N’autoriser que les messages de mes amis</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Nouveau message</value></data>

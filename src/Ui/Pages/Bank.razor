@@ -1,5 +1,6 @@
 @page "/bank"
 @page "/bank/{Tab}"
+@page "/bank/success/{Ref}"
 @implements IDisposable
 @inject ModalService Modal
 
@@ -7,12 +8,24 @@
 <Feed />
 
 @code {
-    [Parameter] public string? Tab { get; set; }
+    Type? shown;
 
-    protected override void OnParametersSet() => Modal.Show<BankModal>(new Dictionary<string, object?> { ["Tab"] = Tab is "memberships" or "help" ? Tab : "ems" });
+    /// <summary>ems, memberships (also for any other value), help, or offerwall.</summary>
+    [Parameter] public string? Tab { get; set; }
+    /// <summary>Set after a payment: the thanks dialog instead of the bank.</summary>
+    [Parameter] public string? Ref { get; set; }
+    /// <summary>?show_help=1 opens the help tab.</summary>
+    [SupplyParameterFromQuery(Name = "show_help")] public int? ShowHelp { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Ref is not null) { shown = typeof(PurchaseDoneModal); Modal.Show<PurchaseDoneModal>(); }
+        else if (Tab == "offerwall") { shown = typeof(OfferwallModal); Modal.Show<OfferwallModal>(); }
+        else { shown = typeof(BankModal); Modal.Show<BankModal>(new Dictionary<string, object?> { ["Tab"] = ShowHelp == 1 ? "help" : Tab is "ems" or "help" ? Tab : "memberships" }); }
+    }
 
     public void Dispose()
     {
-        if (Modal.Type == typeof(BankModal)) Modal.Close();
+        if (Modal.Type == shown) Modal.Close();
     }
 }
