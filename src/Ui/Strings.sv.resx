@@ -23,9 +23,9 @@
   <data name="Menu.Help" xml:space="preserve"><value>HJÄLP</value></data>
   <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>NEDLADDNINGAR</value></data>
-  <data name="Menu.Dashboard" xml:space="preserve"><value>Översikt</value></data>
-  <data name="Menu.Single" xml:space="preserve"><value>Enspelarspel</value></data>
-  <data name="Menu.Multi" xml:space="preserve"><value>Flerspelarspel</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Instrumentpanel</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Enspelarläge</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Flerspelarläge</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Hitta ett flerspelarspel</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Guider</value></data>
   <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ är {game}s virtuella valuta som du kan använda för att köpa föremål i butiken, till exempel vapen, utrustning, kläder och mycket mer.</value></data>
@@ -73,7 +73,7 @@
   <data name="Legal.Section" xml:space="preserve"><value>INLEDNING</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Platshållarrubrik</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Platshållartext. Den som driver tjänsten tillhandahåller den verkliga juridiska texten.</value></data>
-  <data name="Public.Already" xml:space="preserve"><value>Redan jägare?</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>Är du redan jägare?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Logga in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-post</value></data>
   <data name="Signin.Code" xml:space="preserve"><value>Kod</value></data>
@@ -112,8 +112,8 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Visa kommande tävlingar</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>SKAPA ENSPELARSPEL</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>SKAPA ETT FLERSPELARSPEL</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Välj var du vill starta din jaktrunda. Klicka på en av de 12 jaktområdeslogotyperna nedan för att se en karta över området, och klicka på stugorna (husikonerna) för att se vilka arter som finns där. Du kan också utforska världskartan genom att klicka och dra på den, och zooma in och ut med mushjulet.</value></data>
-  <data name="Launch.Intro2" xml:space="preserve"><value>Några av världens vackraste naturmiljöer och 45 olika djurarter väntar på dig. Lycka till med jakten!</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Välj var du vill starta din jakt. Klicka på en av de 12 logotyperna för jaktområden nedan för att se en karta över området, och klicka på stugorna (husikonerna) för att se vilka arter som finns där. Du kan också utforska världskartan genom att klicka och dra på den, och zooma in och ut med mushjulet.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Några av världens vackraste naturmiljöer och 45 olika djurarter väntar på dig. Lycka till på jakten!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttid:</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Starta spel</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patchar</value></data>
@@ -144,7 +144,7 @@
   <data name="Servers.Clear" xml:space="preserve"><value>Rensa</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Uppdatera</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Visa bara spel jag får gå med i</value></data>
-  <data name="Servers.Showing" xml:space="preserve"><value>Visade spel: {0}</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Spel som visas: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Spelnamn</value></data>
   <data name="Servers.Reserve" xml:space="preserve"><value>Jaktområde</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelare</value></data>
@@ -163,11 +163,11 @@
   <data name="Servers.Info" xml:space="preserve"><value>Om du spelar flerspelarspel med personer som befinner sig långt ifrån dig kan det ge anslutningsproblem eller lagg. Vi rekommenderar att du går med i spel där värden befinner sig nära dig. De färgade prickarna bredvid flaggorna i serverlistan visar ungefär hur långt du är från spelets värd.</value></data>
   <data name="Servers.InfoLink" xml:space="preserve"><value>Klicka här för mer information om anslutningar</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Kort avstånd</value></data>
-  <data name="Servers.Medium" xml:space="preserve"><value>Medelavstånd</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Medellångt avstånd</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Långt avstånd</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>Inga spel hittades</value></data>
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Vi hittade inga offentliga flerspelarspel som du får gå med i.</value></data>
-  <data name="Servers.HostOwn" xml:space="preserve"><value>VÄRDA ETT EGET SPEL</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>STARTA ETT EGET SPEL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Det här spelet är lösenordsskyddat</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverplats: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
@@ -189,7 +189,7 @@
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Avbryt</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Starta spel</value></data>
   <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Helskärm</value></data>
-  <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertikal synk</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertikal synkronisering</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Skärmupplösning</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scenkomplexitet</value></data>
@@ -200,7 +200,7 @@
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Skuggkvalitet</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample-kantutjämning</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
-  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontextuell hjälp</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Sammanhangsberoende hjälp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Utökat ljudminne</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Låg</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Medel</value></data>
@@ -266,24 +266,24 @@
   <data name="Launcher.Error.9" xml:space="preserve"><value>Nedladdningen misslyckades.</value></data>
   <data name="Launcher.Error.10" xml:space="preserve"><value>Nedladdningen av torrentdata misslyckades.</value></data>
   <data name="Launcher.Error.11" xml:space="preserve"><value>Ogiltig .torrent-fil.</value></data>
-  <data name="Launcher.Error.12" xml:space="preserve"><value>Ogiltig startplats för launcherapplikationen.</value></data>
-  <data name="Launcher.Error.13" xml:space="preserve"><value>Misslyckades att packa upp NSIS sfx-arkiv.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Ogiltig plats för launcherfilen.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>Det gick inte att packa upp NSIS sfx-arkivet.</value></data>
   <data name="Launcher.Error.14" xml:space="preserve"><value>Patchfel.</value></data>
   <data name="Launcher.Error.15" xml:space="preserve"><value>Saknad eller felaktig manifestfil.</value></data>
-  <data name="Launcher.Error.16" xml:space="preserve"><value>Misslyckades att starta den uppdaterade launchern.</value></data>
-  <data name="Launcher.Error.17" xml:space="preserve"><value>Launcherapplikationen svarar ej.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Det gick inte att starta den uppdaterade launchern.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Launchern svarar inte.</value></data>
   <data name="Launcher.Error.18" xml:space="preserve"><value>Det gick inte att skapa spelkatalogen.</value></data>
   <data name="Launcher.Error.19" xml:space="preserve"><value>Det gick inte att skapa torrentkatalogen.</value></data>
   <data name="Launcher.Error.20" xml:space="preserve"><value>Det gick inte att skapa patchkatalogen.</value></data>
   <data name="Launcher.Error.21" xml:space="preserve"><value>Det gick inte att skapa katalog.</value></data>
   <data name="Launcher.Error.22" xml:space="preserve"><value>Det gick inte att kopiera filer.</value></data>
   <data name="Launcher.Error.27" xml:space="preserve"><value>Varning! Inte tillräckligt med diskutrymme.</value></data>
-  <data name="Launcher.Error.35" xml:space="preserve"><value>Kan inte applicera patch. Din nuvarande installation är modifierad eller trasig och kan inte uppgraderas. Laddar hem fullständigt spel istället.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>Det går inte att tillämpa patchen, din nuvarande installation är ändrad eller skadad. Laddar ner hela spelet i stället.</value></data>
   <data name="Launcher.Error.49" xml:space="preserve"><value>Det gick inte att skapa Direct3D-objekt.</value></data>
   <data name="Launcher.Error.50" xml:space="preserve"><value>Det gick inte att hämta aktuellt visningsläge.</value></data>
   <data name="Launcher.Error.51" xml:space="preserve"><value>Inga lämpliga visningslägen hittades.</value></data>
   <data name="Launcher.Error.52" xml:space="preserve"><value>Det gick inte att avgöra vilka visningslägen som stöds av ditt grafikkort.</value></data>
-  <data name="Launcher.Error.53" xml:space="preserve"><value>Det gick inte att utröna grafikkortets kapacitet.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>Det gick inte att hämta grafikkortets egenskaper.</value></data>
   <data name="Launcher.Error.16001" xml:space="preserve"><value>Ogiltig session, starta ett nytt spel.</value></data>
   <data name="Launcher.Error.16002" xml:space="preserve"><value>Det gick inte att ansluta till spelservern. Försök igen.</value></data>
   <data name="Launcher.Error.16003" xml:space="preserve"><value>Ogiltigt operativsystem.</value></data>
@@ -309,11 +309,11 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Föregående avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Nästa avatar</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>SKAFFA DITT FÖRSTA VAPEN</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>Så långt har du kommit, grymt! Här är en välkomstgåva från oss – ditt första vapen, den blänkande hagelbössan 12GA Single Shot med gratis ammunition som fylls på igen. Med den här tåliga skönheten kan du jaga alla djur i spelet på ett etiskt försvarbart sätt, utom bison.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Så långt har du kommit, grymt! Här är en välkomstgåva från oss – ditt första vapen, den blänkande hagelgeväret 12GA Single Shot med gratis ammunition som fylls på igen. Med den här tåliga skönheten kan du jaga alla djur i spelet på ett etiskt försvarbart sätt, utom bison.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>NJUT AV DINA JAKTLICENSER</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>Snart är det dags för din första jakt! Vad blir det? Som gästspelare får du gratis jaktlicenser för vitsvanshjort, europeisk kanin och fasan, för alltid, plus två djur till som byts ut varje vecka. Betalande medlemmar kan jaga alla arter; kolla in vår medlemskapsbutik om du vill bli en.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Snart är det dags för din första jakt! Vad blir det? Som gästspelare får du gratis livstida jaktlicenser för vitsvanshjort, europeisk kanin och fasan, plus två djur till som byts ut varje vecka. Betalande medlemmar kan jaga alla arter; kolla in vår medlemskapsbutik om du vill bli medlem.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>BEKRÄFTA DIN E-POST</value></data>
-  <data name="Signup.P4.Text" xml:space="preserve"><value>Den som väntar på något gott… bekräfta din e-post! Kolla din inkorg efter ett meddelande från oss och följ instruktionerna i det. Din nuvarande e-postadress är {0}. Om den inte stämmer kan du ändra den nedan och klicka på ”Skicka e-post igen”.</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Gott kommer till den som bekräftar sin e-post! Kolla din inkorg efter ett meddelande från oss och följ instruktionerna i det. Din nuvarande e-postadress är {0}. Om den inte stämmer kan du ändra den nedan och klicka på ”Skicka e-post igen”.</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>DIN BELÖNING</value></data>
   <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Tack för att du bekräftade din e-post.</value></data>
   <data name="Signup.P4.Change" xml:space="preserve"><value>Uppdatera e-postadress</value></data>
@@ -339,7 +339,7 @@
   <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Spara och starta</value></data>
   <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Grafikkvalitet</value></data>
   <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Låga inställningar</value></data>
-  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Medelinställningar</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Medelhöga inställningar</value></data>
   <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Höga inställningar</value></data>
   <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultrainställningar</value></data>
   <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Egna inställningar</value></data>
@@ -350,7 +350,7 @@
   <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Scenkomplexitet</value></data>
   <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Skuggkvalitet</value></data>
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Texturkvalitet</value></data>
-  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertikal synk</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Vertikal synkronisering</value></data>
   <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Tävlingar</value></data>
   <data name="Comp.Tab.League" xml:space="preserve"><value>Community League</value></data>
   <data name="Comp.Title" xml:space="preserve"><value>TÄVLINGAR</value></data>
@@ -408,7 +408,7 @@
   <data name="League.P1" xml:space="preserve"><value>Välkommen till {game} Community League, som ersätter vårt nuvarande upplägg med helgtävlingar.</value></data>
   <data name="League.P2" xml:space="preserve"><value>Varje fredag jagar du ett nytt djur i det angivna jaktområdet (djur som fälls utanför området räknas inte). Du har en hel vecka och 7 försök på dig att lämna in ett bidrag. Tävlingen aktiveras och inaktiveras som vanligt. Under veckan som ett djur jagas pausas alla ordinarie tävlingar för just det djuret. Och ja, rean pågår numera i en hel vecka. Belöningarna per ligatävling motsvarar de helgtävlingar de ersätter.</value></data>
   <data name="League.P3" xml:space="preserve"><value>Event påverkas inte av ligan.</value></data>
-  <data name="League.P4" xml:space="preserve"><value>Alla tävlingar är enbart enspelarläge, utom tävlingar för anka eller gås.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Alla tävlingar spelas enbart i enspelarläge, utom tävlingar för anka eller gås.</value></data>
   <data name="League.P5" xml:space="preserve"><value>Var fjärde vecka flyttar vi till ett nytt jaktområde, och tre jaktområden utgör en säsong.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Du behöver inte delta i varje ligatävling för att kvalificera dig för månads- eller säsongspriserna, men det finns uppenbara fördelar med att haka på så ofta du kan.</value></data>
   <data name="League.NotEnrolled" xml:space="preserve"><value>Du är inte anmäld till några tävlingar</value></data>
@@ -496,9 +496,9 @@
   <data name="Store.Cat.10" xml:space="preserve"><value>Ammunition</value></data>
   <data name="Store.Cat.5" xml:space="preserve"><value>Sikten</value></data>
   <data name="Store.Cat.50" xml:space="preserve"><value>Gevärssikten</value></data>
-  <data name="Store.Cat.51" xml:space="preserve"><value>Pistolsikten</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Handvapensikten</value></data>
   <data name="Store.Cat.52" xml:space="preserve"><value>Hagelgevärssikten</value></data>
-  <data name="Store.Cat.53" xml:space="preserve"><value>Pil- och armborstsikten</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Pilbågs- och armborstsikten</value></data>
   <data name="Store.Cat.54" xml:space="preserve"><value>Mynningsladdarsikten</value></data>
   <data name="Store.Cat.59" xml:space="preserve"><value>Hundar</value></data>
   <data name="Store.Cat.15" xml:space="preserve"><value>Lockmedel</value></data>
@@ -536,7 +536,7 @@
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Skaffa mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inkluderar</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Köpet är klart!</value></data>
-  <data name="Store.Enjoy" xml:space="preserve"><value>Njut av din {0}!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Njut av {0}!</value></data>
   <data name="Store.Oops" xml:space="preserve"><value>Hoppsan.</value></data>
   <data name="Store.Close" xml:space="preserve"><value>Stäng</value></data>
   <data name="Store.YouSave" xml:space="preserve"><value>Du sparar</value></data>
@@ -592,7 +592,7 @@
   <data name="Bank.Q1" xml:space="preserve"><value>Vad är em$?</value></data>
   <data name="Bank.A1" xml:space="preserve"><value>em$ är {game}s virtuella valuta som du kan använda för att köpa föremål i butiken, till exempel vapen, utrustning, kläder och mycket mer.</value></data>
   <data name="Bank.Q2" xml:space="preserve"><value>Hur köper jag em$ som present till en vän?</value></data>
-  <data name="Bank.A2" xml:space="preserve"><value>På fliken ”Köp em$” i det här fönstret kryssar du i rutan ”Köp som present” och klickar sedan på knappen ”KÖP” för det belopp du vill köpa. Du kommer till en köpsammanfattning på Steams webbplats. Klicka på knappen ”Godkänn”. Du kommer till en bekräftelsesida (tack för ditt köp). Klicka på ditt em$-saldo högst upp på skärmen (där det står ”em$ XXXX”) och titta i din {0}köphistorik{1}. Den senaste posten i din köphistorik ska lyda ”Köpt som present. Presentkod:”, följt av presentkoden. Kopiera koden och skicka den till vännen du vill ge den till. Din vän måste sedan lösa in koden för att em$-presenten ska läggas till på hens saldo.</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>På fliken ”Köp em$” i det här fönstret kryssar du i rutan ”Köp som present” och klickar sedan på knappen ”KÖP” för det belopp du vill köpa. Du kommer till en köpsammanfattning på Steams webbplats. Klicka på knappen ”Godkänn”. Du kommer till en bekräftelsesida (tack för ditt köp). Klicka på ditt em$-saldo högst upp på skärmen (där det står ”em$ XXXX”) och titta i din {0}köphistorik{1}. Den senaste posten i din köphistorik ska lyda ”Köpt som present. Presentkod:”, följt av presentkoden. Kopiera koden och skicka den till vännen du vill ge den till. Din vän måste sedan lösa in koden för att em$-presenten ska läggas till på vännens saldo.</value></data>
   <data name="Bank.Q3" xml:space="preserve"><value>Hur löser jag in en presentkod?</value></data>
   <data name="Bank.A3" xml:space="preserve"><value>Klicka på knappen ”Lös in en rabattkod” i övre högra hörnet av det här fönstret, klistra in presentkoden där och klicka på knappen ”OK”. Ett bekräftelsemeddelande visas; klicka på knappen ”Klicka här för att lösa in presenten”. Ett meddelande visas som bekräftar att presenten har lagts till på ditt konto. Klicka på OK och njut av din present!</value></data>
   <data name="Bank.Q4" xml:space="preserve"><value>Jag missade ett reapris, kan jag fortfarande få rabatten?</value></data>
@@ -695,7 +695,7 @@
   <data name="Welcome.TutorialsText" xml:space="preserve"><value>Låt Doc, uppsyningsman i Evergreen Hunting Reserve, lära dig allt du behöver veta om att spela {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Gå till guiderna</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Jaga</value></data>
-  <data name="Welcome.HuntingText" xml:space="preserve"><value>Starta en riktig jakt om du redan känner till {game} eller helt enkelt är för otålig för att vänta.</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Starta en riktig jakt om du redan känner till {game} eller bara inte kan vänta på att komma ut.</value></data>
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Starta ett nytt spel</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Nedladdningar</value></data>
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Om du ännu inte har laddat ner spelets launcher och klient måste du göra det innan du kan börja jaga.</value></data>
@@ -714,7 +714,7 @@
   <data name="Invite.Step1" xml:space="preserve"><value>Skicka en inbjudan</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Klicka på knappen nedan för att få din inbjudningslänk och skicka den till en vän du vill bjuda in till {game}.</value></data>
   <data name="Invite.Step2" xml:space="preserve"><value>Spela {game} tillsammans</value></data>
-  <data name="Invite.Step2Text" xml:space="preserve"><value>När din vän registrerar ett konto {0}med din länk{1} får hen 200 em$, en 5x30 mm avståndsmätare, en älgkalllock och ett doftneutraliseringsmedel!</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>När din vän registrerar ett konto {0}med din länk{1} får vännen 200 em$, en 5x30 mm avståndsmätare, ett älglock och en doftneutraliserare!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Bli belönad</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Om din vän köper em$ blir du belönad!</value></data>
   <data name="Invite.SeeRewards" xml:space="preserve"><value>Se belöningar nedan</value></data>
@@ -763,7 +763,7 @@
   <data name="Prof.AchRecent" xml:space="preserve"><value>Senaste prestationer</value></data>
   <data name="Prof.Total" xml:space="preserve"><value>Totalt</value></data>
   <data name="Prof.Species" xml:space="preserve"><value>Arter</value></data>
-  <data name="Prof.Spotting" xml:space="preserve"><value>Upptäckt</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Identifiering</value></data>
   <data name="Prof.Tracking" xml:space="preserve"><value>Spårning</value></data>
   <data name="Prof.Shooting" xml:space="preserve"><value>Skytte</value></data>
   <data name="Prof.Lvl" xml:space="preserve"><value>Nv</value></data>
@@ -974,7 +974,7 @@
   <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Djur</value></data>
   <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Vapen</value></data>
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Samlarföremål</value></data>
-  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handeldvapen</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Handvapen</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Armborst</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
@@ -998,7 +998,7 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guider och handledningar</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoguider</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Lokala communitysajter</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flera officiella supportkanaler. Mycket information om hur man spelar och felsöker finns på vår communityunderhållna wikisida. Våra officiella {game}-forum är mycket aktiva och besöks dagligen av många spelare som gärna hjälper nybörjare.</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flera officiella supportkanaler. Mycket information om hur man spelar och felsöker finns på vår wiki, som underhålls av communityn. Våra officiella {game}-forum är mycket aktiva och besöks dagligen av många spelare som gärna hjälper nybörjare.</value></data>
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Om du inte hittar svar på dina frågor i forumet eller wikin kan du skapa ett ärende i vårt supportsystem, så försöker vi hjälpa dig så snabbt vi kan!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-support</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
@@ -1024,49 +1024,49 @@
   <data name="DayHelp.Intro.2" xml:space="preserve"><value>Eftersom de är tänkta att klaras av på en dag är dagliga uppdrag ganska enkla, och de flesta kräver inga särskilda vapen eller någon särskild utrustning. Svåra dagliga uppdrag kan ibland vara ett undantag, men misströsta inte! Du kan klara dagliga uppdrag i flerspelarläge om du vill.</value></data>
   <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Det nya gränssnittet för dagliga uppdrag</value></data>
   <data name="DayHelp.How.Title" xml:space="preserve"><value>Hur fungerar det?</value></data>
-  <data name="DayHelp.How.1" xml:space="preserve"><value>Varje dag får varje spelare ett nytt dagligt uppdrag att klara. Olika spelare får olika dagliga uppdrag (förkortat DU från och med nu).</value></data>
-  <data name="DayHelp.How.2" xml:space="preserve"><value>Varje avklarat DU ökar din DU-svit med 1. En {0}svit{1} är en serie avklarade DU i följd.</value></data>
-  <data name="DayHelp.How.3" xml:space="preserve"><value>Om du hoppar över eller misslyckas med ett DU ”bryts din svit” och du är tillbaka på dag ett.</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Varje dag får varje spelare ett nytt dagligt uppdrag att klara. Olika spelare får olika dagliga uppdrag.</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Varje avklarat dagligt uppdrag ökar din svit med 1. En {0}svit{1} är en serie avklarade dagliga uppdrag i följd.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Om du hoppar över ett dagligt uppdrag eller misslyckas med det ”bryts din svit” och du är tillbaka på dag ett.</value></data>
   <data name="DayHelp.How.4" xml:space="preserve"><value>Om du bryter din svit blir de dagliga uppdragen inaktiva tills du antingen aktiverar dem för att starta en ny svit eller återupptar din senaste svit. En bruten svit kan räddas med tjänsten {0}Återuppta svit{1} i butiken, så att du fortsätter från ditt senast avklarade dagliga uppdrag.</value></data>
   <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Svårighetsgrader</value></data>
-  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>DU finns i tre svårighetsgrader:</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>Dagliga uppdrag finns i tre svårighetsgrader:</value></data>
   <data name="DayHelp.Easy" xml:space="preserve"><value>Lätt</value></data>
   <data name="DayHelp.Medium" xml:space="preserve"><value>Medel</value></data>
   <data name="DayHelp.Hard" xml:space="preserve"><value>Svår</value></data>
-  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Varje svårighetsgrad har sin egen färg: ett lätt DU markeras med en grön ikon, ett medelsvårt med en blå ikon och ett svårt med en röd ikon.</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Varje svårighetsgrad har sin egen färg: ett lätt uppdrag markeras med en grön ikon, ett medelsvårt med en blå ikon och ett svårt med en röd ikon.</value></data>
   <data name="DayHelp.Diff.2" xml:space="preserve"><value>Förutom färgerna har varje svårighetsgrad olika antal stjärnor: 1 stjärna för lätt, 2 för medel och 3 för svår.</value></data>
   <data name="DayHelp.Diff.3" xml:space="preserve"><value>Varje svårighetsgrad ger olika grundbelöningar: {0}100 gm$ för lätt, 500 gm$ för medel och 1000 gm$ för svår{1}.</value></data>
-  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Belöningarna ökar ju längre din DU-svit blir, mer om det nedan.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Belöningarna ökar ju längre din svit blir, mer om det nedan.</value></data>
   <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Utveckling</value></data>
-  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Ditt första DU är alltid ett lätt. Klarar du det växlar DU av olika svårighetsgrad enligt ett mönster som vi kallar en {0}cykel{1}.</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Ditt första dagliga uppdrag är alltid ett lätt. Klarar du det växlar uppdragen av olika svårighetsgrad enligt ett mönster som vi kallar en {0}cykel{1}.</value></data>
   <data name="DayHelp.Prog.2" xml:space="preserve"><value>En cykel ser ut så här:</value></data>
-  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Som du ser varar en cykel i 16 dagar, förutsatt förstås att du fortsätter att klara de DU du tilldelas dag efter dag.</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Som du ser varar en cykel i 16 dagar, förutsatt förstås att du fortsätter att klara de dagliga uppdrag du tilldelas dag efter dag.</value></data>
   <data name="DayHelp.Prog.4" xml:space="preserve"><value>När den första cykeln är avklarad börjar en ny cykel med {0}10 % högre belöningar i gm${1} (lätt = 110 gm$, medel = 550 gm$, svår = 1100 gm$).</value></data>
   <data name="DayHelp.Prog.5" xml:space="preserve"><value>För varje ny cykel ökar belöningarna med ytterligare 10 %, upp till som mest dubbelt så mycket som grundbelöningarna (en ökning på 100 %).</value></data>
   <data name="DayHelp.Prog.6" xml:space="preserve"><value>Om du till exempel lyckas klara 10 cykler i rad utan att bryta din svit får du alltså dubbel belöning för varje uppdrag, och det fortsätter tills du bryter din svit.</value></data>
   <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Skillnader mot vanliga uppdrag</value></data>
-  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Till skillnad från vanliga uppdrag måste du fälla djuret själv för att en fällning ska gälla i DU. Dina vänner kan dock fortfarande hjälpa dig att {0}hitta{1} det djur som krävs i en flerspelarsession.</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Till skillnad från vanliga uppdrag måste du fälla djuret själv för att en fällning ska gälla i dagliga uppdrag. Dina vänner kan dock fortfarande hjälpa dig att {0}hitta{1} det djur som krävs i en flerspelarsession.</value></data>
   <data name="DayHelp.Reg.2" xml:space="preserve"><value>Till skillnad från vanliga uppdrag behöver dagliga uppdrag inte aktiveras. Ett dagligt uppdrag är alltid aktivt så länge det pågår (24 timmar).</value></data>
-  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Du kan tjäna prestationer genom att klara DU. Dina DU-prestationer hittar du under Prestationer i din spelarprofil:</value></data>
-  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Avklarade DU räknas mot 3 olika typer av prestationer, en för varje svårighetsgrad.</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Du kan tjäna prestationer genom att klara dagliga uppdrag. Dina prestationer för dagliga uppdrag hittar du under Prestationer i din spelarprofil:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Avklarade dagliga uppdrag räknas mot 3 olika typer av prestationer, en för varje svårighetsgrad.</value></data>
   <data name="DayHelp.Ach.3" xml:space="preserve"><value>Här är en tabell med milstolparna för varje svårighetsgrad:</value></data>
   <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Svårighetsgrad</value></data>
   <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Avklarade uppdrag</value></data>
   <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Särskilda belöningar</value></data>
-  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>När du tar dig fram genom din DU-svit får du särskilda belöningar för att ha klarat svåra DU.</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>När du tar dig fram genom din svit får du särskilda belöningar för att ha klarat svåra dagliga uppdrag.</value></data>
   <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Särskilda belöningar kommer i form av:</value></data>
   <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>föremål</value></data>
   <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>troféer</value></data>
-  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Föremål och troféer är exklusiva belöningar som du bara kan vinna genom att klara DU (det finns alltså inget annat sätt att få tag på dem!). Dina belöningar visas först när du startar ett nytt spel.</value></data>
-  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}VIKTIGT:{1} Alla särskilda belöningar för DU kan bara vinnas en gång! Om du bryter din svit och startar en ny får du fortfarande gm$, men du måste ta dig förbi din tidigare svit för att få nya särskilda belöningar.</value></data>
-  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Du ser alla särskilda belöningar under Belöningar i ditt DU:</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Föremål och troféer är exklusiva belöningar som du bara kan vinna genom att klara dagliga uppdrag (det finns alltså inget annat sätt att få tag på dem!). Dina belöningar visas först när du startar ett nytt spel.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}VIKTIGT:{1} Alla särskilda belöningar för dagliga uppdrag kan bara vinnas en gång! Om du bryter din svit och startar en ny får du fortfarande gm$, men du måste ta dig förbi din tidigare svit för att få nya särskilda belöningar.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Du ser alla särskilda belöningar under Belöningar i ditt dagliga uppdrag:</value></data>
   <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Här är en praktisk tabell som visar hur det fungerar:</value></data>
-  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Antal avklarade svåra DU i följd (svit)</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Antal avklarade svåra dagliga uppdrag i följd (svit)</value></data>
   <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Särskild belöning</value></data>
   <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Jaktkeps</value></data>
   <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Kamouflagemönster A</value></data>
   <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Enkel t-shirt</value></data>
-  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Dagliga uppdrag-hjälte</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Hjälte i dagliga uppdrag</value></data>
   <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Repetergevär</value></data>
   <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Kamouflagemönster B</value></data>
   <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Skinnjacka</value></data>
@@ -1075,14 +1075,14 @@
   <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Graverad</value></data>
   <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Unik trofé (3 månader)</value></data>
   <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Unik trofé (6 månader)</value></data>
-  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Unik trofé ({0} svåra DU)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Unik trofé ({0} svåra dagliga uppdrag)</value></data>
   <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Unik trofé (1 år)</value></data>
-  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Som namnet antyder låter den här tjänsten dig återuppta en DU-svit. Om du till exempel har en lång svit av avklarade DU och sedan missar eller misslyckas med ett, kan du använda tjänsten för att återuppta din svit och fortsätta från ditt senast avklarade DU.</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Som namnet antyder låter den här tjänsten dig återuppta en svit. Om du till exempel har en lång svit av avklarade dagliga uppdrag och sedan missar eller misslyckas med ett, kan du använda tjänsten för att återuppta din svit och fortsätta från ditt senast avklarade dagliga uppdrag.</value></data>
   <data name="DayHelp.Resume.2" xml:space="preserve"><value>Det fina är att det inte spelar någon roll hur lång tid som har gått sedan du bröt din svit, du kan alltid återuppta den – även om du bröt den för, säg, ett år sedan.</value></data>
   <data name="DayHelp.Resume.3" xml:space="preserve"><value>Tjänsten kan köpas i förväg och aktiveras när det behövs. Det finns ingen gräns för hur många av de här korten du kan köpa eller äga.</value></data>
-  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Du kan köpa tjänsten direkt på DU-sidan: så fort du bryter din svit visas en knapp till vänster om ditt DU ”Dag 1” som uppmanar dig att köpa den (eller använda den, om du redan äger minst en).</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Du kan köpa tjänsten direkt på sidan för dagliga uppdrag: så fort du bryter din svit visas en knapp till vänster om ditt dagliga uppdrag ”Dag 1” som uppmanar dig att köpa den (eller använda den, om du redan äger minst en).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Du kan också köpa den i {0}butiken{1}.</value></data>
-  <data name="DayHelp.Resume.6" xml:space="preserve"><value>När du har köpt den kan du använda tjänsten direkt på DU-sidan:</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>När du har köpt den kan du använda tjänsten direkt på sidan för dagliga uppdrag:</value></data>
   <data name="Download.Title" xml:space="preserve"><value>Så laddar du ner och spelar {game}</value></data>
   <data name="Download.Multi.Title" xml:space="preserve"><value>Krav för flerspelarläge</value></data>
   <data name="Download.Single.Title" xml:space="preserve"><value>Krav för enspelarläge</value></data>
@@ -1106,7 +1106,7 @@
   <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kbps upp och ner</value></data>
   <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps upp och ner (beroende på antal spelare)</value></data>
   <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Om värden inte kör spelet i minst 25–30 fps (bildrutor per sekund) uppstår fel i fysiken. Spelare med svagare datorer bör försöka sänka inställningarna för att kunna köra spelet med så hög fps som möjligt. {0}30 FPS{1} är det lägsta rekommenderade värdet. FPS kan mätas med gratisverktyg som finns på internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Sök verktyg</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Sök efter verktyg</value></data>
   <data name="Download.Size" xml:space="preserve"><value>Ladda ner spelet (cirka 12 GB).</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Klicka här för att ladda ner</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Steg {0}</value></data>
