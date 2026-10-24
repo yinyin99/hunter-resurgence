@@ -14,7 +14,7 @@
   <data name="Menu.Competitions" xml:space="preserve"><value>KONKURSY</value></data>
   <data name="Menu.Leaderboards" xml:space="preserve"><value>RANKINGI</value></data>
   <data name="Menu.Missions" xml:space="preserve"><value>MISJE</value></data>
-  <data name="Feed.LatestNews" xml:space="preserve"><value>NAJNOWSZE WIADOMOŚCI</value></data>
+  <data name="Feed.LatestNews" xml:space="preserve"><value>NAJNOWSZE AKTUALNOŚCI</value></data>
   <data name="Feed.News" xml:space="preserve"><value>AKTUALNOŚCI: {GAME}</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>TWÓRCA</value></data>
   <data name="Footer.Follow" xml:space="preserve"><value>OBSERWUJ: {GAME}</value></data>
@@ -36,7 +36,7 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Wiadomości</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mój portfel / Historia zakupów</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Wyloguj się</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Twój Hunter Score</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Twoje Punkty Myśliwego</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ustawienia konta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Zarządzanie grą</value></data>
@@ -85,9 +85,9 @@
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Nieprawidłowy kod. Spróbuj ponownie.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>GRAJ ZA DARMO</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Czytaj dalej →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Archiwum wiadomości</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>Archiwum aktualności</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>CZŁONKÓW ONLINE</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>CZŁONKOWIE ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Dołącz do Discorda</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Spędzaj czas z ludźmi, którzy znają ten klimat</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Poluj</value></data>
@@ -103,7 +103,7 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Lub dołącz do istniejącej</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Szybka gra</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Twój postęp</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Punkty Myśliwego</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Pozycja</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Ostatnie osiągnięcie</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Brak zdobytych osiągnięć</value></data>
@@ -133,7 +133,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Chronione hasłem</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Hasło do gry</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max graczy</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Ogranicz Hunter Score</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limit Punktów Myśliwego</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
@@ -156,8 +156,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezerwat:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Czas gry:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. Hunter Score:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Hunter Score:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. Punkty Myśliwego:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Punkty Myśliwego:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Gracze ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informacje o połączeniach w trybie wieloosobowym</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Granie wieloosobowe z osobami mieszkającymi bardzo daleko od Ciebie może powodować problemy z połączeniem lub lagi. Zalecamy dołączanie do gier, w których host znajduje się blisko Ciebie. Kolorowe kropki obok flag na liście serwerów wskazują, jak daleko od hosta gry się znajdujesz.</value></data>
@@ -192,8 +192,8 @@
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Synchronizacja pionowa</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Rozdzielczość ekranu</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
-  <data name="GameSettings.Scene" xml:space="preserve"><value>Wypełnienie sceny</value></data>
-  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Złożoność sceny określa gęstość roślinności i zasięg renderowania. Przy zasięgu renderowania ustawienie Niskie zapewnia maksymalnie 220 m widoczności poziomej, Średnie – 270 m, a Wysokie/Bardzo wysokie – 320 m.</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Złożoność sceny</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Złożoność sceny określa gęstość roślinności i zasięg renderowania. Przy zasięgu renderowania niskie ustawienie zapewnia maksymalnie 220 m widoczności poziomej, średnie – 270 m, a wysokie/bardzo wysokie – 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Jakość tekstur</value></data>
   <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Tekstury wysokiej jakości wymagają 512 MB pamięci karty graficznej w grze jednoosobowej i 768 MB w trybie wieloosobowym.</value></data>
   <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Pamięć karty graficznej: {0} MB</value></data>
@@ -202,10 +202,10 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrowanie anizotropowe</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Pomoc kontekstowa</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozszerzona pamięć audio</value></data>
-  <data name="GameSettings.Low" xml:space="preserve"><value>Niskie</value></data>
-  <data name="GameSettings.Medium" xml:space="preserve"><value>Średnie</value></data>
-  <data name="GameSettings.High" xml:space="preserve"><value>Wysokie</value></data>
-  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Bardzo wysokie</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Niska</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Średnia</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>Wysoka</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Bardzo wysoka</value></data>
   <data name="GameSettings.Off" xml:space="preserve"><value>Wyłączone</value></data>
   <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
   <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
@@ -266,11 +266,11 @@
   <data name="Launcher.Error.9" xml:space="preserve"><value>Pobieranie nie powiodło się.</value></data>
   <data name="Launcher.Error.10" xml:space="preserve"><value>Pobieranie danych torrent nie powiodło się.</value></data>
   <data name="Launcher.Error.11" xml:space="preserve"><value>Uszkodzony plik .torrent.</value></data>
-  <data name="Launcher.Error.12" xml:space="preserve"><value>Nieprawidłowa lokalizacja pliku klienta.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Nieprawidłowa lokalizacja pliku launchera.</value></data>
   <data name="Launcher.Error.13" xml:space="preserve"><value>Nie można wypakować archiwum NSIS sfx.</value></data>
   <data name="Launcher.Error.14" xml:space="preserve"><value>Błąd aktualizacji.</value></data>
   <data name="Launcher.Error.15" xml:space="preserve"><value>Brakujący lub niepoprawny plik wykazu.</value></data>
-  <data name="Launcher.Error.16" xml:space="preserve"><value>Nie można uruchomić zaktualizowanego klienta.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Nie można uruchomić zaktualizowanego launchera.</value></data>
   <data name="Launcher.Error.17" xml:space="preserve"><value>Launcher nie odpowiada.</value></data>
   <data name="Launcher.Error.18" xml:space="preserve"><value>Nie można utworzyć katalogu gry.</value></data>
   <data name="Launcher.Error.19" xml:space="preserve"><value>Nie można utworzyć katalogu torrent.</value></data>
@@ -347,7 +347,7 @@
   <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Tryb wyświetlania</value></data>
   <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Pełny ekran</value></data>
   <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
-  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Wypełnienie sceny</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Złożoność sceny</value></data>
   <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Jakość cieni</value></data>
   <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Jakość tekstur</value></data>
   <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Synchronizacja pionowa</value></data>
@@ -384,7 +384,7 @@
   <data name="Comp.StateEnded" xml:space="preserve"><value>Zakończony</value></data>
   <data name="Comp.StartsIn" xml:space="preserve"><value>Start za</value></data>
   <data name="Comp.EndsIn" xml:space="preserve"><value>Koniec za</value></data>
-  <data name="Comp.YourPosition" xml:space="preserve"><value>Twoje miejsce</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Twoja pozycja</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Wynik do pobicia</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Przegląd</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Ranking</value></data>
@@ -417,7 +417,7 @@
   <data name="Board.Title" xml:space="preserve"><value>RANKINGI</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Punktacja</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Odległość</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Najlepszy Hunter Score</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Punkty Myśliwego</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Sala Sław</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -428,10 +428,10 @@
   <data name="Board.Full" xml:space="preserve"><value>Zobacz pełny ranking</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Twoja pozycja</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Nie ma Cię obecnie w rankingu tej kategorii</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Najlepszy Hunter Score wszech czasów</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Najwięcej Punktów Myśliwego w historii</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Pozycja</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Myśliwy</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Punkty Myśliwego</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Sala Sław – minione sezony</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezon {0}</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najlepsze wyniki Lane Bandit</value></data>
@@ -469,7 +469,7 @@
   <data name="Mis.GoToStore" xml:space="preserve"><value>Przejdź do sklepu</value></data>
   <data name="Mis.Completion" xml:space="preserve"><value>Ukończone misje: {0} z {1}, zestawy misji: {2} z {3}.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtry</value></data>
-  <data name="Mis.FilterIn" xml:space="preserve"><value>Filtruj wg</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Pokaż</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Wszystkie</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Ulubione</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Aktywne</value></data>
@@ -495,7 +495,7 @@
   <data name="Store.Cat.0" xml:space="preserve"><value>Bronie</value></data>
   <data name="Store.Cat.10" xml:space="preserve"><value>Amunicja</value></data>
   <data name="Store.Cat.5" xml:space="preserve"><value>Celowniki</value></data>
-  <data name="Store.Cat.50" xml:space="preserve"><value>Celowniki do karabinów</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Celowniki do sztucerów</value></data>
   <data name="Store.Cat.51" xml:space="preserve"><value>Celowniki do pistoletów</value></data>
   <data name="Store.Cat.52" xml:space="preserve"><value>Celowniki do strzelb</value></data>
   <data name="Store.Cat.53" xml:space="preserve"><value>Celowniki do łuków/kusz</value></data>
@@ -509,7 +509,7 @@
   <data name="Store.Cat.24" xml:space="preserve"><value>Wyposażenie</value></data>
   <data name="Store.Cat.29" xml:space="preserve"><value>Duży sprzęt</value></data>
   <data name="Store.Cat.57" xml:space="preserve"><value>Wydarzenia</value></data>
-  <data name="Store.Cat.87" xml:space="preserve"><value>Sale trofeów</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Sale trofeum</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Pojazdy</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Szukaj</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KUP</value></data>
@@ -577,9 +577,9 @@
   <data name="Bank.Compare" xml:space="preserve"><value>* W porównaniu z 500 em$</value></data>
   <data name="Bank.Save" xml:space="preserve"><value>Oszczędzasz {0}%*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Zestawy startowe</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Zdobądź wszystko, czego potrzebujesz, by zacząć polować na dowolne zwierzę w Rezerwacie Myśliwskim Evergreen. Nasze zestawy startowe zawierają Członkostwo Podstawowe, które daje licencję na polowanie na każde zwierzę w grze, oraz specjalny wybór przedmiotów, które szybko wprowadzą Cię na drogę do mistrzostwa w łowiectwie.</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Zdobądź wszystko, czego potrzebujesz, by zacząć polować na dowolne zwierzę w Rezerwacie Myśliwskim Evergreen. Nasze zestawy startowe zawierają członkostwo podstawowe, które daje licencję na polowanie na każde zwierzę w grze, oraz specjalny wybór przedmiotów, które szybko wprowadzą Cię na drogę do mistrzostwa w łowiectwie.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Zestawy specjalne</value></data>
-  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Wybierz jeden z naszych zestawów specjalnych, aby zdobyć wszystko, czego potrzebujesz do polowania na najpopularniejsze zwierzęta w grze {game}. Każdy z tych zestawów zawiera Członkostwo Podstawowe z licencją na polowanie na każdy gatunek w grze oraz wybór polecanych przedmiotów dla konkretnych zwierząt i sposobu polowania na nie.</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Wybierz jeden z naszych zestawów specjalnych, aby zdobyć wszystko, czego potrzebujesz do polowania na najpopularniejsze zwierzęta w grze {game}. Każdy z tych zestawów zawiera członkostwo podstawowe z licencją na polowanie na każdy gatunek w grze oraz wybór polecanych przedmiotów dla konkretnych zwierząt i sposobu polowania na nie.</value></data>
   <data name="Bank.Basic" xml:space="preserve"><value>Członkostwa podstawowe</value></data>
   <data name="Bank.Months" xml:space="preserve"><value>Członkostwo: {0} mies.</value></data>
   <data name="Bank.Animals" xml:space="preserve"><value>Licencja na polowanie na wszystkie zwierzęta</value></data>
@@ -619,7 +619,7 @@
   <data name="Set.TabEmail" xml:space="preserve"><value>E-mail konta</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Awatar</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Język i strefa czasowa</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Bany w multiplayer</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Bany w grze wieloosobowej</value></data>
   <data name="Set.TabFacebook" xml:space="preserve"><value>Ustawienia Facebooka</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Ustawienia Steam</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Ustawienia profilu</value></data>
@@ -661,11 +661,11 @@
   <data name="Set.Warning" xml:space="preserve"><value>Ostrzeżenie</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Odłączenie konta Steam wyloguje Cię z gry {game} i zamknie launcher. Nie będzie można grać w {game} przez Steam, dopóki nie połączysz innego konta.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Rozumiem i chcę odłączyć swoje konto Steam</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Obraz nagłówka</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Obrazy nagłówka są odblokowywane po osiągnięciu nowych poziomów w trzech kategoriach osiągnięć – Mistrz Zwierząt, Mistrz Broni i Mistrz Eksploracji. Po odblokowaniu obrazy nagłówka pozostają dostępne na zawsze.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Dowiedz się więcej o poziomach osiągnięć Mistrza.</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Zdjęcie nagłówkowe</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Zdjęcia nagłówkowe są odblokowywane po osiągnięciu nowych poziomów w trzech kategoriach osiągnięć – Mistrz Zwierząt, Mistrz Broni i Mistrz Eksploracji. Po odblokowaniu zdjęcia nagłówkowe pozostają dostępne na zawsze.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Dowiedz się więcej o poziomach osiągnięć mistrzowskich.</value></data>
   <data name="Set.HeaderNone" xml:space="preserve"><value>Brak</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Najnowszy</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>Najnowsze</value></data>
   <data name="Set.GroupAnimals" xml:space="preserve"><value>Zwierzęta</value></data>
   <data name="Set.GroupWeapons" xml:space="preserve"><value>Bronie</value></data>
   <data name="Set.GroupExploration" xml:space="preserve"><value>Odkrycia</value></data>
@@ -699,7 +699,7 @@
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Rozpocznij nową grę</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Pobierz</value></data>
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Jeśli nie masz jeszcze pobranego launchera i klienta gry, musisz je pobrać przed rozpoczęciem polowania.</value></data>
-  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Do pobierania</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Pliki do pobrania</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="Welcome.SettingsText" xml:space="preserve"><value>Jeśli chcesz zmienić adres e-mail, ustawienia języka lub awatar gracza, zrobisz to na stronie ustawień.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Zmień ustawienia konta</value></data>
@@ -743,8 +743,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Pozycja {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Rodzaj członkostwa: {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Hunter Score: {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Pozycja w rankingu Hunter Score: {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>Punkty Myśliwego: {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Pozycja w rankingu Punktów Myśliwego: {0}</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} jest online</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Wyślij zaproszenie do znajomych</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Zaproszenie oczekuje na odpowiedź</value></data>
@@ -753,7 +753,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Bronie</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Kolekcje</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Postęp</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Punkty Myśliwego</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorie</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Odblokowane</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Odkrycia</value></data>
@@ -766,7 +766,7 @@
   <data name="Prof.Spotting" xml:space="preserve"><value>Wypatrywanie</value></data>
   <data name="Prof.Tracking" xml:space="preserve"><value>Tropienie</value></data>
   <data name="Prof.Shooting" xml:space="preserve"><value>Strzelanie</value></data>
-  <data name="Prof.Lvl" xml:space="preserve"><value>Poz.</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Poziom</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>Statystyki</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Ostatnie polowanie</value></data>
   <data name="Stat.Lifetime" xml:space="preserve"><value>Statystyki łączne</value></data>
@@ -779,7 +779,7 @@
   <data name="Stat.Ammo" xml:space="preserve"><value>Amunicja</value></data>
   <data name="Stat.Shots" xml:space="preserve"><value>Strzały</value></data>
   <data name="Stat.Accuracy" xml:space="preserve"><value>Celność</value></data>
-  <data name="Stat.PerHit" xml:space="preserve"><value>Zabicia na trafienie</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Zdobycze na trafienie</value></data>
   <data name="Stat.Longest" xml:space="preserve"><value>Najdłuższy strzał</value></data>
   <data name="Stat.Species" xml:space="preserve"><value>Gatunek</value></data>
   <data name="Stat.Spotted" xml:space="preserve"><value>Wypatrzone</value></data>
@@ -808,17 +808,17 @@
   <data name="Stat.AllTime" xml:space="preserve"><value>Wszystkie sezony</value></data>
   <data name="Stat.Season" xml:space="preserve"><value>Sezon {0}</value></data>
   <data name="Stat.BestDisabled" xml:space="preserve"><value>Funkcja rekordów osobistych jest obecnie wyłączona.</value></data>
-  <data name="Stat.BestQueued" xml:space="preserve"><value>Rekordy osobiste – {0}, sezon {1}: oczekują na obliczenie. Zajrzyj tu wkrótce.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Rekordy osobiste – {0}, sezon {1}: oczekują na obliczenie. Sprawdź ponownie wkrótce.</value></data>
   <data name="Stat.BestBuilding" xml:space="preserve"><value>Rekordy osobiste – {0}, sezon {1}: są właśnie obliczane i wkrótce będą dostępne.</value></data>
   <data name="Stat.BestNone" xml:space="preserve"><value>Użytkownik {0}: brak wypraw w sezonie {1}.</value></data>
-  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Rekordy osobiste ze wszystkich sezonów – {0}: oczekują na obliczenie. Zajrzyj tu wkrótce.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Rekordy osobiste ze wszystkich sezonów – {0}: oczekują na obliczenie. Sprawdź ponownie wkrótce.</value></data>
   <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Rekordy osobiste ze wszystkich sezonów – {0}: są właśnie obliczane i wkrótce będą dostępne.</value></data>
   <data name="Stat.BestAllNone" xml:space="preserve"><value>Użytkownik {0}: brak wypraw, aby obliczyć rekordy osobiste ze wszystkich sezonów.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Punktacja</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Odległość</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Poprzedni</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Następny</value></data>
-  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Brak obrazów do wyświetlenia.</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Brak zdjęć do wyświetlenia.</value></data>
   <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Brak trofeów do wyświetlenia.</value></data>
   <data name="Prof.DogsEmpty" xml:space="preserve"><value>Ten myśliwy nie ma żadnych psów.</value></data>
   <data name="Prof.FriendsEmpty" xml:space="preserve"><value>Brak znajomych do wyświetlenia.</value></data>
@@ -826,8 +826,8 @@
   <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Przygotowywanie galerii do pobrania</value></data>
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Twoja galeria jest gotowa do pobrania!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Nie zamykaj tego okna</value></data>
-  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Czy na pewno chcesz usunąć ten obraz? Tej czynności nie można cofnąć!</value></data>
-  <data name="Prof.DogLvl" xml:space="preserve"><value>Poz.:</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Czy na pewno chcesz usunąć to zdjęcie? Tej czynności nie można cofnąć!</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Poziom:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Umiejętności</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ten pies nie odblokował jeszcze żadnych umiejętności.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Usuń</value></data>
@@ -1008,7 +1008,7 @@
   <data name="Help.Lang.French" xml:space="preserve"><value>francusku</value></data>
   <data name="Help.Lang.Spanish" xml:space="preserve"><value>hiszpańsku</value></data>
   <data name="Help.Support.Connections" xml:space="preserve"><value>Informacje o połączeniach w trybie wieloosobowym</value></data>
-  <data name="Help.Support.NewTo" xml:space="preserve"><value>Zaczynasz z {game}?</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>Zaczynasz przygodę z {game}?</value></data>
   <data name="Help.Support.Videos" xml:space="preserve"><value>Zobacz samouczki wideo &gt;</value></data>
   <data name="Help.Guides.Title" xml:space="preserve"><value>Zasoby i poradniki społeczności</value></data>
   <data name="Help.Guides.Text" xml:space="preserve"><value>Gra {game} ma liczną społeczność – zajrzyj do tych świetnych zasobów stworzonych przez naszych członków.</value></data>
@@ -1067,11 +1067,11 @@
   <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Kamuflaż A</value></data>
   <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Podstawowy T-shirt</value></data>
   <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Bohater Misji Dziennych</value></data>
-  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Karabin powtarzalny</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Sztucer powtarzalny</value></data>
   <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Kamuflaż B</value></data>
   <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Skórzana kurtka</value></data>
   <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Polowanie Hardcore</value></data>
-  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Karabin dźwigniowy</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Sztucer dźwigniowy</value></data>
   <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Grawerowany</value></data>
   <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Unikalne trofeum (3 mies.)</value></data>
   <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Unikalne trofeum (6 mies.)</value></data>
