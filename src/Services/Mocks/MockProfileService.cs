@@ -143,7 +143,8 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
     // the kills of the player's last two expeditions can still be mounted: the offer runs out a day after the kill
     public Task<Expedition?> ExpeditionAsync(string handle, long? id)
     {
-        var n = id is null ? 0 : (int)(Latest - id.Value);
+        // an id outside the made-up history (the captured one is a real id) shows the nearest entry
+        var n = id is null ? 0 : (int)Math.Clamp(Latest - id.Value, 0, 54);
         var e = Make(id ?? Latest, n);
         if (handle == Own && n is 1 or 2) e = e with { Kills = e.Kills.Select(k => k with { Taxidermy = new(DateTime.UtcNow.AddHours(24 - n * 5), 120, 2000) }).ToList() };
         return Task.FromResult<Expedition?>(e);
