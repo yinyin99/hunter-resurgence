@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>dager</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKKE</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>BEGRENSET</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NY</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>SAMFUNNETS VALG</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Inkludert</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Verdi</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Antall lov å eie</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Ubegrenset</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Pakkepris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasitetskostnad</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Tillatt for</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>Det er etisk å bruke {0} når man jakter på: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Det er ikke etisk å bruke {0} når man jakter på: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Det er ikke mulig å kjøpe denne varen</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Du eier allerede denne artikkelen</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Det er ikke mulig å kjøpe denne pakken. Grensen for hvor mange du kan eie, er nådd for minst én av de inkluderte varene</value></data>
   <data name="Store.None" xml:space="preserve"><value>Ingen varer i denne kategorien</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Detaljer</value></data>
@@ -567,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Hjelp</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Transaksjonslogg</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Din em$-saldo:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Ditt medlemskap:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Utløper:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Aldri</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Løs inn en rabattkode</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Skriv inn rabattkoden din</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Avbryt</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Tilbake</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Rabattkoden du skrev inn, er ugyldig eller utløpt</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Kode aktivert</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deaktiver kode</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Løs inn gaven din</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Du har skrevet inn en gavekode som inneholder</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Klikk her for å løse inn denne gaven</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Gaven er lagt til kontoen din!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Spillvaluta</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Våpen, telt, klær, jaktlisenser og mye mer kan kjøpes med spillvaluta (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Kjøp som gave</value></data>
@@ -586,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Tilgang til alle reservater</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Ubegrenset standardammunisjon</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Detaljer</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Våpen inkludert:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Utstyr inkludert:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Gjenstander som følger med et medlemskap eller er kjøpt separat, beholdes selv om medlemskapet utløper</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Sammenlignet med {game}-medlemskap på 3 måneder</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Spørsmål og svar om {game}-butikken</value></data>
@@ -603,6 +625,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Merk at em$ ikke kan selges eller overføres, og ikke kan byttes mot kontanter eller noe annet enn selve innholdet i {game}. em$ refunderes ikke. em$ har ingen pengeverdi og utgjør ikke valuta eller eiendom av noe slag.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Ekstra våpen: {0}, andre varer: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mnd.</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Intern Steam-feil. Prøv igjen senere.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Det oppstod en feil under tilkobling til Steam. Prøv igjen.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Takk for at du bruker {game}-butikken. Kontoen din er oppdatert med den kjøpte gjenstanden.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Klikk på lukk øverst til høyre for å gå tilbake til {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Noe gikk galt. Prøv på nytt. Hvis det fortsatt ikke fungerer, kontakt support</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Takk for kjøpet!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Kjøpet ditt av {0} via Steam er fullført, og varene er lagt til kontoen din.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Kjøpet mislyktes</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Noe gikk galt, og Steam-kjøpet ditt ble avbrutt. Prøv igjen.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Jakt</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Meldinger</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Tillat bare meldinger fra venner</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Ny melding</value></data>

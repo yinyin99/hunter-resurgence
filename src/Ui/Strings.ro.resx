@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>zile</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTĂ</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PACHET</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITAT</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NOU</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>ALEGEREA COMUNITĂŢII</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Inclus</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Valoare</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Limita proprie</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Nelimitat</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prețul pachetului</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Cost capacitate</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Acceptat(ă) pentru</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>Este etic să folosiți {0} la vânătoarea de: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Nu este etic să folosiți {0} la vânătoarea de: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Acest articol nu poate fi cumpărat</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Deţineţi deja acest obiect</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Acest pachet nu poate fi cumpărat. S-a atins limita maximă de deținere pentru cel puțin unul dintre articolele incluse</value></data>
   <data name="Store.None" xml:space="preserve"><value>Niciun articol în această categorie</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Detalii</value></data>
@@ -567,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Ajutor</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Istoricul achizițiilor</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Soldul dvs. em$:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Your membership type:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Expiră:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Niciodată</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Folosiți un cod de reducere</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Introduceți codul de reducere</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Anulați</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Înapoi</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Codul de reducere introdus este invalid sau expirat</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Code activated</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deactivate code</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Folosiți-vă cadoul</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Ați introdus un cod cadou care conține</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Faceți clic aici pentru a folosi acest cadou</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Cadoul dvs. a fost adăugat în cont!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Monedă din joc</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Arme, corturi, îmbrăcăminte, permise de vânătoare și multe altele pot fi cumpărate cu moneda din joc (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Cumpărați ca cadou</value></data>
@@ -586,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Acces la toate rezervațiile</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Muniție de bază nelimitată</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Detalii</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Weapons included:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Items included:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Articolele incluse într-un abonament sau cumpărate separat se păstrează chiar dacă abonamentul expiră</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Comparativ cu abonamentul {game} de 3 luni</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Întrebări și răspunsuri despre magazinul {game}</value></data>
@@ -603,6 +625,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Rețineți că em$ nu pot fi vânduți sau transferați și nu pot fi schimbați pe bani sau pe altceva decât pe conținut real din {game}. em$ nu sunt rambursabili. em$ nu au valoare monetară și nu constituie monedă sau proprietate de niciun fel.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Arme extra: {0}, alte articole: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} luni</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Eroare internă Steam, încercați din nou mai târziu.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>A apărut o eroare la conectarea la Steam. Încercați din nou.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Vă mulțumim că ați folosit magazinul {game}, contul dvs. a fost actualizat cu articolul cumpărat.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Faceți clic pe Închide în colțul din dreapta sus pentru a reveni la {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Ceva nu a mers. Vă rugăm să încercaţi din nou. Şi dacă tot nu funcţionează, contactaţi asistenţa</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Vă mulțumim pentru achiziție!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Achiziția dvs. de {0} prin Steam s-a finalizat, iar bunurile au fost adăugate în cont.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Achiziție eșuată</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Ceva nu a mers bine, iar achiziția prin Steam a fost anulată. Încercați din nou.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Vânați acum</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Mesaje</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Acceptați mesaje doar de la prieteni</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Mesaj nou</value></data>
