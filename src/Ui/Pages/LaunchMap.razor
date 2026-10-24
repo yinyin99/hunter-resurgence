@@ -74,15 +74,12 @@ else
             <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
         }
         <h3>@reserves.FirstOrDefault(r => r.Id == reserve)?.Name</h3>
-        @foreach (var kind in strips)
-        {
-            <div class="strip">
-                @foreach (var m in markers.Where(m => m.Kind == kind))
-                {
-                    <button type="button" class="hover-tint" data-tip="@m.Name" aria-label="@m.Name" @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null" @onclick="() => centre = m.Id"><Icon Name="@MapPlaceholder.IconFor(kind)" /></button>
-                }
-            </div>
-        }
+        <div class="strip">
+            @foreach (var m in markers.Where(m => strips.Contains(m.Kind)).OrderBy(m => m.Kind))
+            {
+                <button type="button" class="hover-tint" data-tip="@m.Name" aria-label="@m.Name" @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null" @onclick="() => centre = m.Id"><Icon Name="@MapPlaceholder.IconFor(m.Kind)" /></button>
+            }
+        </div>
         <p class="legend"><Icon Name="house" /> @L["Launch.Lodges"]</p>
         @Starts(MarkerKind.Lodge)
         <p class="legend"><Icon Name="campground" /> @L["Launch.Tents"]</p>

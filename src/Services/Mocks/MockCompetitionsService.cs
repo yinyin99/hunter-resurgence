@@ -29,13 +29,13 @@ public sealed class MockCompetitionsService : ICompetitionsService
 
     static readonly Competition[] Previous = Enumerable.Range(0, 70).Select(n => Make(170000 + n, Names.Species[n % Names.Species.Length].Name, n % 2 == 0 ? "board" : "weight", Tiers[n % 3], false, 2 + n * 7 % 30, false) with { Start = null, End = null, Status = null }).ToArray();
 
-    // the weekly hunts of the community league: one running, one over soon, the rest not started (those cannot be joined)
+    // the weekly hunts of the community league: two running, the rest not started (those cannot be joined)
     static readonly Competition[] League = Enumerable.Range(0, 6).Select(n => new Competition(190001 + n, $"Weekly Hunt {n + 1} - {Names.Species[n * 7 % Names.Species.Length].Name}", n % 2 == 0 ? "board" : "weight",
         [Names.Species[n * 7 % Names.Species.Length].Name, "Single player"], $"Hunt a {Names.Species[n * 7 % Names.Species.Length].Name} on the reserve of the week. Best result of your attempts counts.", null, 40 + n * 13,
         Now.AddDays(n * 3 - 4), Now.AddDays(n * 3 + 3), n < 2 ? "Started" : "Signup", n < 2)).ToArray();
 
     // activating and leaving move a competition in and out of this list (the mock lives as long as the host)
-    readonly List<Competition> enrolled = [.. Active, League[0]];
+    readonly List<Competition> enrolled = [.. Active];
 
     // attempts left, attempts, position: fixed numbers per competition, so every id has other ones
     static int Max(int id) => 5 + id % 6;

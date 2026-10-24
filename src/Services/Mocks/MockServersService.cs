@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development states: "servers:none" (no games), "loadouts:none" (no saved loadouts), "tents" (the player has tents).</param>
+/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents).</param>
 public sealed class MockServersService(ILogger<MockServersService> log, ILauncherBridge bridge, string? mock = null) : IServersService
 {
     static readonly (string Host, string Country, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
@@ -44,7 +44,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>(Tutorials);
 
     public Task<IReadOnlyList<Loadout>> LoadoutsAsync() =>
-        Task.FromResult<IReadOnlyList<Loadout>>(mock == "loadouts:none" ? [] : [new(1, "Loadout 1"), new(2, "Loadout 2"), new(3, "Loadout 3")]);
+        Task.FromResult<IReadOnlyList<Loadout>>(mock == "loadouts" ? [new(1, "Loadout 1"), new(2, "Loadout 2"), new(3, "Loadout 3")] : []);
 
     public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) => Launch($"single reserve {reserve} marker {marker} at {minutes} min, loadout {loadout}");
     public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Launch($"multiplayer \"{game.Name}\" reserve {reserve} marker {marker} at {minutes} min, max {game.MaxPlayers}, loadout {loadout}");

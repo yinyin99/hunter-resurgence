@@ -193,7 +193,7 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Having problems connecting to your friends in multiplayer? There can be many causes for this and not everything may be directly related to the game itself. Check out the {0} section in the troubleshooting guide for more information.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>connection issues</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Need more info on game features?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Can't find your prey? Stuck on how to use a specific piece of equipment? Wondering which hunting reserve might suit you best? Check out the {0} for more information. The wiki is created and managed by the community, and if you can't find an answer to your question there, feel free to ask in the {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Can't find your prey? Stuck on how to use a specific piece of equipment? Wondering which hunting reserve might suit you best? Check out {0} for more information. The wiki is created and managed by the community, and if you can't find an answer to your question there, feel free to ask in the {1}.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
   <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Having other technical problems?</value></data>

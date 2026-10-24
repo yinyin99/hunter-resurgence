@@ -1,13 +1,13 @@
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development state "membership": the signed-in player has a membership.</param>
-public sealed class MockSessionService(string? mock = null) : ISessionService
+/// <param name="mock">The development state, read when asked (the page reads it after this service is made): "membership" gives the signed-in player a membership.</param>
+public sealed class MockSessionService(Func<string?>? mock = null) : ISessionService
 {
-    Session? session = new("Hunter01", 74, mock == "membership");
+    Session? session = new("Hunter01", 74);
 
     public event Action? Changed;
 
-    public Task<Session?> CurrentAsync() => Task.FromResult(session);
+    public Task<Session?> CurrentAsync() => Task.FromResult(session is { Handle.Length: > 0 } ? session with { Membership = mock?.Invoke() == "membership" } : session);
 
     public Task<Result> RequestCodeAsync(string email) =>
         Task.FromResult(email.Contains('@') ? Result.Success : Result.Fail("Validation.Email.Invalid"));
@@ -15,7 +15,7 @@ public sealed class MockSessionService(string? mock = null) : ISessionService
     public Task<Result> SignInAsync(string email, string code, bool register = false)
     {
         if (code.Length != 6 || !code.All(char.IsAsciiDigit)) return Task.FromResult(Result.Fail("Validation.Code.Invalid"));
-        session = register ? new("", 0) : new("Hunter01", 74, mock == "membership");
+        session = register ? new("", 0) : new("Hunter01", 74);
         Changed?.Invoke();
         return Task.FromResult(Result.Success);
     }

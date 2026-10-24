@@ -33,6 +33,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 li { position: relative; isolation: isolate; display: flex; align-items: center; height: 51px; border-bottom: 1px solid transparent; padding-right: 34px; }
 li::before { content: ""; position: absolute; inset: 2px 0; z-index: -1; border-radius: var(--r-3); background: var(--surface-3); }
 li::after { content: ""; position: absolute; inset: 2px 0; border-radius: var(--r-3); background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
+li:hover { z-index: 1; }
 li:hover::after { background: var(--tint-2); }
 li ::deep .dot { position: absolute; left: 7px; top: 11px; }
 li ::deep .flag { margin: 0 10px 0 27px; flex: none; }
