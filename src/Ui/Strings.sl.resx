@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klikni za pomoč</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dan {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>danes</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Ended</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutri</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Naloge</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivacija je končana!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Lep lov!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiviraj vse</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KUPI</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Samodejno aktiviraj nove razpoložljive misije</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Samodejno aktiviraj samo priljubljene misije</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Misije lahko proti plačilu ponastaviš v trgovini.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Orožje</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Vse izbrano</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Izbrano: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrij dokončane</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Iskanje</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -639,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Tvoj e-naslov je bil spremenjen.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Ponovno pošlji potrditev</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Potrditveno e-sporočilo je ponovno poslano.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Ponovno pošiljanje ni uspelo. Poskusi znova ali se obrni na podporo.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Država</value></data>
@@ -661,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Opozorilo</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Prekinitev povezave z računom Steam te bo odjavila iz igre {game} in zaprla zaganjalnik. Igranje igre {game} v Steamu ne bo mogoče, dokler se ne povežeš z drugim računom.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Razumem in želim prekiniti povezavo s svojim računom Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Naslovna slika</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Naslovne slike se odklenejo, ko dosežeš nove ravni v treh različnih kategorijah dosežkov: Mojster živali, Mojster orožja in Mojster raziskovanja. Ko so odklenjene, ostanejo na voljo za vedno.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Več podrobnosti o ravneh mojstrov dosežkov.</value></data>
@@ -816,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>Uporabnik {0} še ni opravil nobene odprave, zato osebnega rekorda vseh časov ni mogoče izračunati.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Rezultat</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Razdalja</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas odstrela</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Osveži</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bo posodobljena, ko končaš z lovom.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Nazaj</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Naprej</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ni slik za prikaz.</value></data>
@@ -830,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Raven:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Spretnosti</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ta pes še ni odklenil nobene spretnosti.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Doggie</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Izbriši</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Share this trophy shot</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Image URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Image BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Prijavljanje ...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Prijava je končana!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Ta stran se je odprla, ker te mora igra {game} prijaviti.</value></data>
@@ -976,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Zbirateljstvo</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pištole</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Samostreli</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blood Tracking</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>This skill governs how well a dog can find blood tracks.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>This skill governs how well a dog can detect different species of animals.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

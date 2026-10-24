@@ -55,7 +55,7 @@ else
 <div class="badges">
     @foreach (var r in reserves)
     {
-        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve)" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
+        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve ? "true" : "false")" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
     }
 </div>
 <div class="stage">
@@ -71,7 +71,7 @@ else
         <ul>
             @foreach (var m in markers.Where(m => m.Kind == MarkerKind.Lodge))
             {
-                <li class="@(m.Id == marker ? "current" : "")"><a href="#" @onclick="() => marker = m.Id" @onclick:preventDefault>@m.Name</a></li>
+                <li class="@(m.Id == marker ? "current" : "")"><a class="@(m.Id == marker ? "" : "hover-tint")" href="#" @onclick="() => marker = m.Id" @onclick:preventDefault>@m.Name</a></li>
             }
         </ul>
         <p class="legend"><Icon Name="campground" /> @L["Launch.Tents"]</p>

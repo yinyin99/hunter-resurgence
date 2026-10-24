@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Cliquez pour obtenir de l’aide</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Jour {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>aujourd’hui</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Terminée</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>demain</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Description</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Objectifs</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Activation terminée !</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Bonne chasse !</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Tout activer</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>ACHETER</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Activer automatiquement les nouvelles missions disponibles</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activer automatiquement uniquement les missions favorites</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Vous pouvez réinitialiser vos missions en échange d’une certaine somme dans la boutique.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Toutes</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Sélection : {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Masquer les accomplies</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Rechercher</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrer</value></data>
@@ -639,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Votre adresse email a été modifiée.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Renvoyer un email de confirmation</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>L’email de confirmation a bien été renvoyé.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Renvoyer l’email de confirmation. Vous devez cliquer sur le lien qui se trouve dans l’email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Renvoyer un email de confirmation</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Le renvoi de l’email a échoué. Veuillez réessayer ou contacter le support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Pays</value></data>
@@ -661,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Avertissement</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>La déconnexion de votre compte Steam vous déconnectera de {game} et fermera le lanceur. Vous ne pourrez plus jouer à {game} sur Steam tant que vous ne vous serez pas connecté à un autre compte.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Je comprends et souhaite déconnecter mon compte Steam</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannière</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Les images de bannière se débloquent lorsque vous atteignez de nouveaux niveaux dans trois catégories de succès : Maître des animaux, Maître des armes et Maître de l’exploration. Une fois débloquées, les images de bannière restent disponibles à vie.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>En savoir plus sur les niveaux de maître des succès.</value></data>
@@ -816,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} n’a pas encore effectué d’expédition permettant de calculer son record personnel global.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Distance</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Date du prélèvement </value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Les statistiques seront mises à jour lorsque l'expédition sera terminée.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Précédent</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Suivant</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Aucune image à afficher.</value></data>
@@ -830,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Niveau :</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Compétences</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ce chien n’a pas encore débloqué de compétences.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Doggie</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Partager</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Partager cette photo de trophée</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copiez l’URL ou le BBCode pour partager cette photo de trophée avec vos amis sur le forum officiel {game} ou sur les réseaux sociaux.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>URL de l’image</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>BBCode de l'image</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Connexion en cours…</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Connexion terminée !</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Cette page s’est ouverte car {game} a besoin que vous vous connectiez.</value></data>
@@ -976,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Collectés</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Armes de poing</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Arbalètes</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Pister le sang</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Cette compétence détermine l'aptitude du chien à trouver des traces de sang.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Détection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Cette compétence détermine l'aptitude du chien à détecter les différentes espèces.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} j</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

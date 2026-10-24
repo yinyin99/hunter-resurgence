@@ -1,6 +1,6 @@
 namespace Resurgence.Services;
 
-public sealed record Account(string Email, string Avatar, string Language, string Country, string TimeZone);
+public sealed record Account(string Email, string Avatar, string Language, string Country, string TimeZone, bool EmailConfirmed = true);
 /// <summary>An avatar picture of the settings; a locked one is bought in the store.</summary>
 public sealed record AvatarChoice(string Id, string Name, bool Locked);
 public sealed record BannedPlayer(int Id, string Handle);
@@ -20,6 +20,8 @@ public sealed record Recruiting(string Link, IReadOnlyList<RewardRow> Rewards, I
 
 public interface IAccountService
 {
+    /// <summary>Raised when the avatar changes (the bar shows it).</summary>
+    event Action? Changed;
     Task<Account> AccountAsync();
     Task<IReadOnlyList<AvatarChoice>> AvatarsAsync();
     Task<Result> SetAvatarAsync(string id);
@@ -27,6 +29,8 @@ public interface IAccountService
     Task<Result> SaveLocaleAsync(string language, string country, string timeZone);
     /// <summary>Sends a confirmation code to the new address; the error key is Validation.Email.Invalid or Set.EmailTaken.</summary>
     Task<Result> RequestEmailChangeAsync(string email);
+    /// <summary>Sends the confirmation e-mail of the address that is not confirmed yet.</summary>
+    Task<Result> ResendConfirmationAsync();
     /// <summary>Changes the address once the code from the e-mail is right; the error key is Validation.Code.Invalid.</summary>
     Task<Result> ConfirmEmailChangeAsync(string email, string code);
     Task<IReadOnlyList<BannedPlayer>> BansAsync();

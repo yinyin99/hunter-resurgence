@@ -1,6 +1,14 @@
 @page "/thank-you"
 @layout BrowserLayout
+@inject ISignupService Signup
 
 <PageTitle>@L["App.Name"]</PageTitle>
 
 <BrowserNotice Text="@L["Browser.ThankYou"]" />
+
+@code {
+    /// <summary>The code of the link (?code=): the launcher gets it so it can go on.</summary>
+    [SupplyParameterFromQuery] public string? Code { get; set; }
+
+    protected override Task OnInitializedAsync() => Signup.SharedDataAsync(Code);
+}

@@ -26,8 +26,10 @@ public sealed class MockSessionService : ISessionService
         return Task.CompletedTask;
     }
 
+    /// <summary>A name that starts with "race" is taken by someone else just before it is saved.</summary>
     public Task<Result> SetHandleAsync(string handle)
     {
+        if (handle.StartsWith("race", StringComparison.OrdinalIgnoreCase)) return Task.FromResult(Result.Fail("Signup.P1.Taken"));
         session = new(handle, 0);
         Changed?.Invoke();
         return Task.FromResult(Result.Success);

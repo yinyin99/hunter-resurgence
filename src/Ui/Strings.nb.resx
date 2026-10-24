@@ -450,6 +450,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klikk for hjelp</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dag {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>i dag</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Avsluttet</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>Et nytt Daglig Oppdrag blir tilgjengelig om:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Slutter om:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>i morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivelse</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
@@ -463,6 +466,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktiveringen er fullført!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Nyt tjenesten din!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiver alle</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KJØP</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>BRUK</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktiver nye tilgjengelige oppdrag automatisk</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktiver bare favorittoppdrag automatisk</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan tilbakestille oppdragene dine mot betaling i butikken.</value></data>
@@ -479,6 +485,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Våpen</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alle valgt</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} valgt</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skjul fullførte</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Søk</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -639,6 +646,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>E-postadressen din er endret.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Send bekreftelse på nytt</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Bekreftelses-e-posten er sendt på nytt.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Send bekreftelses-eposten på nytt. Du må klikke på linken i eposten.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Send bekreftelses-eposten på nytt</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Kunne ikke sende e-posten på nytt. Prøv igjen eller kontakt kundestøtten.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Språk</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
@@ -661,6 +672,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Advarsel</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Hvis du kobler fra Steam-kontoen din, blir du logget ut av {game}, og launcheren lukkes. Du kan ikke spille {game} på Steam igjen før du kobler til en annen konto.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jeg forstår og ønsker å koble fra Steam-kontoen min</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Toppbilde</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Toppbilder låses opp når du når nye nivåer i tre ulike prestasjonskategorier: Animals Master, Weapons Master og Exploration Master. Når et toppbilde er låst opp, forblir det tilgjengelig for alltid.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Finn ut mer om nivåene i Achievement Master.</value></data>
@@ -816,6 +828,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} har ikke gått på noen jaktturer ennå, så personlige rekorder gjennom tidene kan ikke beregnes.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Poeng</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Avstand</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Fellingstidspunkt</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Oppdater</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistikk vil bli oppdatert når jakten er avsluttet.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Forrige</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Neste</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ingen bilder å vise.</value></data>
@@ -830,7 +847,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Nivå:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Ferdigheter</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Denne hunden har ikke låst opp noen ferdigheter ennå.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Tassen</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Slett</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Del dette trofébildet</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Kopier URL-adressen eller BBCode for å dele dette trofébildet med vennene dine på det offisielle {game}-forumet eller på sosiale medier.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Bildets URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Bildets BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Logger inn...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Innloggingen er fullført!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Denne siden åpnet seg fordi {game} må logge deg inn.</value></data>
@@ -976,6 +999,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Samleobjekter</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Håndvåpen</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Armbrøster</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blodspor</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Denne ferdigheten styrer hvor god hunden er til å finne blodspor.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Deteksjon</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Denne ferdigheten styrer hvor godt hunden kan oppdage ulike arter av dyr.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}t</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}min</value></data>

@@ -5,3 +5,5 @@
 .pop { min-width: anchor-size(width); max-height: 260px; padding: 4px 0; border: 1px solid var(--line-3); background: var(--surface-4); }
 li label { display: block; padding: 3px 12px; font-size: 14px; line-height: 20px; white-space: nowrap; color: var(--text-2); cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
 li label:hover { background: var(--surface-6); }
+.find { padding: 4px 8px; list-style: none; }
+.find input { box-sizing: border-box; width: 100%; }

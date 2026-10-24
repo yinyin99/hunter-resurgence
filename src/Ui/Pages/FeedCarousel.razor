@@ -28,7 +28,7 @@
             @for (var i = 0; i < slides.Count; i++)
             {
                 var n = i;
-                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => index = n"><AssetSlot Name="@($"news-thumb-{i + 1}")" Width="175" Height="95" /></button>
+                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@($"news-thumb-{i + 1}")" Width="175" Height="95" /></button>
             }
         </div>
     </div>
@@ -39,18 +39,32 @@
     int index;
     PeriodicTimer? timer;
 
-    protected override async Task OnInitializedAsync() => slides = await News.FeaturedAsync();
+    // the old feed shows four slides at most
+    protected override async Task OnInitializedAsync() => slides = (await News.FeaturedAsync()).Take(4).ToList();
 
     /// <summary>The slides change every 18 seconds, as in the old feed.</summary>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (!firstRender || slides.Count < 2) return;
-        timer = new(TimeSpan.FromSeconds(18));
-        while (await timer.WaitForNextTickAsync())
+        if (firstRender && slides.Count > 1) _ = Run();
+    }
+
+    async Task Run()
+    {
+        var t = timer = new(TimeSpan.FromSeconds(18));
+        while (await t.WaitForNextTickAsync())
         {
             index = (index + 1) % slides.Count;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
+    }
+
+    // a click on another slide's preview shows it and starts the 18 seconds again
+    void Select(int n)
+    {
+        if (n == index) return;
+        index = n;
+        timer?.Dispose();
+        _ = Run();
     }
 
     public void Dispose() => timer?.Dispose();

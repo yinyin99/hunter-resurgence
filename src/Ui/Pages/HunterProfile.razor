@@ -4,6 +4,7 @@
 @page "/profile/{Handle}/{Tab}/{Sub}/{Arg:int}"
 @inject IProfileService Service
 @inject ISessionService Session
+@inject IAccountService Account
 
 <PageTitle>@L["Prof.Title", Handle]</PageTitle>
 
@@ -11,8 +12,9 @@
 @if (profile is not null)
 {
     <header class="head">
-        <AssetSlot Name="profile-banner" Width="940" Height="200" Class="banner" />
-        <div class="polaroid"><AssetSlot Name="avatar-profile" Width="170" Height="185" /><Icon Name="paw" /></div>
+        @* the header picture the player chose in the settings: none, the most recent kill or a picture *@
+        @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
+        <div class="polaroid"><AssetSlot Name="@(profile.Own ? avatar : "avatar-profile")" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend)
         {
@@ -61,6 +63,7 @@
 
     Profile? profile;
     bool signedIn, requested;
+    string header = "recent", avatar = "avatar-profile";
 
     [Parameter] public string Handle { get; set; } = "";
     [Parameter] public string? Tab { get; set; }
@@ -76,5 +79,8 @@
         profile = await Service.ProfileAsync(Handle);
         signedIn = await Session.CurrentAsync() is not null;
         requested = false;
+        // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here)
+        if (profile?.Own == true) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
+        else (header, avatar) = ("recent", "avatar-profile");
     }
 }

@@ -64,14 +64,31 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         return new(all.Skip((n - 1) * size).Take(size).ToList(), n, pages);
     }
 
-    public Task<Page<Photo>> GalleryAsync(string handle, int page) => Task.FromResult(Slice<Photo>(
-        handle != Own || mock == "profile:photos" ? Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, Names.Species[i * 3 % Names.Species.Length].Name, 10.5 + i * 1.25)).ToList() : [], page, 24));
+    // the own gallery starts empty (as captured), with the hook "profile:photos" it has 30 pictures; deleting changes the list
+    readonly List<Photo> own = mock == "profile:photos" ? [.. Photos()] : [];
+
+    static IEnumerable<Photo> Photos() => Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, Names.Species[i * 3 % Names.Species.Length].Name, 10.5 + i * 1.25, $"https://example.test/gallery/{5000000 + i}.jpg"));
+
+    public Task<Page<Photo>> GalleryAsync(string handle, int page) => Task.FromResult(Slice<Photo>(handle == Own ? own : [.. Photos()], page, 24));
+
+    public Task<Result> DeleteGalleryImageAsync(long id) => Task.FromResult(own.RemoveAll(p => p.Id == id) > 0 ? Result.Success : Result.Fail("Mis.Failed"));
+
+    // a small real zip of the pictures' names, so the browser has a file to save
+    public Task<byte[]> GalleryZipAsync(string handle)
+    {
+        using var ms = new MemoryStream();
+        using (var zip = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Create, true))
+        using (var w = new StreamWriter(zip.CreateEntry("gallery.txt").Open()))
+            foreach (var p in handle == Own ? own : Photos()) w.WriteLine($"{p.Id} {p.Animal} {p.Score}");
+        return Task.FromResult(ms.ToArray());
+    }
 
     public Task<Page<Trophy>> TrophiesAsync(string handle, int page) => Task.FromResult(Slice<Trophy>(
         handle == Own ? [] : Enumerable.Range(0, 26).Select(i => i % 3 == 0 ? new Trophy($"Competition Trophy {i}", new(2026, 9, 1 + i), 100 + i, $"Competition {i}") : new Trophy($"Trophy {i}", new(2026, 9, 1 + i), null, null)).ToList(), page, 24));
 
     public Task<IReadOnlyList<Dog>> DogsAsync(string handle) => Task.FromResult<IReadOnlyList<Dog>>(handle == Own ? []
-        : [new("Rex", "Hound (Brown)", 3, ["Scent Tracking", "Retrieve"]), new("Doggie", "Retriever (Golden)", 1, [])]);
+        : [new("Rex", "Hound (Brown)", 3, 64, [new("Blood Tracking", "This skill governs how well a dog can find blood tracks.", 2), new("Detection", "This skill governs how well a dog can detect different species of animals.", 1)], ["Competition Trophy 3", "Trophy 1"]),
+           new("", "Retriever (Golden)", 1, 10, [], [])]);
 
     public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => Task.FromResult(Slice<ProfileFriend>(handle == Own
         ? [new("Ranger_Test", 100), new("Moss_Walker", 115000), new("Hunter02", 7000)]
@@ -110,17 +127,24 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         Names.Species.Take(24).Select((s, i) => new SpeciesStat(s.Name, i * 7 % 6, i * 5 % 21, i * 3 % 11)).ToList(),
         [new("Common Mushroom", 1, 12, 12)], 100.0, 2 * 86400));
 
-    static Expedition Make(long id, int n)
+    Expedition Make(long id, int n)
     {
         // the latest expedition is empty; the others have shots and kills
         var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
-        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
+        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, mock == "profile:ongoing" ? null : start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
         var species = Names.Species[(n * 5) % Names.Species.Length].Name;
         return new(id, Reserves[n % 3], Lodges[n % 3], start, start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new("Common Mushroom", 1, 12, 12)], ["1 " + species],
             3.2 + n, (38 + n) * 60 + n * 17 % 60, [], [new(100000200 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 120.0 + n, 100.0 + n, 85.0 + n, start.AddMinutes(20))]);
     }
 
-    public Task<Expedition?> ExpeditionAsync(string handle, long? id) => Task.FromResult<Expedition?>(Make(id ?? Latest, id is null ? 0 : (int)(Latest - id.Value)));
+    // the kills of the player's last two expeditions can still be mounted: the offer runs out a day after the kill
+    public Task<Expedition?> ExpeditionAsync(string handle, long? id)
+    {
+        var n = id is null ? 0 : (int)(Latest - id.Value);
+        var e = Make(id ?? Latest, n);
+        if (handle == Own && n is 1 or 2) e = e with { Kills = e.Kills.Select(k => k with { Taxidermy = new(DateTime.UtcNow.AddHours(24 - n * 5), 120, 2000) }).ToList() };
+        return Task.FromResult<Expedition?>(e);
+    }
 
     public Task<Page<HistoryRow>> HistoryAsync(string handle, int page)
     {
@@ -129,10 +153,18 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         return Task.FromResult(new Page<HistoryRow>(all.Skip((n - 1) * 40).Take(40).ToList(), n, 2));
     }
 
-    // the own bests show only the disabled box; another hunter's bests are made up
-    public Task<PersonalBest> BestAsync(string handle, int season) => Task.FromResult(handle == Own ? new PersonalBest("disabled", [])
-        : season == 3 ? new("queued", []) : season == 4 ? new("building", []) : season == 5 ? new("empty", [])
-        : new("done", Names.Species.Take(12).Select((s, i) => new BestRow(s.Name, 8.5 + i * 1.3, 60 + i * 11.7)).ToList()));
+    // the own bests show only the disabled box; another hunter's bests are made up. Season 3 is queued then building then done, season 4 building then done: each read goes a step on
+    readonly Dictionary<int, int> reads = [];
+
+    public Task<PersonalBest> BestAsync(string handle, int season)
+    {
+        if (handle == Own) return Task.FromResult(new PersonalBest("disabled", []));
+        var step = reads[season] = reads.GetValueOrDefault(season) + 1;
+        if (season == 5) return Task.FromResult(new PersonalBest("empty", []));
+        if (season == 3 && step == 1) return Task.FromResult(new PersonalBest("queued", []));
+        if (season == 3 && step == 2 || season == 4 && step == 1) return Task.FromResult(new PersonalBest("building", []));
+        return Task.FromResult(new PersonalBest("done", Names.Species.Take(12).Select((s, i) => new BestRow(s.Name, 8.5 + i * 1.3, 60 + i * 11.7, WeaponStats[i % 5].Weapon, new DateTime(2026, 10, 2, 13, 42, 0).AddDays(-i * 3), 100000200 + i)).ToList()));
+    }
 
     public Task<Progress> ProgressAsync() => Task.FromResult(new Progress(50, 100, 12, new("Achievement One", "Placeholder description of the achievement.", new(2026, 7, 9))));
     public Task<int> ExpeditionCountAsync() => Task.FromResult(42);

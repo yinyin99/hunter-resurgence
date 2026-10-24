@@ -1,11 +1,14 @@
 <div class="multi">
     <button type="button" class="btn" popovertarget="@uid" aria-haspopup="listbox">
-        <span>@(Selected.Count == 0 || Selected.Count == Options.Count ? L["Mis.AllSelected"] : L["Mis.NSelected", Selected.Count])</span><span class="caret"></span>
+        <span>@Summary()</span><span class="caret"></span>
     </button>
     <ul id="@uid" class="pop" popover role="listbox">
-        @foreach (var o in Options)
+        @* as the old multiselect: a search box from ten options on, and a select-all entry *@
+        @if (Options.Count >= 10) { <li class="find"><input type="text" class="field-light" placeholder="@L["Mis.Search"]" @bind="query" @bind:event="oninput" /></li> }
+        <li><label><input type="checkbox" checked="@(shown.Count > 0 && shown.All(Selected.Contains))" @onchange="e => ToggleAll((bool)e.Value!)" /> @L["Mis.SelectAll"]</label></li>
+        @foreach (var o in shown)
         {
-            <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @(Label?.Invoke(o) ?? o)</label></li>
+            <li><label><input type="checkbox" checked="@(Selected.Contains(o))" @onchange="e => Toggle(o, (bool)e.Value!)" /> @Text(o)</label></li>
         }
     </ul>
 </div>
@@ -19,6 +22,22 @@
     /// <summary>The text shown for an option; the option itself by default.</summary>
     [Parameter] public Func<string, string>? Label { get; set; }
     [Parameter] public EventCallback Changed { get; set; }
+
+    string query = "";
+
+    IEnumerable<string> Shown => Options.Where(o => query.Length == 0 || Text(o).Contains(query, StringComparison.CurrentCultureIgnoreCase));
+    List<string> shown => Shown.ToList();
+
+    string Text(string o) => Label?.Invoke(o) ?? o;
+
+    // none chosen is "All selected", up to three show their names, more show a count
+    string Summary() => Selected.Count == 0 ? L["Mis.AllSelected"] : Selected.Count > 3 ? L["Mis.NSelected", Selected.Count] : string.Join(", ", Options.Where(Selected.Contains).Select(Text));
+
+    async Task ToggleAll(bool on)
+    {
+        foreach (var o in shown) { if (on) Selected.Add(o); else Selected.Remove(o); }
+        await Changed.InvokeAsync();
+    }
 
     async Task Toggle(string option, bool on)
     {

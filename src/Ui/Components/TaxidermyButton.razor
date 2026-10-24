@@ -1,0 +1,43 @@
+@implements IDisposable
+@inject ModalService Modal
+
+@* own kill of the last 24 hours: the taxidermy through the buy window until the offer ends (the old page counted down every second) *@
+@if (left > TimeSpan.Zero)
+{
+    <button type="button" class="btn btn-primary" @onclick="Buy">@L["Stat.Taxidermy"] <small>@Fmt.Elapsed(L, (int)left.TotalSeconds)</small></button>
+}
+
+@code {
+    TimeSpan left;
+    CancellationTokenSource? stop;
+
+    [Parameter, EditorRequired] public Kill Kill { get; set; } = null!;
+    [Parameter, EditorRequired] public TaxidermyOffer Offer { get; set; } = null!;
+
+    protected override void OnParametersSet() => left = Offer.End - DateTime.UtcNow;
+
+    // after the first paint, so the page does not wait for the countdown
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        stop = new();
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try
+        {
+            while (left > TimeSpan.Zero && await timer.WaitForNextTickAsync(stop.Token))
+            {
+                left = Offer.End - DateTime.UtcNow;
+                StateHasChanged();
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    // the item ids of the old store: 744 is the trophy
+    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
+    {
+        ["Id"] = 744, ["Name"] = $"{L["Stat.Taxidermy"]} {L.Term(Kill.Species)}", ["Ems"] = Offer.Ems, ["Gms"] = Offer.Gms
+    });
+
+    public void Dispose() => stop?.Cancel();
+}
