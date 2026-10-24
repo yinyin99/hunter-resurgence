@@ -1,0 +1,1143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Pagina nu a fost găsită</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>Această pagină nu există.</value></data>
+  <data name="Menu.HuntNow" xml:space="preserve"><value>VÂNAȚI ACUM</value></data>
+  <data name="Menu.GetEms" xml:space="preserve"><value>OBȚINEȚI EM$</value></data>
+  <data name="Menu.News" xml:space="preserve"><value>ȘTIRI</value></data>
+  <data name="Menu.Competitions" xml:space="preserve"><value>COMPETIȚII</value></data>
+  <data name="Menu.Leaderboards" xml:space="preserve"><value>CLASAMENTE</value></data>
+  <data name="Menu.Missions" xml:space="preserve"><value>MISIUNI</value></data>
+  <data name="Feed.LatestNews" xml:space="preserve"><value>ULTIMELE ȘTIRI</value></data>
+  <data name="Feed.News" xml:space="preserve"><value>ȘTIRI {GAME}</value></data>
+  <data name="Footer.DevelopedBy" xml:space="preserve"><value>DEZVOLTAT DE</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>URMĂRIȚI {GAME}</value></data>
+  <data name="Menu.Label" xml:space="preserve"><value>Meniul principal</value></data>
+  <data name="Menu.Store" xml:space="preserve"><value>MAGAZIN</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>AJUTOR</value></data>
+  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
+  <data name="Menu.Downloads" xml:space="preserve"><value>DESCĂRCĂRI</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Panou de bord</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Joc single-player</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Joc multiplayer</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Găsiți un joc multiplayer</value></data>
+  <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriale</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ este moneda virtuală a {game} și poate fi folosită pentru a cumpăra articole din magazin, precum arme, echipament, îmbrăcăminte și multe altele.</value></data>
+  <data name="Statusbar.Settings" xml:space="preserve"><value>Setări</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>muniție:</value></data>
+  <data name="Statusbar.Fuel" xml:space="preserve"><value>combustibil:</value></data>
+  <data name="Tip.Friends" xml:space="preserve"><value>Prieteni</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Prieteni ({0} cereri noi)</value></data>
+  <data name="Tip.Messages" xml:space="preserve"><value>Mesaje</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesaje ({0} noi)</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>Portofelul meu / Istoricul achizițiilor</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Deconectare</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Hunter Score-ul dvs.</value></data>
+  <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Setări cont</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionarea jocului</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Limba</value></data>
+  <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
+  <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Fișiere jurnal</value></data>
+  <data name="Settings.GameFolder" xml:space="preserve"><value>Folderul jocului</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Curățați cache-ul launcherului</value></data>
+  <data name="Settings.ClearGameCache" xml:space="preserve"><value>Curățați cache-ul jocului</value></data>
+  <data name="Friends.Title" xml:space="preserve"><value>Prieteni ({0})</value></data>
+  <data name="Friends.Search" xml:space="preserve"><value>Găsiți alți vânători...</value></data>
+  <data name="Friends.SendMessage" xml:space="preserve"><value>Trimiteți mesaj</value></data>
+  <data name="Friends.Remove" xml:space="preserve"><value>Eliminați</value></data>
+  <data name="Friends.RemoveConfirm" xml:space="preserve"><value>Sigur doriți să eliminați utilizatorul {0} din lista de prieteni?</value></data>
+  <data name="Friends.None" xml:space="preserve"><value>Încă niciun prieten</value></data>
+  <data name="Friends.Results" xml:space="preserve"><value>Rezultatele căutării ({0})</value></data>
+  <data name="Friends.NoHunters" xml:space="preserve"><value>Nu s-au găsit vânători</value></data>
+  <data name="Friends.SendRequest" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
+  <data name="Friends.RequestSent" xml:space="preserve"><value>Cerere de prietenie trimisă</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Cererea de prietenie {0} din {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} vrea să fie prietenul tău!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Acceptă</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Refuză</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Cererea anterioară</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Cererea următoare</value></data>
+  <data name="Language.Title" xml:space="preserve"><value>Selectați limba</value></data>
+  <data name="Language.English" xml:space="preserve"><value>Engleză</value></data>
+  <data name="Language.French" xml:space="preserve"><value>Franceză</value></data>
+  <data name="Alert.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Alert.Yes" xml:space="preserve"><value>Da</value></data>
+  <data name="Alert.No" xml:space="preserve"><value>Nu</value></data>
+  <data name="Alert.Close" xml:space="preserve"><value>Închideți</value></data>
+  <data name="Footer.Ratings" xml:space="preserve"><value>CLASIFICĂRI</value></data>
+  <data name="Footer.Privacy" xml:space="preserve"><value>Politica de confidențialitate</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>Acord de licență pentru utilizatorul final</value></data>
+  <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITICA DE CONFIDENȚIALITATE</value></data>
+  <data name="Footer.Eula.Title" xml:space="preserve"><value>ACORD DE LICENȚĂ PENTRU UTILIZATORUL FINAL</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să confirmați acordul de licență pentru utilizatorul final și politica de confidențialitate înainte de a continua.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați următoarele: {0} și {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Sunt de acord cu EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Sunt de acord cu Politica de confidențialitate</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Ultima actualizare: text provizoriu</value></data>
+  <data name="Legal.Section" xml:space="preserve"><value>INTRODUCERE</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Titlu provizoriu</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Text provizoriu. Operatorul acestui serviciu furnizează textul juridic real.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Despre modul de prelucrare a datelor personale, consultați: {0}.</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>Sunteți deja vânător?</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Conectare</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Signin.Code" xml:space="preserve"><value>Cod</value></data>
+  <data name="Signin.SendCode" xml:space="preserve"><value>Trimiteți codul</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Conectare</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Folosiți altă adresă de e-mail</value></data>
+  <data name="Signin.Sent" xml:space="preserve"><value>Am trimis un cod din 6 cifre la {0}.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Introduceți o adresă de e-mail validă.</value></data>
+  <data name="Validation.Code.Invalid" xml:space="preserve"><value>Cod incorect. Încercați din nou.</value></data>
+  <data name="Landing.Play" xml:space="preserve"><value>JUCAȚI GRATUIT</value></data>
+  <data name="Feed.ContinueReading" xml:space="preserve"><value>Continuați lectura →</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>Arhiva de știri</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>MEMBRI ONLINE</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Intrați pe Discord</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Petreceți timp cu oameni care vă înțeleg</value></data>
+  <data name="Hunt.Go" xml:space="preserve"><value>Mergeți la vânătoare</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>SINGLE-PLAYER</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Misiuni active:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>Nu aveți nicio misiune activă. Activați misiuni pe {0}pagina de misiuni{1}.</value></data>
+  <data name="Hunt.MoreMissions" xml:space="preserve"><value>și încă {0}...</value></data>
+  <data name="Hunt.NoFriends" xml:space="preserve"><value>Niciunul dintre prietenii dvs. nu este online</value></data>
+  <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Prieteni online:</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Începeți un joc single-player</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Începeți un joc multiplayer</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>Sau alăturați-vă unuia</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Alăturare rapidă</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Progresul dvs.</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Hunt.Rank" xml:space="preserve"><value>Poziție</value></data>
+  <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Ultima realizare</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Nicio realizare obținută</value></data>
+  <data name="Hunt.Competitions" xml:space="preserve"><value>Competiții</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Competițiile la care participați:</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Vedeți competițiile viitoare</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>CREAȚI UN JOC SINGLE-PLAYER</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>CREAȚI UN JOC MULTIPLAYER</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Alegeți locul de unde începeți sesiunea de vânătoare. Faceți clic pe una dintre cele 12 embleme de rezervații de mai jos pentru a vedea harta rezervației respective și faceți clic pe cabane (simbolurile în formă de casă) pentru a afla ce specii se găsesc în zona respectivă. Puteți explora și harta lumii, trăgând de ea cu mouse-ul și mărind sau micșorând cu rotița mouse-ului.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Unele dintre cele mai magnifice medii naturale din lume, precum și 45 de specii diferite de animale vă așteaptă. Vânătoare plăcută!</value></data>
+  <data name="Launch.StartTime" xml:space="preserve"><value>Ora de începere:</value></data>
+  <data name="Launch.StartGame" xml:space="preserve"><value>Începeți jocul</value></data>
+  <data name="Launch.Patching" xml:space="preserve"><value>Actualizare</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Cabane:</value></data>
+  <data name="Launch.Tents" xml:space="preserve"><value>Corturi:</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>Nu aveți niciun cort în această rezervație. Corturile pe care le amplasați într-o rezervație funcționează ca puncte portabile de apariție și de acces la inventar. Cumpărați corturi din {0}magazin{1}.</value></data>
+  <data name="Launch.ZoomIn" xml:space="preserve"><value>Măriți</value></data>
+  <data name="Launch.ZoomOut" xml:space="preserve"><value>Micșorați</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Start la {0}</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Informații despre joc și punctul de start</value></data>
+  <data name="Launch.GameName" xml:space="preserve"><value>Numele jocului:</value></data>
+  <data name="Launch.GameOf" xml:space="preserve"><value>Jocul lui {0}</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Introduceți o descriere a jocului (opțional)</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>Cine se poate alătura?</value></data>
+  <data name="Launch.FriendsOnly" xml:space="preserve"><value>Doar persoanele din lista mea de prieteni</value></data>
+  <data name="Launch.Anyone" xml:space="preserve"><value>Oricine</value></data>
+  <data name="Launch.Password" xml:space="preserve"><value>Protejat cu parolă</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Parola jocului</value></data>
+  <data name="Launch.MaxPlayers" xml:space="preserve"><value>Nr. maxim de jucători</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitați Hunter Score</value></data>
+  <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
+  <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
+  <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Launch.Create" xml:space="preserve"><value>Creați jocul</value></data>
+  <data name="Launch.Failed" xml:space="preserve"><value>Ceva nu a mers bine la crearea sesiunii de joc. Reîncărcați lista de servere și încercați să vă alăturați altui joc.</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>GĂSIȚI UN JOC MULTIPLAYER</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Găsiți un joc sau o gazdă...</value></data>
+  <data name="Servers.Clear" xml:space="preserve"><value>Ștergeți</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Reîmprospătați</value></data>
+  <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Afișați doar jocurile la care mă pot alătura</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Jocuri afișate: {0}</value></data>
+  <data name="Servers.GameName" xml:space="preserve"><value>Numele jocului</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Rezervație</value></data>
+  <data name="Servers.Players" xml:space="preserve"><value>Jucători</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Gazdă</value></data>
+  <data name="Servers.Country" xml:space="preserve"><value>Țară</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jucători: {1}/{2} - Gazdă: {3}</value></data>
+  <data name="Servers.Details" xml:space="preserve"><value>Detaliile jocului</value></data>
+  <data name="Servers.Join" xml:space="preserve"><value>Alăturați-vă jocului</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Gazdă:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezervație:</value></data>
+  <data name="Servers.GameTime" xml:space="preserve"><value>Timp de joc:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Hunter Score min.:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Hunter Score max.:</value></data>
+  <data name="Servers.PlayerList" xml:space="preserve"><value>Jucători ({0}/{1})</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Informații despre conexiunile multiplayer</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Jocul multiplayer cu persoane aflate la distanțe mari de dvs. poate cauza probleme de conexiune sau lag. Vă recomandăm să vă alăturați jocurilor în care gazda se află aproape de dvs. Punctele colorate de lângă steaguri, în lista de servere, vă arată cât de departe vă aflați de gazda jocului.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Faceți clic aici pentru mai multe informații despre conexiuni</value></data>
+  <data name="Servers.Short" xml:space="preserve"><value>Distanță scurtă</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Distanță medie</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Distanță lungă</value></data>
+  <data name="Servers.NoGames" xml:space="preserve"><value>Niciun joc găsit</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nu am găsit niciun joc multiplayer public la care să vă puteți alătura.</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>GĂZDUIȚI PROPRIUL JOC</value></data>
+  <data name="Servers.Locked" xml:space="preserve"><value>Acest joc este protejat cu parolă</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Locația serverului: {0}</value></data>
+  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>America de Nord</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>America de Sud</value></data>
+  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
+  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
+  <data name="Join.Hint" xml:space="preserve"><value>Faceți clic pe un punct de start de pe hartă pentru a vă alătura acestui joc</value></data>
+  <data name="Join.Password" xml:space="preserve"><value>Introduceți parola pentru a vă alătura acestui joc:</value></data>
+  <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Introduceți parola</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Alăturați-vă jocului</value></data>
+  <data name="Join.Close" xml:space="preserve"><value>Închideți</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Vă recomandăm să parcurgeți tutorialele de bază înainte de prima vânătoare adevărată din prima rezervație. În aceste tutoriale îl veți întâlni pe paznicul rezervației, care vă va ghida prin noțiunile de bază și vă va învăța ce trebuie să știți pentru a avea succes în {game}.</value></data>
+  <data name="Tut.Start" xml:space="preserve"><value>Începeți tutorialul</value></data>
+  <data name="Tut.Location" xml:space="preserve"><value>Locație: {0}</value></data>
+  <data name="GameSettings.Title" xml:space="preserve"><value>Setările de joc</value></data>
+  <data name="GameSettings.Initial" xml:space="preserve"><value>Configurare inițială</value></data>
+  <data name="GameSettings.Save" xml:space="preserve"><value>Salvați</value></data>
+  <data name="GameSettings.Cancel" xml:space="preserve"><value>Anulați</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Începeți jocul</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Ecran complet</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Sincronizare verticală</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Rezoluția ecranului</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Complexitatea scenei</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Complexitatea scenei controlează densitatea vegetației și distanța de randare. Pentru distanța de randare, setarea Redusă oferă o vizibilitate orizontală maximă de 220 m, setarea Medie de 270 m, iar setările Ridicată/Foarte ridicată de 320 m.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Calitatea texturilor</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Texturile de calitate ridicată necesită 512 MB de memorie video în modul single-player și 768 MB în multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Aveți {0} MB de memorie video</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Calitatea umbrelor</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Anti-aliasing multisample</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrare anisotropică</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ajutor contextual</value></data>
+  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memorie audio extinsă</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Redusă</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Medie</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>Ridicată</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Foarte ridicată</value></data>
+  <data name="GameSettings.Off" xml:space="preserve"><value>Oprit</value></data>
+  <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Neconfigurat: settings.json nu conține nicio intrare pentru aceste fișiere.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Porniți jocul o dată pentru ca acesta să creeze fișierele de setări.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un fișier de setări are un format necunoscut launcherului, așa că a fost lăsat neatins.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Jocul rulează. Închideți-l înainte de salvare: el rescrie singur aceste fișiere.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Setările nu au putut fi salvate.</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>Am înțeles!</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>Patch nou pentru joc</value></data>
+  <data name="Patch.NewText" xml:space="preserve"><value>A fost lansat un nou patch pentru joc. Jocul va fi actualizat automat, iar imediat ce se termină veți putea porni o nouă expediție! Între timp, puteți naviga liber.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Notele actualizării</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Actualizare {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Vezi jurnalul de modificări</value></data>
+  <data name="Patch.FullTitle" xml:space="preserve"><value>Se descarcă {game}</value></data>
+  <data name="Patch.FullText" xml:space="preserve"><value>Pe calculatorul dvs. se descarcă o instalare completă a {game}. Veți putea începe să jucați imediat ce se termină. Între timp, puteți naviga liber.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>Launcherul se actualizează</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>Launcherul trebuie actualizat. Actualizarea va fi descărcată automat. După actualizare, launcherul va trebui repornit.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Actualizare execută. Launcher-ul trebuie repornit.</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Este necesară actualizarea jocului</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Este disponibilă o actualizare pentru {game}. Trebuie să actualizați {game} în Steam înainte de a putea juca. Pentru actualizare, trebuie să închideți launcherul.</value></data>
+  <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} este disponibil doar pe Steam</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>De acum înainte trebuie să jucați prin platforma Steam!</value></data>
+  <data name="Patch.GoToSteam" xml:space="preserve"><value>Mergeți la Steam</value></data>
+  <data name="Patch.ErrorTitle" xml:space="preserve"><value>A apărut o eroare</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Consultați {0} pentru mai multe informații.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>secțiunea de asistență</value></data>
+  <data name="Patch.StateDownloading" xml:space="preserve"><value>DESCĂRCARE</value></data>
+  <data name="Patch.StateVerifying" xml:space="preserve"><value>VERIFICARE</value></data>
+  <data name="Patch.StateExtracting" xml:space="preserve"><value>EXTRAGERE</value></data>
+  <data name="Patch.StatePatching" xml:space="preserve"><value>ACTUALIZARE</value></data>
+  <data name="Patch.StateReady" xml:space="preserve"><value>GATA</value></data>
+  <data name="Patch.Downloading" xml:space="preserve"><value>Se descarcă {0}: {1} ({2}). {3}/s</value></data>
+  <data name="Patch.KindFull" xml:space="preserve"><value>instalarea completă</value></data>
+  <data name="Patch.KindPatch" xml:space="preserve"><value>actualizarea</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>actualizarea launcherului</value></data>
+  <data name="Patch.Verifying" xml:space="preserve"><value>Așteptați verificarea fișierelor descărcate.</value></data>
+  <data name="Patch.Extracting" xml:space="preserve"><value>Așteptați rularea programului de instalare.</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Se verifică suma de control a fișierului: {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Se actualizează fișierul: {0} / {1}</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Se finalizează...</value></data>
+  <data name="Patch.PatchError" xml:space="preserve"><value>Eroare!</value></data>
+  <data name="Patch.Done" xml:space="preserve"><value>Sunteți gata să porniți jocul.</value></data>
+  <data name="Installer.DownloadingGame" xml:space="preserve"><value>Se descarcă jocul...</value></data>
+  <data name="Installer.DownloadingUpdate" xml:space="preserve"><value>Se descarcă actualizarea...</value></data>
+  <data name="Installer.Verifying" xml:space="preserve"><value>Se verifică</value></data>
+  <data name="Installer.Installing" xml:space="preserve"><value>Se instalează</value></data>
+  <data name="Installer.Updating" xml:space="preserve"><value>Fișiere actualizate: {0}/{1}</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Actualizare finalizată - încheiați expertul pentru a începe să jucați.</value></data>
+  <data name="Installer.Ready" xml:space="preserve"><value>{game} este gata de joc!</value></data>
+  <data name="Launcher.Error.Unknown" xml:space="preserve"><value>A apărut o eroare necunoscută (cod {0}).</value></data>
+  <data name="Launcher.Error.1" xml:space="preserve"><value>Cheie de registru lipsă.</value></data>
+  <data name="Launcher.Error.2" xml:space="preserve"><value>Niciun server specificat. Porniți jocul de pe site.</value></data>
+  <data name="Launcher.Error.3" xml:space="preserve"><value>Interogarea serverului a eșuat (ID de sesiune invalid sau server inaccesibil).</value></data>
+  <data name="Launcher.Error.4" xml:space="preserve"><value>Hardware incompatibil.</value></data>
+  <data name="Launcher.Error.5" xml:space="preserve"><value>URL de server invalid în argumentul liniei de comandă.</value></data>
+  <data name="Launcher.Error.6" xml:space="preserve"><value>Lipsește fișierul executabil al jocului.</value></data>
+  <data name="Launcher.Error.7" xml:space="preserve"><value>Pornirea clientului de joc a eșuat.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Nu s-a reușit scrierea fișierului torrent.</value></data>
+  <data name="Launcher.Error.9" xml:space="preserve"><value>Descărcarea a eșuat.</value></data>
+  <data name="Launcher.Error.10" xml:space="preserve"><value>Descărcarea datelor torrent a eșuat.</value></data>
+  <data name="Launcher.Error.11" xml:space="preserve"><value>Fișier .torrent invalid.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Locație invalidă a fișierului launcherului.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>Nu s-a reușit extragerea arhivei NSIS sfx.</value></data>
+  <data name="Launcher.Error.14" xml:space="preserve"><value>Eroare de patch.</value></data>
+  <data name="Launcher.Error.15" xml:space="preserve"><value>Fișier manifest lipsă sau incorect.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Nu s-a putut porni launcherul actualizat.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Launcherul nu răspunde.</value></data>
+  <data name="Launcher.Error.18" xml:space="preserve"><value>Nu s-a putut crea directorul jocului.</value></data>
+  <data name="Launcher.Error.19" xml:space="preserve"><value>Nu s-a putut crea directorul torrent.</value></data>
+  <data name="Launcher.Error.20" xml:space="preserve"><value>Nu s-a putut crea directorul de patch-uri.</value></data>
+  <data name="Launcher.Error.21" xml:space="preserve"><value>Nu s-a putut crea directorul.</value></data>
+  <data name="Launcher.Error.22" xml:space="preserve"><value>Nu s-au putut copia fișierele.</value></data>
+  <data name="Launcher.Error.27" xml:space="preserve"><value>Atenție! Spațiu insuficient pe disc.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>Patch-ul nu poate fi aplicat: instalarea curentă este modificată sau coruptă. Se descarcă în schimb jocul complet.</value></data>
+  <data name="Launcher.Error.49" xml:space="preserve"><value>Nu s-a putut crea obiectul Direct3D.</value></data>
+  <data name="Launcher.Error.50" xml:space="preserve"><value>Nu s-a putut obține modul de afișare curent.</value></data>
+  <data name="Launcher.Error.51" xml:space="preserve"><value>Nu s-a găsit niciun mod de afișare adecvat.</value></data>
+  <data name="Launcher.Error.52" xml:space="preserve"><value>Nu s-au putut determina modurile de afișare acceptate de placa video.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>Nu s-au putut obține capacitățile dispozitivului pentru placa video.</value></data>
+  <data name="Launcher.Error.16001" xml:space="preserve"><value>Sesiune invalidă, porniți un joc nou.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>Nu s-a putut face conexiunea la serverul de joc. Încercați din nou.</value></data>
+  <data name="Launcher.Error.16003" xml:space="preserve"><value>Sistem de operare invalid.</value></data>
+  <data name="Launcher.Error.16004" xml:space="preserve"><value>Porniți jocul de pe site.</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>Jocul s-a blocat (vom investiga).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>Utilizatorul nu are acces.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Jocul rulează deja.</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Versiune greșită a fișierului de setări. Accesați setările și reconfigurați.</value></data>
+  <data name="Launcher.Error.16009" xml:space="preserve"><value>Placa video nu acceptă D3DQUERYTYPE_EVENT.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Un moment, încercăm să vă conectăm...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Bună! Porniți jocul din Steam, dar nu am putut verifica dacă aveți un cont. Alegeți una dintre variantele de mai jos:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Conectați-vă mai jos pentru a asocia contul cu Steam.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Asociați un cont existent cu Steam</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Înregistrați un cont {game} nou</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>- sau -</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Adresă de e-mail</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Continuați</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>NUME DE UTILIZATOR ȘI AVATAR</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Alegeți un nume</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Obligatoriu</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Nume de utilizator indisponibil</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Sugerați nume</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Avatarul anterior</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Avatarul următor</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>OBȚINEȚI PRIMA ARMĂ</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Ați ajuns până aici, grozav! Iată un cadou de bun venit din partea noastră: prima dvs. armă, strălucitoarea pușcă 12GA cu un singur foc, cu muniție gratuită reîncărcabilă. Cu această frumusețe robustă puteți vâna etic toate animalele din joc, cu excepția bizonului.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>BUCURAȚI-VĂ DE PERMISELE DE VÂNĂTOARE</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Se apropie prima dvs. vânătoare! Pe ce animal veți merge? Ca jucător invitat, primiți gratuit și pe viață permise de vânătoare pentru cerbul cu coada albă, iepurele de vizuină și fazanul, plus alte două animale gratuite care se schimbă săptămânal. Abonații plătitori pot vâna toate speciile; consultați magazinul de abonamente dacă doriți să deveniți unul.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>CONFIRMAȚI ADRESA DE E-MAIL</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Lucrurile bune vin la cei care își confirmă adresa de e-mail! Verificați-vă căsuța de e-mail pentru un mesaj de la noi și urmați instrucțiunile din el. Adresa dvs. actuală este {0}. Dacă nu este corectă, schimbați-o mai jos și faceți clic pe „Retrimiteți e-mailul”.</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>RECOMPENSA DVS.</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Vă mulțumim că ați confirmat adresa de e-mail.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Actualizați adresa de e-mail</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Retrimiteți e-mailul</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Porniți tutorialul</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Setările de joc</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>SUNTEȚI GATA PENTRU VÂNATUL MARE</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Puteți relua tutorialele cu butonul VÂNAȚI ACUM.</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Vânați acum!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Conectare</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Adresă de e-mail</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Conectare</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Anulați</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Adresa de e-mail este obligatorie</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Adresă de e-mail invalidă</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>Această adresă de e-mail nu este disponibilă</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Schimbați adresa de e-mail</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Schimbați</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>E-mail trimis</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>V-am trimis un nou e-mail cu un link pentru confirmarea adresei de e-mail.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Pornire tutorial</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Salvați și porniți</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Calitatea grafică</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Setări reduse</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Setări medii</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Setări ridicate</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Setări ultra</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Setări personalizate</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Filtrare anisotropică</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Mod de afișare</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Ecran complet</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Complexitatea scenei</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Calitatea umbrelor</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Calitatea texturilor</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Sincronizare verticală</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Competiții</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Liga comunității</value></data>
+  <data name="Comp.Title" xml:space="preserve"><value>COMPETIȚII</value></data>
+  <data name="Comp.Enrolled" xml:space="preserve"><value>Competiții înscrise</value></data>
+  <data name="Comp.Name" xml:space="preserve"><value>Numele competiției</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Încercări</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Poziție</value></data>
+  <data name="Comp.Starts" xml:space="preserve"><value>Începe</value></data>
+  <data name="Comp.Ends" xml:space="preserve"><value>Se termină</value></data>
+  <data name="Comp.Status" xml:space="preserve"><value>Stare</value></data>
+  <data name="Comp.Action" xml:space="preserve"><value>Acțiune</value></data>
+  <data name="Comp.Players" xml:space="preserve"><value>Jucători</value></data>
+  <data name="Comp.Activate" xml:space="preserve"><value>Activați</value></data>
+  <data name="Comp.Deactivate" xml:space="preserve"><value>Dezactivați</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>Nu vă puteți alătura</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
+  <data name="Comp.Requirements" xml:space="preserve"><value>Cerințe:</value></data>
+  <data name="Comp.Upcoming" xml:space="preserve"><value>Competiții viitoare</value></data>
+  <data name="Comp.Previous" xml:space="preserve"><value>Competiții anterioare</value></data>
+  <data name="Comp.Filter" xml:space="preserve"><value>Faceți clic pentru a filtra după specie:</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>Nu s-au găsit competiții; încercați să schimbați filtrele</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Înscriere</value></data>
+  <data name="Comp.StatusStarted" xml:space="preserve"><value>A început</value></data>
+  <data name="Comp.StatusFinished" xml:space="preserve"><value>Terminată</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>N/A</value></data>
+  <data name="Comp.Join" xml:space="preserve"><value>ALĂTURAȚI-VĂ</value></data>
+  <data name="Comp.Leave" xml:space="preserve"><value>PĂRĂSIȚI</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Starea competiției: {0}</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Înscriere</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>În curs</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Încheiată</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Începe în</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Se termină în</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Poziția dvs.</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Scor de depășit</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Privire de ansamblu</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Clasament</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>Istoric</value></data>
+  <data name="Comp.Prizes" xml:space="preserve"><value>Premii</value></data>
+  <data name="Comp.Trophy" xml:space="preserve"><value>Trofeu</value></data>
+  <data name="Comp.Rules" xml:space="preserve"><value>Reguli și condiții</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Specii: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Rezervații: {0}</value></data>
+  <data name="Comp.Description" xml:space="preserve"><value>Descriere</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Arme</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Punctaj</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Cerințe speciale</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Mod de joc</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>O încercare este scăzută de fiecare dată când începeți o vânătoare într-o rezervație în care este activă o competiție. Competițiile nu pot fi activate în timpul jocului; orice modificare făcută în timpul jocului va avea efect doar la următoarea vânătoare pornită.</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Participanți cu rezultat ({0})</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Jucător</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Rezultat</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>Niciun rezultat de afișat</value></data>
+  <data name="League.Title" xml:space="preserve"><value>LIGA COMUNITĂȚII</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Bun venit în Liga comunității {game}, care va înlocui actualul nostru format de competiție de weekend.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>În fiecare vineri, vânați un alt animal în rezervația desemnată (animalele vânate în afara acelei rezervații nu se punctează). Aveți o săptămână întreagă și 7 încercări pentru a participa. Competiția se activează și se dezactivează ca de obicei. În săptămâna în care este vânat un anumit animal, toate competițiile obișnuite dedicate acelui animal vor fi suspendate. Și da, reducerile vor dura acum o săptămână întreagă. Recompensele pentru fiecare competiție din Ligă vor fi aceleași ca la competițiile de weekend pe care le înlocuiesc.</value></data>
+  <data name="League.P3" xml:space="preserve"><value>Evenimentele nu sunt afectate de Ligă.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Toate competițiile vor fi doar single-player, cu excepția oricărei competiții de rațe sau gâște.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>La fiecare 4 săptămâni trecem la o nouă rezervație, iar 3 rezervații formează un Sezon.</value></data>
+  <data name="League.P6" xml:space="preserve"><value>Nu trebuie să participați la fiecare competiție din Ligă pentru a vă califica la premiile lunare sau de sezon, dar există avantaje evidente dacă vă înscrieți cât mai des.</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>Nu sunteți înscris la nicio competiție</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Clasamentul lunar</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Clasamentul sezonului</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>CLASAMENTE</value></data>
+  <data name="Board.Score" xml:space="preserve"><value>Scor</value></data>
+  <data name="Board.Range" xml:space="preserve"><value>Distanță</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Top Hunter Score</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Tabela de Onoare</value></data>
+  <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
+  <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Un singur corn</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Două coarne</value></data>
+  <data name="Board.TopScores" xml:space="preserve"><value>Cele mai bune scoruri, sezonul {0}</value></data>
+  <data name="Board.TopRanges" xml:space="preserve"><value>Cele mai mari distanțe, sezonul {0}</value></data>
+  <data name="Board.Full" xml:space="preserve"><value>Vedeți clasamentul complet</value></data>
+  <data name="Board.YourRank" xml:space="preserve"><value>Poziția dvs.</value></data>
+  <data name="Board.NoRank" xml:space="preserve"><value>Momentan nu sunteți clasat în această categorie</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Top Hunter Score, din toate timpurile</value></data>
+  <data name="Board.Rank" xml:space="preserve"><value>Poziție</value></data>
+  <data name="Board.Hunter" xml:space="preserve"><value>Vânător</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.Past" xml:space="preserve"><value>Tabela de Onoare, sezonul trecut</value></data>
+  <data name="Board.SeasonN" xml:space="preserve"><value>Sezonul {0}</value></data>
+  <data name="Board.TopLane" xml:space="preserve"><value>Cele mai bune scoruri Lane Bandit</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit este un joc arcade retro pe care îl puteți juca pe Huntermate pentru a vă distra cât așteptați să apară trofeul!</value></data>
+  <data name="Board.GetLane" xml:space="preserve"><value>Obțineți Lane Bandit</value></data>
+  <data name="Board.TopBust" xml:space="preserve"><value>Cele mai bune scoruri Bust Through</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through este un joc arcade retro pe care îl puteți juca pe Huntermate pentru a vă distra cât așteptați să apară trofeul!</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Solo</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Următor</value></data>
+  <data name="Pager.Label" xml:space="preserve"><value>Pagini</value></data>
+  <data name="Board.Avatar" xml:space="preserve"><value>Avatarul lui {0}</value></data>
+  <data name="Comp.Failed" xml:space="preserve"><value>Competiția nu a putut fi modificată. Încercați din nou.</value></data>
+  <data name="Mis.Daily" xml:space="preserve"><value>Misiuni zilnice</value></data>
+  <data name="Mis.Regular" xml:space="preserve"><value>Misiuni obișnuite</value></data>
+  <data name="Mis.Help" xml:space="preserve"><value>Faceți clic pentru ajutor</value></data>
+  <data name="Mis.Day" xml:space="preserve"><value>Ziua {0}</value></data>
+  <data name="Mis.Today" xml:space="preserve"><value>astăzi</value></data>
+  <data name="Mis.Tomorrow" xml:space="preserve"><value>mâine</value></data>
+  <data name="Mis.Description" xml:space="preserve"><value>Descriere</value></data>
+  <data name="Mis.Objectives" xml:space="preserve"><value>Obiective</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Rezervații</value></data>
+  <data name="Mis.Rewards" xml:space="preserve"><value>Recompense</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Inactivă</value></data>
+  <data name="Mis.Completed" xml:space="preserve"><value>Finalizată</value></data>
+  <data name="Mis.Activate" xml:space="preserve"><value>ACTIVAȚI</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Seria dvs. s-a întrerupt. Apăsați ACTIVAȚI pentru a începe una nouă sau CUMPĂRAȚI/FOLOSIȚI „Reluare serie” pentru a continua ultima serie.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Misiunile zilnice vor rămâne inactive până când alegeți să activați sau să reluați o serie.</value></data>
+  <data name="Mis.ActivationDone" xml:space="preserve"><value>Activare finalizată!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>Bucurați-vă de serviciu!</value></data>
+  <data name="Mis.ActivateAll" xml:space="preserve"><value>Activați toate</value></data>
+  <data name="Mis.Auto" xml:space="preserve"><value>Activați automat misiunile noi disponibile</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activați automat doar misiunile favorite</value></data>
+  <data name="Mis.ResetDesc" xml:space="preserve"><value>Vă puteți reseta misiunile contra cost în magazin.</value></data>
+  <data name="Mis.GoToStore" xml:space="preserve"><value>La magazin</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Ați finalizat {0} din {1} misiuni și {2} din {3} pachete de misiuni.</value></data>
+  <data name="Mis.Filters" xml:space="preserve"><value>Filtre</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Filtru după</value></data>
+  <data name="Mis.All" xml:space="preserve"><value>Toate</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Favorite</value></data>
+  <data name="Mis.Active" xml:space="preserve"><value>Active</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Pachete de misiuni</value></data>
+  <data name="Mis.Available" xml:space="preserve"><value>Disponibile</value></data>
+  <data name="Mis.Species" xml:space="preserve"><value>Specii</value></data>
+  <data name="Mis.Weapons" xml:space="preserve"><value>Arme</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>Toate selectate</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>Selectate: {0}</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Ascundeți finalizatele</value></data>
+  <data name="Mis.Search" xml:space="preserve"><value>Căutați</value></data>
+  <data name="Mis.Filter" xml:space="preserve"><value>Filtrați</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Progres:</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Faceți clic pentru a adăuga la favorite sau a elimina din favorite</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>Momentan nu aveți nicio misiune favorită</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Momentan nu aveți nicio misiune activată. Activați mai jos o misiune disponibilă pentru a începe.</value></data>
+  <data name="Mis.NoAvailable" xml:space="preserve"><value>Nicio misiune disponibilă</value></data>
+  <data name="Mis.Unlock" xml:space="preserve"><value>Trebuie să finalizați următoarele misiuni pentru a debloca {0}:</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Ceva nu a funcționat și nu ați primit articolul. Ne cerem scuze. Încercați din nou!</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Oferte</value></data>
+  <data name="Store.Cat.all" xml:space="preserve"><value>Toate articolele</value></data>
+  <data name="Store.Cat.bundles" xml:space="preserve"><value>Pachete</value></data>
+  <data name="Store.Cat.0" xml:space="preserve"><value>Arme</value></data>
+  <data name="Store.Cat.10" xml:space="preserve"><value>Muniție</value></data>
+  <data name="Store.Cat.5" xml:space="preserve"><value>Optică</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Optică pentru pușcă</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Optică pentru pistol</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Optică pentru pușcă cu alice</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Optică arc și arbaletă</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Optică pentru arme cu încărcare pe la gura țevii</value></data>
+  <data name="Store.Cat.59" xml:space="preserve"><value>Câini</value></data>
+  <data name="Store.Cat.15" xml:space="preserve"><value>Momeli</value></data>
+  <data name="Store.Cat.18" xml:space="preserve"><value>Îmbrăcăminte</value></data>
+  <data name="Store.Cat.27" xml:space="preserve"><value>Upgrade-uri</value></data>
+  <data name="Store.Cat.46" xml:space="preserve"><value>Servicii</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Poziții foto trofeu</value></data>
+  <data name="Store.Cat.24" xml:space="preserve"><value>Echipament</value></data>
+  <data name="Store.Cat.29" xml:space="preserve"><value>Echipament greu</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Articole de eveniment</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Cabane de trofee</value></data>
+  <data name="Store.Cat.108" xml:space="preserve"><value>Vehicule</value></data>
+  <data name="Store.Search" xml:space="preserve"><value>Caută</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>CUMPĂRAȚI</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>Nu este de vânzare</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Conectați-vă pentru a cumpăra</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Dețineți:</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>sau</value></data>
+  <data name="Store.Days" xml:space="preserve"><value>zile</value></data>
+  <data name="Store.SaleTag" xml:space="preserve"><value>OFERTĂ</value></data>
+  <data name="Store.BundleTag" xml:space="preserve"><value>PACHET</value></data>
+  <data name="Store.Included" xml:space="preserve"><value>Inclus</value></data>
+  <data name="Store.Value" xml:space="preserve"><value>Valoare</value></data>
+  <data name="Store.BundlePrice" xml:space="preserve"><value>Prețul pachetului</value></data>
+  <data name="Store.Capacity" xml:space="preserve"><value>Cost capacitate</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>Acest articol nu poate fi cumpărat</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Acest pachet nu poate fi cumpărat. S-a atins limita maximă de deținere pentru cel puțin unul dintre articolele incluse</value></data>
+  <data name="Store.None" xml:space="preserve"><value>Niciun articol în această categorie</value></data>
+  <data name="Store.Details" xml:space="preserve"><value>Detalii</value></data>
+  <data name="Store.ClickMore" xml:space="preserve"><value>Faceți clic pentru detalii</value></data>
+  <data name="Store.Confirm" xml:space="preserve"><value>Confirmați achiziția</value></data>
+  <data name="Store.BuyEms" xml:space="preserve"><value>CUMPĂRAȚI cu em$</value></data>
+  <data name="Store.BuyGms" xml:space="preserve"><value>CUMPĂRAȚI cu gm$</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>Gm$ insuficienți</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Obțineți mai mulți em$</value></data>
+  <data name="Store.Includes" xml:space="preserve"><value>Include</value></data>
+  <data name="Store.Complete" xml:space="preserve"><value>Achiziție finalizată!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Bucurați-vă de {0}!</value></data>
+  <data name="Store.Oops" xml:space="preserve"><value>Ups!</value></data>
+  <data name="Store.Close" xml:space="preserve"><value>Închideți</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Economisiți</value></data>
+  <data name="Wal.MyWallet" xml:space="preserve"><value>Portofelul meu</value></data>
+  <data name="Wal.History" xml:space="preserve"><value>Istoricul achizițiilor</value></data>
+  <data name="Wal.Balance" xml:space="preserve"><value>Soldul curent</value></data>
+  <data name="Wal.Spent" xml:space="preserve"><value>Total cheltuit</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>Istoric achiziții bancă</value></data>
+  <data name="Wal.TabEms" xml:space="preserve"><value>Istoric achiziții em$</value></data>
+  <data name="Wal.TabGms" xml:space="preserve"><value>Istoric achiziții gm$</value></data>
+  <data name="Wal.Type" xml:space="preserve"><value>Tip</value></data>
+  <data name="Wal.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Wal.Status" xml:space="preserve"><value>Stare</value></data>
+  <data name="Wal.Item" xml:space="preserve"><value>Articol</value></data>
+  <data name="Wal.Amount" xml:space="preserve"><value>Sumă</value></data>
+  <data name="Wal.Provider" xml:space="preserve"><value>Furnizor</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>Această pagină listează toate achizițiile efectuate cu {0}</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>Nu ați făcut încă nicio achiziție cu {0}.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>Nu ați făcut încă nicio achiziție.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Sumă ({0})</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Sold înainte</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Sold după</value></data>
+  <data name="Wal.Items" xml:space="preserve"><value>Articole</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Afișați mai multe</value></data>
+  <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Achiziționat ca cadou. Folosit la data de {0}.</value></data>
+  <data name="Wal.GiftCode" xml:space="preserve"><value>Achiziționat ca cadou. Cod cadou: {0}</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>Cumpărați em$</value></data>
+  <data name="Bank.Help" xml:space="preserve"><value>Ajutor</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>Istoricul achizițiilor</value></data>
+  <data name="Bank.Balance" xml:space="preserve"><value>Soldul dvs. em$:</value></data>
+  <data name="Bank.Redeem" xml:space="preserve"><value>Folosiți un cod de reducere</value></data>
+  <data name="Bank.EnterCode" xml:space="preserve"><value>Introduceți codul de reducere</value></data>
+  <data name="Bank.Cancel" xml:space="preserve"><value>Anulați</value></data>
+  <data name="Bank.Invalid" xml:space="preserve"><value>Codul de reducere introdus este invalid sau expirat</value></data>
+  <data name="Bank.InGame" xml:space="preserve"><value>Monedă din joc</value></data>
+  <data name="Bank.EmsDesc" xml:space="preserve"><value>Arme, corturi, îmbrăcăminte, permise de vânătoare și multe altele pot fi cumpărate cu moneda din joc (em$).</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Cumpărați ca cadou</value></data>
+  <data name="Bank.Compare" xml:space="preserve"><value>* Comparativ cu 500 em$</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Economisiți {0}%*</value></data>
+  <data name="Bank.Starter" xml:space="preserve"><value>Pachete de start</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Obțineți tot ce vă trebuie pentru a începe să vânați orice animal din Rezervația de vânătoare Evergreen. Pachetele noastre de start includ un Abonament de bază, care vă oferă permis de vânătoare pentru fiecare animal din joc, și o selecție specială de articole care vă pun pe drumul cel bun spre a deveni un vânător desăvârșit.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Pachete speciale</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Alegeți unul dintre pachetele noastre speciale pentru a obține tot ce vă trebuie ca să vânați cele mai populare animale din {game}. Toate aceste pachete includ un Abonament de bază, care vă oferă permis de vânătoare pentru fiecare specie din joc, și o selecție de articole recomandate pentru anumite animale și modul lor de vânătoare.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Abonamente de bază</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>Abonament de {0} luni</value></data>
+  <data name="Bank.Animals" xml:space="preserve"><value>Permis de vânătoare pentru toate animalele</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Acces la toate rezervațiile</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Muniție de bază nelimitată</value></data>
+  <data name="Bank.Details" xml:space="preserve"><value>Detalii</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Articolele incluse într-un abonament sau cumpărate separat se păstrează chiar dacă abonamentul expiră</value></data>
+  <data name="Bank.ComparePrize" xml:space="preserve"><value>* Comparativ cu abonamentul {game} de 3 luni</value></data>
+  <data name="Bank.HelpTitle" xml:space="preserve"><value>Întrebări și răspunsuri despre magazinul {game}</value></data>
+  <data name="Bank.Q1" xml:space="preserve"><value>Ce sunt em$?</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>em$ este moneda virtuală a {game} și poate fi folosită pentru a cumpăra articole din magazin, precum arme, echipament, îmbrăcăminte și multe altele.</value></data>
+  <data name="Bank.Q2" xml:space="preserve"><value>Cum cumpăr em$ cadou pentru un prieten?</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>În fila „Cumpărați em$” a acestei ferestre, bifați caseta „Cumpărați ca cadou”, apoi faceți clic pe butonul „CUMPĂRAȚI” de la suma de monedă pe care doriți să o cumpărați. Veți ajunge la un rezumat al achiziției pe site-ul Steam. Faceți clic pe butonul de autorizare („Authorize”). Veți ajunge la o pagină de confirmare (vă mulțumim pentru achiziție). Faceți clic pe soldul dvs. em$ din partea de sus a ecranului (unde scrie „em$ XXXX”) și consultați {0}Istoricul achizițiilor{1}. Cea mai recentă intrare din Istoricul achizițiilor ar trebui să fie „Achiziționat ca cadou. Cod cadou:”, urmată de codul cadou. Copiați codul și trimiteți-l prietenului căruia vreți să-i faceți cadou. Prietenul dvs. va trebui apoi să folosească codul pentru ca darul em$ să fie adăugat la soldul său.</value></data>
+  <data name="Bank.Q3" xml:space="preserve"><value>Cum folosesc un cod cadou?</value></data>
+  <data name="Bank.A3" xml:space="preserve"><value>Faceți clic pe butonul „Folosiți un cod de reducere” din colțul din dreapta sus al acestei ferestre, lipiți acolo codul cadou și faceți clic pe butonul „OK”. Va apărea un mesaj de confirmare; faceți clic pe butonul „Click here to redeem this gift”. Va apărea un mesaj care confirmă că darul a fost adăugat în contul dvs. Faceți clic pe OK și bucurați-vă de cadou!</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>Am ratat un preț promoțional; mai pot primi reducerea?</value></data>
+  <data name="Bank.A4" xml:space="preserve"><value>După ce o ofertă sau o reducere a expirat, nu mai putem oferi prețul redus.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Politica de rambursare</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>Ca în cazul majorității monedelor digitale, nu oferim rambursări pentru achizițiile de em$. Jocul poate fi descărcat și încercat gratuit; verificați că funcționează pe calculatorul dvs. și că este ceea ce vă așteptați înainte de a cumpăra em$.</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Avertisment</value></data>
+  <data name="Bank.A6" xml:space="preserve"><value>Rețineți că em$ nu pot fi vânduți sau transferați și nu pot fi schimbați pe bani sau pe altceva decât pe conținut real din {game}. em$ nu sunt rambursabili. em$ nu au valoare monetară și nu constituie monedă sau proprietate de niciun fel.</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Arme extra: {0}, alte articole: {1}</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} luni</value></data>
+  <data name="Msg.Title" xml:space="preserve"><value>Mesaje</value></data>
+  <data name="Msg.OnlyFriends" xml:space="preserve"><value>Acceptați mesaje doar de la prieteni</value></data>
+  <data name="Msg.New" xml:space="preserve"><value>Mesaj nou</value></data>
+  <data name="Msg.Conversations" xml:space="preserve"><value>Conversații</value></data>
+  <data name="Msg.Text" xml:space="preserve"><value>Textul mesajului</value></data>
+  <data name="Msg.Send" xml:space="preserve"><value>Trimiteți mesajul</value></data>
+  <data name="Msg.To" xml:space="preserve"><value>Către:</value></data>
+  <data name="Msg.Sent" xml:space="preserve"><value>Trimis {0}</value></data>
+  <data name="Msg.Empty" xml:space="preserve"><value>Nu ați trimis și nu ați primit încă niciun mesaj. Când începeți o conversație cu un alt vânător, aceasta va apărea aici.</value></data>
+  <data name="Msg.NoUser" xml:space="preserve"><value>Utilizator inexistent.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>Nu puteți trimite mesaje către propriul cont.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>A apărut o eroare la trimiterea mesajului.</value></data>
+  <data name="Set.Title" xml:space="preserve"><value>Setări cont</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-mailul contului</value></data>
+  <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Limbă și fus orar</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Blocări multiplayer</value></data>
+  <data name="Set.TabFacebook" xml:space="preserve"><value>Setări Facebook</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Setări Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Setări profil</value></data>
+  <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatarul jucătorului</value></data>
+  <data name="Set.AvatarInfo" xml:space="preserve"><value>Avatarul ales vă va reprezenta atât în joc, cât și pe site</value></data>
+  <data name="Set.AvatarCurrent" xml:space="preserve"><value>Avatarul curent</value></data>
+  <data name="Set.AvatarSelect" xml:space="preserve"><value>Selectați un avatar nou</value></data>
+  <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatare deblocabile</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Acest avatar este blocat. Îl puteți debloca cumpărându-l din magazin.</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
+  <data name="Set.EmailAddress" xml:space="preserve"><value>Adresă de e-mail</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Schimbați e-mailul</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Un e-mail de confirmare a fost trimis la noua adresă de e-mail. Confirmați-o pentru a activa noua adresă.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>Această adresă de e-mail nu este disponibilă</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Ceva nu a funcționat la actualizarea adresei de e-mail.</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmați e-mailul</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Adresa dvs. de e-mail a fost schimbată.</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Retrimiteți confirmarea</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>E-mail de confirmare retrimis.</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Retrimiterea e-mailului a eșuat. Încercați din nou sau contactați asistența.</value></data>
+  <data name="Set.Language" xml:space="preserve"><value>Limba</value></data>
+  <data name="Set.Country" xml:space="preserve"><value>Țară</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Alegeți țara</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Fus orar:</value></data>
+  <data name="Set.Save" xml:space="preserve"><value>Salvați</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Istoric achiziții cont</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Toate tranzacțiile pe care le efectuați, atât prin {0}, cât și prin {1}, sunt salvate în portofelul dvs.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>bancă</value></data>
+  <data name="Set.Store" xml:space="preserve"><value>magazin</value></data>
+  <data name="Set.WalletLink" xml:space="preserve"><value>Faceți clic aici pentru a vedea portofelul dvs.</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Jucători blocați</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Nu ați blocat niciun jucător din jocurile dvs.</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Deblocați</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Sigur doriți să deblocați utilizatorul {0} în jocurile dvs.?</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>Vă puteți conecta contul la Facebook pentru a vă autentifica mai ușor.</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Conectați</value></data>
+  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>Contul dvs. {game} {0} este conectat la contul dvs. Steam. Dacă doriți să conectați acest cont {game} la un alt cont Steam sau să conectați contul Steam la un alt cont {game}, trebuie mai întâi să deconectați cele două conturi deja conectate.</value></data>
+  <data name="Set.Warning" xml:space="preserve"><value>Atenție</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>Deconectarea contului Steam vă va deconecta din {game} și va închide launcherul. Nu veți mai putea juca {game} pe Steam până când nu vă conectați la un alt cont.</value></data>
+  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Înțeleg și vreau să-mi deconectez contul Steam</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagine de antet</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Imaginile de antet se deblochează când atingeți niveluri noi în trei categorii de Realizări: Maestru al animalelor, Maestru al armelor și Maestru al explorării. Odată deblocate, imaginile de antet rămân disponibile pentru totdeauna.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Aflați mai multe despre nivelurile Maestru din Realizări.</value></data>
+  <data name="Set.HeaderNone" xml:space="preserve"><value>Niciuna</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>Cea mai recentă</value></data>
+  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animale</value></data>
+  <data name="Set.GroupWeapons" xml:space="preserve"><value>Arme</value></data>
+  <data name="Set.GroupExploration" xml:space="preserve"><value>Explorare</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>Evenimente</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Misiuni zilnice</value></data>
+  <data name="Set.SaveProfile" xml:space="preserve"><value>Salvați setările profilului</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Setări profil salvate</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>Salvarea profilului a eșuat. Încercați din nou sau contactați asistența.</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Cabană de trofee</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Puncte de momeală</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>ACASĂ</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Alegeți o secțiune.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>SELECTAȚI CABANA DE TROFEE</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Momentan nu dețineți nicio cabană.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>GESTIONAREA PUNCTELOR DE MOMEALĂ</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Umpleți hrănitorul până la:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Momeală</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Stare</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Activ</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Reumpleți</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Bun venit în {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Felicitări, {0}, noul dvs. cont {game} a fost creat!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Dacă ați descărcat și instalat deja launcherul și clientul jocului, sunteți gata să începeți să jucați! Dacă sunteți nou în {game}, vă recomandăm să parcurgeți tutorialele înainte de prima vânătoare adevărată. Tutorialele vă vor învăța tot ce trebuie să știți pentru a vă descurca singur în Rezervația de vânătoare Evergreen. Începeți mai jos.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>Aveți un cod retail?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>Dacă ați cumpărat o versiune retail a {game}, {0}faceți clic aici{1} pentru a vă activa codul retail.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutoriale</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Lăsați-l pe Doc, paznicul Rezervației de vânătoare Evergreen, să vă învețe tot ce trebuie să știți despre {game}.</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Mergeți la tutoriale</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>La vânătoare</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Porniți o vânătoare adevărată dacă cunoașteți deja {game} sau pur și simplu abia așteptați să ieșiți pe teren.</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Începeți un joc nou</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Descărcări</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Dacă nu ați descărcat încă launcherul și clientul jocului, trebuie să faceți acest lucru înainte de a începe să vânați.</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>La descărcări</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Setări</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Dacă doriți să vă schimbați adresa de e-mail, limba sau avatarul de jucător, puteți face acest lucru în pagina de setări.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modificați setările contului</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Tot progresul dvs. din {game} este afișat în pagina de profil, unde veți găsi statistici detaliate pentru toate vânătorile anterioare.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>Vedeți profilul meu</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Ajutor</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Aveți nevoie de ajutor la început? Consultați secțiunea de ajutor și excelentele resurse gestionate de comunitate.</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>Vedeți secțiunea de ajutor</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Recrutați un prieten</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>Cum recrutați un prieten</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Trimiteți o invitație</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Faceți clic pe butonul de mai jos pentru a obține linkul dvs. de recomandare și trimiteți-l unui prieten pe care doriți să-l invitați în {game}.</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Jucați {game} împreună</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Când prietenul dvs. își înregistrează un cont {0}folosind linkul dvs.{1}, primește 200 em$, un telemetru 5x30mm, un chemător de elan și un neutralizator de miros!</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Primiți recompense</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>Dacă prietenul dvs. cumpără em$, veți fi recompensat!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>Vedeți recompensele mai jos</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Faceți clic aici pentru a invita un prieten</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Recompense</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* Recompensa de recomandare se acordă prima dată când un prieten recomandat cumpără em$. Veți primi această recompensă o singură dată pentru FIECARE recomandare.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** Recompensa pentru prima achiziție se acordă prima dată când ORICARE dintre prietenii dvs. recomandați cumpără acea sumă de em$. Veți primi aceste recompense o singură dată fiecare, nu per achiziție.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>Dacă prietenul dvs. cumpără</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>Primiți*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>Recompensă unică**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Recruții mei</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>Utilizator</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>S-a alăturat</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Recompensă</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>Acesta este linkul dvs. de recomandare; copiați-l și trimiteți-l oricui doriți să invitați în {game}:</value></data>
+  <data name="Prof.Title" xml:space="preserve"><value>Profilul lui {0}</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Ranguri</value></data>
+  <data name="Prof.TabAchievements" xml:space="preserve"><value>Realizări</value></data>
+  <data name="Prof.TabSkills" xml:space="preserve"><value>Abilități</value></data>
+  <data name="Prof.TabStats" xml:space="preserve"><value>Statistici</value></data>
+  <data name="Prof.TabGallery" xml:space="preserve"><value>Galerie</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Trofee</value></data>
+  <data name="Prof.TabDogs" xml:space="preserve"><value>Câini</value></data>
+  <data name="Prof.TabFriends" xml:space="preserve"><value>Prieteni</value></data>
+  <data name="Prof.Membership" xml:space="preserve"><value>Vânător</value></data>
+  <data name="Prof.Rank" xml:space="preserve"><value>Poziția {0}</value></data>
+  <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
+  <data name="Prof.TipMembership" xml:space="preserve"><value>Tipul de abonament al lui {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>Hunter Score-ul lui {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Poziția lui {0} după Hunter Score</value></data>
+  <data name="Prof.TipOnline" xml:space="preserve"><value>{0} este online</value></data>
+  <data name="Prof.Request" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Cerere de prietenie în așteptare</value></data>
+  <data name="Prof.Overview" xml:space="preserve"><value>Privire de ansamblu</value></data>
+  <data name="Prof.Animals" xml:space="preserve"><value>Animale</value></data>
+  <data name="Prof.Weapons" xml:space="preserve"><value>Arme</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Colectibile</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Progres</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Prof.Categories" xml:space="preserve"><value>Categorii</value></data>
+  <data name="Prof.Unlocked" xml:space="preserve"><value>Deblocat</value></data>
+  <data name="Prof.Exploration" xml:space="preserve"><value>Explorare</value></data>
+  <data name="Prof.DailyMissions" xml:space="preserve"><value>Misiuni zilnice</value></data>
+  <data name="Prof.Challenges" xml:space="preserve"><value>Provocări</value></data>
+  <data name="Prof.AchUnlocked" xml:space="preserve"><value>Realizări deblocate</value></data>
+  <data name="Prof.AchRecent" xml:space="preserve"><value>Realizări recente</value></data>
+  <data name="Prof.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Prof.Species" xml:space="preserve"><value>Specii</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Observare</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Urmărire</value></data>
+  <data name="Prof.Shooting" xml:space="preserve"><value>Împușcare</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Niv.</value></data>
+  <data name="Prof.Statistics" xml:space="preserve"><value>Statistici</value></data>
+  <data name="Stat.Last" xml:space="preserve"><value>Ultima vânătoare</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Statistici complete</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>Istoric expediții</value></data>
+  <data name="Stat.Best" xml:space="preserve"><value>Recorduri personale</value></data>
+  <data name="Stat.Misc" xml:space="preserve"><value>Diverse</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Coarne de colecție</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Doborâri confirmate</value></data>
+  <data name="Stat.Weapon" xml:space="preserve"><value>Armă</value></data>
+  <data name="Stat.Ammo" xml:space="preserve"><value>Muniție</value></data>
+  <data name="Stat.Shots" xml:space="preserve"><value>Focuri</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Precizia tirului</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Doborâri/lovitură</value></data>
+  <data name="Stat.Longest" xml:space="preserve"><value>Cea mai lungă lovitură</value></data>
+  <data name="Stat.Species" xml:space="preserve"><value>Specii</value></data>
+  <data name="Stat.Spotted" xml:space="preserve"><value>Observate</value></data>
+  <data name="Stat.Tracked" xml:space="preserve"><value>Urmărite</value></data>
+  <data name="Stat.Harvested" xml:space="preserve"><value>Vânate</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Nume</value></data>
+  <data name="Stat.Collected" xml:space="preserve"><value>Colectate</value></data>
+  <data name="Stat.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Stat.Max" xml:space="preserve"><value>Max</value></data>
+  <data name="Stat.Distance" xml:space="preserve"><value>Distanța parcursă</value></data>
+  <data name="Stat.Duration" xml:space="preserve"><value>Durata vânătorii</value></data>
+  <data name="Stat.NoShots" xml:space="preserve"><value>Niciun foc tras</value></data>
+  <data name="Stat.NoShotsExp" xml:space="preserve"><value>Niciun foc tras în această expediție.</value></data>
+  <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Nicio interacțiune cu animalele în această expediție.</value></data>
+  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Niciun colectibil adunat în această expediție.</value></data>
+  <data name="Stat.NoAchExp" xml:space="preserve"><value>Nicio realizare obținută în această expediție.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Niciun corn de colecție adunat în această expediție.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Nicio doborâre confirmată în această expediție.</value></data>
+  <data name="Stat.NoExpeditions" xml:space="preserve"><value>Acest vânător nu a participat la nicio expediție.</value></data>
+  <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Stat.Dur" xml:space="preserve"><value>Durată</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Rezervație</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Cabană</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Colectibile</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Doborâri</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>Din toate timpurile</value></data>
+  <data name="Stat.Season" xml:space="preserve"><value>Sezonul {0}</value></data>
+  <data name="Stat.BestDisabled" xml:space="preserve"><value>Funcția de recorduri personale este momentan dezactivată.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Recordul personal pentru {0} și sezonul {1} este în coada de calcul. Reveniți în curând.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Recordul personal pentru {0} și sezonul {1} este în curs de calcul și va fi disponibil în curând.</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} nu a participat la nicio expediție în sezonul {1}.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Recordul personal din toate timpurile pentru {0} este în coada de calcul. Reveniți în curând.</value></data>
+  <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Recordul personal din toate timpurile pentru {0} este în curs de calcul și va fi disponibil în curând.</value></data>
+  <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} nu a participat încă la nicio expediție, deci recordul personal din toate timpurile nu poate fi calculat.</value></data>
+  <data name="Stat.Score" xml:space="preserve"><value>Scor</value></data>
+  <data name="Stat.Range" xml:space="preserve"><value>Distanță</value></data>
+  <data name="Stat.Previous" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Stat.Next" xml:space="preserve"><value>Următor</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Nicio imagine de afișat.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Niciun trofeu de afișat.</value></data>
+  <data name="Prof.DogsEmpty" xml:space="preserve"><value>Acest vânător nu are câini.</value></data>
+  <data name="Prof.FriendsEmpty" xml:space="preserve"><value>Niciun prieten de afișat.</value></data>
+  <data name="Prof.DownloadGallery" xml:space="preserve"><value>Descărcați galeria</value></data>
+  <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Se generează galeria pentru descărcare</value></data>
+  <data name="Prof.GalleryReady" xml:space="preserve"><value>Galeria dvs. este gata de descărcat!</value></data>
+  <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Nu închideți fereastra</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Sigur doriți să ștergeți această imagine? Acțiunea nu poate fi anulată!</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Niv.:</value></data>
+  <data name="Prof.DogSkills" xml:space="preserve"><value>Abilități</value></data>
+  <data name="Prof.DogNoSkills" xml:space="preserve"><value>Acest câine nu a deblocat încă nicio abilitate.</value></data>
+  <data name="Prof.Delete" xml:space="preserve"><value>Ștergeți</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Conectare în curs...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Conectare finalizată!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>Această pagină s-a deschis deoarece {game} trebuie să vă conecteze.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Așteptați...</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>Puteți închide acum această fereastră/filă, dacă doriți.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>Ar putea dura câteva secunde...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Se confirmă adresa de e-mail...</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>Confirmarea adresei de e-mail s-a încheiat!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Vă mulțumim că v-ați alăturat! Continuați în launcherul {game} pentru a începe să jucați!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Deconectare finalizată</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Capră de munte</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>Rață neagră americană</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Vulpe polară</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Cerb axis</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Banteng</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Oaie bighorn</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Bizon</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Urs negru</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Cerb cu coada neagră (atipic)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Cerb cu coada neagră (tipic)</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Râs roșu</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Urs brun</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Gâscă canadiană</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Iepure cottontail</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Coiot</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Oaie Dall</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Râs eurasiatic</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>Iepure de vizuină</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Cerb lopătar</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Capră sălbatică</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Porc sălbatic</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Rață pestriță</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Lup cenușiu</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Urs grizzly</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Gâscă semipalmată</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Rață sălbatică</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Elan</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Cerb catâr (atipic)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Cerb catâr (tipic)</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Rață sulițar</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Fazan</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Urs polar</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Puma</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Cerb</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Vulpe roșie</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Cangur roșu</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Ren</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Ieruncă alpină</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Cerb wapiti</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Căprior</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Iepuroi</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Cerb Roosevelt</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Cerb rusa</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Cerb sambar</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Cerb Sitka</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Gâscă de zăpadă</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Iepure snowshoe</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Curcan</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Tyrannosaurus Rex</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Bivol de apă</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Wendigo</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>Ieruncă cu coada albă</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Cerb cu coada albă (atipic)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Cerb cu coada albă (tipic)</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Mistreț</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Potârniche polară</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Cocoș de munte</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Muscariță</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>Hrib</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Gălbiori</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Ciupercă obișnuită</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Rusulă galbenă de mlaștină</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Oală nordică</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Monedă bizantină</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Corn de cerb lopătar</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Cadou verde</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Cadou albastru</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Cadou roșu</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Cadou violet</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Cadou argintiu</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Craniu verde</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Trandafir roz</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>Trandafir alb</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Trandafir roșu</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Ou de aur</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Clătită cu fructe</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Craniu albastru</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Clătită cu înghețată</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Clătită Deluxe</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Craniu roșu</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Craniu violet</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Corn de cerb axis</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>Trandafir alb de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Ritual întunecat</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Ursuleț maro de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Trandafir roșu de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Balon auriu de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Corn atipic de cerb cu coada albă</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Cadou auriu</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Corn de cerb cu coada albă</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Corn de cerb catâr</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Corn de cerb Roosevelt</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Corn atipic de cerb catâr</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Corn de cerb cu coada neagră</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Corn atipic de cerb cu coada neagră</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Corn de elan</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Ursuleț roșu de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Corn de căprior</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Corn de cerb</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Clătită cu bucăți de ciocolată</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Corn de ren</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Clătită cu unt și sirop</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>Ciupercă 1UP</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Pepită de aur</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Corn de cerb Sitka</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Ou de argint</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Ou de bronz</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Dovleac portocaliu</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Dovleac maro</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Dovleac galben</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Oală cu aur</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Cuțit aborigen vechi</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Cuțit aborigen vechi</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Cuțit aborigen vechi</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Balon de hematit de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Balon argintiu de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Corn de cerb wapiti</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Dolar de argint</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Fosilă de amonit</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Fosilă de dinte de rechin</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Pană de acvilă</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Pană de corb</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Corn de cerb rusa</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Corn de cerb sambar</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Ursuleț argintiu de Ziua Îndrăgostiților</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Trandafir roz de Ziua Îndrăgostiților</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Single-player</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Animale</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Arme</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Colectibile</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pistoale</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Arbalete</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0}z</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0}h</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0}min</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0}s</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} GB</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} MB</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} KB</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} B</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} mile)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>acum câteva secunde</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>acum un minut</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>acum {0} min</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>acum o oră</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>acum {0} h</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>acum o zi</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>acum {0} z</value></data>
+  <data name="Splash.Loading" xml:space="preserve"><value>Se încarcă</value></data>
+  <data name="Splash.Error" xml:space="preserve"><value>Eroare</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>Asistență {game}</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Ghiduri și tutoriale</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Tutoriale video</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Site-uri comunitare locale</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} are mai multe canale oficiale de asistență. O mulțime de informații despre cum se joacă, precum și soluții pentru probleme se găsesc pe pagina noastră Wiki, întreținută de comunitate. Forumurile oficiale {game} sunt foarte active și vizitate zilnic de mulți dintre jucătorii noștri, care ajută cu plăcere începătorii.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Dacă nu găsiți răspunsul la întrebările dvs. pe forum sau în wiki, puteți deschide un tichet în sistemul nostru de asistență și vom încerca să vă ajutăm cât mai repede!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Asistență {game}</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Forumul {game}</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (și în {1}, {2} și {3})</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>germană</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>franceză</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>spaniolă</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Informații despre conexiunile multiplayer</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>Nou în {game}?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Vedeți câteva tutoriale video &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Resurse și ghiduri ale comunității</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>{game} are o comunitate numeroasă; descoperiți câteva dintre aceste resurse excelente create de membrii noștri.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Învățați elementele de bază ale jocului {game}. Parcurgeți și {0}tutorialele jucabile{1} înainte de prima vânătoare în Rezervația de vânătoare Evergreen!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>De {0}</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Site-uri comunitare locale</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game} are o comunitate vibrantă, iar mulți dintre jucătorii noștri se întâlnesc în comunități locale, alături de jucători din regiunea lor! Descoperiți aceste site-uri locale ale fanilor {game}!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>CUPRINS</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Servicii pentru misiunile zilnice</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Reluare serie</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Reluarea unei serii</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Misiunile zilnice sunt o noutate absolută în sistemul de misiuni din {game} și se găsesc în {0}secțiunea Misiuni{1} din Launcher sau de pe site.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Fiind menite să fie finalizate într-o singură zi, misiunile zilnice sunt destul de simple, iar majoritatea nu necesită arme sau echipament specifice. Misiunile zilnice dificile pot fi uneori o excepție, dar nu vă descurajați! Puteți finaliza misiunile zilnice și în multiplayer, dacă doriți.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Noua interfață a misiunilor zilnice</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>Cum funcționează?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>În fiecare zi, fiecare jucător primește o nouă misiune zilnică de îndeplinit. Jucători diferiți vor primi misiuni zilnice diferite (MZ, în continuare).</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Finalizarea unei MZ crește seria dvs. de MZ cu 1. O {0}serie{1} este definită ca un șir de MZ consecutive finalizate.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Sărirea peste o MZ sau nefinalizarea ei va „întrerupe seria” și vă va readuce la ziua unu.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>Dacă întrerupeți seria, misiunile zilnice vor deveni inactive până când le activați pentru a începe o serie nouă sau reluați ultima serie. O serie întreruptă poate fi recuperată cu ajutorul serviciului {0}Reluare serie{1} din magazin, pentru a continua de la ultima misiune zilnică finalizată.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Niveluri de dificultate</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>MZ au trei niveluri de dificultate:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Ușor</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Mediu</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Greu</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Fiecare nivel de dificultate are o culoare: o MZ ușoară este reprezentată de o pictogramă verde, una medie de o pictogramă albastră, iar una grea de o pictogramă roșie.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Pe lângă culori, fiecare nivel de dificultate are un număr diferit de stele: 1 stea pentru ușor, 2 pentru mediu și 3 pentru greu.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Fiecare nivel de dificultate vine cu recompense de bază diferite: {0}100 gm$ pentru Ușor, 500 gm$ pentru Mediu și 1000 gm$ pentru Greu{1}, respectiv.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Recompensele cresc pe măsură ce seria dvs. de MZ se lungește; mai multe detalii mai jos.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Progresie</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Prima dvs. MZ va fi mereu una ușoară. Dacă o finalizați, MZ de diferite niveluri de dificultate se vor alterna după un tipar pe care îl numim {0}ciclu{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>Un ciclu arată astfel:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>După cum puteți vedea, un ciclu durează 16 zile, bineînțeles cu condiția să continuați să finalizați zi de zi MZ care vă sunt atribuite.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>După finalizarea primului ciclu începe un nou ciclu cu {0}recompense în gm$ mărite cu 10%{1} (Ușor = 110 gm$, Mediu = 550 gm$, Greu = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>La fiecare ciclu următor, recompensele cresc cu încă 10%, până la maximum dublul recompenselor de bază (o creștere de 100%).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>De exemplu, dacă reușiți să finalizați 10 cicluri la rând fără a vă întrerupe seria, veți primi o recompensă de x2 pentru fiecare misiune, care va continua până vă întrerupeți seria.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Diferențe față de misiunile obișnuite</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Spre deosebire de misiunile obișnuite, pentru ca un animal vânat să fie valid în MZ, trebuie să-l doborâți chiar dvs. Prietenii vă pot totuși ajuta să {0}găsiți{1} animalul necesar într-o sesiune multiplayer.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Spre deosebire de misiunile obișnuite, misiunile zilnice nu trebuie activate. O misiune zilnică este întotdeauna activă pe durata ei (24 de ore).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Puteți obține realizări finalizând MZ. Realizările pentru MZ le puteți vedea în secțiunea Realizări din profilul dvs. de jucător:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Finalizarea MZ contează pentru 3 tipuri diferite de realizări, câte una pentru fiecare nivel de dificultate.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Iată un tabel cu pragurile pentru fiecare nivel de dificultate:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Dificultate</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Misiuni finalizate</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Recompense speciale</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>Pe măsură ce avansați în seria dvs. de MZ, veți primi recompense speciale pentru finalizarea MZ Grele (ca dificultate).</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Recompensele speciale pot fi:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>articole</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trofee</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Articolele și trofeele sunt recompense exclusive pe care le puteți câștiga doar finalizând MZ (adică nu există altă modalitate de a le obține!). Recompensele dvs. vor apărea abia la începutul unui joc nou.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}IMPORTANT:{1} Toate recompensele speciale ale MZ pot fi câștigate o singură dată! Dacă vă întrerupeți seria și începeți una nouă, veți primi în continuare gm$, dar va trebui să depășiți seria anterioară pentru a câștiga noi recompense speciale.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Puteți vedea orice recompense speciale în secțiunea Recompense a MZ dvs.:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Iată un tabel util care arată cum funcționează:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Numărul de MZ Grele finalizate la rând (serie)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Recompensă specială</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Șapcă de vânătoare</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Model camuflaj A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Tricou simplu</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Eroul misiunilor zilnice</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Pușcă cu închizător</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Model camuflaj B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Geacă de piele</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hard Core Hunting</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Pușcă cu pârghie</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Gravată</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Trofeu unic (3 luni)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Trofeu unic (6 luni)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Trofeu unic ({0} MZ Grele)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Trofeu unic (1 an)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>După cum sugerează și numele, acest serviciu vă permite să reluați seria unei MZ. De exemplu, dacă aveți o serie lungă de MZ finalizate și apoi ați ratat sau nu ați reușit o MZ, puteți folosi acest serviciu pentru a vă relua seria și a continua de la ultima MZ finalizată.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>Partea bună este că nu contează cât timp a trecut de când ați întrerupt seria; o puteți relua oricând, chiar dacă ați întrerupt-o, să zicem, în urmă cu un an.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>Acest serviciu poate fi cumpărat în avans și activat când este nevoie. Nu există nicio limită pentru câte astfel de carduri puteți cumpăra sau deține.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Puteți cumpăra acest serviciu direct din pagina MZ: imediat ce vă întrerupeți seria, va apărea un buton în stânga MZ „Ziua 1”, care vă invită să-l cumpărați (sau să-l folosiți, dacă dețineți deja cel puțin unul).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternativ, îl puteți cumpăra din {0}magazin{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>După achiziție, veți putea folosi acest serviciu direct din pagina MZ:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Cum descărcați și jucați {game}</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Cerințe multiplayer</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Cerințe single-player</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Sisteme de operare acceptate:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Sistem de operare:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>Procesor:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Memorie:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Placă video:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Rezoluție grafică:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Conexiune la internet:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Gazdă:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS gazdă:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 și Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 și Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Procesor dual core (2 GHz)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA seria 8 (8800 sau mai bun), ATI Radeon HD seria 2000 (2400 sau mai bun). 256 MB memorie integrată (pentru setări reduse și medii). 512–768 MB memorie integrată (pentru setări ridicate, în funcție de numărul de jucători).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA seria 7 (7600 sau mai bun). ATI X1900 (sau mai bun). 256 MB memorie integrată (pentru setări reduse și medii). 512 MB memorie integrată (pentru setări ridicate).</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Cel puțin 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps încărcare și descărcare</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps încărcare și descărcare (în funcție de numărul de jucători)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Dacă gazda nu rulează jocul la cel puțin 25-30 fps (cadre pe secundă), fizica va produce erori. Jucătorii cu calculatoare mai slabe ar trebui să încerce să reducă setările pentru a putea rula jocul cu un număr cât mai mare de fps. {0}30 FPS{1} este cea mai mică valoare recomandată. FPS-ul poate fi măsurat cu instrumente gratuite disponibile pe internet.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Căutați un instrument</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Descărcați jocul (aprox. 12 GB).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Faceți clic aici pentru a descărca</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Pasul {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Rulați jocul după finalizarea instalării.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Faceți clic pe butonul {0} din pagina web pentru a porni un joc nou.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Depanare</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Utilitarul de depanare verifică automat configurația jocului, detectează problemele frecvente și recomandă soluții pentru a vă ajuta să reveniți mai repede la joc.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Descărcați utilitarul de depanare.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Plasați-l în folderul jocului, lângă fișierul executabil al jocului.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Folderul jocului]\game\&lt;utilitar&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Rulați utilitarul pentru a analiza problemele de configurare și de performanță.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Aplicați soluțiile sugerate în timpul analizei.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Dacă soluțiile propuse nu ajută, descărcați fișierul jurnal generat și trimiteți-l către {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>echipa de asistență</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Descărcați utilitarul</value></data>
+</root>

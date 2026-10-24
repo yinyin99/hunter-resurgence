@@ -13,7 +13,7 @@
 <PageTitle>@L["Msg.Title"]</PageTitle>
 
 <div class="page-min">
-    <h2 class="page-title">@(L["Msg.Title"].Value.ToUpperInvariant())</h2>
+    <h2 class="page-title">@(L["Msg.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" disabled="@savingOnly" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
     <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
     <div class="cols">

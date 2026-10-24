@@ -1,0 +1,1143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="NotFound.Title" xml:space="preserve"><value>Sivua ei löytynyt</value></data>
+  <data name="NotFound.Lead" xml:space="preserve"><value>Tätä sivua ei ole olemassa.</value></data>
+  <data name="Menu.HuntNow" xml:space="preserve"><value>METSÄSTÄMÄÄN</value></data>
+  <data name="Menu.GetEms" xml:space="preserve"><value>HANKI EM$</value></data>
+  <data name="Menu.News" xml:space="preserve"><value>UUTISET</value></data>
+  <data name="Menu.Competitions" xml:space="preserve"><value>KILPAILUT</value></data>
+  <data name="Menu.Leaderboards" xml:space="preserve"><value>PISTETAULUKOT</value></data>
+  <data name="Menu.Missions" xml:space="preserve"><value>TEHTÄVÄT</value></data>
+  <data name="Feed.LatestNews" xml:space="preserve"><value>VIIMEISIMMÄT UUTISET</value></data>
+  <data name="Feed.News" xml:space="preserve"><value>{GAME}-UUTISET</value></data>
+  <data name="Footer.DevelopedBy" xml:space="preserve"><value>KEHITTÄJÄ</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>SEURAA {GAME}-PELIÄ</value></data>
+  <data name="Menu.Label" xml:space="preserve"><value>Päävalikko</value></data>
+  <data name="Menu.Store" xml:space="preserve"><value>KAUPPA</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>APU</value></data>
+  <data name="Menu.Forum" xml:space="preserve"><value>FOORUMI</value></data>
+  <data name="Menu.Downloads" xml:space="preserve"><value>LATAUKSET</value></data>
+  <data name="Menu.Dashboard" xml:space="preserve"><value>Kojelauta</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Yksinpeli</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Moninpeli</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Etsi moninpeli</value></data>
+  <data name="Menu.Tutorials" xml:space="preserve"><value>Harjoitukset</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ on {game}-pelin virtuaalivaluutta, jolla voit ostaa kaupasta tuotteita, kuten aseita, varusteita, vaatteita ja paljon muuta.</value></data>
+  <data name="Statusbar.Settings" xml:space="preserve"><value>Asetukset</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>ammukset:</value></data>
+  <data name="Statusbar.Fuel" xml:space="preserve"><value>polttoaine:</value></data>
+  <data name="Tip.Friends" xml:space="preserve"><value>Kaverit</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Kaverit ({0} uutta pyyntöä)</value></data>
+  <data name="Tip.Messages" xml:space="preserve"><value>Viestit</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Viestit ({0} uutta)</value></data>
+  <data name="Tip.Wallet" xml:space="preserve"><value>Lompakkoni / Ostohistoria</value></data>
+  <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Metsästäjän pisteesi</value></data>
+  <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
+  <data name="Settings.Account" xml:space="preserve"><value>Tilin asetukset</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Pelin hallinta</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Kieli</value></data>
+  <data name="Settings.GameSettings" xml:space="preserve"><value>Pelin asetukset</value></data>
+  <data name="Settings.Screenshots" xml:space="preserve"><value>Kuvakaappaukset</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Lokitiedostot</value></data>
+  <data name="Settings.GameFolder" xml:space="preserve"><value>Pelin kansio</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Tyhjennä käynnistäjän välimuisti</value></data>
+  <data name="Settings.ClearGameCache" xml:space="preserve"><value>Tyhjennä pelin välimuisti</value></data>
+  <data name="Friends.Title" xml:space="preserve"><value>Kaverit ({0})</value></data>
+  <data name="Friends.Search" xml:space="preserve"><value>Etsi muita metsästäjiä...</value></data>
+  <data name="Friends.SendMessage" xml:space="preserve"><value>Lähetä viesti</value></data>
+  <data name="Friends.Remove" xml:space="preserve"><value>Poista</value></data>
+  <data name="Friends.RemoveConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa käyttäjän {0} kaverilistaltasi?</value></data>
+  <data name="Friends.None" xml:space="preserve"><value>Ei vielä kavereita</value></data>
+  <data name="Friends.Results" xml:space="preserve"><value>Hakutulokset ({0})</value></data>
+  <data name="Friends.NoHunters" xml:space="preserve"><value>Metsästäjiä ei löytynyt</value></data>
+  <data name="Friends.SendRequest" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
+  <data name="Friends.RequestSent" xml:space="preserve"><value>Kaveripyyntö lähetetty</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Kaveripyyntö {0}/{1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} haluaa olla kaverisi!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Hyväksy</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Hylkää</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Edellinen pyyntö</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Seuraava pyyntö</value></data>
+  <data name="Language.Title" xml:space="preserve"><value>Valitse kielesi</value></data>
+  <data name="Language.English" xml:space="preserve"><value>englanti</value></data>
+  <data name="Language.French" xml:space="preserve"><value>ranska</value></data>
+  <data name="Alert.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Alert.Yes" xml:space="preserve"><value>Kyllä</value></data>
+  <data name="Alert.No" xml:space="preserve"><value>Ei</value></data>
+  <data name="Alert.Close" xml:space="preserve"><value>Sulje</value></data>
+  <data name="Footer.Ratings" xml:space="preserve"><value>IKÄRAJAT</value></data>
+  <data name="Footer.Privacy" xml:space="preserve"><value>Tietosuojakäytäntö</value></data>
+  <data name="Footer.Eula" xml:space="preserve"><value>Käyttöoikeussopimus</value></data>
+  <data name="Footer.Privacy.Title" xml:space="preserve"><value>TIETOSUOJAKÄYTÄNTÖ</value></data>
+  <data name="Footer.Eula.Title" xml:space="preserve"><value>LOPPUKÄYTTÄJÄN KÄYTTÖOIKEUSSOPIMUS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Sinun on hyväksyttävä käyttöoikeussopimus ja tietosuojakäytäntö ennen jatkamista.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Klikkaamalla ”Jatka”-painiketta hyväksyt seuraavat: {0} ja {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Hyväksyn EULA-sopimuksen</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Hyväksyn tietosuojakäytännön</value></data>
+  <data name="Legal.Updated" xml:space="preserve"><value>Viimeksi päivitetty: paikkateksti</value></data>
+  <data name="Legal.Section" xml:space="preserve"><value>JOHDANTO</value></data>
+  <data name="Legal.Subsection" xml:space="preserve"><value>Paikkaotsikko</value></data>
+  <data name="Legal.Placeholder" xml:space="preserve"><value>Paikkateksti. Palvelun ylläpitäjä toimittaa varsinaisen oikeudellisen tekstin.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Tietoa henkilötietojen käsittelystä: {0}.</value></data>
+  <data name="Public.Already" xml:space="preserve"><value>Oletko jo metsästäjä?</value></data>
+  <data name="Public.SignIn" xml:space="preserve"><value>Kirjaudu</value></data>
+  <data name="Signin.Email" xml:space="preserve"><value>Sähköposti</value></data>
+  <data name="Signin.Code" xml:space="preserve"><value>Koodi</value></data>
+  <data name="Signin.SendCode" xml:space="preserve"><value>Lähetä koodi</value></data>
+  <data name="Signin.Submit" xml:space="preserve"><value>Kirjaudu</value></data>
+  <data name="Signin.Back" xml:space="preserve"><value>Käytä toista sähköpostiosoitetta</value></data>
+  <data name="Signin.Sent" xml:space="preserve"><value>Lähetimme 6-numeroisen koodin osoitteeseen {0}.</value></data>
+  <data name="Validation.Email.Invalid" xml:space="preserve"><value>Anna kelvollinen sähköpostiosoite.</value></data>
+  <data name="Validation.Code.Invalid" xml:space="preserve"><value>Väärä koodi. Yritä uudelleen.</value></data>
+  <data name="Landing.Play" xml:space="preserve"><value>PELAA ILMAISEKSI</value></data>
+  <data name="Feed.ContinueReading" xml:space="preserve"><value>Jatka lukemista →</value></data>
+  <data name="Feed.NewsArchive" xml:space="preserve"><value>Uutisarkisto</value></data>
+  <data name="Discord.Online" xml:space="preserve"><value>Paikalla: {0}</value></data>
+  <data name="Discord.Members" xml:space="preserve"><value>JÄSENET PAIKALLA</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>
+  <data name="Discord.Hangout" xml:space="preserve"><value>Vietä aikaa ihmisten kanssa, jotka ymmärtävät</value></data>
+  <data name="Hunt.Go" xml:space="preserve"><value>Metsästämään</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>YKSINPELI</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>MONINPELI (YHTEISTYÖ)</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Aktiiviset tehtävät:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>Sinulla ei ole aktiivisia tehtäviä. Aktivoi tehtäviä {0}tehtäväsivulla{1}.</value></data>
+  <data name="Hunt.MoreMissions" xml:space="preserve"><value>ja {0} muuta...</value></data>
+  <data name="Hunt.NoFriends" xml:space="preserve"><value>Kukaan kavereistasi ei ole paikalla</value></data>
+  <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Kaverit paikalla:</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Aloita yksinpeli</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Aloita moninpeli</value></data>
+  <data name="Hunt.OrJoin" xml:space="preserve"><value>Tai liity yhteen</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Nopea liittyminen</value></data>
+  <data name="Hunt.Progress" xml:space="preserve"><value>Edistymisesi</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Hunt.Rank" xml:space="preserve"><value>Sijoitus</value></data>
+  <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Viimeisin saavutus</value></data>
+  <data name="Hunt.NoAchievements" xml:space="preserve"><value>Ei saavutuksia vielä</value></data>
+  <data name="Hunt.Competitions" xml:space="preserve"><value>Kilpailut</value></data>
+  <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Kilpailut, joissa olet mukana:</value></data>
+  <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Näytä tulevat kilpailut</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>LUO YKSINPELI</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>LUO MONINPELI</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Valitse, mistä aloitat metsästyksesi. Napsauta jotakin alla olevista 12 alueen logoista nähdäksesi kyseisen alueen kartan, ja napsauta erämajoja (talosymboleita) nähdäksesi, mitä lajeja alueelta löytyy. Voit myös selata maailmankarttaa napsauttamalla ja vetämällä sitä sekä lähentää ja loitontaa hiiren rullalla.</value></data>
+  <data name="Launch.Intro2" xml:space="preserve"><value>Osa maailman upeimmista luonnonympäristöistä sekä 45 eri eläinlajia odottavat sinua. Hyvää metsästysonnea!</value></data>
+  <data name="Launch.StartTime" xml:space="preserve"><value>Aloitusaika:</value></data>
+  <data name="Launch.StartGame" xml:space="preserve"><value>Aloita peli</value></data>
+  <data name="Launch.Patching" xml:space="preserve"><value>Päivitetään</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Erämajat:</value></data>
+  <data name="Launch.Tents" xml:space="preserve"><value>Teltat:</value></data>
+  <data name="Launch.NoTents" xml:space="preserve"><value>Sinulla ei ole telttoja tällä alueella. Alueelle pystyttämäsi teltat toimivat siirrettävinä aloituspisteinä ja varusteiden käyttöpisteinä. Hanki teltat {0}kaupasta{1}.</value></data>
+  <data name="Launch.ZoomIn" xml:space="preserve"><value>Lähennä</value></data>
+  <data name="Launch.ZoomOut" xml:space="preserve"><value>Loitonna</value></data>
+  <data name="Launch.StartingAt" xml:space="preserve"><value>Lähtöpaikka: {0}</value></data>
+  <data name="Launch.Info" xml:space="preserve"><value>Pelitiedot ja lähtöpaikka</value></data>
+  <data name="Launch.GameName" xml:space="preserve"><value>Pelin nimi:</value></data>
+  <data name="Launch.GameOf" xml:space="preserve"><value>Peli: {0}</value></data>
+  <data name="Launch.Description" xml:space="preserve"><value>Syötä pelin kuvaus (valinnainen)</value></data>
+  <data name="Launch.Who" xml:space="preserve"><value>Kuka voi liittyä?</value></data>
+  <data name="Launch.FriendsOnly" xml:space="preserve"><value>Vain kaverilistallani olevat</value></data>
+  <data name="Launch.Anyone" xml:space="preserve"><value>Kuka tahansa</value></data>
+  <data name="Launch.Password" xml:space="preserve"><value>Salasanasuojaus</value></data>
+  <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Pelin salasana</value></data>
+  <data name="Launch.MaxPlayers" xml:space="preserve"><value>Maks. pelaajia</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Rajoita metsästäjän pisteitä</value></data>
+  <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
+  <data name="Launch.Max" xml:space="preserve"><value>Maks:</value></data>
+  <data name="Launch.Start" xml:space="preserve"><value>Aloitus</value></data>
+  <data name="Launch.Create" xml:space="preserve"><value>Luo peli</value></data>
+  <data name="Launch.Failed" xml:space="preserve"><value>Pelisession luomisessa tapahtui virhe. Lataa palvelinluettelo uudelleen ja yritä liittyä toiseen peliin.</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>ETSI MONINPELI</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Etsi peli tai isäntä...</value></data>
+  <data name="Servers.Clear" xml:space="preserve"><value>Tyhjennä</value></data>
+  <data name="Servers.Refresh" xml:space="preserve"><value>Päivitä</value></data>
+  <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Näytä vain pelit, joihin saan liittyä</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Näytetään pelejä: {0}</value></data>
+  <data name="Servers.GameName" xml:space="preserve"><value>Pelin nimi</value></data>
+  <data name="Servers.Reserve" xml:space="preserve"><value>Alue</value></data>
+  <data name="Servers.Players" xml:space="preserve"><value>Pelaajat</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Isäntä</value></data>
+  <data name="Servers.Country" xml:space="preserve"><value>Maa</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Pelaajat: {1}/{2} - Isäntä: {3}</value></data>
+  <data name="Servers.Details" xml:space="preserve"><value>Pelin tiedot</value></data>
+  <data name="Servers.Join" xml:space="preserve"><value>Liity peliin</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Isäntä:</value></data>
+  <data name="Servers.ReserveLabel" xml:space="preserve"><value>Alue:</value></data>
+  <data name="Servers.GameTime" xml:space="preserve"><value>Peliaika:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. metsästäjän pisteet:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Maks. metsästäjän pisteet:</value></data>
+  <data name="Servers.PlayerList" xml:space="preserve"><value>Pelaajat ({0}/{1})</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Tietoa moninpelin yhteyksistä</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Moninpelaaminen kaukana olevien pelaajien kanssa voi aiheuttaa yhteysongelmia tai viivettä. On suositeltavaa liittyä peleihin, joiden isäntä on lähelläsi. Palvelinluettelon lippujen vieressä olevat värilliset pisteet kertovat, kuinka kaukana pelin isännästä olet.</value></data>
+  <data name="Servers.InfoLink" xml:space="preserve"><value>Napsauta tästä saadaksesi lisätietoa yhteyksistä</value></data>
+  <data name="Servers.Short" xml:space="preserve"><value>Lyhyt etäisyys</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Keskipitkä etäisyys</value></data>
+  <data name="Servers.Long" xml:space="preserve"><value>Pitkä etäisyys</value></data>
+  <data name="Servers.NoGames" xml:space="preserve"><value>Pelejä ei löytynyt</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Emme löytäneet yhtään julkista moninpeliä, johon saisit liittyä.</value></data>
+  <data name="Servers.HostOwn" xml:space="preserve"><value>ISÄNNÖI OMAA PELIÄ</value></data>
+  <data name="Servers.Locked" xml:space="preserve"><value>Tämä peli on salasanasuojattu</value></data>
+  <data name="Servers.Location" xml:space="preserve"><value>Palvelimen sijainti: {0}</value></data>
+  <data name="Servers.Europe" xml:space="preserve"><value>Eurooppa</value></data>
+  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Pohjois-Amerikka</value></data>
+  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Etelä-Amerikka</value></data>
+  <data name="Servers.Asia" xml:space="preserve"><value>Aasia</value></data>
+  <data name="Servers.Oceania" xml:space="preserve"><value>Oseania</value></data>
+  <data name="Join.Hint" xml:space="preserve"><value>Liity tähän peliin napsauttamalla aloituspaikkaa kartalta</value></data>
+  <data name="Join.Password" xml:space="preserve"><value>Anna salasana liittyäksesi tähän peliin:</value></data>
+  <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Anna salasana</value></data>
+  <data name="Join.Go" xml:space="preserve"><value>Liity peliin</value></data>
+  <data name="Join.Close" xml:space="preserve"><value>Sulje</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Suosittelemme, että pelaat perusharjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi ensimmäisellä alueella. Harjoituksissa tapaat kyseisen alueen vartijan. Hän opastaa sinut perusasioihin ja opettaa, mitä tarvitset menestyäksesi pelissä {game}.</value></data>
+  <data name="Tut.Start" xml:space="preserve"><value>Aloita harjoitus</value></data>
+  <data name="Tut.Location" xml:space="preserve"><value>Sijainti: {0}</value></data>
+  <data name="GameSettings.Title" xml:space="preserve"><value>Pelin asetukset</value></data>
+  <data name="GameSettings.Initial" xml:space="preserve"><value>Alkuasetukset</value></data>
+  <data name="GameSettings.Save" xml:space="preserve"><value>Tallenna</value></data>
+  <data name="GameSettings.Cancel" xml:space="preserve"><value>Peruuta</value></data>
+  <data name="GameSettings.StartGame" xml:space="preserve"><value>Aloita peli</value></data>
+  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Kokonäyttö</value></data>
+  <data name="GameSettings.Vsync" xml:space="preserve"><value>Pystysynkronointi</value></data>
+  <data name="GameSettings.Resolution" xml:space="preserve"><value>Näytön resoluutio</value></data>
+  <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
+  <data name="GameSettings.Scene" xml:space="preserve"><value>Maiseman monimutkaisuus</value></data>
+  <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Maiseman monimutkaisuus määrää kasvillisuuden tiheyden ja piirtoetäisyyden. Piirtoetäisyyden osalta Matala-asetus antaa enintään 220 m vaakasuuntaisen näkyvyyden, Keskitaso 270 m ja Korkea/Erittäin korkea 320 m.</value></data>
+  <data name="GameSettings.Texture" xml:space="preserve"><value>Tekstuurien laatu</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Korkealaatuiset tekstuurit vaativat 512 MB:n näytönohjaimen muistin yksinpelissä ja 768 MB:n moninpelissä.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Näytönohjaimen muistia: {0} MB</value></data>
+  <data name="GameSettings.Shadow" xml:space="preserve"><value>Varjojen laatu</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample-pehmennys</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrooppinen suodatus</value></data>
+  <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tilannekohtaiset ohjeet</value></data>
+  <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Laajennettu äänimuisti</value></data>
+  <data name="GameSettings.Low" xml:space="preserve"><value>Matala</value></data>
+  <data name="GameSettings.Medium" xml:space="preserve"><value>Keskitaso</value></data>
+  <data name="GameSettings.High" xml:space="preserve"><value>Korkea</value></data>
+  <data name="GameSettings.VeryHigh" xml:space="preserve"><value>Erittäin korkea</value></data>
+  <data name="GameSettings.Off" xml:space="preserve"><value>Pois</value></data>
+  <data name="GameSettings.X2" xml:space="preserve"><value>2x</value></data>
+  <data name="GameSettings.X4" xml:space="preserve"><value>4x</value></data>
+  <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
+  <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
+  <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Ei määritetty: settings.json ei sisällä merkintää näille tiedostoille.</value></data>
+  <data name="GameSettings.Missing" xml:space="preserve"><value>Käynnistä peli kerran, jotta se luo asetustiedostonsa.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Asetustiedoston muotoa ei tunnisteta käynnistäjässä, joten sitä ei muuteta.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Peli on käynnissä. Sulje se ennen tallennusta: peli kirjoittaa nämä tiedostot itse uudelleen.</value></data>
+  <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Asetuksia ei voitu tallentaa.</value></data>
+  <data name="Patch.GotIt" xml:space="preserve"><value>Selvä!</value></data>
+  <data name="Patch.NewTitle" xml:space="preserve"><value>Uusi pelipäivitys</value></data>
+  <data name="Patch.NewText" xml:space="preserve"><value>Uusi pelipäivitys on julkaistu. Pelisi päivitetään automaattisesti, ja voit aloittaa uuden retken heti sen valmistuttua! Voit sillä välin selata sivustoa vapaasti.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Päivityksen tiedot</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Päivitys {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Näytä muutosloki</value></data>
+  <data name="Patch.FullTitle" xml:space="preserve"><value>Ladataan: {game}</value></data>
+  <data name="Patch.FullText" xml:space="preserve"><value>{game}-pelin täyttä asennusta ladataan tietokoneellesi. Voit aloittaa pelaamisen heti sen valmistuttua. Voit sillä välin selata sivustoa vapaasti.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>Käynnistäjää päivitetään</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>Käynnistäjä täytyy päivittää. Päivitys ladataan automaattisesti. Kun käynnistäjä on päivitetty, se täytyy käynnistää uudelleen.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Päivitys tehty. Käynnistäjä pitää käynnistää uudelleen.</value></data>
+  <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Pelipäivitys vaaditaan</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>{game}-pelille on saatavilla päivitys. Sinun täytyy päivittää {game}-peli Steamissä ennen pelaamista. Käynnistäjä täytyy sulkea päivitystä varten.</value></data>
+  <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} toimii vain Steamissä</value></data>
+  <data name="Patch.SteamOnlyText" xml:space="preserve"><value>Tästä lähtien peliä täytyy pelata Steam-alustan kautta!</value></data>
+  <data name="Patch.GoToSteam" xml:space="preserve"><value>Siirry Steamiin</value></data>
+  <data name="Patch.ErrorTitle" xml:space="preserve"><value>Tapahtui virhe</value></data>
+  <data name="Patch.PleaseSee" xml:space="preserve"><value>Lisätietoja löydät osiosta {0}.</value></data>
+  <data name="Patch.SupportSection" xml:space="preserve"><value>Tuki</value></data>
+  <data name="Patch.StateDownloading" xml:space="preserve"><value>LADATAAN</value></data>
+  <data name="Patch.StateVerifying" xml:space="preserve"><value>TARKISTETAAN</value></data>
+  <data name="Patch.StateExtracting" xml:space="preserve"><value>PURETAAN</value></data>
+  <data name="Patch.StatePatching" xml:space="preserve"><value>PÄIVITETÄÄN</value></data>
+  <data name="Patch.StateReady" xml:space="preserve"><value>VALMIS</value></data>
+  <data name="Patch.Downloading" xml:space="preserve"><value>Ladataan ({0}): {1} ({2}). {3}/s</value></data>
+  <data name="Patch.KindFull" xml:space="preserve"><value>täysi asennus</value></data>
+  <data name="Patch.KindPatch" xml:space="preserve"><value>päivitys</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>käynnistäjän päivitys</value></data>
+  <data name="Patch.Verifying" xml:space="preserve"><value>Odota, ladattuja tiedostoja tarkistetaan.</value></data>
+  <data name="Patch.Extracting" xml:space="preserve"><value>Odota, asennusohjelma on käynnissä.</value></data>
+  <data name="Patch.Checksum" xml:space="preserve"><value>Tarkistetaan tiedoston tarkistussumma: {0} / {1} ({2})</value></data>
+  <data name="Patch.File" xml:space="preserve"><value>Päivitetään tiedostoa: {0} / {1}</value></data>
+  <data name="Patch.Finishing" xml:space="preserve"><value>Viimeistellään...</value></data>
+  <data name="Patch.PatchError" xml:space="preserve"><value>Virhe!</value></data>
+  <data name="Patch.Done" xml:space="preserve"><value>Voit nyt aloittaa pelin.</value></data>
+  <data name="Installer.DownloadingGame" xml:space="preserve"><value>Ladataan peliä...</value></data>
+  <data name="Installer.DownloadingUpdate" xml:space="preserve"><value>Ladataan päivitystä...</value></data>
+  <data name="Installer.Verifying" xml:space="preserve"><value>Tarkistetaan</value></data>
+  <data name="Installer.Installing" xml:space="preserve"><value>Asennetaan</value></data>
+  <data name="Installer.Updating" xml:space="preserve"><value>Päivitetään: {0}/{1} tiedostoa</value></data>
+  <data name="Installer.UpdateComplete" xml:space="preserve"><value>Päivitys valmis – suorita ohjattu asennus loppuun aloittaaksesi pelaamisen.</value></data>
+  <data name="Installer.Ready" xml:space="preserve"><value>{game}-peli on valmis pelattavaksi!</value></data>
+  <data name="Launcher.Error.Unknown" xml:space="preserve"><value>Tapahtui tuntematon virhe (koodi {0}).</value></data>
+  <data name="Launcher.Error.1" xml:space="preserve"><value>Rekisteriavain puuttuu.</value></data>
+  <data name="Launcher.Error.2" xml:space="preserve"><value>Palvelinta ei ole määritetty. Käynnistä peli verkkosivustolta.</value></data>
+  <data name="Launcher.Error.3" xml:space="preserve"><value>Palvelimeen ei saatu yhteyttä (virheellinen istuntotunnus tai palvelin ei ole käytettävissä).</value></data>
+  <data name="Launcher.Error.4" xml:space="preserve"><value>Laitteisto on yhteensopimaton.</value></data>
+  <data name="Launcher.Error.5" xml:space="preserve"><value>Komentorivin argumentissa on virheellinen palvelimen URL-osoite.</value></data>
+  <data name="Launcher.Error.6" xml:space="preserve"><value>Pelin suoritustiedosto puuttuu.</value></data>
+  <data name="Launcher.Error.7" xml:space="preserve"><value>Pelin asiakasohjelman käynnistäminen epäonnistui.</value></data>
+  <data name="Launcher.Error.8" xml:space="preserve"><value>Torrent-tiedoston kirjoittaminen epäonnistui.</value></data>
+  <data name="Launcher.Error.9" xml:space="preserve"><value>Lataus epäonnistui.</value></data>
+  <data name="Launcher.Error.10" xml:space="preserve"><value>Torrent-tietojen lataus epäonnistui.</value></data>
+  <data name="Launcher.Error.11" xml:space="preserve"><value>Virheellinen .torrent-tiedosto.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Virheellinen käynnistäjätiedoston sijainti.</value></data>
+  <data name="Launcher.Error.13" xml:space="preserve"><value>NSIS sfx -arkiston purkaminen epäonnistui.</value></data>
+  <data name="Launcher.Error.14" xml:space="preserve"><value>Virhe päivityksessä.</value></data>
+  <data name="Launcher.Error.15" xml:space="preserve"><value>Manifestitiedosto puuttuu tai se on virheellinen.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Päivitetyn käynnistäjän käynnistäminen epäonnistui.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Käynnistäjä ei vastaa.</value></data>
+  <data name="Launcher.Error.18" xml:space="preserve"><value>Pelin kansion luominen ei onnistu.</value></data>
+  <data name="Launcher.Error.19" xml:space="preserve"><value>Torrent-kansion luominen ei onnistu.</value></data>
+  <data name="Launcher.Error.20" xml:space="preserve"><value>Päivityskansion luominen ei onnistu.</value></data>
+  <data name="Launcher.Error.21" xml:space="preserve"><value>Kansion luominen ei onnistu.</value></data>
+  <data name="Launcher.Error.22" xml:space="preserve"><value>Tiedostojen kopioiminen ei onnistu.</value></data>
+  <data name="Launcher.Error.27" xml:space="preserve"><value>Varoitus! Levytilaa ei ole tarpeeksi.</value></data>
+  <data name="Launcher.Error.35" xml:space="preserve"><value>Päivitystä ei voi ottaa käyttöön, nykyinen asennuksesi on vioittunut tai sitä on muokattu. Ladataan sen sijaan koko peli.</value></data>
+  <data name="Launcher.Error.49" xml:space="preserve"><value>Direct3D-objektin luominen epäonnistui.</value></data>
+  <data name="Launcher.Error.50" xml:space="preserve"><value>Nykyisen näyttötilan hakeminen epäonnistui.</value></data>
+  <data name="Launcher.Error.51" xml:space="preserve"><value>Sopivia näyttötiloja ei löydy.</value></data>
+  <data name="Launcher.Error.52" xml:space="preserve"><value>Näytönohjaimen tukemia näyttötiloja ei voida määrittää.</value></data>
+  <data name="Launcher.Error.53" xml:space="preserve"><value>Näytönohjaimen ominaisuuksien hakeminen ei onnistu.</value></data>
+  <data name="Launcher.Error.16001" xml:space="preserve"><value>Virheellinen istunto, aloita uusi peli.</value></data>
+  <data name="Launcher.Error.16002" xml:space="preserve"><value>Peliserveriin ei saatu yhteyttä. Yritä uudelleen.</value></data>
+  <data name="Launcher.Error.16003" xml:space="preserve"><value>Virheellinen käyttöjärjestelmä.</value></data>
+  <data name="Launcher.Error.16004" xml:space="preserve"><value>Aloita peli verkkosivustolta.</value></data>
+  <data name="Launcher.Error.16005" xml:space="preserve"><value>Peli kaatui (selvitämme asiaa).</value></data>
+  <data name="Launcher.Error.16006" xml:space="preserve"><value>Käyttäjällä ei ole käyttöoikeutta.</value></data>
+  <data name="Launcher.Error.16007" xml:space="preserve"><value>Peli on jo käynnissä.</value></data>
+  <data name="Launcher.Error.16008" xml:space="preserve"><value>Väärä asetustiedoston versio. Siirry asetuksiin ja määritä asetukset uudelleen.</value></data>
+  <data name="Launcher.Error.16009" xml:space="preserve"><value>Näytönohjain ei tue D3DQUERYTYPE_EVENT-kyselyä.</value></data>
+  <data name="Signup.Trying" xml:space="preserve"><value>Hetkinen, yritämme kirjata sinut sisään...</value></data>
+  <data name="Signup.SteamIntro" xml:space="preserve"><value>Hei. Käynnistät pelin Steamistä, mutta emme havainneet, onko sinulla tiliä. Valitse jokin alla olevista:</value></data>
+  <data name="Signup.SteamLink" xml:space="preserve"><value>Kirjaudu sisään alla yhdistääksesi tilisi Steamiin.</value></data>
+  <data name="Signup.SteamConnect" xml:space="preserve"><value>Yhdistä olemassa oleva tili Steamiin</value></data>
+  <data name="Signup.SteamRegister" xml:space="preserve"><value>Luo uusi {game}-tili</value></data>
+  <data name="Signup.Or" xml:space="preserve"><value>- tai -</value></data>
+  <data name="Signup.Email" xml:space="preserve"><value>Sähköpostiosoite</value></data>
+  <data name="Signup.Continue" xml:space="preserve"><value>Jatka</value></data>
+  <data name="Signup.P1.Title" xml:space="preserve"><value>KÄYTTÄJÄNIMI JA AVATAR</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Valitse nimi</value></data>
+  <data name="Signup.P1.Required" xml:space="preserve"><value>Pakollinen</value></data>
+  <data name="Signup.P1.Taken" xml:space="preserve"><value>Käyttäjänimi ei ole saatavilla</value></data>
+  <data name="Signup.P1.Dice" xml:space="preserve"><value>Ehdota nimiä</value></data>
+  <data name="Signup.P1.Prev" xml:space="preserve"><value>Edellinen avatar</value></data>
+  <data name="Signup.P1.Next" xml:space="preserve"><value>Seuraava avatar</value></data>
+  <data name="Signup.P2.Title" xml:space="preserve"><value>HANKI ENSIMMÄINEN ASEESI</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Olet päässyt näin pitkälle, mahtavaa! Tässä tervetuliaislahja meiltä: ensimmäinen aseesi, kiiltävä 12-kaliiperinen yksilaukauksinen haulikko ja ilmaiset, täydentyvät ammukset. Tällä kestävällä kaunottarella voit metsästää eettisesti kaikkia pelin eläimiä biisonia lukuun ottamatta.</value></data>
+  <data name="Signup.P3.Title" xml:space="preserve"><value>NAUTI METSÄSTYSLUVISTASI</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Ensimmäinen metsästyksesi on pian käsillä! Mitä lähdet jahtaamaan? Vieraspelaajana saat elinikäiset ilmaiset metsästysluvat valkohäntäpeuran, villikaniinin ja fasaanin metsästykseen sekä kahden muun ilmaisen, viikoittain vaihtuvan eläimen metsästykseen. Maksavat jäsenet voivat metsästää kaikkia lajeja; tutustu kaupan jäsenyyksiin, jos haluat liittyä jäseneksi.</value></data>
+  <data name="Signup.P4.Title" xml:space="preserve"><value>VAHVISTA SÄHKÖPOSTISI</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Hyvää tulee niille, jotka vahvistavat sähköpostinsa! Tarkista saapuneet viestit, etsi viestimme ja seuraa sen ohjeita. Nykyinen sähköpostiosoitteesi on {0}. Jos se ei ole oikea, vaihda se alla ja napsauta ”Lähetä sähköposti uudelleen”.</value></data>
+  <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>PALKINTOSI</value></data>
+  <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Kiitos sähköpostisi vahvistamisesta.</value></data>
+  <data name="Signup.P4.Change" xml:space="preserve"><value>Päivitä sähköpostiosoite</value></data>
+  <data name="Signup.P4.Resend" xml:space="preserve"><value>Lähetä sähköposti uudelleen</value></data>
+  <data name="Signup.P4.Launch" xml:space="preserve"><value>Käynnistä harjoitus</value></data>
+  <data name="Signup.P4.Settings" xml:space="preserve"><value>Pelin asetukset</value></data>
+  <data name="Signup.P5.Title" xml:space="preserve"><value>OLET VALMIS SUURRIISTAN METSÄSTYKSEEN</value></data>
+  <data name="Signup.P5.Text" xml:space="preserve"><value>Voit pelata harjoitukset uudelleen METSÄSTÄMÄÄN-painikkeen alta.</value></data>
+  <data name="Signup.P5.Hunt" xml:space="preserve"><value>Metsästämään!</value></data>
+  <data name="Dialog.Login.Title" xml:space="preserve"><value>Kirjaudu sisään</value></data>
+  <data name="Dialog.Email" xml:space="preserve"><value>Sähköpostiosoite</value></data>
+  <data name="Dialog.Login.Submit" xml:space="preserve"><value>Kirjaudu</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Peruuta</value></data>
+  <data name="Dialog.EmailRequired" xml:space="preserve"><value>Sähköpostiosoite vaaditaan</value></data>
+  <data name="Dialog.EmailInvalid" xml:space="preserve"><value>Virheellinen sähköpostiosoite</value></data>
+  <data name="Dialog.EmailTaken" xml:space="preserve"><value>Tämä sähköpostiosoite ei ole saatavilla</value></data>
+  <data name="Dialog.Change.Title" xml:space="preserve"><value>Vaihda sähköposti</value></data>
+  <data name="Dialog.Change.Submit" xml:space="preserve"><value>Vaihda</value></data>
+  <data name="Dialog.Sent.Title" xml:space="preserve"><value>Sähköposti lähetetty</value></data>
+  <data name="Dialog.Sent.Text" xml:space="preserve"><value>Olemme lähettäneet sinulle uuden sähköpostin, jossa on linkki sähköpostiosoitteesi vahvistamiseen.</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Tutorial.Title" xml:space="preserve"><value>Käynnistä harjoitus</value></data>
+  <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Tallenna ja käynnistä</value></data>
+  <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Grafiikan laatu</value></data>
+  <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Matalat asetukset</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Keskitason asetukset</value></data>
+  <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Korkeat asetukset</value></data>
+  <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultra-asetukset</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Omat asetukset</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anisotrooppinen suodatus</value></data>
+  <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Näyttötila</value></data>
+  <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Kokonäyttö</value></data>
+  <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
+  <data name="Dialog.Tutorial.Scene" xml:space="preserve"><value>Maiseman monimutkaisuus</value></data>
+  <data name="Dialog.Tutorial.Shadow" xml:space="preserve"><value>Varjojen laatu</value></data>
+  <data name="Dialog.Tutorial.Texture" xml:space="preserve"><value>Tekstuurien laatu</value></data>
+  <data name="Dialog.Tutorial.Vsync" xml:space="preserve"><value>Pystysynkronointi</value></data>
+  <data name="Comp.Tab.Competitions" xml:space="preserve"><value>Kilpailut</value></data>
+  <data name="Comp.Tab.League" xml:space="preserve"><value>Yhteisöliiga</value></data>
+  <data name="Comp.Title" xml:space="preserve"><value>KILPAILUT</value></data>
+  <data name="Comp.Enrolled" xml:space="preserve"><value>Ilmoittautumasi kilpailut</value></data>
+  <data name="Comp.Name" xml:space="preserve"><value>Kilpailun nimi</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Yritykset</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Sijoitus</value></data>
+  <data name="Comp.Starts" xml:space="preserve"><value>Alkaa</value></data>
+  <data name="Comp.Ends" xml:space="preserve"><value>Päättyy</value></data>
+  <data name="Comp.Status" xml:space="preserve"><value>Tila</value></data>
+  <data name="Comp.Action" xml:space="preserve"><value>Toiminto</value></data>
+  <data name="Comp.Players" xml:space="preserve"><value>Pelaajat</value></data>
+  <data name="Comp.Activate" xml:space="preserve"><value>Aktivoi</value></data>
+  <data name="Comp.Deactivate" xml:space="preserve"><value>Poista käytöstä</value></data>
+  <data name="Comp.CantJoin" xml:space="preserve"><value>Ei voi liittyä</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Moninpeli</value></data>
+  <data name="Comp.Requirements" xml:space="preserve"><value>Vaatimukset:</value></data>
+  <data name="Comp.Upcoming" xml:space="preserve"><value>Tulevat kilpailut</value></data>
+  <data name="Comp.Previous" xml:space="preserve"><value>Menneet kilpailut</value></data>
+  <data name="Comp.Filter" xml:space="preserve"><value>Suodata lajin mukaan napsauttamalla:</value></data>
+  <data name="Comp.NoneFound" xml:space="preserve"><value>Kilpailuja ei löytynyt, kokeile muuttaa suodattimia</value></data>
+  <data name="Comp.StatusSignup" xml:space="preserve"><value>Ilmoittautuminen</value></data>
+  <data name="Comp.StatusStarted" xml:space="preserve"><value>Alkanut</value></data>
+  <data name="Comp.StatusFinished" xml:space="preserve"><value>Päättynyt</value></data>
+  <data name="Comp.NA" xml:space="preserve"><value>–</value></data>
+  <data name="Comp.Join" xml:space="preserve"><value>LIITY</value></data>
+  <data name="Comp.Leave" xml:space="preserve"><value>POISTU</value></data>
+  <data name="Comp.ChipStatus" xml:space="preserve"><value>Kilpailun tila: {0}</value></data>
+  <data name="Comp.StateSignUp" xml:space="preserve"><value>Ilmoittautuminen</value></data>
+  <data name="Comp.StateOngoing" xml:space="preserve"><value>Käynnissä</value></data>
+  <data name="Comp.StateEnded" xml:space="preserve"><value>Päättynyt</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Alkamiseen:</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Päättymiseen:</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Sijoituksesi</value></data>
+  <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Voitettava tulos</value></data>
+  <data name="Comp.Overview" xml:space="preserve"><value>Yleiskatsaus</value></data>
+  <data name="Comp.Leaderboard" xml:space="preserve"><value>Pistetaulukko</value></data>
+  <data name="Comp.History" xml:space="preserve"><value>Historia</value></data>
+  <data name="Comp.Prizes" xml:space="preserve"><value>Palkinnot</value></data>
+  <data name="Comp.Trophy" xml:space="preserve"><value>Pokaali</value></data>
+  <data name="Comp.Rules" xml:space="preserve"><value>Säännöt ja ehdot</value></data>
+  <data name="Comp.Species" xml:space="preserve"><value>Lajit: {0}</value></data>
+  <data name="Comp.Reserves" xml:space="preserve"><value>Alueet: {0}</value></data>
+  <data name="Comp.Description" xml:space="preserve"><value>Kuvaus</value></data>
+  <data name="Comp.Weapons" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Comp.Scoring" xml:space="preserve"><value>Pisteytys</value></data>
+  <data name="Comp.Special" xml:space="preserve"><value>Erityisvaatimukset</value></data>
+  <data name="Comp.Gamemode" xml:space="preserve"><value>Pelitila</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Yksi yritys kuluu aina, kun aloitat metsästyksen alueella, jolla kilpailu on käynnissä. Kilpailuja ei voi aktivoida pelin aikana; pelin aikana tehdyt muutokset tulevat voimaan vasta seuraavan metsästyksen alkaessa.</value></data>
+  <data name="Comp.Participants" xml:space="preserve"><value>Osallistujat, joilla on tulos ({0})</value></data>
+  <data name="Comp.Player" xml:space="preserve"><value>Pelaaja</value></data>
+  <data name="Comp.Result" xml:space="preserve"><value>Tulos</value></data>
+  <data name="Comp.NoResults" xml:space="preserve"><value>Ei näytettäviä tuloksia</value></data>
+  <data name="League.Title" xml:space="preserve"><value>YHTEISÖLIIGA</value></data>
+  <data name="League.P1" xml:space="preserve"><value>Tervetuloa {game}-yhteisöliigaan, joka korvaa nykyisen viikonloppukilpailumme.</value></data>
+  <data name="League.P2" xml:space="preserve"><value>Joka perjantai metsästät eri eläintä määrätyllä alueella (muualla metsästetyt eläimet eivät lasketa). Sinulla on kokonainen viikko ja 7 yritystä osallistua. Kilpailu aktivoidaan ja poistetaan käytöstä tavalliseen tapaan. Sinä viikkona, kun tiettyä eläintä metsästetään, kaikki kyseiselle eläimelle omistetut tavalliset kilpailut keskeytetään. Ja kyllä, alennusmyynnit kestävät nyt kokonaisen viikon. Liigakilpailujen palkinnot vastaavat korvaamiensa viikonloppukilpailujen palkintoja.</value></data>
+  <data name="League.P3" xml:space="preserve"><value>Liiga ei vaikuta tapahtumiin.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Kaikki kilpailut ovat vain yksinpelejä, lukuun ottamatta ankka- ja hanhikilpailuja.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Joka neljäs viikko siirrytään uudelle alueelle, ja jokaiset kolme aluetta muodostavat yhden kauden.</value></data>
+  <data name="League.P6" xml:space="preserve"><value>Sinun ei tarvitse osallistua jokaiseen liigakilpailuun saadaksesi kuukausi- tai kausipalkintoja, mutta osallistumisesta on selvää hyötyä aina kun vain mahdollista.</value></data>
+  <data name="League.NotEnrolled" xml:space="preserve"><value>Et ole ilmoittautunut yhteenkään kilpailuun</value></data>
+  <data name="League.Monthly" xml:space="preserve"><value>Kuukauden pistetaulukko</value></data>
+  <data name="League.Season" xml:space="preserve"><value>Kauden pistetaulukko</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>PISTETAULUKOT</value></data>
+  <data name="Board.Score" xml:space="preserve"><value>Pisteet</value></data>
+  <data name="Board.Range" xml:space="preserve"><value>Etäisyys</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Board.HallOfFame" xml:space="preserve"><value>Kunniagalleria</value></data>
+  <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
+  <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Yksi sarvi</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Tuplasarvet</value></data>
+  <data name="Board.TopScores" xml:space="preserve"><value>Parhaat pisteet, kausi {0}</value></data>
+  <data name="Board.TopRanges" xml:space="preserve"><value>Pisimmät etäisyydet, kausi {0}</value></data>
+  <data name="Board.Full" xml:space="preserve"><value>Näytä koko pistetaulukko</value></data>
+  <data name="Board.YourRank" xml:space="preserve"><value>Sijoituksesi</value></data>
+  <data name="Board.NoRank" xml:space="preserve"><value>Et ole tällä hetkellä sijoittunut tässä kategoriassa</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Kaikkien aikojen parhaat: metsästäjän pisteet</value></data>
+  <data name="Board.Rank" xml:space="preserve"><value>Sijoitus</value></data>
+  <data name="Board.Hunter" xml:space="preserve"><value>Metsästäjä</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Board.Past" xml:space="preserve"><value>Viime kauden kunniagalleria</value></data>
+  <data name="Board.SeasonN" xml:space="preserve"><value>Kausi {0}</value></data>
+  <data name="Board.TopLane" xml:space="preserve"><value>Parhaat Lane Bandit -tulokset</value></data>
+  <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>
+  <data name="Board.GetLane" xml:space="preserve"><value>Osta Lane Bandit</value></data>
+  <data name="Board.TopBust" xml:space="preserve"><value>Parhaat Bust Through -tulokset</value></data>
+  <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Yksinpeli</value></data>
+  <data name="Pager.Prev" xml:space="preserve"><value>Edellinen</value></data>
+  <data name="Pager.Next" xml:space="preserve"><value>Seuraava</value></data>
+  <data name="Pager.Label" xml:space="preserve"><value>Sivut</value></data>
+  <data name="Board.Avatar" xml:space="preserve"><value>Avatar: {0}</value></data>
+  <data name="Comp.Failed" xml:space="preserve"><value>Kilpailua ei voitu muuttaa. Yritä uudelleen.</value></data>
+  <data name="Mis.Daily" xml:space="preserve"><value>Päivittäistehtävät</value></data>
+  <data name="Mis.Regular" xml:space="preserve"><value>Yleistehtävät</value></data>
+  <data name="Mis.Help" xml:space="preserve"><value>Napsauta saadaksesi apua</value></data>
+  <data name="Mis.Day" xml:space="preserve"><value>Päivä {0}</value></data>
+  <data name="Mis.Today" xml:space="preserve"><value>tänään</value></data>
+  <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
+  <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
+  <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
+  <data name="Mis.Reserves" xml:space="preserve"><value>Alueet</value></data>
+  <data name="Mis.Rewards" xml:space="preserve"><value>Palkinnot</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Passiivinen</value></data>
+  <data name="Mis.Completed" xml:space="preserve"><value>Suoritettu</value></data>
+  <data name="Mis.Activate" xml:space="preserve"><value>AKTIVOI</value></data>
+  <data name="Mis.Broken" xml:space="preserve"><value>Putkesi on katkennut. Aloita uusi painamalla AKTIVOI tai jatka edellistä putkeasi OSTAMALLA tai KÄYTTÄMÄLLÄ ”Jatka putkea” -palvelua.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Päivittäistehtävät pysyvät passiivisina, kunnes päätät aktivoida tai jatkaa putkea.</value></data>
+  <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivointi valmis!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>Nauti palvelustasi!</value></data>
+  <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivoi kaikki</value></data>
+  <data name="Mis.Auto" xml:space="preserve"><value>Aktivoi uudet saatavilla olevat tehtävät automaattisesti</value></data>
+  <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
+  <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
+  <data name="Mis.GoToStore" xml:space="preserve"><value>Siirry kauppaan</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Olet suorittanut {0}/{1} tehtävää ja {2}/{3} tehtäväpakettia.</value></data>
+  <data name="Mis.Filters" xml:space="preserve"><value>Suodattimet</value></data>
+  <data name="Mis.FilterIn" xml:space="preserve"><value>Näytä</value></data>
+  <data name="Mis.All" xml:space="preserve"><value>Kaikki</value></data>
+  <data name="Mis.Favourite" xml:space="preserve"><value>Suosikki</value></data>
+  <data name="Mis.Active" xml:space="preserve"><value>Aktiivinen</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Tehtäväpaketit</value></data>
+  <data name="Mis.Available" xml:space="preserve"><value>Saatavilla</value></data>
+  <data name="Mis.Species" xml:space="preserve"><value>Laji</value></data>
+  <data name="Mis.Weapons" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Mis.AllSelected" xml:space="preserve"><value>Kaikki valittu</value></data>
+  <data name="Mis.NSelected" xml:space="preserve"><value>Valittuja: {0}</value></data>
+  <data name="Mis.HideCompleted" xml:space="preserve"><value>Piilota suoritetut</value></data>
+  <data name="Mis.Search" xml:space="preserve"><value>Haku</value></data>
+  <data name="Mis.Filter" xml:space="preserve"><value>Suodatin</value></data>
+  <data name="Mis.Progress" xml:space="preserve"><value>Edistyminen:</value></data>
+  <data name="Mis.FavouriteTip" xml:space="preserve"><value>Lisää suosikiksi tai poista suosikeista napsauttamalla</value></data>
+  <data name="Mis.NoFavourites" xml:space="preserve"><value>Sinulla ei ole vielä suosikkitehtäviä</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Sinulla ei ole tällä hetkellä aktiivisia tehtäviä. Aloita aktivoimalla jokin alla näkyvistä tehtävistä.</value></data>
+  <data name="Mis.NoAvailable" xml:space="preserve"><value>Ei saatavilla olevia tehtäviä</value></data>
+  <data name="Mis.Unlock" xml:space="preserve"><value>Avataksesi tehtävän ”{0}” suorita seuraavat tehtävät:</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Jokin meni pieleen, etkä saanut tuotettasi. Pahoittelut. Yritä uudelleen!</value></data>
+  <data name="Store.Cat.sales" xml:space="preserve"><value>Alennukset</value></data>
+  <data name="Store.Cat.all" xml:space="preserve"><value>Kaikki tuotteet</value></data>
+  <data name="Store.Cat.bundles" xml:space="preserve"><value>Paketit</value></data>
+  <data name="Store.Cat.0" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Store.Cat.10" xml:space="preserve"><value>Ammukset</value></data>
+  <data name="Store.Cat.5" xml:space="preserve"><value>Tähtäimet</value></data>
+  <data name="Store.Cat.50" xml:space="preserve"><value>Kiväärin tähtäimet</value></data>
+  <data name="Store.Cat.51" xml:space="preserve"><value>Käsiaseen tähtäimet</value></data>
+  <data name="Store.Cat.52" xml:space="preserve"><value>Haulikon tähtäimet</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Jousien ja varsijousien tähtäimet</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Mustaruutiaseen tähtäimet</value></data>
+  <data name="Store.Cat.59" xml:space="preserve"><value>Koirat</value></data>
+  <data name="Store.Cat.15" xml:space="preserve"><value>Houkuttimet</value></data>
+  <data name="Store.Cat.18" xml:space="preserve"><value>Vaatetus</value></data>
+  <data name="Store.Cat.27" xml:space="preserve"><value>Parannukset</value></data>
+  <data name="Store.Cat.46" xml:space="preserve"><value>Palvelut</value></data>
+  <data name="Store.Cat.114" xml:space="preserve"><value>Kaatokuvien asennot</value></data>
+  <data name="Store.Cat.24" xml:space="preserve"><value>Tarvikkeet</value></data>
+  <data name="Store.Cat.29" xml:space="preserve"><value>Suuret tavarat</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Tapahtumatavarat</value></data>
+  <data name="Store.Cat.87" xml:space="preserve"><value>Trofeemajat</value></data>
+  <data name="Store.Cat.108" xml:space="preserve"><value>Ajoneuvot</value></data>
+  <data name="Store.Search" xml:space="preserve"><value>Haku</value></data>
+  <data name="Store.Buy" xml:space="preserve"><value>OSTA</value></data>
+  <data name="Store.NotBuyable" xml:space="preserve"><value>Ei ostettavissa</value></data>
+  <data name="Store.Login" xml:space="preserve"><value>Kirjaudu ostaaksesi</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Omistat:</value></data>
+  <data name="Store.Or" xml:space="preserve"><value>tai</value></data>
+  <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>
+  <data name="Store.SaleTag" xml:space="preserve"><value>ALE</value></data>
+  <data name="Store.BundleTag" xml:space="preserve"><value>PAKETTI</value></data>
+  <data name="Store.Included" xml:space="preserve"><value>Sisältyy</value></data>
+  <data name="Store.Value" xml:space="preserve"><value>Arvo</value></data>
+  <data name="Store.BundlePrice" xml:space="preserve"><value>Paketin hinta</value></data>
+  <data name="Store.Capacity" xml:space="preserve"><value>Kapasiteettikustannus</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>Tätä tuotetta ei voi ostaa</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Tätä pakettia ei voi ostaa. Vähintään yhden sisältyvän tuotteen omistusraja on täynnä</value></data>
+  <data name="Store.None" xml:space="preserve"><value>Ei tuotteita tässä kategoriassa</value></data>
+  <data name="Store.Details" xml:space="preserve"><value>Tiedot</value></data>
+  <data name="Store.ClickMore" xml:space="preserve"><value>Näytä tiedot napsauttamalla</value></data>
+  <data name="Store.Confirm" xml:space="preserve"><value>Vahvista osto</value></data>
+  <data name="Store.BuyEms" xml:space="preserve"><value>OSTA em$:llä</value></data>
+  <data name="Store.BuyGms" xml:space="preserve"><value>OSTA gm$:llä</value></data>
+  <data name="Store.NotEnoughGms" xml:space="preserve"><value>Ei tarpeeksi gm$:ää</value></data>
+  <data name="Store.GetMoreEms" xml:space="preserve"><value>Hanki lisää em$:ää</value></data>
+  <data name="Store.Includes" xml:space="preserve"><value>Sisältää</value></data>
+  <data name="Store.Complete" xml:space="preserve"><value>Osto suoritettu!</value></data>
+  <data name="Store.Enjoy" xml:space="preserve"><value>Nauti tuotteesta: {0}!</value></data>
+  <data name="Store.Oops" xml:space="preserve"><value>Hupsista.</value></data>
+  <data name="Store.Close" xml:space="preserve"><value>Sulje</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Säästät</value></data>
+  <data name="Wal.MyWallet" xml:space="preserve"><value>Lompakkoni</value></data>
+  <data name="Wal.History" xml:space="preserve"><value>Ostohistoria</value></data>
+  <data name="Wal.Balance" xml:space="preserve"><value>Tämänhetkinen saldo</value></data>
+  <data name="Wal.Spent" xml:space="preserve"><value>Käytetty yhteensä</value></data>
+  <data name="Wal.TabBank" xml:space="preserve"><value>Pankin ostohistoria</value></data>
+  <data name="Wal.TabEms" xml:space="preserve"><value>Em$-ostohistoria</value></data>
+  <data name="Wal.TabGms" xml:space="preserve"><value>Gm$-ostohistoria</value></data>
+  <data name="Wal.Type" xml:space="preserve"><value>Tyyppi</value></data>
+  <data name="Wal.Date" xml:space="preserve"><value>Päivämäärä</value></data>
+  <data name="Wal.Status" xml:space="preserve"><value>Tila</value></data>
+  <data name="Wal.Item" xml:space="preserve"><value>Tavara</value></data>
+  <data name="Wal.Amount" xml:space="preserve"><value>Määrä</value></data>
+  <data name="Wal.Provider" xml:space="preserve"><value>Maksupalvelu</value></data>
+  <data name="Wal.EmsDesc" xml:space="preserve"><value>Tällä sivulla näkyvät kaikki ostokset, jotka olet tehnyt valuutalla {0}.</value></data>
+  <data name="Wal.NoneVirtual" xml:space="preserve"><value>Et ole vielä tehnyt ostoksia valuutalla {0}.</value></data>
+  <data name="Wal.NoneBank" xml:space="preserve"><value>Et ole vielä tehnyt ostoksia.</value></data>
+  <data name="Wal.AmountOf" xml:space="preserve"><value>Määrä ({0})</value></data>
+  <data name="Wal.Before" xml:space="preserve"><value>Saldo ennen tapahtumaa</value></data>
+  <data name="Wal.After" xml:space="preserve"><value>Saldo tapahtuman jälkeen</value></data>
+  <data name="Wal.Items" xml:space="preserve"><value>Tavarat</value></data>
+  <data name="Wal.More" xml:space="preserve"><value>Näytä lisää</value></data>
+  <data name="Wal.GiftRedeemed" xml:space="preserve"><value>Ostettu lahjaksi. Lunastettu: {0}.</value></data>
+  <data name="Wal.GiftCode" xml:space="preserve"><value>Ostettu lahjaksi. Lahjakoodi: {0}</value></data>
+  <data name="Bank.BuyEms" xml:space="preserve"><value>Osta em$</value></data>
+  <data name="Bank.Help" xml:space="preserve"><value>Apu</value></data>
+  <data name="Bank.History" xml:space="preserve"><value>Ostohistoria</value></data>
+  <data name="Bank.Balance" xml:space="preserve"><value>Saldosi (em$):</value></data>
+  <data name="Bank.Redeem" xml:space="preserve"><value>Lunasta alennuskoodi</value></data>
+  <data name="Bank.EnterCode" xml:space="preserve"><value>Syötä alennuskoodisi</value></data>
+  <data name="Bank.Cancel" xml:space="preserve"><value>Peruuta</value></data>
+  <data name="Bank.Invalid" xml:space="preserve"><value>Antamasi alennuskoodi on virheellinen tai vanhentunut</value></data>
+  <data name="Bank.InGame" xml:space="preserve"><value>Pelin sisäinen valuutta</value></data>
+  <data name="Bank.EmsDesc" xml:space="preserve"><value>Aseita, telttoja, vaatteita, metsästyslupia ja paljon muuta voi ostaa pelin sisäisellä valuutalla (em$).</value></data>
+  <data name="Bank.Gift" xml:space="preserve"><value>Osta lahjaksi</value></data>
+  <data name="Bank.Compare" xml:space="preserve"><value>* Verrattuna 500 em$:ään</value></data>
+  <data name="Bank.Save" xml:space="preserve"><value>Säästä {0} %*</value></data>
+  <data name="Bank.Starter" xml:space="preserve"><value>Aloituspaketit</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Hanki kaikki tarvittava minkä tahansa eläimen metsästykseen Evergreenin metsästysalueella. Aloituspakettimme sisältävät perusjäsenyyden, joka antaa luvan metsästää kaikkia pelin eläimiä, sekä erikoisvalikoiman tuotteita, joilla pääset vauhtiin kohti mestarimetsästäjän uraa.</value></data>
+  <data name="Bank.Special" xml:space="preserve"><value>Erikoispaketit</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Valitse jokin erikoispaketeistamme saadaksesi kaiken tarvitsemasi pelin {game} suosituimpien eläinten metsästykseen. Kaikkiin näihin paketteihin kuuluu perusjäsenyys, joka antaa luvan metsästää kaikkia pelin lajeja, sekä valikoima suositeltuja tuotteita, jotka keskittyvät tiettyihin eläimiin ja niiden metsästykseen.</value></data>
+  <data name="Bank.Basic" xml:space="preserve"><value>Perusjäsenyydet</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>{0} kuukauden jäsenyys</value></data>
+  <data name="Bank.Animals" xml:space="preserve"><value>Lupa metsästää kaikkia eläimiä</value></data>
+  <data name="Bank.Reserves" xml:space="preserve"><value>Pääsy kaikille alueille</value></data>
+  <data name="Bank.Ammo" xml:space="preserve"><value>Rajattomasti perusammuksia</value></data>
+  <data name="Bank.Details" xml:space="preserve"><value>Tiedot</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Jäsenyyteen sisältyvät tai erikseen ostetut tuotteet säilyvät, vaikka jäsenyytesi päättyisi</value></data>
+  <data name="Bank.ComparePrize" xml:space="preserve"><value>* Verrattuna 3 kuukauden {game}-jäsenyyteen</value></data>
+  <data name="Bank.HelpTitle" xml:space="preserve"><value>{game}-kaupan kysymykset ja vastaukset</value></data>
+  <data name="Bank.Q1" xml:space="preserve"><value>Mitä em$ on?</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>em$ on {game}-pelin virtuaalivaluutta, jolla voit ostaa kaupasta tuotteita, kuten aseita, varusteita, vaatteita ja paljon muuta.</value></data>
+  <data name="Bank.Q2" xml:space="preserve"><value>Miten ostan em$ lahjaksi kaverille?</value></data>
+  <data name="Bank.A2" xml:space="preserve"><value>Valitse tämän ikkunan ”Osta em$” -välilehdellä ”Osta lahjaksi” -ruutu ja napsauta sitten sen em$-määrän ”OSTA”-painiketta, jonka haluat ostaa. Siirryt Steamin verkkosivuston ostoyhteenvetoon. Napsauta ”Valtuuta”-painiketta. Siirryt vahvistussivulle (kiitos ostoksestasi). Napsauta em$-saldoasi näytön yläreunassa (kohdassa ”em$ XXXX”) ja avaa {0}Ostohistoria{1}. Ostohistorian uusimman merkinnän pitäisi olla ”Ostettu lahjaksi. Lahjakoodi:”, jonka perässä on lahjakoodi. Kopioi koodi ja lähetä se kaverille, jolle haluat antaa lahjan. Kaverin täytyy sitten lunastaa koodi, jotta em$-lahja lisätään hänen saldoonsa.</value></data>
+  <data name="Bank.Q3" xml:space="preserve"><value>Miten lunastan lahjakoodin?</value></data>
+  <data name="Bank.A3" xml:space="preserve"><value>Napsauta tämän ikkunan oikeassa yläkulmassa olevaa ”Lunasta alennuskoodi” -painiketta, liitä lahjakoodisi siihen ja napsauta ”OK”-painiketta. Näkyviin tulee vahvistusviesti; napsauta ”Napsauta tästä lunastaaksesi tämän lahjan” -painiketta. Näkyviin tulee viesti, joka vahvistaa lahjan lisäämisen tilillesi. Napsauta OK ja nauti lahjastasi!</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>Alennushinta jäi minulta väliin. Voinko silti saada alennuksen?</value></data>
+  <data name="Bank.A4" xml:space="preserve"><value>Kun alennus on päättynyt, emme voi enää tarjota alennettua hintaa.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Palautuskäytäntö</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>Kuten useimpien digitaalisten valuuttojen kohdalla, em$-ostoksista ei hyvitetä rahaa. Pelin voi ladata ja kokeilla ilmaiseksi, joten varmista ennen em$:n ostamista, että se toimii tietokoneellasi ja on sitä, mitä odotat.</value></data>
+  <data name="Bank.Q6" xml:space="preserve"><value>Huomautus</value></data>
+  <data name="Bank.A6" xml:space="preserve"><value>Huomaa, että em$-valuuttaa ei voi myydä tai siirtää, eikä sitä voi vaihtaa rahaksi tai mihinkään muuhun kuin varsinaiseen {game}-sisältöön. em$ ei ole palautettavissa. em$:lla ei ole rahallista arvoa, eikä se muodosta minkäänlaista valuuttaa tai omaisuutta.</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Lisäaseet: {0}, muut tuotteet: {1}</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} kk</value></data>
+  <data name="Msg.Title" xml:space="preserve"><value>Viestit</value></data>
+  <data name="Msg.OnlyFriends" xml:space="preserve"><value>Salli viestit vain kavereilta</value></data>
+  <data name="Msg.New" xml:space="preserve"><value>Uusi viesti</value></data>
+  <data name="Msg.Conversations" xml:space="preserve"><value>Keskustelut</value></data>
+  <data name="Msg.Text" xml:space="preserve"><value>Viestin teksti</value></data>
+  <data name="Msg.Send" xml:space="preserve"><value>Lähetä viesti</value></data>
+  <data name="Msg.To" xml:space="preserve"><value>Kenelle:</value></data>
+  <data name="Msg.Sent" xml:space="preserve"><value>Lähetetty {0}</value></data>
+  <data name="Msg.Empty" xml:space="preserve"><value>Et ole vielä lähettänyt tai vastaanottanut viestejä. Kun aloitat keskustelun toisen metsästäjän kanssa, se näkyy tässä.</value></data>
+  <data name="Msg.NoUser" xml:space="preserve"><value>Käyttäjää ei löydy.</value></data>
+  <data name="Msg.Self" xml:space="preserve"><value>Et voi lähettää viestejä itsellesi.</value></data>
+  <data name="Msg.Failed" xml:space="preserve"><value>Viestin lähettämisessä tapahtui virhe.</value></data>
+  <data name="Set.Title" xml:space="preserve"><value>Tilin asetukset</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Tilin sähköposti</value></data>
+  <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Kieli ja aikavyöhyke</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Moninpeliporttikiellot</value></data>
+  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-asetukset</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-asetukset</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profiiliasetukset</value></data>
+  <data name="Set.AvatarTitle" xml:space="preserve"><value>Pelaajan avatar</value></data>
+  <data name="Set.AvatarInfo" xml:space="preserve"><value>Valitsemasi avatar edustaa sinua sekä pelissä että verkossa</value></data>
+  <data name="Set.AvatarCurrent" xml:space="preserve"><value>Nykyinen avatarisi</value></data>
+  <data name="Set.AvatarSelect" xml:space="preserve"><value>Valitse uusi avatar</value></data>
+  <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avattavat avatarit</value></data>
+  <data name="Set.AvatarLocked" xml:space="preserve"><value>Tämä avatar on lukittu. Voit avata sen ostamalla sen kaupasta.</value></data>
+  <data name="Set.EmailTitle" xml:space="preserve"><value>Sähköposti:</value></data>
+  <data name="Set.EmailAddress" xml:space="preserve"><value>Sähköpostiosoite</value></data>
+  <data name="Set.EmailUpdate" xml:space="preserve"><value>Päivitä sähköposti</value></data>
+  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Uuteen sähköpostiosoitteeseesi on lähetetty vahvistusviesti. Vahvista osoite ottaaksesi sen käyttöön.</value></data>
+  <data name="Set.EmailTaken" xml:space="preserve"><value>Tämä sähköpostiosoite ei ole saatavilla</value></data>
+  <data name="Set.EmailFailed" xml:space="preserve"><value>Sähköpostiosoitteen päivittämisessä tapahtui virhe.</value></data>
+  <data name="Set.EmailConfirm" xml:space="preserve"><value>Vahvista sähköposti</value></data>
+  <data name="Set.EmailChanged" xml:space="preserve"><value>Sähköpostiosoitteesi on vaihdettu.</value></data>
+  <data name="Set.EmailResend" xml:space="preserve"><value>Lähetä vahvistus uudelleen</value></data>
+  <data name="Set.EmailResent" xml:space="preserve"><value>Vahvistussähköposti lähetetty uudelleen.</value></data>
+  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
+  <data name="Set.Language" xml:space="preserve"><value>Kieli</value></data>
+  <data name="Set.Country" xml:space="preserve"><value>Maa</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Valitse maa</value></data>
+  <data name="Set.TimeZone" xml:space="preserve"><value>Aikavyöhyke:</value></data>
+  <data name="Set.Save" xml:space="preserve"><value>Tallenna</value></data>
+  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Tilin ostohistoria</value></data>
+  <data name="Set.PurchasesText" xml:space="preserve"><value>Kaikki sekä {0}- että {1}-osiossa tekemäsi tapahtumat tallentuvat lompakkoosi.</value></data>
+  <data name="Set.Bank" xml:space="preserve"><value>pankki</value></data>
+  <data name="Set.Store" xml:space="preserve"><value>kauppa</value></data>
+  <data name="Set.WalletLink" xml:space="preserve"><value>Näytä lompakkosi napsauttamalla tästä</value></data>
+  <data name="Set.BansTitle" xml:space="preserve"><value>Pelaajat porttikiellossa</value></data>
+  <data name="Set.BansNone" xml:space="preserve"><value>Et ole asettanut yhtään pelaajaa porttikieltoon peleissäsi</value></data>
+  <data name="Set.Unban" xml:space="preserve"><value>Poista porttikielto</value></data>
+  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa käyttäjän {0} porttikiellon peleistäsi?</value></data>
+  <data name="Set.FacebookText" xml:space="preserve"><value>Voit yhdistää tilisi Facebookiin, jolloin kirjautuminen on helpompaa.</value></data>
+  <data name="Set.Connect" xml:space="preserve"><value>Yhdistä</value></data>
+  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
+  <data name="Set.SteamText" xml:space="preserve"><value>{game}-tilisi ({0}) on yhdistetty Steam-tiliisi. Jos haluat yhdistää tämän {game}-tilin toiseen Steam-tiliin tai yhdistää Steam-tilin toiseen {game}-tiliin, sinun täytyy ensin katkaista kyseisten kahden jo yhdistetyn tilin yhteys.</value></data>
+  <data name="Set.Warning" xml:space="preserve"><value>Varoitus</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>Steam-tilin yhteyden katkaiseminen kirjaa sinut ulos {game}-pelistä ja sulkee käynnistäjän. Et voi pelata {game}-peliä Steamissä uudelleen, ennen kuin yhdistät sen toiseen tiliin.</value></data>
+  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ymmärrän ja haluan katkaista Steam-tilini yhteyden</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Otsikkokuva</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Otsikkokuvat avautuvat, kun saavutat uusia tasoja kolmessa eri saavutuskategoriassa: Eläinmestari, Asemestari ja Tutkimusmestari. Avautuneet otsikkokuvat pysyvät käytettävissä ikuisesti.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Lue lisää saavutusmestarien tasoista.</value></data>
+  <data name="Set.HeaderNone" xml:space="preserve"><value>Ei mitään</value></data>
+  <data name="Set.HeaderRecent" xml:space="preserve"><value>Viimeisin</value></data>
+  <data name="Set.GroupAnimals" xml:space="preserve"><value>Eläimet</value></data>
+  <data name="Set.GroupWeapons" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Set.GroupExploration" xml:space="preserve"><value>Tutkimus</value></data>
+  <data name="Set.GroupEvents" xml:space="preserve"><value>Tapahtumat</value></data>
+  <data name="Set.GroupMissions" xml:space="preserve"><value>Päivittäistehtävät</value></data>
+  <data name="Set.SaveProfile" xml:space="preserve"><value>Tallenna profiiliasetukset</value></data>
+  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profiiliasetukset tallennettu</value></data>
+  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profiilin tallennus epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
+  <data name="GM.Lodge" xml:space="preserve"><value>Trofeemaja</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Syöttipaikat</value></data>
+  <data name="GM.Home" xml:space="preserve"><value>KOTI</value></data>
+  <data name="GM.Choose" xml:space="preserve"><value>Valitse osio.</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>TROFEEMAJAN VALINTA</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Et omista tällä hetkellä yhtään majaa.</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>SYÖTTIPAIKKOJEN HALLINTA</value></data>
+  <data name="GM.Fill" xml:space="preserve"><value>Täytä syöttilaite tasolle:</value></data>
+  <data name="GM.BaitCol" xml:space="preserve"><value>Syötti</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Tila</value></data>
+  <data name="GM.Active" xml:space="preserve"><value>Aktiivinen</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Täydennä</value></data>
+  <data name="Welcome.Title" xml:space="preserve"><value>Tervetuloa peliin {game}</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Onneksi olkoon, {0}! Uusi {game}-tilisi on luotu!</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Jos olet jo ladannut ja asentanut pelin käynnistäjän ja asiakasohjelman, voit aloittaa pelaamisen! Jos {game} on sinulle uusi, suosittelemme pelaamaan harjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi. Harjoituksissa opit kaiken, mitä tarvitset pärjätäksesi itse Evergreenin metsästysalueella. Aloita alta.</value></data>
+  <data name="Welcome.Retail" xml:space="preserve"><value>Onko sinulla pelipaketin koodi?</value></data>
+  <data name="Welcome.RetailText" xml:space="preserve"><value>Jos olet ostanut {game}-pelin pakettiversion, {0}napsauta tästä{1} aktivoidaksesi pelipaketin koodisi.</value></data>
+  <data name="Welcome.Tutorials" xml:space="preserve"><value>Harjoitukset</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Anna Docin, Evergreenin metsästysalueen vartijan, opettaa sinulle kaikki, mitä tarvitset {game}-pelin pelaamiseen.</value></data>
+  <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Siirry harjoituksiin</value></data>
+  <data name="Welcome.Hunting" xml:space="preserve"><value>Metsästämään</value></data>
+  <data name="Welcome.HuntingText" xml:space="preserve"><value>Aloita oikea metsästys, jos {game} on jo tuttu tai jos et vain malta odottaa pääsyä metsään.</value></data>
+  <data name="Welcome.HuntingGo" xml:space="preserve"><value>Aloita uusi peli</value></data>
+  <data name="Welcome.Downloads" xml:space="preserve"><value>Lataukset</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Jos et ole vielä ladannut pelin käynnistäjää ja asiakasohjelmaa, sinun täytyy tehdä se ennen kuin voit aloittaa metsästyksen.</value></data>
+  <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Latauksiin</value></data>
+  <data name="Welcome.Settings" xml:space="preserve"><value>Asetukset</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jos haluat vaihtaa sähköpostiosoitteesi, kieliasetuksesi tai pelaajan avatarisi, voit tehdä sen asetussivulla.</value></data>
+  <data name="Welcome.SettingsGo" xml:space="preserve"><value>Muuta tilin asetuksia</value></data>
+  <data name="Welcome.Profile" xml:space="preserve"><value>Profiili</value></data>
+  <data name="Welcome.ProfileText" xml:space="preserve"><value>Kaikki edistymisesi {game}-pelissä näkyy profiilisivullasi, josta löydät yksityiskohtaiset tilastot kaikista aiemmista metsästyksistäsi.</value></data>
+  <data name="Welcome.ProfileGo" xml:space="preserve"><value>Näytä profiilini</value></data>
+  <data name="Welcome.Help" xml:space="preserve"><value>Apu</value></data>
+  <data name="Welcome.HelpText" xml:space="preserve"><value>Tarvitsetko apua alkuun pääsemiseksi? Tutustu apuosioon ja yhteisön ylläpitämiin hyviin oppaisiin.</value></data>
+  <data name="Welcome.HelpGo" xml:space="preserve"><value>Näytä apuosio</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Kutsu kaveri</value></data>
+  <data name="Invite.How" xml:space="preserve"><value>Näin kutsut kaverin</value></data>
+  <data name="Invite.Step1" xml:space="preserve"><value>Lähetä kutsu</value></data>
+  <data name="Invite.Step1Text" xml:space="preserve"><value>Napsauta alla olevaa painiketta saadaksesi suosituslinkkisi ja lähetä se kaverille, jonka haluat kutsua {game}-peliin.</value></data>
+  <data name="Invite.Step2" xml:space="preserve"><value>Pelatkaa yhdessä: {game}</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Kun kaverisi luo tilin {0}linkkisi kautta{1}, hän saa 200 em$, 5x30 mm etäisyysmittarin, hirvenkutsupillin ja hajunpoistajan!</value></data>
+  <data name="Invite.Step3" xml:space="preserve"><value>Tule palkituksi</value></data>
+  <data name="Invite.Step3Text" xml:space="preserve"><value>Jos kaverisi ostaa em$, sinut palkitaan!</value></data>
+  <data name="Invite.SeeRewards" xml:space="preserve"><value>Katso palkinnot alta</value></data>
+  <data name="Invite.Button" xml:space="preserve"><value>Kutsu kaveri napsauttamalla tästä</value></data>
+  <data name="Invite.Rewards" xml:space="preserve"><value>Palkinnot</value></data>
+  <data name="Invite.Note1" xml:space="preserve"><value>* Suosituspalkkio annetaan, kun kutsuttu kaveri ostaa em$ ensimmäisen kerran. Saat palkkion vain kerran JOKAISESTA kutsutusta.</value></data>
+  <data name="Invite.Note2" xml:space="preserve"><value>** Ensiostospalkkio annetaan, kun JOKIN kutsumistasi kavereista ostaa kyseisen em$-määrän ensimmäisen kerran. Saat kunkin palkkion vain kerran, et jokaisesta ostoksesta.</value></data>
+  <data name="Invite.Purchases" xml:space="preserve"><value>Jos kaverisi ostaa</value></data>
+  <data name="Invite.YouGet" xml:space="preserve"><value>Saat*</value></data>
+  <data name="Invite.OneTime" xml:space="preserve"><value>Kertapalkinto**</value></data>
+  <data name="Invite.Recruits" xml:space="preserve"><value>Kutsumani kaverit</value></data>
+  <data name="Invite.User" xml:space="preserve"><value>Käyttäjä</value></data>
+  <data name="Invite.Joined" xml:space="preserve"><value>Liittynyt</value></data>
+  <data name="Invite.Reward" xml:space="preserve"><value>Palkinto</value></data>
+  <data name="Invite.LinkText" xml:space="preserve"><value>Tämä on suosituslinkkisi. Kopioi se ja lähetä kenelle tahansa, jonka haluat kutsua {game}-peliin:</value></data>
+  <data name="Prof.Title" xml:space="preserve"><value>Profiili: {0}</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Sijoitukset</value></data>
+  <data name="Prof.TabAchievements" xml:space="preserve"><value>Saavutukset</value></data>
+  <data name="Prof.TabSkills" xml:space="preserve"><value>Taidot</value></data>
+  <data name="Prof.TabStats" xml:space="preserve"><value>Tilastot</value></data>
+  <data name="Prof.TabGallery" xml:space="preserve"><value>Galleria</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Trofeet</value></data>
+  <data name="Prof.TabDogs" xml:space="preserve"><value>Koirat</value></data>
+  <data name="Prof.TabFriends" xml:space="preserve"><value>Kaverit</value></data>
+  <data name="Prof.Membership" xml:space="preserve"><value>Metsästäjä</value></data>
+  <data name="Prof.Rank" xml:space="preserve"><value>Sijoitus {0}</value></data>
+  <data name="Prof.Online" xml:space="preserve"><value>Paikalla</value></data>
+  <data name="Prof.TipMembership" xml:space="preserve"><value>Jäsenyystyyppi: {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>Metsästäjän pisteet: {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Metsästäjän pisteiden sijoitus: {0}</value></data>
+  <data name="Prof.TipOnline" xml:space="preserve"><value>{0} on paikalla</value></data>
+  <data name="Prof.Request" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
+  <data name="Prof.RequestPending" xml:space="preserve"><value>Kaveripyyntö odottaa vastausta</value></data>
+  <data name="Prof.Overview" xml:space="preserve"><value>Yleiskatsaus</value></data>
+  <data name="Prof.Animals" xml:space="preserve"><value>Eläimet</value></data>
+  <data name="Prof.Weapons" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Prof.Collectables" xml:space="preserve"><value>Keräiltävät</value></data>
+  <data name="Prof.Progress" xml:space="preserve"><value>Edistyminen</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Prof.Categories" xml:space="preserve"><value>Kategoriat</value></data>
+  <data name="Prof.Unlocked" xml:space="preserve"><value>Avattu</value></data>
+  <data name="Prof.Exploration" xml:space="preserve"><value>Tutkimus</value></data>
+  <data name="Prof.DailyMissions" xml:space="preserve"><value>Päivittäistehtävät</value></data>
+  <data name="Prof.Challenges" xml:space="preserve"><value>Haasteet</value></data>
+  <data name="Prof.AchUnlocked" xml:space="preserve"><value>Avatut saavutukset</value></data>
+  <data name="Prof.AchRecent" xml:space="preserve"><value>Viimeisimmät saavutukset</value></data>
+  <data name="Prof.Total" xml:space="preserve"><value>Yhteensä</value></data>
+  <data name="Prof.Species" xml:space="preserve"><value>Laji</value></data>
+  <data name="Prof.Spotting" xml:space="preserve"><value>Havainnointi</value></data>
+  <data name="Prof.Tracking" xml:space="preserve"><value>Jäljitys</value></data>
+  <data name="Prof.Shooting" xml:space="preserve"><value>Ampuminen</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Taso</value></data>
+  <data name="Prof.Statistics" xml:space="preserve"><value>Tilastot</value></data>
+  <data name="Stat.Last" xml:space="preserve"><value>Edellinen retki</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Kaikkien aikojen tilastot</value></data>
+  <data name="Stat.History" xml:space="preserve"><value>Metsästyshistoria</value></data>
+  <data name="Stat.Best" xml:space="preserve"><value>Henkilökohtaiset ennätykset</value></data>
+  <data name="Stat.Misc" xml:space="preserve"><value>Muut</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Keräiltävät sarvet</value></data>
+  <data name="Stat.Kills" xml:space="preserve"><value>Varmistetut kaadot</value></data>
+  <data name="Stat.Weapon" xml:space="preserve"><value>Ase</value></data>
+  <data name="Stat.Ammo" xml:space="preserve"><value>Ammukset</value></data>
+  <data name="Stat.Shots" xml:space="preserve"><value>Laukaukset</value></data>
+  <data name="Stat.Accuracy" xml:space="preserve"><value>Osumatarkkuus</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>Kaatoja osumaa kohden</value></data>
+  <data name="Stat.Longest" xml:space="preserve"><value>Pisin laukaus</value></data>
+  <data name="Stat.Species" xml:space="preserve"><value>Laji</value></data>
+  <data name="Stat.Spotted" xml:space="preserve"><value>Havaittu</value></data>
+  <data name="Stat.Tracked" xml:space="preserve"><value>Jäljitetty</value></data>
+  <data name="Stat.Harvested" xml:space="preserve"><value>Kaadettu</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Nimi</value></data>
+  <data name="Stat.Collected" xml:space="preserve"><value>Kerätty</value></data>
+  <data name="Stat.Total" xml:space="preserve"><value>Yhteensä</value></data>
+  <data name="Stat.Max" xml:space="preserve"><value>Maks.</value></data>
+  <data name="Stat.Distance" xml:space="preserve"><value>Kuljettu matka</value></data>
+  <data name="Stat.Duration" xml:space="preserve"><value>Retken kesto</value></data>
+  <data name="Stat.NoShots" xml:space="preserve"><value>Ei laukauksia</value></data>
+  <data name="Stat.NoShotsExp" xml:space="preserve"><value>Tällä retkellä ei ammuttu laukauksia.</value></data>
+  <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Tällä retkellä ei ollut eläinkohtaamisia.</value></data>
+  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Tällä retkellä ei kerätty keräiltäviä.</value></data>
+  <data name="Stat.NoAchExp" xml:space="preserve"><value>Tällä retkellä ei saatu saavutuksia.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Tällä retkellä ei kerätty keräiltäviä sarvia.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Tällä retkellä ei ollut varmistettuja kaatoja.</value></data>
+  <data name="Stat.NoExpeditions" xml:space="preserve"><value>Tämä metsästäjä ei ole vielä tehnyt yhtään retkeä.</value></data>
+  <data name="Stat.Start" xml:space="preserve"><value>Aloitus</value></data>
+  <data name="Stat.Dur" xml:space="preserve"><value>Kesto</value></data>
+  <data name="Stat.Reserve" xml:space="preserve"><value>Alue</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Erämaja</value></data>
+  <data name="Stat.CollectablesCol" xml:space="preserve"><value>Keräiltävät</value></data>
+  <data name="Stat.KillsCol" xml:space="preserve"><value>Kaadot</value></data>
+  <data name="Stat.AllTime" xml:space="preserve"><value>Kaikkien aikojen</value></data>
+  <data name="Stat.Season" xml:space="preserve"><value>Kausi {0}</value></data>
+  <data name="Stat.BestDisabled" xml:space="preserve"><value>Henkilökohtaiset ennätykset ovat tällä hetkellä pois käytöstä.</value></data>
+  <data name="Stat.BestQueued" xml:space="preserve"><value>Pelaajan henkilökohtainen ennätys ({0}, kausi {1}) on jonossa laskettavaksi. Tarkista pian uudelleen.</value></data>
+  <data name="Stat.BestBuilding" xml:space="preserve"><value>Pelaajan henkilökohtainen ennätys ({0}, kausi {1}) lasketaan parhaillaan ja on pian saatavilla.</value></data>
+  <data name="Stat.BestNone" xml:space="preserve"><value>{0} ei ole tehnyt retkiä kaudella {1}.</value></data>
+  <data name="Stat.BestAllQueued" xml:space="preserve"><value>Pelaajan kaikkien aikojen henkilökohtainen ennätys ({0}) on jonossa laskettavaksi. Tarkista pian uudelleen.</value></data>
+  <data name="Stat.BestAllBuilding" xml:space="preserve"><value>Pelaajan kaikkien aikojen henkilökohtainen ennätys ({0}) lasketaan parhaillaan ja on pian saatavilla.</value></data>
+  <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} ei ole vielä tehnyt retkiä, joten kaikkien aikojen henkilökohtaista ennätystä ei voida laskea.</value></data>
+  <data name="Stat.Score" xml:space="preserve"><value>Pisteet</value></data>
+  <data name="Stat.Range" xml:space="preserve"><value>Etäisyys</value></data>
+  <data name="Stat.Previous" xml:space="preserve"><value>Edellinen</value></data>
+  <data name="Stat.Next" xml:space="preserve"><value>Seuraava</value></data>
+  <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ei näytettäviä kuvia.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Ei näytettäviä trofeita.</value></data>
+  <data name="Prof.DogsEmpty" xml:space="preserve"><value>Tällä metsästäjällä ei ole koiria.</value></data>
+  <data name="Prof.FriendsEmpty" xml:space="preserve"><value>Ei näytettäviä kavereita.</value></data>
+  <data name="Prof.DownloadGallery" xml:space="preserve"><value>Lataa galleria</value></data>
+  <data name="Prof.GalleryGenerating" xml:space="preserve"><value>Luodaan galleriaa ladattavaksi</value></data>
+  <data name="Prof.GalleryReady" xml:space="preserve"><value>Galleriasi on valmis ladattavaksi!</value></data>
+  <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Älä sulje ikkunaa</value></data>
+  <data name="Prof.GalleryDelete" xml:space="preserve"><value>Haluatko varmasti poistaa tämän kuvan? Toimintoa ei voi kumota!</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Taso:</value></data>
+  <data name="Prof.DogSkills" xml:space="preserve"><value>Taidot</value></data>
+  <data name="Prof.DogNoSkills" xml:space="preserve"><value>Tämä koira ei ole vielä avannut yhtään taitoa.</value></data>
+  <data name="Prof.Delete" xml:space="preserve"><value>Poista</value></data>
+  <data name="Browser.LoginProgress" xml:space="preserve"><value>Kirjaudutaan sisään...</value></data>
+  <data name="Browser.LoginDone" xml:space="preserve"><value>Kirjautuminen valmis!</value></data>
+  <data name="Browser.AutoLoginText" xml:space="preserve"><value>Tämä sivu avautui, koska {game}-pelin täytyy kirjata sinut sisään.</value></data>
+  <data name="Browser.Wait" xml:space="preserve"><value>Odota hetki...</value></data>
+  <data name="Browser.CanClose" xml:space="preserve"><value>Voit nyt sulkea tämän ikkunan tai välilehden.</value></data>
+  <data name="Browser.Delay" xml:space="preserve"><value>Tämä voi kestää muutaman sekunnin...</value></data>
+  <data name="Browser.EmailProgress" xml:space="preserve"><value>Sähköpostia vahvistetaan...</value></data>
+  <data name="Browser.EmailDone" xml:space="preserve"><value>Sähköpostin vahvistus valmis!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Kiitos liittymisestä! Jatka {game}-käynnistäjässä aloittaaksesi pelaamisen!</value></data>
+  <data name="Browser.Logout" xml:space="preserve"><value>Uloskirjautuminen valmis</value></data>
+  <data name="Term.species.19" xml:space="preserve"><value>Vuorikauris</value></data>
+  <data name="Term.species.28" xml:space="preserve"><value>Nokisorsa</value></data>
+  <data name="Term.species.23" xml:space="preserve"><value>Naali</value></data>
+  <data name="Term.species.54" xml:space="preserve"><value>Aksishirvi</value></data>
+  <data name="Term.species.46" xml:space="preserve"><value>Bantengi</value></data>
+  <data name="Term.species.39" xml:space="preserve"><value>Paksusarvilammas</value></data>
+  <data name="Term.species.24" xml:space="preserve"><value>Biisoni</value></data>
+  <data name="Term.species.9" xml:space="preserve"><value>Mustakarhu</value></data>
+  <data name="Term.species.106" xml:space="preserve"><value>Mustahäntäpeura (epätyypillinen)</value></data>
+  <data name="Term.species.6" xml:space="preserve"><value>Mustahäntäpeura (tyypillinen)</value></data>
+  <data name="Term.species.43" xml:space="preserve"><value>Punailves</value></data>
+  <data name="Term.species.13" xml:space="preserve"><value>Karhu</value></data>
+  <data name="Term.species.16" xml:space="preserve"><value>Kanadanhanhi</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Pumpulihäntäkaniini</value></data>
+  <data name="Term.species.4" xml:space="preserve"><value>Kojootti</value></data>
+  <data name="Term.species.41" xml:space="preserve"><value>Ohutsarvilammas</value></data>
+  <data name="Term.species.49" xml:space="preserve"><value>Ilves</value></data>
+  <data name="Term.species.20" xml:space="preserve"><value>Villikaniini</value></data>
+  <data name="Term.species.55" xml:space="preserve"><value>Kuusipeura</value></data>
+  <data name="Term.species.40" xml:space="preserve"><value>Villivuohi</value></data>
+  <data name="Term.species.5" xml:space="preserve"><value>Villiintynyt sika</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Harmaasorsa</value></data>
+  <data name="Term.species.36" xml:space="preserve"><value>Susi</value></data>
+  <data name="Term.species.37" xml:space="preserve"><value>Harmaakarhu</value></data>
+  <data name="Term.species.47" xml:space="preserve"><value>Puuhanhi</value></data>
+  <data name="Term.species.15" xml:space="preserve"><value>Sinisorsa</value></data>
+  <data name="Term.species.8" xml:space="preserve"><value>Hirvi</value></data>
+  <data name="Term.species.101" xml:space="preserve"><value>Muulipeura (epätyypillinen)</value></data>
+  <data name="Term.species.1" xml:space="preserve"><value>Muulipeura (tyypillinen)</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Jouhisorsa</value></data>
+  <data name="Term.species.7" xml:space="preserve"><value>Fasaani</value></data>
+  <data name="Term.species.30" xml:space="preserve"><value>Jääkarhu</value></data>
+  <data name="Term.species.52" xml:space="preserve"><value>Puuma</value></data>
+  <data name="Term.species.12" xml:space="preserve"><value>Saksanhirvi</value></data>
+  <data name="Term.species.14" xml:space="preserve"><value>Kettu</value></data>
+  <data name="Term.species.21" xml:space="preserve"><value>Punajättikenguru</value></data>
+  <data name="Term.species.18" xml:space="preserve"><value>Tunturipeura</value></data>
+  <data name="Term.species.34" xml:space="preserve"><value>Kiiruna</value></data>
+  <data name="Term.species.38" xml:space="preserve"><value>Kalliovuortenvapiti</value></data>
+  <data name="Term.species.11" xml:space="preserve"><value>Metsäkauris</value></data>
+  <data name="Term.species.53" xml:space="preserve"><value>Jä-ris</value></data>
+  <data name="Term.species.3" xml:space="preserve"><value>Rooseveltinvapiti</value></data>
+  <data name="Term.species.44" xml:space="preserve"><value>Rusanhirvi</value></data>
+  <data name="Term.species.45" xml:space="preserve"><value>Sambarhirvi</value></data>
+  <data name="Term.species.26" xml:space="preserve"><value>Sitkanpeura</value></data>
+  <data name="Term.species.51" xml:space="preserve"><value>Lumihanhi</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Lumikenkäjänis</value></data>
+  <data name="Term.species.2" xml:space="preserve"><value>Kalkkuna</value></data>
+  <data name="Term.species.56" xml:space="preserve"><value>Tyrannosaurus rex</value></data>
+  <data name="Term.species.42" xml:space="preserve"><value>Vesipuhveli</value></data>
+  <data name="Term.species.58" xml:space="preserve"><value>Wendigo</value></data>
+  <data name="Term.species.31" xml:space="preserve"><value>Ihmissusi</value></data>
+  <data name="Term.species.50" xml:space="preserve"><value>Ihmissusi</value></data>
+  <data name="Term.species.35" xml:space="preserve"><value>Valkopyrstöriekko</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Valkohäntäpeura (epätyypillinen)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Valkohäntäpeura (tyypillinen)</value></data>
+  <data name="Term.species.10" xml:space="preserve"><value>Villisika</value></data>
+  <data name="Term.species.33" xml:space="preserve"><value>Riekko</value></data>
+  <data name="Term.species.57" xml:space="preserve"><value>Metso</value></data>
+  <data name="Term.collectable.0" xml:space="preserve"><value>Punakärpässieni</value></data>
+  <data name="Term.collectable.1" xml:space="preserve"><value>Herkkutatti</value></data>
+  <data name="Term.collectable.2" xml:space="preserve"><value>Kanttarelli</value></data>
+  <data name="Term.collectable.3" xml:space="preserve"><value>Herkkusieni</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Keltahapero</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Viikinkiruukku</value></data>
+  <data name="Term.collectable.6" xml:space="preserve"><value>Bysanttilainen kolikko</value></data>
+  <data name="Term.collectable.2055" xml:space="preserve"><value>Kuusipeuran sarvi</value></data>
+  <data name="Term.collectable.1032" xml:space="preserve"><value>Vihreä lahja</value></data>
+  <data name="Term.collectable.1033" xml:space="preserve"><value>Sininen lahja</value></data>
+  <data name="Term.collectable.1034" xml:space="preserve"><value>Punainen lahja</value></data>
+  <data name="Term.collectable.1035" xml:space="preserve"><value>Violetti lahja</value></data>
+  <data name="Term.collectable.1036" xml:space="preserve"><value>Hopeinen lahja</value></data>
+  <data name="Term.collectable.1026" xml:space="preserve"><value>Vihreä kallo</value></data>
+  <data name="Term.collectable.1038" xml:space="preserve"><value>Vaaleanpunainen ruusu</value></data>
+  <data name="Term.collectable.1039" xml:space="preserve"><value>Valkoinen ruusu</value></data>
+  <data name="Term.collectable.1040" xml:space="preserve"><value>Punainen ruusu</value></data>
+  <data name="Term.collectable.1002" xml:space="preserve"><value>Kultamuna</value></data>
+  <data name="Term.collectable.1042" xml:space="preserve"><value>Hedelmäpannukakku</value></data>
+  <data name="Term.collectable.1027" xml:space="preserve"><value>Sininen kallo</value></data>
+  <data name="Term.collectable.1044" xml:space="preserve"><value>Jäätelöpannukakku</value></data>
+  <data name="Term.collectable.1045" xml:space="preserve"><value>Luksuspannukakku</value></data>
+  <data name="Term.collectable.1028" xml:space="preserve"><value>Punainen kallo</value></data>
+  <data name="Term.collectable.1029" xml:space="preserve"><value>Violetti kallo</value></data>
+  <data name="Term.collectable.2054" xml:space="preserve"><value>Aksishirven sarvi</value></data>
+  <data name="Term.collectable.1024" xml:space="preserve"><value>Valkoinen ystävänpäivän ruusu</value></data>
+  <data name="Term.collectable.1031" xml:space="preserve"><value>Pimeä rituaali</value></data>
+  <data name="Term.collectable.1020" xml:space="preserve"><value>Ruskea ystävänpäivän nallekarhu</value></data>
+  <data name="Term.collectable.1025" xml:space="preserve"><value>Punainen ystävänpäivän ruusu</value></data>
+  <data name="Term.collectable.1014" xml:space="preserve"><value>Kultainen ystävänpäivän ilmapallo</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Valkohäntäpeuran sarvi (epätyypillinen)</value></data>
+  <data name="Term.collectable.1037" xml:space="preserve"><value>Kultainen lahja</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Valkohäntäpeuran sarvi</value></data>
+  <data name="Term.collectable.2001" xml:space="preserve"><value>Muulipeuran sarvi</value></data>
+  <data name="Term.collectable.2003" xml:space="preserve"><value>Rooseveltinvapitin sarvi</value></data>
+  <data name="Term.collectable.2040" xml:space="preserve"><value>Muulipeuran sarvi (epätyypillinen)</value></data>
+  <data name="Term.collectable.2006" xml:space="preserve"><value>Mustahäntäpeuran sarvi</value></data>
+  <data name="Term.collectable.2041" xml:space="preserve"><value>Mustahäntäpeuran sarvi (epätyypillinen)</value></data>
+  <data name="Term.collectable.2008" xml:space="preserve"><value>Hirven sarvi</value></data>
+  <data name="Term.collectable.1021" xml:space="preserve"><value>Punainen ystävänpäivän nallekarhu</value></data>
+  <data name="Term.collectable.1030" xml:space="preserve"><value>Día de Muertos</value></data>
+  <data name="Term.collectable.2011" xml:space="preserve"><value>Metsäkauriin sarvi</value></data>
+  <data name="Term.collectable.2012" xml:space="preserve"><value>Saksanhirven sarvi</value></data>
+  <data name="Term.collectable.1043" xml:space="preserve"><value>Suklaahippupannukakku</value></data>
+  <data name="Term.collectable.2018" xml:space="preserve"><value>Tunturipeuran sarvi</value></data>
+  <data name="Term.collectable.1041" xml:space="preserve"><value>Voi-siirappipannukakku</value></data>
+  <data name="Term.collectable.1000" xml:space="preserve"><value>1UP-sieni</value></data>
+  <data name="Term.collectable.1001" xml:space="preserve"><value>Kultahippu</value></data>
+  <data name="Term.collectable.2026" xml:space="preserve"><value>Sitkanpeuran sarvi</value></data>
+  <data name="Term.collectable.1003" xml:space="preserve"><value>Hopeamuna</value></data>
+  <data name="Term.collectable.1004" xml:space="preserve"><value>Pronssimuna</value></data>
+  <data name="Term.collectable.1005" xml:space="preserve"><value>Oranssi kurpitsa</value></data>
+  <data name="Term.collectable.1006" xml:space="preserve"><value>Ruskea kurpitsa</value></data>
+  <data name="Term.collectable.1007" xml:space="preserve"><value>Keltainen kurpitsa</value></data>
+  <data name="Term.collectable.1008" xml:space="preserve"><value>Kultaruukku</value></data>
+  <data name="Term.collectable.1009" xml:space="preserve"><value>Vanha aboriginaalien veitsi</value></data>
+  <data name="Term.collectable.1010" xml:space="preserve"><value>Vanha aboriginaalien veitsi</value></data>
+  <data name="Term.collectable.1011" xml:space="preserve"><value>Vanha aboriginaalien veitsi</value></data>
+  <data name="Term.collectable.1012" xml:space="preserve"><value>Hematiitinvärinen ystävänpäivän ilmapallo</value></data>
+  <data name="Term.collectable.1013" xml:space="preserve"><value>Hopeinen ystävänpäivän ilmapallo</value></data>
+  <data name="Term.collectable.2038" xml:space="preserve"><value>Kalliovuortenvapitin sarvi</value></data>
+  <data name="Term.collectable.1015" xml:space="preserve"><value>Hopeadollari</value></data>
+  <data name="Term.collectable.1016" xml:space="preserve"><value>Ammoniittifossiili</value></data>
+  <data name="Term.collectable.1017" xml:space="preserve"><value>Haiden hammasfossiili</value></data>
+  <data name="Term.collectable.1018" xml:space="preserve"><value>Kotkan höyhen</value></data>
+  <data name="Term.collectable.1019" xml:space="preserve"><value>Korpin höyhen</value></data>
+  <data name="Term.collectable.2044" xml:space="preserve"><value>Rusanhirven sarvi</value></data>
+  <data name="Term.collectable.2045" xml:space="preserve"><value>Sambarhirven sarvi</value></data>
+  <data name="Term.collectable.1022" xml:space="preserve"><value>Hopeinen ystävänpäivän nallekarhu</value></data>
+  <data name="Term.collectable.1023" xml:space="preserve"><value>Vaaleanpunainen ystävänpäivän ruusu</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Yksinpeli</value></data>
+  <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Eläimet</value></data>
+  <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Aseet</value></data>
+  <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Keräiltävät</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Käsiaseet</value></data>
+  <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Varsijouset</value></data>
+  <data name="Fmt.Days" xml:space="preserve"><value>{0} pv</value></data>
+  <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
+  <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Fmt.Seconds" xml:space="preserve"><value>{0} s</value></data>
+  <data name="Fmt.Gb" xml:space="preserve"><value>{0} GB</value></data>
+  <data name="Fmt.Mb" xml:space="preserve"><value>{0} MB</value></data>
+  <data name="Fmt.Kb" xml:space="preserve"><value>{0} KB</value></data>
+  <data name="Fmt.Bytes" xml:space="preserve"><value>{0} tavua</value></data>
+  <data name="Fmt.Kilometres" xml:space="preserve"><value>{0} km ({1} mi)</value></data>
+  <data name="Fmt.AgoSeconds" xml:space="preserve"><value>muutama sekunti sitten</value></data>
+  <data name="Fmt.AgoMinute" xml:space="preserve"><value>minuutti sitten</value></data>
+  <data name="Fmt.AgoMinutes" xml:space="preserve"><value>{0} minuuttia sitten</value></data>
+  <data name="Fmt.AgoHour" xml:space="preserve"><value>tunti sitten</value></data>
+  <data name="Fmt.AgoHours" xml:space="preserve"><value>{0} tuntia sitten</value></data>
+  <data name="Fmt.AgoDay" xml:space="preserve"><value>päivä sitten</value></data>
+  <data name="Fmt.AgoDays" xml:space="preserve"><value>{0} päivää sitten</value></data>
+  <data name="Splash.Loading" xml:space="preserve"><value>Ladataan</value></data>
+  <data name="Splash.Error" xml:space="preserve"><value>Virhe</value></data>
+  <data name="Help.Tabs.Support" xml:space="preserve"><value>{game}-tuki</value></data>
+  <data name="Help.Tabs.Guides" xml:space="preserve"><value>Oppaat ja harjoitukset</value></data>
+  <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoharjoitukset</value></data>
+  <data name="Help.Tabs.Community" xml:space="preserve"><value>Paikalliset yhteisösivustot</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game}-pelillä on useita virallisia tukikanavia. Paljon tietoa pelaamisesta ja vianmäärityksestä löytyy yhteisön ylläpitämältä Wiki-sivulta. Viralliset {game}-foorumimme ovat hyvin aktiivisia, ja monet pelaajamme vierailevat niillä päivittäin ja auttavat mielellään aloittelijoita.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Jos et löydä vastausta kysymyksiisi foorumilta tai wikistä, voit avata tukipyynnön tukijärjestelmässämme, niin yritämme auttaa sinua mahdollisimman pian!</value></data>
+  <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-tuki</value></data>
+  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-foorumi</value></data>
+  <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
+  <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (myös kielillä: {1}, {2} ja {3})</value></data>
+  <data name="Help.Lang.German" xml:space="preserve"><value>saksa</value></data>
+  <data name="Help.Lang.French" xml:space="preserve"><value>ranska</value></data>
+  <data name="Help.Lang.Spanish" xml:space="preserve"><value>espanja</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Tietoa moninpelin yhteyksistä</value></data>
+  <data name="Help.Support.NewTo" xml:space="preserve"><value>Uusi {game}-pelaaja?</value></data>
+  <data name="Help.Support.Videos" xml:space="preserve"><value>Katso videoharjoituksia &gt;</value></data>
+  <data name="Help.Guides.Title" xml:space="preserve"><value>Yhteisön resurssit ja oppaat</value></data>
+  <data name="Help.Guides.Text" xml:space="preserve"><value>{game}-pelillä on suuri yhteisö. Tutustu näihin jäsentemme tekemiin hienoihin resursseihin.</value></data>
+  <data name="Help.Tut.Intro" xml:space="preserve"><value>Opi {game}-pelin perusteet. Muista pelata myös {0}pelattavat harjoitukset{1} ennen ensimmäistä metsästystäsi Evergreenin metsästysalueella!</value></data>
+  <data name="Help.Tut.By" xml:space="preserve"><value>Tekijä: {0}</value></data>
+  <data name="Help.Community.Title" xml:space="preserve"><value>Paikalliset yhteisösivustot</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game}-pelillä on vilkas yhteisö, ja moni pelaajamme viettää aikaa oman alueensa pelaajien paikallisyhteisöissä! Tutustu näihin paikallisiin {game}-fanisivustoihin!</value></data>
+  <data name="DayHelp.Index" xml:space="preserve"><value>SISÄLLYS</value></data>
+  <data name="DayHelp.Services.Title" xml:space="preserve"><value>Päivittäistehtävien palvelut</value></data>
+  <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Jatka putkea</value></data>
+  <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Putken jatkaminen</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Päivittäistehtävät ovat upouusi lisäys {game}-pelin tehtäväjärjestelmään, ja ne löytyvät käynnistäjän tai verkkosivuston {0}Tehtävät-osiosta{1}.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Koska päivittäistehtävät on tarkoitettu suoritettaviksi yhdessä päivässä, ne ovat melko yksinkertaisia, eivätkä useimmat vaadi erityisiä aseita tai varusteita. Vaikeat päivittäistehtävät voivat toisinaan olla poikkeus, mutta älä lannistu! Voit halutessasi suorittaa päivittäiset myös moninpelissä.</value></data>
+  <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Uusi päivittäistehtävien käyttöliittymä</value></data>
+  <data name="DayHelp.How.Title" xml:space="preserve"><value>Miten se toimii?</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Joka päivä jokainen pelaaja saa uuden päivittäistehtävän suoritettavaksi. Eri pelaajat saavat eri päivittäistehtäviä.</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Päivittäistehtävän suorittaminen kasvattaa päivittäistehtäväputkeasi yhdellä. {0}Putki{1} tarkoittaa peräkkäin suoritettujen päivittäistehtävien sarjaa.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Päivittäistehtävän ohittaminen tai suorittamatta jättäminen ”katkaisee putkesi” ja palauttaa sinut päivään yksi.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>Jos katkaiset putkesi, päivittäistehtävät muuttuvat passiivisiksi, kunnes joko aktivoit ne aloittaaksesi uuden putken tai jatkat edellistä putkeasi. Katkenneen putken voi palauttaa kaupan {0}Jatka putkea{1} -palvelulla, jolloin jatkat viimeksi suorittamastasi päivittäistehtävästä.</value></data>
+  <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Vaikeustasot</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>Päivittäistehtäviä on kolmea vaikeustasoa:</value></data>
+  <data name="DayHelp.Easy" xml:space="preserve"><value>Helppo</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Keskitaso</value></data>
+  <data name="DayHelp.Hard" xml:space="preserve"><value>Vaikea</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Jokainen vaikeustaso on värikoodattu: helppoa päivittäistehtävää edustaa vihreä kuvake, keskitasoista sininen ja vaikeaa punainen.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Värien lisäksi jokaisella vaikeustasolla on eri määrä tähtiä: 1 tähti helpolle, 2 keskitasolle ja 3 vaikealle.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Jokaisella vaikeustasolla on eri peruspalkinto: {0}100 gm$ helpolle, 500 gm$ keskitasolle ja 1000 gm$ vaikealle{1}.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Palkinnot kasvavat päivittäistehtäväputkesi pidentyessä. Lisää tästä alla.</value></data>
+  <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Eteneminen</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>Ensimmäinen päivittäistehtäväsi on aina helppo. Kun suoritat sen, eri vaikeustasojen päivittäistehtävät vuorottelevat kaavan mukaisesti, jota kutsumme {0}sykliksi{1}.</value></data>
+  <data name="DayHelp.Prog.2" xml:space="preserve"><value>Sykli näyttää tältä:</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Kuten näet, sykli kestää 16 päivää, edellyttäen tietysti, että suoritat sinulle annetut päivittäistehtävät päivästä toiseen.</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Kun ensimmäinen sykli on suoritettu, alkaa uusi sykli, jossa {0}gm$-palkinnot kasvavat 10 %{1} (helppo = 110 gm$, keskitaso = 550 gm$, vaikea = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.5" xml:space="preserve"><value>Jokaisella seuraavalla syklillä palkinnot kasvavat vielä 10 % enintään peruspalkintojen kaksinkertaiseen määrään asti (100 %:n korotus).</value></data>
+  <data name="DayHelp.Prog.6" xml:space="preserve"><value>Jos esimerkiksi suoritat 10 sykliä peräkkäin katkaisematta putkeasi, saat jokaisesta tehtävästä x2-palkinnon, joka jatkuu, kunnes katkaiset putkesi.</value></data>
+  <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Erot tavallisiin tehtäviin</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Toisin kuin tavallisissa tehtävissä, päivittäistehtävissä saalis hyväksytään vain, jos kaadat eläimen itse. Kaverit voivat silti auttaa sinua {0}löytämään{1} tarvittavan eläimen moninpelissä.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Toisin kuin tavallisia tehtäviä, päivittäistehtäviä ei tarvitse aktivoida. Päivittäistehtävä on aina aktiivinen sen keston ajan (24 tuntia).</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Voit ansaita saavutuksia suorittamalla päivittäistehtäviä. Näet päivittäistehtäväsaavutuksesi pelaajaprofiilisi Saavutukset-osiossa:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Päivittäistehtävien suorittaminen kerryttää kolmea eri saavutustyyppiä, yhtä kullekin vaikeustasolle.</value></data>
+  <data name="DayHelp.Ach.3" xml:space="preserve"><value>Tässä taulukko kunkin vaikeustason välitavoitteista:</value></data>
+  <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Vaikeustaso</value></data>
+  <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Suoritetut tehtävät</value></data>
+  <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Erikoispalkinnot</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>Päivittäistehtäväputkesi edetessä saat erikoispalkintoja vaikeiden päivittäistehtävien suorittamisesta.</value></data>
+  <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Erikoispalkinnot ovat seuraavia:</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>tavarat</value></data>
+  <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trofeet</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Tavarat ja trofeet ovat yksinoikeudella saatavia palkintoja, joita voi voittaa vain suorittamalla päivittäistehtäviä (eli muuta tapaa saada niitä ei ole!). Palkintosi näkyvät vasta uuden pelin alussa.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}TÄRKEÄÄ:{1} Kaikki päivittäistehtävien erikoispalkinnot voi voittaa vain kerran! Jos katkaiset putkesi ja aloitat uuden, saat edelleen gm$, mutta uusien erikoispalkintojen ansaitseminen edellyttää aiemman putkesi ylittämistä.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Näet kaikki erikoispalkinnot päivittäistehtäväsi Palkinnot-osiossa:</value></data>
+  <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Tässä kätevä taulukko, joka näyttää, miten tämä toimii:</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Peräkkäin suoritettujen vaikeiden päivittäistehtävien määrä (putki)</value></data>
+  <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Erikoispalkinto</value></data>
+  <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Metsästyslakki</value></data>
+  <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Maastokuvio A</value></data>
+  <data name="DayHelp.Reward.BasicTShirt" xml:space="preserve"><value>Perus-T-paita</value></data>
+  <data name="DayHelp.Reward.DailyMissionsHero" xml:space="preserve"><value>Päivittäistehtävien sankari</value></data>
+  <data name="DayHelp.Reward.BoltActionRifle" xml:space="preserve"><value>Lukkokivääri</value></data>
+  <data name="DayHelp.Reward.CamoPatternB" xml:space="preserve"><value>Maastokuvio B</value></data>
+  <data name="DayHelp.Reward.LeatherJacket" xml:space="preserve"><value>Nahkatakki</value></data>
+  <data name="DayHelp.Reward.HardCoreHunting" xml:space="preserve"><value>Hardcore-metsästys</value></data>
+  <data name="DayHelp.Reward.LeverActionRifle" xml:space="preserve"><value>Vipukivääri</value></data>
+  <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Kaiverrettu</value></data>
+  <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Ainutlaatuinen trofeo (3 kuukautta)</value></data>
+  <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Ainutlaatuinen trofeo (6 kuukautta)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Ainutlaatuinen trofeo ({0} vaikeaa päivittäistehtävää)</value></data>
+  <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Ainutlaatuinen trofeo (1 vuosi)</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Kuten nimi kertoo, tämä palvelu antaa sinun jatkaa päivittäistehtäväputkeasi. Jos esimerkiksi sinulla on pitkä putki suoritettuja päivittäistehtäviä ja sitten jätät yhden suorittamatta tai epäonnistut siinä, voit käyttää tätä palvelua putkesi jatkamiseen viimeksi suorittamastasi päivittäistehtävästä.</value></data>
+  <data name="DayHelp.Resume.2" xml:space="preserve"><value>Hyvä puoli on, että putken katkeamisesta kuluneella ajalla ei ole väliä: voit aina jatkaa sitä, vaikka katkaisit sen vaikkapa vuosi sitten.</value></data>
+  <data name="DayHelp.Resume.3" xml:space="preserve"><value>Palvelun voi ostaa etukäteen ja aktivoida tarvittaessa. Ostettavien tai omistettavien korttien määrää ei ole rajoitettu.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Voit ostaa palvelun suoraan päivittäistehtäväsivulta: heti kun katkaiset putkesi, ”Päivä 1” -päivittäistehtävän vasemmalle puolelle ilmestyy painike, joka kehottaa ostamaan sen (tai käyttämään, jos omistat jo vähintään yhden).</value></data>
+  <data name="DayHelp.Resume.5" xml:space="preserve"><value>Vaihtoehtoisesti voit ostaa sen {0}kaupasta{1}.</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Oston jälkeen voit käyttää palvelua suoraan päivittäistehtäväsivulla:</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Näin lataat ja pelaat peliä {game}</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Moninpelin vaatimukset</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Yksinpelin vaatimukset</value></data>
+  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Tuetut käyttöjärjestelmät:</value></data>
+  <data name="Download.Req.Os" xml:space="preserve"><value>Käyttöjärjestelmä:</value></data>
+  <data name="Download.Req.Cpu" xml:space="preserve"><value>Suoritin:</value></data>
+  <data name="Download.Req.Memory" xml:space="preserve"><value>Muisti:</value></data>
+  <data name="Download.Req.Graphics" xml:space="preserve"><value>Näytönohjain:</value></data>
+  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafiikan resoluutio:</value></data>
+  <data name="Download.Req.Internet" xml:space="preserve"><value>Internet-yhteys:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Isäntä:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>Isännän FPS:</value></data>
+  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 ja Windows 10</value></data>
+  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 ja Windows 11</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Kaksiytiminen suoritin (2 GHz)</value></data>
+  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
+  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
+  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 -sarja (8800 tai parempi), ATI Radeon HD 2000 -sarja (2400 tai parempi). 256 MB:n näytönohjaimen muisti (matalalle ja keskitasolle). 512–768 MB:n näytönohjaimen muisti (korkealle, pelaajamäärästä riippuen).</value></data>
+  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 -sarja (7600 tai parempi). ATI X1900 (tai parempi). 256 MB:n näytönohjaimen muisti (matalalle ja keskitasolle). 512 MB:n näytönohjaimen muisti (korkealle).</value></data>
+  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Vähintään 1024x768</value></data>
+  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Pelaaja: 512 kbps lataus ja lähetys</value></data>
+  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Mbps lataus ja lähetys (pelaajamäärästä riippuen)</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Jos isäntä ei pyöritä peliä vähintään 25–30 FPS:llä (ruutua sekunnissa), fysiikka tuottaa virheitä. Pelaajien, joilla on heikko tietokone, kannattaa laskea asetuksia, jotta peli toimisi mahdollisimman korkealla FPS:llä. {0}30 FPS{1} on pienin suositeltu arvo. FPS:ää voi mitata internetistä löytyvillä ilmaisilla työkaluilla.</value></data>
+  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Hakutyökalu</value></data>
+  <data name="Download.Size" xml:space="preserve"><value>Lataa peli (noin 12 GB).</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Lataa napsauttamalla tästä</value></data>
+  <data name="Download.Step" xml:space="preserve"><value>Vaihe {0}</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Käynnistä peli asennuksen päätyttyä.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Napsauta verkkosivun {0}-painiketta aloittaaksesi uuden pelin.</value></data>
+  <data name="Download.Trouble.Title" xml:space="preserve"><value>Vianmääritys</value></data>
+  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Vianmäärityksen apuohjelma tarkistaa automaattisesti pelisi asetukset, havaitsee yleiset ongelmat ja ehdottaa korjauksia, jotta pääset takaisin pelaamaan nopeammin.</value></data>
+  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Lataa vianmäärityksen apuohjelma.</value></data>
+  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Sijoita se pelikansioosi pelin suoritustiedoston viereen.</value></data>
+  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Pelikansio]\game\&lt;apuohjelma&gt;</value></data>
+  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Suorita työkalu analysoidaksesi asetus- ja suorituskykyongelmia.</value></data>
+  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Ota käyttöön analyysin aikana ehdotetut korjaukset.</value></data>
+  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Jos ehdotetut ratkaisut eivät auta, lataa luotu lokitiedosto ja lähetä se {0}.</value></data>
+  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>tukitiimillemme</value></data>
+  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Lataa apuohjelma</value></data>
+</root>
