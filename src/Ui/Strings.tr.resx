@@ -24,9 +24,9 @@
   <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>İNDİRMELER</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Panel</value></data>
-  <data name="Menu.Single" xml:space="preserve"><value>Tekli oyun modu</value></data>
-  <data name="Menu.Multi" xml:space="preserve"><value>Çoklu oyun modu</value></data>
-  <data name="Menu.Find" xml:space="preserve"><value>Bir çoklu oyun ara</value></data>
+  <data name="Menu.Single" xml:space="preserve"><value>Tek oyunculu mod</value></data>
+  <data name="Menu.Multi" xml:space="preserve"><value>Çok oyunculu mod</value></data>
+  <data name="Menu.Find" xml:space="preserve"><value>Çok oyunculu oyun bul</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Eğitimler</value></data>
   <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$, {game} oyununun sanal para birimidir; mağazadan silah, ekipman, kıyafet ve çok daha fazlasını satın almak için kullanılabilir.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Ayarlar</value></data>
@@ -43,7 +43,7 @@
   <data name="Settings.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>
-  <data name="Settings.Logfiles" xml:space="preserve"><value>Log Dosyaları</value></data>
+  <data name="Settings.Logfiles" xml:space="preserve"><value>Günlük Dosyaları</value></data>
   <data name="Settings.GameFolder" xml:space="preserve"><value>Oyun Klasörü</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Başlatıcı önbelleğini temizle</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Oyun önbelleğini temizle</value></data>
@@ -91,15 +91,15 @@
   <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Sizi anlayan insanlarla takılın</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Ava Çık</value></data>
-  <data name="Hunt.Single" xml:space="preserve"><value>TEKLİ OYUN MODU</value></data>
-  <data name="Hunt.Multi" xml:space="preserve"><value>ÇOKLU OYUN CO-OP</value></data>
-  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Aktif görevler:</value></data>
-  <data name="Hunt.NoMissions" xml:space="preserve"><value>Aktif göreviniz yok. Görevleri {0}görevler sayfasından{1} etkinleştirin.</value></data>
+  <data name="Hunt.Single" xml:space="preserve"><value>TEK OYUNCULU MOD</value></data>
+  <data name="Hunt.Multi" xml:space="preserve"><value>ÇOK OYUNCULU KOOP</value></data>
+  <data name="Hunt.ActiveMissions" xml:space="preserve"><value>Etkin görevler:</value></data>
+  <data name="Hunt.NoMissions" xml:space="preserve"><value>Etkin göreviniz yok. Görevleri {0}görevler sayfasından{1} etkinleştirin.</value></data>
   <data name="Hunt.MoreMissions" xml:space="preserve"><value>ve {0} tane daha...</value></data>
   <data name="Hunt.NoFriends" xml:space="preserve"><value>Arkadaşlarınızdan hiçbiri çevrimiçi değil</value></data>
   <data name="Hunt.FriendsOnline" xml:space="preserve"><value>Çevrimiçi arkadaşlar:</value></data>
-  <data name="Hunt.StartSingle" xml:space="preserve"><value>Tekli bir oyun başlat</value></data>
-  <data name="Hunt.StartMulti" xml:space="preserve"><value>Çoklu bir oyun başlat</value></data>
+  <data name="Hunt.StartSingle" xml:space="preserve"><value>Tek oyunculu oyun başlat</value></data>
+  <data name="Hunt.StartMulti" xml:space="preserve"><value>Çok oyunculu oyun başlat</value></data>
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Ya da katıl</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Hızlı Katılım</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>İlerleme durumunuz</value></data>
@@ -110,8 +110,8 @@
   <data name="Hunt.Competitions" xml:space="preserve"><value>Yarışmalar</value></data>
   <data name="Hunt.CompetitionsIn" xml:space="preserve"><value>Katıldığınız yarışmalar:</value></data>
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Yaklaşan yarışmaları görüntüle</value></data>
-  <data name="Launch.TitleSingle" xml:space="preserve"><value>TEKLİ OYUN OLUŞTUR</value></data>
-  <data name="Launch.TitleMulti" xml:space="preserve"><value>ÇOKLU OYUN OLUŞTUR</value></data>
+  <data name="Launch.TitleSingle" xml:space="preserve"><value>TEK OYUNCULU OYUN OLUŞTUR</value></data>
+  <data name="Launch.TitleMulti" xml:space="preserve"><value>ÇOK OYUNCULU OYUN OLUŞTUR</value></data>
   <data name="Launch.Intro1" xml:space="preserve"><value>Av oturumunuzu nereden başlatacağınızı seçin. İlgili rezervin haritasını görmek için aşağıdaki 12 rezerv logosundan birine, o bölgede hangi türlerin bulunduğunu öğrenmek için ise kulübelere (ev simgeleri) tıklayın. Dünya haritasında tıklayıp sürükleyerek gezinebilir, fare tekerleğiyle yakınlaştırıp uzaklaştırabilirsiniz.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Dünyanın en muhteşem doğal ortamlarından bazıları ve 45 farklı hayvan türü sizi bekliyor, iyi avlar!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Başlangıç saati:</value></data>
@@ -139,8 +139,8 @@
   <data name="Launch.Start" xml:space="preserve"><value>Başlat</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Oyun Oluştur</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Oyun oturumunuz oluşturulurken bir sorun oluştu. Lütfen sunucu listesini yeniden yükleyin ve başka bir oyuna katılmayı deneyin.</value></data>
-  <data name="Servers.Title" xml:space="preserve"><value>ÇOKLU OYUN ARA</value></data>
-  <data name="Servers.Search" xml:space="preserve"><value>Oyun veya sahip ara...</value></data>
+  <data name="Servers.Title" xml:space="preserve"><value>ÇOK OYUNCULU OYUN BUL</value></data>
+  <data name="Servers.Search" xml:space="preserve"><value>Oyun veya kurucu ara...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Temizle</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Yenile</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Sadece katılmaya izinli olduğum oyunları göster</value></data>
@@ -148,25 +148,25 @@
   <data name="Servers.GameName" xml:space="preserve"><value>Oyun adı</value></data>
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezerv</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Oyuncular</value></data>
-  <data name="Servers.Host" xml:space="preserve"><value>Sahip</value></data>
+  <data name="Servers.Host" xml:space="preserve"><value>Kurucu</value></data>
   <data name="Servers.Country" xml:space="preserve"><value>Ülke</value></data>
-  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Oyuncular: {1}/{2} - Sahip: {3}</value></data>
+  <data name="Servers.Summary" xml:space="preserve"><value>{0} - Oyuncular: {1}/{2} - Kurucu: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Oyun detayları</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Oyuna Katıl</value></data>
-  <data name="Servers.HostLabel" xml:space="preserve"><value>Sahip:</value></data>
+  <data name="Servers.HostLabel" xml:space="preserve"><value>Kurucu:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezerv:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Oyun süresi:</value></data>
   <data name="Servers.MinScore" xml:space="preserve"><value>En düşük avcı skoru:</value></data>
   <data name="Servers.MaxScore" xml:space="preserve"><value>En yüksek avcı skoru:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Oyuncular ({0}/{1})</value></data>
-  <data name="Servers.InfoTitle" xml:space="preserve"><value>Çoklu oyun bağlantıları hakkında bilgi</value></data>
-  <data name="Servers.Info" xml:space="preserve"><value>Çok uzak mesafedeki kişilerle çoklu oyun oynamak bağlantı sorunlarına veya gecikmeye neden olabilir. Sahibi size yakın olan oyunlara katılmanız önerilir. Sunucu listesinde bayrakların yanında yer alan renkli noktalar, oyunun sahibine ne kadar uzakta olduğunuzu gösterir.</value></data>
+  <data name="Servers.InfoTitle" xml:space="preserve"><value>Çok oyunculu bağlantılar hakkında bilgi</value></data>
+  <data name="Servers.Info" xml:space="preserve"><value>Çok uzak mesafedeki kişilerle çok oyunculu modda oynamak bağlantı sorunlarına veya gecikmeye neden olabilir. Kurucusu size yakın olan oyunlara katılmanız önerilir. Sunucu listesinde bayrakların yanında yer alan renkli noktalar, oyunun kurucusundan ne kadar uzakta olduğunuzu gösterir.</value></data>
   <data name="Servers.InfoLink" xml:space="preserve"><value>Bağlantılar hakkında daha fazla bilgi için buraya tıklayın</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Kısa mesafe</value></data>
   <data name="Servers.Medium" xml:space="preserve"><value>Orta mesafe</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Uzun mesafe</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>Oyun bulunamadı</value></data>
-  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Katılabileceğiniz herkese açık bir çoklu oyun bulamadık.</value></data>
+  <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Katılabileceğiniz herkese açık çok oyunculu oyun bulamadık.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>KENDİ OYUNUNUZU KURUN</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Bu oyun şifre korumalıdır</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
@@ -198,8 +198,8 @@
   <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Yüksek kaliteli dokular tekli oyunda 512 MB, çoklu oyunda 768 MB ekran kartı belleği gerektirir.</value></data>
   <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Ekran kartı belleğiniz: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Gölge Kalitesi</value></data>
-  <data name="GameSettings.Msaa" xml:space="preserve"><value>Çoklu Kenar Yumuşatma</value></data>
-  <data name="GameSettings.Aniso" xml:space="preserve"><value>Eşyönsüz Süzme</value></data>
+  <data name="GameSettings.Msaa" xml:space="preserve"><value>Çoklu Örneklemeli Kenar Yumuşatma</value></data>
+  <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropik Filtreleme</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Bağlamsal Yardım</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Genişletilmiş Ses Belleği</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Düşük</value></data>
@@ -302,7 +302,7 @@
   <data name="Signup.Email" xml:space="preserve"><value>E-posta adresi</value></data>
   <data name="Signup.Continue" xml:space="preserve"><value>Devam</value></data>
   <data name="Signup.P1.Title" xml:space="preserve"><value>KULLANICI ADI VE AVATAR</value></data>
-  <data name="Signup.P1.Pick" xml:space="preserve"><value>Bir ad seç</value></data>
+  <data name="Signup.P1.Pick" xml:space="preserve"><value>Bir ad seçin</value></data>
   <data name="Signup.P1.Required" xml:space="preserve"><value>Gerekli</value></data>
   <data name="Signup.P1.Taken" xml:space="preserve"><value>Kullanıcı adı kullanılamıyor</value></data>
   <data name="Signup.P1.Dice" xml:space="preserve"><value>Ad öner</value></data>
@@ -343,7 +343,7 @@
   <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Yüksek ayarlar</value></data>
   <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultra ayarlar</value></data>
   <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Özel ayarlar</value></data>
-  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Eşyönsüz Süzme</value></data>
+  <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anizotropik Filtreleme</value></data>
   <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Görüntü Modu</value></data>
   <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Tam Ekran</value></data>
   <data name="Dialog.Tutorial.Msaa" xml:space="preserve"><value>MSAA</value></data>
@@ -356,8 +356,8 @@
   <data name="Comp.Title" xml:space="preserve"><value>YARIŞMALAR</value></data>
   <data name="Comp.Enrolled" xml:space="preserve"><value>Kayıt olunan yarışmalar</value></data>
   <data name="Comp.Name" xml:space="preserve"><value>Yarışma Adı</value></data>
-  <data name="Comp.Attempts" xml:space="preserve"><value>Girişimler</value></data>
-  <data name="Comp.Position" xml:space="preserve"><value>Pozisyon</value></data>
+  <data name="Comp.Attempts" xml:space="preserve"><value>Giriş hakları</value></data>
+  <data name="Comp.Position" xml:space="preserve"><value>Sıra</value></data>
   <data name="Comp.Starts" xml:space="preserve"><value>Başlangıç</value></data>
   <data name="Comp.Ends" xml:space="preserve"><value>Bitiş</value></data>
   <data name="Comp.Status" xml:space="preserve"><value>Durum</value></data>
@@ -366,7 +366,7 @@
   <data name="Comp.Activate" xml:space="preserve"><value>Etkinleştir</value></data>
   <data name="Comp.Deactivate" xml:space="preserve"><value>Devre dışı bırak</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Katılınamıyor</value></data>
-  <data name="Comp.Multi" xml:space="preserve"><value>Çoklu oyun</value></data>
+  <data name="Comp.Multi" xml:space="preserve"><value>Çok oyunculu</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Gereksinimler:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Yaklaşan yarışmalar</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Geçmiş yarışmalar</value></data>
@@ -382,9 +382,9 @@
   <data name="Comp.StateSignUp" xml:space="preserve"><value>Kayıt</value></data>
   <data name="Comp.StateOngoing" xml:space="preserve"><value>Devam ediyor</value></data>
   <data name="Comp.StateEnded" xml:space="preserve"><value>Sona erdi</value></data>
-  <data name="Comp.StartsIn" xml:space="preserve"><value>Başlamaya kalan</value></data>
-  <data name="Comp.EndsIn" xml:space="preserve"><value>Bitmeye kalan</value></data>
-  <data name="Comp.YourPosition" xml:space="preserve"><value>Konumunuz</value></data>
+  <data name="Comp.StartsIn" xml:space="preserve"><value>Başlangıca kalan</value></data>
+  <data name="Comp.EndsIn" xml:space="preserve"><value>Bitişe kalan</value></data>
+  <data name="Comp.YourPosition" xml:space="preserve"><value>Sıranız</value></data>
   <data name="Comp.ScoreToBeat" xml:space="preserve"><value>Aşılacak skor</value></data>
   <data name="Comp.Overview" xml:space="preserve"><value>Genel bakış</value></data>
   <data name="Comp.Leaderboard" xml:space="preserve"><value>Sıralama</value></data>
@@ -399,7 +399,7 @@
   <data name="Comp.Scoring" xml:space="preserve"><value>Puanlama</value></data>
   <data name="Comp.Special" xml:space="preserve"><value>Özel Gereksinimler</value></data>
   <data name="Comp.Gamemode" xml:space="preserve"><value>Oyun modu</value></data>
-  <data name="Comp.Disclaimer" xml:space="preserve"><value>Bir yarışmanın aktif olduğu rezervde her av başlatıldığında bir giriş hakkınızdan düşülür. Yarışmalar oyun içindeyken etkinleştirilemez; oyun sırasında yapılan değişiklikler ancak bir sonraki av başlatıldığında geçerli olur.</value></data>
+  <data name="Comp.Disclaimer" xml:space="preserve"><value>Bir yarışmanın etkin olduğu rezervde her av başlatıldığında bir giriş hakkınızdan düşülür. Yarışmalar oyun içindeyken etkinleştirilemez; oyun sırasında yapılan değişiklikler ancak bir sonraki av başlatıldığında geçerli olur.</value></data>
   <data name="Comp.Participants" xml:space="preserve"><value>Sonuç alan katılımcılar ({0})</value></data>
   <data name="Comp.Player" xml:space="preserve"><value>Oyuncu</value></data>
   <data name="Comp.Result" xml:space="preserve"><value>Sonuç</value></data>
@@ -408,7 +408,7 @@
   <data name="League.P1" xml:space="preserve"><value>{game} Topluluk Ligi'ne hoş geldiniz; bu lig, mevcut hafta sonu yarışma biçimimizin yerini alacak.</value></data>
   <data name="League.P2" xml:space="preserve"><value>Her Cuma, belirlenen rezervde farklı bir hayvanı avlayın (o rezerv dışında avlanan hayvanlar sayılmaz). Katılım için tam bir haftanız ve 7 giriş hakkınız var. Yarışma her zamanki gibi etkinleştirilir ve devre dışı bırakılır. Bir hayvanın avlandığı hafta boyunca, o hayvana ayrılmış tüm normal yarışmalar askıya alınır. Ve evet, indirimler artık tam bir hafta sürecek. Lig yarışması başına ödüller, yerini aldıkları hafta sonu yarışmalarıyla aynı olacak.</value></data>
   <data name="League.P3" xml:space="preserve"><value>Etkinlikler Lig'den etkilenmeyecek.</value></data>
-  <data name="League.P4" xml:space="preserve"><value>Ördek veya kaz yarışmaları dışında tüm yarışmalar yalnızca tekli oyun olacak.</value></data>
+  <data name="League.P4" xml:space="preserve"><value>Ördek veya kaz yarışmaları dışında tüm yarışmalar yalnızca tek oyunculu olacak.</value></data>
   <data name="League.P5" xml:space="preserve"><value>Her 4 haftada bir yeni bir rezerve geçiyoruz ve her 3 rezerv bir sezon oluşturuyor.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Aylık veya sezon ödüllerine hak kazanmak için her lig yarışmasına katılmanız gerekmez; ancak mümkün olduğunca sık katılmanın açık avantajları vardır.</value></data>
   <data name="League.NotEnrolled" xml:space="preserve"><value>Hiçbir yarışmaya kayıtlı değilsiniz</value></data>
@@ -439,7 +439,7 @@
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit'i edinin</value></data>
   <data name="Board.TopBust" xml:space="preserve"><value>En yüksek Bust Through skorları</value></data>
   <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through, Huntermate'inizde oynayabileceğiniz, avınızın ortaya çıkmasını beklerken eğlenceli vakit geçirmenizi sağlayan havalı bir retro atari oyunudur!</value></data>
-  <data name="Board.SP" xml:space="preserve"><value>Tekli</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Tek oyunculu</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Önceki</value></data>
   <data name="Pager.Next" xml:space="preserve"><value>Sonraki</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Sayfalar</value></data>
@@ -455,11 +455,11 @@
   <data name="Mis.Objectives" xml:space="preserve"><value>Hedefler</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervler</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Ödüller</value></data>
-  <data name="Mis.Inactive" xml:space="preserve"><value>Pasif</value></data>
+  <data name="Mis.Inactive" xml:space="preserve"><value>Etkin değil</value></data>
   <data name="Mis.Completed" xml:space="preserve"><value>Tamamlandı</value></data>
   <data name="Mis.Activate" xml:space="preserve"><value>ETKİNLEŞTİR</value></data>
   <data name="Mis.Broken" xml:space="preserve"><value>Seriniz bozuldu. Yeni bir seri başlatmak için ETKİNLEŞTİR düğmesine basın ya da son serinize devam etmek için Seriyi Sürdür öğesini SATIN ALIN/KULLANIN.</value></data>
-  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Günlük Görevler, bir seriyi etkinleştirmeyi veya sürdürmeyi seçene kadar pasif kalır.</value></data>
+  <data name="Mis.BrokenNote" xml:space="preserve"><value>* Günlük Görevler, bir seriyi etkinleştirmeyi veya sürdürmeyi seçene kadar etkin olmaz.</value></data>
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Etkinleştirme tamamlandı!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Hizmetin keyfini çıkarın!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Tümünü etkinleştir</value></data>
@@ -485,7 +485,7 @@
   <data name="Mis.Progress" xml:space="preserve"><value>İlerleme:</value></data>
   <data name="Mis.FavouriteTip" xml:space="preserve"><value>Favorilere eklemek/çıkarmak için tıklayın</value></data>
   <data name="Mis.NoFavourites" xml:space="preserve"><value>Henüz favori göreviniz yok</value></data>
-  <data name="Mis.NoActive" xml:space="preserve"><value>Şu anda aktif göreviniz yok. Başlamak için aşağıdaki uygun görevlerden birini etkinleştirin.</value></data>
+  <data name="Mis.NoActive" xml:space="preserve"><value>Şu anda etkin göreviniz yok. Başlamak için aşağıdaki uygun görevlerden birini etkinleştirin.</value></data>
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Uygun görev yok</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Şu görevin kilidini açmak için aşağıdaki görevleri tamamlamalısınız: {0}</value></data>
   <data name="Mis.Failed" xml:space="preserve"><value>Bir şeyler ters gitti ve ürününüzü alamadınız. Üzgünüz. Lütfen tekrar deneyin!</value></data>
@@ -498,8 +498,8 @@
   <data name="Store.Cat.50" xml:space="preserve"><value>Tüfek Nişangahları</value></data>
   <data name="Store.Cat.51" xml:space="preserve"><value>Tabanca Nişangahları</value></data>
   <data name="Store.Cat.52" xml:space="preserve"><value>Av Tüfeği Nişangahları</value></data>
-  <data name="Store.Cat.53" xml:space="preserve"><value>Yay/Tatar Yayı Nişangahları</value></data>
-  <data name="Store.Cat.54" xml:space="preserve"><value>Ağızdan Dolma Nişangahları</value></data>
+  <data name="Store.Cat.53" xml:space="preserve"><value>Yay ve Tatar Yayı Nişangahları</value></data>
+  <data name="Store.Cat.54" xml:space="preserve"><value>Ağızdan Dolma Tüfek Nişangahları</value></data>
   <data name="Store.Cat.59" xml:space="preserve"><value>Köpekler</value></data>
   <data name="Store.Cat.15" xml:space="preserve"><value>Cezbediciler</value></data>
   <data name="Store.Cat.18" xml:space="preserve"><value>Kıyafet</value></data>
@@ -539,7 +539,7 @@
   <data name="Store.Enjoy" xml:space="preserve"><value>Keyfini çıkarın: {0}</value></data>
   <data name="Store.Oops" xml:space="preserve"><value>Eyvah.</value></data>
   <data name="Store.Close" xml:space="preserve"><value>Kapat</value></data>
-  <data name="Store.YouSave" xml:space="preserve"><value>Kazancınız</value></data>
+  <data name="Store.YouSave" xml:space="preserve"><value>Tasarrufunuz</value></data>
   <data name="Wal.MyWallet" xml:space="preserve"><value>Cüzdanım</value></data>
   <data name="Wal.History" xml:space="preserve"><value>Satın Alma Geçmişi</value></data>
   <data name="Wal.Balance" xml:space="preserve"><value>Mevcut bakiye</value></data>
@@ -601,7 +601,7 @@
   <data name="Bank.A5" xml:space="preserve"><value>Çoğu dijital para biriminde olduğu gibi, em$ satın alımları için iade yapmıyoruz. Oyunun indirilmesi ve denenmesi ücretsizdir; em$ satın almadan önce oyunun bilgisayarınızda çalıştığını ve beklentilerinizi karşıladığını lütfen doğrulayın.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Yasal Uyarı</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Lütfen unutmayın: em$ satılamaz, devredilemez; nakde veya gerçek {game} içeriği dışındaki herhangi bir şeye çevrilemez. em$ iade edilemez. em$ birimlerinin parasal değeri yoktur ve hiçbir türde para birimi veya mülk niteliği taşımaz.</value></data>
-  <data name="Bank.Extras" xml:space="preserve"><value>Ekstra silah: {0}, diğer ürünler: {1}</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Ek silah: {0}, diğer ürünler: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} ay</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Mesajlar</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Yalnızca arkadaşlarımdan gelen mesajlara izin ver</value></data>
@@ -619,7 +619,7 @@
   <data name="Set.TabEmail" xml:space="preserve"><value>Hesap e-postası</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Dil ve saat dilimi</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Çoklu oyun banları</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Çok oyunculu mod banları</value></data>
   <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook ayarları</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam ayarları</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profil ayarları</value></data>
@@ -642,7 +642,7 @@
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-posta yeniden gönderilemedi. Lütfen tekrar deneyin veya destekle iletişime geçin.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Ülke</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Ülke seç</value></data>
+  <data name="Set.CountryChoose" xml:space="preserve"><value>Ülke seçin</value></data>
   <data name="Set.TimeZone" xml:space="preserve"><value>Saat dilimi:</value></data>
   <data name="Set.Save" xml:space="preserve"><value>Kaydet</value></data>
   <data name="Set.PurchasesTitle" xml:space="preserve"><value>Hesap satın alma geçmişi</value></data>
@@ -709,7 +709,7 @@
   <data name="Welcome.Help" xml:space="preserve"><value>Yardım</value></data>
   <data name="Welcome.HelpText" xml:space="preserve"><value>Başlamak için yardıma mı ihtiyacınız var? Yardım bölümüne ve topluluğumuzun yönettiği harika kaynaklara göz atın.</value></data>
   <data name="Welcome.HelpGo" xml:space="preserve"><value>Yardım bölümünü görüntüle</value></data>
-  <data name="Invite.Title" xml:space="preserve"><value>Arkadaşını Çağır</value></data>
+  <data name="Invite.Title" xml:space="preserve"><value>Arkadaşınızı Çağırın</value></data>
   <data name="Invite.How" xml:space="preserve"><value>Arkadaş nasıl davet edilir?</value></data>
   <data name="Invite.Step1" xml:space="preserve"><value>Davet gönderin</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Yönlendirme bağlantınızı almak için aşağıdaki düğmeye tıklayın ve {game} oyununa davet etmek istediğiniz bir arkadaşınıza gönderin.</value></data>
@@ -731,12 +731,12 @@
   <data name="Invite.Reward" xml:space="preserve"><value>Ödül</value></data>
   <data name="Invite.LinkText" xml:space="preserve"><value>Bu sizin yönlendirme bağlantınız; kopyalayıp {game} oyununa davet etmek istediğiniz herkese gönderin:</value></data>
   <data name="Prof.Title" xml:space="preserve"><value>{0} adlı kişinin profili</value></data>
-  <data name="Prof.TabRanks" xml:space="preserve"><value>Sıralar</value></data>
+  <data name="Prof.TabRanks" xml:space="preserve"><value>Sıralamalar</value></data>
   <data name="Prof.TabAchievements" xml:space="preserve"><value>Başarılar</value></data>
   <data name="Prof.TabSkills" xml:space="preserve"><value>Beceriler</value></data>
   <data name="Prof.TabStats" xml:space="preserve"><value>İstatistikler</value></data>
   <data name="Prof.TabGallery" xml:space="preserve"><value>Galeri</value></data>
-  <data name="Prof.TabTrophies" xml:space="preserve"><value>Kupalar</value></data>
+  <data name="Prof.TabTrophies" xml:space="preserve"><value>Trofeler</value></data>
   <data name="Prof.TabDogs" xml:space="preserve"><value>Köpekler</value></data>
   <data name="Prof.TabFriends" xml:space="preserve"><value>Arkadaşlar</value></data>
   <data name="Prof.Membership" xml:space="preserve"><value>Avcı</value></data>
@@ -766,7 +766,7 @@
   <data name="Prof.Spotting" xml:space="preserve"><value>Tespit</value></data>
   <data name="Prof.Tracking" xml:space="preserve"><value>İz sürme</value></data>
   <data name="Prof.Shooting" xml:space="preserve"><value>Atış</value></data>
-  <data name="Prof.Lvl" xml:space="preserve"><value>Sv.</value></data>
+  <data name="Prof.Lvl" xml:space="preserve"><value>Sev.</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>İstatistikler</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Son Av</value></data>
   <data name="Stat.Lifetime" xml:space="preserve"><value>Tüm Zamanların İstatistikleri</value></data>
@@ -779,13 +779,13 @@
   <data name="Stat.Ammo" xml:space="preserve"><value>Cephane</value></data>
   <data name="Stat.Shots" xml:space="preserve"><value>Atışlar</value></data>
   <data name="Stat.Accuracy" xml:space="preserve"><value>İsabet yüzdesi</value></data>
-  <data name="Stat.PerHit" xml:space="preserve"><value>Vuruşta öldürme</value></data>
+  <data name="Stat.PerHit" xml:space="preserve"><value>İsabet başına öldürme</value></data>
   <data name="Stat.Longest" xml:space="preserve"><value>En uzak atış</value></data>
   <data name="Stat.Species" xml:space="preserve"><value>Türler</value></data>
   <data name="Stat.Spotted" xml:space="preserve"><value>Tespit Edildi</value></data>
   <data name="Stat.Tracked" xml:space="preserve"><value>İzi Sürüldü</value></data>
   <data name="Stat.Harvested" xml:space="preserve"><value>Avlandı</value></data>
-  <data name="Stat.Name" xml:space="preserve"><value>İsim</value></data>
+  <data name="Stat.Name" xml:space="preserve"><value>Ad</value></data>
   <data name="Stat.Collected" xml:space="preserve"><value>Toplandı</value></data>
   <data name="Stat.Total" xml:space="preserve"><value>Toplam</value></data>
   <data name="Stat.Max" xml:space="preserve"><value>En fazla</value></data>
@@ -819,7 +819,7 @@
   <data name="Stat.Previous" xml:space="preserve"><value>Önceki</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Sonraki</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Gösterilecek görsel yok.</value></data>
-  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Gösterilecek kupa yok.</value></data>
+  <data name="Prof.TrophiesEmpty" xml:space="preserve"><value>Gösterilecek trofe yok</value></data>
   <data name="Prof.DogsEmpty" xml:space="preserve"><value>Bu avcının hiç köpeği yok.</value></data>
   <data name="Prof.FriendsEmpty" xml:space="preserve"><value>Gösterilecek arkadaş yok.</value></data>
   <data name="Prof.DownloadGallery" xml:space="preserve"><value>Galeriyi İndir</value></data>
@@ -827,7 +827,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Galeriniz indirmeye hazır!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Lütfen pencereyi kapatmayın</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Bu görseli silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!</value></data>
-  <data name="Prof.DogLvl" xml:space="preserve"><value>Sv.:</value></data>
+  <data name="Prof.DogLvl" xml:space="preserve"><value>Sev.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Beceriler</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Bu köpek henüz hiçbir beceri açmadı.</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Sil</value></data>
@@ -854,7 +854,7 @@
   <data name="Term.species.43" xml:space="preserve"><value>Doru Vaşak</value></data>
   <data name="Term.species.13" xml:space="preserve"><value>Boz Ayı</value></data>
   <data name="Term.species.16" xml:space="preserve"><value>Kanada Kazı</value></data>
-  <data name="Term.species.17" xml:space="preserve"><value>Dağ Tavşanı</value></data>
+  <data name="Term.species.17" xml:space="preserve"><value>Pamuk Kuyruklu Tavşan</value></data>
   <data name="Term.species.4" xml:space="preserve"><value>Kır Kurdu</value></data>
   <data name="Term.species.41" xml:space="preserve"><value>Dall Yaban Koyunu</value></data>
   <data name="Term.species.49" xml:space="preserve"><value>Bayağı Vaşak</value></data>
@@ -862,7 +862,7 @@
   <data name="Term.species.55" xml:space="preserve"><value>Alageyik</value></data>
   <data name="Term.species.40" xml:space="preserve"><value>Yabani Keçi</value></data>
   <data name="Term.species.5" xml:space="preserve"><value>Vahşi Domuz</value></data>
-  <data name="Term.species.29" xml:space="preserve"><value>Boz ördek</value></data>
+  <data name="Term.species.29" xml:space="preserve"><value>Boz Ördek</value></data>
   <data name="Term.species.36" xml:space="preserve"><value>Gri Kurt</value></data>
   <data name="Term.species.37" xml:space="preserve"><value>Grizzly Ayısı</value></data>
   <data name="Term.species.47" xml:space="preserve"><value>Yarımperdeayak Kazı</value></data>
@@ -870,7 +870,7 @@
   <data name="Term.species.8" xml:space="preserve"><value>Sığın Geyiği</value></data>
   <data name="Term.species.101" xml:space="preserve"><value>Katır Geyiği (Tipik Olmayan)</value></data>
   <data name="Term.species.1" xml:space="preserve"><value>Katır Geyiği (Tipik)</value></data>
-  <data name="Term.species.27" xml:space="preserve"><value>Kıl Kuyruk Ördeği</value></data>
+  <data name="Term.species.27" xml:space="preserve"><value>Kılkuyruk Ördeği</value></data>
   <data name="Term.species.7" xml:space="preserve"><value>Sülün</value></data>
   <data name="Term.species.30" xml:space="preserve"><value>Kutup Ayısı</value></data>
   <data name="Term.species.52" xml:space="preserve"><value>Puma</value></data>
@@ -970,7 +970,7 @@
   <data name="Term.collectable.2045" xml:space="preserve"><value>Sambar Geyiği Boynuzu</value></data>
   <data name="Term.collectable.1022" xml:space="preserve"><value>Gümüş Sevgililer Günü Oyuncak Ayısı</value></data>
   <data name="Term.collectable.1023" xml:space="preserve"><value>Pembe Sevgililer Günü Gülü</value></data>
-  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Tekli oyun modu</value></data>
+  <data name="Term.ui.competitions_singleplayer" xml:space="preserve"><value>Tek oyunculu</value></data>
   <data name="Term.ui.gohunting_hunt_header_animals" xml:space="preserve"><value>Hayvanlar</value></data>
   <data name="Term.ui.profile_category_weapons" xml:space="preserve"><value>Silahlar</value></data>
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Koleksiyonlar</value></data>
@@ -1007,7 +1007,7 @@
   <data name="Help.Lang.German" xml:space="preserve"><value>Almanca</value></data>
   <data name="Help.Lang.French" xml:space="preserve"><value>Fransızca</value></data>
   <data name="Help.Lang.Spanish" xml:space="preserve"><value>İspanyolca</value></data>
-  <data name="Help.Support.Connections" xml:space="preserve"><value>Çoklu oyun bağlantıları hakkında bilgi</value></data>
+  <data name="Help.Support.Connections" xml:space="preserve"><value>Çok oyunculu bağlantılar hakkında bilgi</value></data>
   <data name="Help.Support.NewTo" xml:space="preserve"><value>{game} oyununda yeni misiniz?</value></data>
   <data name="Help.Support.Videos" xml:space="preserve"><value>Bazı video eğitimlere göz atın &gt;</value></data>
   <data name="Help.Guides.Title" xml:space="preserve"><value>Topluluk Kaynakları ve Rehberler</value></data>
@@ -1021,47 +1021,47 @@
   <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Seriyi Sürdür</value></data>
   <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Bir Seriyi Sürdürme</value></data>
   <data name="DayHelp.Intro.1" xml:space="preserve"><value>Günlük görevler, {game} oyununun görev sistemine eklenen yepyeni bir özelliktir ve Başlatıcıda veya Web Sitesinde {0}Görevler bölümünde{1} bulunabilir.</value></data>
-  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Bir günde tamamlanmak üzere tasarlandıkları için Günlük Görevler oldukça basit olmalıdır ve çoğu belirli silah veya ekipman gerektirmez. Zor Günlük Görevler bazen buna istisna olabilir, ancak cesaretiniz kırılmasın! Günlük görevleri isterseniz Çoklu Oyunda da tamamlayabilirsiniz.</value></data>
+  <data name="DayHelp.Intro.2" xml:space="preserve"><value>Bir günde tamamlanmak üzere tasarlandıkları için Günlük Görevler oldukça basit olmalıdır ve çoğu belirli silah veya ekipman gerektirmez. Zor Günlük Görevler bazen buna istisna olabilir, ancak cesaretiniz kırılmasın! Günlük görevleri isterseniz çok oyunculu modda da tamamlayabilirsiniz.</value></data>
   <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>Yeni Günlük Görevler arayüzü</value></data>
   <data name="DayHelp.How.Title" xml:space="preserve"><value>Nasıl çalışır?</value></data>
-  <data name="DayHelp.How.1" xml:space="preserve"><value>Her gün her oyuncu tamamlaması için yeni bir Günlük Görev (bundan sonra GG) alır. Farklı oyuncular farklı Günlük Görevler alır.</value></data>
-  <data name="DayHelp.How.2" xml:space="preserve"><value>Bir GG tamamlamak GG serinizi 1 artırır. {0}Seri{1}, art arda tamamlanan GG'lerin oluşturduğu dizi olarak tanımlanır.</value></data>
-  <data name="DayHelp.How.3" xml:space="preserve"><value>Bir GG'yi atlamak veya tamamlayamamak “serinizi bozar” ve sizi birinci güne geri döndürür.</value></data>
-  <data name="DayHelp.How.4" xml:space="preserve"><value>Serinizi bozarsanız, Günlük Görevler siz onları yeni bir seri başlatmak için Etkinleştirene veya son serinizi sürdürene kadar pasif olur. Bozulan bir seri, son tamamladığınız Günlük Görevden devam etmek için Mağazadaki {0}Seriyi Sürdür{1} hizmetiyle kurtarılabilir.</value></data>
+  <data name="DayHelp.How.1" xml:space="preserve"><value>Her gün her oyuncu tamamlaması için yeni bir Günlük Görev alır. Farklı oyuncular farklı Günlük Görevler alır.</value></data>
+  <data name="DayHelp.How.2" xml:space="preserve"><value>Bir Günlük Görevi tamamlamak Günlük Görev serinizi 1 artırır. {0}Seri{1}, art arda tamamlanan Günlük Görevlerin oluşturduğu dizi olarak tanımlanır.</value></data>
+  <data name="DayHelp.How.3" xml:space="preserve"><value>Bir Günlük Görevi atlamak veya tamamlayamamak “serinizi bozar” ve sizi birinci güne geri döndürür.</value></data>
+  <data name="DayHelp.How.4" xml:space="preserve"><value>Serinizi bozarsanız, Günlük Görevler siz onları yeni bir seri başlatmak için Etkinleştirene veya son serinizi sürdürene kadar etkin olmaz. Bozulan bir seri, son tamamladığınız Günlük Görevden devam etmek için Mağazadaki {0}Seriyi Sürdür{1} hizmetiyle kurtarılabilir.</value></data>
   <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Zorluk Seviyeleri</value></data>
-  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>GG'ler üç zorluk seviyesinde gelir:</value></data>
+  <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>Günlük Görevler üç zorluk seviyesinde gelir:</value></data>
   <data name="DayHelp.Easy" xml:space="preserve"><value>Kolay</value></data>
   <data name="DayHelp.Medium" xml:space="preserve"><value>Orta</value></data>
   <data name="DayHelp.Hard" xml:space="preserve"><value>Zor</value></data>
-  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Her zorluk seviyesi renk kodludur: kolay GG yeşil, orta GG mavi, zor GG kırmızı simgeyle gösterilir.</value></data>
+  <data name="DayHelp.Diff.1" xml:space="preserve"><value>Her zorluk seviyesi renk kodludur: kolay Günlük Görev yeşil, orta Günlük Görev mavi, zor Günlük Görev kırmızı simgeyle gösterilir.</value></data>
   <data name="DayHelp.Diff.2" xml:space="preserve"><value>Renklere ek olarak her zorluk seviyesinin yıldız sayısı da farklıdır: kolay için 1, orta için 2, zor için 3 yıldız.</value></data>
   <data name="DayHelp.Diff.3" xml:space="preserve"><value>Her zorluk seviyesinin temel ödülü farklıdır; sırasıyla {0}Kolay için 100 gm$, Orta için 500 gm$ ve Zor için 1000 gm${1}.</value></data>
-  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Ödüller GG serinizin uzunluğuyla birlikte artar; bununla ilgili ayrıntılar aşağıda.</value></data>
+  <data name="DayHelp.Diff.4" xml:space="preserve"><value>Ödüller Günlük Görev serinizin uzunluğuyla birlikte artar; bununla ilgili ayrıntılar aşağıda.</value></data>
   <data name="DayHelp.Prog.Title" xml:space="preserve"><value>İlerleme</value></data>
-  <data name="DayHelp.Prog.1" xml:space="preserve"><value>İlk GG'niz her zaman kolay olacaktır. Onu tamamlarsanız, farklı zorluk seviyelerindeki GG'ler {0}döngü{1} adını verdiğimiz bir düzene göre dönüşümlü olarak gelir.</value></data>
+  <data name="DayHelp.Prog.1" xml:space="preserve"><value>İlk Günlük Göreviniz her zaman kolay olacaktır. Onu tamamlarsanız, farklı zorluk seviyelerindeki Günlük Görevler {0}döngü{1} adını verdiğimiz bir düzene göre dönüşümlü olarak gelir.</value></data>
   <data name="DayHelp.Prog.2" xml:space="preserve"><value>Bir döngü şöyle görünür:</value></data>
-  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Gördüğünüz gibi bir döngü 16 gün sürer; tabii size verilen GG'leri gün be gün tamamlamaya devam etmeniz koşuluyla.</value></data>
+  <data name="DayHelp.Prog.3" xml:space="preserve"><value>Gördüğünüz gibi bir döngü 16 gün sürer; tabii size verilen Günlük Görevleri her gün tamamlamaya devam etmeniz koşuluyla.</value></data>
   <data name="DayHelp.Prog.4" xml:space="preserve"><value>İlk döngü tamamlandığında, {0}gm$ ödülleri %10 artırılmış{1} yeni bir döngü başlar (Kolay = 110 gm$, Orta = 550 gm$, Zor = 1100 gm$).</value></data>
   <data name="DayHelp.Prog.5" xml:space="preserve"><value>Sonraki her döngüde ödüller %10 daha artar ve en fazla temel ödül miktarının iki katına (%100 artış) kadar çıkar.</value></data>
   <data name="DayHelp.Prog.6" xml:space="preserve"><value>Örneğin serinizi bozmadan art arda 10 döngü tamamlarsanız, her görev için 2 kat ödül almaya başlarsınız ve bu, serinizi bozana kadar devam eder.</value></data>
   <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Normal Görevlerden Farkları</value></data>
-  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Normal görevlerin aksine, GG'lerde bir avın geçerli sayılması için hayvanı kendiniz öldürmeniz gerekir. Yine de arkadaşlarınız Çoklu Oyun oturumunda gerekli hayvanı {0}bulmanıza{1} yardım edebilir.</value></data>
-  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Normal görevlerin aksine, Günlük Görevlerin etkinleştirilmesi gerekmez. Bir Günlük Görev, sürdüğü süre boyunca (24 saat) her zaman aktiftir.</value></data>
-  <data name="DayHelp.Ach.1" xml:space="preserve"><value>GG'leri tamamlayarak başarılar kazanabilirsiniz. GG başarılarınızı oyuncu profilinizin Başarılar bölümünden kontrol edebilirsiniz:</value></data>
-  <data name="DayHelp.Ach.2" xml:space="preserve"><value>GG'leri tamamlamak, her zorluk seviyesi için bir tane olmak üzere 3 farklı başarı türüne sayılır.</value></data>
+  <data name="DayHelp.Reg.1" xml:space="preserve"><value>Normal görevlerin aksine, Günlük Görevlerde bir avın geçerli sayılması için hayvanı kendiniz öldürmeniz gerekir. Yine de arkadaşlarınız çok oyunculu oturumda gerekli hayvanı {0}bulmanıza{1} yardım edebilir.</value></data>
+  <data name="DayHelp.Reg.2" xml:space="preserve"><value>Normal görevlerin aksine, Günlük Görevlerin etkinleştirilmesi gerekmez. Bir Günlük Görev, sürdüğü süre boyunca (24 saat) her zaman etkindir.</value></data>
+  <data name="DayHelp.Ach.1" xml:space="preserve"><value>Günlük Görevleri tamamlayarak başarılar kazanabilirsiniz. Günlük Görev başarılarınızı oyuncu profilinizin Başarılar bölümünden kontrol edebilirsiniz:</value></data>
+  <data name="DayHelp.Ach.2" xml:space="preserve"><value>Günlük Görevleri tamamlamak, her zorluk seviyesi için bir tane olmak üzere 3 farklı başarı türüne sayılır.</value></data>
   <data name="DayHelp.Ach.3" xml:space="preserve"><value>İşte her zorluk seviyesinin kilometre taşlarını gösteren bir tablo:</value></data>
   <data name="DayHelp.Ach.Col.Difficulty" xml:space="preserve"><value>Zorluk</value></data>
   <data name="DayHelp.Ach.Col.Completed" xml:space="preserve"><value>Tamamlanan Görevler</value></data>
   <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Özel Ödüller</value></data>
-  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>GG serinizde ilerledikçe Zor GG'leri tamamladığınız için özel ödüller alırsınız.</value></data>
+  <data name="DayHelp.Rewards.1" xml:space="preserve"><value>Günlük Görev serinizde ilerledikçe Zor Günlük Görevleri tamamladığınız için özel ödüller alırsınız.</value></data>
   <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Özel ödüller şu biçimlerde gelir:</value></data>
   <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>ürünler</value></data>
   <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>kupalar</value></data>
-  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Ürünler ve kupalar yalnızca GG'leri tamamlayarak kazanabileceğiniz özel ödüllerdir (yani bunları edinmenin başka bir yolu yok!). Ödülleriniz yalnızca yeni bir oyunun başında görünür.</value></data>
-  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}ÖNEMLİ:{1} GG'lerin tüm Özel Ödülleri yalnızca bir kez kazanılabilir! Serinizi bozup yeni bir seri başlatırsanız yine gm$ alırsınız, ancak yeni Özel ödüller kazanmak için önceki serinizi geçmeniz gerekir.</value></data>
-  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Özel ödüllerinizi GG'nizin Ödüller bölümünde görebilirsiniz:</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Ürünler ve kupalar yalnızca Günlük Görevleri tamamlayarak kazanabileceğiniz özel ödüllerdir (yani bunları edinmenin başka bir yolu yok!). Ödülleriniz yalnızca yeni bir oyunun başında görünür.</value></data>
+  <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}ÖNEMLİ:{1} Günlük Görevlerin tüm Özel Ödülleri yalnızca bir kez kazanılabilir! Serinizi bozup yeni bir seri başlatırsanız yine gm$ alırsınız, ancak yeni Özel ödüller kazanmak için önceki serinizi geçmeniz gerekir.</value></data>
+  <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Özel ödüllerinizi Günlük Görevinizin Ödüller bölümünde görebilirsiniz:</value></data>
   <data name="DayHelp.Rewards.6" xml:space="preserve"><value>İşte bunun nasıl işlediğini gösteren kullanışlı bir tablo:</value></data>
-  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Art arda tamamlanan Zor GG sayısı (seri)</value></data>
+  <data name="DayHelp.Rewards.Col.Streak" xml:space="preserve"><value>Art arda tamamlanan Zor Günlük Görev sayısı (seri)</value></data>
   <data name="DayHelp.Rewards.Col.Reward" xml:space="preserve"><value>Özel Ödül</value></data>
   <data name="DayHelp.Reward.HuntingCap" xml:space="preserve"><value>Avcı Şapkası</value></data>
   <data name="DayHelp.Reward.CamoPatternA" xml:space="preserve"><value>Kamuflaj Deseni A</value></data>
@@ -1075,17 +1075,17 @@
   <data name="DayHelp.Reward.Engraved" xml:space="preserve"><value>Oymalı</value></data>
   <data name="DayHelp.Reward.Trophy3Months" xml:space="preserve"><value>Eşsiz kupa (3 ay)</value></data>
   <data name="DayHelp.Reward.Trophy6Months" xml:space="preserve"><value>Eşsiz kupa (6 ay)</value></data>
-  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Eşsiz kupa ({0} Zor GG)</value></data>
+  <data name="DayHelp.Reward.TrophyHardDms" xml:space="preserve"><value>Eşsiz kupa ({0} Zor Günlük Görev)</value></data>
   <data name="DayHelp.Reward.TrophyYear" xml:space="preserve"><value>Eşsiz kupa (1 yıl)</value></data>
-  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Adından da anlaşılacağı gibi bu hizmet, bir GG serisini sürdürmenizi sağlar. Örneğin uzun bir tamamlanmış GG serisine sahipsiniz ve ardından bir GG'yi kaçırdınız veya tamamlayamadınız; bu hizmeti kullanarak serinizi sürdürebilir ve son tamamladığınız GG'den devam edebilirsiniz.</value></data>
+  <data name="DayHelp.Resume.1" xml:space="preserve"><value>Adından da anlaşılacağı gibi bu hizmet, bir Günlük Görev serisini sürdürmenizi sağlar. Örneğin uzun bir tamamlanmış Günlük Görev serisine sahipsiniz ve ardından bir Günlük Görevi kaçırdınız veya tamamlayamadınız; bu hizmeti kullanarak serinizi sürdürebilir ve son tamamladığınız Günlük Görevden devam edebilirsiniz.</value></data>
   <data name="DayHelp.Resume.2" xml:space="preserve"><value>İyi tarafı, serinizi bozduğunuzdan beri ne kadar zaman geçtiğinin önemi yoktur; serinizi her zaman sürdürebilirsiniz - örneğin bir yıl önce bozmuş olsanız bile.</value></data>
   <data name="DayHelp.Resume.3" xml:space="preserve"><value>Bu hizmet önceden satın alınıp gerektiğinde etkinleştirilebilir. Satın alabileceğiniz veya sahip olabileceğiniz bu kartların sayısında sınır yoktur.</value></data>
-  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Bu hizmeti doğrudan GG sayfasından satın alabilirsiniz: serinizi bozduğunuz anda “1. gün” GG'nizin soluna, onu satın almanızı (veya en az bir tanesine zaten sahipseniz kullanmanızı) isteyen bir düğme gelir.</value></data>
+  <data name="DayHelp.Resume.4" xml:space="preserve"><value>Bu hizmeti doğrudan Günlük Görev sayfasından satın alabilirsiniz: serinizi bozduğunuz anda “1. gün” Günlük Görevinizin soluna, onu satın almanızı (veya en az bir tanesine zaten sahipseniz kullanmanızı) isteyen bir düğme gelir.</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternatif olarak {0}Mağaza{1} üzerinden de satın alabilirsiniz.</value></data>
-  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Satın aldıktan sonra bu hizmeti doğrudan GG sayfasında kullanabilirsiniz:</value></data>
+  <data name="DayHelp.Resume.6" xml:space="preserve"><value>Satın aldıktan sonra bu hizmeti doğrudan Günlük Görev sayfasında kullanabilirsiniz:</value></data>
   <data name="Download.Title" xml:space="preserve"><value>{game} nasıl indirilir ve oynanır</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Çoklu oyun gereksinimleri</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Tekli oyun gereksinimleri</value></data>
+  <data name="Download.Multi.Title" xml:space="preserve"><value>Çok oyunculu mod gereksinimleri</value></data>
+  <data name="Download.Single.Title" xml:space="preserve"><value>Tek oyunculu mod gereksinimleri</value></data>
   <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Desteklenen işletim sistemleri:</value></data>
   <data name="Download.Req.Os" xml:space="preserve"><value>İşletim sistemi:</value></data>
   <data name="Download.Req.Cpu" xml:space="preserve"><value>İşlemci:</value></data>
@@ -1093,8 +1093,8 @@
   <data name="Download.Req.Graphics" xml:space="preserve"><value>Ekran kartı:</value></data>
   <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafik çözünürlüğü:</value></data>
   <data name="Download.Req.Internet" xml:space="preserve"><value>İnternet bağlantısı:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Sahip:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Sahip FPS:</value></data>
+  <data name="Download.Req.Host" xml:space="preserve"><value>Kurucu:</value></data>
+  <data name="Download.Req.HostFps" xml:space="preserve"><value>Kurucu FPS:</value></data>
   <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 ve Windows 10</value></data>
   <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 ve Windows 11</value></data>
   <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Çift çekirdekli işlemci (2 GHz)</value></data>
@@ -1105,7 +1105,7 @@
   <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>En az 1024x768</value></data>
   <data name="Download.Req.InternetClient" xml:space="preserve"><value>İstemci: 512 kbps yükleme ve indirme</value></data>
   <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps yükleme ve indirme (oyuncu sayısına bağlı olarak)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Sahip oyunu en az 25-30 fps (saniyedeki kare sayısı) ile çalıştırmazsa fizik motoru hatalar üretir. Düşük donanımlı bilgisayarları olan oyuncular, oyunu mümkün olan en yüksek fps ile çalıştırabilmek için ayarları düşürmeyi denemelidir. {0}30 FPS{1} önerilen en düşük değerdir. FPS, internette bulunan ücretsiz araçlarla ölçülebilir.</value></data>
+  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Kurucu oyunu en az 25-30 fps (saniyedeki kare sayısı) ile çalıştırmazsa fizik motoru hatalar üretir. Düşük donanımlı bilgisayarları olan oyuncular, oyunu mümkün olan en yüksek fps ile çalıştırabilmek için ayarları düşürmeyi denemelidir. {0}30 FPS{1} önerilen en düşük değerdir. FPS, internette bulunan ücretsiz araçlarla ölçülebilir.</value></data>
   <data name="Download.Req.FpsTool" xml:space="preserve"><value>Araç ara</value></data>
   <data name="Download.Size" xml:space="preserve"><value>Oyunu indirin (yaklaşık 12 GB).</value></data>
   <data name="Download.Click" xml:space="preserve"><value>İndirmek için buraya tıklayın</value></data>
