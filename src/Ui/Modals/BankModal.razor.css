@@ -37,3 +37,22 @@ section > .cards + h2, .cards + h2 { margin-top: 30px; }
 .balance button ::deep .icon { width: 12px; height: 12px; vertical-align: -1px; }
 section.ms { padding-top: 33px; }
 .done { margin: 0; padding: 10px 15px; background: #eaf7dd; font-size: 14px; color: #3d9a1e; }
+.balance .info { display: flex; gap: 24px; margin-right: auto; }
+.balance .back { margin-right: 12px; }
+.balance .active b { margin: 0 6px 0 2px; font-weight: 700; color: #3d9a1e; }
+#remove-code { padding: 0; border: 0; background: none; color: var(--accent); text-decoration: underline; }
+.failed { margin: 0; padding: 10px 15px; background: #fbe6e6; font-size: 14px; color: #c00; }
+.invalid { animation: fade-out 2.5s forwards; }
+@keyframes fade-out { 0%, 92% { opacity: 1; } 100% { opacity: 0; } }
+.price { position: relative; }
+.price s { position: absolute; left: 0; right: 0; top: -20px; font-size: 16px; line-height: 20px; color: #aaa; }
+.pack .price b, .card .price b { font-weight: 400; color: #e03030; }
+.content-details { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 200ms ease; }
+.content-details.open { grid-template-rows: 1fr; }
+.content-details > div { overflow: hidden; }
+.content-details h4 { margin: 10px 0 2px; font-size: 14px; color: #555; }
+.content-details ul { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 20px; color: #777; }
+.redeem { text-align: center; }
+.redeem h2 { font-size: 26px; }
+.redeem p { margin: 0 0 8px; font-size: 16px; color: #777; }
+.redeem .buy { width: 320px; margin: 24px auto 0; }

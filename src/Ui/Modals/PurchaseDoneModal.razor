@@ -1,0 +1,13 @@
+@inject ModalService Modal
+@inject NavigationManager Nav
+
+<div class="done dialog-card" role="dialog" aria-modal="true">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Close">&times;</button>
+    <h2>@L["Store.Complete"]</h2>
+    <p>@L["Bank.Thanks"]</p>
+    <p>@L["Bank.ThanksClose"]</p>
+</div>
+
+@code {
+    void Close() { Modal.Close(); Nav.NavigateTo("/"); }
+}

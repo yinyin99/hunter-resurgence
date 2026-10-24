@@ -11,12 +11,16 @@ public sealed record BankPayment(DateTime When, string Type, string Status, stri
 /// <summary>A purchase or reward in em$ or gm$ with the balance around it; <see cref="Item"/> may be empty.</summary>
 public sealed record WalletEntry(DateTime When, int Amount, int Before, int After, string Item, string Summary);
 
+/// <summary>The membership of the account; <see cref="Expires"/> is null when it never ends.</summary>
+public sealed record AccountMembership(string Type, DateTime? Expires);
+
 public interface IWalletService
 {
     /// <summary>Rows a list call returns at most; a full list may have more.</summary>
     const int PageSize = 50;
 
     Task<Balances> BalancesAsync();
+    Task<AccountMembership> MembershipAsync();
     Task<WalletSummary> SummaryAsync();
     Task<IReadOnlyList<BankPayment>> BankAsync(int offset);
     Task<IReadOnlyList<WalletEntry>> EntriesAsync(bool gms, int offset);

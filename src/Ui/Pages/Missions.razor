@@ -2,6 +2,7 @@
 @page "/missions/group/{Group:int}"
 @inject IMissionsService Service
 @inject ModalService Modal
+@inject IJSRuntime JS
 
 <PageTitle>@L["Mis.Regular"]</PageTitle>
 
@@ -80,12 +81,24 @@ else { <div class="skeleton skeleton-page"></div> }
 
     [Parameter] public int? Group { get; set; }
 
+    // the old deep link /missions/group/<id> opens that pack and scrolls to it, once the page has its data
+    bool scrollPending;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!scrollPending || data is null || Group is not { } id) return;
+        scrollPending = false;
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await shell.InvokeVoidAsync("scrollToPack", id);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
         data = await Service.RegularAsync();
         (reserves, species, weapons) = (data.Missions.Select(m => m.Reserve).Distinct().Order().ToList(), data.Missions.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), data.Missions.Select(m => m.Weapon).Distinct().Order().ToList());
         Apply();
+        if (Group is { } g) { open.Add("pack:" + g); scrollPending = true; }
     }
 
     bool Show(string box) => appliedIn == "all" || appliedIn == box;
@@ -105,7 +118,7 @@ else { <div class="skeleton skeleton-page"></div> }
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "")">
-                <button type="button" class="row" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
+                <button type="button" class="row hover-tint" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
                 @if (open.Contains(m.Name))
                 {
                     <div class="more">
@@ -122,9 +135,19 @@ else { <div class="skeleton skeleton-page"></div> }
     RenderFragment Packs(IEnumerable<MissionPack> list) => @<ul class="rows packs">
         @foreach (var p in list)
         {
-            <li>
-                <div class="row pack"><span class="tri"></span><span class="name">@p.Name<small>@L["Mis.Progress"] @p.Done / @p.Total</small></span>
-                    <button type="button" class="star" title="@L["Mis.FavouriteTip"]" aria-pressed="@p.Favourite" @onclick="() => Favourite(p)"><Icon Name="@(p.Favourite ? "star" : "star-regular")" /></button></div>
+            var key = "pack:" + p.Id;
+            <li class="@(open.Contains(key) ? "open" : "")" data-pack="@p.Id">
+                <div class="packline">
+                    <button type="button" class="row pack hover-tint" aria-expanded="@(open.Contains(key) ? "true" : "false")" @onclick="() => Toggle(key)"><span class="tri"></span><span class="name">@p.Name<small>@L["Mis.Progress"] @p.Done / @p.Total</small></span></button>
+                    <button type="button" class="star" title="@L["Mis.FavouriteTip"]" aria-pressed="@p.Favourite" @onclick="() => Favourite(p)"><Icon Name="@(p.Favourite ? "star" : "star-regular")" /></button>
+                </div>
+                @if (open.Contains(key))
+                {
+                    <div class="more">
+                        <p>@p.Description</p>
+                        @Rows(p.Missions)
+                    </div>
+                }
             </li>
         }
     </ul>;

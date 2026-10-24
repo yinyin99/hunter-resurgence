@@ -4,7 +4,7 @@
     <h2 class="page-title">@L["Menu.Store"]</h2>
     <div class="cols">
         <nav class="menu" aria-label="@L["Menu.Store"]">
-            @foreach (var c in categories)
+            @foreach (var c in categories.Where(c => c.Key != "sales" || hasSales))
             {
                 var open = c.Key == Active || c.Children.Any(x => x.Key == Active);
                 <a href="/store/@c.Key" class="top @(c.Key is "sales" or "all" or "bundles" ? "lead" : "") @(open ? "open" : "")">@Name(c)</a>
@@ -23,12 +23,13 @@
 
 @code {
     IReadOnlyList<StoreCategory> categories = [];
+    bool hasSales;
 
     /// <summary>Key of the category (or sub-category) shown.</summary>
     [Parameter, EditorRequired] public string Active { get; set; } = "all";
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    protected override async Task OnInitializedAsync() => categories = await Service.CategoriesAsync();
+    protected override async Task OnInitializedAsync() => (categories, hasSales) = (await Service.CategoriesAsync(), await Service.HasSalesAsync());
 
     // the category texts come from the resx (incl. the Sights sub-categories); other sub-categories fall back to the name as given
     string Name(StoreCategory c) => L["Store.Cat." + c.Key] is { ResourceNotFound: false } s ? s.Value : c.Name;

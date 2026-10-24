@@ -1,7 +1,7 @@
 <span class="ribbon @Class" aria-hidden="true"><span>@Text</span></span>
 
 @code {
-    /// <summary>The corner ribbon of a store card: SALE (red) or BUNDLE (blue, Class="blue").</summary>
+    /// <summary>The corner ribbon of a store card: SALE (red), BUNDLE (Class="blue") or an item banner (Class premium, limited, new or community).</summary>
     [Parameter, EditorRequired] public string Text { get; set; } = "";
     [Parameter] public string? Class { get; set; }
 }

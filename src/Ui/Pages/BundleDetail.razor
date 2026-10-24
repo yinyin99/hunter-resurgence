@@ -21,11 +21,13 @@
             <p class="text">@bundle.Description</p>
             @if (!bundle.Buyable) { <p class="own">@L["Store.MaxOwn"]</p> }
             <table class="tbl">
-                <thead><tr><th>@L["Store.Included"]</th><th class="own">@L["Store.Own"]</th><th>@L["Store.Value"]</th></tr></thead>
+                <thead><tr><th>@L["Store.Included"]</th><th class="own">@L["Store.Own"]</th><th>@L["Store.OwnLimit"]</th><th>@L["Store.Value"]</th></tr></thead>
                 <tbody>
-                    @foreach (var l in bundle.Lines)
+                    @* a line of the same item twice is one line with the counts added *@
+                    @foreach (var g in bundle.Lines.GroupBy(l => l.ItemId))
                     {
-                        <tr><td><AssetSlot Name="store-thumb" Width="30" Height="30" Class="thumb" /> @(l.Count)x <a href="/store/item/@l.ItemId">@l.Name ()</a></td><td class="own">@l.Owned</td><td>@l.Value em$</td></tr>
+                        var l = g.First();
+                        <tr><td><AssetSlot Name="store-thumb" Width="30" Height="30" Class="thumb" /> @g.Sum(x => x.Count)x <a href="/store/item/@l.ItemId">@l.Name</a>@if (l.Variant.Length > 0) { <text> (@l.Variant)</text> }</td><td class="own">@l.Owned</td><td>@(l.OwnLimit > 0 ? l.OwnLimit : L["Store.Unlimited"])</td><td>@g.Sum(x => x.Value) em$</td></tr>
                     }
                 </tbody>
             </table>
@@ -46,9 +48,15 @@
     protected override async Task OnParametersSetAsync()
     {
         signedIn = await Sessions.CurrentAsync() is not null;
-        bundle = await Service.BundleAsync(Id);
+        await Load();
         loaded = true;
     }
 
-    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = bundle!.Id, ["Name"] = bundle.Name, ["Ems"] = bundle.Price, ["Bundle"] = true });
+    async Task Load() => bundle = await Service.BundleAsync(Id);
+
+    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
+    {
+        ["Id"] = bundle!.Id, ["Name"] = bundle.Name, ["Ems"] = bundle.Price, ["Bundle"] = true, ["Lines"] = bundle.Lines,
+        ["Bought"] = EventCallback.Factory.Create(this, Load),
+    });
 }

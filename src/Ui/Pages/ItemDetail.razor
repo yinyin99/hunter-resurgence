@@ -9,7 +9,7 @@
     @if (item is not null)
     {
         <article class="item panel">
-            @if (item.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
+            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L["Store.SaleTag"] : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
             <AssetSlot Name="store-item-large" Width="270" Height="197" Class="pic" />
             <div class="buy">
                 @* signed out the old page shows only the button *@
@@ -20,15 +20,48 @@
                     @if (item.WasEms is { } was) { <s>@was em$</s> }
                 }
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!item.Buyable) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
+                else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
             </div>
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
-            @if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
-            @if (!item.Buyable) { <p class="own">@L["Store.CantBuy"]</p> }
+            @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+            else if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
+            @if (!item.Buyable || item.DisabledByServices) { <p class="own">@L["Store.CantBuy"]</p> }
+            else if (item.LimitReached) { <p class="own">@L["Store.AlreadyOwn"]</p> }
             <p class="text">@item.Description</p>
+            @if (item.Fits is { Count: > 0 } fits)
+            {
+                <section class="fits">
+                    @foreach (var f in fits)
+                    {
+                        <h4>@f.Title</h4>
+                        <table class="tbl"><tbody>@foreach (var x in f.Items) { <tr><td><a href="/store/item/@x.Id">@x.Name</a></td></tr> }</tbody></table>
+                    }
+                </section>
+            }
+            @if (item.Ethics is { } ethics)
+            {
+                <section class="ethics">
+                    <h4>@L["Store.Ethical"]</h4>
+                    <table class="tbl tbl-c">
+                        <thead><tr><th></th>@foreach (var c in ethics.Columns) { <th>@c</th> }</tr></thead>
+                        <tbody>
+                            @foreach (var r in ethics.Rows)
+                            {
+                                <tr>
+                                    <td>@r.Species</td>
+                                    @foreach (var (c, ok) in ethics.Columns.Zip(r.Permitted))
+                                    {
+                                        <td title="@L[ok ? "Store.Ethical.Yes" : "Store.Ethical.No", c, r.Species]"><Icon Name="@(ok ? "check" : "xmark")" /></td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </section>
+            }
         </article>
     }
     else if (loaded) { <p class="text">@L["Store.None"]</p> }
@@ -39,14 +72,23 @@
     StoreItem? item;
     bool loaded, signedIn;
 
+    // the corner banner: premium, then sale, then limited, new or community
+    string? banner => item is null ? null : item.Banner == "premium" ? "premium" : item.WasEms is not null ? "sale" : item.Banner;
+
     [Parameter] public int Id { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
         signedIn = await Sessions.CurrentAsync() is not null;
-        item = await Service.ItemAsync(Id);
+        await Load();
         loaded = true;
     }
 
-    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?> { ["Id"] = item!.Id, ["Name"] = item.Name, ["Ems"] = item.Ems, ["Gms"] = item.Gms });
+    async Task Load() => item = await Service.ItemAsync(Id);
+
+    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
+    {
+        ["Id"] = item!.Id, ["Name"] = item.Name, ["Ems"] = item.Ems, ["Gms"] = item.Gms, ["Owned"] = item.Owned, ["DaysLeft"] = item.DaysLeft, ["Multi"] = item.MultiBuy,
+        ["Bought"] = EventCallback.Factory.Create(this, Load),
+    });
 }

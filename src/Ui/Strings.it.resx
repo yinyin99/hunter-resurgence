@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>giorni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFFERTA</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PACCHETTO</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITATA</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NUOVO</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>SCELTI DALLA COMMUNITY</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Incluso</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Valore</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Limite di acquisto</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Illimitati</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prezzo del pacchetto</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Costo capacità</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Consentito per</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>È etico usare {0} quando si caccia: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Non è etico usare {0} quando si caccia: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Non è possibile acquistare questo articolo</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Possiedi già questo oggetto</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Non è possibile acquistare questo pacchetto. È stato raggiunto il limite massimo di possesso per almeno uno degli articoli inclusi</value></data>
   <data name="Store.None" xml:space="preserve"><value>Nessun articolo in questa categoria</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Dettagli</value></data>
@@ -567,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Guida</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Cronologia acquisti</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Il tuo saldo em$:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Tipo di abbonamento:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Scadenza:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Mai</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Riscatta un codice sconto</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Inserisci il tuo codice sconto</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Annulla</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Indietro</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Il codice sconto inserito non è valido o è scaduto</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Codice attivato</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Disattiva il codice</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Riscatta il tuo regalo</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Hai inserito un codice regalo che contiene</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Clicca qui per riscattare questo regalo</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Il tuo regalo è stato aggiunto al tuo account!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Valuta di gioco</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Armi, tende, abbigliamento, licenze di caccia e molto altro si possono acquistare con la valuta di gioco (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Acquista come regalo</value></data>
@@ -586,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Accesso a tutte le riserve</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Munizioni base illimitate</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Dettagli</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Armi incluse:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Oggetti inclusi:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Gli articoli inclusi in un abbonamento o acquistati separatamente restano tuoi anche dopo la scadenza dell’abbonamento</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Rispetto a 3 mesi di abbonamento a {game}</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Domande e risposte sul negozio di {game}</value></data>
@@ -603,6 +625,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Ti ricordiamo che le em$ non possono essere vendute né trasferite e non possono essere convertite in denaro o in nient’altro che non sia contenuto effettivo di {game}. Le em$ non sono rimborsabili. Le em$ non hanno alcun valore monetario e non costituiscono valuta né proprietà di alcun tipo.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Armi extra: {0}, altri articoli: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} mesi</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Errore interno di Steam, riprova più tardi.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Si è verificato un errore durante la connessione a Steam. Riprova.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Grazie per aver usato il negozio di {game}, il tuo account è stato aggiornato con l'oggetto acquistato.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Clicca su Chiudi in alto a destra per tornare a {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Qualcosa è andato storto. Per favore riprova. Se ancora non funziona contatta il supporto</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Grazie per il tuo acquisto!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Il tuo acquisto di {0} tramite Steam è completato e i tuoi articoli sono stati aggiunti al tuo account.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Acquisto non riuscito</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Qualcosa è andato storto e il tuo acquisto su Steam è stato annullato. Riprova.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Caccia ora</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Messaggi</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Accetta messaggi solo dagli amici</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Nuovo messaggio</value></data>

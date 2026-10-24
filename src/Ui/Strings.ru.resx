@@ -520,11 +520,21 @@
   <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>КОМПЛЕКТ</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>ПРЕМИУМ</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>ОГРАНИЧЕННЫЙ СРОК</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>НОВИНКА</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>Выбор сообщества</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Включает</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Стоимость</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Лимит собственности</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>неогр.</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Цена комплекта</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Занимаемое место</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Оружие разрешено для охоты на этих животных:</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>{0} разрешено для охоты: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>{0} не разрешено для охоты: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Этот предмет нельзя купить</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>У вас уже есть этот предмет.</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Этот комплект нельзя купить: достигнут предел владения хотя бы для одного из входящих в него предметов</value></data>
   <data name="Store.None" xml:space="preserve"><value>В этой категории нет предметов</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Детали</value></data>
@@ -567,10 +577,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Помощь</value></data>
   <data name="Bank.History" xml:space="preserve"><value>История покупок</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Ваш баланс em$:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Тип членства:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Истекает:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Никогда</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Использовать код скидки</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Введите код скидки</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Назад</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Введённый код скидки недействителен или истёк</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Код активирован</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Деактивировать</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Получите ваш подарок</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Вы ввели подарочный код, содержащий</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Нажмите здесь, чтобы получить подарок</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Подарок добавлен на ваш аккаунт!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Внутриигровая валюта</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>За внутриигровую валюту (em$) можно купить оружие, палатки, одежду, охотничьи лицензии и многое другое.</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Купить в подарок</value></data>
@@ -586,6 +606,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Доступ ко всем охотугодьям</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Неограниченные базовые боеприпасы</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Детали</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Включено оружие:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Включены предметы:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Предметы, входящие в членство или купленные отдельно, сохраняются, даже если членство истекло</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* По сравнению с 3 месяцами членства в {game}</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>Вопросы и ответы о магазине {game}</value></data>
@@ -603,6 +625,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Обратите внимание: em$ нельзя продать или передать, а также обменять на наличные или что-либо ещё, кроме собственно содержимого {game}. em$ не подлежат возврату. em$ не имеют денежной стоимости и не являются валютой или имуществом какого-либо вида.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Доп. оружие: {0}, прочие предметы: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} мес.</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Внутренняя ошибка Steam, повторите попытку позже.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Произошла ошибка при подключении к Steam. Повторите попытку.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Спасибо, что пользуетесь магазином {game}, купленный предмет добавлен на ваш аккаунт.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Нажмите «Закрыть» в правом верхнем углу, чтобы вернуться в {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Что-то пошло не так. Пожалуйста, повторите попытку. И если все равно не получится, обратитесь в службу техподдержки.</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Спасибо за покупку!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Ваша покупка {0} через Steam завершена, товары добавлены на ваш аккаунт.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Покупка не удалась</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Что-то пошло не так, и покупка в Steam была отменена. Повторите попытку.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Охота</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Сообщения</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Разрешить сообщения только от друзей</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Новое сообщение</value></data>
