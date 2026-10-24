@@ -28,9 +28,9 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Multiplayer-spil</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Find et multiplayer-spil</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Selvstudier</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ er den virtuelle valuta i {game}, som kan bruges til at købe ting i butikken, f.eks. våben, udstyr, tøj og meget mere.</value></data>
+  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ er den virtuelle valuta i {game}, som kan bruges til at købe varer i butikken, f.eks. våben, udstyr, tøj og meget mere.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Indstillinger</value></data>
-  <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunition:</value></data>
+  <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>brændstof:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Venner</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Beskeder</value></data>
@@ -88,7 +88,7 @@
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Nyhedsarkiv</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEDLEMMER ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Deltag på Discord</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Kom med på Discord</value></data>
   <data name="Discord.Hangout" xml:space="preserve"><value>Hæng ud med folk, der forstår det</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Gå på jagt</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLEPLAYER</value></data>
@@ -101,7 +101,7 @@
   <data name="Hunt.StartSingle" xml:space="preserve"><value>Start et singleplayer-spil</value></data>
   <data name="Hunt.StartMulti" xml:space="preserve"><value>Start et multiplayer-spil</value></data>
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Eller deltag i et</value></data>
-  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Hurtig deltagelse</value></data>
+  <data name="Hunt.QuickJoin" xml:space="preserve"><value>Deltag nu</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Dine fremskridt</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Jægerscore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rang</value></data>
@@ -112,7 +112,7 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Se kommende konkurrencer</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>OPRET SINGLEPLAYER-SPIL</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>OPRET ET MULTIPLAYER-SPIL</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Vælg, hvor din jagt skal starte. Klik på et af de 12 jagtområde-logoer nedenfor for at se et kort over det pågældende jagtområde, og klik på jagthytterne (husikonerne) for at se, hvilke arter der findes i området. Du kan også udforske verdenskortet ved at klikke og trække på det og zoome ind og ud med musehjulet.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Vælg, hvor din jagt skal starte. Klik på et af de 12 logoer for jagtområderne nedenfor for at se et kort over det pågældende jagtområde, og klik på jagthytterne (husikonerne) for at se, hvilke arter der findes i området. Du kan også udforske verdenskortet ved at klikke og trække på det og zoome ind og ud med musehjulet.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Nogle af verdens mest storslåede naturområder og 45 forskellige dyrearter venter på dig – god jagt!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttidspunkt:</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Start spillet</value></data>
@@ -144,7 +144,7 @@
   <data name="Servers.Clear" xml:space="preserve"><value>Ryd</value></data>
   <data name="Servers.Refresh" xml:space="preserve"><value>Opdater</value></data>
   <data name="Servers.OnlyAllowed" xml:space="preserve"><value>Vis kun spil, jeg må deltage i</value></data>
-  <data name="Servers.Showing" xml:space="preserve"><value>Viste spil: {0}</value></data>
+  <data name="Servers.Showing" xml:space="preserve"><value>Viser spil: {0}</value></data>
   <data name="Servers.GameName" xml:space="preserve"><value>Spillets navn</value></data>
   <data name="Servers.Reserve" xml:space="preserve"><value>Jagtområde</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spillere</value></data>
@@ -163,7 +163,7 @@
   <data name="Servers.Info" xml:space="preserve"><value>Hvis du spiller multiplayer med folk, der befinder sig langt væk fra dig, kan det give forbindelsesproblemer eller lag. Det anbefales, at du deltager i spil, hvor værten er tæt på dig. De farvede prikker ved siden af flagene på serverlisten viser, hvor langt du er fra spillets vært.</value></data>
   <data name="Servers.InfoLink" xml:space="preserve"><value>Klik her for at få mere at vide om forbindelser</value></data>
   <data name="Servers.Short" xml:space="preserve"><value>Kort afstand</value></data>
-  <data name="Servers.Medium" xml:space="preserve"><value>Mellem afstand</value></data>
+  <data name="Servers.Medium" xml:space="preserve"><value>Mellemlang afstand</value></data>
   <data name="Servers.Long" xml:space="preserve"><value>Lang afstand</value></data>
   <data name="Servers.NoGames" xml:space="preserve"><value>Ingen spil fundet</value></data>
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Vi kunne ikke finde nogen offentlige multiplayer-spil, som du må deltage i.</value></data>
@@ -180,7 +180,7 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Angiv adgangskode</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Deltag i spil</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Luk</value></data>
-  <data name="Tut.Intro" xml:space="preserve"><value>Det anbefales, at du gennemfører de grundlæggende selvstudier, før du går på din første rigtige jagt i det første jagtområde. I selvstudierne møder du områdets faste jagtopsynsmand. Han gennemgår det grundlæggende og lærer dig, hvad du skal vide for at få succes i {game}.</value></data>
+  <data name="Tut.Intro" xml:space="preserve"><value>Det anbefales, at du gennemfører de grundlæggende selvstudier, før du går på din første rigtige jagt i det første jagtområde. I selvstudierne møder du områdets faste jagtbetjent. Han gennemgår det grundlæggende og lærer dig, hvad du skal vide for at få succes i {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Start selvstudium</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Sted: {0}</value></data>
   <data name="GameSettings.Title" xml:space="preserve"><value>Spilindstillinger</value></data>
@@ -214,7 +214,7 @@
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Ikke konfigureret: settings.json har ingen post for disse filer.</value></data>
   <data name="GameSettings.Missing" xml:space="preserve"><value>Start spillet én gang, så det opretter sine indstillingsfiler.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>En indstillingsfil har et format, som launcheren ikke kender, så den er ikke blevet ændret.</value></data>
-  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Spillet kører. Luk det, før du gemmer: Det omskriver selv disse filer.</value></data>
+  <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Spillet kører. Luk det, før du gemmer: det omskriver selv disse filer.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Indstillingerne kunne ikke gemmes.</value></data>
   <data name="Patch.GotIt" xml:space="preserve"><value>Forstået!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Ny spilpatch</value></data>
@@ -309,11 +309,11 @@
   <data name="Signup.P1.Prev" xml:space="preserve"><value>Forrige avatar</value></data>
   <data name="Signup.P1.Next" xml:space="preserve"><value>Næste avatar</value></data>
   <data name="Signup.P2.Title" xml:space="preserve"><value>FÅ DIT FØRSTE VÅBEN</value></data>
-  <data name="Signup.P2.Text" xml:space="preserve"><value>Du er nået så langt, fedt! Her er en velkomstgave fra os – dit første våben, den blanke 12GA enkeltløbede haglbørsse med gratis påfyldelig ammunition. Med denne robuste skønhed kan du jage alle dyr i spillet på etisk forsvarlig vis, undtagen bison.</value></data>
+  <data name="Signup.P2.Text" xml:space="preserve"><value>Du er nået så langt, fedt! Her er en velkomstgave fra os – dit første våben, den blanke 12GA haglbørse (enkeltskud) med gratis påfyldelig ammunition. Med denne robuste skønhed kan du jage alle dyr i spillet på etisk forsvarlig vis, undtagen bison.</value></data>
   <data name="Signup.P3.Title" xml:space="preserve"><value>NYD DINE JAGTTEGN</value></data>
-  <data name="Signup.P3.Text" xml:space="preserve"><value>Nu er det snart tid til din første jagt! Hvad går du efter? Som gæstespiller får du gratis jagttegn for livstid til hvidhalet hjort, europæisk kanin og fasan samt to ekstra gratis dyr, der skifter hver uge. Betalende medlemmer kan jage alle arter – se vores medlemskabsbutik, hvis du vil blive medlem.</value></data>
+  <data name="Signup.P3.Text" xml:space="preserve"><value>Nu er det snart tid til din første jagt! Hvad går du efter? Som gæstespiller får du gratis livsvarige jagttegn til virginiahjort, europæisk kanin og fasan samt to ekstra gratis dyr, der skifter hver uge. Betalende medlemmer kan jage alle arter – se vores medlemskabsbutik, hvis du vil blive medlem.</value></data>
   <data name="Signup.P4.Title" xml:space="preserve"><value>BEKRÆFT DIN E-MAIL</value></data>
-  <data name="Signup.P4.Text" xml:space="preserve"><value>Den, der bekræfter sin e-mail, venter gode ting! Tjek din indbakke for en besked fra os, og følg vejledningen i den. Din nuværende e-mailadresse er {0}. Hvis den ikke er korrekt, så ret den nedenfor, og klik på »Send e-mail igen«.</value></data>
+  <data name="Signup.P4.Text" xml:space="preserve"><value>Gode ting venter dem, der bekræfter deres e-mail! Tjek din indbakke for en besked fra os, og følg vejledningen i den. Din nuværende e-mailadresse er {0}. Hvis den ikke er korrekt, så ret den nedenfor, og klik på »Send e-mail igen«.</value></data>
   <data name="Signup.P4.ConfirmedTitle" xml:space="preserve"><value>DIN BELØNNING</value></data>
   <data name="Signup.P4.Confirmed" xml:space="preserve"><value>Tak, fordi du bekræftede din e-mail.</value></data>
   <data name="Signup.P4.Change" xml:space="preserve"><value>Opdater e-mailadresse</value></data>
@@ -339,10 +339,10 @@
   <data name="Dialog.Tutorial.Save" xml:space="preserve"><value>Gem og start</value></data>
   <data name="Dialog.Tutorial.Preset" xml:space="preserve"><value>Grafikkvalitet</value></data>
   <data name="Dialog.Tutorial.Low" xml:space="preserve"><value>Lave indstillinger</value></data>
-  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Mellemindstillinger</value></data>
+  <data name="Dialog.Tutorial.Medium" xml:space="preserve"><value>Mellemste indstillinger</value></data>
   <data name="Dialog.Tutorial.High" xml:space="preserve"><value>Høje indstillinger</value></data>
   <data name="Dialog.Tutorial.Ultra" xml:space="preserve"><value>Ultraindstillinger</value></data>
-  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Egne indstillinger</value></data>
+  <data name="Dialog.Tutorial.Custom" xml:space="preserve"><value>Brugerdefinerede indstillinger</value></data>
   <data name="Dialog.Tutorial.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="Dialog.Tutorial.Display" xml:space="preserve"><value>Visningstilstand</value></data>
   <data name="Dialog.Tutorial.Fullscreen" xml:space="preserve"><value>Fuld skærm</value></data>
@@ -409,7 +409,7 @@
   <data name="League.P2" xml:space="preserve"><value>Hver fredag skal du jage et nyt dyr i det tildelte jagtområde (dyr nedlagt uden for dette jagtområde tæller ikke med). Du har en hel uge og 7 forsøg til at deltage. Konkurrencen aktiveres og deaktiveres som normalt. I den uge, hvor et dyr jages, er alle almindelige konkurrencer for det pågældende dyr sat på pause. Og ja, tilbud varer nu en hel uge. Præmierne for hver ligakonkurrence svarer til de weekendkonkurrencer, de erstatter.</value></data>
   <data name="League.P3" xml:space="preserve"><value>Begivenheder påvirkes ikke af ligaen.</value></data>
   <data name="League.P4" xml:space="preserve"><value>Alle konkurrencer er kun singleplayer, bortset fra konkurrencer med ænder eller gæs.</value></data>
-  <data name="League.P5" xml:space="preserve"><value>Hver 4. uge rykker vi til et nyt jagtområde, og hver 3 jagtområder udgør en sæson.</value></data>
+  <data name="League.P5" xml:space="preserve"><value>Hver 4. uge rykker vi til et nyt jagtområde, og tre jagtområder udgør en sæson.</value></data>
   <data name="League.P6" xml:space="preserve"><value>Du behøver ikke deltage i hver eneste ligakonkurrence for at kvalificere dig til månedens eller sæsonens præmier, men det er oplagt en fordel at kaste sig ud i det så ofte, du kan.</value></data>
   <data name="League.NotEnrolled" xml:space="preserve"><value>Du er ikke tilmeldt nogen konkurrencer</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Månedlig rangliste</value></data>
@@ -421,8 +421,8 @@
   <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
-  <data name="Board.Single" xml:space="preserve"><value>Enkelt gevir</value></data>
-  <data name="Board.Double" xml:space="preserve"><value>Dobbelt gevir</value></data>
+  <data name="Board.Single" xml:space="preserve"><value>Enkelt gevirstang</value></data>
+  <data name="Board.Double" xml:space="preserve"><value>Par gevirstænger</value></data>
   <data name="Board.TopScores" xml:space="preserve"><value>Højeste scorer i sæson {0}</value></data>
   <data name="Board.TopRanges" xml:space="preserve"><value>Længste skud i sæson {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Se hele ranglisten</value></data>
@@ -461,7 +461,7 @@
   <data name="Mis.Broken" xml:space="preserve"><value>Din serie er brudt. Tryk på AKTIVÉR for at starte en ny, eller KØB/BRUG Genoptag serie for at fortsætte din seneste serie.</value></data>
   <data name="Mis.BrokenNote" xml:space="preserve"><value>* Daglige missioner forbliver inaktive, indtil du vælger at aktivere eller genoptage en serie.</value></data>
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivering gennemført!</value></data>
-  <data name="Mis.Enjoy" xml:space="preserve"><value>God tjeneste!</value></data>
+  <data name="Mis.Enjoy" xml:space="preserve"><value>God fornøjelse!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivér alle</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktivér automatisk nye tilgængelige missioner</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivér kun favoritmissioner automatisk</value></data>
@@ -488,7 +488,7 @@
   <data name="Mis.NoActive" xml:space="preserve"><value>Du har i øjeblikket ingen aktive missioner. Aktivér en tilgængelig mission nedenfor for at komme i gang.</value></data>
   <data name="Mis.NoAvailable" xml:space="preserve"><value>Ingen tilgængelige missioner</value></data>
   <data name="Mis.Unlock" xml:space="preserve"><value>Du skal gennemføre følgende missioner for at låse {0} op:</value></data>
-  <data name="Mis.Failed" xml:space="preserve"><value>Noget gik galt, og du fik ikke din ting. Beklager. Prøv igen!</value></data>
+  <data name="Mis.Failed" xml:space="preserve"><value>Noget gik galt, og du fik ikke din genstand. Beklager. Prøv igen!</value></data>
   <data name="Store.Cat.sales" xml:space="preserve"><value>Tilbud</value></data>
   <data name="Store.Cat.all" xml:space="preserve"><value>Alle varer</value></data>
   <data name="Store.Cat.bundles" xml:space="preserve"><value>Pakker</value></data>
@@ -508,14 +508,14 @@
   <data name="Store.Cat.114" xml:space="preserve"><value>Poser til trofæfoto</value></data>
   <data name="Store.Cat.24" xml:space="preserve"><value>Udstyr</value></data>
   <data name="Store.Cat.29" xml:space="preserve"><value>Stort udstyr</value></data>
-  <data name="Store.Cat.57" xml:space="preserve"><value>Eventgenstande</value></data>
+  <data name="Store.Cat.57" xml:space="preserve"><value>Begivenhedsgenstande</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trofæhytter</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Køretøjer</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Søg</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KØB</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Kan ikke købes</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Log ind for at købe</value></data>
-  <data name="Store.Own" xml:space="preserve"><value>Du har:</value></data>
+  <data name="Store.Own" xml:space="preserve"><value>Du ejer:</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
@@ -524,8 +524,8 @@
   <data name="Store.Value" xml:space="preserve"><value>Værdi</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Pakkepris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapacitetsomkostning</value></data>
-  <data name="Store.CantBuy" xml:space="preserve"><value>Det er ikke muligt at købe denne ting</value></data>
-  <data name="Store.MaxOwn" xml:space="preserve"><value>Det er ikke muligt at købe denne pakke. Grænsen for, hvor mange du kan eje, er nået for mindst én af de inkluderede ting</value></data>
+  <data name="Store.CantBuy" xml:space="preserve"><value>Det er ikke muligt at købe denne vare</value></data>
+  <data name="Store.MaxOwn" xml:space="preserve"><value>Det er ikke muligt at købe denne pakke. Grænsen for, hvor mange du kan eje, er nået for mindst én af de inkluderede genstande</value></data>
   <data name="Store.None" xml:space="preserve"><value>Ingen varer i denne kategori</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Detaljer</value></data>
   <data name="Store.ClickMore" xml:space="preserve"><value>Klik for at se detaljer</value></data>
@@ -577,32 +577,32 @@
   <data name="Bank.Compare" xml:space="preserve"><value>* Sammenlignet med 500 em$</value></data>
   <data name="Bank.Save" xml:space="preserve"><value>Spar {0} %*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Startpakker</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Få alt, hvad du skal bruge for at gå på jagt efter ethvert dyr i Evergreen Hunting Reserve. Vores startpakker indeholder et basismedlemskab, der giver dig jagttegn til alle dyr i spillet, og et særligt udvalg af ting, der sætter dig på sporet af at blive mesterjæger.</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Få alt, hvad du skal bruge for at gå på jagt efter ethvert dyr i Evergreen Hunting Reserve. Vores startpakker indeholder et basismedlemskab, der giver dig jagttegn til alle dyr i spillet, og et særligt udvalg af genstande, der sætter dig på sporet af at blive mesterjæger.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Specialpakker</value></data>
-  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Vælg en af vores specialpakker, og få alt, hvad du skal bruge for at jage de mest populære dyr i {game}. Alle disse pakker indeholder et basismedlemskab, der giver dig jagttegn til alle arter i spillet, og et udvalg af anbefalede ting, der er målrettet bestemte dyr og deres jagtspil.</value></data>
+  <data name="Bank.SpecialDesc" xml:space="preserve"><value>Vælg en af vores specialpakker, og få alt, hvad du skal bruge for at jage de mest populære dyr i {game}. Alle disse pakker indeholder et basismedlemskab, der giver dig jagttegn til alle arter i spillet, og et udvalg af anbefalede genstande, der er målrettet bestemte dyr og deres jagtspil.</value></data>
   <data name="Bank.Basic" xml:space="preserve"><value>Basismedlemskaber</value></data>
-  <data name="Bank.Months" xml:space="preserve"><value>{0} måneders medlemskab</value></data>
+  <data name="Bank.Months" xml:space="preserve"><value>{0} md. medlemskab</value></data>
   <data name="Bank.Animals" xml:space="preserve"><value>Jagttegn til alle dyr</value></data>
   <data name="Bank.Reserves" xml:space="preserve"><value>Adgang til alle jagtområder</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Ubegrænset basisammunition</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Detaljer</value></data>
-  <data name="Bank.Kept" xml:space="preserve"><value>Ting, der er inkluderet i et medlemskab eller købt separat, beholder du, selv om dit medlemskab udløber</value></data>
+  <data name="Bank.Kept" xml:space="preserve"><value>Genstande, der er inkluderet i et medlemskab eller købt separat, beholder du, selv om dit medlemskab udløber</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Sammenlignet med 3 måneders {game}-medlemskab</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game}-butikken: spørgsmål og svar</value></data>
   <data name="Bank.Q1" xml:space="preserve"><value>Hvad er em$?</value></data>
-  <data name="Bank.A1" xml:space="preserve"><value>em$ er den virtuelle valuta i {game}, som kan bruges til at købe ting i butikken, f.eks. våben, udstyr, tøj og meget mere.</value></data>
+  <data name="Bank.A1" xml:space="preserve"><value>em$ er den virtuelle valuta i {game}, som kan bruges til at købe varer i butikken, f.eks. våben, udstyr, tøj og meget mere.</value></data>
   <data name="Bank.Q2" xml:space="preserve"><value>Hvordan køber jeg em$ som gave til en ven?</value></data>
   <data name="Bank.A2" xml:space="preserve"><value>Under fanen »Køb em$« i dette vindue skal du markere afkrydsningsfeltet »Køb som gave« og derefter klikke på knappen »KØB« ud for det valutabeløb, du vil købe. Du kommer til en købsoversigt på Steams hjemmeside. Klik på knappen »Godkend«. Du kommer til en bekræftelsesside (tak for dit køb). Klik på din em$-saldo øverst på skærmen (hvor der står »em$ XXXX«), og se din {0}købshistorik{1}. Den seneste post i din købshistorik skal lyde »Købt som gave. Gavekode:« efterfulgt af gavekoden. Kopiér koden, og send den til den ven, du vil give gaven. Din ven skal derefter indløse koden, for at em$-gaven bliver lagt til vennens saldo.</value></data>
   <data name="Bank.Q3" xml:space="preserve"><value>Hvordan indløser jeg en gavekode?</value></data>
   <data name="Bank.A3" xml:space="preserve"><value>Klik på knappen »Indløs en rabatkode« i øverste højre hjørne af dette vindue, indsæt din gavekode dér, og klik på knappen »OK«. Der vises en bekræftelsesbesked – klik på knappen »Klik her for at indløse denne gave«. Der vises en besked om, at din gave er lagt på din konto. Klik på OK, og nyd din gave!</value></data>
-  <data name="Bank.Q4" xml:space="preserve"><value>Jeg missede en tilbudspris – kan jeg stadig få rabatten?</value></data>
+  <data name="Bank.Q4" xml:space="preserve"><value>Jeg gik glip af en tilbudspris – kan jeg stadig få rabatten?</value></data>
   <data name="Bank.A4" xml:space="preserve"><value>Når et tilbud eller en rabat er udløbet, kan vi ikke længere tilbyde den rabatterede pris.</value></data>
-  <data name="Bank.Q5" xml:space="preserve"><value>Refusionspolitik</value></data>
-  <data name="Bank.A5" xml:space="preserve"><value>Som med de fleste digitale valutaer giver vi ikke refusion for køb af em$. Spillet er gratis at downloade og prøve, så kontrollér, at det virker på din computer, og at det er, hvad du forventer, før du køber em$.</value></data>
+  <data name="Bank.Q5" xml:space="preserve"><value>Refunderingspolitik</value></data>
+  <data name="Bank.A5" xml:space="preserve"><value>Som med de fleste digitale valutaer tilbyder vi ikke refundering ved køb af em$. Spillet er gratis at downloade og prøve, så kontrollér, at det virker på din computer, og at det er, hvad du forventer, før du køber em$.</value></data>
   <data name="Bank.Q6" xml:space="preserve"><value>Ansvarsfraskrivelse</value></data>
   <data name="Bank.A6" xml:space="preserve"><value>Bemærk, at em$ ikke kan sælges eller overdrages og ikke kan veksles til kontanter eller andet end selve indholdet i {game}. em$ kan ikke refunderes. em$ har ingen pengeværdi og udgør ikke valuta eller ejendom af nogen art.</value></data>
-  <data name="Bank.Extras" xml:space="preserve"><value>Ekstra våben: {0}, andre ting: {1}</value></data>
-  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} måneder</value></data>
+  <data name="Bank.Extras" xml:space="preserve"><value>Ekstra våben: {0}, andre genstande: {1}</value></data>
+  <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} md.</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Beskeder</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Tillad kun beskeder fra venner</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Ny besked</value></data>
@@ -661,9 +661,9 @@
   <data name="Set.Warning" xml:space="preserve"><value>Advarsel</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Hvis du afbryder forbindelsen til din Steam-konto, bliver du logget ud af {game}, og launcheren lukkes. Du kan ikke spille {game} på Steam igen, før du forbinder med en anden konto.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jeg forstår det og vil afbryde forbindelsen til min Steam-konto</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Headerbillede</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Headerbilleder låses op, når du når nye niveauer i tre forskellige milepælskategorier – Dyremester, Våbenmester og Udforskningsmester. Når et headerbillede er låst op, forbliver det tilgængeligt for altid.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Se flere detaljer om milepælsniveauerne for mestre.</value></data>
+  <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannerbillede</value></data>
+  <data name="Set.HeaderText" xml:space="preserve"><value>Bannerbilleder låses op, når du når nye niveauer i tre forskellige milepælskategorier – Dyremester, Våbenmester og Udforskningsmester. Når et bannerbillede er låst op, forbliver det tilgængeligt for altid.</value></data>
+  <data name="Set.HeaderLink" xml:space="preserve"><value>Se flere oplysninger om mesterniveauerne for milepæle.</value></data>
   <data name="Set.HeaderNone" xml:space="preserve"><value>Ingen</value></data>
   <data name="Set.HeaderRecent" xml:space="preserve"><value>Seneste</value></data>
   <data name="Set.GroupAnimals" xml:space="preserve"><value>Dyr</value></data>
@@ -687,12 +687,12 @@
   <data name="GM.Active" xml:space="preserve"><value>Aktiv</value></data>
   <data name="GM.Refill" xml:space="preserve"><value>Genfyld</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Velkommen til {game}</value></data>
-  <data name="Welcome.Congrats" xml:space="preserve"><value>Tillykke {0}, din splinternye {game}-konto er oprettet!</value></data>
+  <data name="Welcome.Congrats" xml:space="preserve"><value>Tillykke, {0}! Din splinternye {game}-konto er oprettet!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Hvis du allerede har downloadet og installeret spillets launcher og klient, er du klar til at spille! Er du ny i {game}, anbefaler vi, at du gennemfører selvstudierne, før du går på din første rigtige jagt. Selvstudierne lærer dig alt, hvad du har brug for at vide for at klare dig selv i Evergreen Hunting Reserve. Kom i gang nedenfor.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Har du en detailkode?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Hvis du har købt en detailversion af {game}, skal du {0}klikke her{1} for at aktivere din detailkode.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Selvstudier</value></data>
-  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Lad Doc, den faste jagtopsynsmand i Evergreen Hunting Reserve, lære dig alt, hvad du skal vide for at spille {game}.</value></data>
+  <data name="Welcome.TutorialsText" xml:space="preserve"><value>Lad Doc, den faste jagtbetjent i Evergreen Hunting Reserve, lære dig alt, hvad du skal vide for at spille {game}.</value></data>
   <data name="Welcome.TutorialsGo" xml:space="preserve"><value>Gå til selvstudier</value></data>
   <data name="Welcome.Hunting" xml:space="preserve"><value>Gå på jagt</value></data>
   <data name="Welcome.HuntingText" xml:space="preserve"><value>Start en rigtig jagt, hvis du allerede kender {game}, eller du bare er for ivrig efter at komme ud.</value></data>
@@ -714,7 +714,7 @@
   <data name="Invite.Step1" xml:space="preserve"><value>Send en invitation</value></data>
   <data name="Invite.Step1Text" xml:space="preserve"><value>Klik på knappen nedenfor for at få dit henvisningslink, og send det til en ven, du vil invitere til {game}.</value></data>
   <data name="Invite.Step2" xml:space="preserve"><value>Spil {game} sammen</value></data>
-  <data name="Invite.Step2Text" xml:space="preserve"><value>Når din ven opretter en konto {0}via dit link{1}, får vedkommende 200 em$, en 5x30 mm afstandsmåler, en elgkalder og en lugtfjerner!</value></data>
+  <data name="Invite.Step2Text" xml:space="preserve"><value>Når din ven opretter en konto {0}via dit link{1}, får vedkommende 200 em$, en 5x30 mm afstandsmåler, et elgkald og en lugtfjerner!</value></data>
   <data name="Invite.Step3" xml:space="preserve"><value>Bliv belønnet</value></data>
   <data name="Invite.Step3Text" xml:space="preserve"><value>Hvis din ven køber em$, bliver du belønnet!</value></data>
   <data name="Invite.SeeRewards" xml:space="preserve"><value>Se belønningerne nedenfor</value></data>
@@ -769,11 +769,11 @@
   <data name="Prof.Lvl" xml:space="preserve"><value>Niv.</value></data>
   <data name="Prof.Statistics" xml:space="preserve"><value>Statistik</value></data>
   <data name="Stat.Last" xml:space="preserve"><value>Seneste jagt</value></data>
-  <data name="Stat.Lifetime" xml:space="preserve"><value>Statistik for hele livet</value></data>
+  <data name="Stat.Lifetime" xml:space="preserve"><value>Samlet statistik</value></data>
   <data name="Stat.History" xml:space="preserve"><value>Jagthistorik</value></data>
   <data name="Stat.Best" xml:space="preserve"><value>Personlige rekorder</value></data>
   <data name="Stat.Misc" xml:space="preserve"><value>Diverse</value></data>
-  <data name="Stat.Antlers" xml:space="preserve"><value>Gevirer at samle</value></data>
+  <data name="Stat.Antlers" xml:space="preserve"><value>Gevir-samleobjekter</value></data>
   <data name="Stat.Kills" xml:space="preserve"><value>Bekræftede nedlagte dyr</value></data>
   <data name="Stat.Weapon" xml:space="preserve"><value>Våben</value></data>
   <data name="Stat.Ammo" xml:space="preserve"><value>Ammunition</value></data>
@@ -796,8 +796,8 @@
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Ingen dyremøder under denne ekspedition.</value></data>
   <data name="Stat.NoCollectExp" xml:space="preserve"><value>Ingen samleobjekter samlet under denne ekspedition.</value></data>
   <data name="Stat.NoAchExp" xml:space="preserve"><value>Ingen milepæle opnået under denne ekspedition.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Ingen gevirer samlet under denne ekspedition.</value></data>
-  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ingen bekræftede drab under denne ekspedition.</value></data>
+  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Ingen gevir-samleobjekter samlet under denne ekspedition.</value></data>
+  <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ingen bekræftede nedlagte dyr under denne ekspedition.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Denne jæger har ikke været på nogen ekspeditioner.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>
   <data name="Stat.Dur" xml:space="preserve"><value>Varighed</value></data>
@@ -839,7 +839,7 @@
   <data name="Browser.Delay" xml:space="preserve"><value>Det kan tage et par sekunder...</value></data>
   <data name="Browser.EmailProgress" xml:space="preserve"><value>E-mailbekræftelse i gang...</value></data>
   <data name="Browser.EmailDone" xml:space="preserve"><value>E-mailbekræftelsen er gennemført!</value></data>
-  <data name="Browser.ThankYou" xml:space="preserve"><value>Tak, fordi du er blevet med! Fortsæt i {game}-launcheren for at begynde at spille!</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Tak, fordi du er kommet med! Fortsæt i {game}-launcheren for at begynde at spille!</value></data>
   <data name="Browser.Logout" xml:space="preserve"><value>Du er nu logget ud</value></data>
   <data name="Term.species.19" xml:space="preserve"><value>Alpestenbuk</value></data>
   <data name="Term.species.28" xml:space="preserve"><value>Amerikansk sortand</value></data>
@@ -887,7 +887,7 @@
   <data name="Term.species.45" xml:space="preserve"><value>Sambarhjort</value></data>
   <data name="Term.species.26" xml:space="preserve"><value>Sitkahjort</value></data>
   <data name="Term.species.51" xml:space="preserve"><value>Snegås</value></data>
-  <data name="Term.species.25" xml:space="preserve"><value>Snesko-hare</value></data>
+  <data name="Term.species.25" xml:space="preserve"><value>Sneskohare</value></data>
   <data name="Term.species.2" xml:space="preserve"><value>Kalkun</value></data>
   <data name="Term.species.56" xml:space="preserve"><value>Tyrannosaurus rex</value></data>
   <data name="Term.species.42" xml:space="preserve"><value>Vandbøffel</value></data>
@@ -895,8 +895,8 @@
   <data name="Term.species.31" xml:space="preserve"><value>Varulv</value></data>
   <data name="Term.species.50" xml:space="preserve"><value>Varulv</value></data>
   <data name="Term.species.35" xml:space="preserve"><value>Hvidhalet rype</value></data>
-  <data name="Term.species.100" xml:space="preserve"><value>Hvidhalehjort (utypisk)</value></data>
-  <data name="Term.species.0" xml:space="preserve"><value>Hvidhalehjort (typisk)</value></data>
+  <data name="Term.species.100" xml:space="preserve"><value>Virginiahjort (utypisk)</value></data>
+  <data name="Term.species.0" xml:space="preserve"><value>Virginiahjort (typisk)</value></data>
   <data name="Term.species.10" xml:space="preserve"><value>Vildsvin</value></data>
   <data name="Term.species.33" xml:space="preserve"><value>Dalrype</value></data>
   <data name="Term.species.57" xml:space="preserve"><value>Tjur</value></data>
@@ -904,8 +904,8 @@
   <data name="Term.collectable.1" xml:space="preserve"><value>Karl Johan</value></data>
   <data name="Term.collectable.2" xml:space="preserve"><value>Gylden kantarel</value></data>
   <data name="Term.collectable.3" xml:space="preserve"><value>Champignon</value></data>
-  <data name="Term.collectable.4" xml:space="preserve"><value>Gul sumpskørhat</value></data>
-  <data name="Term.collectable.5" xml:space="preserve"><value>Nordisk gryde</value></data>
+  <data name="Term.collectable.4" xml:space="preserve"><value>Gul birkeskørhat</value></data>
+  <data name="Term.collectable.5" xml:space="preserve"><value>Norrøn gryde</value></data>
   <data name="Term.collectable.6" xml:space="preserve"><value>Byzantinsk mønt</value></data>
   <data name="Term.collectable.2055" xml:space="preserve"><value>Dådyrgevir</value></data>
   <data name="Term.collectable.1032" xml:space="preserve"><value>Grøn gave</value></data>
@@ -930,9 +930,9 @@
   <data name="Term.collectable.1020" xml:space="preserve"><value>Brun valentinsbamse</value></data>
   <data name="Term.collectable.1025" xml:space="preserve"><value>Rød valentinsrose</value></data>
   <data name="Term.collectable.1014" xml:space="preserve"><value>Guld-valentinsballon</value></data>
-  <data name="Term.collectable.2039" xml:space="preserve"><value>Utypisk hvidhalehjortgevir</value></data>
+  <data name="Term.collectable.2039" xml:space="preserve"><value>Utypisk virginiahjortgevir</value></data>
   <data name="Term.collectable.1037" xml:space="preserve"><value>Gylden gave</value></data>
-  <data name="Term.collectable.2000" xml:space="preserve"><value>Hvidhalehjortgevir</value></data>
+  <data name="Term.collectable.2000" xml:space="preserve"><value>Virginiahjortgevir</value></data>
   <data name="Term.collectable.2001" xml:space="preserve"><value>Muldyrhjortgevir</value></data>
   <data name="Term.collectable.2003" xml:space="preserve"><value>Roosevelt-wapitigevir</value></data>
   <data name="Term.collectable.2040" xml:space="preserve"><value>Utypisk muldyrhjortgevir</value></data>
@@ -998,7 +998,7 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guides og selvstudier</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoselvstudier</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Lokale fællesskabssider</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flere officielle supportkanaler. Du kan finde en masse oplysninger om, hvordan man spiller spillet, samt fejlfinding på vores wikiside, som fællesskabet selv vedligeholder. Vores officielle {game}-fora er meget aktive og besøges dagligt af mange af vores spillere, som gerne hjælper begyndere.</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flere officielle supportkanaler. Du kan finde en masse oplysninger om, hvordan du spiller spillet, samt fejlfinding på vores wikiside, som fællesskabet selv vedligeholder. Vores officielle {game}-fora er meget aktive og besøges dagligt af mange af vores spillere, som gerne hjælper begyndere.</value></data>
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Hvis du ikke kan finde svar på dine spørgsmål i forummet eller wikien, kan du oprette en sag i vores supportsystem, og så prøver vi at hjælpe dig så hurtigt som muligt!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-support</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
@@ -1031,17 +1031,17 @@
   <data name="DayHelp.Diff.Title" xml:space="preserve"><value>Sværhedsgrader</value></data>
   <data name="DayHelp.Diff.Intro" xml:space="preserve"><value>DM'er findes i tre sværhedsgrader:</value></data>
   <data name="DayHelp.Easy" xml:space="preserve"><value>Let</value></data>
-  <data name="DayHelp.Medium" xml:space="preserve"><value>Mellem</value></data>
+  <data name="DayHelp.Medium" xml:space="preserve"><value>Middel</value></data>
   <data name="DayHelp.Hard" xml:space="preserve"><value>Svær</value></data>
   <data name="DayHelp.Diff.1" xml:space="preserve"><value>Hver sværhedsgrad er farvekodet: en let DM vises med et grønt ikon, en mellemsvær DM med et blåt ikon og en svær DM med et rødt ikon.</value></data>
-  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Ud over farverne har hver sværhedsgrad et forskelligt antal stjerner: 1 stjerne for let, 2 for mellem og 3 for svær.</value></data>
-  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Hver sværhedsgrad giver forskellige grundbelønninger: {0}100 gm$ for let, 500 gm$ for mellem og 1000 gm$ for svær{1}.</value></data>
+  <data name="DayHelp.Diff.2" xml:space="preserve"><value>Ud over farverne har hver sværhedsgrad et forskelligt antal stjerner: 1 stjerne for let, 2 for middel og 3 for svær.</value></data>
+  <data name="DayHelp.Diff.3" xml:space="preserve"><value>Hver sværhedsgrad giver forskellige grundbelønninger: {0}100 gm$ for let, 500 gm$ for middel og 1000 gm$ for svær{1}.</value></data>
   <data name="DayHelp.Diff.4" xml:space="preserve"><value>Belønningerne stiger, efterhånden som din DM-serie bliver længere – mere om det nedenfor.</value></data>
   <data name="DayHelp.Prog.Title" xml:space="preserve"><value>Progression</value></data>
   <data name="DayHelp.Prog.1" xml:space="preserve"><value>Din første DM er altid en let en. Hvis du gennemfører den, skifter DM'er med forskellige sværhedsgrader efter et mønster, som vi kalder en {0}cyklus{1}.</value></data>
   <data name="DayHelp.Prog.2" xml:space="preserve"><value>En cyklus ser sådan ud:</value></data>
   <data name="DayHelp.Prog.3" xml:space="preserve"><value>Som du kan se, varer en cyklus 16 dage, forudsat at du naturligvis dag efter dag bliver ved med at gennemføre de DM'er, du får tildelt.</value></data>
-  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Når den første cyklus er gennemført, begynder en ny cyklus med {0}10 % højere gm$-belønninger{1} (let = 110 gm$, mellem = 550 gm$, svær = 1100 gm$).</value></data>
+  <data name="DayHelp.Prog.4" xml:space="preserve"><value>Når den første cyklus er gennemført, begynder en ny cyklus med {0}10 % højere gm$-belønninger{1} (let = 110 gm$, middel = 550 gm$, svær = 1100 gm$).</value></data>
   <data name="DayHelp.Prog.5" xml:space="preserve"><value>For hver efterfølgende cyklus stiger belønningerne med yderligere 10 % op til højst det dobbelte af grundbelønningerne (en stigning på 100 %).</value></data>
   <data name="DayHelp.Prog.6" xml:space="preserve"><value>Hvis du for eksempel gennemfører 10 cyklusser i træk uden at bryde din serie, får du derfor en x2-belønning for hver mission, og det fortsætter, indtil du bryder din serie.</value></data>
   <data name="DayHelp.Reg.Title" xml:space="preserve"><value>Forskelle fra almindelige missioner</value></data>
@@ -1055,9 +1055,9 @@
   <data name="DayHelp.Rewards.Title" xml:space="preserve"><value>Særlige belønninger</value></data>
   <data name="DayHelp.Rewards.1" xml:space="preserve"><value>Efterhånden som du kommer længere i din DM-serie, får du særlige belønninger for at gennemføre svære DM'er.</value></data>
   <data name="DayHelp.Rewards.2" xml:space="preserve"><value>Særlige belønninger kommer i form af:</value></data>
-  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>ting</value></data>
+  <data name="DayHelp.Rewards.Items" xml:space="preserve"><value>genstande</value></data>
   <data name="DayHelp.Rewards.Trophies" xml:space="preserve"><value>trofæer</value></data>
-  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Ting og trofæer er eksklusive belønninger, som du kun kan vinde ved at gennemføre DM'er (der er altså ingen anden måde at få dem på!). Dine belønninger vises først ved start af et nyt spil.</value></data>
+  <data name="DayHelp.Rewards.3" xml:space="preserve"><value>Genstande og trofæer er eksklusive belønninger, som du kun kan vinde ved at gennemføre DM'er (der er altså ingen anden måde at få dem på!). Dine belønninger vises først ved start af et nyt spil.</value></data>
   <data name="DayHelp.Rewards.4" xml:space="preserve"><value>{0}VIGTIGT:{1} Alle DM'ens særlige belønninger kan kun vindes én gang! Hvis du bryder din serie og starter en ny, får du stadig gm$, men du skal overgå din tidligere serie for at optjene nye særlige belønninger.</value></data>
   <data name="DayHelp.Rewards.5" xml:space="preserve"><value>Du kan se alle særlige belønninger i sektionen Belønninger på din DM:</value></data>
   <data name="DayHelp.Rewards.6" xml:space="preserve"><value>Her er en praktisk tabel, der viser, hvordan det fungerer:</value></data>
@@ -1097,7 +1097,7 @@
   <data name="Download.Req.HostFps" xml:space="preserve"><value>Værtens FPS:</value></data>
   <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 og Windows 10</value></data>
   <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 og Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual core-processor (2 GHz)</value></data>
+  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual-core-processor (2 GHz)</value></data>
   <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
   <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
   <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 eller bedre), ATI Radeon HD 2000 Series (2400 eller bedre). 256 MB indbygget hukommelse (til lav og mellem). 512-768 MB indbygget hukommelse (til høj, afhængigt af antal spillere).</value></data>
