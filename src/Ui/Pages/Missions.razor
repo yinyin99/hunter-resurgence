@@ -20,7 +20,7 @@
         <h4>@L["Mis.Filters"]</h4>
         <form @onsubmit="Apply" @onsubmit:preventDefault>
             <div class="grid">
-                <label>@L["Mis.FilterIn"]<select class="field-sel" id="block_id" @bind="filterIn"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
+                <label>@L["Mis.FilterIn"]<select class="field-sel" id="block_id" value="@filterIn" @onchange="BlockChanged"><option value="all">@L["Mis.All"]</option><option value="favourite">@L["Mis.Favourite"]</option><option value="active">@L["Mis.Active"]</option><option value="packs">@L["Mis.Packs"]</option><option value="available">@L["Mis.Available"]</option></select></label>
                 <label>@L["Mis.Reserves"]<MultiSelect Options="reserves" Selected="reserveSel" /></label>
                 <label>@L["Mis.Species"]<MultiSelect Options="species" Selected="speciesSel" Label="s => L.Term(s)" /></label>
                 <label>@L["Mis.Weapons"]<MultiSelect Options="weapons" Selected="weaponSel" /></label>
@@ -34,9 +34,9 @@
     @if (Show("favourite"))
     {
         <section class="box">
-            <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input class="tick" type="checkbox" id="mission_favourite_hide" /> @L["Mis.HideCompleted"]</label></h4>
-            @if (data.Packs.All(p => !p.Favourite)) { <p class="notice">@L["Mis.NoFavourites"]</p> }
-            else { @Packs(data.Packs.Where(p => p.Favourite)) }
+            <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input class="tick" type="checkbox" id="mission_favourite_hide" checked="@data.HideCompletedFavourite" @onchange="HideFavourite" /> @L["Mis.HideCompleted"]</label></h4>
+            @if (favourites.Count == 0) { <p class="notice">@L["Mis.NoFavourites"]</p> }
+            else { @Packs(favourites) }
         </section>
     }
     @if (Show("active"))
@@ -77,7 +77,7 @@ else { <div class="skeleton skeleton-page"></div> }
     bool hideCompleted, appliedHide;
     int closed;
     IReadOnlyList<Mission> active = [], available = [];
-    IReadOnlyList<MissionPack> packs = [];
+    IReadOnlyList<MissionPack> packs = [], favourites = [];
 
     [Parameter] public int? Group { get; set; }
 
@@ -96,29 +96,64 @@ else { <div class="skeleton skeleton-page"></div> }
     {
         tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
         data = await Service.RegularAsync();
-        (reserves, species, weapons) = (data.Missions.Select(m => m.Reserve).Distinct().Order().ToList(), data.Missions.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), data.Missions.Select(m => m.Weapon).Distinct().Order().ToList());
+        Options();
         Apply();
         if (Group is { } g) { open.Add("pack:" + g); scrollPending = true; }
     }
 
     bool Show(string box) => appliedIn == "all" || appliedIn == box;
 
-    // client-side, as in the old page: the Filter button narrows the lists
+    // the options of the three filters are those of the lists the chosen block shows; changing the block clears the choices and filters at once, as the old page
+    void BlockChanged(ChangeEventArgs e)
+    {
+        filterIn = e.Value?.ToString() ?? "all";
+        reserveSel.Clear();
+        speciesSel.Clear();
+        weaponSel.Clear();
+        Options();
+        Apply();
+    }
+
+    void Options()
+    {
+        var ms = data!.Missions.Where(m => m.State == "active" && Block("active") || m.State == "available" && Block("available"))
+            .Concat(data.Packs.Where(p => p.Favourite && Block("favourite") || Block("packs")).SelectMany(p => p.Missions)).ToList();
+        (reserves, species, weapons) = (ms.Select(m => m.Reserve).Distinct().Order().ToList(), ms.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), ms.Select(m => m.Weapon).Distinct().Order().ToList());
+    }
+
+    bool Block(string box) => filterIn == "all" || filterIn == box;
+
+    bool Chosen(Mission m) => (reserveSel.Count == 0 || reserveSel.Contains(m.Reserve)) && (speciesSel.Count == 0 || speciesSel.Contains(m.Species)) && (weaponSel.Count == 0 || weaponSel.Contains(m.Weapon));
+
+    static bool Has(string text, string find) => text.Contains(find, StringComparison.OrdinalIgnoreCase);
+
+    bool Found(Mission m) => applied.Length == 0 || Has(m.Name, applied) || Has(m.Description, applied) || m.Objectives.Any(o => Has(o, applied));
+
+    // client-side, as in the old page: the Filter button narrows the lists; both the missions and the packs (and their favourites) answer to reserve, species, weapon, hide completed and search
     void Apply()
     {
         (appliedIn, applied, appliedHide) = (filterIn, search.Trim(), hideCompleted);
-        var ms = data!.Missions.Where(m => (reserveSel.Count == 0 || reserveSel.Contains(m.Reserve)) && (speciesSel.Count == 0 || speciesSel.Contains(m.Species)) && (weaponSel.Count == 0 || weaponSel.Contains(m.Weapon))
-            && (applied.Length == 0 || m.Name.Contains(applied, StringComparison.OrdinalIgnoreCase)) && !(appliedHide && m.State == "completed")).ToList();
+        var ms = data!.Missions.Where(m => Chosen(m) && Found(m) && !(appliedHide && m.State == "completed")).OrderBy(m => m.Name, StringComparer.Ordinal).ToList();
         active = ms.Where(m => m.State == "active").ToList();
         available = ms.Where(m => m.State == "available").ToList();
-        packs = data.Packs.Where(p => applied.Length == 0 || p.Name.Contains(applied, StringComparison.OrdinalIgnoreCase)).ToList();
+        // a pack stays when one of its missions is chosen and, with a search text, when its title, description or one of its missions is found
+        bool Pack(MissionPack p) => p.Missions.Any(Chosen) && (applied.Length == 0 || Has(p.Name, applied) || Has(p.Description, applied) || p.Missions.Any(Found));
+        packs = data.Packs.Where(Pack).OrderBy(p => p.Name, StringComparer.Ordinal).ToList();
+        favourites = packs.Where(p => p.Favourite && !(data.HideCompletedFavourite && p.Done == p.Total)).ToList();
+    }
+
+    async Task HideFavourite(ChangeEventArgs e)
+    {
+        await Service.SetHideCompletedFavouriteAsync((bool)e.Value!);
+        data = await Service.RegularAsync();
+        Apply();
     }
 
     RenderFragment Rows(IReadOnlyList<Mission> list) => @<ul class="rows">
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "")">
-                <button type="button" class="row hover-tint" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
+                <button type="button" class="row hover-tint" aria-expanded="@(open.Contains(m.Name) ? "true" : "false")" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
                 @if (open.Contains(m.Name))
                 {
                     <div class="more">
@@ -139,7 +174,7 @@ else { <div class="skeleton skeleton-page"></div> }
             <li class="@(open.Contains(key) ? "open" : "")" data-pack="@p.Id">
                 <div class="packline">
                     <button type="button" class="row pack hover-tint" aria-expanded="@(open.Contains(key) ? "true" : "false")" @onclick="() => Toggle(key)"><span class="tri"></span><span class="name">@p.Name<small>@L["Mis.Progress"] @p.Done / @p.Total</small></span></button>
-                    <button type="button" class="star" title="@L["Mis.FavouriteTip"]" aria-pressed="@p.Favourite" @onclick="() => Favourite(p)"><Icon Name="@(p.Favourite ? "star" : "star-regular")" /></button>
+                    <button type="button" class="star" title="@L["Mis.FavouriteTip"]" aria-pressed="@(p.Favourite ? "true" : "false")" @onclick="() => Favourite(p)"><Icon Name="@(p.Favourite ? "star" : "star-regular")" /></button>
                 </div>
                 @if (open.Contains(key))
                 {
@@ -154,7 +189,6 @@ else { <div class="skeleton skeleton-page"></div> }
 
     void Toggle(string name) { if (!open.Remove(name)) open.Add(name); }
 
-    // activating, favouriting and the two automatic settings are fake in the mock
     async Task Activate(int id) => await Done(await Service.ActivateAsync(id));
 
     async Task ActivateAll() => await Done(await Service.ActivateAsync(0));
@@ -163,21 +197,21 @@ else { <div class="skeleton skeleton-page"></div> }
     {
         Modal.Alert(r.Ok ? L["Mis.ActivationDone"] + " " + L["Mis.Enjoy"] : L["Mis.Failed"]);
         data = await Service.RegularAsync();
+        Options();
         Apply();
     }
 
     async Task Favourite(MissionPack p)
     {
         await Service.SetFavouriteAsync(p.Id, !p.Favourite);
-        data = data! with { Packs = data.Packs.Select(x => x.Id == p.Id ? x with { Favourite = !x.Favourite } : x).ToList() };
+        data = await Service.RegularAsync();
+        Options();
         Apply();
     }
 
     async Task Automatic(string setting, ChangeEventArgs e)
     {
-        var on = (bool)e.Value!;
-        await Service.SetAutomaticAsync(setting, on);
-        // turning one on turns the other off
-        data = setting == "auto" ? data! with { Auto = on, OnlyFavourite = on ? false : data.OnlyFavourite } : data! with { OnlyFavourite = on, Auto = on ? false : data.Auto };
+        await Service.SetAutomaticAsync(setting, (bool)e.Value!);
+        data = await Service.RegularAsync();
     }
 }
