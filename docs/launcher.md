@@ -35,6 +35,8 @@ The selftest uses a temporary Steam folder tree, temporary settings files and te
 
 States: `patch:new-patch`, `patch:full-download`, `patch:launcher-update`, `patch:verifying`, `patch:extracting`, `patch:checksum`, `patch:files`, `patch:finishing`, `patch:done`, `patch:steam-update`, `patch:steam-only`, `patch:error`, `settings:first` (the first-start dialog, on the mock settings), `signup:confirmed`, `account:bans`, `profile:photos`, `start:hold` (stay on the start screen), `session:signup` (an account without a username).
 
+Store, wallet and bank: `store:fail` (every purchase fails), `store:nosales` (nothing is on sale, so no Sales entry), `wallet:many` (more than one page of wallet rows), `bank:steam206` and `bank:steamerror` (the two Steam errors of a bank purchase). Buying in the store or the bank changes one mock wallet that the status bar and the wallet show (per website session, or per launcher run). The bank codes are `SAVE20` (20 % off) and `GIFT` (500 em$, once); a payment reference with `fail` in it, as in `/steam_callback/fail-1`, is a failed payment.
+
 The same states work on the website with `?mock=<state>`; see [website.md](website.md).
 
 ## settings.json
