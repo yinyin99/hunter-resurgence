@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munitie:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>brandstof:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Vrienden</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Vrienden ({0} nieuwe verzoeken)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Berichten</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Berichten ({0} nieuw)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mijn portemonnee / Aankoopgeschiedenis</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Geen jagers gevonden</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Vriendschapsverzoek sturen</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Vriendschapsverzoek verstuurd</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Vriendschapsverzoek {0} van {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} wil je vriend zijn!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Accepteren</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Weigeren</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Vorig verzoek</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Volgend verzoek</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Kies je taal</value></data>
   <data name="Language.English" xml:space="preserve"><value>Engels</value></data>
   <data name="Language.French" xml:space="preserve"><value>Frans</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licentieovereenkomst voor eindgebruikers</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACYBELEID</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENTIEOVEREENKOMST VOOR EINDGEBRUIKERS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Je moet de licentieovereenkomst voor eindgebruikers en het privacybeleid bevestigen voordat je doorgaat.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Door op de knop "Doorgaan" te klikken ga je akkoord met {0} en {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Ik ga akkoord met de EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ik ga akkoord met het privacybeleid</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Laatst bijgewerkt op: voorbeeldtekst</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INLEIDING</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Voorbeeldkop</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Voorbeeldtekst. De beheerder van deze dienst levert de echte juridische tekst.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Voor informatie over de verwerking van persoonsgegevens, zie: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Al een jager?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Inloggen</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Begrepen!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nieuwe spelpatch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Er is een nieuwe spelpatch uitgebracht. Je spel wordt automatisch gepatcht en zodra dat klaar is, kun je een nieuwe expeditie starten! Intussen kun je gewoon rondkijken.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Update Notities</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Update {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Changelog bekijken</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>{game} downloaden</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Er wordt een volledige installatie van {game} naar je computer gedownload. Zodra dat klaar is, kun je beginnen met spelen. Intussen kun je gewoon rondkijken.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>De launcher wordt bijgewerkt</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>De launcher moet worden bijgewerkt. De update wordt automatisch gedownload. Zodra de launcher is bijgewerkt, moet hij opnieuw worden gestart.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Update voltooid. De launcher moet opnieuw worden opgestart.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spelupdate vereist</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Er is een update voor {game} beschikbaar. Je moet {game} via Steam bijwerken voordat je kunt spelen. Je moet de launcher sluiten om bij te werken.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} is alleen via Steam beschikbaar</value></data>

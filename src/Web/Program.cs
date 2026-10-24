@@ -19,7 +19,9 @@ builder.Services.AddScoped<ISessionService, MockSessionService>();
 // the development states (?mock=patch:..., ?mock=settings:first) are per browser circuit too
 builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));
-builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IFriendsService>(sp => new MockFriendsService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IMessagesService>(sp => new MockMessagesService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();

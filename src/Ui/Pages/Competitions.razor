@@ -23,7 +23,7 @@
             @foreach (var s in species)
             {
                 @if (s.Competitions == 0) { <span class="chip off">@L.Term("species", s.Id, s.Name) <small>(0)</small></span> }
-                else { <a class="chip @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@L.Term("species", s.Id, s.Name) <small>(@s.Competitions)</small></a> }
+                else { <a class="chip hover-tint @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@L.Term("species", s.Id, s.Name) <small>(@s.Competitions)</small></a> }
             }
         </div>
     </div>

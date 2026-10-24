@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>střelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>palivo:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Přátelé</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Přátelé ({0} nových žádostí)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Zprávy</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Zprávy ({0} nových)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Moje peněženka / Historie nákupů</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odhlásit</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše lovecké skóre</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Žádní lovci nenalezeni</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Poslat žádost o přátelství</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Žádost o přátelství odeslána</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Žádost o přátelství {0} z {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} se s vámi chce přátelit!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Přijmout</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Odmítnout</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Předchozí žádost</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Další žádost</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Vyberte svůj jazyk</value></data>
   <data name="Language.English" xml:space="preserve"><value>Angličtina</value></data>
   <data name="Language.French" xml:space="preserve"><value>Francouzština</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licenční smlouva s koncovým uživatelem</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>ZÁSADY OCHRANY SOUKROMÍ</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENČNÍ SMLOUVA S KONCOVÝM UŽIVATELEM</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Před pokračováním musíte potvrdit Licenční smlouvu s koncovým uživatelem a Zásady ochrany soukromí.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Kliknutím na tlačítko „Pokračovat“ souhlasíte s následujícím: {0} a {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Souhlasím s EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Souhlasím se Zásadami ochrany soukromí</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Naposledy aktualizováno: zástupný text</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>ÚVOD</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Zástupný nadpis</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Zástupný text. Skutečné právní znění dodá provozovatel této služby.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Informace o zpracování osobních údajů: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Už jste lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Přihlásit se</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Rozumím!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nová aktualizace hry</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Byla vydána nová aktualizace hry. Hra se aktualizuje automaticky a hned po dokončení budete moci vyrazit na novou výpravu! Mezitím se můžete volně rozhlížet po webu.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Poznámky k aktualizaci</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Aktualizace {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Zobrazit seznam změn</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Stahování hry {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Do vašeho počítače se stahuje kompletní instalace hry {game}. Hrát budete moci hned po dokončení. Mezitím se můžete volně rozhlížet po webu.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Launcher se aktualizuje</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Launcher je potřeba aktualizovat. Aktualizace se stáhne automaticky. Po její instalaci bude nutné launcher restartovat.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Aktualizace provedena. Launcher bude restartován.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Je nutná aktualizace hry</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Pro hru {game} je k dispozici aktualizace. Než budete moci hrát, musíte hru {game} aktualizovat na Steamu. K provedení aktualizace je třeba zavřít launcher.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>Hra {game_full} je jen na Steamu</value></data>

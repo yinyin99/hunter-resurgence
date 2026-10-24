@@ -25,7 +25,9 @@ public partial class MainWindow : Window
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
-        services.AddSingleton<IProfileService>(new MockProfileService(mock));
+        services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
+        services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
+        services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>()));
         services.AddSingleton<ModalService>();
         services.AddSingleton<ILanguageSwitcher, LauncherLanguageSwitcher>();
         Resources.Add("services", services.BuildServiceProvider());

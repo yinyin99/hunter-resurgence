@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunition:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>bränsle:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Vänner</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Vänner ({0} nya förfrågningar)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Meddelanden</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Meddelanden ({0} nya)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min plånbok / Köphistorik</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logga ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Hunterpoäng</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Inga jägare hittades</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Skicka vänförfrågan</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Vänförfrågan skickad</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Vänförfrågan {0} av {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} vill vara din vän!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Acceptera</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Avböj</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Föregående förfrågan</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Nästa förfrågan</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Välj språk</value></data>
   <data name="Language.English" xml:space="preserve"><value>Engelska</value></data>
   <data name="Language.French" xml:space="preserve"><value>Franska</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licensavtal för slutanvändare</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>INTEGRITETSPOLICY</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENSAVTAL FÖR SLUTANVÄNDARE</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Du måste bekräfta licensavtalet för slutanvändare och integritetspolicyn innan du fortsätter.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Genom att klicka på knappen "Fortsätt" godkänner du {0} och {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jag godkänner EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jag godkänner integritetspolicyn</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Senast uppdaterad: platshållartext</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INLEDNING</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Platshållarrubrik</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Platshållartext. Den som driver tjänsten tillhandahåller den verkliga juridiska texten.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Se {0} för information om hur personuppgifter hanteras.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Är du redan jägare?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Logga in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-post</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Uppfattat!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Ny spelpatch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>En ny spelpatch har släppts. Ditt spel patchas automatiskt och du kan starta en ny expedition så fort det är klart! Under tiden kan du fritt surfa runt.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Uppdateringsinfo</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Uppdatering {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Visa ändringslogg</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Laddar ner {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>En fullständig installation av {game} laddas ner till din dator. Du kan börja spela så fort den är klar. Under tiden kan du fritt surfa runt.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Launchern uppdateras</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Launchern behöver uppdateras. Uppdateringen laddas ner automatiskt. När launchern har uppdaterats måste den startas om.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Uppdatering klar. Launcherapplikationen behöver starta om.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spelet måste uppdateras</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Det finns en uppdatering till {game}. Du måste uppdatera {game} på Steam innan du kan spela. Du måste stänga launchern för att kunna uppdatera.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} finns bara på Steam</value></data>

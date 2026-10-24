@@ -3,7 +3,8 @@ namespace Resurgence.Services;
 /// <param name="State">active, available, completed or locked</param>
 public sealed record Mission(int Id, string Name, string State, string Description, IReadOnlyList<string> Objectives, string Reward, string Reserve, string Species, string Weapon);
 
-public sealed record MissionPack(int Id, string Name, int Done, int Total, bool Favourite);
+/// <param name="Missions">The missions of the pack, shown when its row is opened.</param>
+public sealed record MissionPack(int Id, string Name, int Done, int Total, bool Favourite, string Description, IReadOnlyList<Mission> Missions);
 
 public sealed record RegularMissions(IReadOnlyList<Mission> Missions, IReadOnlyList<MissionPack> Packs, int Completed, int Total, int PacksDone, int PacksTotal, bool Auto, bool OnlyFavourite);
 

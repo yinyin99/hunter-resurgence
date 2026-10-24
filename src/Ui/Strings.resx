@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>fuel:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Friends ({0} new requests)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Messages ({0} new)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>My Wallet / Purchase History</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sign Out</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Your Hunter Score</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>No hunters found</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send friend request</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Friend request sent</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Friend request {0} of {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} wants to be your friend!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Accept</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Decline</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Previous request</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Next request</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Select your language</value></data>
   <data name="Language.English" xml:space="preserve"><value>English</value></data>
   <data name="Language.French" xml:space="preserve"><value>French</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>End User License Agreement</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>END USER LICENSE AGREEMENT</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>You must confirm the EULA and Privacy Policy agreements before continuing.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>By clicking the "Continue" button you agree to the {0} and the {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>I agree to the EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I agree to the Privacy Policy</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Last updated on: placeholder text</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INTRODUCTION</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Placeholder heading</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>For how personal data is handled, see the {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Got it!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>New game patch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>A new game patch has been released. Your game will be patched automatically and you will be able to start a new expedition as soon as it's done! In the meantime you may browse around freely.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Update Notes</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Update {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>View changelog</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Downloading {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>A full installation of {game} is being downloaded to your computer. You will be able to start playing as soon as it's done. In the meantime you may browse around freely.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>The launcher is updating</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>The launcher needs to update. The update will be downloaded automatically. Once the launcher has been updated it will need to be restarted.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Updating done. The launcher has to restart.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Game update required</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>There is an update for {game} available. You need to update {game} on Steam before you can play. You need to close the launcher in order to update.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} is Steam only</value></data>

@@ -9,9 +9,16 @@
     <p>@L["Legal.Placeholder"]</p>
     <h1>2. @L["Legal.Section"]</h1>
     <p>@L["Legal.Placeholder"]</p>
+    @if (Title == "Footer.Eula.Title")
+    {
+        @* the agreement points to the privacy policy; the link closes this dialog and opens that one *@
+        <p>@L.Frag("Legal.SeePrivacy", PrivacyLink())</p>
+    }
 </div>
 
 @code {
     /// <summary>Resource key of the heading (Footer.Privacy.Title or Footer.Eula.Title).</summary>
     [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    RenderFragment PrivacyLink() => @<a href="#" @onclick='() => Modal.Show<LegalModal>(new Dictionary<string, object?> { [nameof(Title)] = "Footer.Privacy.Title" })' @onclick:preventDefault>@L["Footer.Privacy"]</a>;
 }

@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>lőszer:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>üzemanyag:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Barátok</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Barátok ({0} új kérelem)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Üzenetek</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Üzenetek ({0} új)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Pénztárcám / Vásárlási előzmények</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te vadászpontjaid</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nem található vadász</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Barátkérelem küldése</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Barátkérelem elküldve</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>{0}. barátkérelem a(z) {1} közül</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} a barátod szeretne lenni!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Elfogadás</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Elutasítás</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Előző kérelem</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Következő kérelem</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Válaszd ki a nyelvedet</value></data>
   <data name="Language.English" xml:space="preserve"><value>Angol</value></data>
   <data name="Language.French" xml:space="preserve"><value>Francia</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Végfelhasználói licencszerződés</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>ADATVÉDELMI IRÁNYELVEK</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>VÉGFELHASZNÁLÓI LICENCSZERZŐDÉS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>A folytatás előtt meg kell erősítened a végfelhasználói licencszerződést és az adatvédelmi irányelveket.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>A „Tovább” gombra kattintva elfogadod a következőket: {0} és {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Elfogadom az EULA-t</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Elfogadom az adatvédelmi irányelveket</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Utolsó frissítés: helyőrző szöveg</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>BEVEZETŐ</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Helyőrző címsor</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Helyőrző szöveg. A tényleges jogi szöveget a szolgáltatás üzemeltetője biztosítja.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>A személyes adatok kezelésével kapcsolatban lásd: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Már vadász vagy?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Bejelentkezés</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Értem!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Új játékfrissítés</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Megjelent egy új játékfrissítés. A játék automatikusan frissül, és amint végzett, új expedíciót indíthatsz! Addig szabadon böngészhetsz.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Frissítési információk</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Frissítés: {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Változásnapló megtekintése</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Letöltés: {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>A játék ({game}) teljes telepítése letöltődik a számítógépedre. Amint végzett, elkezdhetsz játszani. Addig szabadon böngészhetsz.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>A launcher frissül</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>A launchert frissíteni kell. A frissítés automatikusan letöltődik. A frissítés után a launchert újra kell indítani.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Frissítés kész, a programindító újraindul.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Játékfrissítés szükséges</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Elérhető egy frissítés a játékhoz ({game}). Mielőtt játszhatnál, frissítened kell a Steamen: {game}. A frissítéshez be kell zárnod a launchert.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full}: csak Steamen</value></data>

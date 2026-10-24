@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>strelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>gorivo:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Prijatelji</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Prijatelji ({0} novih prošenj)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Sporočila</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Sporočila ({0} novih)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Moja denarnica / zgodovina nakupov</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoje lovske točke</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ni najdenih lovcev</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Pošlji prošnjo za prijateljstvo</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Prošnja je poslana</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Prošnja za prijateljstvo {0} od {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} želi biti tvoj prijatelj!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Sprejmi</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Zavrni</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Prejšnja prošnja</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Naslednja prošnja</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Izberi jezik</value></data>
   <data name="Language.English" xml:space="preserve"><value>English</value></data>
   <data name="Language.French" xml:space="preserve"><value>Français</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Licenčna pogodba za končnega uporabnika</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRAVILNIK O ZASEBNOSTI</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENČNA POGODBA ZA KONČNEGA UPORABNIKA</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Pred nadaljevanjem morate potrditi licenčno pogodbo za končnega uporabnika in pravilnik o zasebnosti.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>S klikom na gumb »Nadaljuj« se strinjate z naslednjim: {0} in {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Strinjam se z EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Strinjam se s Pravilnikom o zasebnosti</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Zadnja posodobitev: besedilo za zapolnitev</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>UVOD</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Naslov za zapolnitev</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Besedilo za zapolnitev. Pravo pravno besedilo zagotovi upravljavec te storitve.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>O obdelavi osebnih podatkov glejte: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Si že lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Prijava</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-naslov</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Razumem!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Nova posodobitev igre</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Izšla je nova posodobitev igre. Igra se bo posodobila samodejno, nov lov pa lahko začneš takoj po koncu posodabljanja! Medtem se lahko prosto sprehajaš po strani.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Opombe posodobitve</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Posodobitev {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Ogled dnevnika sprememb</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Prenos igre {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Popolna namestitev igre {game} se prenaša v tvoj računalnik. Z igranjem lahko začneš takoj po koncu prenosa. Medtem se lahko prosto sprehajaš po strani.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Zaganjalnik se posodablja</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Zaganjalnik se mora posodobiti. Posodobitev se bo prenesla samodejno. Ko bo zaganjalnik posodobljen, ga bo treba znova zagnati.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Posodobitev končana. Zaganjalnik se mora ponovno zagnati.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Potrebna je posodobitev igre</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Na voljo je posodobitev za igro {game}. Igro {game} moraš pred igranjem posodobiti v Steamu. Za posodobitev moraš zapreti zaganjalnik.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} je samo za Steam</value></data>

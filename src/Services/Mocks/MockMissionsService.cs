@@ -16,7 +16,11 @@ public sealed class MockMissionsService : IMissionsService
     ];
 
     static readonly MissionPack[] Packs = Names.Species.Select(s => s.Name + " Missions").Concat(Enumerable.Range(1, 20).Select(n => $"Special Pack {n:00}")).OrderBy(n => n)
-        .Select((n, i) => new MissionPack(i + 1, n, 0, i % 7 == 0 ? 5 : 10, false)).ToArray();
+        .Select((n, i) => Pack(i + 1, n, i % 7 == 0 ? 5 : 10)).ToArray();
+
+    // the first mission of a pack can be activated, the others wait for it
+    static MissionPack Pack(int id, string name, int total) => new(id, name, 0, total, false, $"Complete every mission of {name} to finish the pack.",
+        Enumerable.Range(1, total).Select(n => Make(1000 + id * 20 + n, $"{name} {n:00}", n == 1 ? "available" : "locked", id + n)).ToList());
 
     public Task<IReadOnlyList<Mission>> ActiveAsync() => Task.FromResult<IReadOnlyList<Mission>>(Missions.Where(m => m.State == "active").ToList());
 
