@@ -55,7 +55,7 @@
                 </table>
             }
         }
-        @if (more) { <button type="button" class="btn load-more-button" @onclick="More">@L["Wal.More"]</button> }
+        @if (more) { <button type="button" class="btn load-more-button" @onclick="ShowMore">@L["Wal.More"]</button> }
     </section>
 </div>
 
@@ -65,6 +65,7 @@
     List<BankPayment> payments = [];
     List<WalletEntry> entries = [];
     bool loaded, more;
+    DateTime lastMore;
 
     [Parameter] public string? Kind { get; set; }
     string kind => Kind is "ems" or "gms" ? Kind : "bank";
@@ -79,6 +80,14 @@
     protected override async Task OnParametersSetAsync()
     {
         (payments, entries, loaded) = ([], [], false);
+        await More();
+    }
+
+    // a second click within 2 s would fetch the same rows again
+    async Task ShowMore()
+    {
+        if (DateTime.UtcNow - lastMore < TimeSpan.FromSeconds(2)) return;
+        lastMore = DateTime.UtcNow;
         await More();
     }
 
