@@ -1,12 +1,15 @@
 namespace Resurgence.Services.Mocks;
 
 /// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.</summary>
-public sealed class MockProfileService(string? mock = null) : IProfileService
+public sealed class MockProfileService(string? mock = null, IFriendsService? friends = null) : IProfileService
 {
     const string Own = "Hunter01";
 
-    public Task<Profile?> ProfileAsync(string handle) =>
-        Task.FromResult<Profile?>(handle == Own ? new(handle, 50, 200000, "Hunter", true, true, false) : new(handle, 115000, 1, "Hunter", false, false, handle.Length % 2 == 0));
+    // friend and request state come from the shared friends mock, so the dropdown, this page and the friends tab agree
+    public async Task<Profile?> ProfileAsync(string handle) =>
+        handle == Own ? new(handle, 50, 200000, "Hunter", true, true, false)
+        : friends is null ? new(handle, 115000, 1, "Hunter", false, false, handle.Length % 2 == 0)
+        : new(handle, 115000, 1, "Hunter", false, false, (await friends.FriendsAsync()).Any(f => f.Handle == handle), (await friends.PendingAsync()).Contains(handle));
 
     static readonly string[] WeaponTypes = ["Lever Action Rifles", "Bolt Action Rifles", "Semi-Automatic Rifles", "Air Rifles", "Handguns", "Shotguns", "Bows", "Crossbows", "Muzzleloaders", "Revolvers"];
     static readonly string[] Collectables = ["Common Mushrooms", "Rare Mushrooms", "Treasures", "Feathers", "Fossils", "Pumpkins"];
@@ -90,9 +93,9 @@ public sealed class MockProfileService(string? mock = null) : IProfileService
         : [new("Rex", "Hound (Brown)", 3, 64, [new("Blood Tracking", "This skill governs how well a dog can find blood tracks.", 2), new("Detection", "This skill governs how well a dog can detect different species of animals.", 1)], ["Competition Trophy 3", "Trophy 1"]),
            new("", "Retriever (Golden)", 1, 10, [], [])]);
 
-    public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => Task.FromResult(Slice<ProfileFriend>(handle == Own
-        ? [new("Ranger_Test", 100), new("Moss_Walker", 115000), new("Hunter02", 7000)]
-        : Enumerable.Range(1, 45).Select(i => new ProfileFriend($"Friend_{i:00}", i * 311 % 9000)).ToList(), page, 20));
+    public async Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => Slice<ProfileFriend>(handle == Own
+        ? (friends is null ? ["Ranger_Test", "Moss_Walker", "Hunter02"] : (await friends.FriendsAsync()).Select(f => f.Handle)).Select(h => new ProfileFriend(h, h switch { "Ranger_Test" => 100, "Moss_Walker" => 115000, "Hunter02" => 7000, _ => h.Length * 311 })).ToList()
+        : Enumerable.Range(1, 45).Select(i => new ProfileFriend($"Friend_{i:00}", i * 311 % 9000)).ToList(), page, 20);
 
     static SheetRow R(string label, double? a, double? b) => new(label, a, b, a is { } x && b is { } y ? Math.Round(Math.Abs(x - y), 4) : null);
 

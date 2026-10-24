@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>muniție:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>combustibil:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Prieteni</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Prieteni ({0} cereri noi)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Mesaje</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesaje ({0} noi)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Portofelul meu / Istoricul achizițiilor</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Deconectare</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Hunter Score-ul dvs.</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nu s-au găsit vânători</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Cerere de prietenie trimisă</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Cererea de prietenie {0} din {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} vrea să fie prietenul tău!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Acceptă</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Refuză</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Cererea anterioară</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Cererea următoare</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Selectați limba</value></data>
   <data name="Language.English" xml:space="preserve"><value>Engleză</value></data>
   <data name="Language.French" xml:space="preserve"><value>Franceză</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Acord de licență pentru utilizatorul final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITICA DE CONFIDENȚIALITATE</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>ACORD DE LICENȚĂ PENTRU UTILIZATORUL FINAL</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să confirmați acordul de licență pentru utilizatorul final și politica de confidențialitate înainte de a continua.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați următoarele: {0} și {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Sunt de acord cu EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Sunt de acord cu Politica de confidențialitate</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Ultima actualizare: text provizoriu</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INTRODUCERE</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Titlu provizoriu</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Text provizoriu. Operatorul acestui serviciu furnizează textul juridic real.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Despre modul de prelucrare a datelor personale, consultați: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sunteți deja vânător?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Conectare</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Am înțeles!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Patch nou pentru joc</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>A fost lansat un nou patch pentru joc. Jocul va fi actualizat automat, iar imediat ce se termină veți putea porni o nouă expediție! Între timp, puteți naviga liber.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Notele actualizării</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Actualizare {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Vezi jurnalul de modificări</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Se descarcă {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Pe calculatorul dvs. se descarcă o instalare completă a {game}. Veți putea începe să jucați imediat ce se termină. Între timp, puteți naviga liber.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Launcherul se actualizează</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Launcherul trebuie actualizat. Actualizarea va fi descărcată automat. După actualizare, launcherul va trebui repornit.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Actualizare execută. Launcher-ul trebuie repornit.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Este necesară actualizarea jocului</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Este disponibilă o actualizare pentru {game}. Trebuie să actualizați {game} în Steam înainte de a putea juca. Pentru actualizare, trebuie să închideți launcherul.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} este disponibil doar pe Steam</value></data>

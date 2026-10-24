@@ -12,6 +12,7 @@
     IJSObjectReference? module;
     Action? changed;
     bool shown;
+    DotNetObjectReference<ModalHost>? self;
 
     protected override void OnInitialized() => Modal.Changed += changed = () => InvokeAsync(StateHasChanged);
 
@@ -20,13 +21,21 @@
         var open = Modal.Type is not null;
         if (!open && module is null) return;
         module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
-        await module.InvokeVoidAsync("dialog", dialog, open, Modal.Backdrop != "none");
+        await module.InvokeVoidAsync("dialog", dialog, open, Modal.Backdrop != "none", self ??= DotNetObjectReference.Create(this), Modal.ClosesOnBackdrop);
         if (open == shown) return;
         shown = open;
         if (open) StateHasChanged();
     }
 
-    public void Dispose() => Modal.Changed -= changed;
+    /// <summary>Called by shell.js for a click on the backdrop of a dialog that closes with it.</summary>
+    [JSInvokable]
+    public void Dismiss() => Modal.Close();
+
+    public void Dispose()
+    {
+        Modal.Changed -= changed;
+        self?.Dispose();
+    }
 
     public async ValueTask DisposeAsync()
     {

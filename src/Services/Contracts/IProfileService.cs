@@ -1,7 +1,7 @@
 namespace Resurgence.Services;
 
-/// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs.</summary>
-public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend);
+/// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs, <see cref="RequestPending"/> a friend request of the signed-in player that is not answered yet.</summary>
+public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false);
 /// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one.</summary>
 public sealed record RankBar(string Name, int Level, int Done, int Total);
 public sealed record Achievement(string Title, string Description, DateOnly Date);

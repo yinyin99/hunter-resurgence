@@ -8,6 +8,19 @@ public sealed class MockSessionService : ISessionService
 
     public Task<Session?> CurrentAsync() => Task.FromResult(session);
 
+    // the mock account has accepted; development hook ?mock=eula (HostMode) takes the acceptance back
+    bool licenseAccepted = true;
+
+    public void RequireLicense() => licenseAccepted = false;
+
+    public Task<bool> LicenseAcceptedAsync() => Task.FromResult(licenseAccepted);
+
+    public Task AcceptLicenseAsync()
+    {
+        licenseAccepted = true;
+        return Task.CompletedTask;
+    }
+
     public Task<Result> RequestCodeAsync(string email) =>
         Task.FromResult(email.Contains('@') ? Result.Success : Result.Fail("Validation.Email.Invalid"));
 

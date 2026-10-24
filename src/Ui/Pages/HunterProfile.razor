@@ -5,6 +5,7 @@
 @inject IProfileService Service
 @inject ISessionService Session
 @inject IAccountService Account
+@inject IFriendsService Friends
 
 <PageTitle>@L["Prof.Title", Handle]</PageTitle>
 
@@ -18,9 +19,8 @@
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend)
         {
-            // the request goes out once; the button then stays off
-            <button type="button" class="btn btn-primary request" disabled="@requested" @onclick="() => requested = true">
-                @if (requested) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
+            <button type="button" class="btn btn-primary request" disabled="@profile.RequestPending" @onclick="Request">
+                @if (profile.RequestPending) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
             </button>
         }
         <p class="sub">
@@ -62,7 +62,7 @@
     ];
 
     Profile? profile;
-    bool signedIn, requested;
+    bool signedIn;
     string header = "recent", avatar = "avatar-profile";
 
     [Parameter] public string Handle { get; set; } = "";
@@ -78,9 +78,15 @@
     {
         profile = await Service.ProfileAsync(Handle);
         signedIn = await Session.CurrentAsync() is not null;
-        requested = false;
         // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here)
         if (profile?.Own == true) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
         else (header, avatar) = ("recent", "avatar-profile");
+    }
+
+    // the request goes to the friends service; the profile then says it is pending, also when the page is opened again
+    async Task Request()
+    {
+        await Friends.SendRequestAsync(profile!.Handle);
+        profile = await Service.ProfileAsync(Handle);
     }
 }

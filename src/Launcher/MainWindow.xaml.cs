@@ -27,7 +27,9 @@ public partial class MainWindow : Window
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<INewsService>(new MockNewsService(mock));
         services.AddSingleton<IMissionsService>(new MockMissionsService(mock));
-        services.AddSingleton<IProfileService>(new MockProfileService(mock));
+        services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
+        services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
+        services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>()));
         services.AddSingleton<ModalService>();
         services.AddSingleton<ILanguageSwitcher, LauncherLanguageSwitcher>();
         Resources.Add("services", services.BuildServiceProvider());

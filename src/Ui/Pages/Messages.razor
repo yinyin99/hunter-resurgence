@@ -2,16 +2,19 @@
 @page "/messages/{Handle}"
 @page "/new-message"
 @page "/new-message/{Handle}"
+@implements IDisposable
 @inject IMessagesService Service
 @inject IFriendsService Friends
 @inject ISessionService Sessions
 @inject NavigationManager Nav
+@inject ModalService Modal
+@inject HostMode Mode
 
 <PageTitle>@L["Msg.Title"]</PageTitle>
 
 <div class="page-min">
     <h2 class="page-title">@(L["Msg.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
-    <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
+    <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" disabled="@savingOnly" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
     <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
     <div class="cols">
         <aside>
@@ -34,9 +37,8 @@
                 <datalist id="friends">@foreach (var f in friends) { <option value="@f.Handle"></option> }</datalist>
             }
             <textarea class="field-light" id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
-            <button id="sendMessage" type="button" class="send" disabled="@(!canSend)" @onclick="Send">@L["Msg.Send"]</button>
+            <button id="sendMessage" type="button" class="send" disabled="@(!canSend || sending)" @onclick="Send">@L["Msg.Send"]</button>
             <span class="count">@text.Length / 1024</span>
-            @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
             @if (!composing)
             {
                 <div class="thread">
@@ -54,12 +56,12 @@
 </div>
 
 @code {
+    readonly CancellationTokenSource stop = new();
     IReadOnlyList<Conversation> conversations = [];
     IReadOnlyList<Friend> friends = [];
     IReadOnlyList<Message> thread = [];
     string text = "", recipient = "", me = "", current = "";
-    string? error;
-    bool onlyFriends;
+    bool onlyFriends, savingOnly, sending;
 
     [Parameter] public string? Handle { get; set; }
     bool composing => Nav.Uri.Contains("/new-message");
@@ -67,28 +69,73 @@
 
     protected override async Task OnInitializedAsync()
     {
-        (conversations, onlyFriends, me) = (await Service.ConversationsAsync(), await Service.OnlyFriendsAsync(), (await Sessions.CurrentAsync())?.Handle ?? "");
+        (conversations, me) = (await Service.ConversationsAsync(), (await Sessions.CurrentAsync())?.Handle ?? "");
         friends = await Friends.FriendsAsync();
+        _ = Poll();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        (text, error, recipient) = ("", null, Handle ?? "");
+        (text, recipient, onlyFriends) = ("", Handle ?? "", await Service.OnlyFriendsAsync());
         current = composing ? "" : conversations.FirstOrDefault(c => string.Equals(c.Handle, Handle, StringComparison.OrdinalIgnoreCase))?.Handle ?? Handle ?? conversations.FirstOrDefault()?.Handle ?? "";
-        thread = current.Length > 0 ? await Service.ThreadAsync(current) : [];
+        await OpenThread();
     }
 
-    async Task OnlyFriends(ChangeEventArgs e) { onlyFriends = (bool)e.Value!; await Service.SetOnlyFriendsAsync(onlyFriends); }
+    // opening a thread reads it: the unread dot of the conversation goes (the status bar follows with its next read)
+    async Task OpenThread()
+    {
+        thread = current.Length > 0 ? await Service.ThreadAsync(current) : [];
+        if (conversations.FirstOrDefault(c => c.Handle == current)?.Unread != true) return;
+        await Service.MarkReadAsync(current);
+        conversations = await Service.ConversationsAsync();
+    }
 
-    // sending is fake in the mock: the message shows at the top of the thread, or the thread opens
+    // like the old page, which read the conversations again whenever the status bar learned of a new message
+    async Task Poll()
+    {
+        using var timer = new PeriodicTimer(Mode.PollInterval);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token))
+                await InvokeAsync(async () =>
+                {
+                    conversations = await Service.ConversationsAsync();
+                    await OpenThread();
+                    StateHasChanged();
+                });
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    async Task OnlyFriends(ChangeEventArgs e)
+    {
+        (onlyFriends, savingOnly) = ((bool)e.Value!, true);
+        await Service.SetOnlyFriendsAsync(onlyFriends);
+        savingOnly = false;
+    }
+
+    // at most one send a second; a failure opens the alert dialog; a message to someone new shows up in the conversations
     async Task Send()
     {
-        var to = composing ? recipient.Trim() : current;
-        var r = await Service.SendAsync(to, text.Trim());
-        error = r.Error;
-        if (!r.Ok) return;
-        if (composing) { Nav.NavigateTo("/messages/" + to); return; }
-        thread = [new(true, text.Trim(), TimeSpan.Zero), .. thread];
-        text = "";
+        if (sending) return;
+        sending = true;
+        try
+        {
+            var to = composing ? recipient.Trim() : current;
+            var r = await Service.SendAsync(to, text.Trim());
+            if (!r.Ok) { Modal.Alert(L[r.Error ?? "Msg.Failed"]); return; }
+            var known = conversations.Any(c => string.Equals(c.Handle, to, StringComparison.OrdinalIgnoreCase));
+            conversations = await Service.ConversationsAsync();
+            text = "";
+            if (!composing) thread = await Service.ThreadAsync(current);
+            else if (known) Nav.NavigateTo("/messages/" + to);
+        }
+        finally
+        {
+            await Task.Delay(1000);
+            sending = false;
+        }
     }
+
+    public void Dispose() => stop.Cancel();
 }

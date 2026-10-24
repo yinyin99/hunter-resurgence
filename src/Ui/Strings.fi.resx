@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammukset:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>polttoaine:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Kaverit</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Kaverit ({0} uutta pyyntöä)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Viestit</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Viestit ({0} uutta)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Lompakkoni / Ostohistoria</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Metsästäjän pisteesi</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Metsästäjiä ei löytynyt</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Kaveripyyntö lähetetty</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Kaveripyyntö {0}/{1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} haluaa olla kaverisi!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Hyväksy</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Hylkää</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Edellinen pyyntö</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Seuraava pyyntö</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Valitse kielesi</value></data>
   <data name="Language.English" xml:space="preserve"><value>englanti</value></data>
   <data name="Language.French" xml:space="preserve"><value>ranska</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Käyttöoikeussopimus</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>TIETOSUOJAKÄYTÄNTÖ</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LOPPUKÄYTTÄJÄN KÄYTTÖOIKEUSSOPIMUS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Sinun on hyväksyttävä käyttöoikeussopimus ja tietosuojakäytäntö ennen jatkamista.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Klikkaamalla ”Jatka”-painiketta hyväksyt seuraavat: {0} ja {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Hyväksyn EULA-sopimuksen</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Hyväksyn tietosuojakäytännön</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Viimeksi päivitetty: paikkateksti</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>JOHDANTO</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Paikkaotsikko</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Paikkateksti. Palvelun ylläpitäjä toimittaa varsinaisen oikeudellisen tekstin.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Tietoa henkilötietojen käsittelystä: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Oletko jo metsästäjä?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Kirjaudu</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Sähköposti</value></data>
@@ -219,10 +233,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Selvä!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Uusi pelipäivitys</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Uusi pelipäivitys on julkaistu. Pelisi päivitetään automaattisesti, ja voit aloittaa uuden retken heti sen valmistuttua! Voit sillä välin selata sivustoa vapaasti.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Päivityksen tiedot</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Päivitys {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Näytä muutosloki</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Ladataan: {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>{game}-pelin täyttä asennusta ladataan tietokoneellesi. Voit aloittaa pelaamisen heti sen valmistuttua. Voit sillä välin selata sivustoa vapaasti.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Käynnistäjää päivitetään</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Käynnistäjä täytyy päivittää. Päivitys ladataan automaattisesti. Kun käynnistäjä on päivitetty, se täytyy käynnistää uudelleen.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Päivitys tehty. Käynnistäjä pitää käynnistää uudelleen.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Pelipäivitys vaaditaan</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>{game}-pelille on saatavilla päivitys. Sinun täytyy päivittää {game}-peli Steamissä ennen pelaamista. Käynnistäjä täytyy sulkea päivitystä varten.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} toimii vain Steamissä</value></data>

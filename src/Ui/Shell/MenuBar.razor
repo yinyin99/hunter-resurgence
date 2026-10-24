@@ -55,10 +55,11 @@ else
     /// <summary>Rendered inside the status bar after scrolling.</summary>
     [Parameter] public bool InBar { get; set; }
 
-    /// <summary>The item whose route the current path starts with is orange.</summary>
+    /// <summary>The item whose route the current path contains is orange.</summary>
     string? Active(string route)
     {
         var path = Nav.ToBaseRelativePath(Nav.Uri);
-        return path.StartsWith(route, StringComparison.OrdinalIgnoreCase) || route == "feed" && (path.Length == 0 || path[0] == '?') ? "active" : null;
+        // the old menu marked every item whose route is contained in the address
+        return path.Contains(route, StringComparison.OrdinalIgnoreCase) || route == "feed" && (path.Length == 0 || path[0] == '?') ? "active" : null;
     }
 }

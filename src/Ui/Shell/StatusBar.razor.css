@@ -15,8 +15,12 @@
 .pill { display: inline-block; margin-left: 2px; padding: 0 6px; border-radius: var(--r-pill); background: var(--pill-balance-fg); color: #222; font-size: 13px; line-height: 17px; vertical-align: 1px; }
 .pill.ems { background: var(--pill-ems); }
 .count { position: absolute; right: 0; top: 4px; min-width: 12px; padding: 0 3px; border: 1px solid #000; border-radius: var(--r-pill); background: var(--badge); color: #fff; font-size: 11px; line-height: 14px; text-align: center; }
-.settings .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base); position: absolute; top: 44px; right: -2px; width: 200px; z-index: 5; }
-.settings:hover .menu, .settings:focus-within .menu { visibility: visible; opacity: 1; transform: none; }
+.settings .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease) 300ms, transform var(--t-base) var(--ease) 300ms, visibility 0s linear calc(300ms + var(--t-base)); position: absolute; top: 44px; right: -2px; width: 200px; z-index: 5; }
+.settings:hover .menu, .settings:focus-within .menu { visibility: visible; opacity: 1; transform: none; transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility 0s; }
+.settings.shut .menu, .settings.shut:hover .menu, .settings.shut:focus-within .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: none; }
+.qn .quick-nav { position: absolute; left: -27px; top: 4px; width: 25px; height: 52px; color: var(--accent); font-size: 22px; line-height: 40px; text-align: center; }
+.qn ::deep .in-bar { position: absolute; left: 0; top: 100%; width: 100%; z-index: 4; visibility: hidden; transition: visibility 0s linear 150ms; box-shadow: 0 0 5px rgba(0, 0, 0, .9); }
+.qn:hover ::deep .in-bar { visibility: visible; transition-delay: 0s; }
 .settings:hover, .settings:focus-within { color: #fff; }
 .settings a { color: inherit; }
 .settings .icon { font-size: 17px; vertical-align: -3px; }
