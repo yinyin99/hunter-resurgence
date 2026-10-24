@@ -29,7 +29,7 @@
                     case "avatar":
                         <p class="info">@L["Set.AvatarInfo"]</p>
                         <h5>@L["Set.AvatarCurrent"]</h5>
-                        <div class="cur"><AssetSlot Name="avatar-current" Width="150" Height="150" /></div>
+                        <div class="cur"><AssetSlot Name="@(account?.Avatar ?? "avatar-current")" Width="150" Height="150" /></div>
                         <h5>@L["Set.AvatarSelect"]</h5>
                         <div class="avatars">
                             @foreach (var a in avatars.Where(a => !a.Locked))
@@ -57,6 +57,10 @@
                         <form @onsubmit="Email" @onsubmit:preventDefault>
                             @if (!codeSent)
                             {
+                                @if (account is { EmailConfirmed: false })
+                                {
+                                    <p class="info">@L["Set.EmailUnconfirmed"] <a href="#" class="resend" @onclick="ResendConfirmation" @onclick:preventDefault>@L["Set.EmailResendConfirm"]</a></p>
+                                }
                                 <label>@L["Set.EmailAddress"]<input class="field-light" id="email" type="email" name="email" @bind="email" @bind:event="oninput" /></label>
                                 <button type="submit" class="btn btn-primary">@L["Set.EmailUpdate"]</button>
                             }
@@ -181,6 +185,9 @@
         (ok, message) = (true, "Set.EmailChanged");
     }
 
+    // the old link was disabled after a click until the answer came
+    async Task ResendConfirmation() => Say(await Service.ResendConfirmationAsync(), "Set.ResendOk", "Set.ResendFailed");
+
     async Task Resend() => Say(await Service.RequestEmailChangeAsync(email.Trim()), "Set.EmailResent");
 
     async Task Unban(BannedPlayer b)
@@ -193,7 +200,14 @@
     // the player is signed out and the launcher (or the page) is left, as in the old app
     async Task Disconnect()
     {
-        if (!(await Service.DisconnectSteamAsync()).Ok) return;
+        // the old page asked up to five times, two seconds apart; it said nothing when they all failed
+        var done = false;
+        for (var i = 0; i < 5 && !done; i++)
+        {
+            if (i > 0) await Task.Delay(2000);
+            done = (await Service.DisconnectSteamAsync()).Ok;
+        }
+        if (!done) { Modal.Alert(L["Set.SteamFailed"]); return; }
         await Sessions.SignOutAsync();
         Nav.NavigateTo("/", forceLoad: true);
     }

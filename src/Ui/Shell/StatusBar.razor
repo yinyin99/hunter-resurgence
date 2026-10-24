@@ -4,6 +4,8 @@
 @inject IWalletService Wallet
 @inject IFriendsService Friends
 @inject IMessagesService Messages
+@inject IAccountService Account
+@implements IDisposable
 
 <header class="bar @(Mode.Launcher ? "" : "web")">
     <div class="row">
@@ -25,7 +27,7 @@
             </div>
             <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
             <div class="user">
-                <a href="/profile/@session?.Handle" data-tip="@L["Tip.Profile"]"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a>
+                <a href="/profile/@session?.Handle" data-tip="@L["Tip.Profile"]"><AssetSlot Name="@avatar" Width="34" Height="34" /></a>
                 <a href="/profile/@session?.Handle" class="name">@session?.Handle</a>
             </div>
         </div>
@@ -45,6 +47,7 @@
     Session? session => Session;
     Balances balances = new(0, 0, 0, 0);
     int unread;
+    string avatar = "avatar-default";
     bool friendsLoaded;
 
     async Task SignOut()
@@ -53,8 +56,15 @@
         Nav.NavigateTo(Mode.Launcher ? "/signup/start" : "/feed");
     }
 
+    // another avatar in the settings shows here at once
+    void Picked() => _ = InvokeAsync(async () => { avatar = (await Account.AccountAsync()).Avatar; StateHasChanged(); });
+
+    public void Dispose() => Account.Changed -= Picked;
+
     protected override async Task OnInitializedAsync()
     {
+        Account.Changed += Picked;
+        avatar = (await Account.AccountAsync()).Avatar;
         balances = await Wallet.BalancesAsync();
         unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
     }
