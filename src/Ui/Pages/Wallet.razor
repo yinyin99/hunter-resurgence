@@ -5,7 +5,7 @@
 <PageTitle>@L["Wal.MyWallet"]</PageTitle>
 
 <div class="page-min">
-    <h2 class="page-title">@(L["Wal.MyWallet"].Value.ToUpperInvariant()) / @(L["Wal.History"].Value.ToUpperInvariant())</h2>
+    <h2 class="page-title">@(L["Wal.MyWallet"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)) / @(L["Wal.History"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     @if (summary is not null)
     {
         <table class="sum tbl">

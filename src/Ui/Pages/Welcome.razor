@@ -4,7 +4,7 @@
 <PageTitle>@L["Welcome.Title"]</PageTitle>
 
 <div class="page-min">
-    <h2 class="page-title">@(L["Welcome.Title"].Value.ToUpperInvariant())</h2>
+    <h2 class="page-title">@(L["Welcome.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <div class="who">
         <AssetSlot Name="avatar-current" Width="80" Height="80" />
         <h2>@L.Frag("Welcome.Congrats", Profile())</h2>
