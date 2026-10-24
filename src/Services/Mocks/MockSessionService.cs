@@ -1,8 +1,9 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockSessionService : ISessionService
+/// <param name="mock">Development state "membership": the signed-in player has a membership.</param>
+public sealed class MockSessionService(string? mock = null) : ISessionService
 {
-    Session? session = new("Hunter01", 74);
+    Session? session = new("Hunter01", 74, mock == "membership");
 
     public event Action? Changed;
 
@@ -14,7 +15,7 @@ public sealed class MockSessionService : ISessionService
     public Task<Result> SignInAsync(string email, string code, bool register = false)
     {
         if (code.Length != 6 || !code.All(char.IsAsciiDigit)) return Task.FromResult(Result.Fail("Validation.Code.Invalid"));
-        session = register ? new("", 0) : new("Hunter01", 74);
+        session = register ? new("", 0) : new("Hunter01", 74, mock == "membership");
         Changed?.Invoke();
         return Task.FromResult(Result.Success);
     }

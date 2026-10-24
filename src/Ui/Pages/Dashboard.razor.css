@@ -43,3 +43,6 @@ li ::deep .flag { margin: 0 10px 0 27px; flex: none; }
 .quick-join { flex: none; width: 90px; padding: 5px 0; text-align: center; }
 .wide { width: 100%; }
 .wide .view-all { position: absolute; right: 0; top: 45px; width: 288px; box-sizing: border-box; text-align: center; }
+.servers .empty { padding-top: 50px; text-align: center; }
+.servers .empty h4 { margin: 0 0 6px; }
+.servers .empty p { margin: 0 0 14px; color: var(--fg-muted); }

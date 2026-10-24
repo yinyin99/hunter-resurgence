@@ -41,3 +41,5 @@ h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text
 .no-tents { margin: 0; font-size: 12px; line-height: 20px; color: var(--fg-muted-2); }
 .stage > ::deep .map { flex: 1; }
 .start-label { position: absolute; z-index: 4; margin: -14px 0 0 18px; padding: 5px 12px; border-radius: var(--r-2); background: var(--surface-4); color: var(--text-1); white-space: nowrap; }
+.strip { display: flex; flex-wrap: wrap; gap: 2px; margin: 0 0 4px; }
+.strip button { width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-2); background: none; color: var(--fg-muted-2); font-size: 12px; cursor: pointer; }

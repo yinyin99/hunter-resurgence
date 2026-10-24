@@ -138,6 +138,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Макс.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Старт</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Создать игру</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Набор снаряжения</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Последнее использованное снаряжение</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>При создании игровой сессии что-то пошло не так. Обновите список серверов и попробуйте присоединиться к другой игре.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>НАЙТИ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Найти игру или хост...</value></data>
@@ -169,6 +171,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Нам не удалось найти публичные многопользовательские игры, к которым вы можете присоединиться.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>СОЗДАЙТЕ СВОЮ ИГРУ</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Эта игра защищена паролем</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Требуется пароль</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Установка обновления...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Расположение сервера: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Европа</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Северная Америка</value></data>
@@ -180,6 +184,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Введите пароль</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Присоединиться</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Неверный пароль. Попробуйте ещё раз.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Пока закончили охоту?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Посмотреть статистику охоты</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>НА ОХОТУ</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Чтобы начать другую игру, закройте это окно и снова нажмите кнопку {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Были проблемы с подключением?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Не удаётся подключиться к друзьям в многопользовательской игре? Причин может быть много, и не все связаны непосредственно с самой игрой. Подробнее читайте в разделе {0} руководства по устранению неполадок.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>проблемы с подключением</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Нужна дополнительная информация об игре?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Не можете найти добычу? Не знаете, как пользоваться снаряжением? Не уверены, какой охотничий заповедник вам подойдёт? Загляните в {0}. Вики создаётся и ведётся сообществом, а если ответа там нет, спросите на {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>вики {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>форуме</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Другие технические проблемы?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Возникла проблема при запуске игры? Появилось странное сообщение об ошибке? Загляните в {0}, а если не найдёте решения, напишите в нашу {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>руководство по устранению неполадок</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>службу поддержки</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Перед первой настоящей охотой на первом охотугодье рекомендуется пройти базовое обучение. Там вы познакомитесь с местным егерем: он расскажет об основах и научит всему, что нужно для успеха в {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Начать обучение</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Место: {0}</value></data>
@@ -367,6 +387,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Выйти</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Нельзя вступить</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Мультиплеер</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Несколько видов</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Требования:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Предстоящие соревнования</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Предыдущие соревнования</value></data>
@@ -391,6 +412,10 @@
   <data name="Comp.History" xml:space="preserve"><value>История</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Призы</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Трофей</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ и трофей</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ и трофей</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Правила и условия</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Виды: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Охотугодья: {0}</value></data>
@@ -414,6 +439,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Вы не вступили ни в одно соревнование</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Ежемесячный список лидеров</value></data>
   <data name="League.Season" xml:space="preserve"><value>Сезонный список лидеров</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Очки</value></data>
   <data name="Board.Title" xml:space="preserve"><value>СПИСКИ ЛИДЕРОВ</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Баллы</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Дистанция</value></data>

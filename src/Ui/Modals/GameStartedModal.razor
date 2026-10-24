@@ -1,0 +1,27 @@
+@inject ModalService Modal
+@inject ISessionService Sessions
+
+@* the old "Done hunting for now?" window, opened five seconds after a game was started (ModalService.GameStarted) *@
+<div class="done" role="dialog" aria-modal="true">
+    <h2>@L["Done.Title"]</h2>
+    <a class="btn btn-primary btn-large" href="/profile/@handle/statistics" @onclick="Modal.Close">@L["Done.Stats"]</a>
+    <p>@L.Frag("Done.Next", Link("/dashboard", L["Done.HuntNow"].Value))</p>
+    <div class="info">
+        <h4>@L["Done.ConnectionTitle"]</h4>
+        <p>@L.Frag("Done.ConnectionText", Ext("support_connections", L["Done.ConnectionLink"].Value))</p>
+        <h4>@L["Done.InfoTitle"]</h4>
+        <p>@L.Frag("Done.InfoText", Ext("wiki", L["Done.Wiki"].Value), Ext("forum", L["Done.Forum"].Value))</p>
+        <h4>@L["Done.TechTitle"]</h4>
+        <p>@L.Frag("Done.TechText", Ext("support", L["Done.Guide"].Value), Ext("support_request", L["Done.Support"].Value))</p>
+    </div>
+</div>
+
+@code {
+    string handle = "";
+
+    // the links inside the text close the window, as the old ones did
+    RenderFragment Link(string href, string text) => @<a href="@href" @onclick="Modal.Close">@text</a>;
+    RenderFragment Ext(string key, string text) => @<ExternalLink Key="@key">@text</ExternalLink>;
+
+    protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+}
