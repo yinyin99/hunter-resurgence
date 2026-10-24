@@ -439,7 +439,7 @@
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit'i edinin</value></data>
   <data name="Board.TopBust" xml:space="preserve"><value>En yüksek Bust Through skorları</value></data>
   <data name="Board.BustInfo" xml:space="preserve"><value>Bust Through, Huntermate'inizde oynayabileceğiniz, avınızın ortaya çıkmasını beklerken eğlenceli vakit geçirmenizi sağlayan havalı bir retro atari oyunudur!</value></data>
-  <data name="Board.SP" xml:space="preserve"><value>Tek oyunculu</value></data>
+  <data name="Board.SP" xml:space="preserve"><value>Solo</value></data>
   <data name="Pager.Prev" xml:space="preserve"><value>Önceki</value></data>
   <data name="Pager.Next" xml:space="preserve"><value>Sonraki</value></data>
   <data name="Pager.Label" xml:space="preserve"><value>Sayfalar</value></data>
