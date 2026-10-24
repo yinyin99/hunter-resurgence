@@ -104,7 +104,7 @@
     async Task Apply()
     {
         if (code.Trim().Length == 0) return;
-        invalid = !(await Bank.CheckCodeAsync(code.Trim())).Ok;
+        invalid = await Bank.CheckCodeAsync(code.Trim()) is null;
     }
 
     void Cancel() => (asking, invalid, code) = (false, false, "");

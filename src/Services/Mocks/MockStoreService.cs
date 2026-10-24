@@ -1,6 +1,7 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockStoreService : IStoreService
+/// <summary>Buying changes the shared wallet state. Mock "store:fail" makes every purchase fail, "store:nosales" leaves no item on sale.</summary>
+public sealed class MockStoreService(MockWalletState state, string? mock = null) : IStoreService
 {
     const int PageSize = 12;
 
@@ -25,20 +26,58 @@ public sealed class MockStoreService : IStoreService
 
     static readonly string[] Variants = ["Standard", "Engraved", "Black", "Silver", "Camouflage"];
 
-    // 46 items, nearly all on sale: four pages of twelve
+    static readonly string[] Species = ["Whitetail Deer", "Red Fox", "Mallard", "Moose", "Canada Goose"];
+
+    // 46 items, nearly all on sale: four pages of twelve. Every 18th has an own limit of 3 (it starts at 3, so it is reached), the services are owned for days,
+    // one of them is disabled by the services, and a banner, the ammunition amounts, attachments and permitted ammunition are spread over the rest.
     static readonly StoreItem[] Items = Enumerable.Range(0, 46).Select(i =>
     {
         var (key, name) = Leaves[i % Leaves.Length];
         var ems = 2 + i * 7 % 60;
         var sale = i % 11 != 10;
-        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : 0, i % 7 != 5, key == "573" ? 7 : 0,
-            "Two-man item suitable for extremely cold conditions. Not recommended for use in warm reserves however.\n\nCharacteristics:\n* Establish a new permanent spawn point\n* Access your inventory\n* Up to 10 can be erected in each reserve at the same time\n* Can be dismantled and moved");
+        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
+            "Two-man item suitable for extremely cold conditions. Not recommended for use in warm reserves however.\n\nCharacteristics:\n* Establish a new permanent spawn point\n* Access your inventory\n* Up to 10 can be erected in each reserve at the same time\n* Can be dismantled and moved",
+            DaysLeft: i switch { 9 => 12, 25 => 0.5, 41 => 0, _ => null }, OwnLimit: i % 18 == 4 ? 3 : 0, DisabledByServices: i == 41,
+            Banner: (i % 13) switch { 3 => "premium", 5 => "limited", 8 => "new", 11 => "community", _ => null }, MultiBuy: key == "10");
     }).ToArray();
+
+    static readonly StoreItem[] Sights = Items.Where(i => i.Category is "50" or "51").Take(3).ToArray();
+    static readonly StoreItem[] Ammo = Items.Where(i => i.Category == "10").Take(3).ToArray();
+
+    // weapons list the sights and ammunition that fit; weapons and ammunition show for which species each ammunition is permitted
+    static readonly EthicalMatrix Ethics = new(Ammo.Select(a => a.Name).ToList(), Species.Select((s, r) => new EthicalRow(s, Ammo.Select((_, c) => (r + c) % 3 != 0).ToList())).ToList());
+
+    static StoreItem Extras(StoreItem i) => i.Category switch
+    {
+        "0" => i with { Fits = [new("Sights", Sights.Select(s => new StoreFit(s.Id, s.Name)).ToList()), new("Ammo", Ammo.Select(a => new StoreFit(a.Id, a.Name)).ToList())], Ethics = Ethics },
+        "10" => i with { Ethics = Ethics },
+        _ => i,
+    };
 
     static readonly StoreBundle[] Bundles =
     [
         new(0, "Bait - Refill Pack", "Buy three bait, get one free!", 90, true, [new(137, "Bait", 4, 0, 120)]),
+        new(1, "Hunter Starter Pack", "A rifle, ammunition and a scope to start with.\nOne rifle per hunter.", 150, true,
+            [new(1226, "Rifle A", 1, 0, 120, "Engraved", 1), new(1225, "Rifle Ammo A", 2, 0, 40, "Black"), new(1225, "Rifle Ammo A", 3, 0, 60, "Black"), new(1224, "Rifle Scope A", 1, 0, 50, "Silver", 2)]),
     ];
+
+    // the items and bundles as the account sees them now: what it bought is owned, a limit may be reached
+    StoreItem Live(StoreItem i)
+    {
+        var bought = state.Bought(i.Id);
+        return Extras(i) with
+        {
+            Owned = i.Owned + bought,
+            DaysLeft = i.DaysLeft is { } d ? d + 30 * bought : null,
+            WasEms = mock == "store:nosales" ? null : i.WasEms,
+        };
+    }
+
+    StoreBundle Live(StoreBundle b)
+    {
+        var lines = b.Lines.Select(l => l with { Owned = l.Owned + state.Bought(l.ItemId) }).ToList();
+        return b with { Lines = lines, Buyable = b.Buyable && !lines.Any(l => l.OwnLimit > 0 && l.Owned >= l.OwnLimit) };
+    }
 
     public Task<IReadOnlyList<StoreCategory>> CategoriesAsync() => Task.FromResult<IReadOnlyList<StoreCategory>>(Categories);
 
@@ -46,20 +85,35 @@ public sealed class MockStoreService : IStoreService
     {
         var words = search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var inView = Categories.FirstOrDefault(c => c.Key == view)?.Children.Select(c => c.Key).Append(view).ToArray() ?? [view];
-        var hits = Items.Where(i => (view == "all" || (view == "sales" ? i.WasEms is not null : inView.Contains(i.Category)))
+        var hits = Items.Select(Live).Where(i => (view == "all" || (view == "sales" ? i.WasEms is not null : inView.Contains(i.Category)))
             && words.All(w => i.Name.Contains(w, StringComparison.OrdinalIgnoreCase) || i.Variant.Contains(w, StringComparison.OrdinalIgnoreCase))).ToList();
         var pages = Math.Max(1, (hits.Count + PageSize - 1) / PageSize);
         var n = Math.Clamp(page, 1, pages);
         return Task.FromResult(new Page<StoreItem>(hits.Skip((n - 1) * PageSize).Take(PageSize).ToList(), n, pages));
     }
 
-    // no bundles in the mock
-    public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>([]);
+    public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>(Bundles.Select(Live).ToList());
 
-    public Task<StoreItem?> ItemAsync(int id) => Task.FromResult(Items.FirstOrDefault(i => i.Id == id));
+    public Task<bool> HasSalesAsync() => Task.FromResult(mock != "store:nosales");
 
-    public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult(Bundles.FirstOrDefault(b => b.Id == id));
+    public Task<StoreItem?> ItemAsync(int id) => Task.FromResult(Items.Where(i => i.Id == id).Select(Live).FirstOrDefault());
 
-    // no balance changes in the mock
-    public Task<Result> BuyAsync(int id, bool bundle, bool gms) => Task.FromResult(Result.Success);
+    public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult(Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault());
+
+    // the request takes a moment, so the pending state of the buy dialog can be seen
+    public async Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1)
+    {
+        await Task.Delay(400);
+        if (mock == "store:fail" || count < 1) return Result.Fail("Store.Oops");
+        if (bundle)
+        {
+            if (Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault() is not { Buyable: true } b || gms || !state.Spend(false, b.Price, b.Name)) return Result.Fail("Store.Oops");
+            foreach (var l in b.Lines) state.Add(l.ItemId, l.Count);
+            return Result.Success;
+        }
+        if (Items.Where(i => i.Id == id).Select(Live).FirstOrDefault() is not { Buyable: true, DisabledByServices: false, LimitReached: false } item || (count > 1 && !item.MultiBuy)) return Result.Fail("Store.Oops");
+        if (!state.Spend(gms, (gms ? item.Gms : item.Ems) * count, count > 1 ? $"{count}x {item.Name}" : item.Name)) return Result.Fail("Store.Oops");
+        state.Add(id, count);
+        return Result.Success;
+    }
 }
