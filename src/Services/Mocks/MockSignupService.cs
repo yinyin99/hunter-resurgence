@@ -19,6 +19,13 @@ public sealed class MockSignupService(string? mock = null) : ISignupService
 
     public Task<Result> ResendEmailAsync() => Task.FromResult(Result.Success);
 
+    // the code or id "bad" is the failing one, whatever else is asked
+    public Task<Result> AutoLoginAsync(string id) => Task.FromResult(id == "bad" ? Result.Fail("Browser.Failed") : Result.Success);
+
+    public Task<Result> ConfirmEmailAsync(string kind, string? code, string? uuid, string? src) => Task.FromResult(code == "bad" ? Result.Fail("Browser.Failed") : Result.Success);
+
+    public Task<Result> SharedDataAsync(string? code) => Task.FromResult(code == "bad" ? Result.Fail("Browser.Failed") : Result.Success);
+
     public Task<Result> ChangeEmailAsync(string address)
     {
         if (address.StartsWith("taken@", StringComparison.OrdinalIgnoreCase)) return Task.FromResult(Result.Fail("Dialog.EmailTaken"));
