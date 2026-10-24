@@ -21,7 +21,7 @@
                 @foreach (var c in conversations)
                 {
                     <li class="@(c.Handle == current ? "on" : "")">
-                        <a href="/messages/@c.Handle"><AssetSlot Name="avatar-default" Width="40" Height="40" Class="av" /><span class="who">@c.Handle</span><span class="last">@c.Last</span>@if (c.Unread) { <i class="dot"></i> }</a>
+                        <a class="hover-tint" href="/messages/@c.Handle"><AssetSlot Name="avatar-default" Width="40" Height="40" Class="av" /><span class="who">@c.Handle</span><span class="last">@c.Last</span>@if (c.Unread) { <i class="dot"></i> }</a>
                     </li>
                 }
             </ul>
