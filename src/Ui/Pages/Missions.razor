@@ -105,7 +105,7 @@ else { <div class="skeleton skeleton-page"></div> }
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "")">
-                <button type="button" class="row" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
+                <button type="button" class="row hover-tint" aria-expanded="@open.Contains(m.Name)" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State == "active" ? "lock" : "unlock")" /></button>
                 @if (open.Contains(m.Name))
                 {
                     <div class="more">
