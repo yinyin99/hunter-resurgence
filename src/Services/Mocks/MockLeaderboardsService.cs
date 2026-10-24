@@ -1,6 +1,6 @@
 namespace Resurgence.Services.Mocks;
 
-/// <summary>Boards computed from fixed formulas: the same names and values on every call. Nobody is ranked except for the hunter score, where the player is far down.</summary>
+/// <summary>Boards computed from fixed formulas: the same names and values on every call. The player is ranked at the hunter score (far down), in the two games and on some boards.</summary>
 public sealed class MockLeaderboardsService : ILeaderboardsService
 {
     static readonly string[] Antlers = ["Axis Deer Antler", "Blacktail Deer Antler", "Blacktail Deer Non-Typical Antler", "Fallow Deer Antler", "Moose Antler", "Mule Deer Antler", "Red Deer Antler", "Whitetail Deer Antler"];
@@ -43,7 +43,15 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
         return Task.FromResult(new Page<Ranked>(Enumerable.Range((page - 1) * size + 1, size).Select(n => Row(kind, id, n)).ToList(), page, pages));
     }
 
-    public Task<Ranked?> MyRankAsync(string kind, int id) => Task.FromResult<Ranked?>(kind == "hunterscore" ? new(200000, "Hunter01", 50) : null);
+    // the player is ranked at the hunter score, in the two games and on every fourth species or antler board (the other boards show "nobody ranked")
+    public Task<Ranked?> MyRankAsync(string kind, int id) => Task.FromResult<Ranked?>(kind switch
+    {
+        "hunterscore" => new(200000, "Hunter01", 50),
+        "lanebandit" => new(310, "Hunter01", 480),
+        "bustthrough" => new(96, "Hunter01", 3210),
+        _ when id % 4 == 1 => new(12 + id % 30, "Hunter01", Value(kind, id, 12 + id % 30), 1_100_000_000 + id * 1000),
+        _ => null,
+    });
 
     public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>(
         Names.Species.OrderBy(s => s.Name).Where(s => season > 1 || s.Name is "Mule Deer (Typical)" or "Turkey" or "Whitetail Deer (Typical)")

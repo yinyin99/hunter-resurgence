@@ -1,7 +1,16 @@
 @page "/competitions/details/{Id:int}"
 @page "/competitions/details/{Id:int}/{Tab}"
+@page "/competitions/details/{Id:int}/leaderboard/{PageNo:int}"
+@page "/community-league/{Id:int}"
+@page "/community-league/{Id:int}/{Tab}"
+@page "/community-league/{Id:int}/leaderboard/{PageNo:int}"
+@page "/community_league/details/{Id:int}"
+@page "/community_league/details/{Id:int}/{Tab}"
+@page "/community_league/details/{Id:int}/leaderboard/{PageNo:int}"
+@implements IDisposable
 @inject ICompetitionsService Service
 @inject ModalService Modal
+@inject NavigationManager Nav
 
 <PageTitle>@L["Comp.Tab.Competitions"]</PageTitle>
 
@@ -20,17 +29,17 @@
     </header>
     <dl class="stats">
         <div><dt>@L["Comp.Players"]</dt><dd>@c.Players</dd></div>
-        <div class="wide"><dt>@L[c.Status == "Signup" ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Fmt.Elapsed(L, d.EndsIn)</dd></div>
+        <div class="wide"><dt>@L[c.Start > DateTime.UtcNow ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Remaining</dd></div>
         <div><dt>@L["Comp.YourPosition"]</dt><dd>@(d.Position?.ToString() ?? L["Comp.NA"])</dd></div>
         <div><dt>@L["Comp.ScoreToBeat"]</dt><dd>@d.ScoreToBeat</dd></div>
         <div><dt>@L["Comp.Attempts"]</dt><dd>@d.Used/@d.Max</dd></div>
     </dl>
     <Tabs Kind="pills" Items="pills" Active="@active" />
 
-    @switch (Tab)
+    switch (tab)
     {
         case "leaderboard":
-            <h3>@L["Comp.Participants", participants.Count]</h3>
+            <h3>@L["Comp.Participants", total]</h3>
             @if (participants.Count == 0) { <p>@L["Comp.NoResults"]</p> }
             else
             {
@@ -38,9 +47,10 @@
                     <thead><tr><th>@L["Comp.Position"]</th><th>@L["Comp.Player"]</th><th>@L["Comp.Result"]</th></tr></thead>
                     <tbody>@foreach (var p in participants) { <tr><td>@p.Position</td><td><a href="/profile/@p.Handle">@p.Handle</a></td><td>@p.Result</td></tr> }</tbody>
                 </table>
+                <Paginator Page="page" Pages="pages" Href='n => root + Id + "/leaderboard/" + n' />
             }
             break;
-        case "history":
+        case "history" when !league:
             <h3>@L["Comp.History"]</h3>
             @foreach (var year in history.GroupBy(h => h.Year))
             {
@@ -56,7 +66,7 @@
             <ul class="prizes">
                 @for (var i = 0; i < d.Prizes.Count; i++)
                 {
-                    <li><span class="medal m@(i + 1)">@(i + 1)</span> @(d.Prizes[i] == "Trophy" ? L["Comp.Trophy"] : d.Prizes[i])</li>
+                    <li><span class="medal m@(i + 1)">@(i + 1)</span> @PrizeText(d.Prizes[i])</li>
                 }
             </ul>
             <h3>@L["Comp.Rules"]</h3>
@@ -80,22 +90,65 @@
 @code {
     CompetitionDetails? d;
     IReadOnlyList<Participant> participants = [];
+    int page = 1, pages = 1, total;
+    readonly CancellationTokenSource stop = new();
     IReadOnlyList<HistoryMonth> history = [];
     IReadOnlyList<(string Label, string Href)> pills = [];
 
     [Parameter] public int Id { get; set; }
     [Parameter] public string? Tab { get; set; }
+    [Parameter] public int? PageNo { get; set; }
 
-    string active => pills[Tab switch { "leaderboard" => 1, "history" => 2, _ => 0 }].Href;
+    // the community league has the same page under its own address, without a history
+    bool league => Nav.ToBaseRelativePath(Nav.Uri).StartsWith("community", StringComparison.OrdinalIgnoreCase);
+    string root => league ? "/community-league/" : "/competitions/details/";
+    string? tab => Tab ?? (PageNo is not null ? "leaderboard" : null);
 
-    string state => d!.Competition.Status switch { "Started" => L["Comp.StateOngoing"], "Signup" => L["Comp.StateSignUp"], _ => L["Comp.StateEnded"] };
+    string active => pills[Math.Min(pills.Count - 1, tab switch { "leaderboard" => 1, "history" => 2, _ => 0 })].Href;
+
+    // from the dates, so the page counts down by itself
+    string state => d!.Competition is { Start: { } s, End: { } e } ? DateTime.UtcNow < s ? L["Comp.StateSignUp"] : DateTime.UtcNow < e ? L["Comp.StateOngoing"] : L["Comp.StateEnded"] : L["Comp.StateEnded"];
+
+    string Remaining
+    {
+        get
+        {
+            var (now, c) = (DateTime.UtcNow, d!.Competition);
+            var to = c.Start > now ? c.Start : c.End > now ? c.End : null;
+            return to is { } t ? Fmt.Elapsed(L, (int)(t - now).TotalSeconds) : L["Comp.StateEnded"];
+        }
+    }
+
+    string PrizeText(Prize p) => (p.Ems, p.Gms, p.Trophy) switch
+    {
+        ( > 0, _, true) => L["Comp.PrizeEmsTrophy", p.Ems],
+        (_, > 0, true) => L["Comp.PrizeGmsTrophy", p.Gms],
+        ( > 0, _, _) => L["Comp.PrizeEms", p.Ems],
+        (_, > 0, _) => L["Comp.PrizeGms", p.Gms],
+        _ => L["Comp.Trophy"],
+    };
+
+    public void Dispose() => stop.Cancel();
+
+    protected override void OnInitialized() => _ = Tick();
+
+    async Task Tick()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token)) await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) { }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
-        var b = "/competitions/details/" + Id;
-        pills = [(L["Comp.Overview"], b), (L["Comp.Leaderboard"], b + "/leaderboard"), (L["Comp.History"], b + "/history")];
+        var b = root + Id;
+        pills = [(L["Comp.Overview"], b), (L["Comp.Leaderboard"], b + "/leaderboard"), .. league ? [] : (IReadOnlyList<(string, string)>)[(L["Comp.History"], b + "/history")]];
         d = await Service.DetailsAsync(Id);
-        participants = await Service.ParticipantsAsync(Id);
+        var p = await Service.ParticipantsAsync(Id, PageNo ?? 1);
+        (participants, page, pages, total) = (p.Rows, p.Number, p.Pages, p.Total);
         history = await Service.HistoryAsync(Id);
     }
 

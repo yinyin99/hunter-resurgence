@@ -152,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Začátek</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Vytvořit hru</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Při vytváření herní relace se něco pokazilo. Obnovte prosím seznam serverů a zkuste se připojit k jiné hře.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>VYHLEDAT HRU S OSTATNÍMI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Najít hru nebo hostitele...</value></data>
@@ -183,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nepodařilo se najít žádnou veřejnou hru s ostatními, ke které se můžete připojit.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOSTOVAT VLASTNÍ HRU</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Tato hra je chráněna heslem</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Vyžadováno heslo</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Aktualizace...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Poloha serveru: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severní Amerika</value></data>
@@ -194,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Zadejte heslo</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Připojit se</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Zavřít</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Špatné heslo. Zkuste to prosím znovu.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Už jste skončili s lovem?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Zobrazit statistiky lovu</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>LOVIT</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Chcete-li spustit další hru, zavřete toto okno a znovu klikněte na tlačítko {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Měli jste potíže s připojením?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Máte problémy s připojením k přátelům v multiplayeru? Může to mít mnoho příčin a ne všechny musí souviset přímo s hrou. Další informace najdete v části {0} v průvodci řešením problémů.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>problémy s připojením</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Potřebujete více informací o funkcích hry?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nemůžete najít svou kořist? Nevíte, jak použít určitou část vybavení? Zajímá vás, která lovecká oblast by vám mohla vyhovovat nejlépe? Více informací najdete na stránce {0}. Wiki vytváří a spravuje komunita, a pokud tam odpověď na svou otázku nenajdete, klidně se zeptejte na {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>wiki {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>fóru</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Máte jiné technické potíže?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Nastal problém při spuštění hry? Zobrazila se vám podivná chybová hláška? Podívejte se do {0} a pokud tam odpověď na svůj problém nenajdete, napište naší {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>průvodce řešením problémů</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>podpoře</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Než vyrazíte na svůj první skutečný lov v první oboře, doporučujeme projít základními tutoriály. V nich se setkáte s tamním hajným, který vás provede základy a naučí vás vše, co potřebujete k úspěchu ve hře {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Spustit výuku</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Lokalita: {0}</value></data>
@@ -385,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deaktivovat</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Nelze se připojit</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Hra s ostatními</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Více druhů</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Požadavky:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Nadcházející soutěže</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Dřívější soutěže</value></data>
@@ -409,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Historie</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Ceny</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofej</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ a trofej</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ a trofej</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Pravidla a podmínky</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Druhy: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Obory: {0}</value></data>
@@ -432,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Nejste zapsáni v žádné soutěži</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Měsíční žebříček</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sezónní žebříček</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Body</value></data>
   <data name="Board.Title" xml:space="preserve"><value>ŽEBŘÍČKY</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Skóre</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Vzdálenost</value></data>

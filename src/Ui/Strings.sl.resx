@@ -152,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Največ:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Začetek</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Ustvari igro</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pri ustvarjanju seje igre je prišlo do napake. Osveži seznam strežnikov in se poskusi pridružiti drugi igri.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>NAJDI SKUPINSKI LOV</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Poišči igro ali gostitelja ...</value></data>
@@ -183,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nismo našli nobene javne skupinske igre, ki se ji lahko pridružiš.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>GOSTI SVOJ LOV</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ta igra je zaščitena z geslom</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Potrebno geslo</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Nameščanje popravkov...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Lokacija strežnika: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severna Amerika</value></data>
@@ -194,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Vnesi geslo</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Pridruži se</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Zapri</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Napačno geslo. Poskusite znova.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Ste za zdaj končali z lovom?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Ogled statistike lova</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>NA LOV</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Za začetek nove igre zaprite to okno in znova kliknite gumb {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Je prišlo do težave s povezavo?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Imate težave s povezovanjem s prijatelji v igri za več igralcev? Vzrokov je lahko veliko in vsi niso nujno neposredno povezani z igro. Za več informacij si oglejte razdelek {0} v vodniku za odpravljanje težav.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>težave s povezavo</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Potrebujete več informacij o funkcijah igre?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Ne najdete plena? Ne veste, kako uporabiti določeno opremo? Se sprašujete, kateri lovski revir vam najbolj ustreza? Za več informacij si oglejte {0}. Wiki ustvarja in upravlja skupnost, če pa tam ne najdete odgovora na svoje vprašanje, se lahko obrnete na {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>wiki {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Imate druge tehnične težave?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Je prišlo do težave pri zagonu igre? Ste prejeli čudno sporočilo o napaki? Obiščite {0}, če pa ne najdete rešitve svoje težave, se obrnite na {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>vodnik za odpravljanje težav</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>podporo</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Priporočamo, da preden začneš prvi pravi lov v prvem rezervatu, opraviš osnovne vadnice. V njih spoznaš lovskega čuvaja tamkajšnjega rezervata, ki ti bo predstavil osnove in te naučil vsega, kar potrebuješ za uspeh v igri {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Začni vadnico</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Lokacija: {0}</value></data>
@@ -385,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deaktiviraj</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Vstop ni možen</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Skupinski lov</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Več vrst</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Zahteve:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Prihajajoča tekmovanja</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Pretekla tekmovanja</value></data>
@@ -409,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Zgodovina</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Nagrade</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofeja</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ in trofeja</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ in trofeja</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Pravila in pogoji</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Živali: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Rezervati: {0}</value></data>
@@ -432,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Ne sodeluješ v nobenem tekmovanju</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Mesečna lestvica</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sezonska lestvica</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Točke</value></data>
   <data name="Board.Title" xml:space="preserve"><value>LESTVICE</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Rezultat</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Razdalja</value></data>

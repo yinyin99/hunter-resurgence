@@ -1,7 +1,8 @@
-@page "/launch-map/{Kind:int}"
+@page "/launch-map"
+@page "/launch-map/{Kind:int?}"
+@inherits PatchWatcher
 @inject IServersService Service
 @inject ISessionService Sessions
-@inject IPatchService Patch
 @inject IGameSettingsService GameSettings
 @inject ModalService Modal
 
@@ -10,8 +11,12 @@
 <h2 class="page-title">@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</h2>
 @if (single)
 {
-    <p class="intro">@L["Launch.Intro1"]</p>
-    <p class="intro">@L["Launch.Intro2"]</p>
+    // the old page greets only players without a membership
+    @if (!member)
+    {
+        <p class="intro">@L["Launch.Intro1"]</p>
+        <p class="intro">@L["Launch.Intro2"]</p>
+    }
 }
 else
 {
@@ -48,6 +53,7 @@ else
             <h3>@L["Launch.Start"]</h3>
             <label class="muted">@L["Launch.StartTime"]</label>
             <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
             <button class="btn btn-primary btn-large btn-block" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.Create"].Value : L["Launch.Patching"].Value)</button>
         </div>
     </form>
@@ -64,20 +70,23 @@ else
         {
             <label class="muted">@L["Launch.StartTime"]</label>
             <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
             <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
         }
         <h3>@reserves.FirstOrDefault(r => r.Id == reserve)?.Name</h3>
-        <p class="legend"><Icon Name="house" /> @L["Launch.Lodges"]</p>
-        <ul>
-            @foreach (var m in markers.Where(m => m.Kind == MarkerKind.Lodge))
+        <div class="strip">
+            @foreach (var m in markers.Where(m => strips.Contains(m.Kind)).OrderBy(m => m.Kind))
             {
-                <li class="@(m.Id == marker ? "current" : "")"><a class="@(m.Id == marker ? "" : "hover-tint")" href="#" @onclick="() => marker = m.Id" @onclick:preventDefault>@m.Name</a></li>
+                <button type="button" class="hover-tint" data-tip="@m.Name" aria-label="@m.Name" @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null" @onclick="() => centre = m.Id"><Icon Name="@MapPlaceholder.IconFor(m.Kind)" /></button>
             }
-        </ul>
+        </div>
+        <p class="legend"><Icon Name="house" /> @L["Launch.Lodges"]</p>
+        @Starts(MarkerKind.Lodge)
         <p class="legend"><Icon Name="campground" /> @L["Launch.Tents"]</p>
-        <p class="no-tents">@L.Html("Launch.NoTents", "<a href=\"/store?category=8&amp;type=30\">", "</a>")</p>
+        @if (markers.Any(m => m.Kind == MarkerKind.Tent)) { @Starts(MarkerKind.Tent) }
+        else { <p class="no-tents">@L.Html("Launch.NoTents", "<a href=\"/store?category=8&amp;type=30\">", "</a>")</p> }
     </div>
-    <MapPlaceholder Markers="markers" Height="750" Selected="marker" OnPick="m => marker = m.Id">
+    <MapPlaceholder Markers="markers" Height="750" Selected="marker" Hover="hover" Centre="centre" OnPick="m => marker = m.Id">
         @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
         {
             <span class="start-label" style="left:@(at.X)%;top:@(at.Y)%">@L["Launch.StartingAt", at.Name]</span>
@@ -94,7 +103,22 @@ else
     // the last start is remembered by the old page in a cookie; the defaults are its first values
     int reserve = 2, marker = 1, hour = 9, maxPlayers = 8;
     string name = "", description = "", password = "", hsMin = "0", hsMax = "99999";
-    bool friendsOnly, limit, ready = true;
+    bool friendsOnly, limit, member;
+    int? hover, centre;
+    IReadOnlyList<Loadout> loadouts = [];
+    int loadout;
+
+    // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
+    bool ready => Status.State is PatchState.Ready or PatchState.Done;
+    static readonly MarkerKind[] strips = [MarkerKind.Tower, MarkerKind.Campsite, MarkerKind.Interest, MarkerKind.Bait, MarkerKind.Feeder, MarkerKind.TreeStand, MarkerKind.GroundBlind];
+
+    /// <summary>Lodges or tents of the reserve as a list; hovering shows the marker's label on the map.</summary>
+    RenderFragment Starts(MarkerKind kind) => @<ul>
+        @foreach (var m in markers.Where(m => m.Kind == kind))
+        {
+            <li class="@(m.Id == marker ? "current" : "")"><a class="@(m.Id == marker ? "" : "hover-tint")" href="#" @onclick="() => marker = m.Id" @onclick:preventDefault @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null">@m.Name</a></li>
+        }
+    </ul>;
 
     [Parameter] public int Kind { get; set; }
 
@@ -104,17 +128,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        name = L["Launch.GameOf", (await Sessions.CurrentAsync())?.Handle ?? "Hunter01"];
+        await base.OnInitializedAsync();
+        var session = await Sessions.CurrentAsync();
+        member = session?.Membership == true;
+        name = L["Launch.GameOf", session?.Handle ?? "Hunter01"];
         reserves = await Service.ReservesAsync();
         markers = await Service.MarkersAsync(reserve);
-        ready = (await Patch.StatusAsync()).State == PatchState.Ready;
+        loadouts = await Service.LoadoutsAsync();
     }
 
     void SetHour(string value) => hour = int.Parse(value[..2]);
 
     async Task Choose(int id)
     {
-        reserve = id;
+        (reserve, hover, centre) = (id, null, null);
         markers = await Service.MarkersAsync(id);
         marker = markers.First(m => m.Kind == MarkerKind.Lodge).Id;
     }
@@ -130,9 +157,9 @@ else
     {
         if (!await Modal.SetUpFirst(GameSettings)) return;
         var result = single
-            ? await Service.StartSingleAsync(reserve, marker, hour * 60)
+            ? await Service.StartSingleAsync(reserve, marker, hour * 60, loadout)
             : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
-                limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60);
-        if (!result.Ok) Modal.Alert(L["Launch.Failed"]);
+                limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60, loadout);
+        if (result.Ok) Modal.GameStarted(); else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
     }
 }

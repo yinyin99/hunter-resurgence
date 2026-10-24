@@ -152,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Creați jocul</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Ceva nu a mers bine la crearea sesiunii de joc. Reîncărcați lista de servere și încercați să vă alăturați altui joc.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>GĂSIȚI UN JOC MULTIPLAYER</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Găsiți un joc sau o gazdă...</value></data>
@@ -183,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nu am găsit niciun joc multiplayer public la care să vă puteți alătura.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>GĂZDUIȚI PROPRIUL JOC</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Acest joc este protejat cu parolă</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parolă necesară</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Se aplică patch-ul...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Locația serverului: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>America de Nord</value></data>
@@ -194,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Introduceți parola</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Alăturați-vă jocului</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Închideți</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Parolă greșită. Încearcă din nou.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Ai terminat de vânat pentru moment?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Vezi statisticile vânătorii</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>VÂNEAZĂ ACUM</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Pentru a începe un alt joc, închide această fereastră și apasă din nou butonul {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>A fost o problemă de conexiune?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Ai probleme la conectarea cu prietenii în multiplayer? Pot exista multe cauze și nu toate au legătură directă cu jocul. Consultă secțiunea {0} din ghidul de depanare pentru mai multe informații.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>probleme de conexiune</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Ai nevoie de mai multe informații despre funcțiile jocului?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nu îți găsești prada? Nu știi cum se folosește un echipament anume? Te întrebi ce rezervație de vânătoare ți se potrivește cel mai bine? Consultă {0} pentru mai multe informații. Wiki-ul este creat și administrat de comunitate, iar dacă nu găsești acolo răspunsul la întrebarea ta, întreabă liniștit pe {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>wiki-ul {game}</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Ai alte probleme tehnice?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>A fost o problemă la pornirea jocului? Ai primit un mesaj de eroare ciudat? Mergi la {0}, iar dacă nu găsești răspunsul la problema ta, trimite un mesaj către {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>ghidul de depanare</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>echipa de asistență</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Vă recomandăm să parcurgeți tutorialele de bază înainte de prima vânătoare adevărată din prima rezervație. În aceste tutoriale îl veți întâlni pe paznicul rezervației, care vă va ghida prin noțiunile de bază și vă va învăța ce trebuie să știți pentru a avea succes în {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Începeți tutorialul</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Locație: {0}</value></data>
@@ -385,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Dezactivați</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Nu vă puteți alătura</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Multispecii</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Cerințe:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Competiții viitoare</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Competiții anterioare</value></data>
@@ -409,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Istoric</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Premii</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofeu</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ şi un trofeu</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ şi un trofeu</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Reguli și condiții</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Specii: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Rezervații: {0}</value></data>
@@ -432,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Nu sunteți înscris la nicio competiție</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Clasamentul lunar</value></data>
   <data name="League.Season" xml:space="preserve"><value>Clasamentul sezonului</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Puncte</value></data>
   <data name="Board.Title" xml:space="preserve"><value>CLASAMENTE</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Scor</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Distanță</value></data>

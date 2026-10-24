@@ -1,12 +1,13 @@
 namespace Resurgence.Services.Mocks;
 
-public sealed class MockSessionService : ISessionService
+/// <param name="mock">The development state, read when asked (the page reads it after this service is made): "membership" gives the signed-in player a membership.</param>
+public sealed class MockSessionService(Func<string?>? mock = null) : ISessionService
 {
     Session? session = new("Hunter01", 74);
 
     public event Action? Changed;
 
-    public Task<Session?> CurrentAsync() => Task.FromResult(session);
+    public Task<Session?> CurrentAsync() => Task.FromResult(session is { Handle.Length: > 0 } ? session with { Membership = mock?.Invoke() == "membership" } : session);
 
     // the mock account has accepted; development hook ?mock=eula (HostMode) takes the acceptance back
     bool licenseAccepted = true;

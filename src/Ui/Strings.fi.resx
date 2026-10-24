@@ -152,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Maks:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Aloitus</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Luo peli</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Aloitustavarat</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Edelliset tarvikkeet</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pelisession luomisessa tapahtui virhe. Lataa palvelinluettelo uudelleen ja yritä liittyä toiseen peliin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ETSI MONINPELI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Etsi peli tai isäntä...</value></data>
@@ -183,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Emme löytäneet yhtään julkista moninpeliä, johon saisit liittyä.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>ISÄNNÖI OMAA PELIÄ</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Tämä peli on salasanasuojattu</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Salasana vaaditaan</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Päivitetään...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Palvelimen sijainti: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Eurooppa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Pohjois-Amerikka</value></data>
@@ -194,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Anna salasana</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Liity peliin</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Sulje</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Väärä salasana. Yritä uudelleen.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Metsästys tältä erää ohi?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Näytä metsästystilastot</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>METSÄSTÄ NYT</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Aloita uusi peli sulkemalla tämä ikkuna ja napsauttamalla painiketta {0} uudelleen.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Oliko yhteysongelma?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Onko sinulla ongelmia yhteyden muodostamisessa ystäviisi moninpelissä? Syitä voi olla monia, eikä kaikki välttämättä liity suoraan itse peliin. Lisätietoja löydät vianmääritysoppaan kohdasta {0}.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>yhteysongelmat</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Tarvitsetko lisätietoa pelin ominaisuuksista?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Etkö löydä saalistasi? Etkö tiedä, miten jotain varustetta käytetään? Mietitkö, mikä metsästysalue sopisi sinulle parhaiten? Lisätietoja löydät osoitteesta {0}. Wikin luo ja ylläpitää yhteisö, ja jos et löydä vastausta kysymykseesi sieltä, kysy vapaasti {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game}-wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>foorumilla</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Muita teknisiä ongelmia?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Oliko pelin käynnistyksessä ongelmia? Saitko oudon virheilmoituksen? Tutustu kohtaan {0}, ja jos et löydä ratkaisua ongelmaasi, lähetä viesti {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>vianmääritysopas</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>tukitiimillemme</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Suosittelemme, että pelaat perusharjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi ensimmäisellä alueella. Harjoituksissa tapaat kyseisen alueen vartijan. Hän opastaa sinut perusasioihin ja opettaa, mitä tarvitset menestyäksesi pelissä {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Aloita harjoitus</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Sijainti: {0}</value></data>
@@ -385,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Poista käytöstä</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Ei voi liittyä</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Moninpeli</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Monilajinen</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Vaatimukset:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Tulevat kilpailut</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Menneet kilpailut</value></data>
@@ -409,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Historia</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Palkinnot</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Pokaali</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ ja palkinto</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ ja palkinto</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Säännöt ja ehdot</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Lajit: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Alueet: {0}</value></data>
@@ -432,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Et ole ilmoittautunut yhteenkään kilpailuun</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Kuukauden pistetaulukko</value></data>
   <data name="League.Season" xml:space="preserve"><value>Kauden pistetaulukko</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Board.Title" xml:space="preserve"><value>PISTETAULUKOT</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Etäisyys</value></data>

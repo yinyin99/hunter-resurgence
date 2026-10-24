@@ -22,8 +22,8 @@
         <div class="species">
             @foreach (var s in species)
             {
-                @if (s.Competitions == 0) { <span class="chip off">@L.Term("species", s.Id, s.Name) <small>(0)</small></span> }
-                else { <a class="chip hover-tint @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@L.Term("species", s.Id, s.Name) <small>(@s.Competitions)</small></a> }
+                @if (s.Competitions == 0) { <span class="chip off">@Chip(s) <small>(0)</small></span> }
+                else { <a class="chip hover-tint @(s.Id == Species ? "on" : "")" href="@(s.Id == Species ? "/competitions/upcoming" : "/competitions/upcoming/" + s.Id)">@Chip(s) <small>(@s.Competitions)</small></a> }
             }
         </div>
     </div>
@@ -43,6 +43,9 @@ else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
 
     [Parameter] public int? Species { get; set; }
     [Parameter] public int? PageNo { get; set; }
+
+    // the synthetic "Multispecies" id is that of another species in the game vocabulary
+    string Chip(Species s) => s.Id == ICompetitionsService.Multispecies ? L["Comp.Multispecies"].Value : L.Term("species", s.Id, s.Name);
 
     bool previous => Nav.ToBaseRelativePath(Nav.Uri).StartsWith("competitions/previous", StringComparison.OrdinalIgnoreCase);
 
@@ -64,7 +67,7 @@ else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
         else
         {
             // the filter is in alphabetical order of the names shown
-            species = (await Service.SpeciesAsync()).OrderBy(s => L.Term("species", s.Id, s.Name), StringComparer.CurrentCulture).ToList();
+            species = (await Service.SpeciesAsync()).OrderBy(Chip, StringComparer.CurrentCulture).ToList();
             rows = await Service.UpcomingAsync(Species);
         }
         loaded = true;

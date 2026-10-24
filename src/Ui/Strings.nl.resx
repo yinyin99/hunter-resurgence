@@ -152,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Starten</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Spel maken</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Er is iets misgegaan bij het maken van je spelsessie. Laad de serverlijst opnieuw en probeer deel te nemen aan een ander spel.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>EEN MULTIPLAYERSPEL ZOEKEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Zoek een spel of host...</value></data>
@@ -183,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>We hebben geen openbare multiplayerspellen gevonden waaraan je mag meedoen.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOST JE EIGEN SPEL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Dit spel is met een wachtwoord beveiligd</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Wachtwoord vereist</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Patchen...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverlocatie: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Noord-Amerika</value></data>
@@ -194,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Voer wachtwoord in</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Meespelen</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Sluiten</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Verkeerd wachtwoord. Probeer het opnieuw.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Even klaar met jagen?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Jachtstatistieken bekijken</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>NU JAGEN</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Om nog een spel te starten, sluit je dit venster en klik je opnieuw op de knop {0}.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Was er een verbindingsprobleem?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Heb je problemen om verbinding te maken met je vrienden in multiplayer? Daar kunnen veel oorzaken voor zijn en niet alles hoeft direct met de game zelf te maken te hebben. Bekijk het gedeelte {0} in de probleemoplossingsgids voor meer informatie.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>verbindingsproblemen</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Meer info nodig over de spelfuncties?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Kun je je prooi niet vinden? Weet je niet hoe je een bepaald stuk uitrusting gebruikt? Vraag je je af welk jachtgebied het best bij je past? Bekijk de {0} voor meer informatie. De wiki wordt gemaakt en beheerd door de community. Kun je daar geen antwoord op je vraag vinden, stel hem dan gerust op het {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game}-wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Andere technische problemen?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Was er een probleem bij het starten van het spel? Kreeg je een vreemde foutmelding? Ga naar de {0} en stuur een bericht naar onze {1} als je het antwoord op je probleem niet kunt vinden.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>probleemoplossingsgids</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>support</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Het is aan te raden de basislessen te doorlopen voordat je je eerste echte jacht in het eerste reservaat begint. In deze lessen maak je kennis met de vaste jachtopziener van dat reservaat. Hij loodst je door de basis en leert je wat je moet weten om succesvol te zijn in {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Les starten</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Locatie: {0}</value></data>
@@ -385,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deactiveren</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Kan niet meedoen</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Meerdere soorten</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Vereisten:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Komende wedstrijden</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Eerdere wedstrijden</value></data>
@@ -409,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Geschiedenis</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Prijzen</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofee</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ en een trofee</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ en een trofee</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Regels en voorwaarden</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Soorten: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Reservaten: {0}</value></data>
@@ -432,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Je bent niet ingeschreven voor wedstrijden</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Maandranglijst</value></data>
   <data name="League.Season" xml:space="preserve"><value>Seizoensranglijst</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Punten</value></data>
   <data name="Board.Title" xml:space="preserve"><value>RANGLIJSTEN</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Afstand</value></data>
