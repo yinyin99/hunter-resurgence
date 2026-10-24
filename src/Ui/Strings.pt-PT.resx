@@ -112,7 +112,7 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Ver próximas competições</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>CRIAR UM JOGO PARA UM JOGADOR</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>CRIAR UM JOGO MULTIJOGADOR</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Escolhe onde queres iniciar a tua sessão de caça. Clica num dos 12 logótipos de reservas abaixo para ver o mapa da reserva correspondente e clica nas cabanas (os símbolos de casa) para saberes que espécies se encontram nessa zona. Também podes percorrer o mapa-múndi clicando e arrastando, e aumentar ou diminuir o zoom com a roda do rato.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Escolhe onde queres iniciar a tua sessão de caça. Clica num dos 12 logótipos de reservas abaixo para ver o mapa da reserva correspondente e clica nas cabanas (os símbolos de casa) para saberes que espécies se encontram nessa zona. Também podes percorrer o mapa-múndi ao clicar e arrastar, e aumentar ou diminuir o zoom com a roda do rato.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Alguns dos ambientes naturais mais magníficos do mundo e 45 espécies diferentes de animais esperam por ti. Boa caçada!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Hora de início:</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Iniciar jogo</value></data>
@@ -577,7 +577,7 @@
   <data name="Bank.Compare" xml:space="preserve"><value>* Em comparação com 500 em$</value></data>
   <data name="Bank.Save" xml:space="preserve"><value>Poupa {0}%*</value></data>
   <data name="Bank.Starter" xml:space="preserve"><value>Pacotes Iniciais</value></data>
-  <data name="Bank.StarterDesc" xml:space="preserve"><value>Obtém tudo o que precisas para começar a caçar qualquer animal da Evergreen Hunting Reserve. Os nossos pacotes iniciais incluem uma Subscrição Básica, que te dá uma licença para caçar todos os animais do jogo, e uma seleção especial de itens para te pôr no caminho certo para te tornares um mestre caçador.</value></data>
+  <data name="Bank.StarterDesc" xml:space="preserve"><value>Obtém tudo o que precisas para começar a caçar qualquer animal da Evergreen Hunting Reserve. Os nossos pacotes iniciais incluem uma Subscrição Básica, que te dá uma licença para caçar todos os animais do jogo, e uma seleção especial de itens para te pôr a caminho de te tornares um mestre caçador.</value></data>
   <data name="Bank.Special" xml:space="preserve"><value>Pacotes Especiais</value></data>
   <data name="Bank.SpecialDesc" xml:space="preserve"><value>Escolhe um dos nossos pacotes especiais para teres tudo o que precisas para caçar os animais mais populares de {game}. Todos estes pacotes incluem uma Subscrição Básica, que te dá uma licença para caçar todas as espécies do jogo, e uma seleção de itens recomendados para te concentrares em animais específicos e na jogabilidade de caça dos mesmos.</value></data>
   <data name="Bank.Basic" xml:space="preserve"><value>Subscrições Básicas</value></data>
@@ -1015,7 +1015,7 @@
   <data name="Help.Tut.Intro" xml:space="preserve"><value>Aprende o essencial sobre como jogar {game}. Não te esqueças de fazer também os {0}tutoriais jogáveis{1} antes da tua primeira caçada na Evergreen Hunting Reserve!</value></data>
   <data name="Help.Tut.By" xml:space="preserve"><value>Por {0}</value></data>
   <data name="Help.Community.Title" xml:space="preserve"><value>Websites das comunidades locais</value></data>
-  <data name="Help.Community.Text" xml:space="preserve"><value>{game} tem uma comunidade vibrante e muitos dos nossos jogadores reúnem-se em comunidades locais com jogadores da sua região! Descobre estes sites de fãs locais de {game}!</value></data>
+  <data name="Help.Community.Text" xml:space="preserve"><value>{game} tem uma comunidade vibrante e muitos dos nossos jogadores reúnem-se em comunidades locais com jogadores da respetiva região! Descobre estes sites de fãs locais de {game}!</value></data>
   <data name="DayHelp.Index" xml:space="preserve"><value>ÍNDICE</value></data>
   <data name="DayHelp.Services.Title" xml:space="preserve"><value>Serviços das Missões Diárias</value></data>
   <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Retomar Sequência</value></data>
