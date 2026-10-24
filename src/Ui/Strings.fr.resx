@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munitions :</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>carburant :</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Amis</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Amis ({0} nouvelles demandes)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Messages ({0} nouveaux)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Porte-monnaie / Historique des achats</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Déconnexion</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Votre Hunter Score</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Aucun chasseur trouvé</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Envoyer une demande d’ami</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Demande d’ami envoyée</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Demande d’ami {0} sur {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} veut devenir votre ami !</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Accepter</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Refuser</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Demande précédente</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Demande suivante</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Choisissez votre langue</value></data>
   <data name="Language.English" xml:space="preserve"><value>English</value></data>
   <data name="Language.French" xml:space="preserve"><value>Français</value></data>

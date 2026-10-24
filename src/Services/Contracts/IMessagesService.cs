@@ -7,8 +7,11 @@ public sealed record Message(bool Mine, string Text, TimeSpan Ago);
 
 public interface IMessagesService
 {
+    /// <summary>The conversations, newest first.</summary>
     Task<IReadOnlyList<Conversation>> ConversationsAsync();
     Task<IReadOnlyList<Message>> ThreadAsync(string handle);
+    /// <summary>Opening a thread reads it: the unread mark of the conversation is gone.</summary>
+    Task MarkReadAsync(string handle);
     /// <summary>Sends a message; the error key is Msg.NoUser, Msg.Self or Msg.Failed.</summary>
     Task<Result> SendAsync(string handle, string text);
     Task<bool> OnlyFriendsAsync();

@@ -52,3 +52,14 @@ export function dialog(el, want, modal, ref, closeOnBackdrop) {
 export function scrollToPack(id) {
     requestAnimationFrame(() => document.querySelector(`[data-pack="${id}"]`)?.scrollIntoView({ block: 'start' }));
 }
+
+// Closes the popover with the given id (the friends list after "Send message").
+export function hidePopover(id) {
+    document.getElementById(id)?.hidePopover();
+}
+
+// Opens the popover with the given id again if the browser closed it (the friends list after a dialog took the focus).
+export function showPopover(id) {
+    const el = document.getElementById(id);
+    if (el && !el.matches(':popover-open')) el.showPopover();
+}

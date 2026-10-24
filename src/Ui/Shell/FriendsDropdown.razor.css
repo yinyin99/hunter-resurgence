@@ -13,3 +13,15 @@
 .empty { color: var(--fg-muted); }
 .results .title { margin: 5px 10px 15px; }
 .notice { margin: 0 10px; padding: 10px; background: #d9edf7; color: #3a87ad; text-align: center; border-radius: var(--radius); }
+.cycle-bar { display: flex; align-items: center; justify-content: space-between; }
+.cycle-bar .title { margin: 0; }
+.cycle { padding: 0 10px; border: 0; background: none; color: #ccc; font: inherit; cursor: pointer; }
+.cycle:hover { color: #fff; }
+.cycle.left ::deep .icon { transform: scaleX(-1); }
+.request { padding: 10px; overflow: hidden; }
+.request ::deep .asset-slot { float: left; margin-right: 10px; }
+.request .handle { display: block; line-height: 40px; }
+.request .content { clear: both; padding: 10px 0; }
+.request .content a { color: var(--accent); }
+.answer { display: flex; gap: 6px; }
+.answer .btn { padding: 2px 5px; font-size: var(--fs-btn-sm); line-height: 16px; font-weight: 500; }

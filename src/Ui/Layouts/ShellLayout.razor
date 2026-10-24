@@ -16,7 +16,7 @@
         <StatusBar Session="session" Quick="quick" />
     }
     <div class="page @(isPublic ? "public" : "")">
-        @if (!isPublic) { <MenuBar Hidden="quick" /> }
+        @if (!isPublic) { <MenuBar Hidden="quick && Mode.Launcher" /> }
         <div class="body">
             <main @key="isPublic">@Body</main>
             <aside class="sidebar"></aside>
@@ -62,7 +62,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || !Mode.Launcher) return;
+        if (!firstRender) return;
         module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
         await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
     }

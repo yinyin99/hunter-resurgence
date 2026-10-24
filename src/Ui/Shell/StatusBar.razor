@@ -1,3 +1,4 @@
+@implements IDisposable
 @inject HostMode Mode
 @inject ISessionService Sessions
 @inject NavigationManager Nav
@@ -7,55 +8,108 @@
 
 <header class="bar @(Mode.Launcher ? "" : "web")">
     <div class="row">
+        @if (Quick && !Mode.Launcher)
+        {
+            @* the website: after scrolling a small strip opens the menu, which hangs under the bar while the pointer is on it *@
+            <div class="qn"><span class="quick-nav" aria-hidden="true"><Icon Name="bars" /></span><MenuBar InBar="true" /></div>
+        }
         <a class="logo" href="/"><AssetSlot Name="logo-bar" Width="173" Height="44" />@if (Mode.Launcher) { <span class="launcher-label">Launcher</span> }</a>
-        <div class="left">
-            <button class="section friends" popovertarget="friends" data-tip="@L["Tip.Friends"]" aria-label="@L["Tip.Friends"]" @onclick="() => friendsLoaded = true"><Icon Name="user" /></button>
-            <a class="section" href="/messages" data-tip="@L["Tip.Messages"]" aria-label="@L["Tip.Messages"]"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
-            <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
-            <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
-            <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", balances.AmmoDays]</span></span>
-            <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", balances.FuelDays]</span></span>
-        </div>
+        @if (!Minimal)
+        {
+            <div class="left">
+                <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
+                <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
+                <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
+                <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
+                <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
+                <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", balances.AmmoDays]</span></span>
+                <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", balances.FuelDays]</span></span>
+            </div>
+        }
         <div class="right">
-            <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>
-            <div class="section settings">
-                <a href="/settings">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
-                <div class="menu"><SettingsMenu /></div>
-            </div>
-            <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
-            <div class="user">
-                <a href="/profile/@session?.Handle" data-tip="@L["Tip.Profile"]"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a>
-                <a href="/profile/@session?.Handle" class="name">@session?.Handle</a>
-            </div>
+            @if (Mode.Launcher)
+            {
+                <button class="section" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]" @onclick="SignOut"><Icon Name="right-from-bracket" /></button>
+            }
+            else
+            {
+                @* the website signs out on its own page *@
+                <a class="section" href="/logout" data-tip="@L["Tip.SignOut"]" aria-label="@L["Tip.SignOut"]"><Icon Name="right-from-bracket" /></a>
+            }
+            @if (!Minimal)
+            {
+                @* the menu opens when the pointer enters the section and closes on a click on it or 0.3 s after the pointer left *@
+                <div class="section settings @(shut ? "shut" : "")" @onmouseenter="() => shut = false">
+                    <a href="/settings">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
+                    <div class="menu" @onclick="() => shut = true"><SettingsMenu /></div>
+                </div>
+                <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
+                <div class="user">
+                    <a href="/profile/@session?.Handle" data-tip="@L["Tip.Profile"]"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a>
+                    <a href="/profile/@session?.Handle" class="name">@session?.Handle</a>
+                </div>
+            }
         </div>
     </div>
-    @* the list is built the first time the button is pressed, then kept; the browser opens, closes and light-dismisses it *@
-    <div id="friends" class="friends-pos" popover>@if (friendsLoaded) { <FriendsDropdown /> }</div>
-    @if (Quick) { <MenuBar InBar="true" /> }
+    @if (!Minimal)
+    {
+        @* the list is built the first time the button is pressed and again at every press (so it is current); the browser opens, closes and light-dismisses it *@
+        <div id="friends" class="friends-pos" popover>@if (friendsKey > 0) { <FriendsDropdown @key="friendsKey" Changed="Refresh" /> }</div>
+    }
+    @if (Quick && Mode.Launcher && !Minimal) { <MenuBar InBar="true" /> }
 </header>
 
 @code {
+    readonly CancellationTokenSource stop = new();
+
     /// <summary>After scrolling the menu bar's items are shown inside this bar (quick-nav).</summary>
     [Parameter] public bool Quick { get; set; }
 
     /// <summary>The signed-in player (the website shows the public bar without one).</summary>
     [Parameter] public Session? Session { get; set; }
 
+    /// <summary>The agreements page: only the logo and the sign-out button.</summary>
+    [Parameter] public bool Minimal { get; set; }
+
     Session? session => Session;
     Balances balances = new(0, 0, 0, 0);
-    int unread;
-    bool friendsLoaded;
+    int unread, requests, friendsKey;
+    bool shut;
+
+    string FriendsTip => requests > 0 ? L["Tip.FriendsNew", requests] : L["Tip.Friends"];
+    string MessagesTip => unread > 0 ? L["Tip.MessagesNew", unread] : L["Tip.Messages"];
 
     async Task SignOut()
     {
         await Sessions.SignOutAsync();
-        Nav.NavigateTo(Mode.Launcher ? "/signup/start" : "/feed");
+        Nav.NavigateTo("/signup/start");
+    }
+
+    /// <summary>Balances, unread messages and friend requests, read now and every 30 seconds like the old status bar did.</summary>
+    async Task Refresh()
+    {
+        balances = await Wallet.BalancesAsync();
+        unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
+        requests = (await Friends.RequestsAsync()).Count;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        balances = await Wallet.BalancesAsync();
-        unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
+        if (Minimal) return;
+        await Refresh();
+        _ = Poll();
     }
+
+    async Task Poll()
+    {
+        using var timer = new PeriodicTimer(Mode.PollInterval);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token))
+                await InvokeAsync(async () => { await Refresh(); StateHasChanged(); });
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => stop.Cancel();
 }

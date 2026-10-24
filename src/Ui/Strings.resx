@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>fuel:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Friends</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Friends ({0} new requests)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Messages</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Messages ({0} new)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>My Wallet / Purchase History</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sign Out</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Your Hunter Score</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>No hunters found</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send friend request</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Friend request sent</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Friend request {0} of {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} wants to be your friend!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Accept</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Decline</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Previous request</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Next request</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Select your language</value></data>
   <data name="Language.English" xml:space="preserve"><value>English</value></data>
   <data name="Language.French" xml:space="preserve"><value>French</value></data>
