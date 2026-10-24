@@ -32,6 +32,7 @@ builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new Mock
 builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.Replace(ServiceDescriptor.Scoped<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetRequiredService<ILogger<MockServersService>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();
