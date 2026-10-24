@@ -9,7 +9,7 @@
 <PageTitle>@L["Set.Title"]</PageTitle>
 
 <div class="page-min">
-    <h2 class="page-title">@(L["Set.Title"].Value.ToUpperInvariant())</h2>
+    <h2 class="page-title">@(L["Set.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <div class="cols">
         <nav class="menu">
             <h3>@handle</h3>
