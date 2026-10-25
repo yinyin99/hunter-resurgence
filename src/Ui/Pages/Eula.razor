@@ -1,0 +1,36 @@
+@page "/eula"
+@inject ISessionService Sessions
+@inject NavigationManager Nav
+@inject ModalService Modal
+
+<PageTitle>@L["App.Name"]</PageTitle>
+
+@* the page the old app showed to accounts that had not accepted the current agreements: nothing else of the shell, two boxes and a button *@
+<div class="eula">
+    <AssetSlot Name="logo-large" Width="240" Height="60" Class="logo" />
+    <h1>@L["Eula.Title"]</h1>
+    <p>@L.Frag("Eula.By", Link("Footer.Eula.Title", "Eula.LinkEula"), Link("Footer.Privacy.Title", "Footer.Privacy"))</p>
+    <p class="agree"><label><input type="checkbox" class="tick" @bind="eula" /> @L["Eula.AgreeEula"]</label></p>
+    <p class="agree"><label><input type="checkbox" class="tick" @bind="privacy" /> @L["Eula.AgreePrivacy"]</label></p>
+    <button type="button" class="btn btn-primary btn-large" disabled="@(!eula || !privacy || busy)" @onclick="Confirm">@L["Signup.Continue"] <Icon Name="angle-right" /></button>
+</div>
+
+@code {
+    bool eula, privacy, busy;
+
+    RenderFragment Link(string title, string text) => @<a href="#" @onclick="() => Modal.Show<LegalModal>(new Dictionary<string, object?> { [nameof(LegalModal.Title)] = title })" @onclick:preventDefault>@L[text]</a>;
+
+    // signed out or already accepted: nothing to confirm here
+    protected override async Task OnInitializedAsync()
+    {
+        if (await Sessions.CurrentAsync() is null || await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/feed", replace: true);
+    }
+
+    async Task Confirm()
+    {
+        if (!eula || !privacy) return;
+        busy = true;
+        await Sessions.AcceptLicenseAsync();
+        Nav.NavigateTo("/feed");
+    }
+}

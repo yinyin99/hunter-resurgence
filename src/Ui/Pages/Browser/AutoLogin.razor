@@ -4,6 +4,7 @@
 @inject ISessionService Sessions
 @inject ModalService Modal
 @inject HostMode Mode
+@inject ISignupService Signup
 
 <PageTitle>@L["App.Name"]</PageTitle>
 
@@ -19,6 +20,9 @@
 @code {
     bool done;
     Action? changed;
+
+    /// <summary>The id of the launcher login this page finishes (?id=); without one the old page makes its own.</summary>
+    [SupplyParameterFromQuery(Name = "id")] public string? LoginId { get; set; }
 
     // without a web session the sign-in dialog opens first; the login then runs (mock: a short wait, after the first paint so the page does not hold back)
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -37,6 +41,8 @@
         // dev hook ?mock=browser:hold keeps the progress state (for the comparison)
         if (Mode.Mock == "browser:hold") return;
         await Task.Delay(3000);
+        // a login that fails leaves the sign-in dialog, as the old page without a session
+        if (!(await Signup.AutoLoginAsync(LoginId ?? Guid.NewGuid().ToString())).Ok) { Modal.Show<LoginDialog>(backdrop: "none"); return; }
         done = true;
         StateHasChanged();
     }

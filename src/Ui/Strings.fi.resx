@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammukset:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>polttoaine:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Kaverit</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Kaverit ({0} uutta pyyntöä)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Viestit</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Viestit ({0} uutta)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Lompakkoni / Ostohistoria</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Metsästäjän pisteesi</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Metsästäjiä ei löytynyt</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Kaveripyyntö lähetetty</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Kaveripyyntö {0}/{1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} haluaa olla kaverisi!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Hyväksy</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Hylkää</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Edellinen pyyntö</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Seuraava pyyntö</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Valitse kielesi</value></data>
   <data name="Language.English" xml:space="preserve"><value>englanti</value></data>
   <data name="Language.French" xml:space="preserve"><value>ranska</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Käyttöoikeussopimus</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>TIETOSUOJAKÄYTÄNTÖ</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>LOPPUKÄYTTÄJÄN KÄYTTÖOIKEUSSOPIMUS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Sinun on hyväksyttävä käyttöoikeussopimus ja tietosuojakäytäntö ennen jatkamista.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Klikkaamalla ”Jatka”-painiketta hyväksyt seuraavat: {0} ja {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Hyväksyn EULA-sopimuksen</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Hyväksyn tietosuojakäytännön</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Viimeksi päivitetty: paikkateksti</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>JOHDANTO</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Paikkaotsikko</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Paikkateksti. Palvelun ylläpitäjä toimittaa varsinaisen oikeudellisen tekstin.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Tietoa henkilötietojen käsittelystä: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Oletko jo metsästäjä?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Kirjaudu</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Sähköposti</value></data>
@@ -138,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Maks:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Aloitus</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Luo peli</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Aloitustavarat</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Edelliset tarvikkeet</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pelisession luomisessa tapahtui virhe. Lataa palvelinluettelo uudelleen ja yritä liittyä toiseen peliin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ETSI MONINPELI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Etsi peli tai isäntä...</value></data>
@@ -169,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Emme löytäneet yhtään julkista moninpeliä, johon saisit liittyä.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>ISÄNNÖI OMAA PELIÄ</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Tämä peli on salasanasuojattu</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Salasana vaaditaan</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Päivitetään...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Palvelimen sijainti: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Eurooppa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Pohjois-Amerikka</value></data>
@@ -180,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Anna salasana</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Liity peliin</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Sulje</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Väärä salasana. Yritä uudelleen.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Metsästys tältä erää ohi?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Näytä metsästystilastot</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>METSÄSTÄ NYT</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Aloita uusi peli sulkemalla tämä ikkuna ja napsauttamalla painiketta {0} uudelleen.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Oliko yhteysongelma?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Onko sinulla ongelmia yhteyden muodostamisessa ystäviisi moninpelissä? Syitä voi olla monia, eikä kaikki välttämättä liity suoraan itse peliin. Lisätietoja löydät vianmääritysoppaan kohdasta {0}.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>yhteysongelmat</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Tarvitsetko lisätietoa pelin ominaisuuksista?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Etkö löydä saalistasi? Etkö tiedä, miten jotain varustetta käytetään? Mietitkö, mikä metsästysalue sopisi sinulle parhaiten? Lisätietoja löydät osoitteesta {0}. Wikin luo ja ylläpitää yhteisö, ja jos et löydä vastausta kysymykseesi sieltä, kysy vapaasti {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game}-wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>foorumilla</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Muita teknisiä ongelmia?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Oliko pelin käynnistyksessä ongelmia? Saitko oudon virheilmoituksen? Tutustu kohtaan {0}, ja jos et löydä ratkaisua ongelmaasi, lähetä viesti {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>vianmääritysopas</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>tukitiimillemme</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Suosittelemme, että pelaat perusharjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi ensimmäisellä alueella. Harjoituksissa tapaat kyseisen alueen vartijan. Hän opastaa sinut perusasioihin ja opettaa, mitä tarvitset menestyäksesi pelissä {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Aloita harjoitus</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Sijainti: {0}</value></data>
@@ -219,10 +253,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Selvä!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Uusi pelipäivitys</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Uusi pelipäivitys on julkaistu. Pelisi päivitetään automaattisesti, ja voit aloittaa uuden retken heti sen valmistuttua! Voit sillä välin selata sivustoa vapaasti.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Päivityksen tiedot</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Päivitys {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Näytä muutosloki</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Ladataan: {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>{game}-pelin täyttä asennusta ladataan tietokoneellesi. Voit aloittaa pelaamisen heti sen valmistuttua. Voit sillä välin selata sivustoa vapaasti.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Käynnistäjää päivitetään</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Käynnistäjä täytyy päivittää. Päivitys ladataan automaattisesti. Kun käynnistäjä on päivitetty, se täytyy käynnistää uudelleen.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Päivitys tehty. Käynnistäjä pitää käynnistää uudelleen.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Pelipäivitys vaaditaan</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>{game}-pelille on saatavilla päivitys. Sinun täytyy päivittää {game}-peli Steamissä ennen pelaamista. Käynnistäjä täytyy sulkea päivitystä varten.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} toimii vain Steamissä</value></data>
@@ -367,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Poista käytöstä</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Ei voi liittyä</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Moninpeli</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Monilajinen</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Vaatimukset:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Tulevat kilpailut</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Menneet kilpailut</value></data>
@@ -391,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Historia</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Palkinnot</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Pokaali</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ ja palkinto</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ ja palkinto</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Säännöt ja ehdot</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Lajit: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Alueet: {0}</value></data>
@@ -414,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Et ole ilmoittautunut yhteenkään kilpailuun</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Kuukauden pistetaulukko</value></data>
   <data name="League.Season" xml:space="preserve"><value>Kauden pistetaulukko</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Board.Title" xml:space="preserve"><value>PISTETAULUKOT</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Etäisyys</value></data>
@@ -450,6 +494,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Napsauta saadaksesi apua</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Päivä {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>tänään</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Päättynyt</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Loppuu:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
@@ -463,6 +510,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivointi valmis!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Nauti palvelustasi!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivoi kaikki</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>Osta</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>KÄYTÄ</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktivoi uudet saatavilla olevat tehtävät automaattisesti</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
@@ -479,6 +529,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Aseet</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Kaikki valittu</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Valittuja: {0}</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Piilota suoritetut</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Haku</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Suodatin</value></data>
@@ -520,11 +571,21 @@
   <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ALE</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKETTI</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>RAJOITETTU ERÄ</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>UUSI</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>YHTEISÖN VALINTA</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Sisältyy</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Arvo</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Omistusrajoitus</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Rajoittamaton</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paketin hinta</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasiteettikustannus</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Sallittu seuraaville lajeille</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>{0} on eettinen valinta metsästettäessä: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>{0} ei ole eettinen valinta metsästettäessä: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Tätä tuotetta ei voi ostaa</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Sinä omistat jo tämän tavaran</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Tätä pakettia ei voi ostaa. Vähintään yhden sisältyvän tuotteen omistusraja on täynnä</value></data>
   <data name="Store.None" xml:space="preserve"><value>Ei tuotteita tässä kategoriassa</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Tiedot</value></data>
@@ -567,10 +628,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Apu</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Ostohistoria</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Saldosi (em$):</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Jäsenyyden tyyppi:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Vanhenee:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Ei koskaan</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Lunasta alennuskoodi</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Syötä alennuskoodisi</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Peruuta</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Takaisin</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Antamasi alennuskoodi on virheellinen tai vanhentunut</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Koodi aktivoitu</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deaktivoi koodi</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Lunasta lahjasi</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Olet syöttänyt lahjakoodin, joka sisältää</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Lunasta tämä lahja napsauttamalla tästä</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Lahja on lisätty tilillesi!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Pelin sisäinen valuutta</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Aseita, telttoja, vaatteita, metsästyslupia ja paljon muuta voi ostaa pelin sisäisellä valuutalla (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Osta lahjaksi</value></data>
@@ -586,6 +657,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Pääsy kaikille alueille</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Rajattomasti perusammuksia</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Tiedot</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Aseet:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Tarvikkeet:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Jäsenyyteen sisältyvät tai erikseen ostetut tuotteet säilyvät, vaikka jäsenyytesi päättyisi</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Verrattuna 3 kuukauden {game}-jäsenyyteen</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game}-kaupan kysymykset ja vastaukset</value></data>
@@ -603,6 +676,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Huomaa, että em$-valuuttaa ei voi myydä tai siirtää, eikä sitä voi vaihtaa rahaksi tai mihinkään muuhun kuin varsinaiseen {game}-sisältöön. em$ ei ole palautettavissa. em$:lla ei ole rahallista arvoa, eikä se muodosta minkäänlaista valuuttaa tai omaisuutta.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Lisäaseet: {0}, muut tuotteet: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} kk</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Steamin sisäinen virhe, yritä myöhemmin uudelleen.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Yhteydessä Steamiin tapahtui virhe. Yritä uudelleen.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Kiitos, että käytit {game}-kauppaa. Tilisi on päivitetty ostetulla tuotteella.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Palaa takaisin peliin {game} napsauttamalla oikean yläkulman Sulje-painiketta.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Jotain meni pieleen. Kokeile uudelleen. Jos häiriöitä esiintyy edelleen, ota yhteyttä asiakaspalveluun</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Kiitos ostoksestasi!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Ostoksesi {0} Steamin kautta on valmis, ja tuotteet on lisätty tilillesi.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Osto epäonnistui</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Jokin meni pieleen ja Steam-ostoksesi keskeytettiin. Yritä uudelleen.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Metsästämään</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Viestit</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Salli viestit vain kavereilta</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Uusi viesti</value></data>
@@ -639,6 +722,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Sähköpostiosoitteesi on vaihdettu.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Lähetä vahvistus uudelleen</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Vahvistussähköposti lähetetty uudelleen.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti. Sinun täytyy painaa viestissä olevaa linkkiä.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Kieli</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Maa</value></data>
@@ -661,6 +748,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Varoitus</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Steam-tilin yhteyden katkaiseminen kirjaa sinut ulos {game}-pelistä ja sulkee käynnistäjän. Et voi pelata {game}-peliä Steamissä uudelleen, ennen kuin yhdistät sen toiseen tiliin.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ymmärrän ja haluan katkaista Steam-tilini yhteyden</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Otsikkokuva</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Otsikkokuvat avautuvat, kun saavutat uusia tasoja kolmessa eri saavutuskategoriassa: Eläinmestari, Asemestari ja Tutkimusmestari. Avautuneet otsikkokuvat pysyvät käytettävissä ikuisesti.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Lue lisää saavutusmestarien tasoista.</value></data>
@@ -816,6 +904,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} ei ole vielä tehnyt retkiä, joten kaikkien aikojen henkilökohtaista ennätystä ei voida laskea.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Etäisyys</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Kaadon aika</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Päivitä</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Tilastot päivittyvät kun retki on loppunut.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Edellinen</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Seuraava</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ei näytettäviä kuvia.</value></data>
@@ -830,7 +923,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Taso:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Taidot</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Tämä koira ei ole vielä avannut yhtään taitoa.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Doggie</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Poista</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Jaa tämä kaatokuva</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Kopioi URL tai BBCode jakaaksesi tämän kaatokuvan ystävillesi {game}in foorumilla tai sosiaalisessa mediassa.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Kuvan URL-osoite</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Kuvan BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Kirjaudutaan sisään...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Kirjautuminen valmis!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Tämä sivu avautui, koska {game}-pelin täytyy kirjata sinut sisään.</value></data>
@@ -976,6 +1075,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Keräiltävät</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Käsiaseet</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Varsijouset</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Veren jäljittäminen</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Tämä taito säätelee kuinka hyvin koira löytää verijäljet.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Havainnointi</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Tämä taito säätelee kuinka hyvin koira havaitsee eri eläinlajit.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0} pv</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0} h</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0} min</value></data>

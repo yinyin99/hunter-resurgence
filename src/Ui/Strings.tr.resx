@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>cephane:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>yakıt:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Arkadaşlar</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Arkadaşlar ({0} yeni istek)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Mesajlar</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesajlar ({0} yeni)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Cüzdanım / Satın Alma Geçmişi</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Oturumu Kapat</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Avcı bulunamadı</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Arkadaşlık isteği gönder</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Arkadaşlık isteği gönderildi</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Arkadaşlık isteği {0} / {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} seninle arkadaş olmak istiyor!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Kabul et</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Reddet</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Önceki istek</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Sonraki istek</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Dilinizi seçin</value></data>
   <data name="Language.English" xml:space="preserve"><value>İngilizce</value></data>
   <data name="Language.French" xml:space="preserve"><value>Fransızca</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Son Kullanıcı Lisans Sözleşmesi</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>GİZLİLİK POLİTİKASI</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>SON KULLANICI LİSANS SÖZLEŞMESİ</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Devam etmeden önce Son Kullanıcı Lisans Sözleşmesi'ni ve Gizlilik Politikası'nı onaylamalısınız.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>“Devam” düğmesine tıklayarak şunları kabul etmiş olursunuz: {0} ve {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>EULA'yı kabul ediyorum</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Gizlilik Politikası'nı kabul ediyorum</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Son güncelleme: yer tutucu metin</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>GİRİŞ</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Yer tutucu başlık</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Yer tutucu metin. Gerçek hukuki metni bu hizmetin işletmecisi sağlar.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Kişisel verilerin nasıl işlendiği hakkında bilgi için: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Zaten bir avcı mısınız?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Oturum aç</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-posta</value></data>
@@ -138,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>En fazla:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Başlat</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Oyun Oluştur</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Oyun oturumunuz oluşturulurken bir sorun oluştu. Lütfen sunucu listesini yeniden yükleyin ve başka bir oyuna katılmayı deneyin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ÇOK OYUNCULU OYUN BUL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Oyun veya kurucu ara...</value></data>
@@ -169,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Katılabileceğiniz herkese açık çok oyunculu oyun bulamadık.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>KENDİ OYUNUNUZU KURUN</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Bu oyun şifre korumalıdır</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parola gerekli</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Yama uygulanıyor...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Avrupa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Kuzey Amerika</value></data>
@@ -180,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Şifre girin</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Oyuna Katıl</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Kapat</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Yanlış parola. Lütfen tekrar deneyin.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Şimdilik avı bitirdin mi?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Av istatistiklerini görüntüle</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>HEMEN AVLAN</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Başka bir oyun başlatmak için bu pencereyi kapatın ve {0} düğmesine tekrar tıklayın.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Bağlantı sorunu mu vardı?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Çok oyunculu modda arkadaşlarınıza bağlanırken sorun mu yaşıyorsunuz? Bunun birçok nedeni olabilir ve hepsi doğrudan oyunla ilgili olmayabilir. Daha fazla bilgi için sorun giderme kılavuzundaki {0} bölümüne göz atın.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>bağlantı sorunları</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Oyun özellikleri hakkında daha fazla bilgiye mi ihtiyacın var?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Avını bulamıyor musun? Belirli bir ekipmanın nasıl kullanılacağını mı çözemedin? Hangi av sahasının sana en uygun olduğunu mu merak ediyorsun? Daha fazla bilgi için {0} sayfasına göz at. Wiki topluluk tarafından oluşturulur ve yönetilir; sorunun cevabını orada bulamazsan {1} üzerinden sormaktan çekinme.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Başka teknik sorunların mı var?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Oyunu başlatırken bir sorun mu oldu? Garip bir hata mesajı mı aldın? {0} sayfasına göz at; sorununun cevabını bulamazsan {1} ekibimize bir mesaj gönder.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>sorun giderme kılavuzu</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>destek</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>İlk rezervde ilk gerçek avınıza başlamadan önce temel eğitimleri oynamanız önerilir. Bu eğitimlerde o rezervin yerleşik bekçisiyle tanışacaksınız. Size temel bilgileri gösterecek ve {game} oyununda başarılı olmak için bilmeniz gerekenleri öğretecek.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Eğitimi başlat</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Konum: {0}</value></data>
@@ -219,10 +253,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Anladım!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Yeni oyun yaması</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Yeni bir oyun yaması yayınlandı. Oyununuz otomatik olarak yamalanacak ve işlem biter bitmez yeni bir ava başlayabileceksiniz! Bu sırada serbestçe göz atabilirsiniz.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Güncelleme Notları</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Güncelleştirme {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Değişiklik günlüğünü görüntüle</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>{game} indiriliyor</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>{game} oyununun tam kurulumu bilgisayarınıza indiriliyor. İşlem biter bitmez oynamaya başlayabileceksiniz. Bu sırada serbestçe göz atabilirsiniz.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Başlatıcı güncelleniyor</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Başlatıcının güncellenmesi gerekiyor. Güncelleme otomatik olarak indirilecek. Başlatıcı güncellendikten sonra yeniden başlatılması gerekecek.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Güncelleştirme tamamlandı. Launcher tekrar başlatılacak.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Oyun güncellemesi gerekli</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>{game} için bir güncelleme mevcut. Oynayabilmek için {game} oyununu Steam üzerinden güncellemeniz gerekiyor. Güncellemek için başlatıcıyı kapatmanız gerekiyor.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} yalnızca Steam'de</value></data>
@@ -367,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Devre dışı bırak</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Katılınamıyor</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Çok oyunculu</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Çoklu tür</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Gereksinimler:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Yaklaşan yarışmalar</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Geçmiş yarışmalar</value></data>
@@ -391,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Geçmiş</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Ödüller</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Kupa</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ ve bir kupa</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ ve bir kupa</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Kurallar ve Koşullar</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Türler: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Rezervler: {0}</value></data>
@@ -414,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Hiçbir yarışmaya kayıtlı değilsiniz</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Aylık Sıralama</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sezon Sıralaması</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Puan</value></data>
   <data name="Board.Title" xml:space="preserve"><value>SIRALAMALAR</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Skor</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Mesafe</value></data>
@@ -450,6 +494,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Yardım için tıklayın</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>{0}. gün</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>bugün</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Sona erdi</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>yarın</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Açıklama</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Hedefler</value></data>
@@ -463,6 +510,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Etkinleştirme tamamlandı!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Hizmetin keyfini çıkarın!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Tümünü etkinleştir</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>SATIN AL</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Yeni kullanılabilir görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Yalnızca favori görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Görevlerinizi mağazadan ücret karşılığında sıfırlayabilirsiniz.</value></data>
@@ -479,6 +529,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Silahlar</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Tümü seçili</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} seçili</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Tamamlananları gizle</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Ara</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtre</value></data>
@@ -520,11 +571,21 @@
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>AYRICALIKLI</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>SINIRLI</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>YENİ</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>TOPLULUK SEÇİMİ</value></data>
   <data name="Store.Included" xml:space="preserve"><value>İçindekiler</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Değer</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Satın alma limiti</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Sınırsız</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paket fiyatı</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasite maliyeti</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Avlanma İzinleri</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>{1} avlarken {0} kullanmak etiktir</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>{1} avlarken {0} kullanmak etik değildir</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Bu ürünü satın almak mümkün değil</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Buna zaten sahipsiniz</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Bu paketi satın almak mümkün değil. İçerdiği ürünlerden en az biri için sahip olma sınırına ulaşıldı.</value></data>
   <data name="Store.None" xml:space="preserve"><value>Bu kategoride ürün yok</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Ayrıntılar</value></data>
@@ -567,10 +628,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Yardım</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Satın Alma Geçmişi</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>em$ bakiyeniz:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Your membership type:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Sona Erme Tarihi:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Asla</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>İndirim kodunu kullan</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>İndirim kodunuzu girin</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>İptal</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Geri</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Girdiğiniz indirim kodu geçersiz veya süresi dolmuş</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Code activated</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deactivate code</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Hediyenizi kullanın</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>İçinde şunlar bulunan bir hediye kodu girdiniz</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Bu hediyeyi kullanmak için buraya tıklayın</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Hediyeniz hesabınıza eklendi!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Oyun içi para birimi</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Silahlar, çadırlar, kıyafetler, av lisansları ve çok daha fazlası oyun içi para birimiyle (em$) satın alınabilir.</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Hediye olarak satın al</value></data>
@@ -586,6 +657,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Tüm rezervlere erişim</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Sınırsız temel cephane</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Ayrıntılar</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Weapons included:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Items included:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Üyeliğe dahil olan veya ayrıca satın alınan ürünler, üyeliğiniz sona erse bile sizde kalır</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* 3 aylık {game} Üyeliği ile karşılaştırıldığında</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game} Mağazası Soru ve Cevapları</value></data>
@@ -603,6 +676,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Lütfen unutmayın: em$ satılamaz, devredilemez; nakde veya gerçek {game} içeriği dışındaki herhangi bir şeye çevrilemez. em$ iade edilemez. em$ birimlerinin parasal değeri yoktur ve hiçbir türde para birimi veya mülk niteliği taşımaz.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Ek silah: {0}, diğer ürünler: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} ay</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Steam dahili hatası, lütfen daha sonra tekrar deneyin.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Steam'e bağlanırken bir hata oluştu. Lütfen tekrar deneyin.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>{game} Mağazası'nı kullandığınız için teşekkürler, hesabınız satın alınan öğeyle güncellendi.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>{game} oyununa dönmek için sağ üst köşedeki Kapat'a tıklayın.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Bir şeyler ters gitti. Lütfen yeniden deneyin. İşe yaramazsa lütfen destek ekibiyle iletişime geçin</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Satın alımınız için teşekkürler!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Steam üzerinden yaptığınız {0} satın alımı tamamlandı ve ürünleriniz hesabınıza eklendi.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Satın alma başarısız</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Bir şeyler ters gitti ve Steam satın alımınız iptal edildi. Lütfen tekrar deneyin.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Ava çık</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Mesajlar</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Yalnızca arkadaşlarımdan gelen mesajlara izin ver</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Yeni mesaj</value></data>
@@ -639,6 +722,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>E-posta adresiniz değiştirildi.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Onayı yeniden gönder</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Onay e-postası yeniden gönderildi.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-posta yeniden gönderilemedi. Lütfen tekrar deneyin veya destekle iletişime geçin.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Ülke</value></data>
@@ -661,6 +748,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Uyarı</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Steam hesabınızın bağlantısını kesmek, {game} oyunundan çıkış yapmanıza neden olur ve başlatıcıyı kapatır. Başka bir hesaba bağlanana kadar {game} oyununu Steam üzerinden tekrar oynayamazsınız.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Anlıyorum ve Steam hesabımın bağlantısını kesmek istiyorum</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Başlık görseli</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Başlık görselleri, üç farklı Başarı kategorisinde (Hayvan Ustası, Silah Ustası ve Keşif Ustası) yeni seviyelere ulaştığınızda açılır. Bir kez açıldıktan sonra başlık görselleri sonsuza dek kullanılabilir kalır.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Başarı Ustası seviyeleri hakkında daha fazla ayrıntı öğrenin.</value></data>
@@ -816,6 +904,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} adlı avcı, Tüm Zamanlar kişisel rekorunun hesaplanabilmesi için henüz hiç ava çıkmadı.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Skor</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Mesafe</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Av Zamanı</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Yenile</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Keşif sona erdiğinde istatistikler güncellenecektir.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Önceki</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Sonraki</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Gösterilecek görsel yok.</value></data>
@@ -830,7 +923,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Sev.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Beceriler</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Bu köpek henüz hiçbir beceri açmadı.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Köpek</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Sil</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Share this trophy shot</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Image URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Image BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Oturum açılıyor...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Oturum açma tamamlandı!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Bu sayfa, {game} oyununun oturumunuzu açması gerektiği için açıldı.</value></data>
@@ -976,6 +1075,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Koleksiyonlar</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Tabancalar</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Tatar Yayları</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Blood Tracking</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>This skill governs how well a dog can find blood tracks.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>This skill governs how well a dog can detect different species of animals.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}g</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}sa</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}dk</value></data>

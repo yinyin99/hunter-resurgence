@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>lőszer:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>üzemanyag:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Barátok</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Barátok ({0} új kérelem)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Üzenetek</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Üzenetek ({0} új)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Pénztárcám / Vásárlási előzmények</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te vadászpontjaid</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nem található vadász</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Barátkérelem küldése</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Barátkérelem elküldve</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>{0}. barátkérelem a(z) {1} közül</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} a barátod szeretne lenni!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Elfogadás</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Elutasítás</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Előző kérelem</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Következő kérelem</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Válaszd ki a nyelvedet</value></data>
   <data name="Language.English" xml:space="preserve"><value>Angol</value></data>
   <data name="Language.French" xml:space="preserve"><value>Francia</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Végfelhasználói licencszerződés</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>ADATVÉDELMI IRÁNYELVEK</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>VÉGFELHASZNÁLÓI LICENCSZERZŐDÉS</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>A folytatás előtt meg kell erősítened a végfelhasználói licencszerződést és az adatvédelmi irányelveket.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>A „Tovább” gombra kattintva elfogadod a következőket: {0} és {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Elfogadom az EULA-t</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Elfogadom az adatvédelmi irányelveket</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Utolsó frissítés: helyőrző szöveg</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>BEVEZETŐ</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Helyőrző címsor</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Helyőrző szöveg. A tényleges jogi szöveget a szolgáltatás üzemeltetője biztosítja.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>A személyes adatok kezelésével kapcsolatban lásd: {0}.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Már vadász vagy?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Bejelentkezés</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -138,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Max.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Kezdés</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Játék létrehozása</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Kezdő Szett</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Legutóbbi felszerelés</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Hiba történt a játékmenet létrehozásakor. Kérjük, töltsd újra a szerverlistát, és próbálj meg egy másik játékhoz csatlakozni.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TÖBBJÁTÉKOS MÓD KERESÉSE</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Keress játékot vagy házigazdát...</value></data>
@@ -169,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Nem találtunk olyan nyilvános többjátékos játékot, amelyhez csatlakozhatnál.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>INDÍTS SAJÁT JÁTÉKOT</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ez a játék jelszóval védett</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Jelszó szükséges</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Frissítés...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Szerver helye: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Európa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Észak-Amerika</value></data>
@@ -180,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Jelszó megadása</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Csatlakozás</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Bezár</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Hibás jelszó. Kérjük, próbáld újra.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Egyelőre befejezted a vadászatot?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Vadászati statisztikák megtekintése</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>VADÁSZAT INDÍTÁSA</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Újabb játék indításához zárd be ezt az ablakot, és kattints ismét a(z) {0} gombra.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Kapcsolódási probléma volt?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Gondod van a barátaiddal való kapcsolódással többjátékos módban? Ennek sok oka lehet, és nem biztos, hogy mindegyik közvetlenül a játékhoz kötődik. További információért nézd meg a hibaelhárítási útmutató {0} részét.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>kapcsolódási problémák</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Több információra van szükséged a játék funkcióiról?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nem találod a zsákmányod? Nem tudod, hogyan használj egy adott felszerelést? Azon tűnődsz, melyik vadászterület illik hozzád a legjobban? További információért nézd meg a(z) {0} oldalt. A wikit a közösség hozza létre és kezeli, és ha ott nem találod a választ a kérdésedre, nyugodtan kérdezz a {1}ban.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>fórum</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Egyéb technikai problémád van?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Probléma volt a játék indításakor? Furcsa hibaüzenetet kaptál? Nézd meg a(z) {0} oldalt, és ha nem találod a választ a problémádra, küldj üzenetet a {1} csapatunknak.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>hibaelhárítási útmutató</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>támogatási</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Ajánlott végigjátszani az alapvető oktatójátékokat, mielőtt elkezded az első igazi vadászatodat az első vadászterületen. Ezekben az oktatójátékokban megismered a vadászterület helyi vadőrét. Ő végigvezet az alapokon, és megtanítja, mit kell tudnod ahhoz, hogy sikeres légy ebben a játékban ({game}).</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Oktatójáték indítása</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Helyszín: {0}</value></data>
@@ -219,10 +253,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Értem!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Új játékfrissítés</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Megjelent egy új játékfrissítés. A játék automatikusan frissül, és amint végzett, új expedíciót indíthatsz! Addig szabadon böngészhetsz.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Frissítési információk</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Frissítés: {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Változásnapló megtekintése</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Letöltés: {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>A játék ({game}) teljes telepítése letöltődik a számítógépedre. Amint végzett, elkezdhetsz játszani. Addig szabadon böngészhetsz.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>A launcher frissül</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>A launchert frissíteni kell. A frissítés automatikusan letöltődik. A frissítés után a launchert újra kell indítani.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Frissítés kész, a programindító újraindul.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Játékfrissítés szükséges</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Elérhető egy frissítés a játékhoz ({game}). Mielőtt játszhatnál, frissítened kell a Steamen: {game}. A frissítéshez be kell zárnod a launchert.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full}: csak Steamen</value></data>
@@ -367,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Leiratkozás</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Nem lehet nevezni</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Többjátékos</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Többfajos</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Követelmények:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Soron következő versenyek</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Korábbi versenyek</value></data>
@@ -391,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Előzmények</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Díjak</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trófea</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ és egy trófea</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ és egy trófea</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Szabályok és feltételek</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Fajok: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Vadászterületek: {0}</value></data>
@@ -414,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Nem neveztél egyetlen versenyre sem</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Havi ranglista</value></data>
   <data name="League.Season" xml:space="preserve"><value>Szezonranglista</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Pontok</value></data>
   <data name="Board.Title" xml:space="preserve"><value>HELYEZÉSEK</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pontszám</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Távolság</value></data>
@@ -450,6 +494,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Kattints segítségért</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>{0}. nap</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>ma</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Vége</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>Új Napi Küldetés ekkor lesz elérhető:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Vége:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>holnap</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Leírás</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Feladatok</value></data>
@@ -463,6 +510,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Az aktiválás kész!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>Jó szórakozást!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Összes aktiválása</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>VÁSÁRLÁS</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>Felhasznál</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Az új elérhető küldetések automatikus aktiválása</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Csak a kedvenc küldetések automatikus aktiválása</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Küldetéseidet díj ellenében alaphelyzetbe állíthatod az áruházban.</value></data>
@@ -479,6 +529,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Fegyverek</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Mind kijelölve</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} kijelölve</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Teljesítettek elrejtése</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Keresés</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Szűrés</value></data>
@@ -520,11 +571,21 @@
   <data name="Store.Days" xml:space="preserve"><value>nap</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIÓ</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>CSOMAG</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PRÉMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>KORLÁTOZOTT</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>ÚJ</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>A KÖZÖSSÉG VÁLASZTÁSA</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Tartalmazza</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Érték</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Saját határ</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Korlátlan</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Csomag ára</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Helyigény</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Megengedett</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>Etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Nem etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Ezt a tárgyat nem lehet megvásárolni</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Már megvan ez a tárgy</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Ezt a csomagot nem vásárolhatod meg. Legalább egy benne lévő tárgyból már elérted a maximálisan birtokolható mennyiséget.</value></data>
   <data name="Store.None" xml:space="preserve"><value>Nincs tárgy ebben a kategóriában</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Részletek</value></data>
@@ -567,10 +628,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Súgó</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Vásárlási előzmények</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Az em$ egyenleged:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Tagságod típusa:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Lejárat:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Soha</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Kedvezménykód beváltása</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Írd be a kedvezménykódodat</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Mégsem</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Vissza</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>A megadott kedvezménykód érvénytelen vagy lejárt</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Kód aktiválva</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Inaktiváló kód</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Ajándék beváltása</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Olyan ajándékkódot adtál meg, amely a következőt tartalmazza:</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Kattints ide az ajándék beváltásához</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Az ajándék hozzá lett adva a fiókodhoz!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Játékbeli pénz</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Fegyverek, sátrak, ruhák, vadászengedélyek és sok egyéb tárgy vásárolható a játékbeli pénznemmel (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Vásárlás ajándékba</value></data>
@@ -586,6 +657,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Hozzáférés minden vadászterülethez</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Korlátlan alaplőszer</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Részletek</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>A következő fegyvereket tartalmazza:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>A következő eszközöket tartalmazza:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>A tagságban foglalt vagy külön megvásárolt tárgyak a tagság lejárta után is megmaradnak</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Összehasonlítva a 3 hónapos tagsággal ({game})</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game} Áruház – kérdések és válaszok</value></data>
@@ -603,6 +676,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Kérjük, vedd figyelembe, hogy az em$ nem eladható és nem átruházható, és kizárólag a játék ({game}) tényleges tartalmára váltható; készpénzre vagy bármi másra nem. Az em$ nem téríthető vissza. Az em$ semmilyen pénzbeli értékkel nem bír, és semmilyen formában nem minősül pénznek vagy tulajdonnak.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Extra fegyverek: {0}, egyéb tárgyak: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} hónap</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Belső Steam-hiba, kérjük, próbáld újra később.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Hiba történt a Steamhez való csatlakozás közben. Kérjük, próbáld újra.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Köszönjük, hogy a(z) {game} Áruházat használod, a fiókod frissült a megvásárolt tárggyal.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>A(z) {game} játékhoz való visszatéréshez kattints a jobb felső sarokban a Bezárás gombra.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Valami nem működött jól. Próbáld meg újra. Ha ne megy továbbra sem, keresd meg az ügyfélszolgálatot</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Köszönjük a vásárlást!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>A(z) {0} Steamen keresztüli vásárlása befejeződött, az áruk hozzá lettek adva a fiókodhoz.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>A vásárlás sikertelen</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Valami hiba történt, és a Steam-vásárlás megszakadt. Kérjük, próbáld újra.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Irány vadászni</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Üzenetek</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Csak a barátok üzeneteinek engedélyezése</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Új üzenet</value></data>
@@ -639,6 +722,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Az e-mail címed megváltozott.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Megerősítés újraküldése</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>A megerősítő e-mail újra elküldve.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Megerősítő email újraküldése. Kattints az emailben lévő linkre.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Megerősítő email újraküldése</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Az e-mail újraküldése nem sikerült. Kérjük, próbáld újra, vagy fordulj az ügyfélszolgálathoz.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Nyelv</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Ország</value></data>
@@ -661,6 +748,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Figyelmeztetés</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>A Steam-fiókod leválasztása kijelentkeztet a játékból ({game}), és bezárja a launchert. Amíg nem kapcsolódsz egy másik fiókhoz, nem játszhatsz ezzel a játékkal a Steamen: {game}.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Megértettem, és le akarom választani a Steam-fiókomat</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Fejléckép</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>A fejlécképek akkor oldódnak fel, ha három különböző eredménykategóriában – Vadak mestere, Fegyverek mestere és Felfedezés mestere – új szintet érsz el. A feloldott fejlécképek örökre elérhetők maradnak.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Tudj meg többet az Eredménymester-szintekről.</value></data>
@@ -816,6 +904,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} még nem vett részt egyetlen vadászaton sem, így az összesített egyéni legjobbak nem számíthatók ki.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Pontszám</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Távolság</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Elejtés dátuma</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Frissítés</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>A statisztika a vadászat befejezésével frissül.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Előző</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Következő</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Nincs megjeleníthető kép.</value></data>
@@ -830,7 +923,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Szint:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Készségek</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ez a kutya még nem oldott fel egyetlen készséget sem.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Kutyusok</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Törlés</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Trófea kép megosztása</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Másold be az URL vagy BB kódot, hogy megoszthasd a trófea képedet a barátaiddal a {game} forumon vagy a közösségi médiában.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Kép URL-je</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Kép BBkódja</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Bejelentkezés...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>A bejelentkezés kész!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Ez az oldal azért nyílt meg, mert a játéknak ({game}) be kell jelentkeztetnie téged.</value></data>
@@ -976,6 +1075,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Gyűjtendők</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Pisztolyok</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Számszeríjak</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Vérnyom követés</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Ez a képesség határozza meg, hogy mennyire sikeresen találja meg a vérnyomokat.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Észlelés</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>Ez a képesség azt mutatja mennyire észleli a kutya a különböző állat fajokat.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}n</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}ó</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}p</value></data>

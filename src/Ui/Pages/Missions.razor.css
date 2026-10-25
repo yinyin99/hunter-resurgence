@@ -18,13 +18,16 @@ form .btn { padding: 6px 12px; font-size: 14px; line-height: 20px; }
 .row { display: flex; align-items: center; width: 100%; box-sizing: border-box; min-height: 32px; padding: 0 10px; border: 0; background: none; font-size: 13px; line-height: 32px; text-align: left; color: var(--text-2); cursor: pointer; }
 .row ::deep .icon { margin-left: auto; color: var(--text-4); }
 .tri { display: inline-block; margin-right: 10px; border: 4px solid transparent; border-left: 6px solid #aaa; border-right: 0; }
-.open .tri { transform: rotate(90deg); }
+.open > .row .tri, .open > .packline .tri { transform: rotate(90deg); }
 .more { padding: 4px 28px 14px; }
 .more h5 { margin: 8px 0 2px; font-size: 14px; color: #fff; }
 .more p, .more li { margin: 0; font-size: 14px; line-height: 20px; color: var(--text-3); }
 .more ol { margin: 0 0 10px; padding-left: 20px; }
 .more .btn { margin-top: 8px; padding: 4px 12px; font-size: 14px; }
-.packs .row { min-height: 60px; padding: 4px 10px; }
+.packs .row.pack { min-height: 60px; padding: 4px 10px; }
+.packline { position: relative; }
+.packline .star { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+.more .rows { margin-top: 10px; }
 .name { display: block; line-height: 20px; }
 .name small { display: block; font-size: 14px; color: var(--text-3); }
 .star { margin-left: auto; border: 0; background: none; font-size: 16px; color: var(--text-2); cursor: pointer; }

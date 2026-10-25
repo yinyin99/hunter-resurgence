@@ -10,4 +10,8 @@ public interface ILauncherBridge
     void ClearCache(string kind);
     void OpenExternal(string url);
     void StartGame(string url);
+    /// <summary>Ctrl+D in the launcher window.</summary>
+    void ToggleDevTools();
+    /// <summary>The launcher has updated itself: start the new one.</summary>
+    void RestartLauncher();
 }

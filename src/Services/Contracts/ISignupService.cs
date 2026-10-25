@@ -14,4 +14,12 @@ public interface ISignupService
     Task<Result> ResendEmailAsync();
     /// <summary>Changes the address and sends the confirmation e-mail to it; fails with a key when the address is taken.</summary>
     Task<Result> ChangeEmailAsync(string email);
+
+    // the pages the old launcher opened in the player's browser (they keep the query of the link they were opened with)
+    /// <summary>Logs the browser in for the launcher login with this id.</summary>
+    Task<Result> AutoLoginAsync(string id);
+    /// <param name="kind">verify (a new account), confirm or change (a new address)</param>
+    Task<Result> ConfirmEmailAsync(string kind, string? code, string? uuid, string? src);
+    /// <summary>Hands the code of the thank-you link to the launcher.</summary>
+    Task<Result> SharedDataAsync(string? code);
 }

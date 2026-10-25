@@ -8,11 +8,16 @@
         {
             <li>
                 <AssetSlot Name="dog" Width="120" Height="120" />
+                <div class="dial" style="--p:@(d.Percent)%" data-tip="@d.Percent%"><div><small>@L["Prof.DogLvl"]</small><b>@d.Level</b></div></div>
                 <div>
-                    <b>@d.Name</b>
+                    <b>@(d.Name.Length > 0 ? d.Name : L["Prof.DogUnnamed"])</b>
                     <span>@d.Type</span>
-                    <span>@L["Prof.DogLvl"] @d.Level</span>
-                    <span>@L["Prof.DogSkills"]: @(d.Skills.Count == 0 ? L["Prof.DogNoSkills"] : string.Join(", ", d.Skills))</span>
+                    <span>
+                        @L["Prof.DogSkills"]:
+                        @if (d.Skills.Count == 0) { @L["Prof.DogNoSkills"] }
+                        @foreach (var s in d.Skills) { <em data-tip="@(L.Term(s.Description)) (@L["Prof.DogLvl"] @s.Level)">@L.Term(s.Title)</em> }
+                    </span>
+                    @if (d.Trophies.Count > 0) { <span>@L["Prof.TabTrophies"]: @string.Join(", ", d.Trophies)</span> }
                 </div>
             </li>
         }

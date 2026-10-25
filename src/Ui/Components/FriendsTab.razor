@@ -1,5 +1,6 @@
 @inject IProfileService Service
 @inject ModalService Modal
+@inject IFriendsService Friends
 
 @if (page is not null)
 {
@@ -28,14 +29,19 @@
     [Parameter] public bool Own { get; set; }
     [Parameter] public string? Sub { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    protected override Task OnParametersSetAsync() => Load();
+
+    async Task Load()
     {
         page = await Service.FriendsAsync(Handle, int.TryParse(Sub, out var n) ? n : 1);
         rows = [.. page.Rows];
     }
 
+    // the friend goes from the friends service, so the dropdown and the profile of that hunter agree; the list is read again as the old page did
     async Task Remove(ProfileFriend f)
     {
-        if (await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle])) rows.Remove(f);
+        if (!await Modal.Confirm(L["Friends.RemoveConfirm", f.Handle])) return;
+        await Friends.RemoveAsync(f.Handle);
+        await Load();
     }
 }

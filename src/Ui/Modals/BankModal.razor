@@ -1,3 +1,4 @@
+@implements IDisposable
 @inject ModalService Modal
 @inject IBankService Bank
 @inject IWalletService Wallet
@@ -5,14 +6,19 @@
 
 <div class="bank" id="bank-modal" role="dialog" aria-modal="true">
     <header>
-        <a href="#" class="@(Tab == "ems" ? "on" : "")" @onclick='() => Tab = "ems"' @onclick:preventDefault>@L["Bank.BuyEms"]</a>
-        <a href="#" class="@(Tab == "help" ? "on" : "")" @onclick='() => Tab = "help"' @onclick:preventDefault>@L["Bank.Help"]</a>
+        <a href="#" class="@(Tab == "ems" && redeem is null ? "on" : "")" @onclick='() => Show("ems")' @onclick:preventDefault>@L["Bank.BuyEms"]</a>
+        <a href="#" class="@(Tab == "help" && redeem is null ? "on" : "")" @onclick='() => Show("help")' @onclick:preventDefault>@L["Bank.Help"]</a>
         <a href="/wallet" @onclick="Leave">@L["Bank.History"]</a>
         <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Close">&times;</button>
     </header>
     <div class="balance">
-        <span>@L["Bank.Balance"] <b>@balances?.Ems</b></span>
-        <button type="button" id="redeem-code" @onclick="() => asking = true">@L["Bank.Redeem"] <Icon Name="chevron-right" /></button>
+        @if (redeem is not null) { <button type="button" class="back" @onclick='() => Show(Tab)'><Icon Name="angle-left" /> @L["Bank.Back"]</button> }
+        <span class="info">
+            @L["Bank.Balance"] <b>@balances?.Ems</b>
+            @if (membership is not null) { <span>@L["Bank.MembershipType"] <b>@membership.Type</b></span><span>@L["Bank.Expires"] <b>@(membership.Expires is { } e ? e.ToString("yyyy-MM-dd") : L["Bank.Never"])</b></span> }
+        </span>
+        @if (discount is not null) { <span class="active">@L["Bank.Active"] <b>@discount.Name</b> <button type="button" id="remove-code" @onclick="() => discount = null">@L["Bank.Deactivate"]</button></span> }
+        else { <button type="button" id="redeem-code" @onclick="() => asking = true">@L["Bank.Redeem"] <Icon Name="chevron-right" /></button> }
     </div>
     @if (asking)
     {
@@ -24,23 +30,44 @@
         </form>
     }
     @if (bought) { <p class="done" role="status">@L["Store.Complete"]</p> }
+    @if (error is not null) { <p class="failed" role="alert">@L[error]</p> }
     @if (catalog is not null)
     {
-        @if (Tab == "ems")
+        @if (redeem is not null)
+        {
+            <section class="redeem">
+                @if (!redeemed)
+                {
+                    <h2>@L["Bank.RedeemTitle"]</h2>
+                    <p>@L["Bank.RedeemHas"]</p>
+                    <h2>@redeem.Product</h2>
+                    <AssetSlot Name="em-pack" Width="100" Height="80" />
+                    <button type="button" class="buy redeem-code" disabled="@buying" @onclick="Redeem">@L["Bank.RedeemButton"]</button>
+                }
+                else
+                {
+                    <h2>@L["Bank.Redeemed"]</h2>
+                    <h2>@redeem.Product</h2>
+                    <AssetSlot Name="em-pack" Width="100" Height="80" />
+                    <button type="button" class="buy redeem-reset" @onclick="Close">@L["Alert.Ok"]</button>
+                }
+            </section>
+        }
+        else if (Tab == "ems")
         {
             <section>
                 <h2>@L["Bank.InGame"]</h2>
                 <p class="desc">@L["Bank.EmsDesc"]</p>
-                <label class="gift"><input type="checkbox" id="is_gift_steam" /> @L["Bank.Gift"]</label>
+                <label class="gift"><input type="checkbox" id="is_gift_steam" @bind="gift" /> @L["Bank.Gift"]</label>
                 <div class="packs">
                     @foreach (var (p, i) in catalog.EmPacks.Select((p, i) => (p, i)))
                     {
                         <div class="pack">
                             <AssetSlot Name="em-pack" Width="100" Height="80" />
                             <h3>@p.Ems Em$</h3>
-                            <p class="price">@p.Price.ToString("0.00") @catalog.Currency</p>
+                            <p class="price">@Cost(p.Price)</p>
                             <p class="save">@if (p.Save > 0) { @L["Bank.Save", p.Save] }</p>
-                            <button type="button" class="buy" @onclick='() => Buy("ems", i)'>@L["Store.Buy"] <Icon Name="chevron-right" /></button>
+                            <button type="button" class="buy" disabled="@buying" @onclick='() => Buy("ems", i)'>@L["Store.Buy"] <Icon Name="chevron-right" /></button>
                         </div>
                     }
                 </div>
@@ -65,28 +92,47 @@
 </div>
 
 @code {
+    readonly CancellationTokenSource gone = new();
+    readonly HashSet<string> opened = [];
     BankCatalog? catalog;
     Balances? balances;
-    bool asking, invalid, bought;
+    AccountMembership? membership;
+    BankCode? discount, redeem;
+    bool asking, invalid, bought, gift, buying, redeemed;
     string code = "";
+    string? error;
 
     /// <summary>ems, memberships or help.</summary>
-    [Parameter] public string Tab { get; set; } = "ems";
+    [Parameter] public string Tab { get; set; } = "memberships";
 
     protected override async Task OnInitializedAsync()
     {
-        (catalog, balances) = (await Bank.CatalogAsync(), await Wallet.BalancesAsync());
+        catalog = await Bank.CatalogAsync();
+        await Refresh();
     }
+
+    async Task Refresh() => (balances, membership) = (await Wallet.BalancesAsync(), await Wallet.MembershipAsync());
+
+    // a price lowered by the active discount code shows the old price struck through
+    RenderFragment Cost(decimal p) => @<text>@if (discount is { Percent: > 0 }) { <s>@p.ToString("0.00")</s> <b>@Math.Round(p * (100 - discount.Percent) / 100, 2).ToString("0.00")</b> } else { @p.ToString("0.00") } @catalog!.Currency</text>;
 
     RenderFragment Card(Membership m, string kind, int i) => @<div class="card">
         <AssetSlot Name="membership-card" Width="100" Height="70" />
-        <p class="price">@m.Price.ToString("0.00") @catalog!.Currency</p>
+        <p class="price">@Cost(m.Price)</p>
         <div class="what">
             <p>@(m.Name.Length == 0 ? L["Bank.MonthsOnly", m.Months] : L["Bank.Months", m.Months])</p>
             <p>@L["Bank.Animals"]</p><p>@L["Bank.Reserves"]</p><p>@L["Bank.Ammo"]</p>
-            @if (m.OtherItems > 0) { <p>@L["Bank.Extras", m.ExtraWeapons, m.OtherItems] <a href="#" @onclick:preventDefault>@L["Bank.Details"] <Icon Name="chevron-right" /></a></p> }
+            @if (m.OtherItems > 0)
+            {
+                var key = kind + i;
+                <p>@L["Bank.Extras", m.ExtraWeapons, m.OtherItems] <a href="#" class="content-details-trigger" aria-expanded="@opened.Contains(key)" @onclick="() => Toggle(key)" @onclick:preventDefault>@L["Bank.Details"] <Icon Name="chevron-right" /></a></p>
+                <div class="content-details @(opened.Contains(key) ? "open" : "")"><div>
+                    <h4>@L["Bank.WeaponsIncluded"]</h4><ul>@foreach (var x in m.Weapons ?? []) { <li>@x</li> }</ul>
+                    <h4>@L["Bank.ItemsIncluded"]</h4><ul>@foreach (var x in m.Items ?? []) { <li>@x</li> }</ul>
+                </div></div>
+            }
         </div>
-        <button type="button" class="buy" @onclick="() => Buy(kind, i)">@L["Store.Buy"] <Icon Name="chevron-right" /></button>
+        <button type="button" class="buy" disabled="@buying" @onclick="() => Buy(kind, i)">@L["Store.Buy"] <Icon Name="chevron-right" /></button>
     </div>;
 
     RenderFragment Help() => @<div>
@@ -98,13 +144,45 @@
         }
     </div>;
 
-    // the payment itself belongs to the platform, the mock only reports it
-    async Task Buy(string kind, int i) => bought = (await Bank.BuyAsync(kind, i)).Ok;
+    void Show(string tab) => (Tab, redeem, redeemed, gift, bought, error) = (tab, null, false, false, false, null);
 
+    void Toggle(string key) { if (!opened.Remove(key)) opened.Add(key); }
+
+    // the payment itself belongs to the platform, the mock only reports it; a second click while it runs is ignored
+    async Task Buy(string kind, int i)
+    {
+        if (buying) return;
+        (buying, bought, error) = (true, false, null);
+        var r = await Bank.BuyAsync(kind, i, kind == "ems" && gift, discount is { Gift: false } ? discount.Name : null);
+        buying = false;
+        if (r.Ok) { bought = true; await Refresh(); } else error = r.Error;
+    }
+
+    // the field is cleared at once; an unknown code shows its message for 2.5 s
     async Task Apply()
     {
-        if (code.Trim().Length == 0) return;
-        invalid = !(await Bank.CheckCodeAsync(code.Trim())).Ok;
+        var entered = code.Trim();
+        code = "";
+        if (entered.Length == 0) return;
+        var found = await Bank.CheckCodeAsync(entered);
+        if (found is null)
+        {
+            invalid = true;
+            try { await Task.Delay(2500, gone.Token); invalid = false; }
+            catch (OperationCanceledException) { }
+            return;
+        }
+        asking = invalid = false;
+        if (found.Gift) (redeem, redeemed) = (found, false); else discount = found;
+    }
+
+    async Task Redeem()
+    {
+        if (buying || redeem is null) return;
+        buying = true;
+        redeemed = (await Bank.RedeemAsync(redeem.Name)).Ok;
+        buying = false;
+        if (redeemed) await Refresh();
     }
 
     void Cancel() => (asking, invalid, code) = (false, false, "");
@@ -112,4 +190,6 @@
     void Close() { Modal.Close(); Nav.NavigateTo("/"); }
 
     void Leave() => Modal.Close();
+
+    public void Dispose() => gone.Cancel();
 }

@@ -1,12 +1,13 @@
 @page "/welcome"
 @inject ISessionService Sessions
+@inject IAccountService Account
 
 <PageTitle>@L["Welcome.Title"]</PageTitle>
 
 <div class="page-min">
     <h2 class="page-title">@(L["Welcome.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <div class="who">
-        <AssetSlot Name="avatar-current" Width="80" Height="80" />
+        <AssetSlot Name="@avatar" Width="80" Height="80" />
         <h2>@L.Frag("Welcome.Congrats", Profile())</h2>
     </div>
     <p class="text">@L["Welcome.Intro"]</p>
@@ -23,10 +24,14 @@
 </div>
 
 @code {
-    string handle = "";
+    string handle = "", avatar = "avatar-current";
     RenderFragment Profile() => @<a href="/profile/@handle">@handle</a>;
 
-    protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+    protected override async Task OnInitializedAsync()
+    {
+        handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+        avatar = (await Account.AccountAsync()).Avatar;
+    }
 
     RenderFragment Card(string key, string href, string go, string? icon) => @<section class="card panel">
         <h3>@L[key]</h3>

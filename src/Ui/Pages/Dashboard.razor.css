@@ -33,6 +33,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 li { position: relative; isolation: isolate; display: flex; align-items: center; height: 51px; border-bottom: 1px solid transparent; padding-right: 34px; }
 li::before { content: ""; position: absolute; inset: 2px 0; z-index: -1; border-radius: var(--r-3); background: var(--surface-3); }
 li::after { content: ""; position: absolute; inset: 2px 0; border-radius: var(--r-3); background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
+li:hover { z-index: 1; }
 li:hover::after { background: var(--tint-2); }
 li ::deep .dot { position: absolute; left: 7px; top: 11px; }
 li ::deep .flag { margin: 0 10px 0 27px; flex: none; }
@@ -43,3 +44,6 @@ li ::deep .flag { margin: 0 10px 0 27px; flex: none; }
 .quick-join { flex: none; width: 90px; padding: 5px 0; text-align: center; }
 .wide { width: 100%; }
 .wide .view-all { position: absolute; right: 0; top: 45px; width: 288px; box-sizing: border-box; text-align: center; }
+.servers .empty { padding-top: 50px; text-align: center; }
+.servers .empty h4 { margin: 0 0 6px; }
+.servers .empty p { margin: 0 0 14px; color: var(--fg-muted); }

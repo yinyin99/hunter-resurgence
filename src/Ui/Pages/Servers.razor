@@ -1,6 +1,6 @@
 @page "/servers"
+@inherits PatchWatcher
 @inject ModalService Modal
-@implements IDisposable
 @inject IServersService Service
 
 <PageTitle>@L["Servers.Title"]</PageTitle>
@@ -33,7 +33,7 @@
                 <tbody>
                     @foreach (var g in shown)
                     {
-                        <tr class="@(g == selected ? "selected" : "")" @onclick="() => selected = g">
+                        <tr class="@(g == active ? "selected" : "")" @onclick="() => selected = g">
                             <td class="name">@g.Name</td>
                             <td>@reserves.GetValueOrDefault(g.Reserve)</td>
                             <td class="players">@g.Players/@g.Max</td>
@@ -56,19 +56,24 @@
         <p class="info">@L["Servers.Info"] <ExternalLink Key="support_connections">@L["Servers.InfoLink"]</ExternalLink></p>
         <p class="legend"><i class="dot short"></i> = @L["Servers.Short"] <i class="dot medium"></i> = @L["Servers.Medium"] <i class="dot long"></i> = @L["Servers.Long"]</p>
     </div>
-    @if (selected is { } s)
+    @if (active is { } s)
     {
         <aside class="preview">
             <p class="muted">@L["Servers.Details"]</p>
             <h3>@s.Name</h3>
             @if (s.Description.Length > 0) { <p class="description">@s.Description</p> }
-            <button class="btn btn-primary btn-large btn-block" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = s })">@L["Servers.Join"]</button>
+            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready)" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = s, [nameof(JoinMapModal.Loadout)] = loadout })">@(ready ? L["Servers.Join"].Value : L["Servers.Patching"].Value)</button>
             <h5>@L["Servers.Details"]</h5>
             <p class="line">@L["Servers.HostLabel"] <a href="/profile/@s.Host">@s.Host</a></p>
             <p class="line">@L["Servers.ReserveLabel"] @reserves.GetValueOrDefault(s.Reserve)</p>
             <p class="line">@L["Servers.GameTime"] @Fmt.Elapsed(L, s.Seconds)</p>
-            <p class="line gap">@L["Servers.MinScore"] @s.MinScore</p>
-            <p class="line">@L["Servers.MaxScore"] @s.MaxScore</p>
+            @if (s.Limited)
+            {
+                <p class="line gap">@L["Servers.MinScore"] @s.MinScore</p>
+                <p class="line">@L["Servers.MaxScore"] @s.MaxScore</p>
+            }
+            @if (s.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
+            <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="preview-loadout" Width="282" />
             <h5 class="players-title">@L["Servers.PlayerList", s.Players, s.Max]</h5>
             @foreach (var p in s.Roster)
             {
@@ -82,6 +87,14 @@
     IReadOnlyList<GameServer> all = [];
     Dictionary<int, string> reserves = [];
     GameServer? selected;
+    IReadOnlyList<Loadout> loadouts = [];
+    int loadout;
+
+    // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
+    bool ready => Status.State is PatchState.Ready or PatchState.Done;
+
+    /// <summary>The preview follows the list: a game that is filtered away gives way to the first one, an empty list closes it.</summary>
+    GameServer? active => shown.FirstOrDefault(g => g == selected) ?? shown.FirstOrDefault();
     string query = "";
     bool allowedOnly;
 
@@ -100,7 +113,8 @@
                 "players" => g => g.Players,
                 "host" => g => g.Host.ToLowerInvariant(),
                 "country" => g => g.Country,
-                _ => g => g.Id,
+                // the old list starts with the games of the nearest continent
+                _ => g => (int)g.Distance,
             };
             return (descending ? rows.OrderByDescending(key) : rows.OrderBy(key)).ToList();
         }
@@ -120,6 +134,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+        loadouts = await Service.LoadoutsAsync();
         reserves = (await Service.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
         await Load();
         _ = Refresh();
@@ -136,7 +152,11 @@
         catch (OperationCanceledException) { }
     }
 
-    public void Dispose() => stop.Cancel();
+    public override void Dispose()
+    {
+        base.Dispose();
+        stop.Cancel();
+    }
 
     async Task Load()
     {

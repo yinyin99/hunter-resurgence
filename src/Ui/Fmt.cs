@@ -49,6 +49,9 @@ public static class Fmt
     /// <summary>2026-08-19 15:26:35</summary>
     public static string DateTime(DateTime d) => d.ToString("yyyy-MM-dd HH:mm:ss", English);
 
+    /// <summary>The days an item is owned for: "< 1" up to a day, else rounded.</summary>
+    public static string DaysLeft(double d) => d is > 0 and < 1 ? "< 1" : Math.Round(d).ToString();
+
     /// <summary>A wallet row date: 2026-10-15 12:00.</summary>
     public static string Purchase(DateTime d) => d.ToString("yyyy-MM-dd HH:mm", English);
 

@@ -1,11 +1,13 @@
 @inject IProfileService Service
 @inject ModalService Modal
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 @if (Sub == "download")
 {
     <div class="empty">
         <p>@(done ? L["Prof.GalleryReady"] : L["Prof.GalleryGenerating"] + " (" + progress + "%)")</p>
-        @if (done) { <button class="btn btn-primary" disabled>@L["Prof.DownloadGallery"]</button> }
+        @if (done) { <button class="btn btn-primary" @onclick="Save">@L["Prof.DownloadGallery"]</button> }
         else { <p class="small">@L["Prof.GalleryKeepOpen"]</p> }
     </div>
 }
@@ -14,16 +16,17 @@ else if (photos is not null)
     @if (Own && photos.Rows.Count > 0) { <p class="dl"><a class="btn btn-primary" href="/profile/@Handle/gallery/download">@L["Prof.DownloadGallery"]</a></p> }
     @if (photos.Rows.Count == 0) { <p class="empty">@L["Prof.GalleryEmpty"]</p> }
     <ul class="grid">
-        @foreach (var ph in photos.Rows)
+        @foreach (var (ph, at) in photos.Rows.Select((x, i) => (x, i)))
         {
             <li>
-                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(ph)" @onclick:preventDefault><AssetSlot Name="photo" Width="210" Height="118" /></a>
+                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(at)" @onclick:preventDefault><AssetSlot Name="photo" Width="210" Height="118" /></a>
                 <span>@ph.Animal @Fmt.Score(ph.Score)</span>
+                <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Url })">@L["Prof.Share"]</button>
                 @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
             </li>
         }
     </ul>
-    <PrevNext Page="photos.Number" Pages="photos.Pages" Base="@("/profile/" + Handle + "/gallery")" />
+    <Paginator Page="photos.Number" Pages="photos.Pages" Href="@(n => "/profile/" + Handle + "/gallery/" + n)" />
 }
 
 @code {
@@ -48,11 +51,28 @@ else if (photos is not null)
         else photos = await Service.GalleryAsync(Handle, int.TryParse(Sub, out var n) ? n : 1);
     }
 
-    void Open(Photo p) => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = $"{p.Animal}: {Fmt.Score(p.Score)}", ["Slot"] = "photo" });
+    // the lightbox goes through the pictures of the page
+    void Open(int at) => Modal.Show<VideoModal>(new Dictionary<string, object?>
+    {
+        ["Title"] = "", ["Slot"] = "photo", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => $"{L.Term(p.Animal)}: {Fmt.Score(p.Score)}").ToList()
+    });
 
+    // the page goes on from the list the service has left; a page that is now empty gives way to the one before
     async Task Delete(Photo p)
     {
         if (!await Modal.Confirm(L["Prof.GalleryDelete"])) return;
-        photos = photos! with { Rows = photos.Rows.Where(x => x != p).ToList() };
+        if (!(await Service.DeleteGalleryImageAsync(p.Id)).Ok) { Modal.Alert(L["Mis.Failed"]); return; }
+        var page = photos!.Number;
+        photos = await Service.GalleryAsync(Handle, page);
+        var back = photos.Rows.Count == 0 ? page - 1 : photos.Number;
+        if (back != page && back > 0) Nav.NavigateTo($"/profile/{Handle}/gallery/{back}");
+    }
+
+    async Task Save()
+    {
+        using var file = new MemoryStream(await Service.GalleryZipAsync(Handle));
+        using var stream = new DotNetStreamReference(file);
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await shell.InvokeVoidAsync("save", $"{Handle}-gallery.zip", stream);
     }
 }

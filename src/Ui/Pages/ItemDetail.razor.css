@@ -11,3 +11,8 @@ h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; col
 .cap, .own { margin: 0 0 20px; font-size: 12px; line-height: 16px; }
 .own { color: #e0301e; margin-bottom: 8px; }
 .text { margin: 0; font-size: 12px; line-height: 20px; font-weight: 300; white-space: pre-line; color: var(--text-2); }
+.fits, .ethics { margin: 20px 0 0; }
+.fits h4:not(:first-child) { margin-top: 14px; }
+h4 { margin: 0 0 6px; font-size: 14px; line-height: 20px; font-weight: 400; color: #fff; }
+.fits table, .ethics table { max-width: 440px; }
+.ethics ::deep .icon { width: 12px; height: 12px; }

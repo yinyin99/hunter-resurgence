@@ -14,7 +14,7 @@
             </li>
         }
     </ul>
-    <PrevNext Page="page.Number" Pages="page.Pages" Base="@("/profile/" + Handle + "/trophies")" />
+    <Paginator Page="page.Number" Pages="page.Pages" Href="@(n => "/profile/" + Handle + "/trophies/" + n)" />
 }
 
 @code {

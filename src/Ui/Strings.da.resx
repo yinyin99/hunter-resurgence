@@ -33,7 +33,9 @@
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>brændstof:</value></data>
   <data name="Tip.Friends" xml:space="preserve"><value>Venner</value></data>
+  <data name="Tip.FriendsNew" xml:space="preserve"><value>Venner ({0} nye anmodninger)</value></data>
   <data name="Tip.Messages" xml:space="preserve"><value>Beskeder</value></data>
+  <data name="Tip.MessagesNew" xml:space="preserve"><value>Beskeder ({0} nye)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min tegnebog / Købshistorik</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Log ud</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din jægerscore</value></data>
@@ -57,6 +59,12 @@
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ingen jægere fundet</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send venneanmodning</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Venneanmodning sendt</value></data>
+  <data name="Friends.Request" xml:space="preserve"><value>Venneanmodning {0} af {1}</value></data>
+  <data name="Friends.WantsToBe" xml:space="preserve"><value>{0} vil være din ven!</value></data>
+  <data name="Friends.Accept" xml:space="preserve"><value>Accepter</value></data>
+  <data name="Friends.Decline" xml:space="preserve"><value>Afvis</value></data>
+  <data name="Friends.Previous" xml:space="preserve"><value>Forrige anmodning</value></data>
+  <data name="Friends.Next" xml:space="preserve"><value>Næste anmodning</value></data>
   <data name="Language.Title" xml:space="preserve"><value>Vælg dit sprog</value></data>
   <data name="Language.English" xml:space="preserve"><value>Engelsk</value></data>
   <data name="Language.French" xml:space="preserve"><value>Fransk</value></data>
@@ -69,10 +77,16 @@
   <data name="Footer.Eula" xml:space="preserve"><value>Slutbrugerlicensaftale</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVATLIVSPOLITIK</value></data>
   <data name="Footer.Eula.Title" xml:space="preserve"><value>SLUTBRUGERLICENSAFTALE</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Du skal bekræfte slutbrugerlicensaftalen og privatlivspolitikken, før du fortsætter.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Ved at klikke på knappen "Fortsæt" accepterer du {0} og {1}</value></data>
+  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jeg accepterer EULA</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jeg accepterer privatlivspolitikken</value></data>
   <data name="Legal.Updated" xml:space="preserve"><value>Sidst opdateret: pladsholdertekst</value></data>
   <data name="Legal.Section" xml:space="preserve"><value>INDLEDNING</value></data>
   <data name="Legal.Subsection" xml:space="preserve"><value>Pladsholderoverskrift</value></data>
   <data name="Legal.Placeholder" xml:space="preserve"><value>Pladsholdertekst. Den egentlige juridiske tekst leveres af tjenestens udbyder.</value></data>
+  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Se {0} for oplysninger om, hvordan personoplysninger behandles.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Er du allerede jæger?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Log ind</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -138,6 +152,8 @@
   <data name="Launch.Max" xml:space="preserve"><value>Maks.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
   <data name="Launch.Create" xml:space="preserve"><value>Opret spil</value></data>
+  <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
+  <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Noget gik galt under oprettelsen af din spilsession. Genindlæs serverlisten, og prøv at deltage i et andet spil.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND ET MULTIPLAYER-SPIL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find et spil eller en vært...</value></data>
@@ -169,6 +185,8 @@
   <data name="Servers.NoGamesDesc" xml:space="preserve"><value>Vi kunne ikke finde nogen offentlige multiplayer-spil, som du må deltage i.</value></data>
   <data name="Servers.HostOwn" xml:space="preserve"><value>VÆR VÆRT FOR DIT EGET SPIL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Dette spil er beskyttet med adgangskode</value></data>
+  <data name="Servers.PasswordRequired" xml:space="preserve"><value>Adgangskode påkrævet</value></data>
+  <data name="Servers.Patching" xml:space="preserve"><value>Opdaterer...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverplacering: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
   <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
@@ -180,6 +198,22 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Angiv adgangskode</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Deltag i spil</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Luk</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Forkert adgangskode. Prøv igen.</value></data>
+  <data name="Done.Title" xml:space="preserve"><value>Færdig med at jage for nu?</value></data>
+  <data name="Done.Stats" xml:space="preserve"><value>Se jagtstatistik</value></data>
+  <data name="Done.HuntNow" xml:space="preserve"><value>JAG NU</value></data>
+  <data name="Done.Next" xml:space="preserve"><value>Hvis du vil starte et nyt spil, skal du lukke dette vindue og klikke på knappen {0} igen.</value></data>
+  <data name="Done.ConnectionTitle" xml:space="preserve"><value>Var der et forbindelsesproblem?</value></data>
+  <data name="Done.ConnectionText" xml:space="preserve"><value>Har du problemer med at forbinde til dine venner i multiplayer? Der kan være mange årsager, og ikke alt hænger nødvendigvis direkte sammen med selve spillet. Se afsnittet om {0} i fejlfindingsguiden for mere information.</value></data>
+  <data name="Done.ConnectionLink" xml:space="preserve"><value>forbindelsesproblemer</value></data>
+  <data name="Done.InfoTitle" xml:space="preserve"><value>Brug for mere info om spillets funktioner?</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Kan du ikke finde dit bytte? Sidder du fast med at bruge et bestemt stykke udstyr? Undrer du dig over, hvilket jagtreservat der passer bedst til dig? Se {0} for mere information. Wikien er lavet og vedligeholdt af fællesskabet, og hvis du ikke kan finde svar på dit spørgsmål der, er du velkommen til at spørge i {1}.</value></data>
+  <data name="Done.Wiki" xml:space="preserve"><value>{game}-wikien</value></data>
+  <data name="Done.Forum" xml:space="preserve"><value>forummet</value></data>
+  <data name="Done.TechTitle" xml:space="preserve"><value>Andre tekniske problemer?</value></data>
+  <data name="Done.TechText" xml:space="preserve"><value>Var der et problem med at starte spillet? Fik du en mærkelig fejlmeddelelse? Gå til {0}, og hvis du ikke kan finde svaret på dit problem, så send en besked til vores {1}.</value></data>
+  <data name="Done.Guide" xml:space="preserve"><value>fejlfindingsguiden</value></data>
+  <data name="Done.Support" xml:space="preserve"><value>support</value></data>
   <data name="Tut.Intro" xml:space="preserve"><value>Det anbefales, at du gennemfører de grundlæggende selvstudier, før du går på din første rigtige jagt i det første jagtområde. I selvstudierne møder du områdets faste jagtbetjent. Han gennemgår det grundlæggende og lærer dig, hvad du skal vide for at få succes i {game}.</value></data>
   <data name="Tut.Start" xml:space="preserve"><value>Start selvstudium</value></data>
   <data name="Tut.Location" xml:space="preserve"><value>Sted: {0}</value></data>
@@ -219,10 +253,14 @@
   <data name="Patch.GotIt" xml:space="preserve"><value>Forstået!</value></data>
   <data name="Patch.NewTitle" xml:space="preserve"><value>Ny spilpatch</value></data>
   <data name="Patch.NewText" xml:space="preserve"><value>Der er udgivet en ny spilpatch. Dit spil bliver patchet automatisk, og du kan starte en ny ekspedition, så snart det er færdigt! I mellemtiden kan du frit kigge dig omkring.</value></data>
+  <data name="Patch.UpdateNotes" xml:space="preserve"><value>Opdatering noter</value></data>
+  <data name="Patch.UpdateTitle" xml:space="preserve"><value>Opdatere {0}</value></data>
+  <data name="Patch.ViewChangelog" xml:space="preserve"><value>Se ændringslog</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Henter {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>En komplet installation af {game} bliver hentet til din computer. Du kan begynde at spille, så snart den er færdig. I mellemtiden kan du frit kigge dig omkring.</value></data>
   <data name="Patch.LauncherTitle" xml:space="preserve"><value>Launcheren opdateres</value></data>
   <data name="Patch.LauncherText" xml:space="preserve"><value>Launcheren skal opdateres. Opdateringen hentes automatisk. Når launcheren er opdateret, skal den genstartes.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Opdatering færdig. Opgavestarter skal genstarte.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Spilopdatering påkrævet</value></data>
   <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Der er en opdatering til {game}. Du skal opdatere {game} på Steam, før du kan spille. Du skal lukke launcheren for at opdatere.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} er kun på Steam</value></data>
@@ -367,6 +405,7 @@
   <data name="Comp.Deactivate" xml:space="preserve"><value>Deaktivér</value></data>
   <data name="Comp.CantJoin" xml:space="preserve"><value>Kan ikke deltage</value></data>
   <data name="Comp.Multi" xml:space="preserve"><value>Multiplayer</value></data>
+  <data name="Comp.Multispecies" xml:space="preserve"><value>Flere arter</value></data>
   <data name="Comp.Requirements" xml:space="preserve"><value>Krav:</value></data>
   <data name="Comp.Upcoming" xml:space="preserve"><value>Kommende konkurrencer</value></data>
   <data name="Comp.Previous" xml:space="preserve"><value>Tidligere konkurrencer</value></data>
@@ -391,6 +430,10 @@
   <data name="Comp.History" xml:space="preserve"><value>Historik</value></data>
   <data name="Comp.Prizes" xml:space="preserve"><value>Præmier</value></data>
   <data name="Comp.Trophy" xml:space="preserve"><value>Trofæ</value></data>
+  <data name="Comp.PrizeEmsTrophy" xml:space="preserve"><value>{0} em$ og et trofæ</value></data>
+  <data name="Comp.PrizeGmsTrophy" xml:space="preserve"><value>{0} gm$ og et trofæ</value></data>
+  <data name="Comp.PrizeEms" xml:space="preserve"><value>{0} em$</value></data>
+  <data name="Comp.PrizeGms" xml:space="preserve"><value>{0} gm$</value></data>
   <data name="Comp.Rules" xml:space="preserve"><value>Regler og betingelser</value></data>
   <data name="Comp.Species" xml:space="preserve"><value>Arter: {0}</value></data>
   <data name="Comp.Reserves" xml:space="preserve"><value>Jagtområder: {0}</value></data>
@@ -414,6 +457,7 @@
   <data name="League.NotEnrolled" xml:space="preserve"><value>Du er ikke tilmeldt nogen konkurrencer</value></data>
   <data name="League.Monthly" xml:space="preserve"><value>Månedlig rangliste</value></data>
   <data name="League.Season" xml:space="preserve"><value>Sæsonrangliste</value></data>
+  <data name="League.Points" xml:space="preserve"><value>Point</value></data>
   <data name="Board.Title" xml:space="preserve"><value>RANGLISTER</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Skudafstand</value></data>
@@ -450,6 +494,9 @@
   <data name="Mis.Help" xml:space="preserve"><value>Klik for hjælp</value></data>
   <data name="Mis.Day" xml:space="preserve"><value>Dag {0}</value></data>
   <data name="Mis.Today" xml:space="preserve"><value>i dag</value></data>
+  <data name="Mis.Ended" xml:space="preserve"><value>Afsluttet</value></data>
+  <data name="Mis.NextIn" xml:space="preserve"><value>A new Daily Mission will be available in:</value></data>
+  <data name="Mis.EndsIn" xml:space="preserve"><value>Ends in:</value></data>
   <data name="Mis.Tomorrow" xml:space="preserve"><value>i morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivelse</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
@@ -463,6 +510,9 @@
   <data name="Mis.ActivationDone" xml:space="preserve"><value>Aktivering gennemført!</value></data>
   <data name="Mis.Enjoy" xml:space="preserve"><value>God fornøjelse!</value></data>
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivér alle</value></data>
+  <data name="Mis.Buy" xml:space="preserve"><value>KØB</value></data>
+  <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktivér automatisk nye tilgængelige missioner</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivér kun favoritmissioner automatisk</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan nulstille dine missioner mod et gebyr i butikken.</value></data>
@@ -479,6 +529,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Våben</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alle valgt</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} valgt</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skjul gennemførte</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Søg</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrér</value></data>
@@ -520,11 +571,21 @@
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKKE</value></data>
+  <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
+  <data name="Store.Banner.limited" xml:space="preserve"><value>BEGRÆNSET</value></data>
+  <data name="Store.Banner.new" xml:space="preserve"><value>NY</value></data>
+  <data name="Store.Banner.community" xml:space="preserve"><value>FÆLLESSKABETS VALG</value></data>
   <data name="Store.Included" xml:space="preserve"><value>Inkluderet</value></data>
   <data name="Store.Value" xml:space="preserve"><value>Værdi</value></data>
+  <data name="Store.OwnLimit" xml:space="preserve"><value>Grænse for hvor mange du kan eje</value></data>
+  <data name="Store.Unlimited" xml:space="preserve"><value>Ubegrænset</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Pakkepris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapacitetsomkostning</value></data>
+  <data name="Store.Ethical" xml:space="preserve"><value>Tilladt for</value></data>
+  <data name="Store.Ethical.Yes" xml:space="preserve"><value>Det er etisk at bruge {0} ved jagt på: {1}</value></data>
+  <data name="Store.Ethical.No" xml:space="preserve"><value>Det er ikke etisk at bruge {0} ved jagt på: {1}</value></data>
   <data name="Store.CantBuy" xml:space="preserve"><value>Det er ikke muligt at købe denne vare</value></data>
+  <data name="Store.AlreadyOwn" xml:space="preserve"><value>Du ejer allerede dette element</value></data>
   <data name="Store.MaxOwn" xml:space="preserve"><value>Det er ikke muligt at købe denne pakke. Grænsen for, hvor mange du kan eje, er nået for mindst én af de inkluderede genstande</value></data>
   <data name="Store.None" xml:space="preserve"><value>Ingen varer i denne kategori</value></data>
   <data name="Store.Details" xml:space="preserve"><value>Detaljer</value></data>
@@ -567,10 +628,20 @@
   <data name="Bank.Help" xml:space="preserve"><value>Hjælp</value></data>
   <data name="Bank.History" xml:space="preserve"><value>Købshistorik</value></data>
   <data name="Bank.Balance" xml:space="preserve"><value>Din em$-saldo:</value></data>
+  <data name="Bank.MembershipType" xml:space="preserve"><value>Dit medlemskab type:</value></data>
+  <data name="Bank.Expires" xml:space="preserve"><value>Udløber:</value></data>
+  <data name="Bank.Never" xml:space="preserve"><value>Aldrig</value></data>
   <data name="Bank.Redeem" xml:space="preserve"><value>Indløs en rabatkode</value></data>
   <data name="Bank.EnterCode" xml:space="preserve"><value>Angiv din rabatkode</value></data>
   <data name="Bank.Cancel" xml:space="preserve"><value>Annuller</value></data>
+  <data name="Bank.Back" xml:space="preserve"><value>Tilbage</value></data>
   <data name="Bank.Invalid" xml:space="preserve"><value>Den rabatkode, du har angivet, er ugyldig eller udløbet</value></data>
+  <data name="Bank.Active" xml:space="preserve"><value>Kode aktiveret</value></data>
+  <data name="Bank.Deactivate" xml:space="preserve"><value>Deaktivere kode</value></data>
+  <data name="Bank.RedeemTitle" xml:space="preserve"><value>Indløs din gave</value></data>
+  <data name="Bank.RedeemHas" xml:space="preserve"><value>Du har indtastet en gavekode, der indeholder</value></data>
+  <data name="Bank.RedeemButton" xml:space="preserve"><value>Klik her for at indløse denne gave</value></data>
+  <data name="Bank.Redeemed" xml:space="preserve"><value>Din gave er blevet lagt til din konto!</value></data>
   <data name="Bank.InGame" xml:space="preserve"><value>Valuta i spillet</value></data>
   <data name="Bank.EmsDesc" xml:space="preserve"><value>Våben, telte, tøj, jagttegn og meget mere kan købes med valuta i spillet (em$).</value></data>
   <data name="Bank.Gift" xml:space="preserve"><value>Køb som gave</value></data>
@@ -586,6 +657,8 @@
   <data name="Bank.Reserves" xml:space="preserve"><value>Adgang til alle jagtområder</value></data>
   <data name="Bank.Ammo" xml:space="preserve"><value>Ubegrænset basisammunition</value></data>
   <data name="Bank.Details" xml:space="preserve"><value>Detaljer</value></data>
+  <data name="Bank.WeaponsIncluded" xml:space="preserve"><value>Våben inkluderet:</value></data>
+  <data name="Bank.ItemsIncluded" xml:space="preserve"><value>Genstande inkluderet:</value></data>
   <data name="Bank.Kept" xml:space="preserve"><value>Genstande, der er inkluderet i et medlemskab eller købt separat, beholder du, selv om dit medlemskab udløber</value></data>
   <data name="Bank.ComparePrize" xml:space="preserve"><value>* Sammenlignet med 3 måneders {game}-medlemskab</value></data>
   <data name="Bank.HelpTitle" xml:space="preserve"><value>{game}-butikken: spørgsmål og svar</value></data>
@@ -603,6 +676,16 @@
   <data name="Bank.A6" xml:space="preserve"><value>Bemærk, at em$ ikke kan sælges eller overdrages og ikke kan veksles til kontanter eller andet end selve indholdet i {game}. em$ kan ikke refunderes. em$ har ingen pengeværdi og udgør ikke valuta eller ejendom af nogen art.</value></data>
   <data name="Bank.Extras" xml:space="preserve"><value>Ekstra våben: {0}, andre genstande: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} md.</value></data>
+  <data name="Bank.SteamInternal" xml:space="preserve"><value>Intern Steam-fejl. Prøv igen på et andet tidspunkt.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Der opstod en fejl under forbindelsen til Steam. Prøv igen.</value></data>
+  <data name="Bank.Thanks" xml:space="preserve"><value>Tak fordi du bruger {game}-butikken. Din konto er blevet opdateret med den købte genstand.</value></data>
+  <data name="Bank.ThanksClose" xml:space="preserve"><value>Klik på luk i øverste højre hjørne for at vende tilbage til {game}.</value></data>
+  <data name="Bank.Unavailable" xml:space="preserve"><value>Der gik noget galt. Prøv venligst igen og kontakt supporten hvis det stadig ikke virker</value></data>
+  <data name="Bank.SteamThanks" xml:space="preserve"><value>Tak for dit køb!</value></data>
+  <data name="Bank.SteamDone" xml:space="preserve"><value>Dit køb af {0} via Steam er gennemført, og dine varer er lagt til din konto.</value></data>
+  <data name="Bank.SteamFailed" xml:space="preserve"><value>Købet mislykkedes</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Noget gik galt, og dit Steam-køb blev afbrudt. Prøv igen.</value></data>
+  <data name="Bank.HuntNow" xml:space="preserve"><value>Jagt nu</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Beskeder</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Tillad kun beskeder fra venner</value></data>
   <data name="Msg.New" xml:space="preserve"><value>Ny besked</value></data>
@@ -639,6 +722,10 @@
   <data name="Set.EmailChanged" xml:space="preserve"><value>Din e-mailadresse er blevet ændret.</value></data>
   <data name="Set.EmailResend" xml:space="preserve"><value>Send bekræftelse igen</value></data>
   <data name="Set.EmailResent" xml:space="preserve"><value>Bekræftelses-e-mail sendt igen.</value></data>
+  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
+  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-mailen kunne ikke sendes igen. Prøv igen, eller kontakt support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Sprog</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
@@ -661,6 +748,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Advarsel</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Hvis du afbryder forbindelsen til din Steam-konto, bliver du logget ud af {game}, og launcheren lukkes. Du kan ikke spille {game} på Steam igen, før du forbinder med en anden konto.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jeg forstår det og vil afbryde forbindelsen til min Steam-konto</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannerbillede</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Bannerbilleder låses op, når du når nye niveauer i tre forskellige milepælskategorier – Dyremester, Våbenmester og Udforskningsmester. Når et bannerbillede er låst op, forbliver det tilgængeligt for altid.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Se flere oplysninger om mesterniveauerne for milepæle.</value></data>
@@ -816,6 +904,11 @@
   <data name="Stat.BestAllNone" xml:space="preserve"><value>{0} har endnu ikke været på nogen ekspeditioner, så der kan ikke beregnes en personlig rekord nogensinde.</value></data>
   <data name="Stat.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Stat.Range" xml:space="preserve"><value>Skudafstand</value></data>
+  <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tidspunkt for indsamling</value></data>
+  <data name="Stat.Refresh" xml:space="preserve"><value>Opdater</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistik vil blive opdateret, når ekspeditionen er afsluttet.</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Forrige</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Næste</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ingen billeder at vise.</value></data>
@@ -830,7 +923,13 @@
   <data name="Prof.DogLvl" xml:space="preserve"><value>Niv.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Færdigheder</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Denne hund har endnu ikke låst nogen færdigheder op.</value></data>
+  <data name="Prof.DogUnnamed" xml:space="preserve"><value>Vovse</value></data>
   <data name="Prof.Delete" xml:space="preserve"><value>Slet</value></data>
+  <data name="Prof.Share" xml:space="preserve"><value>Share</value></data>
+  <data name="Prof.ShareHeading" xml:space="preserve"><value>Del dette trofæ skud</value></data>
+  <data name="Prof.ShareDesc" xml:space="preserve"><value>Copy the URL or the BBCode to share this trophy shot with your friends on the official {game} Forum or on social media.</value></data>
+  <data name="Prof.ImageUrl" xml:space="preserve"><value>Billede URL</value></data>
+  <data name="Prof.ImageBbcode" xml:space="preserve"><value>Billede BBCode</value></data>
   <data name="Browser.LoginProgress" xml:space="preserve"><value>Logger ind...</value></data>
   <data name="Browser.LoginDone" xml:space="preserve"><value>Login gennemført!</value></data>
   <data name="Browser.AutoLoginText" xml:space="preserve"><value>Denne side blev åbnet, fordi {game} skal logge dig ind.</value></data>
@@ -976,6 +1075,10 @@
   <data name="Term.ui.statistics_collectables" xml:space="preserve"><value>Samleobjekter</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_2" xml:space="preserve"><value>Håndvåben</value></data>
   <data name="Term.ui.hun_webgui_trophy_lodge_editor_weapon_slot_4" xml:space="preserve"><value>Armbrøster</value></data>
+  <data name="Term.ui.dog_skill_track_blood_title" xml:space="preserve"><value>Sporing af blod</value></data>
+  <data name="Term.ui.dog_skill_track_blood_content" xml:space="preserve"><value>Denne færdighed styrer hvor godt en hund finder blodspor.</value></data>
+  <data name="Term.ui.dog_skill_detection_title" xml:space="preserve"><value>Detection</value></data>
+  <data name="Term.ui.dog_skill_detection_content" xml:space="preserve"><value>This skill governs how well a dog can detect different species of animals.</value></data>
   <data name="Fmt.Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Fmt.Hours" xml:space="preserve"><value>{0}t</value></data>
   <data name="Fmt.Minutes" xml:space="preserve"><value>{0}m</value></data>
