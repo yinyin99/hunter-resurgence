@@ -32,4 +32,8 @@
     <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Resurgence.Tests" />
+  </ItemGroup>
+
 </Project>
