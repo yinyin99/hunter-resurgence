@@ -1,12 +1,17 @@
 version: 2
 updates:
   - package-ecosystem: nuget
-    directory: /tools/backup
+    directories:
+      - /tools/backup
+      - /src/*
     schedule:
       interval: weekly
     commit-message:
       prefix: build
       include: scope
+    groups:
+      dotnet:
+        patterns: ["Microsoft.*", "System.*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
