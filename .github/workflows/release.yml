@@ -24,7 +24,7 @@ jobs:
           if ($ver -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$') { throw "tag $env:TAG is not vMAJOR.MINOR.PATCH[-suffix]" }
           "VERSION=$ver" >> $env:GITHUB_ENV
       - run: dotnet build tools/backup -c Release -p:Version=${{ env.VERSION }}
-      - run: dotnet run --project tools/backup -c Release --no-build -p:Version=${{ env.VERSION }} -- --selftest
+      - run: dotnet test tests/Resurgence.Tests -c Release
       # One repository secret per settings.json key. Values are never printed; every key is required, so a missing secret fails the release.
       - name: Write settings.json
         shell: pwsh

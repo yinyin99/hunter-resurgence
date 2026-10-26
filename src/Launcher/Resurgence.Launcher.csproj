@@ -9,8 +9,6 @@
     <RootNamespace>Resurgence.Launcher</RootNamespace>
     <Version>0.0.0-dev</Version>
     <UseWPF>true</UseWPF>
-    <!-- Program.Main runs the self-test (selftest argument) before any WPF type is touched -->
-    <StartupObject>Resurgence.Launcher.Program</StartupObject>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -30,6 +28,10 @@
   <ItemGroup>
     <!-- placeholders only; build output only; a real settings.json is never committed (git-ignored) -->
     <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Resurgence.Tests" />
   </ItemGroup>
 
 </Project>

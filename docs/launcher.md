@@ -2,7 +2,7 @@
 
 `src/Launcher/` is a Windows desktop app that will replace the game's own launcher once the community server exists. It runs beside the game's own launcher and does not change it. It never writes into the game's install folder.
 
-It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 control, so the Microsoft Edge WebView2 runtime must be installed (it comes with Windows 11). The screens are shared with the [website](website.md) and live in `src/Ui/`; the launcher only adds the window, the real services below and the selftest.
+It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 control, so the Microsoft Edge WebView2 runtime must be installed (it comes with Windows 11). The screens are shared with the [website](website.md) and live in `src/Ui/`; the launcher only adds the window and the real services below.
 
 ## State
 
@@ -19,12 +19,12 @@ Every screen talks to an interface in `src/Services/Contracts/` (one per area: s
 ```
 dotnet build hunter-resurgence.slnx -c Release
 dotnet run --project src/Launcher -c Release
-dotnet run --project src/Launcher -c Release -- --selftest
+dotnet test tests/Resurgence.Tests -c Release
 ```
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
-The selftest uses a temporary Steam folder tree, temporary settings files and temporary zips. It reads and changes nothing else on the PC. It prints one line per check and exits 0 when every check is ok.
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files and temporary zips. They read and change nothing else on the PC. `dotnet test` exits 0 when every test passes.
 
 ### Development switches
 
@@ -62,8 +62,8 @@ Real today:
 
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
 - **launcher.json**: the language chosen in the language dialog is saved and used at the next start.
-- **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip`: size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the selftest covers it.
-- **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the selftest; no screen shows the result yet.
+- **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip`: size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the tests cover it.
+- **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
@@ -98,4 +98,4 @@ Game vocabulary (animal names, collectables and a few labels) is not written by 
 
 A text is a whole sentence: a link or bold part is a hole, never markup in the resx. `{0}...{1}` wrap the words (`L.Html`), or one hole is the whole link or name (`L.Frag`); a translation may move the holes. Counts are written without a plural noun (`Games shown: {0}`), so one string fits every number.
 
-At start the launcher uses the language saved in `launcher.json`, else the Windows display language when it is French, else English. The selftest checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
+At start the launcher uses the language saved in `launcher.json`, else the Windows display language when it is French, else English. A test checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
