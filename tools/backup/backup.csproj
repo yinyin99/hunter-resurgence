@@ -1,15 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- console exe for dotnet run and the self-check; the publish profile makes the published exe WinExe -->
+    <!-- console exe for dotnet run; the publish profile makes the published exe WinExe -->
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <AssemblyName>backup</AssemblyName>
     <RootNamespace>Backup</RootNamespace>
     <Version>0.0.0-dev</Version>
     <UseWPF>true</UseWPF>
-    <!-- Program.Main runs the self-check and settings init before any WPF type is touched -->
-    <StartupObject>Backup.Program</StartupObject>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- WPF binding needs a real culture: with invariant globalization it throws "Cannot find non-neutral culture" -->
@@ -22,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="WPF-UI" Version="4.3.0" />
-    <!-- the WPF SDK drops these two from the implicit usings; Engine, Settings and SelfTest use them -->
+    <!-- the WPF SDK drops these two from the implicit usings; Engine and Settings use them -->
     <Using Include="System.IO" />
     <Using Include="System.Net.Http" />
   </ItemGroup>
