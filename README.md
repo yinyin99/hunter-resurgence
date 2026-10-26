@@ -13,6 +13,8 @@ Licensed under the [GNU AGPL-3.0](LICENSE).
 
 A small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. The app speaks English, French, Spanish, Portuguese, German and Russian, follows your Windows language and can be switched in the window. Details: [docs/backup.md](docs/backup.md).
 
+![The backup tool's window](docs/img/backup.png)
+
 1. Download `backup-win-x64.zip` from the latest release and unpack it. Keep `backup.exe` and `settings.json` in the same folder.
 2. Start `backup.exe`. For your own account, open the game and start a hunt (the app can be open before or after); or choose "Public profile" and type a handle or id.
 3. Tick what to save, press Start. The result goes to `Documents\game-backup\backup-<id>` and a zip beside it. Keep that zip private.
@@ -48,6 +50,10 @@ Solo means a single-player hunt on a server; multiplayer means hunting with othe
 | 4 | **New launcher**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it once you set a Steam launch option | Planned |
 | 5 | **New website**: profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only; no money, ever: no donations, no ads, nothing is sold), missions and friends | Planned |
 | Later | Trophy lodge and bait-site pages inside the game, multiplayer, competitions | - |
+
+![The new launcher, work in progress](docs/img/launcher.png)
+
+*New launcher (step 4): work in progress, mock data, images are placeholders.*
 
 A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the zip private.
 
