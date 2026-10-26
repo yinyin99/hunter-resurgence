@@ -4,6 +4,7 @@ updates:
     directories:
       - /tools/backup
       - /src/*
+      - /tests/*
     schedule:
       interval: weekly
     commit-message:
