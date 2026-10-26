@@ -78,7 +78,7 @@ jobs:
             $msg = (git tag -l --format='%(contents)' $env:TAG) -join "`n"
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
-          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip)."
+          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nThe exe is not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
