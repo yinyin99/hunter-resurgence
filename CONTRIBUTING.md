@@ -11,7 +11,7 @@ These apply to every file and every commit message:
 - No game files and no game data (assets, captures, dumps, saved replies of real accounts). Never patch, ship or download game files: the client is redirected with the hosts file and a local certificate (for now; the method may change).
 - Nothing about how knowledge of the game or its servers was obtained: no reverse-engineering notes, addresses, tool names, capture or live-session logs, nothing about a person's account or runs.
 
-Real values for a build (hosts, consumer key, exe name) live in a `settings.json` that is never committed (it is git-ignored). Releases read them from repository secrets.
+Real values for a build (hosts, consumer key, exe name) live in a `settings.json` that is never committed (it is git-ignored). Releases read them from repository secrets. The release zip ships that `settings.json` in plain text, because the backup tool needs it to reach the official servers; the rules above apply to the repository's files and commits, not to that file.
 
 ## Build and test
 
