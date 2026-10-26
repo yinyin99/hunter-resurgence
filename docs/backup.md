@@ -6,11 +6,11 @@
 
 ```
 dotnet build tools/backup -c Release
-dotnet run --project tools/backup -c Release -- --selftest
+dotnet test tests/Resurgence.Tests -c Release
 tools\backup\publish.cmd <path\to\your\settings.json>
 ```
 
-The window is WPF with the WPF UI library (Fluent theme, follows the system light/dark theme). The published exe is self-contained: players install nothing. The project is a console `Exe` so `dotnet run -- --selftest` prints; the publish profile makes the published exe a GUI one.
+The window is WPF with the WPF UI library (Fluent theme, follows the system light/dark theme). The published exe is self-contained: players install nothing. The project is a console `Exe` for `dotnet run`; the publish profile makes the published exe a GUI one.
 
 `publish.cmd` takes the path of a `settings.json` you filled in (see below). It publishes `tools\backup\bin\Release\net10.0-windows\win-x64\publish\backup.exe`, copies your `settings.json` beside it, and writes `backup-win-x64.zip` with both into `tools\backup\bin\Release\net10.0-windows\win-x64\`. The zip is what players download. The exe is stored uncompressed on purpose: it starts faster and needs less memory.
 
@@ -20,7 +20,7 @@ The window is WPF with the WPF UI library (Fluent theme, follows the system ligh
 
 ## Languages
 
-The window is in English, French, Spanish, Portuguese (Brazil), German or Russian. It starts in the Windows display language when that is one of them, otherwise in English. The picker in the window switches it (not while a backup runs) and the choice is kept in `%APPDATA%\game-backup\language.txt`, next to `claim.key`. The texts are standard .NET resources: `Strings.resx` (English, also the fallback) and one `Strings.<culture>.resx` per language. The log lines and everything in `manifest.json` stay English. To add a language, add its `Strings.<culture>.resx` with the same keys, list it in `Loc.Languages` and in `SatelliteResourceLanguages` of the publish profile; the self-test fails when a resx lacks a key or has other `{0}` placeholders than the English one.
+The window is in English, French, Spanish, Portuguese (Brazil), German or Russian. It starts in the Windows display language when that is one of them, otherwise in English. The picker in the window switches it (not while a backup runs) and the choice is kept in `%APPDATA%\game-backup\language.txt`, next to `claim.key`. The texts are standard .NET resources: `Strings.resx` (English, also the fallback) and one `Strings.<culture>.resx` per language. The log lines and everything in `manifest.json` stay English. To add a language, add its `Strings.<culture>.resx` with the same keys, list it in `Loc.Languages` and in `SatelliteResourceLanguages` of the publish profile; the tests fail when a resx lacks a key or has other `{0}` placeholders than the English one.
 
 ## What is saved
 
@@ -76,6 +76,6 @@ On first run the app writes 32 random bytes to `%APPDATA%\game-backup\claim.key`
 
 The first restore will be local: a server on your own PC reads your own zip. A community server is planned after that, with Steam sign-in first (email sign-in may follow). The Steam account recorded in the backup links it to your sign-in. These are hints, not proof: if two people claim the same profile, the claim may be reviewed.
 
-## Self-test
+## Tests
 
-`dotnet run --project tools/backup -c Release -- --selftest` runs the checks against a fake HTTP handler and a harmless fake process; no real server is contacted. It exits 0 when every check passes.
+`dotnet test tests/Resurgence.Tests -c Release` runs the xUnit tests of the backup tool (folder `BackupTool`) against a fake HTTP handler and a harmless fake process; no real server is contacted. The same project holds the launcher's tests. It exits 0 when every test passes.

@@ -19,12 +19,11 @@ Needs the .NET SDK pinned in `global.json` (Windows).
 
 ```
 dotnet build hunter-resurgence.slnx -c Release
-dotnet run --project tools/backup -c Release -- --selftest
-dotnet run --project src/Launcher -c Release -- --selftest
+dotnet test hunter-resurgence.slnx -c Release --no-build
 dotnet run --project src/Web
 ```
 
-The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`) and the library they share (`src/Ui`). Each selftest exits 0 when every check is ok: the backup tool's uses a fake HTTP handler and a fake process, the launcher's uses temporary files only. The last command starts the website on `http://localhost:5080`.
+The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`) and the library they share (`src/Ui`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
 
 The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md) and [docs/backup.md](docs/backup.md).
 
@@ -36,7 +35,7 @@ tools\backup\publish.cmd path\to\settings.json
 
 ## Releases
 
-Pushing a tag `v*` runs `.github/workflows/release.yml`: build, selftest, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
+Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
 ### Versioning
 

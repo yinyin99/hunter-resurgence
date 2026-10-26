@@ -50,4 +50,4 @@ States: `session:out` (the public site), `session:signup` (an account without a 
 
 English and French. All texts are .NET resources in `src/Ui/` (`Strings.resx`, English and fallback, and `Strings.fr.resx`), shared with the launcher. The website follows the browser's `Accept-Language` header, `?lang=` overrides it and is remembered in a cookie.
 
-The launcher's selftest checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
+A test in `tests/Resurgence.Tests` checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.

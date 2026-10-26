@@ -48,7 +48,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     /// <summary>Minimum gap between two request starts on one host, and the first retry wait (doubles, 4 retries).</summary>
     public int PaceMs = 1000, BackoffMs = 5000;
-    /// <summary>The Steam account id of the signed-in Steam user, 0 = nobody. Read-only registry; a field so the selftest does not depend on this PC.</summary>
+    /// <summary>The Steam account id of the signed-in Steam user, 0 = nobody. Read-only registry; a field so the tests do not depend on this PC.</summary>
     public Func<uint> SteamAccount = ReadSteamAccount;
     /// <summary>The API refused the token (errorCode 5 or 11) or it is missing: the UI says "start a hunt to refresh".</summary>
     public volatile bool TokenStale;
