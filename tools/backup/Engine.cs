@@ -206,9 +206,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     async Task ProfileApi(Action listed)
     {
-        Need(s.ConsumerKey == null ? 9 : 10);
+        Need(s.ConsumerKey == null ? 11 : 12);
         foreach (var ep in new[] { "Statistics/total", "Skill/list", "Achievement/stats", "Challenge/get_user_challenges" })
             await Get(Q(ep, false, ("user_id", uid)));
+        foreach (var ep in new[] { "Campaign/get_active_campaign", "Community_Campaign/get_active_community_campaign" }) // null while no campaign runs: valid data
+            await Get(Q(ep, false, ("user_id", uid), ("lang", "en")));
         await Get(Q("Leaderboard/personal", false, ("user_id", uid), ("season_no", "0")), ready: Done);
         await Get(Q("Leaderboard/current_personal", false, ("user_id", uid)));
         foreach (var g in new[] { "0", "1" }) // the player's position on the two minigame boards
