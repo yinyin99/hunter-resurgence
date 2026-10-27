@@ -280,6 +280,9 @@
   <data name="Msg_Retry" xml:space="preserve">
     <value>Run again later with resume on.</value>
   </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} pictures or pages no longer exist on the server (404), so they could not be saved.</value>
+  </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Map setups: {0} placed items on {1} maps.</value>
   </data>

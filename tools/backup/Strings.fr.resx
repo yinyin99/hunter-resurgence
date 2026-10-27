@@ -280,6 +280,9 @@
   <data name="Msg_Retry" xml:space="preserve">
     <value>Relancez plus tard avec la reprise activée.</value>
   </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} images ou pages n’existent plus sur le serveur (404) et n’ont donc pas pu être sauvegardées.</value>
+  </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Installations sur les cartes : {0} objets placés sur {1} cartes.</value>
   </data>

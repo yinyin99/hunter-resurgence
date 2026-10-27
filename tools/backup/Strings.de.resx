@@ -280,6 +280,9 @@
   <data name="Msg_Retry" xml:space="preserve">
     <value>Führen Sie die Sicherung später mit aktivierter Fortsetzung erneut aus.</value>
   </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} Bilder oder Seiten gibt es auf dem Server nicht mehr (404), sie konnten daher nicht gesichert werden.</value>
+  </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Karten-Aufbauten: {0} aufgestellte Gegenstände auf {1} Karten.</value>
   </data>

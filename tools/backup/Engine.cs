@@ -60,6 +60,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     public int Saved => saved;
     public int Skipped => skipped;
     public int Failed => failed;
+    /// <summary>Pictures and pages the server no longer has (404): listed in the manifest, not a failure, nothing to run again for.</summary>
+    public int Dead => dead;
     /// <summary>Plain words for the result bar, in the UI language: which groups lost requests and why. Empty when nothing failed.</summary>
     public string FailureSummary
     {
@@ -90,8 +92,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     bool own, resume;
     DateTime jwtAt, started = DateTime.UtcNow;
     DateTime? completed;
-    int done, total, sinceWrite, saved, skipped, failed, sent;
-    const string ServerError = "server error", NotData = "not data";
+    int done, total, sinceWrite, saved, skipped, failed, sent, dead;
+    const string ServerError = "server error", NotData = "not data", DeadError = "dead on the server (404)";
     readonly Dictionary<string, string> problems = [];
     CancellationToken ct;
     Exception? fault;
@@ -409,6 +411,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task<byte[]?> Fetch(R r, string name, Func<byte[], bool>? ready)
     {
         var full = Path.Combine(dir, name);
+        if (resume && !r.Fresh && r.Abs != null && files.TryGetValue(name, out var gone) && gone.Error == DeadError)
+        {
+            Interlocked.Increment(ref skipped); // known to be gone: not asked again by the run that goes on
+            Interlocked.Increment(ref dead);
+            return null;
+        }
         if (resume && !r.Fresh && File.Exists(full))
         {
             Entry? known;
@@ -443,6 +451,13 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 // expired (or made for another address): one new JWT, and this request once more
                 (jwtRetried, jwt) = (true, null);
                 if (await EnsureJwt()) { poll--; continue; }
+            }
+            if (r.Abs != null && x.Status == 404) // a picture or sheet that is gone for good: say so, it is not a failure to run again
+            {
+                log($"gone from the server: {r.Path}");
+                Interlocked.Increment(ref dead);
+                lock (files) files[name] = new(name, r.Path, Params(r), 404, null, DateTime.UtcNow, DeadError);
+                return null;
             }
             if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body); return x.Body; } // "no entry" is an answer, not a failure
             if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");

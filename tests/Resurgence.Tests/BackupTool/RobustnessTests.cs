@@ -214,4 +214,26 @@ public class RobustnessTests
         var e = await Run(f, t, ["kills"]);
         Assert.True(Directory.GetFiles(Path.Combine(t.Path, "backup-7", "kills")).Length == 4 && e.Failed == 1, $"jpeg, png, gif and webp saved, bmp is not ({e.Failed} failed)");
     }
+
+    /// <summary>F10: a picture or sheet that is 404 is "dead on the server": in the manifest with that error, counted on its own, no failure and no reason to run again; the resumed run does not ask for it again.</summary>
+    [Fact]
+    public async Task PermanentlyMissingPictureIsDeadNotFailed()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Down.Add("/v1/Skill/list"); // a real failure beside it: the run stays unfinished and resume goes on
+        f.HuntReplies["42"] = Kills((900, 1.5, "https://photo.test/gone.jpg"), (901, null, "https://photo.test/k.jpg"));
+        f.NotFound.Add("/gone.jpg");
+        f.NotFound.Add("/user/x/score/");
+        var e = await Run(f, t, ["kills", "profile"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        Assert.True(e.Dead == 2 && e.Failed == 1, $"2 dead (picture and sheet), only the real failure counted ({e.Dead} dead, {e.Failed} failed)");
+        var deadEntries = Manifest(dir)["files"]!.AsArray().Where(x => x!["error"]?.ToString() == "dead on the server (404)").ToList();
+        Assert.True(deadEntries.Count == 2 && deadEntries.All(x => x!["status"]!.GetValue<int>() == 404) && e.FailureSummary.Contains("Profile"), "both in the manifest with status 404, the summary names the profile only");
+
+        f.Down.Clear();
+        f.Seen.Clear();
+        var e2 = await Run(f, t, ["kills", "profile"]);
+        Assert.True(!f.Seen.Contains("/gone.jpg") && !f.Seen.Contains("/user/x/score/") && e2.Dead == 2 && e2.Failed == 0, "the resumed run does not ask for them again, still reports 2 dead, and now has 0 failed");
+    }
 }
