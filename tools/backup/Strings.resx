@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Other players' data (only the public profile of a handle you type is saved).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Data only the game's own load carries (achievement earn times, own minigame score outside the top 30, mission counters, the units setting, reserve licences); the website has no endpoint for it.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profile</value>
   </data>

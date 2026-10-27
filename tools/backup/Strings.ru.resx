@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Данные других игроков (сохраняется только публичный профиль введённого ника).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Данные, которые есть только в собственной загрузке игры (время получения достижений, свой счёт в мини-игре вне топ-30, счётчики миссий, настройка единиц, лицензии заповедников); у сайта нет для них запроса.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Профиль</value>
   </data>

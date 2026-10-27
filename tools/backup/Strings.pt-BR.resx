@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Dados de outros jogadores (só é salvo o perfil público do apelido digitado).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Dados que só o carregamento do próprio jogo traz (datas de conquistas, sua pontuação de minijogo fora do top 30, contadores de missões, a configuração de unidades, licenças de reservas); o site não tem endpoint para eles.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Perfil</value>
   </data>

@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Données des autres joueurs (seul le profil public du pseudo saisi est sauvegardé).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Données que seul le chargement du jeu fournit (dates d’obtention des succès, propre score de mini-jeu hors du top 30, compteurs de missions, réglage des unités, licences de réserve) ; le site n’a pas de point d’accès pour elles.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profil</value>
   </data>

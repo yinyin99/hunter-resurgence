@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Daten anderer Spieler (gesichert wird nur das öffentliche Profil des eingegebenen Nicknames).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Daten, die nur der Ladevorgang des Spiels liefert (Erfolgszeitpunkte, eigener Minispiel-Wert außerhalb der Top 30, Missionszähler, Einheiteneinstellung, Revierlizenzen); die Website hat dafür keinen Endpunkt.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profil</value>
   </data>
