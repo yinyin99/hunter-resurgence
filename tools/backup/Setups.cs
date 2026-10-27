@@ -17,7 +17,7 @@ sealed partial class Engine
     public int? SetupItems { get; private set; }
     /// <summary>Maps (reserve groups) in map-setups.json.</summary>
     public int SetupReserves { get; private set; }
-    /// <summary>A check found something: sources disagree, a placed item has no position, or one inventory read failed.</summary>
+    /// <summary>A check found something: sources disagree or a placed item has no position. A failed read is not one: it is in the failure count.</summary>
     public bool SetupChecks { get; private set; }
 
     static readonly JsonSerializerOptions SetupJson = new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
@@ -218,7 +218,7 @@ sealed partial class Engine
         lock (files) files[SetupsFile] = new(SetupsFile, "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);
         (SetupItems, SetupReserves) = (items.Count, reserves.Count);
-        SetupChecks = dict == null || list == null || noLoc.Count > 0 || differs.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
+        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
         if (noLoc.Count > 0) log($"! map setups: {noLoc.Count} placed item(s) without a position");
         foreach (var (src, g) in onlyIn.Where(p => p.Value.Count > 0)) log($"! map setups: {g.Count} item(s) in {src} are missing from another source");
         if (differs.Count > 0) log($"! map setups: {differs.Count} item(s) with different positions in two sources");

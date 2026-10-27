@@ -202,13 +202,13 @@ public class SetupsTests
         var a = new (int, string, string)[] { (11, "TENT02", Row("t1", At("10", "1", "10"))) };
         var b = new (int, string, string)[] { (11, "TENT02", Row("t1", At("99", "1", "99"))) };
         await RunOwn(new Fake(Tok) { InventoryDict = Dict((a[0].Item1, a[0].Item3)), InventoryList = ListOf(a) }, t, true, Setups, ct: TestContext.Current.CancellationToken);
-        var f = new Fake(Tok) { InventoryDict = $$"""{"11":[],"leak":"{{Tok}}"}""", InventoryList = ListOf(b) };
+        var f = new Fake(Tok) { InventoryDict = $$"""{"11":[],"leak":"{{Tok}}"}""", InventoryList = ListOf(b), WorldItems = Worlditems(("t1", P("99", "1", "99"), 1)) };
         var e = await RunOwnEngine(f, t, Setups);
         var dir = Path.Combine(t.Path, "backup-7");
         var s = Read(dir);
         Assert.True(s["sources"]!["dict"]!.ToString() == "unavailable" && s["reserves"]![0]!["items"]![0]!["pos"]!["x"]!.GetValue<int>() == 99, "dict unavailable; the item comes from the fresh list, not the older dict file");
         var entry = Read(dir, "manifest.json")["files"]!.AsArray().Single(x => x!["path"]!.ToString() == "Inventory_dict__user_id=7.json")!;
-        Assert.True(e.Failed == 1 && e.SetupChecks && entry["error"] == null, "one failed request counted; the older dict entry stays as it was");
+        Assert.True(e.Failed == 1 && !e.SetupChecks && entry["error"] == null, "one failed request counted, no check flag; the older dict entry stays as it was");
         Assert.True(!File.ReadAllText(Path.Combine(dir, "map-setups.json")).Contains(Tok), "no token in the file");
     }
 
@@ -223,11 +223,11 @@ public class SetupsTests
 
         using var t2 = new TempDir("backup-test-setups-");
         var one = new (int, string, string)[] { (11, "TENT02", Row("t1", At("1", "1", "1"))) };
-        var f2 = new Fake(Tok) { InventoryList = ListOf(one) };
+        var f2 = new Fake(Tok) { InventoryList = ListOf(one), WorldItems = Worlditems(("t1", P("1", "1", "1"), 1)) };
         f2.Down.Add("/v1/Inventory/dict");
         var e2 = await RunOwnEngine(f2, t2, Setups);
         var s2 = Read(Path.Combine(t2.Path, "backup-7"));
-        Assert.True(s2["sources"]!["dict"]!.ToString() == "unavailable" && e2.Failed > 0 && e2.SetupChecks && e2.SetupItems == 1, "dict down: unavailable, counted as failed, built from the list, flagged");
+        Assert.True(s2["sources"]!["dict"]!.ToString() == "unavailable" && e2.Failed > 0 && !e2.SetupChecks && e2.SetupItems == 1, "dict down: unavailable, counted as failed, built from the list, no check flag (the failure is counted)");
 
         using var t3 = new TempDir("backup-test-setups-");
         await RunOwn(new Fake(Tok) { InventoryDict = "{}", InventoryList = "[]" }, t3, true, Setups, ct: TestContext.Current.CancellationToken);
