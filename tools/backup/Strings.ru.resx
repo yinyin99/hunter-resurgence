@@ -202,6 +202,9 @@
   <data name="GroupDesc_history" xml:space="preserve">
     <value>Результат в каждом завершённом соревновании, которое сайт ещё показывает, только за последние 7 дней или около того (сотни запросов)</value>
   </data>
+  <data name="Older" xml:space="preserve">
+    <value>Идти и по более старым выпускам (оценка: до 7000 дополнительных запросов, 2 часа и больше)</value>
+  </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Сообщения</value>
   </data>

@@ -9,6 +9,9 @@ sealed partial class Engine
 {
     const string HistoryFile = "competition-history.json";
 
+    /// <summary>History group only: also follow the list of earlier editions in every edition reply (each id once). That reaches past the rolling window of about a week, at the cost of thousands of requests.</summary>
+    public bool OlderEditions;
+
     async Task History()
     {
         var todo = new Queue<string>();
@@ -38,6 +41,7 @@ sealed partial class Engine
             var id = todo.Dequeue();
             // finished editions never change: a saved one is read back by resume, a failed one is asked again by the next run and does not stop the others
             if (Json(await Get(Q("Page_content/competitions_new", false, ("id", id), ("lang", "en"), ("entrants_limit", "100")))) is not JsonObject e) continue;
+            if (OlderEditions) Queue(e["competitions"]);
             found.Add((long.TryParse(id, out var n) ? n : 0, Edition(id, e)));
         }
 
@@ -45,7 +49,7 @@ sealed partial class Engine
         var notListed = editions.Count(x => x["not_listed"]!.GetValue<bool>());
         var root = new JsonObject
         {
-            ["format"] = 1, ["tool_version"] = Version, ["uid"] = uid,
+            ["format"] = 1, ["tool_version"] = Version, ["uid"] = uid, ["older_editions"] = OlderEditions,
             ["totals"] = new JsonObject { ["editions"] = editions.Count, ["listed"] = editions.Count - notListed, ["not_listed"] = notListed },
             ["editions"] = new JsonArray([.. editions]),
         };

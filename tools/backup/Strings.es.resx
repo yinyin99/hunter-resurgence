@@ -202,6 +202,9 @@
   <data name="GroupDesc_history" xml:space="preserve">
     <value>Resultado en cada competición terminada que el sitio aún lista, solo unos 7 días atrás (cientos de solicitudes)</value>
   </data>
+  <data name="Older" xml:space="preserve">
+    <value>Seguir también ediciones anteriores (estimación: hasta 7000 solicitudes más, 2 horas o más)</value>
+  </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mensajes</value>
   </data>

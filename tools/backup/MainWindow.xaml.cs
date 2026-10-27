@@ -106,6 +106,7 @@ public partial class MainWindow : FluentWindow
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
         Upload.Content = Wrapped(Loc.S("Upload"));
+        Older.Content = Wrapped(Loc.S("Older"));
         Named(Upload, "Upload_Name");
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
@@ -141,6 +142,17 @@ public partial class MainWindow : FluentWindow
             if (!boxes[i].IsEnabled) boxes[i].ToolTip = Loc.S("Tip_Public");
             Groups.Children.Add(boxes[i]);
         }
+        boxes[HistoryAt].Click += (_, _) => SyncOlder();
+        SyncOlder();
+    }
+
+    static readonly int HistoryAt = Array.FindIndex(Engine.Groups, g => g.Key == "history");
+
+    /// <summary>The older-editions switch belongs to the history group: it is only on offer while that group is ticked.</summary>
+    void SyncOlder()
+    {
+        Older.IsEnabled = boxes![HistoryAt].IsChecked == true;
+        if (!Older.IsEnabled) Older.IsChecked = false;
     }
 
     CheckBox Row((string Key, bool On, Engine.Session Needs) g)
@@ -235,6 +247,7 @@ public partial class MainWindow : FluentWindow
         runTimer.Start();
         using var http = new HttpClient();
         var run = eng = new Engine(cfg, http, Log, (d, t) => (doneNow, totalNow) = (d, t), keyPath);
+        run.OlderEditions = Older.IsChecked == true;
         string outDir = OutDir.Text;
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;

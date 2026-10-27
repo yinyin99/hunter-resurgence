@@ -39,9 +39,10 @@ public class HistoryTests
         },
     };
 
-    static async Task<Engine> Run(Fake f, TempDir t, bool resume = true, bool zip = false)
+    static async Task<Engine> Run(Fake f, TempDir t, bool older = false, bool resume = true, bool zip = false)
     {
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        e.OlderEditions = older;
         await e.Run(t.Path, "", () => Tok, new HashSet<string> { "history" }, resume, zip, TestContext.Current.CancellationToken);
         return e;
     }
@@ -136,6 +137,26 @@ public class HistoryTests
         var ed = History(t)["editions"]!.AsArray();
         Assert.True(ed.Count == 1 && ed[0]!["not_listed"]!.GetValue<bool>() && e.Failed == 0, "not_listed, not an error");
         Assert.True(f.Forms.Where(x => x.Contains("entrants_limit=")).All(x => x.Contains("entrants_limit=100")) && Requests(f, Edition) == 1, "entrants_limit=100 sent");
+    }
+
+    /// <summary>The earlier editions in each reply are not followed by default; with the switch each is asked once, however many replies name it.</summary>
+    [Fact]
+    public async Task OlderEditionsAreFollowedOnlyWithTheSwitchAndOnce()
+    {
+        var older = new Dictionary<int, int[]> { [1] = [901, 902], [901] = [902, 903], [902] = [], [903] = [] };
+        Fake Make() => World(_ => PreviousPage(1, [1]), id => EditionReply(id, [Entrant(7, "hh", 3, "1")], older: older[id]));
+
+        using var t = new TempDir("backup-test-history-");
+        var off = Make();
+        await Run(off, t);
+        Assert.True(EditionIds(off).SequenceEqual([1]) && History(t)["totals"]!["editions"]!.GetValue<int>() == 1, "switch off: only the listed edition");
+
+        using var t2 = new TempDir("backup-test-history-");
+        var on = Make();
+        await Run(on, t2, older: true);
+        Assert.True(EditionIds(on).Order().SequenceEqual([1, 901, 902, 903]), $"switch on: each edition once ({string.Join(",", EditionIds(on))})");
+        var h = History(t2);
+        Assert.True(h["editions"]!.AsArray().Select(x => x!["id"]!.GetValue<int>()).SequenceEqual([903, 902, 901, 1]) && h["older_editions"]!.GetValue<bool>(), "all four in the file, no duplicate");
     }
 
     /// <summary>The community league list is a plain array; its editions are fetched and written like the others.</summary>

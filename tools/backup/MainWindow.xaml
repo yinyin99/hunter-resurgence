@@ -81,7 +81,8 @@
                         </Grid>
                         <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" />
                         <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" Grid.ColumnSpan="2" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Older" Grid.Row="2" Grid.Column="1" IsChecked="False" IsEnabled="False" />
                     </Grid>
                 </Border>
             </StackPanel>
