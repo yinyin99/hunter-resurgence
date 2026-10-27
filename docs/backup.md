@@ -30,6 +30,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 |---|---|---|
 | Profile | statistics, skills, achievements, challenges, personal leaderboards (every season), minigame positions, membership bundles, the item catalogue, avatar picture, antler boards | no |
 | Inventory and dogs | owned items and dogs, placed-item positions, loadout | partly |
+| Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
 | Trophies and lodges | trophy list, lodges, harvest record of each own trophy | partly |
 | Hunt history | every hunt with its kills, shots and scores | no |
 | Kill pages and photos (off by default) | score sheet page and picture of every scored kill; many requests | no |
@@ -42,6 +43,16 @@ Pictures are fetched only from https URLs on a host listed in `settings.json`; a
 
 Requests run in one lane per host: at most one request at a time and one start per second per host, with retries and back-off. A host that stays silent after its retries gets one attempt per request until it answers again. Cancel ends the run after writing `manifest.json`, so a resumed run continues.
 
+### Map setups
+
+The group is on by default and runs last, after every other group, so it reads the inventory at the end of the run. Every placed item (tents, blinds, tree stands, tripods, towers, feeders, decoys, climbing gear and the rest) is an inventory row in slot 23 with a `location`. The position, direction, settings (`metadata`) and units of each placed item are saved per map.
+
+- **Raw replies.** `Inventory/dict` and `Inventory/list` are asked again at the end of every run, even with "skip files already saved" on, so a setup changed after an earlier backup is never saved stale. They overwrite the files of the inventory group (same names).
+- **`map-setups.json`.** Made by the tool from those replies, listed in the manifest with `derived: true` and its SHA-256, and part of the zip. It has `format`, `tool_version`, `uid`, `sources` (file, SHA-256 and row counts of each read, or `unavailable` / `skipped: public profile`), `totals` (placed items, maps, count per kind) and `reserves`: one entry per map (the reserve number as the service counts it, from 1; the name when the item catalogue was saved; items with no reserve are under `null`). Each item has `guid`, `item_id`, `define` and `name` (from the catalogue), `kind` (tent, tree_stand, tripod, shooting_rest, blind, tower, feeder, decoy, caller, target, mat, flag, climbing, other), `units`, `pos`, `dir` and `metadata` exactly as the server sent them (never rounded or converted), and `in`: which sources list it (`dict`, `list`, `me`).
+- **Sources.** `Inventory/dict` and `Inventory/list` (both public, so a public profile has them too) and, in My account mode, the `worlditems` of the identity reply, which has a position but no direction. An item counts as placed only when its slot is 23; picked-up items can keep an old location and are ignored.
+- **Checks** (never fail the run): `location_null` (placed items without a position, left out of `reserves`), `only_in` (per source, items that another source lacks) and `pos_differs` (items whose position differs between sources). The result bar shows "Map setups: N placed items on M maps", "none placed", or a warning when a check found something. If one read failed, its source says `unavailable` and the file is built from the other one; if both failed no file is written and an older one is removed.
+- **Climbing gear.** The rows of climbing gear carry `units` of 10, 15, 20 or 25 (the use cost of the four path sizes), which appear to give the size of the path; to be confirmed in game.
+
 ### Two modes
 
 - **My account**: reads the signed-in player's data using the session of the running game.
@@ -49,7 +60,7 @@ Requests run in one lane per host: at most one request at a time and one start p
 
 ## What is not saved
 
-- Placed-object layout and orientation (tents, bait sites, feeders, blinds, towers and other large equipment): the server keeps only the raw per-item `location` and `metadata`, saved as they are.
+- A picture of the placed equipment (the positions themselves are saved, see "Map setups").
 - In-game settings and controls (they stay on the player's PC) and any client state that was never sent to the server.
 - Other players' data (only the public profile of a typed handle is saved).
 - Full message threads.
