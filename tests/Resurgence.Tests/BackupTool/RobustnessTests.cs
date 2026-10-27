@@ -63,4 +63,32 @@ public class RobustnessTests
         var e3 = await Run(new Fake(Tok) { ExpeditionList = six }, t, ["hunts"]);
         Assert.True(Folders(t).Length == 1 && e3.Failed == 0 && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] != null, "the retry completes the same backup");
     }
+
+    static string Kills(params (int Id, double? Score, string? Photo)[] k) => "{\"kills\":[" + string.Join(",", k.Select(x =>
+        "{\"id\":" + x.Id + ",\"kill\":{\"score\":" + (x.Score?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null") + (x.Photo == null ? "" : ",\"photo\":\"" + x.Photo + "\"") + "}}")) + "]}";
+
+    /// <summary>F3: the picture of every kill that has one is saved, scored or not; a score sheet only for a scored kill.</summary>
+    [Fact]
+    public async Task KillPhotosAreSavedForUnscoredKillsToo()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.HuntReplies["42"] = Kills((900, 1.5, "https://photo.test/a.jpg"), (901, null, "https://photo.test/b.jpg"), (902, null, null));
+        var e = await Run(f, t, ["kills"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        Assert.True(f.Seen.Contains("/a.jpg") && f.Seen.Contains("/b.jpg") && f.Seen.Count(p => p == "/user/x/score/") == 1 && e.Failed == 0, "both pictures fetched, one sheet (the scored kill), 0 failed");
+        Assert.True(Directory.GetFiles(Path.Combine(dir, "kills")).Length == 3 && File.Exists(Path.Combine(dir, "kills", "score_900.html")) && !File.Exists(Path.Combine(dir, "kills", "score_901.html")), "kills/ holds the sheet and the two pictures");
+    }
+
+    /// <summary>F5: the hunts are read newest first, whatever order the list has, so the kill sheets of the latest hunts come first.</summary>
+    [Fact]
+    public async Task KillSheetsAreFetchedNewestHuntFirst()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { ExpeditionList = """{"total":3,"expeditions":[{"id":41,"start_ts":100},{"id":43,"start_ts":300},{"id":42,"start_ts":200}]}""" };
+        foreach (var (hunt, kill) in new[] { ("41", 4101), ("42", 4201), ("43", 4301) }) f.HuntReplies[hunt] = Kills((kill, 1.5, null));
+        await Run(f, t, ["kills"]);
+        var sheets = f.Urls.Where(u => u.StartsWith("/user/x/score/")).Select(u => u.Split("id=")[1].Split('&')[0]).ToArray();
+        Assert.True(sheets.SequenceEqual(["4301", "4201", "4101"]), $"sheets newest hunt first ({string.Join(",", sheets)})");
+    }
 }

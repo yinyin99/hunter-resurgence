@@ -260,32 +260,41 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     /// <summary>Hunt list pages, then every hunt. With kills: the score sheet page and the picture of every scored kill too.</summary>
     async Task Hunts(bool kills)
     {
-        var ids = new List<string>();
+        var listed = new List<(string Id, long Start)>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
             var ex = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))))?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
-            ids.AddRange(ex.Select(e => e?["id"]?.ToString()).OfType<string>());
+            listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), (long?)e["start_ts"] ?? 0)));
             if (ex.Count < 50) break;
         }
+        var ids = listed.OrderByDescending(h => h.Start).Select(h => h.Id).ToList(); // newest first (the list comes that way): a run that is cancelled or too long keeps the latest hunts
         Need(ids.Count);
         if (!kills) Sized("hunts");
-        var scored = new List<(string Id, string? Photo)>();
+        var found = new List<(string? Sheet, string? Photo)>(); // a score sheet only for a scored kill, a picture for every kill that has one
         foreach (var id in ids)
         {
             var hunt = Json(await Get(Q("Public_user/expedition", false, ("user_id", uid), ("expedition_id", id))));
             foreach (var k in (hunt?["kills"] as JsonArray) ?? [])
-                if (kills && k?["id"]?.ToString() is { } kid && k["kill"]?["score"] != null) scored.Add((kid, k["kill"]!["photo"]?.ToString()));
+            {
+                if (!kills) break;
+                var sheet = k?["kill"]?["score"] != null ? k["id"]?.ToString() : null;
+                var photo = k?["kill"]?["photo"]?.ToString() is { Length: > 0 } ph ? ph : null;
+                if (sheet != null || photo != null) found.Add((sheet, photo));
+            }
         }
         if (!kills) return;
-        Need(scored.Count + scored.Count(k => k.Photo is { Length: > 0 }));
+        Need(found.Count(k => k.Sheet != null) + found.Count(k => k.Photo != null));
         Sized("kills");
-        foreach (var (kid, photo) in scored)
+        foreach (var (kid, photo) in found)
         {
-            var page = $"https://{s.WebHost}/user/x/score/?id={kid}&tab=true"; // the page does not check the handle
-            await Get(new R(new Uri(page).PathAndQuery, Abs: page, Xhr: true), $"kills/score_{kid}.html");
-            if (photo is { Length: > 0 }) await Picture(photo, "kills/");
+            if (kid != null)
+            {
+                var page = $"https://{s.WebHost}/user/x/score/?id={kid}&tab=true"; // the page does not check the handle
+                await Get(new R(new Uri(page).PathAndQuery, Abs: page, Xhr: true), $"kills/score_{kid}.html");
+            }
+            if (photo != null) await Picture(photo, "kills/");
         }
     }
 

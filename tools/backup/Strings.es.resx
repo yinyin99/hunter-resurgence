@@ -176,7 +176,7 @@
     <value>Páginas de muertes y fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Hoja de puntuación y foto de cada muerte con puntuación (muchas solicitudes)</value>
+    <value>Hoja de puntuación de cada muerte con puntuación, foto de cada muerte que tenga una (muchas solicitudes)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Cuenta</value>

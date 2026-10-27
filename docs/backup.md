@@ -33,7 +33,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 | Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
 | Trophies and lodges | trophy list, lodges, harvest record of each own trophy | partly |
 | Hunt history | every hunt with its kills, shots and scores | no |
-| Kill pages and photos (off by default) | score sheet page and picture of every scored kill; many requests | no |
+| Kill pages and photos (off by default) | score sheet page of every scored kill and the picture of every kill that has one, newest hunts first; many requests | no |
 | Account | missions, wallet history, bank transactions, competition states, message settings, recruits, backgrounds | yes |
 | Friends | friends list, friend requests | partly |
 | Photos (off by default) | gallery pictures at full size | no |

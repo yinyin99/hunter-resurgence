@@ -20,6 +20,10 @@ public sealed class Fake : HttpMessageHandler
     public bool Overlap; // two different hosts had a request in flight at the same time
     /// <summary>Replies of the map-setup reads; null keeps the plain default. WorldItems is the placed-item list of Me/me.</summary>
     public string? InventoryDict, InventoryList, WorldItems, Catalogue, ExpeditionList;
+    /// <summary>Replies of Public_user/expedition by expedition id; the others get the plain default.</summary>
+    public readonly Dictionary<string, string> HuntReplies = [];
+    /// <summary>Path and query of every request, in the order they started.</summary>
+    public readonly List<string> Urls = [];
     /// <summary>Paths that always answer 502.</summary>
     public readonly HashSet<string> Down = [];
     /// <summary>Requests whose form carried the session token.</summary>
@@ -36,6 +40,7 @@ public sealed class Fake : HttpMessageHandler
         {
             ct.ThrowIfCancellationRequested(); // a real handler refuses a cancelled request too
             Seen.Add(path);
+            Urls.Add(req.RequestUri.PathAndQuery);
             if (form.Contains(Token)) WithToken++;
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
@@ -57,6 +62,7 @@ public sealed class Fake : HttpMessageHandler
             "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
             "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
             "/game/user/trophies" => """[{"id":101},{"id":102}]""",
+            "/v1/Public_user/expedition" when System.Text.RegularExpressions.Regex.Match(form, @"expedition_id=(\d+)") is { Success: true } m && HuntReplies.TryGetValue(m.Groups[1].Value, out var hunt) => hunt,
             "/v1/Public_user/expedition" => """{"kills":[{"id":900,"kill":{"score":1.5,"photo":"https://photo.test/k.jpg"}},{"id":901,"kill":{"score":null}}]}""",
             "/v1/Public_user/getByHostname" => """{"id":7,"handle":"hh"}""",
             "/v1/User/jwt" => """{"token":"fake.jwt.value"}""",

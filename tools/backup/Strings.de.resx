@@ -176,7 +176,7 @@
     <value>Abschussseiten und Fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Bewertungsbogen und Foto jedes bewerteten Abschusses (viele Anfragen)</value>
+    <value>Bewertungsbogen jedes bewerteten Abschusses, Foto jedes Abschusses, der eines hat (viele Anfragen)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Konto</value>

@@ -176,7 +176,7 @@
     <value>Páginas de abates e fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Ficha de pontuação e foto de cada abate com pontuação (muitas solicitações)</value>
+    <value>Ficha de pontuação de cada abate com pontuação, foto de cada abate que tenha uma (muitas solicitações)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Conta</value>

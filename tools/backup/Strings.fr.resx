@@ -176,7 +176,7 @@
     <value>Fiches de prélèvements et photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Fiche de score et photo de chaque prélèvement noté (nombreuses requêtes)</value>
+    <value>Fiche de score de chaque prélèvement noté, photo de chaque prélèvement qui en a une (nombreuses requêtes)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Compte</value>

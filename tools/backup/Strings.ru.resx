@@ -176,7 +176,7 @@
     <value>Страницы убийств и фото</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Карточка очков и фото каждого оценённого убийства (много запросов)</value>
+    <value>Карточка очков каждого оценённого убийства, фото каждого убийства, у которого оно есть (много запросов)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Аккаунт</value>

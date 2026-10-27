@@ -176,7 +176,7 @@
     <value>Kill pages and photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Score sheet and picture of every scored kill (many requests)</value>
+    <value>Score sheet of every scored kill, photo of every kill that has one (many requests)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Account</value>
