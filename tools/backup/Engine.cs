@@ -411,7 +411,9 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task<byte[]?> Fetch(R r, string name, Func<byte[], bool>? ready)
     {
         var full = Path.Combine(dir, name);
-        if (resume && !r.Fresh && r.Abs != null && files.TryGetValue(name, out var gone) && gone.Error == DeadError)
+        Entry? gone = null;
+        if (resume && !r.Fresh && r.Abs != null) lock (files) files.TryGetValue(name, out gone);
+        if (gone?.Error == DeadError)
         {
             Interlocked.Increment(ref skipped); // known to be gone: not asked again by the run that goes on
             Interlocked.Increment(ref dead);
