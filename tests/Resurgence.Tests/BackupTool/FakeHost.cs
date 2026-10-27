@@ -34,10 +34,10 @@ public sealed class Fake : HttpMessageHandler
     public string? Revoked;
     /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
     public readonly Dictionary<string, byte[]> Raw = [];
+    /// <summary>Answer for (path, form) chosen by the test; null = the usual answer.</summary>
+    public Func<string, string, HttpResponseMessage?>? Custom;
     /// <summary>Absolute paths that answer 404.</summary>
     public readonly HashSet<string> NotFound = [];
-    /// <summary>A test's own answer for a path and form (null = the default below).</summary>
-    public Func<string, string, HttpResponseMessage?>? Custom;
     /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
     public (string Path, int Times, int Status, int After)? Throttle;
     int throttled;
@@ -72,10 +72,10 @@ public sealed class Fake : HttpMessageHandler
             r.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromSeconds(th.After));
             return r;
         }
+        if (Custom?.Invoke(path, form) is { } custom) return custom;
         if (Revoked != null && form.Contains(Revoked) && path.StartsWith("/v1/")) return new HttpResponseMessage { Content = new StringContent("""{"errorCode":11,"message":"access denied"}""") };
         if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
         if (NotFound.Contains(path)) return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("not found") };
-        if (Custom?.Invoke(path, form) is { } custom) return custom;
         if (Raw.TryGetValue(path, out var raw)) return new HttpResponseMessage { Content = new ByteArrayContent(raw) };
         if (path.EndsWith(".jpg")) return new HttpResponseMessage { Content = new ByteArrayContent([255, 216, 255, 224]) }; // the start of a JPEG
         var body = path switch

@@ -209,7 +209,7 @@
     <value>Messages</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Conversation list, not the message texts</value>
+    <value>Every conversation is opened and saved in full, read and unread. Unread ones will then show as read on the server. Off by default for privacy.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Account lookup</value>
@@ -291,6 +291,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} pictures or pages no longer exist on the server (404), so they could not be saved.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>{0} unread conversations were opened and now show as read.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Kill pages and photos were not saved; tick them for a complete backup.</value>

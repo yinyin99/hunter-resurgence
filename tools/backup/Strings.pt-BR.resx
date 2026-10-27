@@ -209,7 +209,7 @@
     <value>Mensagens</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Lista de conversas, não o texto das mensagens</value>
+    <value>Cada conversa é aberta e salva por inteiro, lidas e não lidas. As não lidas passarão a aparecer como lidas no servidor. Desativado por padrão por privacidade.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Consulta da conta</value>
@@ -291,6 +291,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} imagens ou páginas não existem mais no servidor (404), por isso não puderam ser salvas.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>{0} conversas não lidas foram abertas e agora aparecem como lidas.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>As páginas de abates e as fotos não foram salvas; marque-as para um backup completo.</value>

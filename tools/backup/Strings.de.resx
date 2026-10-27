@@ -209,7 +209,7 @@
     <value>Mitteilungen</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Liste der Unterhaltungen, nicht die Texte der Mitteilungen</value>
+    <value>Jede Unterhaltung wird geöffnet und vollständig gesichert, gelesene und ungelesene. Ungelesene erscheinen danach auf dem Server als gelesen. Aus Datenschutzgründen standardmäßig aus.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Kontoabfrage</value>
@@ -291,6 +291,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} Bilder oder Seiten gibt es auf dem Server nicht mehr (404), sie konnten daher nicht gesichert werden.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>{0} ungelesene Unterhaltungen wurden geöffnet und gelten jetzt als gelesen.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Abschuss-Seiten und Fotos wurden nicht gesichert; für eine vollständige Sicherung ankreuzen.</value>

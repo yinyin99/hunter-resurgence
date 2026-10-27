@@ -209,7 +209,7 @@
     <value>Сообщения</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Список бесед, без текстов сообщений</value>
+    <value>Каждая переписка открывается и сохраняется полностью, прочитанные и непрочитанные. Непрочитанные после этого будут отображаться на сервере как прочитанные. По умолчанию выключено ради приватности.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Поиск аккаунта</value>
@@ -291,6 +291,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} картинок или страниц больше нет на сервере (404), поэтому их не удалось сохранить.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>Открыто непрочитанных переписок: {0}. Теперь они отображаются как прочитанные.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Страницы убийств и фото не сохранены; отметьте их для полной копии.</value>
