@@ -24,7 +24,7 @@ The window is in English, French, Spanish, Portuguese (Brazil), German or Russia
 
 ## What is saved
 
-One file per request, named by endpoint and parameters (for example `Inventory_dict__user_id=<id>.json`), body exactly as the server sent it. `manifest.json` lists every file (`path`, `endpoint`, `params` without the token, `status`, `sha256`, `time_utc`) and the requests that did not give a file (`error`), plus `tool_version`, `groups`, `uid`, `handle` and `claim_hash`. The output folder is `backup-<uid>`; the zip is `backup-<uid>-<time>.zip` beside it. A second run with "skip files already saved" only asks for what is missing.
+One file per request, named by endpoint and parameters (for example `Inventory_dict__user_id=<id>.json`), body exactly as the server sent it. `manifest.json` lists every file (`path`, `endpoint`, `params` without the token, `status`, `sha256`, `time_utc`) and the requests that did not give a file (`error`), plus `tool_version`, `groups`, `uid`, `handle`, `claim_hash` and, once a run ended whole (not cancelled, nothing left to retry), `completed_utc`. The output folder is `backup-<uid>`; the zip is `backup-<uid>-<time>.zip` beside it. "Skip files already saved" only continues a run that did not end whole (cancelled, or with requests that failed). A new run after a finished one is a new snapshot in `backup-<uid>-<yyyyMMdd-HHmmss>`, so hunts played since are saved and the first backup stays as it was.
 
 | Group | Content | Needs the running game |
 |---|---|---|

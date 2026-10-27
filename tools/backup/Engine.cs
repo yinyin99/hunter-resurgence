@@ -14,7 +14,7 @@ namespace Backup;
 /// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply.</summary>
 sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null);
 
-sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64);
+sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
@@ -85,6 +85,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     string uid = "", dir = "";
     bool own, resume;
     DateTime jwtAt, started = DateTime.UtcNow;
+    DateTime? completed;
     int done, total, sinceWrite, saved, skipped, failed, sent;
     const string ServerError = "server error";
     readonly Dictionary<string, string> problems = [];
@@ -121,7 +122,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             me = j;
             if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new InvalidOperationException(Loc.S("Err_NoUid"));
         }
-        dir = Path.Combine(outRoot, "backup-" + uid);
+        dir = FolderFor(outRoot, uid);
         Directory.CreateDirectory(dir);
         foreach (var p in Directory.EnumerateFiles(dir, "*.part", SearchOption.AllDirectories)) File.Delete(p); // a crash mid-write
         LoadManifest();
@@ -148,6 +149,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             catch when (fault != null) { }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
             if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
+            if (failed == 0) completed = DateTime.UtcNow; // a run that ended whole (not cancelled, nothing left to retry) is final: the next run is a new snapshot
         }
         finally { WriteManifest(); }
         log($"{saved} files saved, {skipped} already there, {failed} not saved (see manifest.json; run again with 'skip files already saved' to retry)");
@@ -567,6 +569,21 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     // ---------- output ----------
 
+    /// <summary>The newest backup-&lt;uid&gt; folder when its run did not end (resume continues it), else a new one named with the time: a finished backup is never filled up with later data.</summary>
+    static string FolderFor(string root, string uid)
+    {
+        var name = "backup-" + uid;
+        var last = Directory.Exists(root)
+            ? Directory.EnumerateDirectories(root).Select(Path.GetFileName).OfType<string>().Where(d => Regex.IsMatch(d, $@"^{name}(-\d{{8}}-\d{{6}})?$")).Order(StringComparer.Ordinal).LastOrDefault()
+            : null;
+        if (last == null) return Path.Combine(root, name);
+        var manifest = Path.Combine(root, last, "manifest.json");
+        if (!File.Exists(manifest) || Json(File.ReadAllBytes(manifest))?["completed_utc"] == null) return Path.Combine(root, last);
+        var at = DateTime.Now;
+        while (Directory.Exists(Path.Combine(root, $"{name}-{at:yyyyMMdd-HHmmss}"))) at = at.AddSeconds(1);
+        return Path.Combine(root, $"{name}-{at:yyyyMMdd-HHmmss}");
+    }
+
     void LoadManifest()
     {
         var p = Path.Combine(dir, "manifest.json");
@@ -584,7 +601,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
-        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64);
+        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }
 

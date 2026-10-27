@@ -19,7 +19,7 @@ public sealed class Fake : HttpMessageHandler
     public readonly Dictionary<string, List<DateTime>> Starts = [];
     public bool Overlap; // two different hosts had a request in flight at the same time
     /// <summary>Replies of the map-setup reads; null keeps the plain default. WorldItems is the placed-item list of Me/me.</summary>
-    public string? InventoryDict, InventoryList, WorldItems, Catalogue;
+    public string? InventoryDict, InventoryList, WorldItems, Catalogue, ExpeditionList;
     /// <summary>Paths that always answer 502.</summary>
     public readonly HashSet<string> Down = [];
     /// <summary>Requests whose form carried the session token.</summary>
@@ -62,7 +62,7 @@ public sealed class Fake : HttpMessageHandler
             "/v1/User/jwt" => """{"token":"fake.jwt.value"}""",
             "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
             "/game/user/7/lodges" => """[{"id":3}]""",
-            "/v1/Expedition/list" => """{"total":1,"expeditions":[{"id":42}]}""",
+            "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
             "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
@@ -74,6 +74,15 @@ public sealed class Fake : HttpMessageHandler
 
 static class Hosts
 {
+    /// <summary>Takes the "finished" mark off a backup folder: what a crash or a cancel after the last request would leave. A new run then continues it.</summary>
+    public static void Unfinish(string dir)
+    {
+        var path = System.IO.Path.Combine(dir, "manifest.json");
+        var m = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsObject();
+        m.Remove("completed_utc");
+        File.WriteAllText(path, m.ToJsonString());
+    }
+
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
     public static Engine Make(Fake f, string keyPath) => new(
