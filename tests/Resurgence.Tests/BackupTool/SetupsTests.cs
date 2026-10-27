@@ -396,4 +396,27 @@ public class SetupsTests
         await RunOwnEngine(f2, t2, new HashSet<string> { "profile", "setups" });
         Assert.True(f2.Seen.Count(p => p == "/v1/Application/application") == 1, "with the profile group on the file is shared: still one request");
     }
+
+    /// <summary>Items 3, 4, 7, 9: the written TEXT keeps the numbers digit for digit; a picked-up row is not placed; a guid only in worlditems is never a row; items are ordered by item id, then guid.</summary>
+    [Fact]
+    public async Task WrittenFileKeepsValuesByteExactAndOnlyRealRows()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        var e = await RunOwnEngine(new Fake(Tok) { InventoryDict = d, InventoryList = l, WorldItems = Worlditems(("w9", P("1", "2", "3"), 1), ("a1", P("3144.645", "412.5", "-98.125"), 1)) }, t, Setups);
+        var text = File.ReadAllText(Path.Combine(t.Path, "backup-7", "map-setups.json"));
+        Assert.True(text.Contains("\"x\": 3144.645,") && !text.Contains("3144.6449") && !text.Contains("3144.6450"), "pos 3144.645 stays 3144.645");
+        Assert.True(text.Contains("\"x\": -0.999,") && !text.Contains("-0.9989"), "dir -0.999 stays -0.999");
+        Assert.True(text.Contains("\"units\": 20,") && !text.Contains("20.0") && text.Contains("\"units\": 0,"), "units 20 stays 20 (not 20.0), units 0 stays 0");
+        var s = JsonNode.Parse(text)!;
+        var feeder = Item(s, "a4");
+        Assert.True(feeder["metadata"]!["reserve"]!.GetValue<int>() == 2 && feeder["metadata"]!["owner_note"]!.GetValue<int>() == 9, "the feeder keeps metadata.reserve 2 and its server-owned keys");
+        Assert.True(s["reserves"]!.AsArray().Single(r => r!["items"]!.AsArray().Any(i => i!["guid"]!.ToString() == "a4"))!["reserve"]!.GetValue<int>() == 3, "while its map is the web number, 3");
+        Assert.True(!text.Contains("\"z0\""), "the slot-0 row with a location is not in the file");
+        Assert.True(!text.Contains("w9") || s["checks"]!["only_in"]!["me"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["w9"]), "w9 appears only as a check");
+        Assert.True(!s["reserves"]!.AsArray().SelectMany(r => r!["items"]!.AsArray()).Any(i => i!["guid"]!.ToString() == "w9"), "a guid only in worlditems is never a row");
+        Assert.True(s["reserves"]!.AsArray().Select(r => (int)r!["reserve"]!).SequenceEqual([1, 3, 8]), "maps in order");
+        var one = s["reserves"]!.AsArray()[0]!["items"]!.AsArray();
+        Assert.True(one.Select(i => i!["guid"]!.ToString()).SequenceEqual(["a1", "d1", "o1", "a2", "a3"]) && one.Select(i => i!["item_id"]!.GetValue<int>()).SequenceEqual([11, 11, 11, 12, 14]), "item id, then guid");
+    }
 }
