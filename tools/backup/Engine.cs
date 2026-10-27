@@ -66,7 +66,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         get
         {
             lock (problems)
-                return string.Join(" ", problems.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => Loc.F(p.Value == ServerError ? "Fail_Server" : "Fail_Refused", Loc.S("Group_" + p.Key))));
+                return string.Join(" ", problems.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => Loc.F(p.Value == ServerError ? "Fail_Server" : p.Value == NotData ? "Fail_NotData" : "Fail_Refused", Loc.S("Group_" + p.Key))));
         }
     }
     /// <summary>Requests actually sent, retries included (the UI's time estimate).</summary>
@@ -91,7 +91,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     DateTime jwtAt, started = DateTime.UtcNow;
     DateTime? completed;
     int done, total, sinceWrite, saved, skipped, failed, sent;
-    const string ServerError = "server error";
+    const string ServerError = "server error", NotData = "not data";
     readonly Dictionary<string, string> problems = [];
     CancellationToken ct;
     Exception? fault;
@@ -447,6 +447,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body); return x.Body; } // "no entry" is an answer, not a failure
             if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");
             if (Leaks(r, x.Body)) return Fail(r, name, x.Status, "reply contains a token, not saved");
+            if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
             if (ready != null && !ready(x.Body))
             {
                 if (poll == 19) return Fail(r, name, x.Status, "still building", ServerError);
@@ -477,7 +478,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         lock (problems)
         {
             var g = group.Value ?? "lookup";
-            if (kind == ServerError || !problems.ContainsKey(g)) problems[g] = kind; // a server error is the one worth retrying later
+            if (kind == ServerError || !problems.TryGetValue(g, out var had) || (kind == NotData && had != ServerError)) problems[g] = kind; // a server error is the one worth retrying later, then a reply that held no data
         }
         log($"! {r.Path}: {err}");
         Interlocked.Increment(ref failed);
@@ -524,6 +525,21 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             return false;
         }
         finally { jwtGate.Release(); }
+    }
+
+    /// <summary>What a reply must be before it is saved: JSON for the API (null is allowed, an empty or cut-off body is not), an image for a picture, a page with a table for a score sheet. A proxy's or login page is none of them.</summary>
+    static bool IsData(R r, byte[] b)
+    {
+        if (r.Abs == null)
+        {
+            try { using var _ = JsonDocument.Parse(b); return true; } catch (JsonException) { return false; }
+        }
+        if (r.Xhr) return Encoding.UTF8.GetString(b).Contains("<table", StringComparison.OrdinalIgnoreCase);
+        var s = b.AsSpan();
+        return s.StartsWith<byte>([255, 216, 255]) // JPEG
+            || s.StartsWith<byte>([137, 80, 78, 71]) // PNG
+            || s.StartsWith("GIF8"u8)
+            || (s.Length >= 12 && s.StartsWith("RIFF"u8) && s[8..12].SequenceEqual("WEBP"u8));
     }
 
     bool Leaks(R r, byte[] b)

@@ -65,6 +65,7 @@ The group is on by default and runs last, after every other group, so it reads t
 - Other players' data (only the public profile of a typed handle is saved).
 - Full message threads.
 - Tokens: a reply that contains an access token, a JWT or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
+- Not data: a reply is saved only if it is what was asked for. API replies must be valid JSON (`null` is), pictures must start with a JPEG, PNG, GIF or WebP header, score sheets must contain a table. A proxy, login or error page, or a cut-off reply, is not saved; the request is listed in `manifest.json` as failed ("reply is not data") and the result bar says "some pages did not hold data".
 - Gift codes, and any endpoint that changes state.
 
 The app shows a short version of this list in its window.

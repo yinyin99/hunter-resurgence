@@ -310,6 +310,9 @@
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: some pages were refused (error reply).</value>
   </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: some pages did not hold data (unexpected reply).</value>
+  </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>no game session yet: start the game and a hunt, or type a handle or id</value>
   </data>

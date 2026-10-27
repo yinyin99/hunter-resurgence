@@ -310,6 +310,9 @@
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: часть страниц отклонена (ответ с ошибкой).</value>
   </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: некоторые страницы не содержали данных (неожиданный ответ).</value>
+  </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Пока нет сессии игры: запустите игру и начните охоту либо введите ник или ID</value>
   </data>

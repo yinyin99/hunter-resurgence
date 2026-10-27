@@ -32,6 +32,8 @@ public sealed class Fake : HttpMessageHandler
     public readonly List<string> Forms = [];
     /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
     public string? Revoked;
+    /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
+    public readonly Dictionary<string, byte[]> Raw = [];
     /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
     public (string Path, int Times, int Status, int After)? Throttle;
     int throttled;
@@ -68,8 +70,11 @@ public sealed class Fake : HttpMessageHandler
         }
         if (Revoked != null && form.Contains(Revoked) && path.StartsWith("/v1/")) return new HttpResponseMessage { Content = new StringContent("""{"errorCode":11,"message":"access denied"}""") };
         if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
+        if (Raw.TryGetValue(path, out var raw)) return new HttpResponseMessage { Content = new ByteArrayContent(raw) };
+        if (path.EndsWith(".jpg")) return new HttpResponseMessage { Content = new ByteArrayContent([255, 216, 255, 224]) }; // the start of a JPEG
         var body = path switch
         {
+            "/user/x/score/" => "<table></table>",
             "/v1/Me/me" => form.Contains(Token) ? $$"""{"id":7,"handle":"hh","worlditems":{{WorldItems ?? "[]"}}}""" : """{"errorCode":11,"message":"access denied"}""",
             "/v1/Application/application" => Catalogue ?? """{"season":3}""",
             "/v1/Inventory/dict" when InventoryDict != null => InventoryDict,

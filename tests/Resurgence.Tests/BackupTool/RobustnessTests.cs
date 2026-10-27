@@ -176,4 +176,42 @@ public class RobustnessTests
         Assert.True(auth.Count(x => x.Contains(fresh)) >= 3 && !e.TokenStale, $"requests after the change carry the new token ({auth.Count(x => x.Contains(fresh))}) and the stale mark is cleared");
         Assert.True(e.Failed <= 2, $"only the fake's deliberate token leak and the one request that met the revoked token failed ({e.Failed}: {string.Join("; ", Manifest(Path.Combine(t.Path, "backup-7"))["files"]!.AsArray().Where(x => x!["error"] != null).Select(x => x!["path"] + " " + x["error"]))})");
     }
+
+    static readonly byte[] Html = System.Text.Encoding.UTF8.GetBytes("<html><body>Sign in to the proxy</body></html>");
+
+    /// <summary>F8: a reply that is not what the request asked for (a proxy page for JSON or a picture, no table in a sheet, cut-off JSON) is not saved and is counted as "not data".</summary>
+    [Fact]
+    public async Task RepliesThatAreNotDataAreNotSaved()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Raw["/v1/Skill/list"] = Html; // an API reply that is a web page
+        f.Raw["/v1/Statistics/total"] = "{\"cut\":"u8.ToArray(); // cut off
+        f.Raw["/v1/Challenge/get_user_challenges"] = "null"u8.ToArray(); // a legal JSON value
+        f.Raw["/a.jpg"] = Html; // a picture that is a web page
+        f.Raw["/user/x/score/"] = "<html>login</html>"u8.ToArray(); // a sheet without its table
+        f.HuntReplies["42"] = Kills((900, 1.5, "https://photo.test/a.jpg"));
+        var e = await Run(f, t, ["profile", "kills"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        Assert.True(!File.Exists(Path.Combine(dir, "Skill_list.json")) && !File.Exists(Path.Combine(dir, "Statistics_total.json")) && !Directory.Exists(Path.Combine(dir, "kills")), "none of the four is saved");
+        Assert.True(Directory.GetFiles(dir, "Challenge_get_user_challenges*.json").Length == 1, "null is JSON and is saved");
+        var bad = Manifest(dir)["files"]!.AsArray().Where(x => x!["error"]?.ToString().Contains("not data") == true).Count();
+        Assert.True(bad == 4 && e.FailureSummary.Contains("unexpected reply"), $"4 failed as not data ({bad}) and the summary says so ({e.FailureSummary})");
+    }
+
+    /// <summary>F8: pictures of the four known formats are saved, anything else is not.</summary>
+    [Fact]
+    public async Task PicturesNeedAnImageHeader()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Raw["/p.jpg"] = [255, 216, 255, 224, 0];
+        f.Raw["/p.png"] = [137, 80, 78, 71, 13, 10, 26, 10];
+        f.Raw["/p.gif"] = "GIF89a"u8.ToArray();
+        f.Raw["/p.webp"] = "RIFF\0\0\0\0WEBPVP8 "u8.ToArray();
+        f.Raw["/p.bmp"] = "BM\0\0\0\0\0\0"u8.ToArray();
+        f.HuntReplies["42"] = Kills((1, null, "https://photo.test/p.jpg"), (2, null, "https://photo.test/p.png"), (3, null, "https://photo.test/p.gif"), (4, null, "https://photo.test/p.webp"), (5, null, "https://photo.test/p.bmp"));
+        var e = await Run(f, t, ["kills"]);
+        Assert.True(Directory.GetFiles(Path.Combine(t.Path, "backup-7", "kills")).Length == 4 && e.Failed == 1, $"jpeg, png, gif and webp saved, bmp is not ({e.Failed} failed)");
+    }
 }

@@ -310,6 +310,9 @@
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0} : certaines pages ont été refusées (réponse d’erreur).</value>
   </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0} : certaines pages ne contenaient pas de données (réponse inattendue).</value>
+  </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Pas encore de session de jeu : lancez le jeu puis une chasse, ou saisissez un pseudo ou un identifiant</value>
   </data>
