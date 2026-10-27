@@ -131,7 +131,7 @@
     <value>No incluido:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Disposición y orientación de los objetos colocados: tiendas de campaña, cebaderos, puestos de camuflaje, torres y otro equipamiento grande. Solo se guardan, sin modificar, los datos de reserva y posición de cada objeto (`location`, `metadata`); el servidor no conserva la disposición.</value>
+    <value>Una imagen del equipo colocado (tiendas de campaña, puestos de camuflaje, puestos elevados, torres, cebaderos, equipo de escalada). El equipo en sí se guarda: posición, dirección, ajustes y unidades de cada objeto colocado, por mapa.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Configuración y controles del juego (se conservan en este PC).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Objetos y perros que posees, posiciones de los objetos colocados, equipamiento</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Instalaciones en los mapas</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Equipo colocado en cada mapa, incluido el de escalada</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Trofeos y salones</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Vuelve a ejecutarla más tarde con la reanudación activada.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Instalaciones en los mapas: {0} objetos colocados en {1} mapas.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Instalaciones en los mapas: no hay objetos colocados.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Instalaciones en los mapas: {0} objetos colocados en {1} mapas, pero una comprobación encontró algo inusual (las fuentes no coinciden o un objeto no tiene posición). Consulta map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Guardados hasta ahora: {0}, omitidos: {1}. Vuelve a iniciar con la reanudación activada para continuar.</value>

@@ -18,6 +18,12 @@ public sealed class Fake : HttpMessageHandler
     public readonly Dictionary<string, int> Active = [], MaxActive = [];
     public readonly Dictionary<string, List<DateTime>> Starts = [];
     public bool Overlap; // two different hosts had a request in flight at the same time
+    /// <summary>Replies of the map-setup reads; null keeps the plain default. WorldItems is the placed-item list of Me/me.</summary>
+    public string? InventoryDict, InventoryList, WorldItems, Catalogue;
+    /// <summary>Paths that always answer 502.</summary>
+    public readonly HashSet<string> Down = [];
+    /// <summary>Requests whose form carried the session token.</summary>
+    public int WithToken;
     readonly object gate = new();
     public Fake(string token) => Token = token;
 
@@ -30,6 +36,7 @@ public sealed class Fake : HttpMessageHandler
         {
             ct.ThrowIfCancellationRequested(); // a real handler refuses a cancelled request too
             Seen.Add(path);
+            if (form.Contains(Token)) WithToken++;
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
@@ -40,11 +47,13 @@ public sealed class Fake : HttpMessageHandler
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }
         finally { lock (gate) Active[host]--; }
         if (path.Contains("/personal/") || path == "/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
-        if (host == DeadHost) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
+        if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
         var body = path switch
         {
-            "/v1/Me/me" => form.Contains(Token) ? """{"id":7,"handle":"hh","worlditems":[]}""" : """{"errorCode":11,"message":"access denied"}""",
-            "/v1/Application/application" => """{"season":3}""",
+            "/v1/Me/me" => form.Contains(Token) ? $$"""{"id":7,"handle":"hh","worlditems":{{WorldItems ?? "[]"}}}""" : """{"errorCode":11,"message":"access denied"}""",
+            "/v1/Application/application" => Catalogue ?? """{"season":3}""",
+            "/v1/Inventory/dict" when InventoryDict != null => InventoryDict,
+            "/v1/Inventory/list" when InventoryList != null => InventoryList,
             "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
             "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
             "/game/user/trophies" => """[{"id":101},{"id":102}]""",

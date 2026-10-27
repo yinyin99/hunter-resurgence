@@ -131,7 +131,7 @@
     <value>Not covered:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Placed-object layout and orientation: tents, bait sites and feeders, blinds, towers and other large equipment. Only the raw per-item reserve/position (`location`, `metadata`) is saved; the server keeps no placement layout.</value>
+    <value>A picture of the placed equipment (tents, blinds, stands, towers, feeders, climbing gear). The equipment itself is saved: position, direction, settings and units of every placed item, per map.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>In-game settings and controls (kept on this PC).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Items and dogs you own, placed-item positions, loadout</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Map setups</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Equipment placed on each map, climbing gear included</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Trophies and lodges</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Run again later with resume on.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Map setups: {0} placed items on {1} maps.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Map setups: none placed.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Map setups: {0} placed items on {1} maps, but a check found something unusual (sources disagree or an item has no position). See map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>{0} saved so far, {1} skipped. Start again with resume on to continue.</value>
