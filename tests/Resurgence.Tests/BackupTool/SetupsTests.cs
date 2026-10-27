@@ -375,4 +375,25 @@ public class SetupsTests
         var item = Item(s, "d1");
         Assert.True(item["dir"] == null && item["pos"]!.ToJsonString() == """{"x":70,"y":80,"z":90}""", "saved with its position, dir null");
     }
+
+    /// <summary>Item 8: with the profile group off the setups group fetches the catalogue itself, so kind and define are set even when only the dict has the rows; with the profile group on there is still one request.</summary>
+    [Fact]
+    public async Task CatalogueIsFetchedWhenTheProfileGroupIsOff()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, _) = Big();
+        var f = new Fake(Tok) { InventoryDict = d, Catalogue = Catalogue };
+        f.Down.Add("/v1/Inventory/list"); // the dict is the only source: the rows carry no define
+        await RunOwnEngine(f, t, Setups);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        var a1 = Item(s, "a1");
+        Assert.True(a1["define"]!.ToString() == "TENT02" && a1["kind"]!.ToString() == "tent" && Item(s, "a4")["kind"]!.ToString() == "feeder", "define and kind from the catalogue");
+        Assert.True(f.Seen.Count(p => p == "/v1/Application/application") == 1 && Directory.GetFiles(Path.Combine(t.Path, "backup-7"), "Application_application*.json").Length == 1, "one request, one file");
+
+        using var t2 = new TempDir("backup-test-setups-");
+        var f2 = new Fake(Tok) { InventoryDict = d, Catalogue = Catalogue };
+        f2.Down.Add("/v1/Inventory/list");
+        await RunOwnEngine(f2, t2, new HashSet<string> { "profile", "setups" });
+        Assert.True(f2.Seen.Count(p => p == "/v1/Application/application") == 1, "with the profile group on the file is shared: still one request");
+    }
 }

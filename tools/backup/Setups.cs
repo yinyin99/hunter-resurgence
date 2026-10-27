@@ -119,6 +119,12 @@ sealed partial class Engine
         // both always asked, whatever resume found on disk: the setup may have changed since an earlier run
         var dict = await Get(Q("Inventory/dict", false, ("user_id", uid)) with { Fresh = true });
         var list = await Get(Q("Inventory/list", false, ("user_id", uid)) with { Fresh = true });
+        // names and kinds come from the catalogue: the profile group's file, fetched here when the group was off (same request, same file)
+        if (s.ConsumerKey is { } key && !File.Exists(Path.Combine(dir, FileName(Q("Application/application", false, ("lang", "en"))))))
+        {
+            Need(1);
+            await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en")));
+        }
         BuildSetups(ReadDict(dict), ReadList(list));
     }
 
