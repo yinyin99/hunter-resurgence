@@ -189,7 +189,7 @@ sealed partial class Engine
             return (Reserve: Int(loc["reserve"]), Json: new JsonObject
             {
                 ["guid"] = r.Guid, ["item_id"] = r.ItemId, ["define"] = define, ["name"] = name, ["kind"] = KindOf(define),
-                ["units"] = r.Node["units"]?.DeepClone(), // a climbing path's units appear to be its length
+                ["units"] = r.Node["units"]?.DeepClone(), // units = cost of the anchor the path is bound to (20 or 25); other values exist and are valid, all kept as sent
                 ["pos"] = loc["pos"]!.DeepClone(), ["dir"] = loc["dir"]?.DeepClone(), ["metadata"] = r.Node["metadata"]?.DeepClone(),
                 ["in"] = new JsonArray([.. seen[r.Guid].Select(x => x.Src).Distinct().Select(x => (JsonNode)x)]),
             }, Kind: KindOf(define));
