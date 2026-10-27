@@ -258,14 +258,16 @@ public partial class MainWindow : FluentWindow
         catch (HostSilentException ex)
         {
             sev = InfoBarSeverity.Warning;
-            text = () => (Loc.S("Msg_Stopped"), ex.Message);
+            var opened = run.MessagesOpened;
+            text = () => (Loc.S("Msg_Stopped"), ex.Message + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : ""));
             path = run.Folder;
         }
         catch (OperationCanceledException)
         {
             var (saved, skipped) = (run.Saved, run.Skipped);
             sev = InfoBarSeverity.Warning;
-            text = () => (Loc.S("Msg_Cancelled"), Loc.F("Msg_CancelledText", saved, skipped));
+            var opened = run.MessagesOpened;
+            text = () => (Loc.S("Msg_Cancelled"), Loc.F("Msg_CancelledText", saved, skipped) + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : ""));
             path = run.Folder;
         }
         catch (Exception ex)
