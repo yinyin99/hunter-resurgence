@@ -131,7 +131,7 @@
     <value>Non inclus :</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Disposition et orientation des objets placés : tentes, conteneurs d’appâts, affûts, miradors et autre grand équipement. Seules les données brutes de réserve et de position de chaque objet (`location`, `metadata`) sont sauvegardées ; le serveur ne conserve aucune disposition.</value>
+    <value>Équipement placé (tentes, affûts, miradors, tours, conteneurs d’appâts, matériel d’escalade) : la position, la direction, les réglages et les unités de chaque objet placé sont sauvegardés par carte. Seule une image de la disposition n’est pas créée.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Paramètres et commandes du jeu (conservés sur ce PC).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Objets et chiens que vous possédez, positions des objets placés, équipement</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Installations sur les cartes</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Équipement placé sur chaque carte, matériel d’escalade compris</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Trophées et loges</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Relancez plus tard avec la reprise activée.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Installations sur les cartes : {0} objets placés sur {1} cartes.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Installations sur les cartes : aucun objet placé.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Installations sur les cartes : {0} objets placés sur {1} cartes, mais une vérification a relevé une anomalie (les sources divergent ou un objet n’a pas de position). Voir map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Sauvegardés jusqu’ici : {0}, ignorés : {1}. Relancez avec la reprise activée pour continuer.</value>

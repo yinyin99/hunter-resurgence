@@ -131,7 +131,7 @@
     <value>Nicht enthalten:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Anordnung und Ausrichtung platzierter Gegenstände: Zelte, Lockstellen, Tarnzelte, Hochsitze und andere große Ausrüstung. Gesichert werden nur die unveränderten Angaben zu Revier und Position jedes Gegenstands (`location`, `metadata`); der Server speichert keine Anordnung.</value>
+    <value>Aufgestellte Ausrüstung (Zelte, Tarnzelte, Hochsitze, Türme, Futterstellen, Kletterausrüstung): Position, Ausrichtung, Einstellungen und Einheiten jedes aufgestellten Gegenstands werden pro Karte gesichert. Nur ein Bild der Anordnung wird nicht erstellt.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Spieleinstellungen und Steuerung (bleiben auf diesem PC).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Ihre Gegenstände und Hunde, Positionen platzierter Gegenstände, Ausrüstung</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Karten-Aufbauten</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Auf jeder Karte aufgestellte Ausrüstung, auch Kletterausrüstung</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Trophäen und Lodges</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Führen Sie die Sicherung später mit aktivierter Fortsetzung erneut aus.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Karten-Aufbauten: {0} aufgestellte Gegenstände auf {1} Karten.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Karten-Aufbauten: nichts aufgestellt.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Karten-Aufbauten: {0} aufgestellte Gegenstände auf {1} Karten, aber eine Prüfung hat etwas Auffälliges gefunden (Quellen widersprechen sich oder ein Gegenstand hat keine Position). Siehe map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Bisher {0} gesichert, {1} übersprungen. Starten Sie mit aktivierter Fortsetzung erneut, um fortzufahren.</value>

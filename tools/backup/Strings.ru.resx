@@ -131,7 +131,7 @@
     <value>Не сохраняется:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Расстановка и ориентация размещённых объектов: палатки, кормушки, засидки, вышки и другое крупногабаритное снаряжение. Сохраняются только исходные данные об охотугодье и позиции каждого предмета (`location`, `metadata`); сервер не хранит расстановку.</value>
+    <value>Размещённое снаряжение (палатки, засидки, вышки, кормушки, альпинистское снаряжение): положение, направление, настройки и количество единиц каждого размещённого предмета сохраняются по картам. Не создаётся только картинка расстановки.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Настройки игры и параметры управления (остаются на этом ПК).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Ваши предметы и собаки, позиции размещённых предметов, набор снаряжения</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Расстановка на картах</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Снаряжение, расставленное на каждой карте, включая альпинистское</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Трофеи и залы</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Запустите копирование снова позже с включённым возобновлением.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Расстановка на картах: размещено предметов — {0}, карт — {1}.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Расстановка на картах: ничего не размещено.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Расстановка на картах: размещено предметов — {0}, карт — {1}, но проверка нашла отклонение (источники расходятся или у предмета нет позиции). См. map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Пока сохранено: {0}, пропущено: {1}. Чтобы продолжить, запустите снова с включённым возобновлением.</value>

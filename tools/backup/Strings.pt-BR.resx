@@ -131,7 +131,7 @@
     <value>Não incluído:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Disposição e orientação dos itens colocados: tendas, locais de ração, esconderijos, torres e outros equipamentos grandes. Apenas os dados originais de reserva e posição de cada item (`location`, `metadata`) são salvos; o servidor não guarda a disposição.</value>
+    <value>Equipamentos colocados (tendas, esconderijos, plataformas, torres, locais de ração, equipamento de escalada): a posição, a direção, as configurações e as unidades de cada item colocado são salvas por mapa. Apenas uma imagem do arranjo não é criada.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Ajustes e controles do jogo (ficam neste PC).</value>
@@ -153,6 +153,12 @@
   </data>
   <data name="GroupDesc_inventory" xml:space="preserve">
     <value>Itens e cães que você possui, posições dos itens colocados, equipamento</value>
+  </data>
+  <data name="Group_setups" xml:space="preserve">
+    <value>Montagens nos mapas</value>
+  </data>
+  <data name="GroupDesc_setups" xml:space="preserve">
+    <value>Equipamentos colocados em cada mapa, inclusive de escalada</value>
   </data>
   <data name="Group_trophies" xml:space="preserve">
     <value>Troféus e salões</value>
@@ -270,6 +276,15 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Execute de novo mais tarde com a retomada ativada.</value>
+  </data>
+  <data name="Msg_Setups" xml:space="preserve">
+    <value>Montagens nos mapas: {0} itens colocados em {1} mapas.</value>
+  </data>
+  <data name="Msg_SetupsNone" xml:space="preserve">
+    <value>Montagens nos mapas: nenhum item colocado.</value>
+  </data>
+  <data name="Msg_SetupsCheck" xml:space="preserve">
+    <value>Montagens nos mapas: {0} itens colocados em {1} mapas, mas uma verificação encontrou algo incomum (as fontes divergem ou um item não tem posição). Veja map-setups.json.</value>
   </data>
   <data name="Msg_CancelledText" xml:space="preserve">
     <value>Salvos até agora: {0}, ignorados: {1}. Inicie de novo com a retomada ativada para continuar.</value>

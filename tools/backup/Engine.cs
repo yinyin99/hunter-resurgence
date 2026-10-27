@@ -11,13 +11,14 @@ using System.Text.RegularExpressions;
 
 namespace Backup;
 
-sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error);
+/// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply.</summary>
+sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null);
 
 sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
-/// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header.</summary>
-sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false);
+/// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
+sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false);
 
 /// <summary>Read-only backup: raw replies to files, manifest.json, optional zip. One instance per run.</summary>
 sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Action<int, int> progress, string keyPath)
@@ -30,6 +31,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     [
         ("profile", true, Session.None),
         ("inventory", true, Session.Part),
+        ("setups", true, Session.Part),
         ("trophies", true, Session.Part),
         ("hunts", true, Session.None),
         ("kills", false, Session.None),
@@ -133,7 +135,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             else steamId64 = (76561197960265728UL + acc).ToString();
         }
         File.WriteAllBytes(Path.Combine(dir, "claim.key"), key);
-        var chosen = Groups.Where(g => groups.Contains(g.Key) && !(g.Key == "hunts" && groups.Contains("kills"))).ToList(); // kills reads the hunts itself
+        var chosen = Groups.Where(g => groups.Contains(g.Key) && g.Key != "setups" && !(g.Key == "hunts" && groups.Contains("kills"))).ToList(); // kills reads the hunts itself; setups runs last
+        if (groups.Contains("setups")) Need(2); // its two reads are counted from the start
         lock (unsized) foreach (var g in chosen) if (g.Key is "profile" or "trophies" or "hunts" or "kills" or "account" or "photos") unsized.Add(g.Key);
         using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct);
         this.ct = stop.Token;
@@ -144,6 +147,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
             catch when (fault != null) { }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
+            if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
         }
         finally { WriteManifest(); }
         log($"{saved} files saved, {skipped} already there, {failed} not saved (see manifest.json; run again with 'skip files already saved' to retry)");
@@ -161,7 +165,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             log($"== {key}");
             await (key switch
             {
-                "profile" => Profile(), "inventory" => Inventory(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
+                "profile" => Profile(), "inventory" => Inventory(), "setups" => Setups(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
                 "account" => Account(), "friends" => Friends(), "photos" => Photos(), _ => Messages(),
             });
         }
@@ -385,7 +389,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task<byte[]?> Fetch(R r, string name, Func<byte[], bool>? ready)
     {
         var full = Path.Combine(dir, name);
-        if (resume && File.Exists(full))
+        if (resume && !r.Fresh && File.Exists(full))
         {
             Entry? known;
             lock (files) files.TryGetValue(name, out known);
