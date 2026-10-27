@@ -28,7 +28,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 
 | Group | Content | Needs the running game |
 |---|---|---|
-| Profile | statistics, skills, achievements, challenges, personal leaderboards (every season), minigame positions, membership bundles, the item catalogue, avatar picture, antler boards | no |
+| Profile | statistics, skills, achievements, challenges, personal leaderboards (every season), minigame positions, membership bundles, the item catalogue, avatar picture, antler boards, campaign scores (public; `null` while no campaign runs) | no |
 | Inventory and dogs | owned items and dogs, placed-item positions, loadout | partly |
 | Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
 | Trophies and lodges | trophy list, lodges, harvest record of each own trophy | partly |
@@ -37,7 +37,8 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 | Account | missions, wallet history, bank transactions, competition states, message settings, recruits, backgrounds | yes |
 | Friends | friends list, friend requests | partly |
 | Photos (off by default) | gallery pictures at full size | no |
-| Messages (off by default) | conversation list, not the message texts | yes |
+| Messages (off by default) | every conversation, read and unread, in full; unread ones will show as read afterwards (see "Messages") | yes |
+| Competition history (off by default) | your result in each finished competition the website still lists (about the last 7 days), optionally older editions; hundreds of requests (see "Competition history") | no |
 
 Pictures are fetched only from https URLs on a host listed in `settings.json`; anything else is logged and skipped. `oauth_consumer_key` is sent for the item catalogue request only and never appears in a file name, the log or the manifest.
 
@@ -53,6 +54,19 @@ The group is on by default and runs last, after every other group, so it reads t
 - **Checks** (never fail the run): `location_null` (placed items without a position, left out of `reserves`), `only_in` (per source, items that another source lacks) and `pos_differs` (items whose position differs between sources). The result bar shows "Map setups: N placed items on M maps", "none placed", or a warning when a check found something. If one read failed, its source says `unavailable` and the file is built from the other one; if both failed no file is written and an older one is removed.
 - **Climbing gear.** The rows of climbing gear carry `units` of 10, 15, 20 or 25 (the use cost of the four path sizes), which appear to give the size of the path; to be confirmed in game.
 
+### Messages
+
+The group is off by default. It saves `Chat/conversations` first and unchanged: its `read` flag per conversation is the original state, and it is never overwritten later in the run. Then it asks for every conversation, one `Chat/conversation` request per partner (the website has no paging for it), and saves each reply as it came, in `Chat_conversation__user_id=<id>.json`. Read conversations go first, then the unread ones, so that a run that stops has touched the unread ones last. Opening an unread conversation can mark it read on the server: the website sets `read` itself after that request and has no call to undo it. The group description says so, and when conversations were opened the result bar adds "N unread conversations were opened and now show as read." (the count is of the unread ones opened in this run). Resume skips conversations whose file is saved; one that failed or was not reached is asked for on the next run. `messages-index.json` (derived) lists per conversation `user_id`, `read`, the file, the `total` the reply states and the number of messages in it; `checks.possibly_capped` names the conversations where the two differ. The group needs the game session.
+
+### Competition history
+
+The group is off by default and uses public reads, so it works in public-profile mode too. The server has no per-player history; a past result is the player's row in the edition page. The tool pages `Page_content/list_previous_competitions` (20 at a time, by the list's `total`), reads `Page_content/competitions_new` for each edition, does the same for the community league list, and saves every reply as it came. `competition-history.json` (derived, listed in the manifest, part of the zip) has per edition `id`, type id and name, `start`, `end`, and the player's `position` and `points`; the row is found by user id.
+
+- **A window of about 7 days.** The list holds only the newest 250 finished editions, about the last week. A backup made more than a week after a win does not contain it unless the older-editions switch is on.
+- **Entrants capped at 100.** The server returns at most the best 100 entrants of an edition. A player ranked lower is not in the reply; that edition is `not_listed: true` (no rank is guessed). A win cannot be missing.
+- **Older editions (a separate switch, off by default).** Every edition reply lists earlier editions of the same type. With the switch on, the tool follows them, each edition once, past the window of the list. That can be thousands of requests (an estimate: up to about 7,000 more, 2 hours or more at one request per second per host). The switch is only available while the history group is ticked.
+- **Cost and resume.** Without the switch it is hundreds of requests, tens of KB each. Resume skips editions whose file is saved (finished editions never change); an edition that failed is asked again on the next run and does not stop the others.
+
 ### Two modes
 
 - **My account**: reads the signed-in player's data using the session of the running game. The app asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). A JWT that the server refuses (401) is replaced and that request is made once more.
@@ -63,7 +77,6 @@ The group is on by default and runs last, after every other group, so it reads t
 - A picture of the placed equipment (the positions themselves are saved, see "Map setups").
 - In-game settings and controls (they stay on the player's PC) and any client state that was never sent to the server.
 - Other players' data (only the public profile of a typed handle is saved).
-- Full message threads.
 - Tokens: a reply that contains an access token, a JWT or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
 - Not data: a reply is saved only if it is what was asked for. API replies must be valid JSON (`null` is), pictures must start with a JPEG, PNG, GIF or WebP header, score sheets must contain a table. A proxy, login or error page, or a cut-off reply, is not saved; the request is listed in `manifest.json` as failed ("reply is not data") and the result bar says "some pages did not hold data".
 - Dead on the server: a picture or score sheet whose address answers 404 is gone for good. It is listed in `manifest.json` with the error "dead on the server (404)", is not counted among the failed requests (so it never asks you to run again) and the result bar shows its own count. A resumed run does not ask for it again.
