@@ -362,4 +362,17 @@ public class SetupsTests
         var rows = checks["location_null_rows"]!.AsArray();
         Assert.True(rows.Count == 1 && rows[0]!.ToJsonString() == """{"guid":"n1","item_id":11,"units":5,"metadata":{"k":1}}""", $"the full row: {rows[0]?.ToJsonString()}");
     }
+
+    /// <summary>Item 6: a valid position with dir null is listed in checks.dir_null; the item is still saved, with its position.</summary>
+    [Fact]
+    public async Task ItemWithoutDirectionIsListedAndStillSaved()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        var e = await RunOwnEngine(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, Setups);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(s["checks"]!["dir_null"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["d1"]) && e.SetupChecks, "d1 is the one without a direction");
+        var item = Item(s, "d1");
+        Assert.True(item["dir"] == null && item["pos"]!.ToJsonString() == """{"x":70,"y":80,"z":90}""", "saved with its position, dir null");
+    }
 }

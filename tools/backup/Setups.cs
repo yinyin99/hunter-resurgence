@@ -163,6 +163,9 @@ sealed partial class Engine
             .Select(r => r.Guid).Distinct().Order(StringComparer.Ordinal).ToList();
         var noLoc = (dict?.NoLocation ?? []).Concat(list?.NoLocation ?? []).Distinct().Order(StringComparer.Ordinal).ToList();
 
+        // a position without a direction: the item is saved, a restore has to invent a direction
+        var dirNull = rows.Values.Where(r => r.Node["location"]!["dir"] == null).Select(r => r.Guid).Order(StringComparer.Ordinal).ToList();
+
         // the whole row of a placed item without a position (list over dict, as above), so the owner can be given the item back
         var lost = new Dictionary<string, Row>();
         foreach (var r in (dict?.NoLocationRows ?? []).Concat(list?.NoLocationRows ?? [])) lost[r.Guid] = r;
@@ -228,6 +231,7 @@ sealed partial class Engine
                 ["only_in"] = new JsonObject(onlyIn.Select(p => KeyValuePair.Create(p.Key, (JsonNode?)Guids(p.Value)))),
                 ["pos_differs"] = Guids(differs),
                 ["metadata_differs"] = Guids(metaDiffers),
+                ["dir_null"] = Guids(dirNull),
             },
         };
 
@@ -236,10 +240,11 @@ sealed partial class Engine
         lock (files) files[SetupsFile] = new(SetupsFile, "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);
         (SetupItems, SetupReserves) = (items.Count, reserves.Count);
-        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || metaDiffers.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
+        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || metaDiffers.Count > 0 || dirNull.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
         if (noLoc.Count > 0) log($"! map setups: {noLoc.Count} placed item(s) without a position");
         foreach (var (src, g) in onlyIn.Where(p => p.Value.Count > 0)) log($"! map setups: {g.Count} item(s) in {src} are missing from another source");
         if (differs.Count > 0) log($"! map setups: {differs.Count} item(s) with different positions in two sources");
+        if (dirNull.Count > 0) log($"! map setups: {dirNull.Count} placed item(s) without a direction");
         if (metaDiffers.Count > 0) log($"! map setups: {metaDiffers.Count} item(s) with different metadata, units or direction in the two inventory replies (the list was used)");
         log($"map setups: {items.Count} placed item(s) on {reserves.Count} map(s)");
     }
