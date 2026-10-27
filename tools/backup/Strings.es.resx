@@ -200,7 +200,7 @@
     <value>Mensajes</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Lista de conversaciones, no el texto de los mensajes</value>
+    <value>Cada conversación se abre y se guarda completa, leídas y no leídas. Las no leídas aparecerán después como leídas en el servidor. Desactivado por defecto por privacidad.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Búsqueda de la cuenta</value>
@@ -282,6 +282,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} imágenes o páginas ya no existen en el servidor (404), por lo que no se pudieron guardar.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>Se abrieron {0} conversaciones no leídas y ahora figuran como leídas.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Las páginas de muertes y las fotos no se guardaron; márcalas para una copia completa.</value>

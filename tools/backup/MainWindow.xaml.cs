@@ -244,13 +244,15 @@ public partial class MainWindow : FluentWindow
             path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
             var (saved, skipped, failed, stale) = (run.Saved, run.Skipped, run.Failed, run.TokenStale);
             var gone = run.Dead;
-            var killsOff = !keys.Contains("kills") || !keys.Contains("photos"); // no hint for the messages: they are off by default for privacy, not size
+            var killsOff = !keys.Contains("kills") || !keys.Contains("photos");
+            var opened = run.MessagesOpened;
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             text = () => (Loc.S(failed == 0 ? "Msg_Saved" : "Msg_SavedGaps"),
                 Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
                 + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
+                + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
         }
         catch (HostSilentException ex)

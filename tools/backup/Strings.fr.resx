@@ -200,7 +200,7 @@
     <value>Messages</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Liste des conversations, pas le texte des messages</value>
+    <value>Chaque conversation est ouverte et sauvegardée en entier, lues et non lues. Les conversations non lues apparaîtront ensuite comme lues sur le serveur. Désactivé par défaut pour la confidentialité.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Recherche du compte</value>
@@ -282,6 +282,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} images ou pages n’existent plus sur le serveur (404) et n’ont donc pas pu être sauvegardées.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>{0} conversations non lues ont été ouvertes et apparaissent maintenant comme lues.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Les pages de prélèvements et les photos n’ont pas été sauvegardées ; cochez-les pour une sauvegarde complète.</value>

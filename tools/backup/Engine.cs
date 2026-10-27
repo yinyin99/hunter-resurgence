@@ -335,10 +335,38 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Me/friends", true));
     }
 
+    /// <summary>Unread conversations opened (fetched) in this run: the server probably shows them as read afterwards.</summary>
+    public int MessagesOpened { get; private set; }
+
     async Task Messages()
     {
         Need(1);
-        await Get(Q("Chat/conversations", true)); // ponytail: previews only; Chat/conversation may mark threads read, unverified
+        // opening a thread can mark it read: the list is saved first as the original state
+        var list = Json(await Get(Q("Chat/conversations", true))) as JsonArray;
+        var entries = (list ?? []).OfType<JsonObject>().Where(c => c["user_id"] != null).ToList();
+        Need(entries.Count);
+        var rows = new JsonArray();
+        bool Unread(JsonObject c) => c["read"]?.ToString() is "0" or "false";
+        foreach (var c in entries.Where(c => !Unread(c)).Concat(entries.Where(Unread)))
+        {
+            var id = c["user_id"]!.ToString();
+            var r = Q("Chat/conversation", true, ("user_id", id));
+            var name = FileName(r);
+            var had = resume && File.Exists(Path.Combine(dir, name));
+            if (Json(await Get(r)) is not JsonObject th) continue;
+            if (Unread(c) && !had) MessagesOpened++;
+            var count = (th["messages"] as JsonArray)?.Count ?? 0;
+            var total = (long?)th["total"];
+            log($"messages {id}: total {total}, {count} in reply");
+            rows.Add(new JsonObject { ["user_id"] = id, ["read"] = c["read"]?.DeepClone(), ["file"] = name, ["total"] = total, ["messages"] = count });
+        }
+        if (list == null) return;
+        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => (long?)x["total"] != (long)(int)x["messages"]!).Select(x => (JsonNode?)x["user_id"]!.ToString())]);
+        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
+        WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
+        lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
+        Interlocked.Increment(ref saved);
+        if (capped.Count > 0) log($"! messages: {capped.Count} thread(s) with a total different from the messages returned (possibly capped)");
     }
 
     async Task Photos()
