@@ -32,6 +32,7 @@ public partial class MainWindow : FluentWindow
     bool logDirty;
     double grownBy;
     volatile int doneNow, totalNow;
+    readonly Queue<(double Secs, int Done)> pace = new(); // progress samples of the last minute and a half: the remaining time follows the pace now, not the average since the start
 
     public MainWindow()
     {
@@ -229,23 +230,34 @@ public partial class MainWindow : FluentWindow
         Bar.IsIndeterminate = true;
         ProgressText.Text = Loc.S("Progress_Starting");
         (doneNow, totalNow) = (0, 0);
+        pace.Clear();
         clock.Restart();
         runTimer.Start();
         using var http = new HttpClient();
         var run = eng = new Engine(cfg, http, Log, (d, t) => (doneNow, totalNow) = (d, t), keyPath);
-        string outDir = OutDir.Text, token = own ? watcher!.Token! : "";
+        string outDir = OutDir.Text;
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
         InfoBarSeverity sev; Func<(string Title, string Msg)> text; string? path = null;
         try
         {
-            path = await Task.Run(() => run.Run(outDir, who, own ? token : null, keys, resume, zip, ct));
+            path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
             var (saved, skipped, failed, stale) = (run.Saved, run.Skipped, run.Failed, run.TokenStale);
+            var gone = run.Dead;
+            var killsOff = !keys.Contains("kills") || !keys.Contains("photos"); // no hint for the messages: they are off by default for privacy, not size
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             text = () => (Loc.S(failed == 0 ? "Msg_Saved" : "Msg_SavedGaps"),
                 Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
+                + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
+                + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
+        }
+        catch (HostSilentException ex)
+        {
+            sev = InfoBarSeverity.Warning;
+            text = () => (Loc.S("Msg_Stopped"), ex.Message);
+            path = run.Folder;
         }
         catch (OperationCanceledException)
         {
@@ -285,10 +297,13 @@ public partial class MainWindow : FluentWindow
         if (!Bar.IsIndeterminate) { Bar.Maximum = t; Bar.Value = Math.Min(d, t); }
         string eta = "";
         double secs = clock.Elapsed.TotalSeconds;
-        if (r.TotalKnown && r.Sent >= 3 && secs >= 5 && t > d)
+        pace.Enqueue((secs, d));
+        while (pace.Count > 1 && secs - pace.Peek().Secs > 90) pace.Dequeue();
+        var from = pace.Peek();
+        if (r.TotalKnown && Engine.SecondsLeft(from.Secs, from.Done, secs, d, t) is { } left)
         {
-            double left = (t - d) / (r.Sent / secs); // requests still to do at the rate so far, both hosts counted
-            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : Loc.F("Eta_Min", Math.Ceiling(left / 60)));
+            int min = (int)Math.Ceiling(left / 60);
+            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60));
         }
         ProgressText.Text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
     }

@@ -19,11 +19,26 @@ public sealed class Fake : HttpMessageHandler
     public readonly Dictionary<string, List<DateTime>> Starts = [];
     public bool Overlap; // two different hosts had a request in flight at the same time
     /// <summary>Replies of the map-setup reads; null keeps the plain default. WorldItems is the placed-item list of Me/me.</summary>
-    public string? InventoryDict, InventoryList, WorldItems, Catalogue;
+    public string? InventoryDict, InventoryList, WorldItems, Catalogue, ExpeditionList;
+    /// <summary>Replies of Public_user/expedition by expedition id; the others get the plain default.</summary>
+    public readonly Dictionary<string, string> HuntReplies = [];
+    /// <summary>Path and query of every request, in the order they started.</summary>
+    public readonly List<string> Urls = [];
     /// <summary>Paths that always answer 502.</summary>
     public readonly HashSet<string> Down = [];
     /// <summary>Requests whose form carried the session token.</summary>
     public int WithToken;
+    /// <summary>The form of every request, in the order they started.</summary>
+    public readonly List<string> Forms = [];
+    /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
+    public string? Revoked;
+    /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
+    public readonly Dictionary<string, byte[]> Raw = [];
+    /// <summary>Absolute paths that answer 404.</summary>
+    public readonly HashSet<string> NotFound = [];
+    /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
+    public (string Path, int Times, int Status, int After)? Throttle;
+    int throttled;
     readonly object gate = new();
     public Fake(string token) => Token = token;
 
@@ -36,7 +51,9 @@ public sealed class Fake : HttpMessageHandler
         {
             ct.ThrowIfCancellationRequested(); // a real handler refuses a cancelled request too
             Seen.Add(path);
+            Urls.Add(req.RequestUri.PathAndQuery);
             if (form.Contains(Token)) WithToken++;
+            Forms.Add(form);
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
@@ -47,9 +64,20 @@ public sealed class Fake : HttpMessageHandler
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }
         finally { lock (gate) Active[host]--; }
         if (path.Contains("/personal/") || path == "/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
+        if (Throttle is { } th && path == th.Path && Interlocked.Increment(ref throttled) <= th.Times)
+        {
+            var r = new HttpResponseMessage((HttpStatusCode)th.Status) { Content = new StringContent("slow down") };
+            r.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromSeconds(th.After));
+            return r;
+        }
+        if (Revoked != null && form.Contains(Revoked) && path.StartsWith("/v1/")) return new HttpResponseMessage { Content = new StringContent("""{"errorCode":11,"message":"access denied"}""") };
         if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
+        if (NotFound.Contains(path)) return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("not found") };
+        if (Raw.TryGetValue(path, out var raw)) return new HttpResponseMessage { Content = new ByteArrayContent(raw) };
+        if (path.EndsWith(".jpg")) return new HttpResponseMessage { Content = new ByteArrayContent([255, 216, 255, 224]) }; // the start of a JPEG
         var body = path switch
         {
+            "/user/x/score/" => "<table></table>",
             "/v1/Me/me" => form.Contains(Token) ? $$"""{"id":7,"handle":"hh","worlditems":{{WorldItems ?? "[]"}}}""" : """{"errorCode":11,"message":"access denied"}""",
             "/v1/Application/application" => Catalogue ?? """{"season":3}""",
             "/v1/Inventory/dict" when InventoryDict != null => InventoryDict,
@@ -57,12 +85,13 @@ public sealed class Fake : HttpMessageHandler
             "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
             "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
             "/game/user/trophies" => """[{"id":101},{"id":102}]""",
+            "/v1/Public_user/expedition" when System.Text.RegularExpressions.Regex.Match(form, @"expedition_id=(\d+)") is { Success: true } m && HuntReplies.TryGetValue(m.Groups[1].Value, out var hunt) => hunt,
             "/v1/Public_user/expedition" => """{"kills":[{"id":900,"kill":{"score":1.5,"photo":"https://photo.test/k.jpg"}},{"id":901,"kill":{"score":null}}]}""",
             "/v1/Public_user/getByHostname" => """{"id":7,"handle":"hh"}""",
             "/v1/User/jwt" => """{"token":"fake.jwt.value"}""",
             "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
             "/game/user/7/lodges" => """[{"id":3}]""",
-            "/v1/Expedition/list" => """{"total":1,"expeditions":[{"id":42}]}""",
+            "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
             "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
@@ -74,6 +103,15 @@ public sealed class Fake : HttpMessageHandler
 
 static class Hosts
 {
+    /// <summary>Takes the "finished" mark off a backup folder: what a crash or a cancel after the last request would leave. A new run then continues it.</summary>
+    public static void Unfinish(string dir)
+    {
+        var path = System.IO.Path.Combine(dir, "manifest.json");
+        var m = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsObject();
+        m.Remove("completed_utc");
+        File.WriteAllText(path, m.ToJsonString());
+    }
+
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
     public static Engine Make(Fake f, string keyPath) => new(

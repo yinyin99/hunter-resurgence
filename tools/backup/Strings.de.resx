@@ -176,7 +176,7 @@
     <value>Abschussseiten und Fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Bewertungsbogen und Foto jedes bewerteten Abschusses (viele Anfragen)</value>
+    <value>Bewertungsbogen jedes bewerteten Abschusses, Foto jedes Abschusses, der eines hat (viele Anfragen)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Konto</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Sicherung fehlgeschlagen</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Sicherung abgebrochen</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>{0} gesichert, {1} übersprungen (bereits vorhanden), {2} fehlgeschlagen.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Führen Sie die Sicherung später mit aktivierter Fortsetzung erneut aus.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} Bilder oder Seiten gibt es auf dem Server nicht mehr (404), sie konnten daher nicht gesichert werden.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>Abschuss-Seiten und Fotos wurden nicht gesichert; für eine vollständige Sicherung ankreuzen.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Karten-Aufbauten: {0} aufgestellte Gegenstände auf {1} Karten.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>noch etwa {0} Min.</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>noch etwa {0} Std. {1} Min.</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: einige Seiten haben nicht geantwortet (Serverfehler).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: einige Seiten wurden abgelehnt (Fehlerantwort).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: Einige Seiten enthielten keine Daten (unerwartete Antwort).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Noch keine Spiel-Session: Starten Sie das Spiel und eine Jagd, oder geben Sie einen Nickname oder eine ID ein</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Abfrage fehlgeschlagen (unbekannter Nickname?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} antwortet nicht mehr ({1} Anfragen in Folge sind fehlgeschlagen), der Rest wurde deshalb nicht versucht. Das Gesicherte bleibt erhalten: später mit Fortsetzen erneut starten.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>keine Benutzer-ID in der Antwort</value>

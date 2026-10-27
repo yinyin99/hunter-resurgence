@@ -176,7 +176,7 @@
     <value>Páginas de muertes y fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Hoja de puntuación y foto de cada muerte con puntuación (muchas solicitudes)</value>
+    <value>Hoja de puntuación de cada muerte con puntuación, foto de cada muerte que tenga una (muchas solicitudes)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Cuenta</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Error en la copia de seguridad</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Copia detenida</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Guardados: {0}, omitidos (ya estaban): {1}, con error: {2}.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Vuelve a ejecutarla más tarde con la reanudación activada.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} imágenes o páginas ya no existen en el servidor (404), por lo que no se pudieron guardar.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>Las páginas de muertes y las fotos no se guardaron; márcalas para una copia completa.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Instalaciones en los mapas: {0} objetos colocados en {1} mapas.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>tiempo restante: aprox. {0} min</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>quedan unas {0} h {1} min</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: algunas páginas no respondieron (error del servidor).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: algunas páginas fueron rechazadas (respuesta de error).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: algunas páginas no contenían datos (respuesta inesperada).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Aún no hay sesión del juego: abre el juego y empieza una cacería, o escribe un nombre de usuario o un ID</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Error en la búsqueda (¿nombre de usuario desconocido?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} dejó de responder (fallaron {1} solicitudes seguidas), así que no se intentó el resto. Lo guardado se conserva: vuelve a ejecutarla más tarde con la reanudación activada.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>No hay ningún ID de usuario en la respuesta</value>

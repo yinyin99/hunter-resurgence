@@ -176,7 +176,7 @@
     <value>Страницы убийств и фото</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Карточка очков и фото каждого оценённого убийства (много запросов)</value>
+    <value>Карточка очков каждого оценённого убийства, фото каждого убийства, у которого оно есть (много запросов)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Аккаунт</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Не удалось создать резервную копию</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Копирование остановлено</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Сохранено: {0}, пропущено (уже есть): {1}, с ошибкой: {2}.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Запустите копирование снова позже с включённым возобновлением.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} картинок или страниц больше нет на сервере (404), поэтому их не удалось сохранить.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>Страницы убийств и фото не сохранены; отметьте их для полной копии.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Расстановка на картах: размещено предметов — {0}, карт — {1}.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>осталось около {0} мин</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>осталось около {0} ч {1} мин</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: часть страниц не ответила (ошибка сервера).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: часть страниц отклонена (ответ с ошибкой).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: некоторые страницы не содержали данных (неожиданный ответ).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Пока нет сессии игры: запустите игру и начните охоту либо введите ник или ID</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Поиск не удался (неизвестный ник?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} перестал отвечать (подряд не удались запросов: {1}), поэтому остальное не пробовали. Сохранённое осталось: запустите снова позже с включённым продолжением.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>В ответе нет ID пользователя</value>

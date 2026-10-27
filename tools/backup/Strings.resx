@@ -176,7 +176,7 @@
     <value>Kill pages and photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Score sheet and picture of every scored kill (many requests)</value>
+    <value>Score sheet of every scored kill, photo of every kill that has one (many requests)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Account</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Backup failed</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Backup stopped</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>{0} saved, {1} skipped (already there), {2} failed.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Run again later with resume on.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} pictures or pages no longer exist on the server (404), so they could not be saved.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>Kill pages and photos were not saved; tick them for a complete backup.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Map setups: {0} placed items on {1} maps.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>about {0} min left</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>about {0} h {1} min left</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: some pages did not answer (server error).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: some pages were refused (error reply).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: some pages did not hold data (unexpected reply).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>no game session yet: start the game and a hunt, or type a handle or id</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>lookup failed (unknown handle?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} stopped answering ({1} requests in a row failed), so the rest was not tried. What was saved is kept: run again later with resume on.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>no user id in the reply</value>

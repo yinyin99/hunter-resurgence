@@ -176,7 +176,7 @@
     <value>Fiches de prélèvements et photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Fiche de score et photo de chaque prélèvement noté (nombreuses requêtes)</value>
+    <value>Fiche de score de chaque prélèvement noté, photo de chaque prélèvement qui en a une (nombreuses requêtes)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Compte</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Échec de la sauvegarde</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Sauvegarde interrompue</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Sauvegardés : {0}, ignorés (déjà présents) : {1}, en échec : {2}.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Relancez plus tard avec la reprise activée.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} images ou pages n’existent plus sur le serveur (404) et n’ont donc pas pu être sauvegardées.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>Les pages de prélèvements et les photos n’ont pas été sauvegardées ; cochez-les pour une sauvegarde complète.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Installations sur les cartes : {0} objets placés sur {1} cartes.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>il reste environ {0} min</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>environ {0} h {1} min restantes</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0} : certaines pages n’ont pas répondu (erreur du serveur).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0} : certaines pages ont été refusées (réponse d’erreur).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0} : certaines pages ne contenaient pas de données (réponse inattendue).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Pas encore de session de jeu : lancez le jeu puis une chasse, ou saisissez un pseudo ou un identifiant</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Échec de la recherche (pseudo inconnu ?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} ne répond plus ({1} requêtes de suite ont échoué), le reste n’a donc pas été essayé. Ce qui a été sauvegardé est conservé : relancez plus tard avec la reprise activée.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Aucun identifiant d’utilisateur dans la réponse</value>

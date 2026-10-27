@@ -176,7 +176,7 @@
     <value>Páginas de abates e fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Ficha de pontuação e foto de cada abate com pontuação (muitas solicitações)</value>
+    <value>Ficha de pontuação de cada abate com pontuação, foto de cada abate que tenha uma (muitas solicitações)</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Conta</value>
@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>O backup falhou</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Backup interrompido</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Salvos: {0}, ignorados (já existiam): {1}, com falha: {2}.</value>
   </data>
@@ -276,6 +279,12 @@
   </data>
   <data name="Msg_Retry" xml:space="preserve">
     <value>Execute de novo mais tarde com a retomada ativada.</value>
+  </data>
+  <data name="Msg_Dead" xml:space="preserve">
+    <value>{0} imagens ou páginas não existem mais no servidor (404), por isso não puderam ser salvas.</value>
+  </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>As páginas de abates e as fotos não foram salvas; marque-as para um backup completo.</value>
   </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Montagens nos mapas: {0} itens colocados em {1} mapas.</value>
@@ -298,11 +307,17 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>tempo restante: cerca de {0} min</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>faltam cerca de {0} h {1} min</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: algumas páginas não responderam (erro do servidor).</value>
   </data>
   <data name="Fail_Refused" xml:space="preserve">
     <value>{0}: algumas páginas foram recusadas (resposta de erro).</value>
+  </data>
+  <data name="Fail_NotData" xml:space="preserve">
+    <value>{0}: algumas páginas não continham dados (resposta inesperada).</value>
   </data>
   <data name="Err_NoToken" xml:space="preserve">
     <value>Ainda não há sessão do jogo: abra o jogo e inicie uma caçada, ou digite um apelido ou ID</value>
@@ -312,6 +327,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>A consulta falhou (apelido desconhecido?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} parou de responder ({1} solicitações seguidas falharam), então o resto não foi tentado. O que foi salvo é mantido: execute de novo mais tarde com a retomada ativada.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Nenhum ID de usuário na resposta</value>

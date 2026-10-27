@@ -40,7 +40,7 @@ public class SetupsTests
     static JsonNode Read(string dir, string file = "map-setups.json") => JsonNode.Parse(File.ReadAllText(Path.Combine(dir, file)))!;
 
     static Task<string> RunOwn(Fake f, TempDir t, bool resume, ISet<string> groups, bool zip = false, CancellationToken ct = default) =>
-        Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "", Tok, groups, resume, zip, ct);
+        Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "", () => Tok, groups, resume, zip, ct);
 
     // the world as the first tests use it: 7 rows, 6 placed on two maps, one picked up that still has a location
     static (string Dict, string List, string Me) World()
@@ -73,7 +73,7 @@ public class SetupsTests
         using var t = new TempDir("backup-test-setups-");
         var f = FakeWorld();
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
-        await e.Run(t.Path, "", Tok, new HashSet<string> { "profile", "setups" }, false, false, TestContext.Current.CancellationToken);
+        await e.Run(t.Path, "", () => Tok, new HashSet<string> { "profile", "setups" }, false, false, TestContext.Current.CancellationToken);
         var s = Read(Path.Combine(t.Path, "backup-7"));
         Assert.True(s["format"]!.GetValue<int>() == 1 && s["uid"]!.ToString() == "7" && s["tool_version"] != null, "format, uid, tool version");
         Assert.True(s["totals"]!["placed"]!.GetValue<int>() == 6 && s["totals"]!["reserves"]!.GetValue<int>() == 2 && e.SetupItems == 6 && e.SetupReserves == 2 && !e.SetupChecks, "6 placed items on 2 maps, the picked-up row is not one, sources agree");
@@ -127,6 +127,7 @@ public class SetupsTests
 
         var rows2 = new (int, string, string)[] { (11, "TENT02", Row("t1", At("111", "1", "111"))), (11, "TENT02", Row("t2", At("200", "1", "200"))), (11, "TENT02", Row("t3", At("300", "1", "300"))) };
         var d2 = Dict([.. rows2.Select(r => (r.Item1, r.Item3))]);
+        Hosts.Unfinish(dir); // a crashed or cancelled run: a finished one is never continued
         var f2 = new Fake(Tok) { InventoryDict = d2, InventoryList = ListOf(rows2), Catalogue = Catalogue };
         var e2 = await RunOwnEngine(f2, t, groups);
         var s = Read(dir);
@@ -141,7 +142,7 @@ public class SetupsTests
     static async Task<Engine> RunOwnEngine(Fake f, TempDir t, ISet<string> groups)
     {
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
-        await e.Run(t.Path, "", Tok, groups, true, false, TestContext.Current.CancellationToken);
+        await e.Run(t.Path, "", () => Tok, groups, true, false, TestContext.Current.CancellationToken);
         return e;
     }
 
@@ -202,6 +203,7 @@ public class SetupsTests
         var a = new (int, string, string)[] { (11, "TENT02", Row("t1", At("10", "1", "10"))) };
         var b = new (int, string, string)[] { (11, "TENT02", Row("t1", At("99", "1", "99"))) };
         await RunOwn(new Fake(Tok) { InventoryDict = Dict((a[0].Item1, a[0].Item3)), InventoryList = ListOf(a) }, t, true, Setups, ct: TestContext.Current.CancellationToken);
+        Hosts.Unfinish(Path.Combine(t.Path, "backup-7"));
         var f = new Fake(Tok) { InventoryDict = $$"""{"11":[],"leak":"{{Tok}}"}""", InventoryList = ListOf(b), WorldItems = Worlditems(("t1", P("99", "1", "99"), 1)) };
         var e = await RunOwnEngine(f, t, Setups);
         var dir = Path.Combine(t.Path, "backup-7");
@@ -231,6 +233,7 @@ public class SetupsTests
 
         using var t3 = new TempDir("backup-test-setups-");
         await RunOwn(new Fake(Tok) { InventoryDict = "{}", InventoryList = "[]" }, t3, true, Setups, ct: TestContext.Current.CancellationToken);
+        Hosts.Unfinish(Path.Combine(t3.Path, "backup-7"));
         var f3 = new Fake(Tok);
         f3.Down.Add("/v1/Inventory/dict");
         f3.Down.Add("/v1/Inventory/list");

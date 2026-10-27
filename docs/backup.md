@@ -24,7 +24,7 @@ The window is in English, French, Spanish, Portuguese (Brazil), German or Russia
 
 ## What is saved
 
-One file per request, named by endpoint and parameters (for example `Inventory_dict__user_id=<id>.json`), body exactly as the server sent it. `manifest.json` lists every file (`path`, `endpoint`, `params` without the token, `status`, `sha256`, `time_utc`) and the requests that did not give a file (`error`), plus `tool_version`, `groups`, `uid`, `handle` and `claim_hash`. The output folder is `backup-<uid>`; the zip is `backup-<uid>-<time>.zip` beside it. A second run with "skip files already saved" only asks for what is missing.
+One file per request, named by endpoint and parameters (for example `Inventory_dict__user_id=<id>.json`), body exactly as the server sent it. `manifest.json` lists every file (`path`, `endpoint`, `params` without the token, `status`, `sha256`, `time_utc`) and the requests that did not give a file (`error`), plus `tool_version`, `groups`, `uid`, `handle`, `claim_hash` and, once a run ended whole (not cancelled, nothing left to retry), `completed_utc`. The output folder is `backup-<uid>`; the zip is `backup-<uid>-<time>.zip` beside it. "Skip files already saved" only continues a run that did not end whole (cancelled, or with requests that failed). A new run after a finished one is a new snapshot in `backup-<uid>-<yyyyMMdd-HHmmss>`, so hunts played since are saved and the first backup stays as it was.
 
 | Group | Content | Needs the running game |
 |---|---|---|
@@ -33,7 +33,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 | Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
 | Trophies and lodges | trophy list, lodges, harvest record of each own trophy | partly |
 | Hunt history | every hunt with its kills, shots and scores | no |
-| Kill pages and photos (off by default) | score sheet page and picture of every scored kill; many requests | no |
+| Kill pages and photos (off by default) | score sheet page of every scored kill and the picture of every kill that has one, newest hunts first; many requests | no |
 | Account | missions, wallet history, bank transactions, competition states, message settings, recruits, backgrounds | yes |
 | Friends | friends list, friend requests | partly |
 | Photos (off by default) | gallery pictures at full size | no |
@@ -41,7 +41,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 
 Pictures are fetched only from https URLs on a host listed in `settings.json`; anything else is logged and skipped. `oauth_consumer_key` is sent for the item catalogue request only and never appears in a file name, the log or the manifest.
 
-Requests run in one lane per host: at most one request at a time and one start per second per host, with retries and back-off. A host that stays silent after its retries gets one attempt per request until it answers again. Cancel ends the run after writing `manifest.json`, so a resumed run continues.
+Requests run in one lane per host: at most one request at a time and one start per second per host, with retries and back-off. A host that stays silent after its retries gets one attempt per request until it answers again; after 20 requests in a row that gave up, the run stops with "Backup stopped" instead of trying the rest (what was saved is kept, run again later with resume on). A `Retry-After` on a 429 or 503 is waited out instead of the fixed back-off, for at most 120 seconds. Every request has the same 120 second timeout: replies of the website are slow and a shorter limit would fail good requests. The progress line shows the requests done, the group in work and the time left, worked out from the pace of the last 90 seconds (in hours and minutes when long). Cancel ends the run after writing `manifest.json`, so a resumed run continues.
 
 ### Map setups
 
@@ -55,7 +55,7 @@ The group is on by default and runs last, after every other group, so it reads t
 
 ### Two modes
 
-- **My account**: reads the signed-in player's data using the session of the running game.
+- **My account**: reads the signed-in player's data using the session of the running game. The app asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). A JWT that the server refuses (401) is replaced and that request is made once more.
 - **Public profile**: type a handle or id. Only public data is saved; requests that need the game session are logged as "skipped, needs the game" and are not counted as failed.
 
 ## What is not saved
@@ -65,6 +65,9 @@ The group is on by default and runs last, after every other group, so it reads t
 - Other players' data (only the public profile of a typed handle is saved).
 - Full message threads.
 - Tokens: a reply that contains an access token, a JWT or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
+- Not data: a reply is saved only if it is what was asked for. API replies must be valid JSON (`null` is), pictures must start with a JPEG, PNG, GIF or WebP header, score sheets must contain a table. A proxy, login or error page, or a cut-off reply, is not saved; the request is listed in `manifest.json` as failed ("reply is not data") and the result bar says "some pages did not hold data".
+- Dead on the server: a picture or score sheet whose address answers 404 is gone for good. It is listed in `manifest.json` with the error "dead on the server (404)", is not counted among the failed requests (so it never asks you to run again) and the result bar shows its own count. A resumed run does not ask for it again.
+- Kills and photos off: when "Kill pages and photos" or "Photos" was not ticked, the result bar adds "Kill pages and photos were not saved; tick them for a complete backup." Messages are off by default for privacy; no hint is shown for them.
 - Gift codes, and any endpoint that changes state.
 
 The app shows a short version of this list in its window.
