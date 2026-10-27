@@ -38,6 +38,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         ("account", true, Session.All),
         ("friends", true, Session.Part),
         ("photos", false, Session.None),
+        ("history", false, Session.None),
         ("messages", false, Session.All),
     ];
 
@@ -145,7 +146,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         File.WriteAllBytes(Path.Combine(dir, "claim.key"), key);
         var chosen = Groups.Where(g => groups.Contains(g.Key) && g.Key != "setups" && !(g.Key == "hunts" && groups.Contains("kills"))).ToList(); // kills reads the hunts itself; setups runs last
         if (groups.Contains("setups")) Need(2); // its two reads are counted from the start
-        lock (unsized) foreach (var g in chosen) if (g.Key is "profile" or "trophies" or "hunts" or "kills" or "account" or "photos") unsized.Add(g.Key);
+        lock (unsized) foreach (var g in chosen) if (g.Key is "profile" or "trophies" or "hunts" or "kills" or "account" or "photos" or "history") unsized.Add(g.Key);
         using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct);
         this.ct = stop.Token;
         try
@@ -175,7 +176,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             await (key switch
             {
                 "profile" => Profile(), "inventory" => Inventory(), "setups" => Setups(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
-                "account" => Account(), "friends" => Friends(), "photos" => Photos(), _ => Messages(),
+                "account" => Account(), "friends" => Friends(), "photos" => Photos(), "history" => History(), _ => Messages(),
             });
         }
         catch (Exception e) when (e is not OperationCanceledException)

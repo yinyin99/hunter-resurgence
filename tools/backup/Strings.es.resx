@@ -196,6 +196,12 @@
   <data name="GroupDesc_photos" xml:space="preserve">
     <value>Fotos de la galería a tamaño completo (archivos pesados)</value>
   </data>
+  <data name="Group_history" xml:space="preserve">
+    <value>Historial de competiciones</value>
+  </data>
+  <data name="GroupDesc_history" xml:space="preserve">
+    <value>Resultado en cada competición terminada que el sitio aún lista, solo unos 7 días atrás (cientos de solicitudes)</value>
+  </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mensajes</value>
   </data>
