@@ -32,6 +32,7 @@ public partial class MainWindow : FluentWindow
     bool logDirty;
     double grownBy;
     volatile int doneNow, totalNow;
+    readonly Queue<(double Secs, int Done)> pace = new(); // progress samples of the last minute and a half: the remaining time follows the pace now, not the average since the start
 
     public MainWindow()
     {
@@ -229,6 +230,7 @@ public partial class MainWindow : FluentWindow
         Bar.IsIndeterminate = true;
         ProgressText.Text = Loc.S("Progress_Starting");
         (doneNow, totalNow) = (0, 0);
+        pace.Clear();
         clock.Restart();
         runTimer.Start();
         using var http = new HttpClient();
@@ -285,10 +287,13 @@ public partial class MainWindow : FluentWindow
         if (!Bar.IsIndeterminate) { Bar.Maximum = t; Bar.Value = Math.Min(d, t); }
         string eta = "";
         double secs = clock.Elapsed.TotalSeconds;
-        if (r.TotalKnown && r.Sent >= 3 && secs >= 5 && t > d)
+        pace.Enqueue((secs, d));
+        while (pace.Count > 1 && secs - pace.Peek().Secs > 90) pace.Dequeue();
+        var from = pace.Peek();
+        if (r.TotalKnown && Engine.SecondsLeft(from.Secs, from.Done, secs, d, t) is { } left)
         {
-            double left = (t - d) / (r.Sent / secs); // requests still to do at the rate so far, both hosts counted
-            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : Loc.F("Eta_Min", Math.Ceiling(left / 60)));
+            int min = (int)Math.Ceiling(left / 60);
+            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60));
         }
         ProgressText.Text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
     }

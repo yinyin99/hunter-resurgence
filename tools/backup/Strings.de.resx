@@ -298,6 +298,9 @@
   <data name="Eta_Min" xml:space="preserve">
     <value>noch etwa {0} Min.</value>
   </data>
+  <data name="Eta_Hours" xml:space="preserve">
+    <value>noch etwa {0} Std. {1} Min.</value>
+  </data>
   <data name="Fail_Server" xml:space="preserve">
     <value>{0}: einige Seiten haben nicht geantwortet (Serverfehler).</value>
   </data>

@@ -91,4 +91,13 @@ public class RobustnessTests
         var sheets = f.Urls.Where(u => u.StartsWith("/user/x/score/")).Select(u => u.Split("id=")[1].Split('&')[0]).ToArray();
         Assert.True(sheets.SequenceEqual(["4301", "4201", "4101"]), $"sheets newest hunt first ({string.Join(",", sheets)})");
     }
+
+    /// <summary>F5: the time left follows the pace of the samples it is given, not an average; nothing is promised on too little data.</summary>
+    [Fact]
+    public void TimeLeftFollowsThePaceBetweenTwoSamples()
+    {
+        Assert.True(Engine.SecondsLeft(0, 0, 60, 60, 660) == 600, "1 request/s, 600 to go: 600 s");
+        Assert.True(Engine.SecondsLeft(60, 60, 120, 66, 666) == 6000, "the last minute ran at 0.1 request/s: 6000 s, whatever the start was like");
+        Assert.True(Engine.SecondsLeft(0, 5, 4, 9, 100) == null && Engine.SecondsLeft(0, 5, 30, 5, 100) == null && Engine.SecondsLeft(0, 0, 30, 100, 100) == null, "under 5 s, no progress, or finished: no estimate");
+    }
 }

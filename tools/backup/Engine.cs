@@ -385,6 +385,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     static string Hex(byte[] b) => Convert.ToHexStringLower(b);
 
+    /// <summary>Seconds still to go at the pace between two progress samples (all hosts counted); null while there is too little to tell (under 5 seconds, no progress, or done).</summary>
+    public static double? SecondsLeft(double fromSecs, int fromDone, double nowSecs, int done, int total) =>
+        nowSecs - fromSecs >= 5 && done > fromDone && total > done ? (total - done) / ((done - fromDone) / (nowSecs - fromSecs)) : null;
+
     void Need(int n) { progress(Volatile.Read(ref done), Interlocked.Add(ref total, n)); }
 
     async Task<byte[]?> Get(R r, string? name = null, Func<byte[], bool>? ready = null)
