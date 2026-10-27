@@ -76,6 +76,16 @@ public class HistoryTests
         Assert.True(History(t)["totals"]!["editions"]!.GetValue<int>() == 45, "all 45 are in the derived file");
     }
 
+    /// <summary>This API sends numbers as strings as well: a total of "45" pages like 45.</summary>
+    [Fact]
+    public async Task TotalSentAsAStringIsRead()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var f = World(off => PreviousPage(45, Enumerable.Range(1, 45).Skip(Math.Min(off, 40)).Take(20)).Replace("\"total\":45", "\"total\":\"45\""), id => EditionReply(id, []));
+        await Run(f, t);
+        Assert.True(Offsets(f).SequenceEqual(["0", "20", "40"]) && Requests(f, Edition) == 45, $"offsets {string.Join(",", Offsets(f))}, {Requests(f, Edition)} editions");
+    }
+
     /// <summary>A server that repeats a page does not loop and does not duplicate an edition.</summary>
     [Fact]
     public async Task RepeatedPageCausesNoLoopAndNoDuplicate()
