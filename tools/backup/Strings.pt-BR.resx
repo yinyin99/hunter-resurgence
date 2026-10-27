@@ -283,6 +283,9 @@
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} imagens ou páginas não existem mais no servidor (404), por isso não puderam ser salvas.</value>
   </data>
+  <data name="Msg_KillsOff" xml:space="preserve">
+    <value>As páginas de abates e as fotos não foram salvas; marque-as para um backup completo.</value>
+  </data>
   <data name="Msg_Setups" xml:space="preserve">
     <value>Montagens nos mapas: {0} itens colocados em {1} mapas.</value>
   </data>
