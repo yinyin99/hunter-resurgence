@@ -360,10 +360,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             var count = (th["messages"] as JsonArray)?.Count ?? 0;
             var total = (long?)th["total"];
             log($"messages {id}: total {total}, {count} in reply");
-            rows.Add(new JsonObject { ["user_id"] = id, ["read"] = c["read"]?.DeepClone(), ["file"] = name, ["total"] = total, ["messages"] = count });
+            rows.Add(new JsonObject { ["user_id"] = c["user_id"]!.DeepClone(), ["read"] = c["read"]?.DeepClone(), ["file"] = name, ["total"] = total, ["messages"] = count });
         }
         if (list == null) return;
-        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => (long?)x["total"] != (long)(int)x["messages"]!).Select(x => (JsonNode?)x["user_id"]!.ToString())]);
+        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => (long?)x["total"] != (long)(int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
         var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
         WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
         lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
