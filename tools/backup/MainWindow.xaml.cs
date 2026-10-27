@@ -142,7 +142,8 @@ public partial class MainWindow : FluentWindow
             if (!boxes[i].IsEnabled) boxes[i].ToolTip = Loc.S("Tip_Public");
             Groups.Children.Add(boxes[i]);
         }
-        boxes[HistoryAt].Click += (_, _) => SyncOlder();
+        boxes[HistoryAt].Checked += (_, _) => SyncOlder(); // not Click: a keyboard, screen-reader or code change of the tick counts too
+        boxes[HistoryAt].Unchecked += (_, _) => SyncOlder();
         SyncOlder();
     }
 
