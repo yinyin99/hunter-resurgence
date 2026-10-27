@@ -55,7 +55,7 @@ The group is on by default and runs last, after every other group, so it reads t
 
 ### Two modes
 
-- **My account**: reads the signed-in player's data using the session of the running game.
+- **My account**: reads the signed-in player's data using the session of the running game. The app asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). A JWT that the server refuses (401) is replaced and that request is made once more.
 - **Public profile**: type a handle or id. Only public data is saved; requests that need the game session are logged as "skipped, needs the game" and are not counted as failed.
 
 ## What is not saved

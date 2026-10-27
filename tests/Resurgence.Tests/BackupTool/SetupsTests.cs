@@ -40,7 +40,7 @@ public class SetupsTests
     static JsonNode Read(string dir, string file = "map-setups.json") => JsonNode.Parse(File.ReadAllText(Path.Combine(dir, file)))!;
 
     static Task<string> RunOwn(Fake f, TempDir t, bool resume, ISet<string> groups, bool zip = false, CancellationToken ct = default) =>
-        Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "", Tok, groups, resume, zip, ct);
+        Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "", () => Tok, groups, resume, zip, ct);
 
     // the world as the first tests use it: 7 rows, 6 placed on two maps, one picked up that still has a location
     static (string Dict, string List, string Me) World()
@@ -73,7 +73,7 @@ public class SetupsTests
         using var t = new TempDir("backup-test-setups-");
         var f = FakeWorld();
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
-        await e.Run(t.Path, "", Tok, new HashSet<string> { "profile", "setups" }, false, false, TestContext.Current.CancellationToken);
+        await e.Run(t.Path, "", () => Tok, new HashSet<string> { "profile", "setups" }, false, false, TestContext.Current.CancellationToken);
         var s = Read(Path.Combine(t.Path, "backup-7"));
         Assert.True(s["format"]!.GetValue<int>() == 1 && s["uid"]!.ToString() == "7" && s["tool_version"] != null, "format, uid, tool version");
         Assert.True(s["totals"]!["placed"]!.GetValue<int>() == 6 && s["totals"]!["reserves"]!.GetValue<int>() == 2 && e.SetupItems == 6 && e.SetupReserves == 2 && !e.SetupChecks, "6 placed items on 2 maps, the picked-up row is not one, sources agree");
@@ -142,7 +142,7 @@ public class SetupsTests
     static async Task<Engine> RunOwnEngine(Fake f, TempDir t, ISet<string> groups)
     {
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
-        await e.Run(t.Path, "", Tok, groups, true, false, TestContext.Current.CancellationToken);
+        await e.Run(t.Path, "", () => Tok, groups, true, false, TestContext.Current.CancellationToken);
         return e;
     }
 

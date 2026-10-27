@@ -235,13 +235,13 @@ public partial class MainWindow : FluentWindow
         runTimer.Start();
         using var http = new HttpClient();
         var run = eng = new Engine(cfg, http, Log, (d, t) => (doneNow, totalNow) = (d, t), keyPath);
-        string outDir = OutDir.Text, token = own ? watcher!.Token! : "";
+        string outDir = OutDir.Text;
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
         InfoBarSeverity sev; Func<(string Title, string Msg)> text; string? path = null;
         try
         {
-            path = await Task.Run(() => run.Run(outDir, who, own ? token : null, keys, resume, zip, ct));
+            path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
             var (saved, skipped, failed, stale) = (run.Saved, run.Skipped, run.Failed, run.TokenStale);
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck ? InfoBarSeverity.Success : InfoBarSeverity.Warning;

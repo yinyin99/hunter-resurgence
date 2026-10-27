@@ -24,7 +24,7 @@ public class EngineTests
         string tok = Tok;
         var groups = Hosts.AllGroups;
         var f1 = new Fake(tok);
-        await Hosts.Make(f1, key).Run(tmp, "", tok, groups, true, true, TestContext.Current.CancellationToken);
+        await Hosts.Make(f1, key).Run(tmp, "", () => tok, groups, true, true, TestContext.Current.CancellationToken);
         var good = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["error"] == null).ToList();
         return (good.Select(e => e!["path"]!.ToString()).ToHashSet(), f1.Seen.Count);
     }
@@ -37,7 +37,7 @@ public class EngineTests
         string tok = Tok;
         var groups = Hosts.AllGroups;
         var f1 = new Fake(tok);
-        var res = await Hosts.Make(f1, key).Run(tmp, "", tok, groups, true, true, TestContext.Current.CancellationToken);
+        var res = await Hosts.Make(f1, key).Run(tmp, "", () => tok, groups, true, true, TestContext.Current.CancellationToken);
         Assert.True(res.EndsWith(".zip") && File.Exists(res), "zip written");
         var m = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!;
         Assert.True(m["uid"]!.ToString() == "7" && m["handle"]!.ToString() == "hh" && m["tool_version"] != null, "manifest uid, handle, version");
@@ -53,22 +53,22 @@ public class EngineTests
         Assert.True(good.Any(e => e!["path"]!.ToString() == "Public_user_expedition__user_id=7__expedition_id=42.json") && f1.Seen.Count(p => p == "/v1/User/jwt") == 1, "expedition detail fetched, one JWT");
 
         var f2 = new Fake(tok);
-        await Hosts.Make(f2, key).Run(tmp, "", tok, groups, true, false, TestContext.Current.CancellationToken);
+        await Hosts.Make(f2, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         Assert.True(f2.Seen.Count == 2 && f2.Seen.Contains("/v1/Me/me") && f2.Seen.Contains("/v1/Mission/missions"), $"resume asks only identity and the unsaved reply ({f2.Seen.Count} requests)");
         var fz = new Fake(tok);
         var ez = Hosts.Make(fz, key);
         ez.SteamAccount = () => 0;
-        await ez.Run(tmp, "", tok, groups, true, false, TestContext.Current.CancellationToken);
+        await ez.Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         Assert.True(JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!.AsObject().ContainsKey("steam_id64") == false, "Steam not signed in (0): no steam_id64 in the manifest");
 
         File.Delete(Path.Combine(dir, "manifest.json")); // crash before the manifest was written
         var f3 = new Fake(tok);
-        await Hosts.Make(f3, key).Run(tmp, "", tok, groups, true, false, TestContext.Current.CancellationToken);
+        await Hosts.Make(f3, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var m3 = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
         Assert.True(f3.Seen.Count == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
 
         var f4 = new Fake("z");
-        var e4 = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(f4, key).Run(tmp, "", tok, groups, true, false, TestContext.Current.CancellationToken));
+        var e4 = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(f4, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken));
         Assert.True(e4.Message.Contains("start a hunt"), "errorCode 11 -> start a hunt to refresh");
     }
 
@@ -80,7 +80,7 @@ public class EngineTests
         string tok = Tok;
         var groups = Hosts.AllGroups;
         var f = new Fake(tok) { DelayMs = 15 };
-        await Hosts.Make(f, key).Run(tmp, "", tok, groups, false, false, TestContext.Current.CancellationToken);
+        await Hosts.Make(f, key).Run(tmp, "", () => tok, groups, false, false, TestContext.Current.CancellationToken);
         Assert.True(f.MaxActive["api.test"] == 1, $"api host: never two requests at once ({f.Starts["api.test"].Count} requests)");
         Assert.True(f.MaxActive["apiv2.test"] == 1 && f.Overlap, $"apiv2 lane runs beside the api lane ({f.Starts["apiv2.test"].Count} requests)");
     }
@@ -95,7 +95,7 @@ public class EngineTests
         var fp = new Fake(tok);
         var ep = Hosts.Make(fp, key);
         ep.PaceMs = 120;
-        await ep.Run(tmp, "", tok, new HashSet<string> { "profile", "friends" }, false, false, TestContext.Current.CancellationToken);
+        await ep.Run(tmp, "", () => tok, new HashSet<string> { "profile", "friends" }, false, false, TestContext.Current.CancellationToken);
         var gaps = fp.Starts.Where(h => h.Value.Count > 1).Select(h => h.Value.Zip(h.Value.Skip(1), (a, b) => (b - a).TotalMilliseconds).Min()).ToList();
         Assert.True(gaps.Count == 2 && gaps.All(g => g >= 100), $"each host is paced (smallest gaps {string.Join(" and ", gaps.Select(g => (int)g + " ms"))} for 120 ms)");
     }
@@ -110,14 +110,14 @@ public class EngineTests
         var full = await FullRun();
         using var cts = new CancellationTokenSource();
         var fc = new Fake(tok) { DelayMs = 10, Cts = cts, CancelAt = n => n == 8 };
-        var ex = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(fc, key).Run(tmp, "", tok, groups, true, false, cts.Token));
+        var ex = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(fc, key).Run(tmp, "", () => tok, groups, true, false, cts.Token));
         Assert.True(ex is OperationCanceledException, "cancel ends the run with OperationCanceledException");
         Assert.True(fc.StartedAtCancel == 8 && fc.Seen.Count == 8, $"no request starts after cancel ({fc.Seen.Count} started)");
         var saved = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["error"] == null).Select(e => e!["path"]!.ToString()).ToList();
         Assert.True(saved.Count > 0 && saved.All(p => File.Exists(Path.Combine(dir, p))) && !Directory.EnumerateFiles(dir, "*.part").Any(), $"cancelled run left a manifest of {saved.Count} saved files");
 
         var fr = new Fake(tok);
-        await Hosts.Make(fr, key).Run(tmp, "", tok, groups, true, false, TestContext.Current.CancellationToken);
+        await Hosts.Make(fr, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var after = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["error"] == null).Select(e => e!["path"]!.ToString()).ToHashSet();
         Assert.True(after.SetEquals(full.Files), "resumed run completes the cancelled one");
         Assert.True(fr.Seen.Count < full.Requests, $"resume asked {fr.Seen.Count} requests instead of {full.Requests}");
@@ -132,7 +132,7 @@ public class EngineTests
         var groups = Hosts.AllGroups;
         var fg = new Fake(tok);
         var eg = Hosts.Make(fg, key);
-        await eg.Run(tmp, "", tok, new HashSet<string> { "profile", "trophies", "kills", "account" }, false, false, TestContext.Current.CancellationToken);
+        await eg.Run(tmp, "", () => tok, new HashSet<string> { "profile", "trophies", "kills", "account" }, false, false, TestContext.Current.CancellationToken);
         var mg = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
         JsonNode? Entry(string path) => mg.FirstOrDefault(e => e!["path"]!.ToString() == path);
         Assert.True(fg.Seen.Count(p => p == "/v1/Leaderboard/personal") == 4 && Entry("Leaderboard_personal__user_id=7__season_no=3.json") is { } && Entry("Leaderboard_personal__user_id=7__season_no=4.json") == null,

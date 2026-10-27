@@ -83,6 +83,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead; public int GiveUps; }
 
     string? token, jwt, handle, claimHash;
+    Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
+    readonly object renewing = new();
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
     string uid = "", dir = "";
     bool own, resume;
@@ -104,9 +106,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     /// <summary>idText empty = the account of <paramref name="token"/>; a handle or id = public data only. Returns the zip, or the folder.
     /// Cancelling throws OperationCanceledException after manifest.json was written for what was saved, so a resumed run continues.</summary>
-    public async Task<string> Run(string outRoot, string idText, string? token, ISet<string> groups, bool resume, bool zip, CancellationToken ct)
+    public async Task<string> Run(string outRoot, string idText, Func<string?>? tokenOf, ISet<string> groups, bool resume, bool zip, CancellationToken ct)
     {
-        (this.token, this.resume, this.ct, own) = (token, resume, ct, idText.Length == 0);
+        (this.tokenOf, this.resume, this.ct, own) = (tokenOf, resume, ct, idText.Length == 0);
+        token = tokenOf?.Invoke();
         http.Timeout = TimeSpan.FromSeconds(120); // player queries are slow
         http.DefaultRequestHeaders.UserAgent.ParseAdd(UA);
         if (own && token == null) throw new InvalidOperationException(Loc.S("Err_NoToken"));
@@ -426,13 +429,21 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             log($"skipped, needs the game: {r.Path}"); // public profile: never asked, so not a failure and not in the manifest
             return null;
         }
+        if ((r.Auth || r.Jwt) && own) Renew();
         if ((r.Auth || r.Jwt) && (token == null || TokenStale)) return Fail(r, name, null, "needs the game session (missing or refused)");
         if (r.Jwt && !await EnsureJwt()) return Fail(r, name, null, "no JWT", ServerError);
         log($"{(r.V2 || r.Abs != null ? "GET" : "POST")} {r.Path} {string.Join('&', Pub(r).Select(p => $"{p.K}={p.V}"))}".TrimEnd());
+        var jwtRetried = false;
         for (int poll = 0; ; poll++)
         {
             string? why = null;
             if (await Send(r, e => why = e) is not { } x) return Fail(r, name, null, why ?? "network failure", ServerError);
+            if (r.Jwt && x.Status == 401 && !jwtRetried)
+            {
+                // expired (or made for another address): one new JWT, and this request once more
+                (jwtRetried, jwt) = (true, null);
+                if (await EnsureJwt()) { poll--; continue; }
+            }
             if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body); return x.Body; } // "no entry" is an answer, not a failure
             if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");
             if (Leaks(r, x.Body)) return Fail(r, name, x.Status, "reply contains a token, not saved");
@@ -444,6 +455,18 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             }
             Save(r, name, x.Status, x.Body);
             return x.Body;
+        }
+    }
+
+    /// <summary>A newer token from the game replaces the old one, clears "refused" and drops the JWT, which belongs to the token it was made with.</summary>
+    void Renew()
+    {
+        if (tokenOf?.Invoke() is not { } now) return;
+        lock (renewing)
+        {
+            if (now == token) return;
+            (token, jwt, jwtAt, TokenStale) = (now, null, default, false);
+            log("new game session found");
         }
     }
 

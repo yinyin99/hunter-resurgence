@@ -12,7 +12,7 @@ public class RobustnessTests
     {
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
         tune?.Invoke(e);
-        await e.Run(t.Path, "", Tok, new HashSet<string>(groups), resume, false, ct ?? TestContext.Current.CancellationToken);
+        await e.Run(t.Path, "", () => Tok, new HashSet<string>(groups), resume, false, ct ?? TestContext.Current.CancellationToken);
         return e;
     }
 
@@ -142,5 +142,38 @@ public class RobustnessTests
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // a cap that does not work would wait an hour
         var e2 = await Run(f2, t2, ["profile"], ct: cts.Token, tune: e => (e.BackoffMs, e.RetryAfterCapMs) = (0, 200));
         Assert.True(e2.Failed == 0 && f2.Seen.Count(p => p == "/v1/Skill/list") == 2, "an hour asked for, 200 ms waited (the cap)");
+    }
+
+    /// <summary>F7a: a JWT that was refused (401) is replaced and the request is made once more.</summary>
+    [Fact]
+    public async Task RefusedJwtIsReplacedAndTheRequestRepeatedOnce()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { Throttle = ("/game/user/loadout", 1, 401, 0) };
+        var e = await Run(f, t, ["inventory"]);
+        Assert.True(e.Failed == 0 && f.Seen.Count(p => p == "/game/user/loadout") == 2 && f.Seen.Count(p => p == "/v1/User/jwt") == 2, $"loadout asked twice, a second JWT fetched ({f.Seen.Count(p => p == "/v1/User/jwt")}), 0 failed");
+        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "game_user_loadout.json")), "the repeated request was saved");
+
+        using var t2 = new TempDir("backup-test-v03-");
+        var f2 = new Fake(Tok) { Throttle = ("/game/user/loadout", 5, 401, 0) };
+        var e2 = await Run(f2, t2, ["inventory"]);
+        Assert.True(e2.Failed == 1 && f2.Seen.Count(p => p == "/game/user/loadout") == 2, "a JWT that is refused again is not tried forever: one retry, then failed");
+    }
+
+    /// <summary>F7b: the engine asks for the current token before each request that needs it. A new token replaces the refused one and clears the stale mark.</summary>
+    [Fact]
+    public async Task NewTokenFromTheGameIsUsedFromThenOn()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var old = Tok;
+        var fresh = new string('b', 40);
+        var current = old;
+        var f = new Fake(Tok);
+        f.CancelAt = n => { if (n == 6) { f.Revoked = old; current = fresh; } return false; }; // from the 6th request on the old token is refused and the game has a new one
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "", () => current, new HashSet<string> { "account" }, false, false, TestContext.Current.CancellationToken);
+        var auth = f.Forms.Where(x => x.Contains("oauth_access_token")).ToList();
+        Assert.True(auth.Count(x => x.Contains(fresh)) >= 3 && !e.TokenStale, $"requests after the change carry the new token ({auth.Count(x => x.Contains(fresh))}) and the stale mark is cleared");
+        Assert.True(e.Failed <= 2, $"only the fake's deliberate token leak and the one request that met the revoked token failed ({e.Failed}: {string.Join("; ", Manifest(Path.Combine(t.Path, "backup-7"))["files"]!.AsArray().Where(x => x!["error"] != null).Select(x => x!["path"] + " " + x["error"]))})");
     }
 }

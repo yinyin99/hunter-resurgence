@@ -28,6 +28,10 @@ public sealed class Fake : HttpMessageHandler
     public readonly HashSet<string> Down = [];
     /// <summary>Requests whose form carried the session token.</summary>
     public int WithToken;
+    /// <summary>The form of every request, in the order they started.</summary>
+    public readonly List<string> Forms = [];
+    /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
+    public string? Revoked;
     /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
     public (string Path, int Times, int Status, int After)? Throttle;
     int throttled;
@@ -45,6 +49,7 @@ public sealed class Fake : HttpMessageHandler
             Seen.Add(path);
             Urls.Add(req.RequestUri.PathAndQuery);
             if (form.Contains(Token)) WithToken++;
+            Forms.Add(form);
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
@@ -61,6 +66,7 @@ public sealed class Fake : HttpMessageHandler
             r.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromSeconds(th.After));
             return r;
         }
+        if (Revoked != null && form.Contains(Revoked) && path.StartsWith("/v1/")) return new HttpResponseMessage { Content = new StringContent("""{"errorCode":11,"message":"access denied"}""") };
         if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
         var body = path switch
         {
