@@ -41,7 +41,7 @@ One file per request, named by endpoint and parameters (for example `Inventory_d
 
 Pictures are fetched only from https URLs on a host listed in `settings.json`; anything else is logged and skipped. `oauth_consumer_key` is sent for the item catalogue request only and never appears in a file name, the log or the manifest.
 
-Requests run in one lane per host: at most one request at a time and one start per second per host, with retries and back-off. A host that stays silent after its retries gets one attempt per request until it answers again. The progress line shows the requests done, the group in work and the time left, worked out from the pace of the last 90 seconds (in hours and minutes when long). Cancel ends the run after writing `manifest.json`, so a resumed run continues.
+Requests run in one lane per host: at most one request at a time and one start per second per host, with retries and back-off. A host that stays silent after its retries gets one attempt per request until it answers again; after 20 requests in a row that gave up, the run stops with "Backup stopped" instead of trying the rest (what was saved is kept, run again later with resume on). A `Retry-After` on a 429 or 503 is waited out instead of the fixed back-off, for at most 120 seconds. Every request has the same 120 second timeout: replies of the website are slow and a shorter limit would fail good requests. The progress line shows the requests done, the group in work and the time left, worked out from the pace of the last 90 seconds (in hours and minutes when long). Cancel ends the run after writing `manifest.json`, so a resumed run continues.
 
 ### Map setups
 

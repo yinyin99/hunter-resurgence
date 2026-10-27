@@ -50,6 +50,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     /// <summary>Minimum gap between two request starts on one host, and the first retry wait (doubles, 4 retries).</summary>
     public int PaceMs = 1000, BackoffMs = 5000;
+    /// <summary>A host lane that gave up on this many requests in a row ends the run (what was saved is kept); the longest wait a Retry-After header can ask for.</summary>
+    public int GiveUpLimit = 20, RetryAfterCapMs = 120_000;
     /// <summary>The Steam account id of the signed-in Steam user, 0 = nobody. Read-only registry; a field so the tests do not depend on this PC.</summary>
     public Func<uint> SteamAccount = ReadSteamAccount;
     /// <summary>The API refused the token (errorCode 5 or 11) or it is missing: the UI says "start a hunt to refresh".</summary>
@@ -78,7 +80,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     /// <summary>One request at a time per host, at most one start per PaceMs. Hosts run side by side.</summary>
     /// <summary>Dead = a request gave up after its retries: the rest of the run gets one attempt per request, no back-off, until one answers.</summary>
-    sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead; }
+    sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead; public int GiveUps; }
 
     string? token, jwt, handle, claimHash;
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
@@ -526,6 +528,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 ct.ThrowIfCancellationRequested(); // the last check before a request leaves
                 lane.Last = DateTime.UtcNow;
                 string err;
+                var retryAfter = 0.0;
                 try
                 {
                     using var req = Build(r);
@@ -533,8 +536,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     using var resp = await http.SendAsync(req, ct);
                     var body = await resp.Content.ReadAsByteArrayAsync(ct);
                     var st = (int)resp.StatusCode;
-                    if (st is not (403 or 407 or 429 or >= 500)) { lane.Dead = false; return (st, body); }
+                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body); }
                     err = $"HTTP {st}";
+                    if (st is 429 or 503 && resp.Headers.RetryAfter is { } ra) // the server says how long to wait
+                        retryAfter = Math.Min(ra.Delta?.TotalMilliseconds ?? Math.Max(0, ((ra.Date ?? DateTimeOffset.UtcNow) - DateTimeOffset.UtcNow).TotalMilliseconds), RetryAfterCapMs);
                 }
                 catch (Exception e) when ((e is HttpRequestException or TaskCanceledException or IOException) && !ct.IsCancellationRequested)
                 {
@@ -545,9 +550,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     log(lane.Dead ? $"! host not answering, try again later: {r.Path} ({err})" : $"! giving up on {r.Path}: {err}");
                     lane.Dead = true;
                     gaveUp?.Invoke(err);
+                    if (++lane.GiveUps >= GiveUpLimit) throw new HostSilentException(Host(r), lane.GiveUps);
                     return null;
                 }
-                var d = BackoffMs << n;
+                var d = retryAfter > 0 ? (int)retryAfter : BackoffMs << n;
                 log($"{r.Path}: {err}, retry in {d / 1000} s");
                 await Task.Delay(d, ct);
             }
@@ -638,3 +644,6 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         return k;
     }
 }
+
+/// <summary>A host lane gave up on <see cref="Engine.GiveUpLimit"/> requests in a row: trying the rest would only wait.</summary>
+sealed class HostSilentException(string host, int count) : InvalidOperationException(Loc.F("Err_HostSilent", host, count));

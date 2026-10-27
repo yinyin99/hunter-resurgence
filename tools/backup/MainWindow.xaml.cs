@@ -249,6 +249,12 @@ public partial class MainWindow : FluentWindow
                 Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
         }
+        catch (HostSilentException ex)
+        {
+            sev = InfoBarSeverity.Warning;
+            text = () => (Loc.S("Msg_Stopped"), ex.Message);
+            path = run.Folder;
+        }
         catch (OperationCanceledException)
         {
             var (saved, skipped) = (run.Saved, run.Skipped);

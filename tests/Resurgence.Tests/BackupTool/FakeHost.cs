@@ -28,6 +28,9 @@ public sealed class Fake : HttpMessageHandler
     public readonly HashSet<string> Down = [];
     /// <summary>Requests whose form carried the session token.</summary>
     public int WithToken;
+    /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
+    public (string Path, int Times, int Status, int After)? Throttle;
+    int throttled;
     readonly object gate = new();
     public Fake(string token) => Token = token;
 
@@ -52,6 +55,12 @@ public sealed class Fake : HttpMessageHandler
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }
         finally { lock (gate) Active[host]--; }
         if (path.Contains("/personal/") || path == "/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
+        if (Throttle is { } th && path == th.Path && Interlocked.Increment(ref throttled) <= th.Times)
+        {
+            var r = new HttpResponseMessage((HttpStatusCode)th.Status) { Content = new StringContent("slow down") };
+            r.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromSeconds(th.After));
+            return r;
+        }
         if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
         var body = path switch
         {

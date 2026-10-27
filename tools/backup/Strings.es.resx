@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Error en la copia de seguridad</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Copia detenida</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Guardados: {0}, omitidos (ya estaban): {1}, con error: {2}.</value>
   </data>
@@ -315,6 +318,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>Error en la búsqueda (¿nombre de usuario desconocido?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} dejó de responder (fallaron {1} solicitudes seguidas), así que no se intentó el resto. Lo guardado se conserva: vuelve a ejecutarla más tarde con la reanudación activada.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>No hay ningún ID de usuario en la respuesta</value>

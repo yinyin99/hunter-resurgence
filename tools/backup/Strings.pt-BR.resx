@@ -268,6 +268,9 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>O backup falhou</value>
   </data>
+  <data name="Msg_Stopped" xml:space="preserve">
+    <value>Backup interrompido</value>
+  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Salvos: {0}, ignorados (já existiam): {1}, com falha: {2}.</value>
   </data>
@@ -315,6 +318,9 @@
   </data>
   <data name="Err_Lookup" xml:space="preserve">
     <value>A consulta falhou (apelido desconhecido?)</value>
+  </data>
+  <data name="Err_HostSilent" xml:space="preserve">
+    <value>{0} parou de responder ({1} solicitações seguidas falharam), então o resto não foi tentado. O que foi salvo é mantido: execute de novo mais tarde com a retomada ativada.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Nenhum ID de usuário na resposta</value>

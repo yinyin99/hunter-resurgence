@@ -100,4 +100,47 @@ public class RobustnessTests
         Assert.True(Engine.SecondsLeft(60, 60, 120, 66, 666) == 6000, "the last minute ran at 0.1 request/s: 6000 s, whatever the start was like");
         Assert.True(Engine.SecondsLeft(0, 5, 4, 9, 100) == null && Engine.SecondsLeft(0, 5, 30, 5, 100) == null && Engine.SecondsLeft(0, 0, 30, 100, 100) == null, "under 5 s, no progress, or finished: no estimate");
     }
+
+    /// <summary>F6: a host lane that gave up on N requests in a row ends the run with a clear exception; what was saved is kept.</summary>
+    [Fact]
+    public async Task HostThatKeepsFailingEndsTheRunAfterTheBudget()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { DeadHost = "apiv2.test" };
+        var ex = await Assert.ThrowsAsync<HostSilentException>(() => Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 5)));
+        Assert.True(ex.Message.Contains("apiv2.test") && ex.Message.Contains('3'), "the message names the host and the count");
+        Assert.True(f.Starts["apiv2.test"].Count == 5 + 2, $"one back-off cycle (5 attempts), then one attempt each until the 3rd give-up ({f.Starts["apiv2.test"].Count} attempts)");
+        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "manifest.json")) && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] == null, "the manifest of what was saved is written, the run is not finished");
+    }
+
+    /// <summary>F6: an answer between failures starts the count again, so a flaky host is not cut off.</summary>
+    [Fact]
+    public async Task AnswerResetsTheFailureCount()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Down.Add("/game/user/7/profile");
+        f.Down.Add("/game/user/7/ranks");
+        var e = await Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 0));
+        Assert.True(e.Failed == 2, "two requests failed in a row, below the budget of 3, and the run went on");
+    }
+
+    /// <summary>F6: a 429 or 503 with Retry-After is waited out as the server asked (capped); other waits are the plain back-off.</summary>
+    [Theory]
+    [InlineData(429)]
+    [InlineData(503)]
+    public async Task RetryAfterIsHonouredAndCapped(int status)
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { Throttle = ("/v1/Skill/list", 1, status, 1) };
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        var e = await Run(f, t, ["profile"], tune: e => e.BackoffMs = 0);
+        Assert.True(clock.Elapsed >= TimeSpan.FromMilliseconds(900) && e.Failed == 0 && f.Seen.Count(p => p == "/v1/Skill/list") == 2, $"waited the second the server asked for, then the request went through ({clock.ElapsedMilliseconds} ms)");
+
+        using var t2 = new TempDir("backup-test-v03-");
+        var f2 = new Fake(Tok) { Throttle = ("/v1/Skill/list", 1, status, 3600) };
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // a cap that does not work would wait an hour
+        var e2 = await Run(f2, t2, ["profile"], ct: cts.Token, tune: e => (e.BackoffMs, e.RetryAfterCapMs) = (0, 200));
+        Assert.True(e2.Failed == 0 && f2.Seen.Count(p => p == "/v1/Skill/list") == 2, "an hour asked for, 200 ms waited (the cap)");
+    }
 }
