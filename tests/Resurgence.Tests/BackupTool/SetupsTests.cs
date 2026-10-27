@@ -274,4 +274,50 @@ public class SetupsTests
         var m = Read(Path.Combine(t.Path, "backup-7"), "manifest.json")["files"]!.AsArray();
         Assert.True(m.Count(x => x!["path"]!.ToString() == "Inventory_dict__user_id=7.json") == 1, "one manifest entry for the dict");
     }
+
+    // ---------- the big synthetic fixture: made-up ids and numbers, one of every kind the restore has to handle ----------
+
+    static string Loc(string x, string y, string z, string dir, int reserve) =>
+        $$"""{"pos":{"x":{{x}},"y":{{y}},"z":{{z}}},"dir":{{dir}},"reserve":{{reserve}}}""";
+
+    const string DirA = """{"x":-0.999,"y":0,"z":0.25}""";
+    const string FeederMeta = """{"reserve":2,"bait_amount":7,"bait_attractiveness":1,"penalty_remaining":0,"owner_note":9}""";
+
+    /// <summary>
+    /// One dict and one list reply with: a tent (a1), a tree stand (a2), a tower (a3), a feeder (a4: location reserve 3, metadata reserve 2),
+    /// climbing gear (a5, units 20), a slot-0 row that keeps a location (z0), a slot-23 row without a location (n1), a row with dir null (d1)
+    /// and a row only the dict has (o1). With <paramref name="lag"/> the dict still holds the feeder as it was before a refill.
+    /// </summary>
+    static (string Dict, string List) Big(bool lag = false)
+    {
+        var both = new (int Item, string Define, string Row)[]
+        {
+            (11, "TENT02", Row("a1", Loc("3144.645", "412.5", "-98.125", DirA, 1))),
+            (12, "TREE_STAND01", Row("a2", Loc("-501.5", "300", "77.75", DirA, 1), metadata: """{"tree_shape_key":5,"tree_shape_position_x":-501500,"tree_shape_position_y":300000,"tree_shape_position_z":77750}""")),
+            (14, "DEPLOYABLE_HUNTING_TOWER_01", Row("a3", Loc("10", "20", "30", DirA, 1), metadata: """{"deployable_timestamp":1700000000,"is_constructing":0}""")),
+            (13, "BEAR_BAIT_BARREL", Row("a4", Loc("-7.5", "8", "9.125", DirA, 3), metadata: FeederMeta)),
+            (354, "CLIMBING_GEAR_01", Row("a5", Loc("40", "50", "60", DirA, 8), units: "20")),
+            (11, "TENT02", Row("z0", Loc("1", "2", "3", DirA, 1), slot: 0)),
+            (11, "TENT02", Row("n1", null, units: "5", metadata: """{"k":1}""")),
+            (11, "TENT02", Row("d1", Loc("70", "80", "90", "null", 1))),
+        };
+        var dictRows = both.Select(r => r.Row == both[3].Row && lag ? (r.Item, Row("a4", Loc("-7.5", "8", "9.125", DirA, 3), metadata: FeederMeta.Replace("\"bait_amount\":7", "\"bait_amount\":3"))) : (r.Item, r.Row))
+            .Prepend((11, Row("o1", Loc("5", "5", "5", DirA, 1)))); // first in the reply, so that sorting is the file's work
+        return (Dict([.. dictRows]), ListOf(both));
+    }
+
+    static JsonNode Item(JsonNode setups, string guid) =>
+        setups["reserves"]!.AsArray().SelectMany(r => r!["items"]!.AsArray()).Single(i => i!["guid"]!.ToString() == guid)!;
+
+    /// <summary>Item 1: the list wins when both replies hold a row (the dict can lag a change); a row only the dict has is still there.</summary>
+    [Fact]
+    public async Task ListRowWinsOverDictAndDictOnlyRowStays()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big(lag: true);
+        await RunOwn(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, false, Setups, ct: TestContext.Current.CancellationToken);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(Item(s, "a4")["metadata"]!["bait_amount"]!.GetValue<int>() == 7, "the feeder has the list's metadata, not the lagging dict's");
+        Assert.True(Item(s, "o1")["in"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["dict"]), "a row only the dict has is kept");
+    }
 }

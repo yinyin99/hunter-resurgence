@@ -143,8 +143,9 @@ sealed partial class Engine
             if (!seen.TryGetValue(guid, out var l)) seen[guid] = l = [];
             l.Add((src, pos));
         }
-        foreach (var r in dict?.Placed ?? []) { Add("dict", r.Guid, r.Node["location"]!["pos"]); rows[r.Guid] = r; }
-        foreach (var r in list?.Placed ?? []) { Add("list", r.Guid, r.Node["location"]!["pos"]); rows.TryAdd(r.Guid, r); }
+        // the list wins when both hold a row: the dict can lag a change (a feeder refill showed in the list a minute before the dict); a row only the dict has is kept
+        foreach (var r in dict?.Placed ?? []) { Add("dict", r.Guid, r.Node["location"]!["pos"]); rows.TryAdd(r.Guid, r); }
+        foreach (var r in list?.Placed ?? []) { Add("list", r.Guid, r.Node["location"]!["pos"]); rows[r.Guid] = r; }
         foreach (var w in meRows ?? []) Add("me", w?["id"]?.ToString() ?? "", w?["pos"]);
 
         var avail = new List<string>();
