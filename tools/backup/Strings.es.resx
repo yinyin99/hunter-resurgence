@@ -212,7 +212,7 @@
     <value>Mensajes</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Cada conversación se abre y se guarda completa, leídas y no leídas. Las no leídas aparecerán después como leídas en el servidor. Desactivado por defecto por privacidad.</value>
+    <value>Cada conversación, leída o no, guardada completa. Las no leídas figurarán después como leídas.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Búsqueda de la cuenta</value>

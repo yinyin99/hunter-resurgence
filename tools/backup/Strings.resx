@@ -212,7 +212,7 @@
     <value>Messages</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Every conversation is opened and saved in full, read and unread. Unread ones will then show as read on the server. Off by default for privacy.</value>
+    <value>Every conversation, read and unread, saved in full. Unread ones will then show as read.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Account lookup</value>

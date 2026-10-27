@@ -203,7 +203,7 @@
     <value>Wettbewerbsverlauf</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Ergebnis in jedem beendeten Wettbewerb, den die Website noch aufführt, nur etwa die letzten 7 Tage (hunderte Anfragen)</value>
+    <value>Ergebnis jedes beendeten Wettbewerbs, den die Website noch aufführt, nur etwa 7 Tage (hunderte Anfragen)</value>
   </data>
   <data name="Older" xml:space="preserve">
     <value>Auch ältere Austragungen verfolgen (Schätzung: bis zu 7.000 weitere Anfragen, 2 Stunden oder mehr)</value>
@@ -212,7 +212,7 @@
     <value>Mitteilungen</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Jede Unterhaltung wird geöffnet und vollständig gesichert, gelesene und ungelesene. Ungelesene erscheinen danach auf dem Server als gelesen. Aus Datenschutzgründen standardmäßig aus.</value>
+    <value>Jede Unterhaltung, gelesen oder ungelesen, vollständig gesichert. Ungelesene gelten danach als gelesen.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Kontoabfrage</value>

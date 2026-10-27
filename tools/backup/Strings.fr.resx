@@ -203,7 +203,7 @@
     <value>Historique des compétitions</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Résultat dans chaque compétition terminée que le site liste encore, environ les 7 derniers jours seulement (des centaines de requêtes)</value>
+    <value>Résultat de chaque compétition terminée encore listée par le site, environ 7 derniers jours (centaines de requêtes)</value>
   </data>
   <data name="Older" xml:space="preserve">
     <value>Suivre aussi les éditions plus anciennes (estimation : jusqu’à 7 000 requêtes de plus, 2 heures ou plus)</value>
@@ -212,7 +212,7 @@
     <value>Messages</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Chaque conversation est ouverte et sauvegardée en entier, lues et non lues. Les conversations non lues apparaîtront ensuite comme lues sur le serveur. Désactivé par défaut pour la confidentialité.</value>
+    <value>Chaque conversation, lue ou non, sauvegardée en entier. Les non lues apparaîtront ensuite comme lues.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Recherche du compte</value>

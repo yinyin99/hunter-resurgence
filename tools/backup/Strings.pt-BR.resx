@@ -203,7 +203,7 @@
     <value>Histórico de competições</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Resultado em cada competição encerrada que o site ainda lista, apenas cerca dos últimos 7 dias (centenas de solicitações)</value>
+    <value>Resultado em cada competição encerrada que o site ainda lista, só cerca de 7 dias (centenas de solicitações)</value>
   </data>
   <data name="Older" xml:space="preserve">
     <value>Seguir também edições mais antigas (estimativa: até 7.000 solicitações a mais, 2 horas ou mais)</value>
@@ -212,7 +212,7 @@
     <value>Mensagens</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Cada conversa é aberta e salva por inteiro, lidas e não lidas. As não lidas passarão a aparecer como lidas no servidor. Desativado por padrão por privacidade.</value>
+    <value>Cada conversa, lida ou não, salva por completo. As não lidas passarão a aparecer como lidas.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Consulta da conta</value>
