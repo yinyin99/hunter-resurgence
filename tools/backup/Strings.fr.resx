@@ -131,7 +131,7 @@
     <value>Non inclus :</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Équipement placé (tentes, affûts, miradors, tours, conteneurs d’appâts, matériel d’escalade) : la position, la direction, les réglages et les unités de chaque objet placé sont sauvegardés par carte. Seule une image de la disposition n’est pas créée.</value>
+    <value>Une image de l’équipement placé (tentes, affûts, miradors, tours, conteneurs d’appâts, matériel d’escalade). L’équipement lui-même est sauvegardé : position, direction, réglages et unités de chaque objet placé, par carte.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Paramètres et commandes du jeu (conservés sur ce PC).</value>

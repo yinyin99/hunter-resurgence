@@ -131,7 +131,7 @@
     <value>Not covered:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Placed equipment (tents, blinds, stands, towers, feeders, climbing gear): the position, direction, settings and units of every placed item are saved per map. Only a picture of the layout is not made.</value>
+    <value>A picture of the placed equipment (tents, blinds, stands, towers, feeders, climbing gear). The equipment itself is saved: position, direction, settings and units of every placed item, per map.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>In-game settings and controls (kept on this PC).</value>

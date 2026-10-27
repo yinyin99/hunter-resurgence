@@ -131,7 +131,7 @@
     <value>Nicht enthalten:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Aufgestellte Ausrüstung (Zelte, Tarnzelte, Hochsitze, Türme, Futterstellen, Kletterausrüstung): Position, Ausrichtung, Einstellungen und Einheiten jedes aufgestellten Gegenstands werden pro Karte gesichert. Nur ein Bild der Anordnung wird nicht erstellt.</value>
+    <value>Ein Bild der aufgestellten Ausrüstung (Zelte, Tarnzelte, Hochsitze, Türme, Futterstellen, Kletterausrüstung). Die Ausrüstung selbst wird gesichert: Position, Ausrichtung, Einstellungen und Einheiten jedes aufgestellten Gegenstands, pro Karte.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Spieleinstellungen und Steuerung (bleiben auf diesem PC).</value>

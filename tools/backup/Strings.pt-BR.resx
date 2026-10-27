@@ -131,7 +131,7 @@
     <value>Não incluído:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Equipamentos colocados (tendas, esconderijos, plataformas, torres, locais de ração, equipamento de escalada): a posição, a direção, as configurações e as unidades de cada item colocado são salvas por mapa. Apenas uma imagem do arranjo não é criada.</value>
+    <value>Uma imagem dos equipamentos colocados (tendas, esconderijos, plataformas, torres, locais de ração, equipamento de escalada). Os equipamentos em si são salvos: posição, direção, configurações e unidades de cada item colocado, por mapa.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Ajustes e controles do jogo (ficam neste PC).</value>

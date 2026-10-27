@@ -131,7 +131,7 @@
     <value>No incluido:</value>
   </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Equipo colocado (tiendas de campaña, puestos de camuflaje, puestos elevados, torres, cebaderos, equipo de escalada): la posición, la dirección, los ajustes y las unidades de cada objeto colocado se guardan por mapa. Solo no se crea una imagen de la disposición.</value>
+    <value>Una imagen del equipo colocado (tiendas de campaña, puestos de camuflaje, puestos elevados, torres, cebaderos, equipo de escalada). El equipo en sí se guarda: posición, dirección, ajustes y unidades de cada objeto colocado, por mapa.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
     <value>Configuración y controles del juego (se conservan en este PC).</value>
