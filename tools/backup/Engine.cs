@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.IO.Compression;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
@@ -218,7 +219,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Membership_Bundle/get_active")); // the membership bundles on sale: public, and a token makes it answer handlerError
         int seasons = 0;
         if (s.ConsumerKey is { } key) // the catalogue makes item, species and achievement ids readable later; its season is the newest board
-            seasons = (int?)Json(await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en"))))?["season"] ?? 0;
+            seasons = (int)(Num(Json(await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en"))))?["season"]) ?? 0);
         else log("! Application/application skipped: no oauth_consumer_key in settings.json");
         Need(seasons + 1);
         listed();
@@ -275,7 +276,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             Need(1);
             var ex = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))))?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
-            listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), (long?)e["start_ts"] ?? 0)));
+            listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
             if (ex.Count < 50) break;
         }
         var ids = listed.OrderByDescending(h => h.Start).Select(h => h.Id).ToList(); // newest first (the list comes that way): a run that is cancelled or too long keeps the latest hunts
@@ -337,6 +338,13 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Me/friends", true));
     }
 
+    /// <summary>A reply number: a JSON number or a numeric string (this API sends both); anything else is null.</summary>
+    static long? Num(JsonNode? n) => n is JsonValue v
+        ? v.TryGetValue<long>(out var l) ? l
+        : v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (long)d
+        : v.TryGetValue<string>(out var s) && long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out l) ? l : null
+        : null;
+
     /// <summary>Unread conversations opened (fetched) in this run: the server probably shows them as read afterwards.</summary>
     public int MessagesOpened { get; private set; }
 
@@ -358,12 +366,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (Json(await Get(r)) is not JsonObject th) continue;
             if (Unread(c) && !had) MessagesOpened++;
             var count = (th["messages"] as JsonArray)?.Count ?? 0;
-            var total = (long?)th["total"];
+            var total = Num(th["total"]);
             log($"messages {id}: total {total}, {count} in reply");
             rows.Add(new JsonObject { ["user_id"] = c["user_id"]!.DeepClone(), ["read"] = c["read"]?.DeepClone(), ["file"] = name, ["total"] = total, ["messages"] = count });
         }
         if (list == null) return;
-        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => (long?)x["total"] != (long)(int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
+        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => Num(x["total"]) != (int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
         var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
         WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
         lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);

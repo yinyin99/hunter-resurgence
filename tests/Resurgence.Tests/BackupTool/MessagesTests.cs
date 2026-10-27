@@ -102,6 +102,18 @@ public class MessagesTests
         Assert.True((bool)m["derived"]!);
     }
 
+    /// <summary>The API sends many numbers as strings: a string total is read, not a crash.</summary>
+    [Fact]
+    public async Task StringTotalIsReadNotACrash()
+    {
+        using var t = new TempDir("backup-test-msg-");
+        var e = await Run(Host(thread: id => id == 102 ? Thread(3, 2).Replace("\"total\":3", "\"total\":\"3\"") : Thread(2, 2).Replace("\"total\":2", "\"total\":\"2\"")), t, ["messages"]);
+        Assert.Equal(0, e.Failed);
+        var idx = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir(t), "messages-index.json")))!;
+        Assert.Equal([102], idx["checks"]!["possibly_capped"]!.AsArray().Select(x => (int)x!));
+        Assert.Equal(2, idx["threads"]!.AsArray().Count(x => (int)x!["total"]! == 2));
+    }
+
     [Fact]
     public async Task IndexOfEqualCountsIsNotFlagged()
     {
