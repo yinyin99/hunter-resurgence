@@ -154,6 +154,12 @@ sealed partial class Engine
         if (meRows != null) avail.Add("me");
         var onlyIn = avail.ToDictionary(s => s, s => seen.Where(g => g.Value.Any(x => x.Src == s) && avail.Any(t => g.Value.All(x => x.Src != t))).Select(g => g.Key).ToList());
         var differs = seen.Where(g => g.Value.Select(x => (Dbl(x.Pos?["x"]), Dbl(x.Pos?["y"]), Dbl(x.Pos?["z"]))).Where(p => p is (not null, not null, not null)).Distinct().Count() > 1).Select(g => g.Key).ToList();
+        // metadata, units or dir that differ between the two replies, compared as the server wrote them
+        static string Txt(JsonNode? n) => n?.ToJsonString() ?? "null";
+        var dictRows = (dict?.Placed ?? []).GroupBy(r => r.Guid).ToDictionary(g => g.Key, g => g.First().Node);
+        var metaDiffers = (list?.Placed ?? []).Where(r => dictRows.TryGetValue(r.Guid, out var d)
+                && (Txt(d["metadata"]) != Txt(r.Node["metadata"]) || Txt(d["units"]) != Txt(r.Node["units"]) || Txt(d["location"]?["dir"]) != Txt(r.Node["location"]?["dir"])))
+            .Select(r => r.Guid).Distinct().Order(StringComparer.Ordinal).ToList();
         var noLoc = (dict?.NoLocation ?? []).Concat(list?.NoLocation ?? []).Distinct().Order(StringComparer.Ordinal).ToList();
 
         var items = rows.Values.OrderBy(r => r.ItemId).ThenBy(r => r.Guid, StringComparer.Ordinal).Select(r =>
@@ -211,6 +217,7 @@ sealed partial class Engine
                 ["location_null"] = Guids(noLoc),
                 ["only_in"] = new JsonObject(onlyIn.Select(p => KeyValuePair.Create(p.Key, (JsonNode?)Guids(p.Value)))),
                 ["pos_differs"] = Guids(differs),
+                ["metadata_differs"] = Guids(metaDiffers),
             },
         };
 
@@ -219,10 +226,11 @@ sealed partial class Engine
         lock (files) files[SetupsFile] = new(SetupsFile, "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);
         (SetupItems, SetupReserves) = (items.Count, reserves.Count);
-        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
+        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || metaDiffers.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
         if (noLoc.Count > 0) log($"! map setups: {noLoc.Count} placed item(s) without a position");
         foreach (var (src, g) in onlyIn.Where(p => p.Value.Count > 0)) log($"! map setups: {g.Count} item(s) in {src} are missing from another source");
         if (differs.Count > 0) log($"! map setups: {differs.Count} item(s) with different positions in two sources");
+        if (metaDiffers.Count > 0) log($"! map setups: {metaDiffers.Count} item(s) with different metadata, units or direction in the two inventory replies (the list was used)");
         log($"map setups: {items.Count} placed item(s) on {reserves.Count} map(s)");
     }
 }

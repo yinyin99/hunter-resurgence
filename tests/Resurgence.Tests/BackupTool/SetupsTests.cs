@@ -320,4 +320,33 @@ public class SetupsTests
         Assert.True(Item(s, "a4")["metadata"]!["bait_amount"]!.GetValue<int>() == 7, "the feeder has the list's metadata, not the lagging dict's");
         Assert.True(Item(s, "o1")["in"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["dict"]), "a row only the dict has is kept");
     }
+
+    /// <summary>Item 2: metadata, units or dir that differ between dict and list are listed (and raise the checks mark); identical replies list nothing.</summary>
+    [Fact]
+    public async Task MetadataUnitsOrDirDifferencesBetweenTheRepliesAreListed()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big(lag: true);
+        var e = Hosts.Make(new Fake(Tok) { InventoryDict = d, InventoryList = l }, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "", () => Tok, Setups, false, false, TestContext.Current.CancellationToken);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(s["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["a4"]) && e.SetupChecks, "only the lagging feeder is listed, the checks mark is set");
+
+        using var t2 = new TempDir("backup-test-setups-");
+        var (d2, l2) = Big();
+        d2 = d2.Replace("\"units\":20", "\"units\":25"); // a different climbing cost in the dict only
+        await RunOwn(new Fake(Tok) { InventoryDict = d2, InventoryList = l2 }, t2, false, Setups, ct: TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t2.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["a5"]), "units are compared too");
+
+        using var t3 = new TempDir("backup-test-setups-");
+        var rows = new (int, string, string)[] { (11, "TENT02", Row("p1", Loc("1", "2", "3", DirA, 1), metadata: "{\"k\":1}")) };
+        var e3 = Hosts.Make(new Fake(Tok) { InventoryDict = Dict([.. rows.Select(r => (r.Item1, r.Item3))]), InventoryList = ListOf(rows), WorldItems = Worlditems(("p1", P("1", "2", "3"), 1)) }, Path.Combine(t3.Path, "claim.key"));
+        await e3.Run(t3.Path, "", () => Tok, Setups, false, false, TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t3.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Count == 0 && !e3.SetupChecks, "identical replies: nothing listed, no mark");
+
+        using var t4 = new TempDir("backup-test-setups-");
+        var dirDiff = Dict((11, Row("p1", Loc("1", "2", "3", """{"x":0.5,"y":0,"z":0.25}""", 1), metadata: "{\"k\":1}")));
+        await RunOwn(new Fake(Tok) { InventoryDict = dirDiff, InventoryList = ListOf(rows) }, t4, false, Setups, ct: TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t4.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["p1"]), "dir is compared too");
+    }
 }
