@@ -52,6 +52,7 @@ sealed partial class Engine
         public int Rows;
         public readonly List<Row> Placed = [];
         public readonly List<string> NoLocation = [];
+        public readonly List<Row> NoLocationRows = [];
 
         public void Take(JsonNode? n, int? itemId, JsonObject? info)
         {
@@ -60,7 +61,7 @@ sealed partial class Engine
             if (Int(row["slot"]) != WorldSlot) return;
             var guid = row["id"]?.ToString() ?? "";
             if (row["location"] is JsonObject { } loc && loc["pos"] is JsonObject) Placed.Add(new(guid, itemId, row, info));
-            else NoLocation.Add(guid);
+            else { NoLocation.Add(guid); NoLocationRows.Add(new(guid, itemId, row, info)); }
         }
     }
 
@@ -162,6 +163,14 @@ sealed partial class Engine
             .Select(r => r.Guid).Distinct().Order(StringComparer.Ordinal).ToList();
         var noLoc = (dict?.NoLocation ?? []).Concat(list?.NoLocation ?? []).Distinct().Order(StringComparer.Ordinal).ToList();
 
+        // the whole row of a placed item without a position (list over dict, as above), so the owner can be given the item back
+        var lost = new Dictionary<string, Row>();
+        foreach (var r in (dict?.NoLocationRows ?? []).Concat(list?.NoLocationRows ?? [])) lost[r.Guid] = r;
+        var lostRows = lost.Values.OrderBy(r => r.ItemId).ThenBy(r => r.Guid, StringComparer.Ordinal).Select(r => (JsonNode)new JsonObject
+        {
+            ["guid"] = r.Guid, ["item_id"] = r.ItemId, ["units"] = r.Node["units"]?.DeepClone(), ["metadata"] = r.Node["metadata"]?.DeepClone(),
+        }).ToList();
+
         var items = rows.Values.OrderBy(r => r.ItemId).ThenBy(r => r.Guid, StringComparer.Ordinal).Select(r =>
         {
             var (define, name) = r.ItemId is { } id && cat?.Items.TryGetValue(id, out var c) == true ? c : (null, null);
@@ -215,6 +224,7 @@ sealed partial class Engine
             ["checks"] = new JsonObject
             {
                 ["location_null"] = Guids(noLoc),
+                ["location_null_rows"] = new JsonArray([.. lostRows]),
                 ["only_in"] = new JsonObject(onlyIn.Select(p => KeyValuePair.Create(p.Key, (JsonNode?)Guids(p.Value)))),
                 ["pos_differs"] = Guids(differs),
                 ["metadata_differs"] = Guids(metaDiffers),

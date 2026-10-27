@@ -349,4 +349,17 @@ public class SetupsTests
         await RunOwn(new Fake(Tok) { InventoryDict = dirDiff, InventoryList = ListOf(rows) }, t4, false, Setups, ct: TestContext.Current.CancellationToken);
         Assert.True(Read(Path.Combine(t4.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["p1"]), "dir is compared too");
     }
+
+    /// <summary>Item 5: a placed row without a location is listed by guid (as before) and also saved whole.</summary>
+    [Fact]
+    public async Task PlacedRowWithoutLocationIsSavedWhole()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        await RunOwn(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, false, Setups, ct: TestContext.Current.CancellationToken);
+        var checks = Read(Path.Combine(t.Path, "backup-7"))["checks"]!;
+        Assert.True(checks["location_null"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["n1"]), "still listed by guid");
+        var rows = checks["location_null_rows"]!.AsArray();
+        Assert.True(rows.Count == 1 && rows[0]!.ToJsonString() == """{"guid":"n1","item_id":11,"units":5,"metadata":{"k":1}}""", $"the full row: {rows[0]?.ToJsonString()}");
+    }
 }
