@@ -28,12 +28,12 @@ public class HistoryTests
     static string Field(string form, string key) => Regex.Match(form, $"(?:^|&){key}=([^&]*)").Groups[1].Value;
 
     /// <summary>A fake whose lists and editions come from the given functions.</summary>
-    static Fake World(Func<int, string> previous, Func<int, string> edition, string league = "[]", Func<int, HttpResponseMessage?>? broken = null) => new(Tok)
+    static Fake World(Func<int, string> previous, Func<int, string> edition, string league = "[]", Func<int, HttpResponseMessage?>? broken = null, Func<int, HttpResponseMessage?>? brokenPage = null, bool brokenLeague = false) => new(Tok)
     {
         Custom = (path, form) => path switch
         {
-            Previous => Reply(previous(int.Parse(Field(form, "offset")))),
-            League => Reply(league),
+            Previous => brokenPage?.Invoke(int.Parse(Field(form, "offset"))) ?? Reply(previous(int.Parse(Field(form, "offset")))),
+            League => brokenLeague ? new HttpResponseMessage(HttpStatusCode.BadGateway) : Reply(league),
             Edition => broken?.Invoke(int.Parse(Field(form, "id"))) ?? Reply(edition(int.Parse(Field(form, "id")))),
             _ => null,
         },
@@ -101,6 +101,7 @@ public class HistoryTests
         var f2 = Make("\"abc\"");
         var log = new List<string>();
         await Run(f2, t2, log: log.Add);
+        Assert.True(!History(t2)["complete"]!.GetValue<bool>() && History(t2)["failed"]![0]!["reason"]!.ToString() == "total not readable", "the file says it is incomplete");
         Assert.True(Offsets(f2).SequenceEqual(["0"]) && log.Contains("! history: list total not readable: \"abc\""), $"only offset 0 and the line ({string.Join(" | ", log.Where(x => x.Contains("history")))})");
     }
 
@@ -144,6 +145,7 @@ public class HistoryTests
         Assert.True(ed[0]!["not_listed"]!.GetValue<bool>() && ed[0]!["position"] == null, "edition 3: not listed, no rank guessed");
         Assert.True(!ed[1]!["not_listed"]!.GetValue<bool>() && ed[1]!["position"]!.GetValue<int>() == 9 && ed[1]!["type_id"]!.GetValue<int>() == 77 && ed[1]!["type_name"]!.ToString() == "Test Type" && ed[1]!["start"]!.GetValue<int>() == 1000 && ed[1]!["end"]!.GetValue<int>() == 2000, "edition 2: position 9 by id, type and dates");
         Assert.True(ed[2]!["position"]!.GetValue<int>() == 1 && text.Contains("\"points\": 30.25") && text.Contains("\"points\": 12.50"), "edition 1: position 1; points as sent (30.25, and 12.50 keeps its zero)");
+        Assert.True(h["complete"]!.GetValue<bool>() && h["failed"]!.AsArray().Count == 0, "a run that got everything is complete, nothing failed");
         Assert.True(h["totals"]!["listed"]!.GetValue<int>() == 2 && h["totals"]!["not_listed"]!.GetValue<int>() == 1, "totals");
         var raw = File.ReadAllText(Directory.GetFiles(Path.Combine(t.Path, "backup-7"), "Page_content_competitions_new*id=2*").Single());
         Assert.True(raw == EditionReply(2, mine[2]), "the raw edition file is the reply, untouched");
@@ -223,5 +225,73 @@ public class HistoryTests
         var f = World(_ => PreviousPage(1, [1]), id => EditionReply(id, [Entrant(7, "hh", 2, "5")]));
         await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "history" }, true, false, TestContext.Current.CancellationToken);
         Assert.True(History(t)["editions"]![0]!["position"]!.GetValue<int>() == 2, "found by the id the handle resolves to");
+    }
+
+    static Fake Pages45(Func<int, HttpResponseMessage?>? brokenPage = null, Func<int, HttpResponseMessage?>? broken = null, string league = "[]", bool brokenLeague = false) =>
+        World(off => PreviousPage(45, Enumerable.Range(1, 45).Skip(Math.Min(off, 40)).Take(20)), id => EditionReply(id, []), league, broken, brokenPage, brokenLeague);
+
+    static HttpResponseMessage Bad() => new(HttpStatusCode.BadGateway);
+
+    static string Reasons(JsonNode h) => string.Join(" | ", h["failed"]!.AsArray().Select(x => x!.ToJsonString()));
+
+    /// <summary>A list page that failed is in the file's failed list with its offset and logged; the other pages, the editions and the community list still run, and the file says it is not complete.</summary>
+    [Fact]
+    public async Task FailedListPageMakesTheFileIncompleteButTheRestRuns()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var f = Pages45(brokenPage: off => off == 20 ? Bad() : null);
+        var log = new List<string>();
+        var e = await Run(f, t, log: log.Add);
+        var h = History(t);
+        Assert.True(!h["complete"]!.GetValue<bool>() && h["failed"]!.AsArray().Count == 1, $"incomplete, one failure: {Reasons(h)}");
+        var m = h["failed"]![0]!;
+        Assert.True(m["request"]!.ToString() == "list_previous_competitions" && m["offset"]!.GetValue<int>() == 20 && m["reason"]!.ToString() == "no data", $"names the page: {m.ToJsonString()}");
+        Assert.True(EditionIds(f).Contains(1) && EditionIds(f).Contains(41) && !EditionIds(f).Contains(21) && Requests(f, League) == 1, "pages 0 and 40 and the community list were read, page 20's editions were not");
+        Assert.True(log.Contains("! history: list page offset 20 failed") && e.Failed > 0, "logged, counted as a failed request");
+        Assert.True(h["totals"]!["editions"]!.GetValue<int>() == 25, "the 25 editions of the pages that came");
+    }
+
+    /// <summary>Without the first page there is no total: incomplete, failed offset 0, and the community list still runs.</summary>
+    [Fact]
+    public async Task FailedFirstPageMeansUnknownTotal()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var f = Pages45(brokenPage: off => off == 0 ? Bad() : null, league: "[" + EditionRow(500) + "]");
+        await Run(f, t);
+        var h = History(t);
+        Assert.True(!h["complete"]!.GetValue<bool>() && h["failed"]![0]!["offset"]!.GetValue<int>() == 0 && Offsets(f).Distinct().SequenceEqual(["0"]), $"incomplete, offset 0 failed, no other page asked: {Reasons(h)}");
+        Assert.True(EditionIds(f).SequenceEqual([500]), "the community list and its edition still run");
+    }
+
+    /// <summary>A failed edition and a failed community list are named too; a reply of JSON null is data, not a failure.</summary>
+    [Fact]
+    public async Task FailedEditionAndCommunityListAreNamedButNullIsNotAFailure()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var f = Pages45(broken: id => id == 2 ? Bad() : null, brokenLeague: true);
+        await Run(f, t);
+        var h = History(t);
+        var names = h["failed"]!.AsArray().Select(x => x!["request"]!.ToString() + ":" + (x["id"]?.ToString() ?? "-")).Order().ToArray();
+        Assert.True(!h["complete"]!.GetValue<bool>() && names.SequenceEqual(["competitions_new:2", "list_community_league_competitions:-"]) && h["failed"]!.AsArray().All(x => x!["offset"] == null || x["request"]!.ToString().StartsWith("list_previous")), $"edition 2 (with its id) and the community list (nothing more): {Reasons(h)}");
+
+        using var t2 = new TempDir("backup-test-history-");
+        var f2 = Pages45(league: "null");
+        await Run(f2, t2);
+        Assert.True(History(t2)["complete"]!.GetValue<bool>() && History(t2)["failed"]!.AsArray().Count == 0, "a list that answers null is complete");
+    }
+
+    /// <summary>The next run that gets everything writes complete true and an empty failed list.</summary>
+    [Fact]
+    public async Task ResumeAfterAFailureWritesACompleteFile()
+    {
+        using var t = new TempDir("backup-test-history-");
+        await Run(Pages45(brokenPage: off => off == 20 ? Bad() : null, broken: id => id == 45 ? Bad() : null), t);
+        Assert.True(!History(t)["complete"]!.GetValue<bool>() && History(t)["failed"]!.AsArray().Count == 2, "the first run: a page and an edition failed");
+
+        var f2 = Pages45();
+        var e2 = await Run(f2, t);
+        var h = History(t);
+        Assert.True(h["complete"]!.GetValue<bool>() && h["failed"]!.AsArray().Count == 0 && h["totals"]!["editions"]!.GetValue<int>() == 45 && e2.Failed == 0, "complete, nothing failed, all 45 editions");
+        Assert.True(Offsets(f2).SequenceEqual(["20"]) && EditionIds(f2).Order().SequenceEqual(Enumerable.Range(21, 20).Append(45).Order()), $"only what was missing was asked ({string.Join(",", Offsets(f2))})");
     }
 }
