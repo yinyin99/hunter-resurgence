@@ -73,7 +73,7 @@ public partial class MainWindow : FluentWindow
         ApplyLanguage();
         ApplyMode();
         ContentRendered += (_, _) => SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush"); // FluentWindow resets it to its own dark grey when it applies the backdrop
-        Loaded += (_, _) => { NameTitleButtons(this); FitHeight(); };
+        Loaded += (_, _) => { NameTitleButtons(this); HideGlyphs(); FitHeight(); };
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); langTimer.Stop(); cts?.Cancel(); };
     }
 
@@ -136,7 +136,9 @@ public partial class MainWindow : FluentWindow
         Named(Browse, "Browse_Name");
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
-        Upload.Content = Wrapped(Loc.S("Upload"));
+        var upload = Wrapped(Loc.S("Upload")); // never available: names its dim brush itself, so the readable look of a running backup does not light it up
+        upload.Foreground = (System.Windows.Media.Brush)FindResource("TextFillColorDisabledBrush");
+        Upload.Content = upload;
         Older.Content = Wrapped(Loc.S("Older"));
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
@@ -205,13 +207,11 @@ public partial class MainWindow : FluentWindow
                 ToolTip = Tip(g.Needs),
                 Child = new TextBlock { Text = tagText, FontSize = 11 },
             };
-            tag.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
             title.Children.Add(tag);
         }
         var text = new StackPanel();
         text.Children.Add(title);
         var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
-        desc.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(desc);
         var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, filled by Describe
         note.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
@@ -241,7 +241,19 @@ public partial class MainWindow : FluentWindow
         var text = (StackPanel)box.Content;
         var why = box.IsEnabled ? null : Loc.S("Tip_Public");
         box.ToolTip = why;
-        text.Children[0].Opacity = text.Children[1].Opacity = why == null ? 1 : 0.5;
+        bool off = why != null; // the disabled brush alone dims the row; the old Opacity on top of it left title, description and tag under 3:1
+        var title = (WrapPanel)text.Children[0];
+        // an off row names its brush itself, resolved here from the app: while a backup runs the cards map the disabled keys to readable ones and an off row must not follow
+        void Paint(TextBlock t, string? on) { if (off) t.Foreground = (System.Windows.Media.Brush)Application.Current.FindResource("TextFillColorDisabledBrush"); else if (on == null) t.ClearValue(TextBlock.ForegroundProperty); else t.SetResourceReference(TextBlock.ForegroundProperty, on); }
+        Paint((TextBlock)title.Children[0], null);
+        Paint((TextBlock)text.Children[1], "TextFillColorSecondaryBrush");
+        if (title.Children.Count > 1) // the tag: on its fill the disabled text is under 3:1, so an off row shows it as plain text
+        {
+            var pill = (Border)title.Children[1];
+            Paint((TextBlock)pill.Child, null);
+            if (off) pill.Background = System.Windows.Media.Brushes.Transparent;
+            else pill.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
+        }
         var note = (TextBlock)text.Children[2];
         (note.Text, note.Visibility) = (why ?? "", why == null ? Visibility.Collapsed : Visibility.Visible);
         var extra = why ?? Tip(Engine.Groups[i].Needs); // the pill's explanation is a mouse tooltip only: it goes in the help text too
@@ -318,8 +330,8 @@ public partial class MainWindow : FluentWindow
         SetBusy(true);
         Result.IsOpen = false;
         OpenBtn.Visibility = Visibility.Collapsed;
-        Start.Focus(); // Enter in a field started this run: the focused field is about to be disabled, keep the keyboard on Start (now Cancel)
-        Inputs.IsEnabled = false;
+        Start.Focus(); // Enter in a field started this run: the cards are about to be locked, keep the keyboard on Start (now Cancel)
+        LockInputs(true);
         Start.Content = Loc.S("Cancel");
         lastStatus = "";
         Tick();
@@ -381,7 +393,7 @@ public partial class MainWindow : FluentWindow
         eng = null;
         cts = null;
         clock.Stop();
-        Inputs.IsEnabled = true;
+        LockInputs(false);
         Start.IsEnabled = true;
         Start.Content = Loc.S("Start");
         Start.Appearance = ControlAppearance.Primary;
@@ -402,6 +414,40 @@ public partial class MainWindow : FluentWindow
         bool moves = SystemParameters.ClientAreaAnimation; // ponytail: read at each call, but the template's own short transitions are left to WPF UI
         Bar.IsIndeterminate = busy && moves;
         Bar.Visibility = busy && !moves ? Visibility.Hidden : Visibility.Visible;
+    }
+
+    // while a backup runs the cards are disabled (a screen reader sees them as such) but keep what is being saved readable: each disabled brush the controls use is mapped to the brush of the enabled control
+    static readonly (string Disabled, string Normal)[] RunLook =
+    [
+        ("TextFillColorDisabledBrush", "TextFillColorPrimaryBrush"), // texts and the tick of a disabled box
+        ("CheckBoxForegroundUncheckedDisabled", "CheckBoxForeground"), ("CheckBoxCheckBackgroundFillUncheckedDisabled", "TextControlBackground"), ("CheckBoxCheckBackgroundStrokeUncheckedDisabled", "TextControlElevationBorderBrush"), // the box of a ticked and an unticked group alike: the tick tells them apart
+        ("RadioButtonForegroundDisabled", "RadioButtonForeground"), ("RadioButtonOuterEllipseFillDisabled", "RadioButtonOuterEllipseFill"), ("RadioButtonOuterEllipseStrokeDisabled", "RadioButtonOuterEllipseStroke"), ("RadioButtonOuterEllipseCheckedStrokeDisabled", "RadioButtonOuterEllipseCheckedStroke"),
+        ("ToggleSwitchContentForegroundDisabled", "ToggleSwitchContentForeground"), ("ToggleSwitchFillOnDisabled", "ToggleSwitchFillOn"), ("ToggleSwitchStrokeOnDisabled", "ToggleSwitchStrokeOn"), ("ToggleSwitchKnobFillOnDisabled", "ToggleSwitchKnobFillOn"),
+        ("ToggleSwitchFillOffDisabled", "ToggleSwitchFillOff"), ("ToggleSwitchStrokeOffDisabled", "ToggleSwitchStrokeOff"), ("ToggleSwitchKnobFillOffDisabled", "ToggleSwitchKnobFillOff"),
+        ("TextControlForegroundDisabled", "TextControlForeground"), ("ComboBoxForegroundDisabled", "ComboBoxForeground"),
+    ];
+
+    /// <summary>The cards cannot be used while a backup runs. Disabled, so a screen reader cannot toggle or invoke them either; the scroll region around them stays enabled for the wheel.</summary>
+    void LockInputs(bool locked)
+    {
+        Inputs.IsEnabled = !locked;
+        var look = Inputs.Resources.MergedDictionaries;
+        look.Clear();
+        if (!locked) return;
+        var d = new ResourceDictionary();
+        foreach (var (disabled, normal) in RunLook) if (TryFindResource(normal) is { } brush) d[disabled] = brush;
+        look.Add(d);
+    }
+
+    /// <summary>The Details chevron sits inside the Expander's template, which WPF cannot take out of the control view without a new template: its private-use character gets a blank name and is marked off screen, so a screen reader skips it.</summary>
+    void HideGlyphs()
+    {
+        foreach (var t in Descendants<TextBlock>(Details))
+            if (t.Text.Length == 1 && t.Text[0] >= '\uE000')
+            {
+                System.Windows.Automation.AutomationProperties.SetName(t, " ");
+                System.Windows.Automation.AutomationProperties.SetIsOffscreenBehavior(t, System.Windows.Automation.IsOffscreenBehavior.Offscreen);
+            }
     }
 
     void ShowProgress()
@@ -524,5 +570,30 @@ sealed class ResultBar : InfoBar
         protected override System.Windows.Automation.Peers.AutomationControlType GetAutomationControlTypeCore() => System.Windows.Automation.Peers.AutomationControlType.Text;
         protected override string GetNameCore() => $"{bar.Title}. {bar.Message}";
         protected override List<System.Windows.Automation.Peers.AutomationPeer>? GetChildrenCore() => null;
+    }
+}
+
+/// <summary>An icon that is only decoration: a screen reader does not see it or its private-use glyph.</summary>
+sealed class DecorIcon : SymbolIcon
+{
+    protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer() => new Peer(this);
+
+    sealed class Peer(DecorIcon icon) : System.Windows.Automation.Peers.FrameworkElementAutomationPeer(icon)
+    {
+        protected override bool IsControlElementCore() => false;
+        protected override bool IsContentElementCore() => false;
+        protected override List<System.Windows.Automation.Peers.AutomationPeer>? GetChildrenCore() => null;
+    }
+}
+
+/// <summary>The scroll region of the cards. A plain ScrollViewer takes the arrow keys of a control inside it and moves focus by its own guess, which broke the arrow keys of the two radios; here they go to the controls (focus moving scrolls it into view), and the other keys still scroll.</summary>
+sealed class CardScroll : ScrollViewer
+{
+    public CardScroll() => SetResourceReference(StyleProperty, typeof(ScrollViewer)); // an implicit style does not reach a subclass
+
+    protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.OriginalSource != this && e.Key is System.Windows.Input.Key.Left or System.Windows.Input.Key.Right or System.Windows.Input.Key.Up or System.Windows.Input.Key.Down) return;
+        base.OnKeyDown(e);
     }
 }

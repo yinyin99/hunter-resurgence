@@ -8,6 +8,7 @@
                  WindowStartupLocation="CenterScreen"
                  Foreground="{DynamicResource TextFillColorPrimaryBrush}">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="ShowWhile" />
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
@@ -43,7 +44,7 @@
             </Grid.RowDefinitions>
 
             <!-- cards: locked while a backup runs. They scroll as one when the window is short; Start, the result bar and Details are below the scroll and never leave the window -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,8"> <!-- the 8 px strip above Start is the edge of the scroll region: scrolled text never touches the button -->
+            <local:CardScroll VerticalScrollBarVisibility="Auto" Margin="0,0,0,8" Background="Transparent"> <!-- the 8 px strip above Start is the edge of the scroll region: scrolled text never touches the button. Transparent: the wheel still scrolls while the cards are locked -->
             <Grid x:Name="Inputs">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -58,15 +59,15 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ui:SymbolIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <local:DecorIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
                             <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
                             <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" />
                         </Grid>
                         <WrapPanel>
                             <!-- one Tab stop for the pair; the arrow keys move and select -->
                             <StackPanel Orientation="Horizontal" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
-                                <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" />
-                                <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" />
+                                <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" Padding="0,0,4,0" />
+                                <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" Padding="0,0,4,0" />
                             </StackPanel>
                             <ui:TextBox x:Name="Who" Width="230" Margin="12,0,0,0" IsEnabled="False" ClearButtonEnabled="False" />
                         </WrapPanel>
@@ -97,7 +98,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel x:Name="ColLeft" />
                             <StackPanel x:Name="ColRight" Grid.Column="1">
-                                <ui:ToggleSwitch x:Name="Older" Margin="28,0,0,4" MinHeight="28" IsChecked="False" IsEnabled="False" />
+                                <ui:ToggleSwitch x:Name="Older" Margin="28,0,0,4" MinHeight="28" Padding="0,4,4,4" IsChecked="False" IsEnabled="False" />
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -122,13 +123,13 @@
                             <ui:TextBox x:Name="OutDir" ClearButtonEnabled="False" />
                             <ui:Button x:Name="Browse" Grid.Column="1" Margin="8,0,0,0" />
                         </Grid>
-                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" MinHeight="28" />
-                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" MinHeight="28" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" MinHeight="28" />
+                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
+                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
+                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" MinHeight="28" Padding="0,4,4,4" />
                     </Grid>
                 </Border>
             </Grid>
-            </ScrollViewer>
+            </local:CardScroll>
 
             <Grid Grid.Row="1" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
@@ -139,7 +140,11 @@
                 <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" IsDefault="True" FocusVisualStyle="{StaticResource StartFocus}" />
                 <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
                     <TextBlock x:Name="ProgressText" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
-                    <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="4" Visibility="Hidden" />
+                    <!-- Bar draws no track while it sweeps (the total is not known yet): this one keeps the sweep on a rail -->
+                    <Grid>
+                        <Border Height="8" CornerRadius="4" Background="{DynamicResource ProgressBarBorderBrush}" Visibility="{Binding IsIndeterminate, ElementName=Bar, Converter={StaticResource ShowWhile}}" />
+                        <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="8" Visibility="Hidden" />
+                    </Grid>
                 </StackPanel>
                 <ui:HyperlinkButton x:Name="NotCoveredLink" Grid.Column="2" VerticalAlignment="Center" />
             </Grid>
