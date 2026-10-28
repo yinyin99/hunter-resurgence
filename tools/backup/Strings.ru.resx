@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Данные других игроков (сохраняется только публичный профиль введённого ника).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Данные, которые есть только в собственной загрузке игры (время получения достижений, свой счёт в мини-игре вне топ-30, счётчики миссий, настройка единиц, лицензии заповедников); у сайта нет для них запроса.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Профиль</value>
   </data>
@@ -196,11 +199,20 @@
   <data name="GroupDesc_photos" xml:space="preserve">
     <value>Фото из галереи в полном размере (большой объём)</value>
   </data>
+  <data name="Group_history" xml:space="preserve">
+    <value>История соревнований</value>
+  </data>
+  <data name="GroupDesc_history" xml:space="preserve">
+    <value>Результат в каждом завершённом соревновании из списка сайта, только около 7 дней (сотни запросов)</value>
+  </data>
+  <data name="Older" xml:space="preserve">
+    <value>Идти и по более старым выпускам (оценка: до 7000 дополнительных запросов, 2 часа и больше)</value>
+  </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Сообщения</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Список бесед, без текстов сообщений</value>
+    <value>Каждая беседа, прочитанная или нет, сохраняется целиком. Непрочитанные после этого станут прочитанными.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Поиск аккаунта</value>
@@ -282,6 +294,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} картинок или страниц больше нет на сервере (404), поэтому их не удалось сохранить.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>Открыто непрочитанных переписок: {0}. Теперь они отображаются как прочитанные.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Страницы убийств и фото не сохранены; отметьте их для полной копии.</value>

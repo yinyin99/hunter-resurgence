@@ -106,6 +106,7 @@ public partial class MainWindow : FluentWindow
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
         Upload.Content = Wrapped(Loc.S("Upload"));
+        Older.Content = Wrapped(Loc.S("Older"));
         Named(Upload, "Upload_Name");
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
@@ -141,6 +142,18 @@ public partial class MainWindow : FluentWindow
             if (!boxes[i].IsEnabled) boxes[i].ToolTip = Loc.S("Tip_Public");
             Groups.Children.Add(boxes[i]);
         }
+        boxes[HistoryAt].Checked += (_, _) => SyncOlder(); // not Click: a keyboard, screen-reader or code change of the tick counts too
+        boxes[HistoryAt].Unchecked += (_, _) => SyncOlder();
+        SyncOlder();
+    }
+
+    static readonly int HistoryAt = Array.FindIndex(Engine.Groups, g => g.Key == "history");
+
+    /// <summary>The older-editions switch belongs to the history group: it is only on offer while that group is ticked.</summary>
+    void SyncOlder()
+    {
+        Older.IsEnabled = boxes![HistoryAt].IsChecked == true;
+        if (!Older.IsEnabled) Older.IsChecked = false;
     }
 
     CheckBox Row((string Key, bool On, Engine.Session Needs) g)
@@ -235,6 +248,7 @@ public partial class MainWindow : FluentWindow
         runTimer.Start();
         using var http = new HttpClient();
         var run = eng = new Engine(cfg, http, Log, (d, t) => (doneNow, totalNow) = (d, t), keyPath);
+        run.OlderEditions = Older.IsChecked == true;
         string outDir = OutDir.Text;
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
@@ -244,26 +258,30 @@ public partial class MainWindow : FluentWindow
             path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
             var (saved, skipped, failed, stale) = (run.Saved, run.Skipped, run.Failed, run.TokenStale);
             var gone = run.Dead;
-            var killsOff = !keys.Contains("kills") || !keys.Contains("photos"); // no hint for the messages: they are off by default for privacy, not size
+            var killsOff = !keys.Contains("kills") || !keys.Contains("photos");
+            var opened = run.MessagesOpened;
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             text = () => (Loc.S(failed == 0 ? "Msg_Saved" : "Msg_SavedGaps"),
                 Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
                 + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
+                + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
         }
         catch (HostSilentException ex)
         {
             sev = InfoBarSeverity.Warning;
-            text = () => (Loc.S("Msg_Stopped"), ex.Message);
+            var opened = run.MessagesOpened;
+            text = () => (Loc.S("Msg_Stopped"), ex.Message + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : ""));
             path = run.Folder;
         }
         catch (OperationCanceledException)
         {
             var (saved, skipped) = (run.Saved, run.Skipped);
             sev = InfoBarSeverity.Warning;
-            text = () => (Loc.S("Msg_Cancelled"), Loc.F("Msg_CancelledText", saved, skipped));
+            var opened = run.MessagesOpened;
+            text = () => (Loc.S("Msg_Cancelled"), Loc.F("Msg_CancelledText", saved, skipped) + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : ""));
             path = run.Folder;
         }
         catch (Exception ex)

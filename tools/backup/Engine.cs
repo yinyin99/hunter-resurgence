@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.IO.Compression;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
@@ -38,10 +39,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         ("account", true, Session.All),
         ("friends", true, Session.Part),
         ("photos", false, Session.None),
+        ("history", false, Session.None),
         ("messages", false, Session.All),
     ];
 
-    public static string NotCovered => string.Join("\r\n", Loc.S("NotCovered_Title"), "- " + Loc.S("NotCovered_1"), "- " + Loc.S("NotCovered_2"), "- " + Loc.S("NotCovered_3"), "- " + Loc.S("NotCovered_4"));
+    public static string NotCovered => string.Join("\r\n", Loc.S("NotCovered_Title"), "- " + Loc.S("NotCovered_1"), "- " + Loc.S("NotCovered_2"), "- " + Loc.S("NotCovered_3"), "- " + Loc.S("NotCovered_4"), "- " + Loc.S("NotCovered_5"));
 
     /// <summary>The release version (the git tag, set by the build); "0.0.0-dev" for a local build. The +commit suffix the SDK adds is cut.</summary>
     public static string Version { get; } = (Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0-dev").Split('+')[0];
@@ -145,7 +147,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         File.WriteAllBytes(Path.Combine(dir, "claim.key"), key);
         var chosen = Groups.Where(g => groups.Contains(g.Key) && g.Key != "setups" && !(g.Key == "hunts" && groups.Contains("kills"))).ToList(); // kills reads the hunts itself; setups runs last
         if (groups.Contains("setups")) Need(2); // its two reads are counted from the start
-        lock (unsized) foreach (var g in chosen) if (g.Key is "profile" or "trophies" or "hunts" or "kills" or "account" or "photos") unsized.Add(g.Key);
+        lock (unsized) foreach (var g in chosen) if (g.Key is "profile" or "trophies" or "hunts" or "kills" or "account" or "photos" or "history") unsized.Add(g.Key);
         using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct);
         this.ct = stop.Token;
         try
@@ -175,7 +177,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             await (key switch
             {
                 "profile" => Profile(), "inventory" => Inventory(), "setups" => Setups(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
-                "account" => Account(), "friends" => Friends(), "photos" => Photos(), _ => Messages(),
+                "account" => Account(), "friends" => Friends(), "photos" => Photos(), "history" => History(), _ => Messages(),
             });
         }
         catch (Exception e) when (e is not OperationCanceledException)
@@ -206,9 +208,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     async Task ProfileApi(Action listed)
     {
-        Need(s.ConsumerKey == null ? 9 : 10);
+        Need(s.ConsumerKey == null ? 11 : 12);
         foreach (var ep in new[] { "Statistics/total", "Skill/list", "Achievement/stats", "Challenge/get_user_challenges" })
             await Get(Q(ep, false, ("user_id", uid)));
+        foreach (var ep in new[] { "Campaign/get_active_campaign", "Community_Campaign/get_active_community_campaign" }) // null while no campaign runs: valid data
+            await Get(Q(ep, false, ("user_id", uid), ("lang", "en")));
         await Get(Q("Leaderboard/personal", false, ("user_id", uid), ("season_no", "0")), ready: Done);
         await Get(Q("Leaderboard/current_personal", false, ("user_id", uid)));
         foreach (var g in new[] { "0", "1" }) // the player's position on the two minigame boards
@@ -216,7 +220,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Membership_Bundle/get_active")); // the membership bundles on sale: public, and a token makes it answer handlerError
         int seasons = 0;
         if (s.ConsumerKey is { } key) // the catalogue makes item, species and achievement ids readable later; its season is the newest board
-            seasons = (int?)Json(await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en"))))?["season"] ?? 0;
+            seasons = (int)(Num(Json(await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en"))))?["season"]) ?? 0);
         else log("! Application/application skipped: no oauth_consumer_key in settings.json");
         Need(seasons + 1);
         listed();
@@ -273,7 +277,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             Need(1);
             var ex = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))))?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
-            listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), (long?)e["start_ts"] ?? 0)));
+            listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
             if (ex.Count < 50) break;
         }
         var ids = listed.OrderByDescending(h => h.Start).Select(h => h.Id).ToList(); // newest first (the list comes that way): a run that is cancelled or too long keeps the latest hunts
@@ -335,10 +339,45 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Me/friends", true));
     }
 
+    /// <summary>A reply number: a JSON number or a numeric string (this API sends both); anything else is null.</summary>
+    static long? Num(JsonNode? n) => n is JsonValue v
+        ? v.TryGetValue<long>(out var l) ? l
+        : v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (long)d
+        : v.TryGetValue<string>(out var s) && long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out l) ? l : null
+        : null;
+
+    /// <summary>Unread conversations opened (fetched) in this run: the server probably shows them as read afterwards.</summary>
+    public int MessagesOpened { get; private set; }
+
     async Task Messages()
     {
         Need(1);
-        await Get(Q("Chat/conversations", true)); // ponytail: previews only; Chat/conversation may mark threads read, unverified
+        // opening a thread can mark it read: the list is saved first as the original state
+        var list = Json(await Get(Q("Chat/conversations", true))) as JsonArray;
+        var entries = (list ?? []).OfType<JsonObject>().Where(c => c["user_id"] != null).ToList();
+        Need(entries.Count);
+        var rows = new JsonArray();
+        bool Unread(JsonObject c) => c["read"]?.ToString() is "0" or "false";
+        foreach (var c in entries.Where(c => !Unread(c)).Concat(entries.Where(Unread)))
+        {
+            var id = c["user_id"]!.ToString();
+            var r = Q("Chat/conversation", true, ("user_id", id));
+            var name = FileName(r);
+            var had = resume && File.Exists(Path.Combine(dir, name));
+            if (Json(await Get(r)) is not JsonObject th) continue;
+            if (Unread(c) && !had) MessagesOpened++;
+            var count = (th["messages"] as JsonArray)?.Count ?? 0;
+            var total = Num(th["total"]);
+            log($"messages {id}: total {total}, {count} in reply");
+            rows.Add(new JsonObject { ["user_id"] = c["user_id"]!.DeepClone(), ["read"] = c["read"]?.DeepClone(), ["file"] = name, ["total"] = total, ["messages"] = count });
+        }
+        if (list == null) return;
+        var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => Num(x["total"]) != (int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
+        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
+        WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
+        lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
+        Interlocked.Increment(ref saved);
+        if (capped.Count > 0) log($"! messages: {capped.Count} thread(s) with a total different from the messages returned (possibly capped)");
     }
 
     async Task Photos()

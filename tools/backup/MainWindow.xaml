@@ -24,15 +24,20 @@
 
         <Grid x:Name="Body" Grid.Row="1" Margin="16,0,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- cards: locked while a backup runs -->
-            <StackPanel x:Name="Inputs">
+            <!-- cards: locked while a backup runs. The group list takes the space that is left and scrolls, so the folder card, Start and Details stay on a small screen -->
+            <Grid x:Name="Inputs">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
                         <Grid Margin="0,0,0,6">
@@ -53,14 +58,20 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
+                <Border Style="{StaticResource Card}" Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
                         <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" Margin="0,0,0,4" />
-                        <UniformGrid x:Name="Groups" Columns="2" />
-                    </StackPanel>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <UniformGrid x:Name="Groups" Columns="2" />
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <Border Style="{StaticResource Card}">
+                <Border Style="{StaticResource Card}" Grid.Row="2">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -81,10 +92,11 @@
                         </Grid>
                         <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" />
                         <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" Grid.ColumnSpan="2" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Older" Grid.Row="2" Grid.Column="1" IsChecked="False" IsEnabled="False" />
                     </Grid>
                 </Border>
-            </StackPanel>
+            </Grid>
 
             <Grid Grid.Row="1" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
@@ -109,7 +121,7 @@
 
             <Grid Grid.Row="4">
                 <Expander x:Name="Details" VerticalAlignment="Stretch">
-                    <TextBox x:Name="LogBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
+                    <TextBox x:Name="LogBox" Height="155" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" />
                 </Expander>
                 <ui:Button x:Name="NotCoveredLink" Appearance="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,44,0" />

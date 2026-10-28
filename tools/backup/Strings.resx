@@ -142,6 +142,9 @@
   <data name="NotCovered_4" xml:space="preserve">
     <value>Other players' data (only the public profile of a handle you type is saved).</value>
   </data>
+  <data name="NotCovered_5" xml:space="preserve">
+    <value>Data only the game's own load carries (achievement earn times, own minigame score outside the top 30, mission counters, the units setting, reserve licences); the website has no endpoint for it.</value>
+  </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profile</value>
   </data>
@@ -196,11 +199,20 @@
   <data name="GroupDesc_photos" xml:space="preserve">
     <value>Gallery pictures at full size (large)</value>
   </data>
+  <data name="Group_history" xml:space="preserve">
+    <value>Competition history</value>
+  </data>
+  <data name="GroupDesc_history" xml:space="preserve">
+    <value>Result in every finished competition the website still lists, about the last 7 days only (hundreds of requests)</value>
+  </data>
+  <data name="Older" xml:space="preserve">
+    <value>Also follow older editions (estimate: up to 7,000 more requests, 2 hours or more)</value>
+  </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Messages</value>
   </data>
   <data name="GroupDesc_messages" xml:space="preserve">
-    <value>Conversation list, not the message texts</value>
+    <value>Every conversation, read and unread, saved in full. Unread ones will then show as read.</value>
   </data>
   <data name="Group_lookup" xml:space="preserve">
     <value>Account lookup</value>
@@ -282,6 +294,9 @@
   </data>
   <data name="Msg_Dead" xml:space="preserve">
     <value>{0} pictures or pages no longer exist on the server (404), so they could not be saved.</value>
+  </data>
+  <data name="Msg_MessagesOpened" xml:space="preserve">
+    <value>{0} unread conversations were opened and now show as read.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Kill pages and photos were not saved; tick them for a complete backup.</value>
