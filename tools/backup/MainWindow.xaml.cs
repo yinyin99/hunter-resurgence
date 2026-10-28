@@ -81,8 +81,9 @@ public partial class MainWindow : FluentWindow
     void FitHeight()
     {
         UpdateLayout(); // settle pending changes first: the manual Measure below left them half-measured (Start kept the width of "Cancelling…" and its label sat off-centre)
-        var chrome = ActualHeight - Body.ActualHeight;
-        Body.Measure(new Size(Body.ActualWidth, double.PositiveInfinity));
+        var m = Body.Margin; // Measure takes the size of the slot, margins included, and DesiredSize comes back with them: ActualWidth/Height are the inside
+        var chrome = ActualHeight - (Body.ActualHeight + m.Top + m.Bottom);
+        Body.Measure(new Size(Body.ActualWidth + m.Left + m.Right, double.PositiveInfinity));
         var area = SystemParameters.WorkArea;
         Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height), area.Height);
         Top = Math.Max(area.Top, Math.Min(Top, area.Bottom - Height));
@@ -166,19 +167,15 @@ public partial class MainWindow : FluentWindow
     {
         var old = boxes;
         boxes = [.. Engine.Groups.Select(Row)];
-        Groups.Children.Clear();
-        Groups.RowDefinitions.Clear();
-        HistoryCell.Children.Clear();
+        ColLeft.Children.Clear();
+        ColRight.Children.Clear();
         for (int i = 0; i < boxes.Length; i++)
         {
             if (old != null) (boxes[i].IsChecked, boxes[i].IsEnabled) = (old[i].IsChecked, old[i].IsEnabled);
             Describe(i);
-            UIElement cell = boxes[i];
-            if (i == HistoryAt) { HistoryCell.Children.Add(boxes[i]); HistoryCell.Children.Add(Older); cell = HistoryCell; } // the older-editions switch sits right under the group it depends on
-            if (i % 2 == 0) Groups.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // row pairs: both cells start at the same top
-            Grid.SetRow(cell, i / 2);
-            Grid.SetColumn(cell, i % 2);
-            Groups.Children.Add(cell);
+            var column = i < (boxes.Length + 1) / 2 ? ColLeft : ColRight; // group order runs down the left column, then down the right one: Tab and screen readers follow it
+            column.Children.Add(boxes[i]);
+            if (i == HistoryAt) column.Children.Add(Older); // the older-editions switch sits right under the group it depends on
         }
         boxes[HistoryAt].Checked += (_, _) => SyncOlder(); // not Click: a keyboard, screen-reader or code change of the tick counts too
         boxes[HistoryAt].Unchecked += (_, _) => SyncOlder();
@@ -204,7 +201,7 @@ public partial class MainWindow : FluentWindow
         {
             var tag = new Border
             {
-                Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(6, 0, 6, 1), CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(8, 0, 8, 0), CornerRadius = new CornerRadius(8),
                 ToolTip = Tip(g.Needs),
                 Child = new TextBlock { Text = tagText, FontSize = 11 },
             };
@@ -216,10 +213,10 @@ public partial class MainWindow : FluentWindow
         var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
         desc.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(desc);
-        var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, filled by Describe
+        var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, filled by Describe
         note.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(note);
-        var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 0, 8, 2) };
+        var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 0, 8, 4) };
         System.Windows.Automation.AutomationProperties.SetName(box, tagText.Length > 0 ? $"{label}, {tagText}" : label);
         ToolTipService.SetShowOnDisabled(box, true);
         return box;

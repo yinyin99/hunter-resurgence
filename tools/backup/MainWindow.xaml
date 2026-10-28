@@ -16,7 +16,7 @@
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
-        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a white ring outside the button -->
+        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a white ring outside the button. The -3 margin is off the 4 scale on purpose: with the 2 px stroke it leaves a 2 px gap to the button, -4 would leave 3 and -2 only 1 -->
         <Style x:Key="StartFocus">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -40,11 +40,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!-- cards: locked while a backup runs. They scroll as one when the window is short; Start, the result bar and Details are below the scroll and never leave the window -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,8"> <!-- the 8 px strip above Start is the edge of the scroll region: scrolled text never touches the button -->
             <Grid x:Name="Inputs">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -53,7 +52,7 @@
                 </Grid.RowDefinitions>
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <Grid Margin="0,0,0,6">
+                        <Grid Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -87,23 +86,24 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" VerticalAlignment="Center" AutomationProperties.HeadingLevel="Level1" />
-                            <ui:HyperlinkButton x:Name="SelectAll" Grid.Column="1" Padding="8,2" />
-                            <ui:HyperlinkButton x:Name="SelectNone" Grid.Column="2" Margin="4,0,0,0" Padding="8,2" />
+                            <ui:HyperlinkButton x:Name="SelectAll" Grid.Column="1" Padding="8,4" />
+                            <ui:HyperlinkButton x:Name="SelectNone" Grid.Column="2" Margin="4,0,0,0" Padding="8,4" />
                         </Grid>
+                        <!-- two columns in group order, left one first; each stacks on its own, so a long description or the older-editions switch never leaves a gap under the cell beside it. BuildRows fills them -->
                         <Grid x:Name="Groups" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <!-- the history row's cell: BuildRows puts the checkbox above this switch, which only means something while that group is ticked -->
-                            <StackPanel x:Name="HistoryCell">
+                            <StackPanel x:Name="ColLeft" />
+                            <StackPanel x:Name="ColRight" Grid.Column="1">
                                 <ui:ToggleSwitch x:Name="Older" Margin="28,0,0,4" MinHeight="28" IsChecked="False" IsEnabled="False" />
                             </StackPanel>
                         </Grid>
                     </Grid>
                 </Border>
 
-                <Border Style="{StaticResource Card}" Grid.Row="2">
+                <Border Style="{StaticResource Card}" Grid.Row="2" Margin="0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -114,7 +114,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.ColumnSpan="2" Margin="0,0,0,6">
+                        <Grid Grid.ColumnSpan="2" Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -153,9 +153,9 @@
                 <ui:Button x:Name="OpenBtn" Grid.Column="1" Margin="8,0,0,8" VerticalAlignment="Center" Visibility="Collapsed" />
             </Grid>
 
-            <Grid Grid.Row="4">
+            <Grid Grid.Row="3">
                 <Expander x:Name="Details" VerticalAlignment="Stretch">
-                    <TextBox x:Name="LogBox" Height="155" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
+                    <TextBox x:Name="LogBox" Height="156" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" />
                 </Expander>
             </Grid>
