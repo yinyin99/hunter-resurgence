@@ -32,6 +32,7 @@
     <SolidColorBrush x:Key="CheckBoxForeground" Color="#EEEEEE" />
     <SolidColorBrush x:Key="RadioButtonForeground" Color="#EEEEEE" />
     <SolidColorBrush x:Key="ToggleSwitchContentForeground" Color="#EEEEEE" />
+    <SolidColorBrush x:Key="ToggleSwitchContentForegroundDisabled" Color="#666666" /> <!-- WPF UI's own is 36% white, #959595 on the card, as bright as the secondary text: the older-editions label looked enabled. One disabled grey, TextFillColorDisabledBrush's, 3.15:1 on the card -->
     <SolidColorBrush x:Key="ComboBoxForeground" Color="#EEEEEE" />
     <SolidColorBrush x:Key="ComboBoxItemForeground" Color="#EEEEEE" />
     <SolidColorBrush x:Key="ExpanderHeaderForeground" Color="#EEEEEE" />
@@ -47,6 +48,7 @@
     <SolidColorBrush x:Key="TextControlForeground" Color="#DDDDDD" />
     <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#8A8A8A" /> <!-- 4.9:1 on the field, dimmer than typed text -->
     <SolidColorBrush x:Key="ComboBoxBackground" Color="#1C1C1C" />
+    <SolidColorBrush x:Key="LangBoxEdgeBrush" Color="#707070" /> <!-- the language box edge (MainWindow.xaml), as the fields': 3.65:1 on the card; WPF UI's own is 1.2:1 -->
     <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#1C1C1C" />
     <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#222222" />
 

@@ -43,7 +43,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- cards: locked while a backup runs. They scroll as one when the window is short; Start, the result bar and Details are below the scroll and never leave the window -->
+            <!-- cards: locked while a backup runs (LockInputs disables the controls, not the status line or the heading). They scroll as one when the window is short; Start, the result bar and Details are below the scroll and never leave the window -->
             <local:CardScroll x:Name="Scroller" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8" Background="Transparent"> <!-- the 8 px strip above Start is the edge of the scroll region: scrolled text never touches the button. Transparent: the wheel still scrolls while the cards are locked -->
             <Grid x:Name="Inputs">
                 <Grid.RowDefinitions>
@@ -61,9 +61,9 @@
                             </Grid.ColumnDefinitions>
                             <local:DecorIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
                             <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
-                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" />
+                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" BorderBrush="{DynamicResource LangBoxEdgeBrush}" />
                         </Grid>
-                        <WrapPanel>
+                        <WrapPanel x:Name="SourceRow">
                             <!-- one Tab stop for the pair; the arrow keys move and select -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,12,0" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
                                 <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" Padding="0,0,4,0" />
@@ -105,7 +105,7 @@
                 </Border>
 
                 <Border Style="{StaticResource Card}" Grid.Row="2" Margin="0">
-                    <Grid>
+                    <Grid x:Name="Options">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

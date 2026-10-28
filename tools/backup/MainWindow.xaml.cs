@@ -183,9 +183,7 @@ public partial class MainWindow : FluentWindow
         Browse.Content = Loc.S("Browse");
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
-        var upload = Wrapped(Loc.S("Upload")); // never available: names its dim brush itself, so the readable look of a running backup does not light it up
-        upload.Foreground = (System.Windows.Media.Brush)FindResource("TextFillColorDisabledBrush");
-        Upload.Content = upload;
+        Upload.Content = Wrapped(Loc.S("Upload"));
         Older.Content = Wrapped(Loc.S("Older"));
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
@@ -479,15 +477,25 @@ public partial class MainWindow : FluentWindow
         ("TextControlForegroundDisabled", "TextControlForeground"), ("ComboBoxForegroundDisabled", "ComboBoxForeground"),
     ];
 
-    /// <summary>The cards cannot be used while a backup runs. Disabled, so a screen reader cannot toggle or invoke them either; the scroll region around them stays enabled for the wheel.</summary>
+    /// <summary>The controls cannot be used while a backup runs. Disabled, so a screen reader cannot toggle or invoke them either; the scroll region around them stays enabled for the wheel, and the status line and the heading are not locked, so they keep reading as enabled.
+    /// A control that is off for its own reason (Public mode's token groups, the older-editions switch without its group, Upload) keeps its idle disabled look; only the ones this method locks get the readable one.</summary>
     void LockInputs(bool locked)
     {
-        Inputs.IsEnabled = !locked;
+        foreach (var c in new FrameworkElement[] { LangBox, SourceRow, SelectAll, SelectNone, Groups, Options }) c.IsEnabled = !locked;
         var look = Inputs.Resources.MergedDictionaries;
         look.Clear();
-        foreach (var b in boxes ?? []) // a ticked group keeps its orange box, like the Zip and Skip switches that are on: "on" reads the same way everywhere (the template has one disabled fill for ticked and unticked boxes)
-            if (locked && b.IsChecked == true) b.Resources["CheckBoxCheckBackgroundFillUncheckedDisabled"] = b.Resources["CheckBoxCheckBackgroundStrokeUncheckedDisabled"] = TryFindResource("CheckBoxCheckBackgroundFillChecked");
-            else b.Resources.Clear();
+        foreach (var c in (Control[])[Older, Upload, .. boxes ?? []])
+        {
+            c.Resources.Clear();
+            if (!locked) continue;
+            if (c.ReadLocalValue(IsEnabledProperty) is false) // off for its own reason: the same keys, from the app, so the run look above does not reach it
+                foreach (var (disabled, _) in RunLook) { if (TryFindResource(disabled) is { } idle) c.Resources[disabled] = idle; }
+            else if (c is CheckBox { IsChecked: true }) // a ticked group keeps its orange box, like the Zip and Skip switches that are on: "on" reads the same way everywhere (the template has one disabled fill for ticked and unticked boxes)
+                c.Resources["CheckBoxCheckBackgroundFillUncheckedDisabled"] = c.Resources["CheckBoxCheckBackgroundStrokeUncheckedDisabled"] = TryFindResource("CheckBoxCheckBackgroundFillChecked");
+        }
+        foreach (var r in new[] { OwnRadio, PublicRadio }) // the template dims a disabled, selected radio to 70% by a trigger on its own parts; a local value beats it
+            foreach (var part in new[] { "CheckOuterEllipse", "CheckGlyph" })
+                if (r.Template.FindName(part, r) is UIElement e) { if (locked && r.IsChecked == true) e.Opacity = 1; else e.ClearValue(OpacityProperty); }
         if (!locked) return;
         var d = new ResourceDictionary();
         foreach (var (disabled, normal) in RunLook) if (TryFindResource(normal) is { } brush) d[disabled] = brush;
