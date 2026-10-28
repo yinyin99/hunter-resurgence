@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using CheckBox = System.Windows.Controls.CheckBox;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -38,7 +37,6 @@ public partial class MainWindow : FluentWindow
     {
         langPath = Path.Combine(Path.GetDirectoryName(keyPath)!, "language.txt");
         Loc.Init(langPath);
-        SystemThemeWatcher.Watch(this); // light/dark follow the system, Mica backdrop
         InitializeComponent();
         OutDir.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "game-backup");
         remembered = [.. Engine.Groups.Select(g => g.On)];

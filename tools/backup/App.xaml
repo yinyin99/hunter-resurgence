@@ -6,9 +6,62 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemesDictionary Theme="Light" />
+                <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Blazor app tokens (src/Ui/wwwroot/theme.css) over WPF UI's Dark keys. Direct keys beat the merged dictionaries.
+                 Dark.xaml binds most brush colors with StaticResource, so those are overridden as brushes here.
+                 The accent is set in App.xaml.cs: accent keys set only here did not hold (ticks and toggles rendered system blue). -->
+
+            <!-- keyboard focus ring: accent token -->
+            <SolidColorBrush x:Key="KeyboardFocusBorderColorBrush" Color="#F9560D" />
+
+            <!-- surfaces: surface-1 window, surface-2 .panel, line card stroke -->
+            <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#111111" />
+            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#161616" />
+            <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#222222" />
+            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="#161616" />
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="#222222" />
+            <SolidColorBrush x:Key="ExpanderHeaderBorderPointerOverBrush" Color="#333333" />
+            <SolidColorBrush x:Key="ExpanderContentBackground" Color="#161616" />
+
+            <!-- text: text-1, fg-muted, fg-muted-3 (disabled) -->
+            <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#999999" />
+            <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#888888" />
+            <SolidColorBrush x:Key="TextFillColorDisabledBrush" Color="#666666" />
+
+            <!-- fields (.field): surface-3, line-2 border, text-2 text, accent focus border (TextControlFocusedBorderBrush is already the accent) -->
+            <SolidColorBrush x:Key="TextControlBackground" Color="#1C1C1C" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#222222" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1C1C1C" />
+            <SolidColorBrush x:Key="TextControlElevationBorderBrush" Color="#333333" />
+            <SolidColorBrush x:Key="TextControlForeground" Color="#DDDDDD" />
+            <SolidColorBrush x:Key="ComboBoxBackground" Color="#1C1C1C" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#1C1C1C" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#222222" />
+
+            <!-- plain buttons: btn-ui-bg, btn-inverse-bg, surface-6 -->
+            <SolidColorBrush x:Key="ButtonBackground" Color="#3C3C3C" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#444444" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#333333" />
+
+            <!-- primary button (.btn-primary): primary / primary-hover, white text. Also white on-accent glyphs (WPF UI uses black on its dark accent) -->
+            <SolidColorBrush x:Key="AccentButtonBackground" Color="#F9370D" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#E72D06" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#E72D06" />
+            <SolidColorBrush x:Key="AccentButtonForeground" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="CheckBoxCheckGlyphForeground" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="RadioButtonCheckGlyphFill" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressed" Color="#FFFFFF" />
+
+            <!-- progress track: surface-6 -->
+            <SolidColorBrush x:Key="ProgressBarBackground" Color="#333333" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

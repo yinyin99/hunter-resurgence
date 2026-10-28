@@ -3,7 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  Width="880" Height="690" MinWidth="720" MinHeight="600"
-                 WindowBackdropType="Mica" ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="None" ExtendsContentIntoTitleBar="True"
                  WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="Card" TargetType="Border">
