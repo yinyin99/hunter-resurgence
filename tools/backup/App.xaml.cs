@@ -9,7 +9,10 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         if (SystemParameters.HighContrast)
+        {
             ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, Wpf.Ui.Controls.WindowBackdropType.None, updateAccent: false); // WPF UI picks the system's HC1, HC2, Black or White palette; no tokens, no accent. ponytail: read once at startup, a switch while the app runs needs a restart
+            Resources["StartFocusRingBrush"] = Resources["TextFillColorPrimaryBrush"]; // the ring round Start (MainWindow.xaml) takes the palette's text colour, which pairs with its window colour in all four palettes; WPF UI's own focus key is #3D3D3D in each of them, 1.2:1 on the dark ones. The dark theme sets the ring white in Tokens.xaml
+        }
         else
         {
             Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("Tokens.xaml", UriKind.Relative) });

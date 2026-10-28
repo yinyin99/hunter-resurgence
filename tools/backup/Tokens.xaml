@@ -7,6 +7,8 @@
 
     <!-- keyboard focus ring: accent token -->
     <SolidColorBrush x:Key="KeyboardFocusBorderColorBrush" Color="#F9560D" />
+    <!-- the ring round a focused Start (MainWindow.xaml): white on the window, since the button's own fill is the accent -->
+    <SolidColorBrush x:Key="StartFocusRingBrush" Color="#FFFFFF" />
 
     <!-- surfaces: surface-1 window, surface-2 .panel, line card stroke -->
     <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#111111" />

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -52,7 +53,11 @@ public partial class MainWindow : FluentWindow
         langTimer.Tick += (_, _) => { langTimer.Stop(); ApplyChosenLanguage(); };
         LangBox.SelectionChanged += (_, _) => { if (!LangBox.IsDropDownOpen) { langTimer.Stop(); langTimer.Start(); } }; // an open list applies when it closes
         LangBox.DropDownClosed += (_, _) => { langTimer.Stop(); ApplyChosenLanguage(); };
-        foreach (var r in new[] { OwnRadio, PublicRadio }) r.GotKeyboardFocus += (s, _) => ((RadioButton)s).IsChecked = true; // arrow keys move and select; Tab reaches only the checked one
+        foreach (var r in new[] { OwnRadio, PublicRadio })
+        {
+            r.GotKeyboardFocus += (s, _) => ((RadioButton)s).IsChecked = true; // arrow keys move and select; Tab reaches only the checked one
+            r.KeyDown += (s, e) => { if (e.Key is System.Windows.Input.Key.Up or System.Windows.Input.Key.Down) { (s == OwnRadio ? PublicRadio : OwnRadio).Focus(); e.Handled = true; } }; // Left and Right come from DirectionalNavigation; a Windows radio group takes all four arrows
+        }
         OwnRadio.Checked += (_, _) => ApplyMode();
         PublicRadio.Checked += (_, _) => ApplyMode();
         Browse.Click += (_, _) =>
@@ -61,6 +66,8 @@ public partial class MainWindow : FluentWindow
             if (d.ShowDialog(this) == true) OutDir.Text = d.FolderName;
         };
         Start.Click += OnStart;
+        foreach (var f in new[] { Who, OutDir }) f.KeyDown += (_, e) => { if (e.Key != System.Windows.Input.Key.Enter) return; e.Handled = true; if (!e.IsRepeat) OnStart(this, e); }; // Enter starts a backup only from the two fields (Start is not the window's default button, so Enter on a switch or a tick does nothing)
+        Start.PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Enter && e.IsRepeat) e.Handled = true; }; // a held Enter that started a run from a field moves on to Start, which is Cancel by then: only a fresh press may use it
         OpenBtn.Click += (_, _) => OpenResult();
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
         SelectAll.Click += (_, _) => SelectGroups(true);
@@ -76,6 +83,7 @@ public partial class MainWindow : FluentWindow
         watchTimer.Start();
         ApplyLanguage();
         ApplyMode();
+        SourceInitialized += (_, _) => AddSystemMenu(this);
         ContentRendered += (_, _) => SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush"); // FluentWindow resets it to its own dark grey when it applies the backdrop
         Loaded += (_, _) => { NameTitleButtons(this); HideGlyphs(); FitHeight(); };
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); langTimer.Stop(); cts?.Cancel(); };
@@ -97,6 +105,17 @@ public partial class MainWindow : FluentWindow
     void SelectGroups(bool on)
     {
         foreach (var b in boxes!) if (b.IsEnabled) b.IsChecked = on;
+    }
+
+    [DllImport("user32.dll")] static extern int GetWindowLong(IntPtr h, int index);
+    [DllImport("user32.dll")] static extern int SetWindowLong(IntPtr h, int index, int value);
+
+    /// <summary>The custom title bar leaves the window without WS_SYSMENU, so Alt+Space and a right click on the bar open nothing and there is no keyboard Move or Size. Also used for the dialog's window.</summary>
+    static void AddSystemMenu(Window w)
+    {
+        const int GwlStyle = -16, WsSysMenu = 0x80000;
+        var h = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+        SetWindowLong(h, GwlStyle, GetWindowLong(h, GwlStyle) | WsSysMenu);
     }
 
     /// <summary>The title bar's own buttons have no names for a screen reader; they come from the resources, so they follow the language (and Maximize turns into Restore). Also used for the dialog's window.</summary>
@@ -137,7 +156,6 @@ public partial class MainWindow : FluentWindow
         OutDir.PlaceholderText = Loc.S("OutDir_Placeholder");
         Named(OutDir, "OutDir_Placeholder");
         Browse.Content = Loc.S("Browse");
-        Named(Browse, "Browse_Name");
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
         var upload = Wrapped(Loc.S("Upload")); // never available: names its dim brush itself, so the readable look of a running backup does not light it up
@@ -147,7 +165,6 @@ public partial class MainWindow : FluentWindow
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
         OpenBtn.Content = Loc.S("Open_Folder");
-        Named(OpenBtn, "Open_Name");
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
@@ -273,6 +290,11 @@ public partial class MainWindow : FluentWindow
         System.Windows.Automation.Peers.UIElementAutomationPeer.FromElement(t)?.RaiseAutomationEvent(System.Windows.Automation.Peers.AutomationEvents.LiveRegionChanged);
     }
 
+    /// <summary>A window-level announcement that can be said again (the live regions above only speak when their text changes). Posted after the focus and status changes of this turn.</summary>
+    void Say(string text, string id, System.Windows.Automation.AutomationNotificationKind kind) =>
+        Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(this)?.RaiseNotificationEvent(
+            kind, System.Windows.Automation.AutomationNotificationProcessing.ImportantMostRecent, text, id)));
+
     /// <summary>Public mode: the groups that are all token-only are switched off and say why; the choice comes back with My account.</summary>
     void ApplyMode()
     {
@@ -319,7 +341,7 @@ public partial class MainWindow : FluentWindow
     async void OnStart(object sender, RoutedEventArgs e)
     {
         if (cts != null) { cts.Cancel(); Start.IsEnabled = false; Start.Content = Loc.S("Cancelling"); return; }
-        if (cfg == null) return; // Start is disabled then and the status line says why
+        if (cfg == null) { Say(Loc.S("Status_Settings"), "SettingsMissing", System.Windows.Automation.AutomationNotificationKind.ActionAborted); return; } // Start is disabled then, so only Enter in a field gets here: the status line already says it, a screen reader is told again
         if (Problem() is { } p)
         {
             Show(InfoBarSeverity.Informational, () => (Loc.S("Msg_" + p), Loc.S("Msg_" + p + "Text")), null, () => Problem() == p);
@@ -332,7 +354,6 @@ public partial class MainWindow : FluentWindow
 
         cts = new();
         Start.Appearance = ControlAppearance.Secondary; // Cancel is not the primary action
-        Start.IsDefault = false; // Enter must never cancel a run
         SetBusy(true);
         Result.IsOpen = false;
         validation = null;
@@ -404,7 +425,6 @@ public partial class MainWindow : FluentWindow
         Start.IsEnabled = true;
         Start.Content = Loc.S("Start");
         Start.Appearance = ControlAppearance.Primary;
-        Start.IsDefault = true;
         Bar.IsIndeterminate = false;
         ProgressText.Text = "";
         Bar.Value = done ? Bar.Maximum : 0;
@@ -509,9 +529,7 @@ public partial class MainWindow : FluentWindow
         (Result.Title, Result.Message) = text();
         OpenBtn.Visibility = resultPath.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         Result.IsOpen = true;
-        var spoken = $"{Result.Title}. {Result.Message}";
-        Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(this)?.RaiseNotificationEvent( // after the focus and status changes of this turn; the InfoBar's own texts are not announced
-            System.Windows.Automation.AutomationNotificationKind.ActionCompleted, System.Windows.Automation.AutomationNotificationProcessing.ImportantMostRecent, spoken, "BackupResult")));
+        Say($"{Result.Title}. {Result.Message}", "BackupResult", System.Windows.Automation.AutomationNotificationKind.ActionCompleted);
         FitHeight();
     }
 
@@ -530,6 +548,7 @@ public partial class MainWindow : FluentWindow
             Content = new TextBlock { Text = Engine.NotCovered, TextWrapping = TextWrapping.Wrap, MaxWidth = 520 },
         };
         System.Windows.Automation.AutomationProperties.SetName(box, box.Title); // else the window is named after its whole body text
+        box.SourceInitialized += (_, _) => AddSystemMenu(box);
         box.ContentRendered += (_, _) =>
         {
             NameTitleButtons(box); // this window's title-bar buttons have no names either

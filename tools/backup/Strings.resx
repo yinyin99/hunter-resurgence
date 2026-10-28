@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Browse…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Browse for the output folder</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Save a zip</value>
   </data>
@@ -132,9 +129,6 @@
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Open folder</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Open the backup in Explorer</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>

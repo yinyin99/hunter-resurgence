@@ -17,12 +17,12 @@
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
-        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a white ring outside the button. The -3 margin is off the 4 scale on purpose: with the 2 px stroke it leaves a 2 px gap to the button, -4 would leave 3 and -2 only 1 -->
+        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a ring outside the button in StartFocusRingBrush (white; the palette's text colour in high contrast, App.xaml.cs). The -3 margin is off the 4 scale on purpose: with the 2 px stroke it leaves a 2 px gap to the button, -4 would leave 3 and -2 only 1 -->
         <Style x:Key="StartFocus">
             <Setter Property="Control.Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Rectangle Margin="-3" Stroke="White" StrokeThickness="2" RadiusX="7" RadiusY="7" SnapsToDevicePixels="True" />
+                        <Rectangle Margin="-3" Stroke="{DynamicResource StartFocusRingBrush}" StrokeThickness="2" RadiusX="7" RadiusY="7" SnapsToDevicePixels="True" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -137,7 +137,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" IsDefault="True" FocusVisualStyle="{StaticResource StartFocus}" />
+                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" FocusVisualStyle="{StaticResource StartFocus}" />
                 <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
                     <TextBlock x:Name="ProgressText" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
                     <!-- Bar draws no track while it sweeps (the total is not known yet): this one keeps the sweep on a rail -->

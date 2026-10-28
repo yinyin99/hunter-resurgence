@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Procurar…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Escolher a pasta de destino</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Criar um arquivo zip</value>
   </data>
@@ -132,9 +129,6 @@
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Abrir pasta</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Abrir o backup no Explorador de Arquivos</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Detalhes</value>

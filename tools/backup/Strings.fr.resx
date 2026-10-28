@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Parcourir…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Choisir le dossier de destination</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Créer un fichier zip</value>
   </data>
@@ -132,9 +129,6 @@
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Ouvrir le dossier</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Ouvrir la sauvegarde dans l’Explorateur de fichiers</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Détails</value>
