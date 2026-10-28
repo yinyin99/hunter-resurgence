@@ -359,12 +359,16 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Me/friends", true));
     }
 
-    /// <summary>A reply number: a JSON number or a numeric string (this API sends both); anything else is null.</summary>
-    static long? Num(JsonNode? n) => n is JsonValue v
-        ? v.TryGetValue<long>(out var l) ? l
-        : v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (long)d
-        : v.TryGetValue<string>(out var s) && long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out l) ? l : null
-        : null;
+    /// <summary>A reply number: a JSON number or a numeric string (this API sends both), "250.0" included; a value that is not a whole number, or not a number, is null.</summary>
+    static long? Num(JsonNode? n)
+    {
+        if (n is not JsonValue v) return null;
+        if (v.TryGetValue<long>(out var l)) return l;
+        if (v.TryGetValue<string>(out var s) && long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out l)) return l;
+        double d = 0;
+        if (!(v.TryGetValue<double>(out d) || (s != null && double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d)))) return null;
+        return double.IsFinite(d) && d == Math.Floor(d) && Math.Abs(d) < 9e15 ? (long)d : null;
+    }
 
     /// <summary>Unread conversations opened (fetched) in this run: the server probably shows them as read afterwards.</summary>
     public int MessagesOpened { get; private set; }

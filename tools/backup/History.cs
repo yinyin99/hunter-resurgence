@@ -26,7 +26,9 @@ sealed partial class Engine
         Need(1);
         var page = Json(await Get(Q("Page_content/list_previous_competitions", false, ("offset", "0"), ("limit", "20"), ("lang", "en"))));
         Queue(page?["competitions"]);
-        for (int off = 20, total = (int)(Num(page?["total"]) ?? 0); off < total; off += 20)
+        var count = Num(page?["total"]);
+        if (count == null && page?["total"] is { } bad) log($"! history: list total not readable: {bad.ToJsonString()}"); // present but not a whole number: the rest of the list is not asked
+        for (int off = 20, total = (int)(count ?? 0); off < total; off += 20)
         {
             Need(1);
             Queue(Json(await Get(Q("Page_content/list_previous_competitions", false, ("offset", off.ToString()), ("limit", "20"), ("lang", "en"))))?["competitions"]);

@@ -39,9 +39,9 @@ public class HistoryTests
         },
     };
 
-    static async Task<Engine> Run(Fake f, TempDir t, bool older = false, bool resume = true, bool zip = false)
+    static async Task<Engine> Run(Fake f, TempDir t, bool older = false, bool resume = true, bool zip = false, Action<string>? log = null)
     {
-        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"), log);
         e.OlderEditions = older;
         await e.Run(t.Path, "", () => Tok, new HashSet<string> { "history" }, resume, zip, TestContext.Current.CancellationToken);
         return e;
@@ -84,6 +84,24 @@ public class HistoryTests
         var f = World(off => PreviousPage(45, Enumerable.Range(1, 45).Skip(Math.Min(off, 40)).Take(20)).Replace("\"total\":45", "\"total\":\"45\""), id => EditionReply(id, []));
         await Run(f, t);
         Assert.True(Offsets(f).SequenceEqual(["0", "20", "40"]) && Requests(f, Edition) == 45, $"offsets {string.Join(",", Offsets(f))}, {Requests(f, Edition)} editions");
+    }
+
+    /// <summary>A total of "45.0" (whole number as text with a decimal point) pages like 45; one that is no number is logged and only the first page is read.</summary>
+    [Fact]
+    public async Task TotalWithADecimalPointIsReadAndAnUnreadableOneIsLogged()
+    {
+        Fake Make(string total) => World(off => PreviousPage(45, Enumerable.Range(1, 45).Skip(Math.Min(off, 40)).Take(20)).Replace("\"total\":45", "\"total\":" + total), id => EditionReply(id, []));
+
+        using var t = new TempDir("backup-test-history-");
+        var f = Make("\"45.0\"");
+        await Run(f, t);
+        Assert.True(Offsets(f).SequenceEqual(["0", "20", "40"]), $"offsets {string.Join(",", Offsets(f))}");
+
+        using var t2 = new TempDir("backup-test-history-");
+        var f2 = Make("\"abc\"");
+        var log = new List<string>();
+        await Run(f2, t2, log: log.Add);
+        Assert.True(Offsets(f2).SequenceEqual(["0"]) && log.Contains("! history: list total not readable: \"abc\""), $"only offset 0 and the line ({string.Join(" | ", log.Where(x => x.Contains("history")))})");
     }
 
     /// <summary>A server that repeats a page does not loop and does not duplicate an edition.</summary>

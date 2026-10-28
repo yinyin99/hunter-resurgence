@@ -126,6 +126,6 @@ static class Hosts
 
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
-    public static Engine Make(Fake f, string keyPath) => new(
-        new("api.test", "apiv2.test", "web.test", "fakeclient.exe", ["photo.test"], "ckey-secret-9"), new HttpClient(f), _ => { }, (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
+    public static Engine Make(Fake f, string keyPath, Action<string>? log = null) => new(
+        new("api.test", "apiv2.test", "web.test", "fakeclient.exe", ["photo.test"], "ckey-secret-9"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
 }
