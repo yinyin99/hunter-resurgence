@@ -75,6 +75,8 @@ The group is off by default and uses public reads, so it works in public-profile
 
 "Select all" and "Select none" beside "What to save" tick or untick the groups that can be used in the chosen mode; in Public profile mode the groups that need the game stay off. Enter starts a backup; it never cancels a running one.
 
+The window keeps the language picker, the mode, the groups (in two columns) and the options in one scrolling area; Start (Cancel while a backup runs), the result bar and Details stay in view below it. The window is as tall as its content, up to the height of the screen, and scrolls when it cannot be. While a backup runs the cards are disabled, also for a screen reader, but keep their colours so you can still read what is being saved; a ticked group stays orange, like a switch that is on. If Start finds something missing, it says so in an informational bar and focuses the field when that is the handle; the bar closes by itself as soon as it is fixed. It checks in this order: nothing ticked, no handle (Public profile), no game session (My account). A bar about a backup (saved, cancelled, stopped, failed) stays until the next run.
+
 ## What is not saved
 
 - A picture of the placed equipment (the positions themselves are saved, see "Map setups").
