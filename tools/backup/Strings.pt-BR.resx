@@ -142,23 +142,23 @@
   <data name="NotCovered_Link" xml:space="preserve">
     <value>O que não é salvo?</value>
   </data>
-  <data name="NotCovered_Title" xml:space="preserve">
-    <value>Não incluído:</value>
-  </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Uma imagem dos equipamentos colocados (tendas, esconderijos, plataformas, torres, locais de ração, equipamento de escalada). Os equipamentos em si são salvos: posição, direção, configurações e unidades de cada item colocado, por mapa.</value>
+    <value>Imagens dos equipamentos colocados.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Ajustes e controles do jogo (ficam neste PC).</value>
+    <value>Ajustes e controles do jogo, e tudo o que o jogo guarda apenas neste PC.</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Dados do cliente que nunca foram enviados ao servidor.</value>
+    <value>A posição do veículo, os marcadores do mapa, as linhas desenhadas e a última posição ou ponto de partida.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
-    <value>Dados de outros jogadores (só é salvo o perfil público do apelido digitado).</value>
+    <value>Dados de outros jogadores.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Dados que só o carregamento do próprio jogo traz (datas de conquistas, sua pontuação de minijogo fora do top 30, contadores de missões, a configuração de unidades, licenças de reservas); o site não tem endpoint para eles.</value>
+    <value>Datas de conquistas, sua pontuação de minijogo fora do top 30, contadores de missões, a configuração de unidades e as licenças de reservas.</value>
+  </data>
+  <data name="NotCovered_6" xml:space="preserve">
+    <value>Códigos de presente.</value>
   </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Perfil</value>

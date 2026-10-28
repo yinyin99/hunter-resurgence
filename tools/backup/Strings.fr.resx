@@ -142,23 +142,23 @@
   <data name="NotCovered_Link" xml:space="preserve">
     <value>Qu’est-ce qui n’est pas sauvegardé ?</value>
   </data>
-  <data name="NotCovered_Title" xml:space="preserve">
-    <value>Non inclus :</value>
-  </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Une image de l’équipement placé (tentes, affûts, miradors, tours, conteneurs d’appâts, matériel d’escalade). L’équipement lui-même est sauvegardé : position, direction, réglages et unités de chaque objet placé, par carte.</value>
+    <value>Les images de l’équipement placé.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Paramètres et commandes du jeu (conservés sur ce PC).</value>
+    <value>Les paramètres et les commandes du jeu, et tout ce que le jeu garde uniquement sur ce PC.</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Données côté client qui n’ont jamais été envoyées au serveur.</value>
+    <value>La position du véhicule, les repères posés sur la carte, les lignes tracées, la dernière position ou le point de départ.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
-    <value>Données des autres joueurs (seul le profil public du pseudo saisi est sauvegardé).</value>
+    <value>Les données des autres joueurs.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Données que seul le chargement du jeu fournit (dates d’obtention des succès, propre score de mini-jeu hors du top 30, compteurs de missions, réglage des unités, licences de réserve) ; le site n’a pas de point d’accès pour elles.</value>
+    <value>Les dates d’obtention des succès, le score personnel de mini-jeu hors du top 30, les compteurs de missions, le réglage des unités et les licences de réserve.</value>
+  </data>
+  <data name="NotCovered_6" xml:space="preserve">
+    <value>Les codes cadeaux.</value>
   </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profil</value>

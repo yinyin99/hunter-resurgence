@@ -142,23 +142,23 @@
   <data name="NotCovered_Link" xml:space="preserve">
     <value>Was wird nicht gesichert?</value>
   </data>
-  <data name="NotCovered_Title" xml:space="preserve">
-    <value>Nicht enthalten:</value>
-  </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Ein Bild der aufgestellten Ausrüstung (Zelte, Tarnzelte, Hochsitze, Türme, Futterstellen, Kletterausrüstung). Die Ausrüstung selbst wird gesichert: Position, Ausrichtung, Einstellungen und Einheiten jedes aufgestellten Gegenstands, pro Karte.</value>
+    <value>Bilder der aufgestellten Ausrüstung.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Spieleinstellungen und Steuerung (bleiben auf diesem PC).</value>
+    <value>Spieleinstellungen und Steuerung sowie alles, was das Spiel nur auf diesem PC speichert.</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Clientseitige Daten, die nie an den Server gesendet wurden.</value>
+    <value>Die Position des Fahrzeugs, Kartenmarkierungen, gezeichnete Linien sowie die letzte Position oder der Startpunkt.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
-    <value>Daten anderer Spieler (gesichert wird nur das öffentliche Profil des eingegebenen Nicknames).</value>
+    <value>Daten anderer Spieler.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Daten, die nur der Ladevorgang des Spiels liefert (Erfolgszeitpunkte, eigener Minispiel-Wert außerhalb der Top 30, Missionszähler, Einheiteneinstellung, Revierlizenzen); die Website hat dafür keinen Endpunkt.</value>
+    <value>Zeitpunkte von Erfolgen, der eigene Minispiel-Wert außerhalb der Top 30, Missionszähler, die Einheiteneinstellung und Revierlizenzen.</value>
+  </data>
+  <data name="NotCovered_6" xml:space="preserve">
+    <value>Geschenkcodes.</value>
   </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profil</value>

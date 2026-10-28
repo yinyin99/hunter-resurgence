@@ -142,23 +142,23 @@
   <data name="NotCovered_Link" xml:space="preserve">
     <value>¿Qué no se guarda?</value>
   </data>
-  <data name="NotCovered_Title" xml:space="preserve">
-    <value>No incluido:</value>
-  </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>Una imagen del equipo colocado (tiendas de campaña, puestos de camuflaje, puestos elevados, torres, cebaderos, equipo de escalada). El equipo en sí se guarda: posición, dirección, ajustes y unidades de cada objeto colocado, por mapa.</value>
+    <value>Imágenes del equipo colocado.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>Configuración y controles del juego (se conservan en este PC).</value>
+    <value>Configuración y controles del juego, y todo lo que el juego guarda solo en este PC.</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Datos del cliente que nunca se enviaron al servidor.</value>
+    <value>La posición del vehículo, los marcadores del mapa, las líneas dibujadas y la última posición o punto de inicio.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
-    <value>Datos de otros jugadores (solo se guarda el perfil público del nombre de usuario que escribas).</value>
+    <value>Datos de otros jugadores.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Datos que solo trae la carga del propio juego (fechas de logros, tu puntuación de minijuego fuera del top 30, contadores de misiones, la unidad de medida, licencias de reservas); el sitio web no tiene un punto de acceso para ellos.</value>
+    <value>Fechas de logros, tu puntuación de minijuego fuera del top 30, contadores de misiones, la unidad de medida y las licencias de reservas.</value>
+  </data>
+  <data name="NotCovered_6" xml:space="preserve">
+    <value>Códigos de regalo.</value>
   </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Perfil</value>

@@ -617,12 +617,21 @@ public partial class MainWindow : FluentWindow
 
     async Task ShowNotCovered()
     {
-        var box = new Wpf.Ui.Controls.MessageBox
+        var body = new StackPanel { MaxWidth = 520, HorizontalAlignment = HorizontalAlignment.Left };
+        foreach (var item in Engine.NotCovered)
         {
-            Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"),
-            Content = Scrolled(new TextBlock { Text = Engine.NotCovered, TextWrapping = TextWrapping.Wrap, MaxWidth = 520 }),
-        };
-        await Ask(box, Engine.NotCovered.Replace("\r\n", " "));
+            var row = new Grid { Margin = new Thickness(0, body.Children.Count == 0 ? 0 : 6, 0, 0) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(18) });
+            row.ColumnDefinitions.Add(new ColumnDefinition());
+            var dot = new TextBlock { Text = "•" };
+            var text = new TextBlock { Text = item, TextWrapping = TextWrapping.Wrap };
+            Grid.SetColumn(text, 1);
+            row.Children.Add(dot);
+            row.Children.Add(text);
+            body.Children.Add(row);
+        }
+        var box = new Wpf.Ui.Controls.MessageBox { Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"), Content = Scrolled(body) };
+        await Ask(box, string.Join(" ", Engine.NotCovered));
     }
 
     /// <summary>The short version of the safety and snapshot facts of docs/backup.md ("How it works, in short"): five headings, each with one to three short paragraphs.</summary>
