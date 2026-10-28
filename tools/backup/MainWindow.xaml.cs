@@ -294,6 +294,14 @@ public partial class MainWindow : FluentWindow
     sealed class QuietCheckBox : CheckBox
     {
         public QuietCheckBox() => SetResourceReference(StyleProperty, typeof(CheckBox)); // an implicit style does not reach a subclass
+
+        /// <summary>The template's BulletDecorator centres the tick on the whole row (a VerticalAlignment on the tick does not move it); with a description and a cost line it sat far below the title. It is lifted to the top, level with the title's first line, whatever the row's height. The whole row stays the click target: only the drawing moves.</summary>
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            if (GetTemplateChild("ControlBorderIconPresenter") is not FrameworkElement { Parent: not null } tick) return;
+            SizeChanged += (_, _) => tick.RenderTransform = new System.Windows.Media.TranslateTransform(0, -Math.Max(0, ((FrameworkElement)System.Windows.Media.VisualTreeHelper.GetParent(tick)).ActualHeight - tick.ActualHeight) / 2);
+        }
         protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer() => new Peer(this);
 
         sealed class Peer(CheckBox box) : System.Windows.Automation.Peers.CheckBoxAutomationPeer(box)
@@ -686,8 +694,9 @@ public partial class MainWindow : FluentWindow
             var buttons = Descendants<System.Windows.Controls.Button>(box).Where(b => b.Content is string s && (s == box.PrimaryButtonText || s == box.CloseButtonText)).ToList();
             foreach (var b in buttons) System.Windows.Automation.AutomationProperties.SetHelpText(b, help);
             buttons.FirstOrDefault(b => b.Content as string == box.CloseButtonText)?.Focus();
-            foreach (var sv in Descendants<ScrollViewer>(box).Where(s => s.Tag as string == "body" && s.ScrollableHeight > 0))
+            foreach (var sv in Descendants<ScrollViewer>(box).Where(s => s.Tag as string == "body"))
             {
+                if (sv.ScrollableHeight < 1) { sv.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled; continue; } // the dialog is sized in whole pixels: a fraction of one would show a bar for text that fits
                 sv.Focusable = sv.IsTabStop = true; // a keyboard user can reach the rest of the text
                 System.Windows.Automation.AutomationProperties.SetName(sv, box.Title);
             }
