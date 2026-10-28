@@ -194,7 +194,7 @@
     <value>Fiches de prélèvements et photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Fiche de score de chaque prélèvement noté, photo de chaque prélèvement qui en a une (nombreuses requêtes)</value>
+    <value>Fiche de score de chaque prélèvement noté, photo de chaque prélèvement qui en a une</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Compte</value>
@@ -212,16 +212,16 @@
     <value>Photos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Photos de la galerie en taille réelle (volumineuses)</value>
+    <value>Photos de la galerie en taille réelle</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>Historique des compétitions</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Résultat de chaque compétition terminée encore listée par le site, environ 7 derniers jours (centaines de requêtes)</value>
+    <value>Résultat de chaque compétition terminée encore listée par le site, environ 7 derniers jours</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Suivre aussi les éditions plus anciennes (estimation : jusqu’à 7 000 requêtes de plus, 2 heures ou plus)</value>
+    <value>Suivre aussi les éditions plus anciennes</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Messages</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Aucun identifiant d’utilisateur dans la réponse</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>lent</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Peut prendre longtemps. Une confirmation vous est demandée avant le début de la sauvegarde.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>Une requête par chasse, par prélèvement noté et par photo de prélèvement : de nombreuses requêtes.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Téléchargements volumineux, une requête par photo.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Des centaines de requêtes, quelques dizaines de Ko chacune.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Estimation : jusqu’à 7 000 requêtes de plus, 2 heures ou plus.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>Cette sauvegarde peut prendre longtemps</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>Vous avez coché des options qui demandent de nombreuses requêtes. L’outil envoie au plus une requête par seconde à chaque serveur ; la sauvegarde peut donc prendre longtemps :</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>La ligne de progression indique le temps restant. Vous pouvez annuler à tout moment : ce qui est sauvegardé est conservé, et une exécution ultérieure avec « Ignorer les fichiers déjà sauvegardés (reprise) » repart de là.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Démarrer la sauvegarde</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>Comment ça marche ?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>Il ne fait que lire</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>L’outil demande votre profil aux serveurs officiels et enregistre leurs réponses, telles quelles, dans un dossier sur ce PC. Il ne modifie rien sur le serveur.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>Une exception : Messages, désactivé sauf si vous le cochez. Ouvrir une conversation non lue peut la marquer comme lue, et rien ne permet de l’annuler.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>À quoi il se connecte</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>Il se connecte uniquement aux serveurs officiels listés dans settings.json, à côté de backup.exe. Vous pouvez ouvrir ce fichier dans un éditeur de texte.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Votre sauvegarde reste sur ce PC. L’envoi vers un serveur n’est pas encore disponible.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Votre connexion</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>Pour lire votre propre compte, il utilise la session du jeu lancé. Il n’écrit jamais cette session dans un fichier et ne l’envoie qu’au serveur officiel.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>Un profil public ne demande aucune connexion : seules les données publiques sont sauvegardées.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>Il s’exécute sur ce PC et ne demande ni installation ni droits d’administrateur.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>Ce qui reste sur votre PC</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>Le dossier de sauvegarde choisi et, sauf si vous désactivez « Créer un fichier zip », un zip de ce dossier. Un petit fichier clé, claim.key, est conservé dans %APPDATA%\game-backup et copié dans chaque sauvegarde.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Gardez le zip privé : il contient les données de votre compte, votre identifiant Steam (avec « Mon compte ») et claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>Une copie à un instant donné</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>Une sauvegarde montre votre profil tel qu’il était pendant la sauvegarde. Ce que vous jouez, gagnez, achetez ou modifiez dans le jeu ensuite n’y figure pas.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>Pour la mettre à jour, lancez une autre sauvegarde : elle va dans un nouveau dossier dont le nom contient la date et l’heure, et la première reste intacte. « Ignorer les fichiers déjà sauvegardés » ne le fait pas : il ne fait que reprendre une sauvegarde qui n’est pas allée au bout.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Sauvegarde terminée le {0:g}. Ce que vous jouez, gagnez, achetez ou modifiez dans le jeu ensuite n’y figure pas : lancez une nouvelle sauvegarde.</value>
   </data>
 </root>

@@ -194,7 +194,7 @@
     <value>Abschussseiten und Fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Bewertungsbogen jedes bewerteten Abschusses, Foto jedes Abschusses, der eines hat (viele Anfragen)</value>
+    <value>Bewertungsbogen jedes bewerteten Abschusses, Foto jedes Abschusses, der eines hat</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Konto</value>
@@ -212,16 +212,16 @@
     <value>Fotos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Fotos der Bildergalerie in voller Größe (große Datenmenge)</value>
+    <value>Fotos der Bildergalerie in voller Größe</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>Wettbewerbsverlauf</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Ergebnis jedes beendeten Wettbewerbs, den die Website noch aufführt, nur etwa 7 Tage (hunderte Anfragen)</value>
+    <value>Ergebnis jedes beendeten Wettbewerbs, den die Website noch aufführt, nur etwa 7 Tage</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Auch ältere Austragungen verfolgen (Schätzung: bis zu 7.000 weitere Anfragen, 2 Stunden oder mehr)</value>
+    <value>Auch ältere Austragungen verfolgen</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mitteilungen</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>keine Benutzer-ID in der Antwort</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>langsam</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Kann lange dauern. Vor dem Start der Sicherung müssen Sie bestätigen.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>Eine Anfrage pro Jagd, pro bewertetem Abschuss und pro Abschussfoto: viele Anfragen.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Große Downloads, eine Anfrage pro Foto.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Hunderte Anfragen, je einige zehn KB.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Schätzung: bis zu 7.000 weitere Anfragen, 2 Stunden oder mehr.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>Diese Sicherung kann lange dauern</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>Sie haben Optionen mit vielen Anfragen angekreuzt. Das Programm sendet höchstens eine Anfrage pro Sekunde an jeden Server, daher kann die Sicherung lange dauern:</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>Die Fortschrittszeile zeigt die verbleibende Zeit. Sie können jederzeit abbrechen: Was gesichert ist, bleibt erhalten, und ein späterer Lauf mit „Bereits gesicherte Dateien überspringen (fortsetzen)“ macht dort weiter.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Sicherung starten</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>Wie funktioniert das?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>Es wird nur gelesen</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>Das Programm fragt bei den offiziellen Servern Ihr Profil ab und speichert die Antworten unverändert in einem Ordner auf diesem PC. Auf dem Server ändert es nichts.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>Eine Ausnahme: Mitteilungen, standardmäßig aus. Beim Öffnen einer ungelesenen Unterhaltung kann diese als gelesen markiert werden, und das lässt sich nicht rückgängig machen.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>Womit es sich verbindet</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>Es verbindet sich nur mit den offiziellen Servern, die in der settings.json neben der backup.exe stehen. Sie können diese Datei in einem Texteditor öffnen.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Ihre Sicherung bleibt auf diesem PC. Das Hochladen auf einen Server ist noch nicht verfügbar.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Ihre Anmeldung</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>Für Ihr eigenes Konto nutzt es die Session des laufenden Spiels. Diese Session wird nie in eine Datei geschrieben und nur an den offiziellen Server gesendet.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>Ein öffentliches Profil braucht keine Anmeldung: Es werden nur öffentliche Daten gesichert.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>Es läuft auf diesem PC und braucht weder eine Installation noch Administratorrechte.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>Was auf Ihrem PC bleibt</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>Der gewählte Sicherungsordner und, außer Sie schalten „ZIP-Datei erstellen“ aus, eine ZIP-Datei davon. Eine kleine Schlüsseldatei, claim.key, liegt in %APPDATA%\game-backup und wird in jede Sicherung kopiert.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Halten Sie die ZIP-Datei privat: Sie enthält die Daten Ihres Kontos, Ihre Steam-ID (bei „Mein Konto“) und claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>Eine Kopie zu einem Zeitpunkt</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>Eine Sicherung zeigt Ihr Profil, wie es während der Sicherung war. Was Sie danach im Spiel spielen, verdienen, kaufen oder ändern, ist nicht enthalten.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>Um sie zu aktualisieren, führen Sie eine weitere Sicherung aus: Sie landet in einem neuen Ordner mit Datum und Uhrzeit im Namen, und die erste bleibt unverändert. „Bereits gesicherte Dateien überspringen“ tut das nicht: Es setzt nur eine Sicherung fort, die nicht abgeschlossen wurde.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Sicherung abgeschlossen am {0:g}. Was Sie danach im Spiel spielen, verdienen, kaufen oder ändern, ist nicht enthalten: Führen Sie eine neue Sicherung aus.</value>
   </data>
 </root>

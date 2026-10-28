@@ -194,7 +194,7 @@
     <value>Páginas de muertes y fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Hoja de puntuación de cada muerte con puntuación, foto de cada muerte que tenga una (muchas solicitudes)</value>
+    <value>Hoja de puntuación de cada muerte con puntuación, foto de cada muerte que tenga una</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Cuenta</value>
@@ -212,16 +212,16 @@
     <value>Fotos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Fotos de la galería a tamaño completo (archivos pesados)</value>
+    <value>Fotos de la galería a tamaño completo</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>Historial de competiciones</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Resultado en cada competición terminada que el sitio aún lista, solo unos 7 días atrás (cientos de solicitudes)</value>
+    <value>Resultado en cada competición terminada que el sitio aún lista, solo unos 7 días atrás</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Seguir también ediciones anteriores (estimación: hasta 7000 solicitudes más, 2 horas o más)</value>
+    <value>Seguir también ediciones anteriores</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mensajes</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>No hay ningún ID de usuario en la respuesta</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>lento</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Puede tardar mucho. Se te pide confirmar antes de que empiece la copia de seguridad.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>Una solicitud por cada cacería, cada muerte con puntuación y cada foto de muerte: muchas solicitudes.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Descargas pesadas, una solicitud por cada foto.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Cientos de solicitudes, de decenas de KB cada una.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Estimación: hasta 7000 solicitudes más, 2 horas o más.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>Esta copia de seguridad puede tardar mucho</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>Has marcado opciones que necesitan muchas solicitudes. La herramienta envía como máximo una solicitud por segundo a cada servidor, así que la copia de seguridad puede tardar mucho:</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>La línea de progreso muestra el tiempo restante. Puedes cancelar en cualquier momento: lo guardado se conserva, y una ejecución posterior con «Omitir archivos ya guardados (reanudar)» continúa desde ahí.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Iniciar copia de seguridad</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>¿Cómo funciona?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>Solo lee</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>La herramienta pide tu perfil a los servidores oficiales y guarda sus respuestas, sin cambios, en una carpeta de este PC. Nunca cambia nada en el servidor.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>Una excepción: Mensajes, que está desactivado salvo que lo marques. Abrir una conversación sin leer puede marcarla como leída, y no se puede deshacer.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>A qué se conecta</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>Solo se conecta a los servidores oficiales que figuran en settings.json, junto a backup.exe. Puedes abrir ese archivo en un editor de texto.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Tu copia de seguridad se queda en este PC. Subirla a un servidor aún no está disponible.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Tu inicio de sesión</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>Para leer tu propia cuenta usa la sesión del juego en ejecución. Nunca la escribe en un archivo y solo la envía al servidor oficial.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>Un perfil público no necesita iniciar sesión: solo se guardan datos públicos.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>Funciona en este PC y no necesita instalación ni permisos de administrador.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>Qué se queda en tu PC</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>La carpeta de copia que elijas y, salvo que desactives «Crear un archivo zip», un zip de ella. Un pequeño archivo de clave, claim.key, se guarda en %APPDATA%\game-backup y se copia en cada copia de seguridad.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Mantén el zip en privado: contiene los datos de tu cuenta, tu id de Steam (con «Mi cuenta») y claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>Una copia de un momento</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>Una copia de seguridad muestra tu perfil tal como estaba mientras se hacía. Lo que juegues, ganes, compres o cambies en el juego después no está incluido.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>Para ponerla al día, haz otra copia de seguridad: va a una carpeta nueva con la fecha y la hora en el nombre, y la primera queda como estaba. «Omitir archivos ya guardados» no hace eso: solo continúa una copia que no terminó.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Copia de seguridad terminada el {0:g}. Lo que juegues, ganes, compres o cambies en el juego después no está incluido: haz una nueva copia de seguridad.</value>
   </data>
 </root>

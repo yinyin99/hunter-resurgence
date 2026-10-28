@@ -194,7 +194,7 @@
     <value>Страницы убийств и фото</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Карточка очков каждого оценённого убийства, фото каждого убийства, у которого оно есть (много запросов)</value>
+    <value>Карточка очков каждого оценённого убийства, фото каждого убийства, у которого оно есть</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Аккаунт</value>
@@ -212,16 +212,16 @@
     <value>Фото</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Фото из галереи в полном размере (большой объём)</value>
+    <value>Фото из галереи в полном размере</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>История соревнований</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Результат в каждом завершённом соревновании из списка сайта, только около 7 дней (сотни запросов)</value>
+    <value>Результат в каждом завершённом соревновании из списка сайта, только около 7 дней</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Идти и по более старым выпускам (оценка: до 7000 дополнительных запросов, 2 часа и больше)</value>
+    <value>Идти и по более старым выпускам</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Сообщения</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>В ответе нет ID пользователя</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>долго</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Может занять много времени. Перед началом копирования нужно подтвердить.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>По одному запросу на каждую охоту, каждое оценённое убийство и каждое фото убийства: много запросов.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Большие загрузки, один запрос на каждое фото.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Сотни запросов, по несколько десятков КБ каждый.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Оценка: до 7000 дополнительных запросов, 2 часа и больше.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>Это копирование может занять много времени</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>Вы отметили параметры, которым нужно много запросов. Программа отправляет не больше одного запроса в секунду на каждый сервер, поэтому копирование может занять много времени:</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>Строка прогресса показывает оставшееся время. Отменить можно в любой момент: сохранённое останется, а следующий запуск с «Пропускать уже сохранённые файлы (возобновление)» продолжит с этого места.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Начать копирование</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>Как это работает?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>Только чтение</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>Программа запрашивает ваш профиль у официальных серверов и сохраняет их ответы без изменений в папке на этом компьютере. На сервере она ничего не меняет.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>Одно исключение: «Сообщения», они выключены, пока вы их не отметите. Открытие непрочитанной беседы может пометить её прочитанной, и отменить это нельзя.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>С чем она соединяется</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>Она соединяется только с официальными серверами из файла settings.json рядом с backup.exe. Этот файл можно открыть в текстовом редакторе.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Ваша копия остаётся на этом компьютере. Загрузка на сервер пока недоступна.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Ваш вход</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>Чтобы читать ваш аккаунт, она использует сессию запущенной игры. Эта сессия никогда не записывается в файл и отправляется только на официальный сервер.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>Для публичного профиля вход не нужен: сохраняются только публичные данные.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>Она работает на этом компьютере и не требует ни установки, ни прав администратора.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>Что остаётся на вашем компьютере</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>Выбранная вами папка копии и, если вы не выключили «Создать ZIP-архив», ZIP-архив с ней. Небольшой файл ключа claim.key хранится в %APPDATA%\game-backup и копируется в каждую копию.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Храните ZIP-архив в тайне: в нём данные вашего аккаунта, ваш Steam ID (при «Мой аккаунт») и claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>Копия на один момент</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>Резервная копия показывает ваш профиль таким, каким он был во время копирования. Всё, что вы сыграете, получите, купите или измените в игре потом, в неё не попадёт.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>Чтобы обновить её, сделайте новую копию: она попадёт в новую папку с датой и временем в названии, а первая останется как была. «Пропускать уже сохранённые файлы» этого не делает: он лишь продолжает копирование, которое не завершилось.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Копирование завершено {0:g}. Всё, что вы сыграете, получите, купите или измените в игре потом, в копию не попадёт: сделайте новую копию.</value>
   </data>
 </root>

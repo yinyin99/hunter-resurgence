@@ -194,7 +194,7 @@
     <value>Páginas de abates e fotos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Ficha de pontuação de cada abate com pontuação, foto de cada abate que tenha uma (muitas solicitações)</value>
+    <value>Ficha de pontuação de cada abate com pontuação, foto de cada abate que tenha uma</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Conta</value>
@@ -212,16 +212,16 @@
     <value>Fotos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Fotos da galeria em tamanho original (arquivos grandes)</value>
+    <value>Fotos da galeria em tamanho original</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>Histórico de competições</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Resultado em cada competição encerrada que o site ainda lista, só cerca de 7 dias (centenas de solicitações)</value>
+    <value>Resultado em cada competição encerrada que o site ainda lista, só cerca de 7 dias</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Seguir também edições mais antigas (estimativa: até 7.000 solicitações a mais, 2 horas ou mais)</value>
+    <value>Seguir também edições mais antigas</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Mensagens</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Nenhum ID de usuário na resposta</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>lento</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Pode demorar bastante. Você precisa confirmar antes de o backup começar.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>Uma solicitação por caçada, por abate com pontuação e por foto de abate: muitas solicitações.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Downloads grandes, uma solicitação por foto.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Centenas de solicitações, algumas dezenas de KB cada.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Estimativa: até 7.000 solicitações a mais, 2 horas ou mais.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>Este backup pode demorar bastante</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>Você marcou opções que exigem muitas solicitações. A ferramenta envia no máximo uma solicitação por segundo a cada servidor, então o backup pode demorar bastante:</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>A linha de progresso mostra o tempo restante. Você pode cancelar a qualquer momento: o que já foi salvo continua lá, e uma execução posterior com “Ignorar arquivos já salvos (retomar)” continua dali.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Iniciar backup</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>Como funciona?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>Ele só lê</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>A ferramenta pede seu perfil aos servidores oficiais e salva as respostas, sem alterações, em uma pasta neste PC. Ela nunca altera nada no servidor.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>Uma exceção: Mensagens, que fica desligado a menos que você marque. Abrir uma conversa não lida pode marcá-la como lida, e isso não pode ser desfeito.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>A que ele se conecta</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>Ele se conecta apenas aos servidores oficiais listados no settings.json, ao lado do backup.exe. Você pode abrir esse arquivo em um editor de texto.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Seu backup fica neste PC. O envio para um servidor ainda não está disponível.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Seu login</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>Para ler sua própria conta, ele usa a sessão do jogo em execução. Ele nunca grava essa sessão em um arquivo e só a envia ao servidor oficial.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>Um perfil público não precisa de login: só dados públicos são salvos.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>Ele roda neste PC e não precisa de instalação nem de permissões de administrador.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>O que fica no seu PC</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>A pasta de backup que você escolher e, a menos que você desligue “Criar um arquivo zip”, um zip dela. Um pequeno arquivo de chave, claim.key, fica em %APPDATA%\game-backup e é copiado para cada backup.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Mantenha o zip privado: ele contém os dados da sua conta, seu id da Steam (com “Minha conta”) e o claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>Uma cópia de um momento</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>Um backup mostra seu perfil como ele estava enquanto o backup rodava. O que você jogar, ganhar, comprar ou mudar no jogo depois não está nele.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>Para atualizá-lo, faça outro backup: ele vai para uma pasta nova com data e hora no nome, e o primeiro continua como estava. “Ignorar arquivos já salvos” não faz isso: só continua um backup que não terminou.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Backup concluído em {0:g}. O que você jogar, ganhar, comprar ou mudar no jogo depois não está nele: faça um novo backup.</value>
   </data>
 </root>

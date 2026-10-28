@@ -58,10 +58,12 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <local:DecorIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
                             <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
-                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" BorderBrush="{DynamicResource LangBoxEdgeBrush}" />
+                            <ui:HyperlinkButton x:Name="HowLink" Grid.Column="2" Margin="8,0,0,0" Padding="8,4" VerticalAlignment="Center" />
+                            <ComboBox x:Name="LangBox" Grid.Column="3" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" BorderBrush="{DynamicResource LangBoxEdgeBrush}" />
                         </Grid>
                         <WrapPanel x:Name="SourceRow">
                             <!-- one Tab stop for the pair; the arrow keys move and select -->
