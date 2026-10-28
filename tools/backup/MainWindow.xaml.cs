@@ -66,7 +66,6 @@ public partial class MainWindow : FluentWindow
         SelectNone.Click += (_, _) => SelectGroups(false);
         Details.Expanded += (_, _) => { RenderLog(); Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // the Expander shows or hides its content after the event
         Details.SizeChanged += (_, e) => { if (IsLoaded && !Details.IsExpanded && e.HeightChanged) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // it hides the log after the Collapsed event, when its height drops
-        LayoutUpdated += (_, _) => FitLog();
         StateChanged += (_, _) => NameTitleButtons(this);
         watchTimer.Tick += (_, _) => Tick();
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
@@ -78,29 +77,15 @@ public partial class MainWindow : FluentWindow
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); langTimer.Stop(); cts?.Cancel(); };
     }
 
-    /// <summary>Longer languages need taller cards, and a result bar and the open log take room too: the window is as tall as its content (never taller than the screen). The log asks for its full height here; FitLog takes back what a small screen cannot give.</summary>
+    /// <summary>Longer languages need taller cards, and a result bar and the open log take room too: the window is as tall as its content (never taller than the screen). A shorter window or screen scrolls the inputs; Start, the result bar and Details stay in view.</summary>
     void FitHeight()
     {
         UpdateLayout(); // settle pending changes first: the manual Measure below left them half-measured (Start kept the width of "Cancelling…" and its label sat off-centre)
         var chrome = ActualHeight - Body.ActualHeight;
-        LogBox.Height = LogHeight;
         Body.Measure(new Size(Body.ActualWidth, double.PositiveInfinity));
         var area = SystemParameters.WorkArea;
         Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height), area.Height);
         Top = Math.Max(area.Top, Math.Min(Top, area.Bottom - Height));
-    }
-
-    const double LogHeight = 155, LogMin = 66; // the log is 155 tall when there is room, three lines at least
-
-    /// <summary>The log is the one thing that gives way when the window is short: it takes what is left below the cards, never less than three lines, and never more than LogHeight. The group list only scrolls.</summary>
-    void FitLog()
-    {
-        if (!Details.IsExpanded || Details.ActualHeight == 0) return;
-        var rows = Body.RowDefinitions;
-        // the window's row, not Body: an arranged Body never gets smaller than its content
-        var room = ((Grid)Body.Parent).RowDefinitions[1].ActualHeight - Body.Margin.Top - Body.Margin.Bottom - rows[0].MinHeight - rows[1].ActualHeight - rows[2].ActualHeight - rows[3].ActualHeight - (rows[4].ActualHeight - LogBox.ActualHeight);
-        var want = Math.Clamp(Math.Floor(room), LogMin, LogHeight);
-        if (Math.Abs(LogBox.Height - want) >= 1) LogBox.Height = want;
     }
 
     /// <summary>Only changes enabled rows: in Public mode the token-only groups stay off. The older-editions switch follows through SyncOlder.</summary>
