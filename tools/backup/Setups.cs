@@ -52,6 +52,7 @@ sealed partial class Engine
         public int Rows;
         public readonly List<Row> Placed = [];
         public readonly List<string> NoLocation = [];
+        public readonly List<Row> NoLocationRows = [];
 
         public void Take(JsonNode? n, int? itemId, JsonObject? info)
         {
@@ -60,7 +61,7 @@ sealed partial class Engine
             if (Int(row["slot"]) != WorldSlot) return;
             var guid = row["id"]?.ToString() ?? "";
             if (row["location"] is JsonObject { } loc && loc["pos"] is JsonObject) Placed.Add(new(guid, itemId, row, info));
-            else NoLocation.Add(guid);
+            else { NoLocation.Add(guid); NoLocationRows.Add(new(guid, itemId, row, info)); }
         }
     }
 
@@ -118,6 +119,12 @@ sealed partial class Engine
         // both always asked, whatever resume found on disk: the setup may have changed since an earlier run
         var dict = await Get(Q("Inventory/dict", false, ("user_id", uid)) with { Fresh = true });
         var list = await Get(Q("Inventory/list", false, ("user_id", uid)) with { Fresh = true });
+        // names and kinds come from the catalogue: the profile group's file, fetched here when the group was off (same request, same file)
+        if (s.ConsumerKey is { } key && !File.Exists(Path.Combine(dir, FileName(Q("Application/application", false, ("lang", "en"))))))
+        {
+            Need(1);
+            await Get(Q("Application/application", false, ("oauth_consumer_key", key), ("lang", "en")));
+        }
         BuildSetups(ReadDict(dict), ReadList(list));
     }
 
@@ -143,8 +150,9 @@ sealed partial class Engine
             if (!seen.TryGetValue(guid, out var l)) seen[guid] = l = [];
             l.Add((src, pos));
         }
-        foreach (var r in dict?.Placed ?? []) { Add("dict", r.Guid, r.Node["location"]!["pos"]); rows[r.Guid] = r; }
-        foreach (var r in list?.Placed ?? []) { Add("list", r.Guid, r.Node["location"]!["pos"]); rows.TryAdd(r.Guid, r); }
+        // the list wins when both hold a row: the dict can lag a change (a feeder refill showed in the list a minute before the dict); a row only the dict has is kept
+        foreach (var r in dict?.Placed ?? []) { Add("dict", r.Guid, r.Node["location"]!["pos"]); rows.TryAdd(r.Guid, r); }
+        foreach (var r in list?.Placed ?? []) { Add("list", r.Guid, r.Node["location"]!["pos"]); rows[r.Guid] = r; }
         foreach (var w in meRows ?? []) Add("me", w?["id"]?.ToString() ?? "", w?["pos"]);
 
         var avail = new List<string>();
@@ -153,7 +161,24 @@ sealed partial class Engine
         if (meRows != null) avail.Add("me");
         var onlyIn = avail.ToDictionary(s => s, s => seen.Where(g => g.Value.Any(x => x.Src == s) && avail.Any(t => g.Value.All(x => x.Src != t))).Select(g => g.Key).ToList());
         var differs = seen.Where(g => g.Value.Select(x => (Dbl(x.Pos?["x"]), Dbl(x.Pos?["y"]), Dbl(x.Pos?["z"]))).Where(p => p is (not null, not null, not null)).Distinct().Count() > 1).Select(g => g.Key).ToList();
+        // metadata, units or dir that differ between the two replies, compared as the server wrote them
+        static string Txt(JsonNode? n) => n?.ToJsonString() ?? "null";
+        var dictRows = (dict?.Placed ?? []).GroupBy(r => r.Guid).ToDictionary(g => g.Key, g => g.First().Node);
+        var metaDiffers = (list?.Placed ?? []).Where(r => dictRows.TryGetValue(r.Guid, out var d)
+                && (Txt(d["metadata"]) != Txt(r.Node["metadata"]) || Txt(d["units"]) != Txt(r.Node["units"]) || Txt(d["location"]?["dir"]) != Txt(r.Node["location"]?["dir"])))
+            .Select(r => r.Guid).Distinct().Order(StringComparer.Ordinal).ToList();
         var noLoc = (dict?.NoLocation ?? []).Concat(list?.NoLocation ?? []).Distinct().Order(StringComparer.Ordinal).ToList();
+
+        // a position without a direction: the item is saved, a restore has to invent a direction
+        var dirNull = rows.Values.Where(r => r.Node["location"]!["dir"] == null).Select(r => r.Guid).Order(StringComparer.Ordinal).ToList();
+
+        // the whole row of a placed item without a position (list over dict, as above), so the owner can be given the item back
+        var lost = new Dictionary<string, Row>();
+        foreach (var r in (dict?.NoLocationRows ?? []).Concat(list?.NoLocationRows ?? [])) lost[r.Guid] = r;
+        var lostRows = lost.Values.OrderBy(r => r.ItemId).ThenBy(r => r.Guid, StringComparer.Ordinal).Select(r => (JsonNode)new JsonObject
+        {
+            ["guid"] = r.Guid, ["item_id"] = r.ItemId, ["units"] = r.Node["units"]?.DeepClone(), ["metadata"] = r.Node["metadata"]?.DeepClone(),
+        }).ToList();
 
         var items = rows.Values.OrderBy(r => r.ItemId).ThenBy(r => r.Guid, StringComparer.Ordinal).Select(r =>
         {
@@ -164,7 +189,7 @@ sealed partial class Engine
             return (Reserve: Int(loc["reserve"]), Json: new JsonObject
             {
                 ["guid"] = r.Guid, ["item_id"] = r.ItemId, ["define"] = define, ["name"] = name, ["kind"] = KindOf(define),
-                ["units"] = r.Node["units"]?.DeepClone(), // a climbing path's units appear to be its length
+                ["units"] = r.Node["units"]?.DeepClone(), // units = cost of the anchor the path is bound to (20 or 25); other values exist and are valid, all kept as sent
                 ["pos"] = loc["pos"]!.DeepClone(), ["dir"] = loc["dir"]?.DeepClone(), ["metadata"] = r.Node["metadata"]?.DeepClone(),
                 ["in"] = new JsonArray([.. seen[r.Guid].Select(x => x.Src).Distinct().Select(x => (JsonNode)x)]),
             }, Kind: KindOf(define));
@@ -208,8 +233,11 @@ sealed partial class Engine
             ["checks"] = new JsonObject
             {
                 ["location_null"] = Guids(noLoc),
+                ["location_null_rows"] = new JsonArray([.. lostRows]),
                 ["only_in"] = new JsonObject(onlyIn.Select(p => KeyValuePair.Create(p.Key, (JsonNode?)Guids(p.Value)))),
                 ["pos_differs"] = Guids(differs),
+                ["metadata_differs"] = Guids(metaDiffers),
+                ["dir_null"] = Guids(dirNull),
             },
         };
 
@@ -218,10 +246,12 @@ sealed partial class Engine
         lock (files) files[SetupsFile] = new(SetupsFile, "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);
         (SetupItems, SetupReserves) = (items.Count, reserves.Count);
-        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
+        SetupChecks = noLoc.Count > 0 || differs.Count > 0 || metaDiffers.Count > 0 || dirNull.Count > 0 || onlyIn.Values.Any(v => v.Count > 0);
         if (noLoc.Count > 0) log($"! map setups: {noLoc.Count} placed item(s) without a position");
         foreach (var (src, g) in onlyIn.Where(p => p.Value.Count > 0)) log($"! map setups: {g.Count} item(s) in {src} are missing from another source");
         if (differs.Count > 0) log($"! map setups: {differs.Count} item(s) with different positions in two sources");
+        if (dirNull.Count > 0) log($"! map setups: {dirNull.Count} placed item(s) without a direction");
+        if (metaDiffers.Count > 0) log($"! map setups: {metaDiffers.Count} item(s) with different metadata, units or direction in the two inventory replies (the list was used)");
         log($"map setups: {items.Count} placed item(s) on {reserves.Count} map(s)");
     }
 }
