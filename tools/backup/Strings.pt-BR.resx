@@ -268,8 +268,8 @@
   <data name="Status_Found" xml:space="preserve">
     <value>Sessão do jogo encontrada às {0}</value>
   </data>
-  <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Configurações ausentes</value>
+  <data name="Status_Settings" xml:space="preserve">
+    <value>O arquivo settings.json está ausente ou incompleto. Ele vem com o backup.exe no download e precisa ficar ao lado dele.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Nenhum perfil selecionado</value>
@@ -369,8 +369,5 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Nenhum ID de usuário na resposta</value>
-  </data>
-  <data name="Err_Setting" xml:space="preserve">
-    <value>{0}: defina “{1}” (ausente ou ainda um valor de exemplo)</value>
   </data>
 </root>

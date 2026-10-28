@@ -15,7 +15,7 @@ public partial class MainWindow : FluentWindow
 
     readonly Settings? cfg;
     readonly Watcher? watcher;
-    string cfgError = "";
+    Func<bool>? validation; // while a "you need to do something" bar is open: is its cause still there? (a run result never sets it)
     CheckBox[]? boxes;
     readonly bool[] remembered;
     readonly string keyPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "game-backup", "claim.key");
@@ -43,7 +43,8 @@ public partial class MainWindow : FluentWindow
         OutDir.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "game-backup");
         remembered = [.. Engine.Groups.Select(g => g.On)];
         try { cfg = Settings.Load(); watcher = new(cfg.ClientExe); }
-        catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
+        catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { Log($"settings.json: {e.Message}"); } // the status line says what to do; the detail is for the Details log
+        Start.IsEnabled = cfg != null;
 
         foreach (var l in Loc.Languages) LangBox.Items.Add(new ComboBoxItem { Content = l.Name, Tag = l.Code });
         LangBox.SelectedIndex = Array.FindIndex(Loc.Languages, l => l.Code == Loc.Code);
@@ -64,10 +65,13 @@ public partial class MainWindow : FluentWindow
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
         SelectAll.Click += (_, _) => SelectGroups(true);
         SelectNone.Click += (_, _) => SelectGroups(false);
+        Who.TextChanged += (_, _) => Recheck();
+        Groups.AddHandler(System.Windows.Controls.Primitives.ToggleButton.CheckedEvent, new RoutedEventHandler((_, _) => Recheck()));
+        Groups.AddHandler(System.Windows.Controls.Primitives.ToggleButton.UncheckedEvent, new RoutedEventHandler((_, _) => Recheck()));
         Details.Expanded += (_, _) => { RenderLog(); Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // the Expander shows or hides its content after the event
         Details.SizeChanged += (_, e) => { if (IsLoaded && !Details.IsExpanded && e.HeightChanged) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // it hides the log after the Collapsed event, when its height drops
         StateChanged += (_, _) => NameTitleButtons(this);
-        watchTimer.Tick += (_, _) => Tick();
+        watchTimer.Tick += (_, _) => { Tick(); Recheck(); };
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
         watchTimer.Start();
         ApplyLanguage();
@@ -151,8 +155,6 @@ public partial class MainWindow : FluentWindow
         SelectNone.Content = Loc.S("Groups_None");
         NameTitleButtons(this);
         BuildRows();
-        if (cfg == null) // the settings error is worded in the language too
-            try { Settings.Load(); } catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
         if (resultText != null) (Result.Title, Result.Message) = resultText();
         lastStatus = "";
         Tick();
@@ -286,6 +288,7 @@ public partial class MainWindow : FluentWindow
             boxes[i].IsChecked = own ? remembered[i] : false;
             Describe(i);
         }
+        Recheck();
         if (IsLoaded) FitHeight(); // the notes of the disabled rows change their height
     }
 
@@ -294,7 +297,7 @@ public partial class MainWindow : FluentWindow
     void Tick()
     {
         string text, tone = "SystemFillColorSolidNeutralBrush"; SymbolRegular icon; // icon and words say the state; the colour only backs them up
-        if (watcher == null) (text, icon, tone) = (cfgError, SymbolRegular.ErrorCircle24, "SystemFillColorCriticalBrush");
+        if (watcher == null) (text, icon, tone) = (Loc.S("Status_Settings"), SymbolRegular.ErrorCircle24, "SystemFillColorCriticalBrush");
         else
         {
             if (watcher.Scan()) Log($"game session found {watcher.At:HH:mm:ss}"); // also in public mode: it is ready when My account is chosen
@@ -316,19 +319,23 @@ public partial class MainWindow : FluentWindow
     async void OnStart(object sender, RoutedEventArgs e)
     {
         if (cts != null) { cts.Cancel(); Start.IsEnabled = false; Start.Content = Loc.S("Cancelling"); return; }
-        if (cfg == null) { Show(InfoBarSeverity.Error, () => (Loc.S("Msg_SettingsMissing"), cfgError), null); return; }
+        if (cfg == null) return; // Start is disabled then and the status line says why
+        if (Problem() is { } p)
+        {
+            Show(InfoBarSeverity.Informational, () => (Loc.S("Msg_" + p), Loc.S("Msg_" + p + "Text")), null, () => Problem() == p);
+            if (p == "NoProfile") Who.Focus();
+            return;
+        }
         bool own = OwnRadio.IsChecked == true;
         var who = own ? "" : Who.Text.Trim();
-        if (!own && who.Length == 0) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_NoProfile"), Loc.S("Msg_NoProfileText")), null); Who.Focus(); return; }
-        if (own && watcher?.Token == null) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_NoSession"), Loc.S("Msg_NoSessionText")), null); return; }
         var keys = Engine.Groups.Where((_, i) => boxes![i].IsChecked == true).Select(g => g.Key).ToHashSet();
-        if (keys.Count == 0) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_Nothing"), Loc.S("Msg_NothingText")), null); return; }
 
         cts = new();
         Start.Appearance = ControlAppearance.Secondary; // Cancel is not the primary action
         Start.IsDefault = false; // Enter must never cancel a run
         SetBusy(true);
         Result.IsOpen = false;
+        validation = null;
         OpenBtn.Visibility = Visibility.Collapsed;
         Start.Focus(); // Enter in a field started this run: the cards are about to be locked, keep the keyboard on Start (now Cancel)
         LockInputs(true);
@@ -472,8 +479,27 @@ public partial class MainWindow : FluentWindow
         else ProgressText.Text = text;
     }
 
-    void Show(InfoBarSeverity sev, Func<(string Title, string Msg)> text, string? path)
+    /// <summary>What stops a run now, the cheapest fix first: tick a group, type a handle, and only then a game session, which needs the game. The key is the end of the Msg_ names.</summary>
+    string? Problem()
     {
+        if (boxes!.All(b => b.IsChecked != true)) return "Nothing";
+        if (PublicRadio.IsChecked == true) return Who.Text.Trim().Length == 0 ? "NoProfile" : null;
+        return watcher?.Token == null ? "NoSession" : null;
+    }
+
+    /// <summary>A bar that asks the user to do something goes as soon as it is done. Run results stay until the next run.</summary>
+    void Recheck()
+    {
+        if (validation is not { } stillApplies || stillApplies()) return;
+        (validation, resultText) = (null, null);
+        Result.IsOpen = false;
+        OpenBtn.Visibility = Visibility.Collapsed;
+        if (IsLoaded) FitHeight();
+    }
+
+    void Show(InfoBarSeverity sev, Func<(string Title, string Msg)> text, string? path, Func<bool>? stillApplies = null)
+    {
+        validation = stillApplies;
         resultPath = path ?? "";
         resultText = text;
         Result.Severity = sev;

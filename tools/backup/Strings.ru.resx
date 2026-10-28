@@ -268,8 +268,8 @@
   <data name="Status_Found" xml:space="preserve">
     <value>Сессия игры найдена в {0}</value>
   </data>
-  <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Настройки отсутствуют</value>
+  <data name="Status_Settings" xml:space="preserve">
+    <value>Файл settings.json отсутствует или неполный. Он входит в загрузку вместе с backup.exe и должен лежать рядом с ним.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Профиль не выбран</value>
@@ -369,8 +369,5 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>В ответе нет ID пользователя</value>
-  </data>
-  <data name="Err_Setting" xml:space="preserve">
-    <value>{0}: задайте «{1}» (нет значения или остался пример)</value>
   </data>
 </root>
