@@ -94,9 +94,6 @@
   <data name="Upload" xml:space="preserve">
     <value>Envoi vers le serveur : bientôt disponible</value>
   </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Envoi vers le serveur, pas encore disponible</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Démarrer</value>
   </data>

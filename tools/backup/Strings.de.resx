@@ -94,9 +94,6 @@
   <data name="Upload" xml:space="preserve">
     <value>Auf den Server hochladen: bald verfügbar</value>
   </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Auf den Server hochladen, noch nicht verfügbar</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Starten</value>
   </data>

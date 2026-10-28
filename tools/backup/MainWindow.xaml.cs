@@ -29,6 +29,7 @@ public partial class MainWindow : FluentWindow
     string lastStatus = "", resultPath = "";
     Func<(string Title, string Msg)>? resultText; // so the result bar can be worded again when the language changes
     bool logDirty;
+    string? announcedGroup; // the group the progress line last spoke for: the counts change every tick, only a new group is announced
     volatile int doneNow, totalNow;
     readonly Queue<(double Secs, int Done)> pace = new(); // progress samples of the last minute and a half: the remaining time follows the pace now, not the average since the start
 
@@ -46,15 +47,10 @@ public partial class MainWindow : FluentWindow
 
         foreach (var l in Loc.Languages) LangBox.Items.Add(new ComboBoxItem { Content = l.Name, Tag = l.Code });
         LangBox.SelectedIndex = Array.FindIndex(Loc.Languages, l => l.Code == Loc.Code);
-        LangBox.SelectionChanged += (_, _) =>
-        {
-            if (LangBox.SelectedItem is not ComboBoxItem { Tag: string code } || code == Loc.Code) return;
-            Loc.Set(code);
-            try { Directory.CreateDirectory(Path.GetDirectoryName(langPath)!); File.WriteAllText(langPath, code); }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { } // not remembered, still switched
-            ApplyLanguage();
-            FitHeight();
-        };
+        var langTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) }; // arrow keys on the closed box browse the list: the language is applied once the choice has settled
+        langTimer.Tick += (_, _) => { langTimer.Stop(); ApplyChosenLanguage(); };
+        LangBox.SelectionChanged += (_, _) => { if (!LangBox.IsDropDownOpen) { langTimer.Stop(); langTimer.Start(); } }; // an open list applies when it closes
+        LangBox.DropDownClosed += (_, _) => { langTimer.Stop(); ApplyChosenLanguage(); };
         foreach (var r in new[] { OwnRadio, PublicRadio }) r.GotKeyboardFocus += (s, _) => ((RadioButton)s).IsChecked = true; // arrow keys move and select; Tab reaches only the checked one
         OwnRadio.Checked += (_, _) => ApplyMode();
         PublicRadio.Checked += (_, _) => ApplyMode();
@@ -71,15 +67,15 @@ public partial class MainWindow : FluentWindow
         Details.Expanded += (_, _) => { RenderLog(); Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // the Expander shows or hides its content after the event
         Details.SizeChanged += (_, e) => { if (IsLoaded && !Details.IsExpanded && e.HeightChanged) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // it hides the log after the Collapsed event, when its height drops
         LayoutUpdated += (_, _) => FitLog();
-        StateChanged += (_, _) => NameTitleButtons();
+        StateChanged += (_, _) => NameTitleButtons(this);
         watchTimer.Tick += (_, _) => Tick();
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
         watchTimer.Start();
         ApplyLanguage();
         ApplyMode();
         ContentRendered += (_, _) => SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush"); // FluentWindow resets it to its own dark grey when it applies the backdrop
-        Loaded += (_, _) => { NameTitleButtons(); FitHeight(); };
-        Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); cts?.Cancel(); };
+        Loaded += (_, _) => { NameTitleButtons(this); FitHeight(); };
+        Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); langTimer.Stop(); cts?.Cancel(); };
     }
 
     /// <summary>Longer languages need taller cards, and a result bar and the open log take room too: the window is as tall as its content (never taller than the screen). The log asks for its full height here; FitLog takes back what a small screen cannot give.</summary>
@@ -113,16 +109,27 @@ public partial class MainWindow : FluentWindow
         foreach (var b in boxes!) if (b.IsEnabled) b.IsChecked = on;
     }
 
-    /// <summary>The title bar's own buttons have no names for a screen reader; they come from the resources, so they follow the language (and Maximize turns into Restore).</summary>
-    void NameTitleButtons()
+    /// <summary>The title bar's own buttons have no names for a screen reader; they come from the resources, so they follow the language (and Maximize turns into Restore). Also used for the dialog's window.</summary>
+    static void NameTitleButtons(Window w)
     {
-        foreach (var b in Descendants<TitleBarButton>(TitleBarMain))
+        foreach (var b in Descendants<TitleBarButton>(w))
             Named(b, b.ButtonType switch
             {
                 TitleBarButtonType.Minimize => "Win_Minimize",
                 TitleBarButtonType.Close => "Win_Close",
-                _ => WindowState == WindowState.Maximized ? "Win_Restore" : "Win_Maximize",
+                _ => w.WindowState == WindowState.Maximized ? "Win_Restore" : "Win_Maximize",
             });
+    }
+
+    /// <summary>Applies the language picked in the box: remembered in language.txt, words and layout rebuilt once.</summary>
+    void ApplyChosenLanguage()
+    {
+        if (LangBox.SelectedItem is not ComboBoxItem { Tag: string code } || code == Loc.Code) return;
+        Loc.Set(code);
+        try { Directory.CreateDirectory(Path.GetDirectoryName(langPath)!); File.WriteAllText(langPath, code); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { } // not remembered, still switched
+        ApplyLanguage();
+        FitHeight();
     }
 
     // ---------- language ----------
@@ -145,7 +152,6 @@ public partial class MainWindow : FluentWindow
         Skip.Content = Wrapped(Loc.S("Skip"));
         Upload.Content = Wrapped(Loc.S("Upload"));
         Older.Content = Wrapped(Loc.S("Older"));
-        Named(Upload, "Upload_Name");
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
         OpenBtn.Content = Loc.S("Open_Folder");
@@ -155,7 +161,7 @@ public partial class MainWindow : FluentWindow
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
         SelectAll.Content = Loc.S("Groups_All");
         SelectNone.Content = Loc.S("Groups_None");
-        NameTitleButtons();
+        NameTitleButtons(this);
         BuildRows();
         if (cfg == null) // the settings error is worded in the language too
             try { Settings.Load(); } catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
@@ -214,7 +220,7 @@ public partial class MainWindow : FluentWindow
             var tag = new Border
             {
                 Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(6, 0, 6, 1), CornerRadius = new CornerRadius(8),
-                ToolTip = Loc.S(g.Needs == Engine.Session.All ? "Tip_All" : "Tip_Part"),
+                ToolTip = Tip(g.Needs),
                 Child = new TextBlock { Text = tagText, FontSize = 11 },
             };
             tag.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
@@ -256,8 +262,12 @@ public partial class MainWindow : FluentWindow
         text.Children[0].Opacity = text.Children[1].Opacity = why == null ? 1 : 0.5;
         var note = (TextBlock)text.Children[2];
         (note.Text, note.Visibility) = (why ?? "", why == null ? Visibility.Collapsed : Visibility.Visible);
-        System.Windows.Automation.AutomationProperties.SetHelpText(box, why == null ? Loc.S("GroupDesc_" + Engine.Groups[i].Key) : $"{Loc.S("GroupDesc_" + Engine.Groups[i].Key)}. {why}");
+        var extra = why ?? Tip(Engine.Groups[i].Needs); // the pill's explanation is a mouse tooltip only: it goes in the help text too
+        var desc = Loc.S("GroupDesc_" + Engine.Groups[i].Key);
+        System.Windows.Automation.AutomationProperties.SetHelpText(box, extra == null ? desc : $"{desc.TrimEnd('.')}. {extra}");
     }
+
+    static string? Tip(Engine.Session needs) => needs == Engine.Session.None ? null : Loc.S(needs == Engine.Session.All ? "Tip_All" : "Tip_Part");
 
     /// <summary>WPF does not raise LiveRegionChanged itself when a live TextBlock's text changes; a screen reader only hears the change when this does.</summary>
     static void Announce(TextBlock t, string text)
@@ -323,15 +333,16 @@ public partial class MainWindow : FluentWindow
         cts = new();
         Start.Appearance = ControlAppearance.Secondary; // Cancel is not the primary action
         Start.IsDefault = false; // Enter must never cancel a run
-        Bar.Visibility = Visibility.Visible;
+        SetBusy(true);
         Result.IsOpen = false;
         OpenBtn.Visibility = Visibility.Collapsed;
+        Start.Focus(); // Enter in a field started this run: the focused field is about to be disabled, keep the keyboard on Start (now Cancel)
         Inputs.IsEnabled = false;
         Start.Content = Loc.S("Cancel");
-        Bar.IsIndeterminate = true;
         lastStatus = "";
         Tick();
         ProgressText.Text = Loc.S("Progress_Starting");
+        announcedGroup = null;
         (doneNow, totalNow) = (0, 0);
         pace.Clear();
         clock.Restart();
@@ -397,18 +408,27 @@ public partial class MainWindow : FluentWindow
         ProgressText.Text = "";
         Bar.Value = done ? Bar.Maximum : 0;
         Bar.Visibility = done ? Visibility.Visible : Visibility.Hidden; // an empty bar would look like a stray line
+        lastStatus = ""; // the result is the last thing a screen reader hears: the status line is announced before it
+        Tick();
         Show(sev, text, path);
         (OpenBtn.Visibility == Visibility.Visible ? OpenBtn : Start).Focus(); // the focused Cancel button was disabled and focus fell to the window
-        lastStatus = "";
-        Tick();
+    }
+
+    /// <summary>The total is not known yet: the bar sweeps back and forth, unless Windows animations are off. Then it stays out and the text alone says what is going on.</summary>
+    void SetBusy(bool busy)
+    {
+        bool moves = SystemParameters.ClientAreaAnimation; // ponytail: read at each call, but the template's own short transitions are left to WPF UI
+        Bar.IsIndeterminate = busy && moves;
+        Bar.Visibility = busy && !moves ? Visibility.Hidden : Visibility.Visible;
     }
 
     void ShowProgress()
     {
         if (eng is not { } r) return;
         int d = doneNow, t = totalNow;
-        Bar.IsIndeterminate = !r.TotalKnown || t == 0;
-        if (!Bar.IsIndeterminate) { Bar.Maximum = t; Bar.Value = Math.Min(d, t); }
+        bool busy = !r.TotalKnown || t == 0;
+        SetBusy(busy);
+        if (!busy) { Bar.Maximum = t; Bar.Value = Math.Min(d, t); }
         string eta = "";
         double secs = clock.Elapsed.TotalSeconds;
         pace.Enqueue((secs, d));
@@ -419,7 +439,9 @@ public partial class MainWindow : FluentWindow
             int min = (int)Math.Ceiling(left / 60);
             eta = " · " + (left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60));
         }
-        Announce(ProgressText, $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}");
+        var text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
+        if (r.Group != announcedGroup) { announcedGroup = r.Group; Announce(ProgressText, text); }
+        else ProgressText.Text = text;
     }
 
     void Show(InfoBarSeverity sev, Func<(string Title, string Msg)> text, string? path)
@@ -430,8 +452,9 @@ public partial class MainWindow : FluentWindow
         (Result.Title, Result.Message) = text();
         OpenBtn.Visibility = resultPath.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         Result.IsOpen = true;
-        System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(this)?.RaiseNotificationEvent( // the InfoBar's own texts are not in the control view
-            System.Windows.Automation.AutomationNotificationKind.ActionCompleted, System.Windows.Automation.AutomationNotificationProcessing.ImportantMostRecent, $"{Result.Title}. {Result.Message}", "BackupResult");
+        var spoken = $"{Result.Title}. {Result.Message}";
+        Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(this)?.RaiseNotificationEvent( // after the focus and status changes of this turn; the InfoBar's own texts are not announced
+            System.Windows.Automation.AutomationNotificationKind.ActionCompleted, System.Windows.Automation.AutomationNotificationProcessing.ImportantMostRecent, spoken, "BackupResult")));
         FitHeight();
     }
 
@@ -448,6 +471,12 @@ public partial class MainWindow : FluentWindow
         {
             Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"),
             Content = new TextBlock { Text = Engine.NotCovered, TextWrapping = TextWrapping.Wrap, MaxWidth = 520 },
+        };
+        System.Windows.Automation.AutomationProperties.SetName(box, box.Title); // else the window is named after its whole body text
+        box.ContentRendered += (_, _) =>
+        {
+            NameTitleButtons(box); // this window's title-bar buttons have no names either
+            Descendants<System.Windows.Controls.Button>(box).FirstOrDefault(b => b.Content as string == box.CloseButtonText)?.Focus(); // Enter closes it; Esc still does
         };
         await box.ShowDialogAsync();
         NotCoveredLink.Focus();
@@ -499,5 +528,19 @@ public partial class MainWindow : FluentWindow
             if (c is T t) yield return t;
             foreach (var d in Descendants<T>(c)) yield return d;
         }
+    }
+}
+
+/// <summary>The result bar for a screen reader: one text with title and message (its own template texts are not in the control view), so the result can be read again after it was announced.</summary>
+sealed class ResultBar : InfoBar
+{
+    public ResultBar() => SetResourceReference(StyleProperty, typeof(InfoBar)); // an implicit style does not reach a subclass
+    protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer() => new Peer(this);
+
+    sealed class Peer(ResultBar bar) : System.Windows.Automation.Peers.FrameworkElementAutomationPeer(bar)
+    {
+        protected override System.Windows.Automation.Peers.AutomationControlType GetAutomationControlTypeCore() => System.Windows.Automation.Peers.AutomationControlType.Text;
+        protected override string GetNameCore() => $"{bar.Title}. {bar.Message}";
+        protected override List<System.Windows.Automation.Peers.AutomationPeer>? GetChildrenCore() => null;
     }
 }

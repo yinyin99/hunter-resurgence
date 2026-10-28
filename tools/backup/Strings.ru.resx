@@ -94,9 +94,6 @@
   <data name="Upload" xml:space="preserve">
     <value>Загрузка на сервер: скоро появится</value>
   </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Загрузка на сервер пока недоступна</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Начать</value>
   </data>

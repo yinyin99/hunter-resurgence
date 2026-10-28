@@ -10,7 +10,7 @@ dotnet test tests/Resurgence.Tests -c Release
 tools\backup\publish.cmd <path\to\your\settings.json>
 ```
 
-The window is WPF with the WPF UI library, restyled with the same dark theme and orange accent as the web app (it does not follow the system theme). The published exe is self-contained: players install nothing. The project is a console `Exe` for `dotnet run`; the publish profile makes the published exe a GUI one.
+The window is WPF with the WPF UI library, restyled with the same dark theme and orange accent as the web app (it does not follow the system theme, except in Windows high contrast mode: then the system's high-contrast colours are used, read once at startup). With Windows animations off, the progress bar does not sweep while the total is unknown; the progress text says what is going on. The published exe is self-contained: players install nothing. The project is a console `Exe` for `dotnet run`; the publish profile makes the published exe a GUI one.
 
 `publish.cmd` takes the path of a `settings.json` you filled in (see below). It publishes `tools\backup\bin\Release\net10.0-windows\win-x64\publish\backup.exe`, copies your `settings.json` beside it, and writes `backup-win-x64.zip` with both into `tools\backup\bin\Release\net10.0-windows\win-x64\`. The zip is what players download. The exe is stored uncompressed on purpose: it starts faster and needs less memory.
 
