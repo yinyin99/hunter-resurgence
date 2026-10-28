@@ -11,7 +11,7 @@ public partial class App : Application
         if (SystemParameters.HighContrast)
         {
             ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, Wpf.Ui.Controls.WindowBackdropType.None, updateAccent: false); // WPF UI picks the system's HC1, HC2, Black or White palette; no tokens, no accent. ponytail: read once at startup, a switch while the app runs needs a restart
-            Resources["StartFocusRingBrush"] = Resources["TextFillColorPrimaryBrush"]; // the ring round Start (MainWindow.xaml) takes the palette's text colour, which pairs with its window colour in all four palettes; WPF UI's own focus key is #3D3D3D in each of them, 1.2:1 on the dark ones. The dark theme sets the ring white in Tokens.xaml
+            Resources["KeyboardFocusBorderColorBrush"] = Resources["StartFocusRingBrush"] = Resources["TextFillColorPrimaryBrush"]; // WPF UI's focus colour is #3D3D3D in all four palettes, 1.2:1 to 1.9:1 on the dark ones: every focus ring (and the one round Start, MainWindow.xaml) takes the palette's text colour, which pairs with its window colour. The dark theme has its own in Tokens.xaml
         }
         else
         {
