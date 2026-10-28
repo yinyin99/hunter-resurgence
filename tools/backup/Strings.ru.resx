@@ -269,7 +269,7 @@
     <value>Сессия игры найдена в {0}</value>
   </data>
   <data name="Status_Settings" xml:space="preserve">
-    <value>Файл settings.json отсутствует или неполный. Он входит в загрузку вместе с backup.exe и должен лежать рядом с ним.</value>
+    <value>Файл settings.json отсутствует или неполный. Он идёт с backup.exe и должен лежать&#160;рядом.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Профиль не выбран</value>

@@ -269,7 +269,7 @@
     <value>Game session found at {0}</value>
   </data>
   <data name="Status_Settings" xml:space="preserve">
-    <value>settings.json is missing or incomplete. It comes in the download with backup.exe and must sit next to it.</value>
+    <value>settings.json is missing or incomplete. It comes with backup.exe and must sit next to&#160;it.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>No profile chosen</value>

@@ -427,7 +427,7 @@ public partial class MainWindow : FluentWindow
     static readonly (string Disabled, string Normal)[] RunLook =
     [
         ("TextFillColorDisabledBrush", "TextFillColorPrimaryBrush"), // texts and the tick of a disabled box
-        ("CheckBoxForegroundUncheckedDisabled", "CheckBoxForeground"), ("CheckBoxCheckBackgroundFillUncheckedDisabled", "TextControlBackground"), ("CheckBoxCheckBackgroundStrokeUncheckedDisabled", "TextControlElevationBorderBrush"), // the box of a ticked and an unticked group alike: the tick tells them apart
+        ("CheckBoxForegroundUncheckedDisabled", "CheckBoxForeground"), ("CheckBoxCheckBackgroundFillUncheckedDisabled", "TextControlBackground"), ("CheckBoxCheckBackgroundStrokeUncheckedDisabled", "TextControlElevationBorderBrush"), // the box of an unticked group (a ticked one is set in LockInputs)
         ("RadioButtonForegroundDisabled", "RadioButtonForeground"), ("RadioButtonOuterEllipseFillDisabled", "RadioButtonOuterEllipseFill"), ("RadioButtonOuterEllipseStrokeDisabled", "RadioButtonOuterEllipseStroke"), ("RadioButtonOuterEllipseCheckedStrokeDisabled", "RadioButtonOuterEllipseCheckedStroke"),
         ("ToggleSwitchContentForegroundDisabled", "ToggleSwitchContentForeground"), ("ToggleSwitchFillOnDisabled", "ToggleSwitchFillOn"), ("ToggleSwitchStrokeOnDisabled", "ToggleSwitchStrokeOn"), ("ToggleSwitchKnobFillOnDisabled", "ToggleSwitchKnobFillOn"),
         ("ToggleSwitchFillOffDisabled", "ToggleSwitchFillOff"), ("ToggleSwitchStrokeOffDisabled", "ToggleSwitchStrokeOff"), ("ToggleSwitchKnobFillOffDisabled", "ToggleSwitchKnobFillOff"),
@@ -440,6 +440,9 @@ public partial class MainWindow : FluentWindow
         Inputs.IsEnabled = !locked;
         var look = Inputs.Resources.MergedDictionaries;
         look.Clear();
+        foreach (var b in boxes ?? []) // a ticked group keeps its orange box, like the Zip and Skip switches that are on: "on" reads the same way everywhere (the template has one disabled fill for ticked and unticked boxes)
+            if (locked && b.IsChecked == true) b.Resources["CheckBoxCheckBackgroundFillUncheckedDisabled"] = b.Resources["CheckBoxCheckBackgroundStrokeUncheckedDisabled"] = TryFindResource("CheckBoxCheckBackgroundFillChecked");
+            else b.Resources.Clear();
         if (!locked) return;
         var d = new ResourceDictionary();
         foreach (var (disabled, normal) in RunLook) if (TryFindResource(normal) is { } brush) d[disabled] = brush;

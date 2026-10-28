@@ -13,7 +13,7 @@ sealed record Settings(string ApiHost, string Apiv2Host, string WebHost, string 
     {
         var d = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(FilePath)) ?? [];
         string Get(string k) => d.TryGetValue(k, out var v) && v.Length > 0 && !v.Contains('<')
-            ? v : throw new InvalidOperationException($"{FilePath}: set \"{k}\" (missing or still a placeholder)"); // for the log in the Details box (the log stays English); the window says what to do in the chosen language
+            ? v : throw new InvalidOperationException($"set \"{k}\" (missing or still a placeholder)"); // for the log in the Details box (which adds "settings.json:" and stays English); the window says what to do in the chosen language
         return new(Get("api_host"), Get("apiv2_host"), Get("web_host"), Get("client_exe"),
             d.Where(kv => kv.Key.EndsWith("_host") && !kv.Value.Contains('<')).Select(kv => kv.Value).ToHashSet(),
             d.TryGetValue("oauth_consumer_key", out var ck) && ck.Length > 0 && !ck.Contains('<') ? ck : null); // public key of the website, optional

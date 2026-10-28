@@ -269,7 +269,7 @@
     <value>Spiel-Session um {0} gefunden</value>
   </data>
   <data name="Status_Settings" xml:space="preserve">
-    <value>settings.json fehlt oder ist unvollständig. Die Datei liegt dem Download mit backup.exe bei und muss daneben liegen.</value>
+    <value>settings.json fehlt oder ist unvollständig. Sie muss neben backup.exe liegen, wie im&#160;Download.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Kein Profil ausgewählt</value>

@@ -269,7 +269,7 @@
     <value>Sesión del juego encontrada a las {0}</value>
   </data>
   <data name="Status_Settings" xml:space="preserve">
-    <value>Falta settings.json o está incompleto. Viene con backup.exe en la descarga y debe estar a su lado.</value>
+    <value>Falta settings.json o está incompleto. Viene con backup.exe y debe estar a su&#160;lado.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Ningún perfil seleccionado</value>

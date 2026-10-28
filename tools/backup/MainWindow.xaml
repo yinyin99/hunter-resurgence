@@ -65,11 +65,11 @@
                         </Grid>
                         <WrapPanel>
                             <!-- one Tab stop for the pair; the arrow keys move and select -->
-                            <StackPanel Orientation="Horizontal" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
                                 <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" Padding="0,0,4,0" />
                                 <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" Padding="0,0,4,0" />
                             </StackPanel>
-                            <ui:TextBox x:Name="Who" Width="230" Margin="12,0,0,0" IsEnabled="False" ClearButtonEnabled="False" />
+                            <ui:TextBox x:Name="Who" Width="230" IsEnabled="False" ClearButtonEnabled="False" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>
