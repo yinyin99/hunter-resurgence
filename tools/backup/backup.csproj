@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- console exe for dotnet run; the publish profile makes the published exe WinExe -->
     <OutputType>Exe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <TargetFramework>net10.0-windows</TargetFramework>
     <AssemblyName>backup</AssemblyName>
     <RootNamespace>Backup</RootNamespace>

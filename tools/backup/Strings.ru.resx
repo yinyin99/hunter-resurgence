@@ -109,6 +109,27 @@
   <data name="Close" xml:space="preserve">
     <value>Закрыть</value>
   </data>
+  <data name="Groups_All" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="Groups_None" xml:space="preserve">
+    <value>Снять выбор</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Идёт резервное копирование…</value>
+  </data>
+  <data name="Win_Minimize" xml:space="preserve">
+    <value>Свернуть</value>
+  </data>
+  <data name="Win_Maximize" xml:space="preserve">
+    <value>Развернуть</value>
+  </data>
+  <data name="Win_Restore" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="Win_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Ход резервного копирования</value>
   </data>

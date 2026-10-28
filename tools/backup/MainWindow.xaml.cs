@@ -29,7 +29,6 @@ public partial class MainWindow : FluentWindow
     string lastStatus = "", resultPath = "";
     Func<(string Title, string Msg)>? resultText; // so the result bar can be worded again when the language changes
     bool logDirty;
-    double grownBy;
     volatile int doneNow, totalNow;
     readonly Queue<(double Secs, int Done)> pace = new(); // progress samples of the last minute and a half: the remaining time follows the pace now, not the average since the start
 
@@ -38,6 +37,8 @@ public partial class MainWindow : FluentWindow
         langPath = Path.Combine(Path.GetDirectoryName(keyPath)!, "language.txt");
         Loc.Init(langPath);
         InitializeComponent();
+        var area = SystemParameters.WorkArea; // a small screen or a high scale factor: the window never asks for more than the work area
+        (MinWidth, MinHeight, Width, Height) = (Math.Min(MinWidth, area.Width), Math.Min(MinHeight, area.Height), Math.Min(Width, area.Width), Math.Min(Height, area.Height));
         OutDir.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "game-backup");
         remembered = [.. Engine.Groups.Select(g => g.On)];
         try { cfg = Settings.Load(); watcher = new(cfg.ClientExe); }
@@ -54,6 +55,7 @@ public partial class MainWindow : FluentWindow
             ApplyLanguage();
             FitHeight();
         };
+        foreach (var r in new[] { OwnRadio, PublicRadio }) r.GotKeyboardFocus += (s, _) => ((RadioButton)s).IsChecked = true; // arrow keys move and select; Tab reaches only the checked one
         OwnRadio.Checked += (_, _) => ApplyMode();
         PublicRadio.Checked += (_, _) => ApplyMode();
         Browse.Click += (_, _) =>
@@ -64,27 +66,63 @@ public partial class MainWindow : FluentWindow
         Start.Click += OnStart;
         OpenBtn.Click += (_, _) => OpenResult();
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
-        Details.Expanded += (_, _) => { GrowFor(true); RenderLog(); };
-        Details.Collapsed += (_, _) => GrowFor(false);
+        SelectAll.Click += (_, _) => SelectGroups(true);
+        SelectNone.Click += (_, _) => SelectGroups(false);
+        Details.Expanded += (_, _) => { RenderLog(); Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // the Expander shows or hides its content after the event
+        Details.SizeChanged += (_, e) => { if (IsLoaded && !Details.IsExpanded && e.HeightChanged) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // it hides the log after the Collapsed event, when its height drops
+        LayoutUpdated += (_, _) => FitLog();
+        StateChanged += (_, _) => NameTitleButtons();
         watchTimer.Tick += (_, _) => Tick();
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
         watchTimer.Start();
         ApplyLanguage();
         ApplyMode();
         ContentRendered += (_, _) => SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush"); // FluentWindow resets it to its own dark grey when it applies the backdrop
-        Loaded += (_, _) => FitHeight();
+        Loaded += (_, _) => { NameTitleButtons(); FitHeight(); };
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); cts?.Cancel(); };
     }
 
-    /// <summary>Longer languages need taller cards, and a result bar takes room too: the window is as tall as its content (never taller than the screen). The log, when open, keeps the room GrowFor gave it.</summary>
+    /// <summary>Longer languages need taller cards, and a result bar and the open log take room too: the window is as tall as its content (never taller than the screen). The log asks for its full height here; FitLog takes back what a small screen cannot give.</summary>
     void FitHeight()
     {
         UpdateLayout(); // settle pending changes first: the manual Measure below left them half-measured (Start kept the width of "Cancelling…" and its label sat off-centre)
         var chrome = ActualHeight - Body.ActualHeight;
+        LogBox.Height = LogHeight;
         Body.Measure(new Size(Body.ActualWidth, double.PositiveInfinity));
         var area = SystemParameters.WorkArea;
-        Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height + grownBy), area.Height);
+        Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height), area.Height);
         Top = Math.Max(area.Top, Math.Min(Top, area.Bottom - Height));
+    }
+
+    const double LogHeight = 155, LogMin = 66; // the log is 155 tall when there is room, three lines at least
+
+    /// <summary>The log is the one thing that gives way when the window is short: it takes what is left below the cards, never less than three lines, and never more than LogHeight. The group list only scrolls.</summary>
+    void FitLog()
+    {
+        if (!Details.IsExpanded || Details.ActualHeight == 0) return;
+        var rows = Body.RowDefinitions;
+        // the window's row, not Body: an arranged Body never gets smaller than its content
+        var room = ((Grid)Body.Parent).RowDefinitions[1].ActualHeight - Body.Margin.Top - Body.Margin.Bottom - rows[0].MinHeight - rows[1].ActualHeight - rows[2].ActualHeight - rows[3].ActualHeight - (rows[4].ActualHeight - LogBox.ActualHeight);
+        var want = Math.Clamp(Math.Floor(room), LogMin, LogHeight);
+        if (Math.Abs(LogBox.Height - want) >= 1) LogBox.Height = want;
+    }
+
+    /// <summary>Only changes enabled rows: in Public mode the token-only groups stay off. The older-editions switch follows through SyncOlder.</summary>
+    void SelectGroups(bool on)
+    {
+        foreach (var b in boxes!) if (b.IsEnabled) b.IsChecked = on;
+    }
+
+    /// <summary>The title bar's own buttons have no names for a screen reader; they come from the resources, so they follow the language (and Maximize turns into Restore).</summary>
+    void NameTitleButtons()
+    {
+        foreach (var b in Descendants<TitleBarButton>(TitleBarMain))
+            Named(b, b.ButtonType switch
+            {
+                TitleBarButtonType.Minimize => "Win_Minimize",
+                TitleBarButtonType.Close => "Win_Close",
+                _ => WindowState == WindowState.Maximized ? "Win_Restore" : "Win_Maximize",
+            });
     }
 
     // ---------- language ----------
@@ -115,6 +153,9 @@ public partial class MainWindow : FluentWindow
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
+        SelectAll.Content = Loc.S("Groups_All");
+        SelectNone.Content = Loc.S("Groups_None");
+        NameTitleButtons();
         BuildRows();
         if (cfg == null) // the settings error is worded in the language too
             try { Settings.Load(); } catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
@@ -135,11 +176,18 @@ public partial class MainWindow : FluentWindow
         var old = boxes;
         boxes = [.. Engine.Groups.Select(Row)];
         Groups.Children.Clear();
+        Groups.RowDefinitions.Clear();
+        HistoryCell.Children.Clear();
         for (int i = 0; i < boxes.Length; i++)
         {
             if (old != null) (boxes[i].IsChecked, boxes[i].IsEnabled) = (old[i].IsChecked, old[i].IsEnabled);
             Describe(i);
-            Groups.Children.Add(boxes[i]);
+            UIElement cell = boxes[i];
+            if (i == HistoryAt) { HistoryCell.Children.Add(boxes[i]); HistoryCell.Children.Add(Older); cell = HistoryCell; } // the older-editions switch sits right under the group it depends on
+            if (i % 2 == 0) Groups.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // row pairs: both cells start at the same top
+            Grid.SetRow(cell, i / 2);
+            Grid.SetColumn(cell, i % 2);
+            Groups.Children.Add(cell);
         }
         boxes[HistoryAt].Checked += (_, _) => SyncOlder(); // not Click: a keyboard, screen-reader or code change of the tick counts too
         boxes[HistoryAt].Unchecked += (_, _) => SyncOlder();
@@ -177,7 +225,10 @@ public partial class MainWindow : FluentWindow
         var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
         desc.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(desc);
-        var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, Margin = new Thickness(0, 0, 8, 2) };
+        var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, filled by Describe
+        note.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+        text.Children.Add(note);
+        var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 0, 8, 2) };
         System.Windows.Automation.AutomationProperties.SetName(box, tagText.Length > 0 ? $"{label}, {tagText}" : label);
         ToolTipService.SetShowOnDisabled(box, true);
         return box;
@@ -195,12 +246,16 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    /// <summary>Tooltip and screen-reader help of row i: the description, and why the row is off in Public mode.</summary>
+    /// <summary>Tooltip, visible note and screen-reader help of row i: the description, and why the row is off in Public mode (the row's own texts dim, the note stays readable).</summary>
     void Describe(int i)
     {
         var box = boxes![i];
+        var text = (StackPanel)box.Content;
         var why = box.IsEnabled ? null : Loc.S("Tip_Public");
         box.ToolTip = why;
+        text.Children[0].Opacity = text.Children[1].Opacity = why == null ? 1 : 0.5;
+        var note = (TextBlock)text.Children[2];
+        (note.Text, note.Visibility) = (why ?? "", why == null ? Visibility.Collapsed : Visibility.Visible);
         System.Windows.Automation.AutomationProperties.SetHelpText(box, why == null ? Loc.S("GroupDesc_" + Engine.Groups[i].Key) : $"{Loc.S("GroupDesc_" + Engine.Groups[i].Key)}. {why}");
     }
 
@@ -227,28 +282,29 @@ public partial class MainWindow : FluentWindow
             boxes[i].IsChecked = own ? remembered[i] : false;
             Describe(i);
         }
+        if (IsLoaded) FitHeight(); // the notes of the disabled rows change their height
     }
 
     // ---------- watcher ----------
 
     void Tick()
     {
-        string text; SymbolRegular icon;
-        if (watcher == null) (text, icon) = (cfgError, SymbolRegular.ErrorCircle24);
+        string text, tone = "SystemFillColorSolidNeutralBrush"; SymbolRegular icon; // icon and words say the state; the colour only backs them up
+        if (watcher == null) (text, icon, tone) = (cfgError, SymbolRegular.ErrorCircle24, "SystemFillColorCriticalBrush");
         else
         {
             if (watcher.Scan()) Log($"game session found {watcher.At:HH:mm:ss}"); // also in public mode: it is ready when My account is chosen
-            if (PublicRadio.IsChecked == true) (text, icon) = (Loc.S("Status_Public"), SymbolRegular.Person24);
-            else
-                (text, icon) = watcher.Token == null
-                    ? (Loc.S(watcher.GameSeen ? "Status_NoHunt" : "Status_Waiting"), SymbolRegular.Hourglass24)
-                    : watcher.Stale ? (Loc.S("Status_Stale"), SymbolRegular.Warning24)
-                    : (Loc.F("Status_Found", watcher.At.ToString("HH:mm")), SymbolRegular.CheckmarkCircle24);
+            if (cts != null) (text, icon) = (Loc.S("Status_Running"), SymbolRegular.ArrowSync24);
+            else if (PublicRadio.IsChecked == true) (text, icon) = (Loc.S("Status_Public"), SymbolRegular.Person24);
+            else if (watcher.Token == null) (text, icon) = (Loc.S(watcher.GameSeen ? "Status_NoHunt" : "Status_Waiting"), SymbolRegular.Hourglass24);
+            else if (watcher.Stale) (text, icon, tone) = (Loc.S("Status_Stale"), SymbolRegular.Warning24, "SystemFillColorCautionBrush");
+            else (text, icon, tone) = (Loc.F("Status_Found", watcher.At.ToString("HH:mm")), SymbolRegular.CheckmarkCircle24, "SystemFillColorSuccessBrush");
         }
         if (text == lastStatus) return; // nothing changed: no layout work
         lastStatus = text;
         Announce(StatusText, text);
         StatusIcon.Symbol = icon;
+        StatusIcon.SetResourceReference(Control.ForegroundProperty, tone);
     }
 
     // ---------- run ----------
@@ -266,11 +322,15 @@ public partial class MainWindow : FluentWindow
 
         cts = new();
         Start.Appearance = ControlAppearance.Secondary; // Cancel is not the primary action
+        Start.IsDefault = false; // Enter must never cancel a run
+        Bar.Visibility = Visibility.Visible;
         Result.IsOpen = false;
         OpenBtn.Visibility = Visibility.Collapsed;
         Inputs.IsEnabled = false;
         Start.Content = Loc.S("Cancel");
         Bar.IsIndeterminate = true;
+        lastStatus = "";
+        Tick();
         ProgressText.Text = Loc.S("Progress_Starting");
         (doneNow, totalNow) = (0, 0);
         pace.Clear();
@@ -283,6 +343,7 @@ public partial class MainWindow : FluentWindow
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
         InfoBarSeverity sev; Func<(string Title, string Msg)> text; string? path = null;
+        bool done = false; // the run came back whole (with or without gaps): full bar; cancelled, stopped or failed: empty
         try
         {
             path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
@@ -298,6 +359,7 @@ public partial class MainWindow : FluentWindow
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
                 + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
+            done = true;
         }
         catch (HostSilentException ex)
         {
@@ -330,9 +392,11 @@ public partial class MainWindow : FluentWindow
         Start.IsEnabled = true;
         Start.Content = Loc.S("Start");
         Start.Appearance = ControlAppearance.Primary;
+        Start.IsDefault = true;
         Bar.IsIndeterminate = false;
         ProgressText.Text = "";
-        Bar.Value = sev == InfoBarSeverity.Success ? Bar.Maximum : 0; // a full bar only for a finished run
+        Bar.Value = done ? Bar.Maximum : 0;
+        Bar.Visibility = done ? Visibility.Visible : Visibility.Hidden; // an empty bar would look like a stray line
         Show(sev, text, path);
         (OpenBtn.Visibility == Visibility.Visible ? OpenBtn : Start).Focus(); // the focused Cancel button was disabled and focus fell to the window
         lastStatus = "";
@@ -427,21 +491,13 @@ public partial class MainWindow : FluentWindow
         logDirty = false;
     }
 
-    /// <summary>The log area is the window's last row: opening Details makes the window taller (within the screen) instead of squeezing the cards.</summary>
-    void GrowFor(bool open)
+    static IEnumerable<T> Descendants<T>(DependencyObject o) where T : DependencyObject
     {
-        if (open)
+        for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(o); i++)
         {
-            var room = SystemParameters.WorkArea.Bottom - Top - Height;
-            var want = Math.Min(180, Math.Max(0, room));
-            if (want < 180) { var up = Math.Min(180 - want, Math.Max(0, Top - SystemParameters.WorkArea.Top)); Top -= up; want += up; }
-            Height += want;
-            grownBy = want;
-        }
-        else
-        {
-            Height = Math.Max(MinHeight, Height - grownBy);
-            grownBy = 0;
+            var c = System.Windows.Media.VisualTreeHelper.GetChild(o, i);
+            if (c is T t) yield return t;
+            foreach (var d in Descendants<T>(c)) yield return d;
         }
     }
 }

@@ -35,7 +35,7 @@
 
         <Grid x:Name="Body" Grid.Row="1" Margin="16,0,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" MinHeight="420" /> <!-- status card, two group rows and the folder card: the list scrolls below that, it never collapses -->
+                <RowDefinition Height="*" MinHeight="320" /> <!-- status card, about one group row and the folder card: the list scrolls below that, it never collapses -->
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -59,11 +59,14 @@
                             </Grid.ColumnDefinitions>
                             <ui:SymbolIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
                             <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
-                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Top" />
+                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" />
                         </Grid>
                         <WrapPanel>
-                            <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" />
-                            <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" />
+                            <!-- one Tab stop for the pair; the arrow keys move and select -->
+                            <StackPanel Orientation="Horizontal" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
+                                <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" />
+                                <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" />
+                            </StackPanel>
                             <ui:TextBox x:Name="Who" Width="230" Margin="12,0,0,0" IsEnabled="False" />
                         </WrapPanel>
                     </StackPanel>
@@ -75,9 +78,27 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <ui:HyperlinkButton x:Name="SelectAll" Grid.Column="1" Padding="8,2" />
+                            <ui:HyperlinkButton x:Name="SelectNone" Grid.Column="2" Margin="4,0,0,0" Padding="8,2" />
+                        </Grid>
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <UniformGrid x:Name="Groups" Columns="2" />
+                            <Grid x:Name="Groups">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <!-- the history row's cell: BuildRows puts the checkbox above this switch, which only means something while that group is ticked -->
+                                <StackPanel x:Name="HistoryCell">
+                                    <ui:ToggleSwitch x:Name="Older" Margin="28,0,0,4" MinHeight="28" IsChecked="False" IsEnabled="False" />
+                                </StackPanel>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </Border>
@@ -101,10 +122,9 @@
                             <ui:TextBox x:Name="OutDir" />
                             <ui:Button x:Name="Browse" Grid.Column="1" Margin="8,0,0,0" />
                         </Grid>
-                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" />
-                        <ui:ToggleSwitch x:Name="Older" Grid.Row="2" Grid.Column="1" IsChecked="False" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" MinHeight="28" />
+                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" MinHeight="28" />
+                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" MinHeight="28" />
                     </Grid>
                 </Border>
             </Grid>
@@ -113,12 +133,14 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" FocusVisualStyle="{StaticResource StartFocus}" />
-                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock x:Name="ProgressText" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
-                    <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="4" />
+                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" IsDefault="True" FocusVisualStyle="{StaticResource StartFocus}" />
+                <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="ProgressText" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
+                    <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="4" Visibility="Hidden" />
                 </StackPanel>
+                <ui:HyperlinkButton x:Name="NotCoveredLink" Grid.Column="2" VerticalAlignment="Center" />
             </Grid>
 
             <Grid Grid.Row="2">
@@ -135,7 +157,6 @@
                     <TextBox x:Name="LogBox" Height="155" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" />
                 </Expander>
-                <ui:Button x:Name="NotCoveredLink" Appearance="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,44,0" />
             </Grid>
         </Grid>
     </Grid>

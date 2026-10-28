@@ -73,6 +73,8 @@ The group is off by default and uses public reads, so it works in public-profile
 - **My account**: reads the signed-in player's data using the session of the running game. The app asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). A JWT that the server refuses (401) is replaced and that request is made once more.
 - **Public profile**: type a handle or id. Only public data is saved; requests that need the game session are logged as "skipped, needs the game" and are not counted as failed.
 
+"Select all" and "Select none" beside "What to save" tick or untick the groups that can be used in the chosen mode; in Public profile mode the groups that need the game stay off. Enter starts a backup; it never cancels a running one.
+
 ## What is not saved
 
 - A picture of the placed equipment (the positions themselves are saved, see "Map setups").
@@ -86,7 +88,7 @@ The group is off by default and uses public reads, so it works in public-profile
 - Data only the game's own load reply carries: achievement earn times, the player's own minigame score when outside the top 30, daily-mission and objective counters, the imperial-units setting, the list of reserve licences. The website has no endpoint for them. None blocks a restore: the saved achievement values, statistics, mission states, trophies and inventory rebuild the profile; these only affect toasts, counters and the unit display.
 - Gift codes, and any endpoint that changes state.
 
-The app shows a short version of this list in its window.
+The app shows a short version of this list in a dialog, behind the "What isn't saved?" link next to Start.
 
 ## Privacy
 

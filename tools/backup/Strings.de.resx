@@ -109,6 +109,27 @@
   <data name="Close" xml:space="preserve">
     <value>Schließen</value>
   </data>
+  <data name="Groups_All" xml:space="preserve">
+    <value>Alle auswählen</value>
+  </data>
+  <data name="Groups_None" xml:space="preserve">
+    <value>Keine auswählen</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Sicherung läuft…</value>
+  </data>
+  <data name="Win_Minimize" xml:space="preserve">
+    <value>Minimieren</value>
+  </data>
+  <data name="Win_Maximize" xml:space="preserve">
+    <value>Maximieren</value>
+  </data>
+  <data name="Win_Restore" xml:space="preserve">
+    <value>Wiederherstellen</value>
+  </data>
+  <data name="Win_Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Fortschritt der Sicherung</value>
   </data>
