@@ -33,6 +33,11 @@ public partial class MainWindow : FluentWindow
     string? announcedGroup; // the group the progress line last spoke for: the counts change every tick, only a new group is announced
     volatile int doneNow, totalNow;
     readonly Queue<(double Secs, int Done)> pace = new(); // progress samples of the last minute and a half: the remaining time follows the pace now, not the average since the start
+    // window height: until the user resizes it by hand it follows the content both ways (fitted at load); after that it is max(the user's height, what the content needs). userSized: has a hand resize happened? knownHeight/placedTop: what the app left, to tell a user's resize or move from its own
+    const double MinViewport = 160; // after a hand resize the window only grows to keep this much of the scrolling cards beside Start, the result bar and Details (ponytail: a constant, about the cards' first block; a measured value if a language ever needs more)
+    double userHeight, knownHeight, placedTop;
+    double? displacedTop; // where the window was before the app moved it up to grow; it goes back there when it shrinks, unless the user moved it meanwhile
+    bool userSized, fitting, fitDone;
 
     public MainWindow()
     {
@@ -77,7 +82,12 @@ public partial class MainWindow : FluentWindow
         Groups.AddHandler(System.Windows.Controls.Primitives.ToggleButton.UncheckedEvent, new RoutedEventHandler((_, _) => Recheck()));
         Details.Expanded += (_, _) => { RenderLog(); Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // the Expander shows or hides its content after the event
         Details.SizeChanged += (_, e) => { if (IsLoaded && !Details.IsExpanded && e.HeightChanged) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // it hides the log after the Collapsed event, when its height drops
-        StateChanged += (_, _) => NameTitleButtons(this);
+        StateChanged += (_, _) => { NameTitleButtons(this); if (WindowState == WindowState.Normal) Dispatcher.BeginInvoke(FitHeight, DispatcherPriority.Background); }; // content may have changed while it was maximized or minimized
+        SizeChanged += (_, e) => // a height the app did not set is the user's (drag, keyboard size, snap): it becomes the height to keep
+        {
+            if (!e.HeightChanged || !fitDone || fitting || WindowState != WindowState.Normal || Math.Abs(ActualHeight - knownHeight) < 0.5) return; // a restore brings back the known height
+            (userHeight, userSized, knownHeight) = (ActualHeight, true, ActualHeight);
+        };
         watchTimer.Tick += (_, _) => { Tick(); Recheck(); };
         runTimer.Tick += (_, _) => { FlushLog(); ShowProgress(); };
         watchTimer.Start();
@@ -89,16 +99,31 @@ public partial class MainWindow : FluentWindow
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); langTimer.Stop(); cts?.Cancel(); };
     }
 
-    /// <summary>Longer languages need taller cards, and a result bar and the open log take room too: the window is as tall as its content (never taller than the screen). A shorter window or screen scrolls the inputs; Start, the result bar and Details stay in view.</summary>
+    /// <summary>Until the user resizes the window by hand its height is the content's, up to the work area: fitted at load, taller or shorter again when a language, the result bar or the log change what the content needs. A hand resize (drag, keyboard Size, snap) sets a floor, the height the user gave it, and from then on "the content" is only what cannot scroll: Start, the result bar and Details, with MinViewport of the cards; the window grows to that and goes back to the floor, never below it. Top stays unless the window would leave the work area; the app moves it up only as far as needed and back when it shrinks. Nothing is touched while maximized or minimized, so Restore returns the old bounds.</summary>
     void FitHeight()
     {
         UpdateLayout(); // settle pending changes first: the manual Measure below left them half-measured (Start kept the width of "Cancelling…" and its label sat off-centre)
+        if (WindowState != WindowState.Normal) return; // StateChanged fits again on Restore
         var m = Body.Margin; // Measure takes the size of the slot, margins included, and DesiredSize comes back with them: ActualWidth/Height are the inside
         var chrome = ActualHeight - (Body.ActualHeight + m.Top + m.Bottom);
         Body.Measure(new Size(Body.ActualWidth + m.Left + m.Right, double.PositiveInfinity));
+        double full = chrome + Body.DesiredSize.Height, scroll = Scroller.DesiredSize.Height;
+        Body.InvalidateMeasure(); // the infinite measure was only a question
         var area = SystemParameters.WorkArea;
-        Height = Math.Min(Math.Max(MinHeight, chrome + Body.DesiredSize.Height), area.Height);
-        Top = Math.Max(area.Top, Math.Min(Top, area.Bottom - Height));
+        double need = userSized ? full - scroll + Math.Min(scroll, MinViewport) : full;
+        double h = Math.Min(Math.Max(userSized ? Math.Max(userHeight, need) : need, MinHeight), area.Height), top = Top;
+        if (Math.Abs(h - ActualHeight) >= 0.5)
+        {
+            double wanted = displacedTop is { } d && Math.Abs(Top - placedTop) < 1 ? d : Top; // the user moved it: that is the place now
+            top = Math.Max(area.Top, Math.Min(wanted, area.Bottom - h));
+            displacedTop = top < wanted - 0.5 ? wanted : null;
+        }
+        fitting = true;
+        (Height, Top) = (h, top);
+        UpdateLayout();
+        fitting = false;
+        (knownHeight, placedTop) = (ActualHeight, Top);
+        fitDone = true;
     }
 
     /// <summary>Only changes enabled rows: in Public mode the token-only groups stay off. The older-editions switch follows through SyncOlder.</summary>
