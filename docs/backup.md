@@ -97,14 +97,14 @@ When a run ends whole with nothing failed, the result bar ends with a line of it
 - In-game settings and controls (graphics settings and key bindings stay on the player's PC) and any client state that was never sent to the server.
 - Vehicle position, map markers and drawn lines, and the last position or start point: the server does not store them (the vehicle is made per hunt, markers and lines live on the in-game map page only, the start point is chosen at launch).
 - Other players' data (only the public profile of a typed handle is saved).
-- Tokens: a reply that contains an access token, a JWT or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
+- Tokens: a reply that contains an access token, a JWT, the website's public key (`oauth_consumer_key`) or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
 - Not data: a reply is saved only if it is what was asked for. API replies must be valid JSON (`null` is), pictures must start with a JPEG, PNG, GIF or WebP header, score sheets must contain a table. A proxy, login or error page, or a cut-off reply, is not saved; the request is listed in `manifest.json` as failed ("reply is not data") and the result bar says "some pages did not hold data".
 - Dead on the server: a picture or score sheet whose address answers 404 is gone for good. It is listed in `manifest.json` with the error "dead on the server (404)", is not counted among the failed requests (so it never asks you to run again) and the result bar shows its own count. A resumed run does not ask for it again.
 - Kills and photos off: when "Kill pages and photos" or "Photos" was not ticked, the result bar adds "Kill pages and photos were not saved; tick them for a complete backup." Messages are off by default for privacy; no hint is shown for them.
 - Data only the game's own load reply carries: achievement earn times, the player's own minigame score when outside the top 30, daily-mission and objective counters, the imperial-units setting, the list of reserve licences. The website has no endpoint for them. None blocks a restore: the saved achievement values, statistics, mission states, trophies and inventory rebuild the profile; these only affect toasts, counters and the unit display.
 - Gift codes, and any endpoint that changes state.
 
-The app shows a short version of this list in a dialog, behind the "What isn't saved?" link next to Start. A "How does it work?" link in the status card, at the top, opens a short version of "How it works, in short" in a dialog.
+The app shows a short, plain-language version of this list in a dialog, behind the "What isn't saved?" link next to Start. It lists only what you will not find in a backup: the equipment pictures, settings and controls, vehicle position and map drawings, other players' data, the data only the game's load carries, and gift codes. The items about how the tool works (tokens, "not data" replies, dead files, the kills and photos hint) are left out: the result bar reports them when they happen. A "How does it work?" link in the status card, at the top, opens a short version of "How it works, in short" in a dialog.
 
 ## Privacy
 
