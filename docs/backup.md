@@ -2,6 +2,14 @@
 
 `tools/backup/` is a Windows desktop app that saves a player's profile from the official servers as raw replies, before they shut down on 2026-11-11. It only reads: it never changes anything on the server.
 
+## How it works, in short
+
+The tool asks the official servers for your profile and saves what they answer, unchanged, in a folder on your PC. It only reads: it never changes anything on the server. The one exception is the optional Messages group: opening an unread conversation can mark it as read, and nothing can undo that.
+
+It connects only to the official servers listed in `settings.json`, next to `backup.exe`. Your backup stays on your PC; upload to a server is not available yet. To read your own account it uses the session of the running game, and never writes that session to a file. It runs on your PC and needs no installation and no administrator rights. The backup folder, its zip and `claim.key` stay on your PC: keep the zip private, it holds your account's data, your Steam id and `claim.key`.
+
+A backup is a copy of your profile at one moment: as it was while the backup ran. Anything you play, earn, buy or change in the game afterwards is not in it: run another backup, which goes into a new folder with the date and time in its name. "Skip files already saved" only continues a run that did not finish.
+
 ## Build and run
 
 ```
@@ -77,20 +85,26 @@ The group is off by default and uses public reads, so it works in public-profile
 
 The window keeps the language picker, the mode, the groups (in two columns) and the options in one scrolling area; Start (Cancel while a backup runs), the result bar and Details stay in view below it. Until you resize it, the window is as tall as its content, up to the height of the work area, and follows the content both ways (a longer language, the result bar, the open log make it taller, and it shrinks back). Dragging an edge, or Alt+Space, Size, gives it a height to keep: it then grows only when what cannot scroll (Start, the result bar, Details, and a part of the cards beside them) needs more room, goes back to your height when that fits again, never below it, and the cards scroll. The window's top edge stays where it is unless the window would leave the work area; then it moves up only as far as needed, and back when the window shrinks again, unless you moved it in between. A maximized or minimized window is left alone, and Restore brings back the bounds it had. While a backup runs the cards are disabled, also for a screen reader (the status line and the "What to save" heading are not), but keep their colours so you can still read what is being saved; a ticked group stays orange, like a switch that is on and like the selected mode. What is off for its own reason (the groups that need the game in Public profile mode, the older-editions switch without its group, Upload) keeps the dim look it has when idle. If Start finds something missing, it says so in an informational bar and focuses the field when that is the handle; the bar closes by itself as soon as it is fixed. It checks in this order: nothing ticked, no handle (Public profile), no game session (My account). A bar about a backup (saved, cancelled, stopped, failed) stays until the next run.
 
+### Slow options
+
+Kill pages and photos, Photos and Competition history carry a `slow` tag and, like the older-editions switch, a cost line under the row; the lines use only the figures given in this document ("many requests", "large", "hundreds of requests, tens of KB each", "up to about 7,000 more requests, 2 hours or more"). When Start (or Enter in a field) finds one of them ticked, and the checks above pass, a dialog lists the ticked ones with their cost and says the run can take a long time (at most one request per second per host), that the progress line shows the time left, and that Cancel keeps what is saved and "Skip files already saved" continues from there. Its buttons are "Start backup" and "Back": Back has the focus, Esc and the close button are Back, and nothing starts unless "Start backup" is pressed. There is no "don't ask again", and the wording does not change with resume. Hunt history, Messages, Account and Trophies are not tagged: their cost grows with the account and no figure is documented.
+
+When a run ends whole with nothing failed, the result bar ends with a line of its own: "Backup finished <date time>. Anything you play, earn, buy or change in the game after that is not in it: run a new backup." The time is when the run ended, in the window's language. A run with gaps, a cancelled one and a stopped one do not get it: they are continued with resume, not redone.
+
 ## What is not saved
 
 - A picture of the placed equipment (the positions themselves are saved, see "Map setups").
 - In-game settings and controls (graphics settings and key bindings stay on the player's PC) and any client state that was never sent to the server.
 - Vehicle position, map markers and drawn lines, and the last position or start point: the server does not store them (the vehicle is made per hunt, markers and lines live on the in-game map page only, the start point is chosen at launch).
 - Other players' data (only the public profile of a typed handle is saved).
-- Tokens: a reply that contains an access token, a JWT or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
+- Tokens: a reply that contains an access token, a JWT, the website's public key (`oauth_consumer_key`) or the string `refresh_token` is dropped and logged. The JWT the app obtains for some requests is kept in memory only.
 - Not data: a reply is saved only if it is what was asked for. API replies must be valid JSON (`null` is), pictures must start with a JPEG, PNG, GIF or WebP header, score sheets must contain a table. A proxy, login or error page, or a cut-off reply, is not saved; the request is listed in `manifest.json` as failed ("reply is not data") and the result bar says "some pages did not hold data".
 - Dead on the server: a picture or score sheet whose address answers 404 is gone for good. It is listed in `manifest.json` with the error "dead on the server (404)", is not counted among the failed requests (so it never asks you to run again) and the result bar shows its own count. A resumed run does not ask for it again.
 - Kills and photos off: when "Kill pages and photos" or "Photos" was not ticked, the result bar adds "Kill pages and photos were not saved; tick them for a complete backup." Messages are off by default for privacy; no hint is shown for them.
 - Data only the game's own load reply carries: achievement earn times, the player's own minigame score when outside the top 30, daily-mission and objective counters, the imperial-units setting, the list of reserve licences. The website has no endpoint for them. None blocks a restore: the saved achievement values, statistics, mission states, trophies and inventory rebuild the profile; these only affect toasts, counters and the unit display.
 - Gift codes, and any endpoint that changes state.
 
-The app shows a short version of this list in a dialog, behind the "What isn't saved?" link next to Start.
+The app shows a short, plain-language version of this list in a dialog, behind the "What isn't saved?" link next to Start. It lists only what you will not find in a backup: the equipment pictures, settings and controls, vehicle position and map drawings, other players' data, the data only the game's load carries, and gift codes. The items about how the tool works (tokens, "not data" replies, dead files, the kills and photos hint) are left out: the result bar reports them when they happen. A "How does it work?" link in the status card, at the top, opens a short version of "How it works, in short" in a dialog.
 
 ## Privacy
 

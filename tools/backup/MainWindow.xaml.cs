@@ -75,6 +75,7 @@ public partial class MainWindow : FluentWindow
         Start.PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Enter && e.IsRepeat) e.Handled = true; }; // a held Enter that started a run from a field moves on to Start, which is Cancel by then: only a fresh press may use it
         OpenBtn.Click += (_, _) => OpenResult();
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
+        HowLink.Click += async (_, _) => await ShowHow();
         SelectAll.Click += (_, _) => SelectGroups(true);
         SelectNone.Click += (_, _) => SelectGroups(false);
         Who.TextChanged += (_, _) => Recheck();
@@ -184,13 +185,14 @@ public partial class MainWindow : FluentWindow
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
         Upload.Content = Wrapped(Loc.S("Upload"));
-        Older.Content = Wrapped(Loc.S("Older"));
+        BuildOlder();
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
         OpenBtn.Content = Loc.S("Open_Folder");
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
+        HowLink.Content = Loc.S("How_Link");
         SelectAll.Content = Loc.S("Groups_All");
         SelectNone.Content = Loc.S("Groups_None");
         NameTitleButtons(this);
@@ -233,7 +235,31 @@ public partial class MainWindow : FluentWindow
     {
         Older.IsEnabled = boxes![HistoryAt].IsChecked == true;
         if (!Older.IsEnabled) Older.IsChecked = false;
+        PaintOlder();
     }
+
+    TextBlock? olderNote;
+
+    /// <summary>The older-editions switch: its label and, in the same style as a group row's cost line, what it costs. The label dims by itself when the switch is off; the note takes the same disabled brush from the app (as an off row does, see Describe).</summary>
+    void BuildOlder()
+    {
+        var label = Loc.S("Older");
+        olderNote = new TextBlock { Text = Loc.S("Slow_older"), FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 0) };
+        Older.Content = new StackPanel { Children = { new TextBlock { Text = label, TextWrapping = TextWrapping.Wrap }, olderNote } };
+        System.Windows.Automation.AutomationProperties.SetName(Older, label);
+        System.Windows.Automation.AutomationProperties.SetHelpText(Older, Loc.S("Slow_older"));
+        PaintOlder();
+    }
+
+    void PaintOlder()
+    {
+        if (olderNote == null) return;
+        if (Older.ReadLocalValue(IsEnabledProperty) is false) olderNote.Foreground = (System.Windows.Media.Brush)Application.Current.FindResource("TextFillColorDisabledBrush");
+        else olderNote.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+    }
+
+    /// <summary>The options that make a backup take a long time: a "slow" tag and a cost line on the row, and a confirmation at Start. The older-editions switch is the fourth (see SlowPicked). The cost lines are the resources Slow_&lt;key&gt;.</summary>
+    static bool IsSlow(string key) => key is "kills" or "photos" or "history";
 
     CheckBox Row((string Key, bool On, Engine.Session Needs) g)
     {
@@ -241,25 +267,25 @@ public partial class MainWindow : FluentWindow
         string tagText = g.Needs == Engine.Session.None ? "" : Loc.S(g.Needs == Engine.Session.All ? "Tag_All" : "Tag_Part");
         var title = new WrapPanel();
         title.Children.Add(new TextBlock { Text = label, FontWeight = FontWeights.SemiBold });
-        if (g.Needs != Engine.Session.None)
+        static Border Pill(string text, string? tip) => new()
         {
-            var tag = new Border
-            {
-                Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(8, 0, 8, 0), CornerRadius = new CornerRadius(8),
-                ToolTip = Tip(g.Needs),
-                Child = new TextBlock { Text = tagText, FontSize = 11 },
-            };
-            title.Children.Add(tag);
-        }
+            Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(8, 0, 8, 0), CornerRadius = new CornerRadius(8),
+            ToolTip = tip,
+            Child = new TextBlock { Text = text, FontSize = 11 },
+        };
+        if (g.Needs != Engine.Session.None) title.Children.Add(Pill(tagText, Tip(g.Needs)));
+        string slowText = IsSlow(g.Key) ? Loc.S("Tag_Slow") : "";
+        if (slowText.Length > 0) title.Children.Add(Pill(slowText, Loc.S("Tip_Slow")));
         var text = new StackPanel();
         text.Children.Add(title);
         var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
         text.Children.Add(desc);
-        var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, filled by Describe
+        var note = new TextBlock { FontSize = 12, FontStyle = FontStyles.Italic, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0), Visibility = Visibility.Collapsed }; // why the row is off, or its cost when it is slow; filled by Describe
         note.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(note);
         var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 0, 8, 4) };
-        System.Windows.Automation.AutomationProperties.SetName(box, tagText.Length > 0 ? $"{label}, {tagText}" : label);
+        var tags = string.Join(", ", new[] { label, tagText, slowText }.Where(t => t.Length > 0));
+        System.Windows.Automation.AutomationProperties.SetName(box, tags);
         ToolTipService.SetShowOnDisabled(box, true);
         return box;
     }
@@ -268,6 +294,14 @@ public partial class MainWindow : FluentWindow
     sealed class QuietCheckBox : CheckBox
     {
         public QuietCheckBox() => SetResourceReference(StyleProperty, typeof(CheckBox)); // an implicit style does not reach a subclass
+
+        /// <summary>The template's BulletDecorator centres the tick on the whole row (a VerticalAlignment on the tick does not move it); with a description and a cost line it sat far below the title. It is lifted to the top, level with the title's first line, whatever the row's height. The whole row stays the click target: only the drawing moves.</summary>
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            if (GetTemplateChild("ControlBorderIconPresenter") is not FrameworkElement { Parent: not null } tick) return;
+            SizeChanged += (_, _) => tick.RenderTransform = new System.Windows.Media.TranslateTransform(0, -Math.Max(0, ((FrameworkElement)System.Windows.Media.VisualTreeHelper.GetParent(tick)).ActualHeight - tick.ActualHeight) / 2);
+        }
         protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer() => new Peer(this);
 
         sealed class Peer(CheckBox box) : System.Windows.Automation.Peers.CheckBoxAutomationPeer(box)
@@ -289,18 +323,20 @@ public partial class MainWindow : FluentWindow
         void Paint(TextBlock t, string? on) { if (off) t.Foreground = (System.Windows.Media.Brush)Application.Current.FindResource("TextFillColorDisabledBrush"); else if (on == null) t.ClearValue(TextBlock.ForegroundProperty); else t.SetResourceReference(TextBlock.ForegroundProperty, on); }
         Paint((TextBlock)title.Children[0], null);
         Paint((TextBlock)text.Children[1], "TextFillColorSecondaryBrush");
-        if (title.Children.Count > 1) // the tag: on its fill the disabled text is under 3:1, so an off row shows it as plain text
+        foreach (var pill in title.Children.OfType<Border>()) // the tags: on their fill the disabled text is under 3:1, so an off row shows them as plain text
         {
-            var pill = (Border)title.Children[1];
             Paint((TextBlock)pill.Child, null);
             if (off) pill.Background = System.Windows.Media.Brushes.Transparent;
             else pill.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
         }
+        var key = Engine.Groups[i].Key;
+        var cost = IsSlow(key) ? Loc.S("Slow_" + key) : null;
         var note = (TextBlock)text.Children[2];
-        (note.Text, note.Visibility) = (why ?? "", why == null ? Visibility.Collapsed : Visibility.Visible);
-        var extra = why ?? Tip(Engine.Groups[i].Needs); // the pill's explanation is a mouse tooltip only: it goes in the help text too
-        var desc = Loc.S("GroupDesc_" + Engine.Groups[i].Key);
-        System.Windows.Automation.AutomationProperties.SetHelpText(box, extra == null ? desc : $"{desc.TrimEnd('.')}. {extra}");
+        var shown = why ?? cost;
+        (note.Text, note.Visibility) = (shown ?? "", shown == null ? Visibility.Collapsed : Visibility.Visible);
+        // the pills' explanations are mouse tooltips only: they go in the help text too
+        var parts = new[] { Loc.S("GroupDesc_" + key), why ?? Tip(Engine.Groups[i].Needs), cost, IsSlow(key) ? Loc.S("Tip_Slow") : null }.OfType<string>().Select(p => p.TrimEnd('.')).ToList();
+        System.Windows.Automation.AutomationProperties.SetHelpText(box, string.Join(". ", parts) + (parts.Count > 1 ? "." : ""));
     }
 
     static string? Tip(Engine.Session needs) => needs == Engine.Session.None ? null : Loc.S(needs == Engine.Session.All ? "Tip_All" : "Tip_Part");
@@ -365,12 +401,16 @@ public partial class MainWindow : FluentWindow
     {
         if (cts != null) { cts.Cancel(); Start.IsEnabled = false; Start.Content = Loc.S("Cancelling"); return; }
         if (cfg == null) { Say(Loc.S("Status_Settings"), "SettingsMissing", System.Windows.Automation.AutomationNotificationKind.ActionAborted); return; } // Start is disabled then, so only Enter in a field gets here: the status line already says it, a screen reader is told again
-        if (Problem() is { } p)
+        bool Blocked()
         {
+            if (Problem() is not { } p) return false;
             Show(InfoBarSeverity.Informational, () => (Loc.S("Msg_" + p), Loc.S("Msg_" + p + "Text")), null, () => Problem() == p);
             if (p == "NoProfile") Who.Focus();
-            return;
+            return true;
         }
+        if (Blocked()) return;
+        if (SlowPicked() is { Count: > 0 } slow && !await ConfirmSlow(slow)) return;
+        if (Blocked()) return; // the session may have gone while the dialog was open
         bool own = OwnRadio.IsChecked == true;
         var who = own ? "" : Who.Text.Trim();
         var keys = Engine.Groups.Where((_, i) => boxes![i].IsChecked == true).Select(g => g.Key).ToHashSet();
@@ -409,12 +449,14 @@ public partial class MainWindow : FluentWindow
             var opened = run.MessagesOpened;
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
+            var finished = DateTime.Now;
             text = () => (Loc.S(failed == 0 ? "Msg_Saved" : "Msg_SavedGaps"),
                 Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : failed > 0 ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
                 + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
                 + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
-                + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : ""));
+                + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : "")
+                + (failed == 0 ? "\n" + Loc.F("Msg_Finished", finished) : ""));
             done = true;
         }
         catch (HostSilentException ex)
@@ -575,20 +617,102 @@ public partial class MainWindow : FluentWindow
 
     async Task ShowNotCovered()
     {
-        var box = new Wpf.Ui.Controls.MessageBox
+        var body = new StackPanel { MaxWidth = 520, HorizontalAlignment = HorizontalAlignment.Left };
+        foreach (var item in Engine.NotCovered)
         {
-            Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"),
-            Content = new TextBlock { Text = Engine.NotCovered, TextWrapping = TextWrapping.Wrap, MaxWidth = 520 },
-        };
-        System.Windows.Automation.AutomationProperties.SetName(box, box.Title); // else the window is named after its whole body text
+            var row = new Grid { Margin = new Thickness(0, body.Children.Count == 0 ? 0 : 6, 0, 0) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(18) });
+            row.ColumnDefinitions.Add(new ColumnDefinition());
+            var dot = new TextBlock { Text = "•" };
+            var text = new TextBlock { Text = item, TextWrapping = TextWrapping.Wrap };
+            Grid.SetColumn(text, 1);
+            row.Children.Add(dot);
+            row.Children.Add(text);
+            body.Children.Add(row);
+        }
+        var box = new Wpf.Ui.Controls.MessageBox { Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"), Content = Scrolled(body) };
+        await Ask(box, string.Join(" ", Engine.NotCovered));
+    }
+
+    /// <summary>The short version of the safety and snapshot facts of docs/backup.md ("How it works, in short"): five headings, each with one to three short paragraphs.</summary>
+    async Task ShowHow()
+    {
+        var body = new StackPanel { MaxWidth = 520, HorizontalAlignment = HorizontalAlignment.Left }; // below the dialog width (Ask): measured wider it would be sized for fewer lines than it shows
+        var help = new List<string>();
+        foreach (var section in new[] { "1ab", "2ab", "3abc", "4ab", "5ab" }) // How_<n>H is the heading, How_<n>a.. the paragraphs
+        {
+            var head = new TextBlock { Text = Loc.S($"How_{section[0]}H"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, body.Children.Count == 0 ? 0 : 14, 0, 2) };
+            System.Windows.Automation.AutomationProperties.SetHeadingLevel(head, System.Windows.Automation.AutomationHeadingLevel.Level1);
+            body.Children.Add(head);
+            help.Add(head.Text + ".");
+            foreach (var p in section[1..])
+            {
+                var t = Loc.S($"How_{section[0]}{p}");
+                body.Children.Add(new TextBlock { Text = t, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0) });
+                help.Add(t);
+            }
+        }
+        var box = new Wpf.Ui.Controls.MessageBox { Title = Loc.S("How_Link"), Owner = this, CloseButtonText = Loc.S("Close"), Content = Scrolled(body) };
+        await Ask(box, string.Join(" ", help));
+    }
+
+    /// <summary>The ticked slow options with their cost lines: the four of IsSlow and the older-editions switch.</summary>
+    List<(string Name, string Cost)> SlowPicked() =>
+    [
+        .. Engine.Groups.Where((g, i) => IsSlow(g.Key) && boxes![i].IsChecked == true).Select(g => (Loc.S("Group_" + g.Key), Loc.S("Slow_" + g.Key))),
+        .. Older.IsChecked == true ? [(Loc.S("Older"), Loc.S("Slow_older"))] : Array.Empty<(string, string)>(),
+    ];
+
+    /// <summary>Asked at Start when a slow option is ticked. Back is the focused button and Esc; only "Start backup" lets the run begin.</summary>
+    async Task<bool> ConfirmSlow(List<(string Name, string Cost)> slow)
+    {
+        var body = new StackPanel { MaxWidth = 520, HorizontalAlignment = HorizontalAlignment.Left };
+        var intro = Loc.S("Slow_Intro");
+        body.Children.Add(new TextBlock { Text = intro, TextWrapping = TextWrapping.Wrap });
+        var help = new List<string> { intro };
+        foreach (var (name, cost) in slow)
+        {
+            var item = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
+            item.Children.Add(new TextBlock { Text = name, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
+            var c = new TextBlock { Text = cost, TextWrapping = TextWrapping.Wrap };
+            c.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+            item.Children.Add(c);
+            body.Children.Add(item);
+            help.Add($"{name}. {cost}");
+        }
+        var outro = Loc.S("Slow_Outro");
+        body.Children.Add(new TextBlock { Text = outro, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 14, 0, 0) });
+        help.Add(outro);
+        var box = new Wpf.Ui.Controls.MessageBox { Title = Loc.S("Slow_Title"), Owner = this, PrimaryButtonText = Loc.S("Slow_Start"), CloseButtonText = Loc.S("Slow_Back"), Content = Scrolled(body) };
+        return await Ask(box, string.Join(" ", help)) == Wpf.Ui.Controls.MessageBoxResult.Primary;
+    }
+
+    /// <summary>The dialog body in a scroll region of its own, as tall as the work area allows. It is only a Tab stop (and so scrolls with the arrow and page keys) when the text does not fit, see Ask.</summary>
+    static UIElement Scrolled(UIElement content) => new ScrollViewer { Content = content, Tag = "body", VerticalScrollBarVisibility = ScrollBarVisibility.Auto, MaxHeight = Math.Max(160, SystemParameters.WorkArea.Height - 240) };
+
+    /// <summary>Shows a dialog over this window. Its title names the window (else the whole body does); its buttons carry the body as help text, because focus lands on a button and a screen reader does not read a WPF dialog's body by itself. Focus starts on the close button (the safe one: Enter closes it, Esc still does) and goes back to where it was.</summary>
+    async Task<Wpf.Ui.Controls.MessageBoxResult> Ask(Wpf.Ui.Controls.MessageBox box, string help)
+    {
+        var back = System.Windows.Input.Keyboard.FocusedElement;
+        box.MaxWidth = 600; // WPF UI stops a dialog at 450, which made the longer texts tall
+        System.Windows.Automation.AutomationProperties.SetName(box, box.Title);
         box.SourceInitialized += (_, _) => AddSystemMenu(box);
         box.ContentRendered += (_, _) =>
         {
             NameTitleButtons(box); // this window's title-bar buttons have no names either
-            Descendants<System.Windows.Controls.Button>(box).FirstOrDefault(b => b.Content as string == box.CloseButtonText)?.Focus(); // Enter closes it; Esc still does
+            var buttons = Descendants<System.Windows.Controls.Button>(box).Where(b => b.Content is string s && (s == box.PrimaryButtonText || s == box.CloseButtonText)).ToList();
+            foreach (var b in buttons) System.Windows.Automation.AutomationProperties.SetHelpText(b, help);
+            buttons.FirstOrDefault(b => b.Content as string == box.CloseButtonText)?.Focus();
+            foreach (var sv in Descendants<ScrollViewer>(box).Where(s => s.Tag as string == "body"))
+            {
+                if (sv.ScrollableHeight < 1) { sv.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled; continue; } // the dialog is sized in whole pixels: a fraction of one would show a bar for text that fits
+                sv.Focusable = sv.IsTabStop = true; // a keyboard user can reach the rest of the text
+                System.Windows.Automation.AutomationProperties.SetName(sv, box.Title);
+            }
         };
-        await box.ShowDialogAsync();
-        NotCoveredLink.Focus();
+        var result = await box.ShowDialogAsync();
+        back?.Focus();
+        return result;
     }
 
     // ---------- log ----------

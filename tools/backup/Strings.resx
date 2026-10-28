@@ -142,23 +142,23 @@
   <data name="NotCovered_Link" xml:space="preserve">
     <value>What isn't saved?</value>
   </data>
-  <data name="NotCovered_Title" xml:space="preserve">
-    <value>Not covered:</value>
-  </data>
   <data name="NotCovered_1" xml:space="preserve">
-    <value>A picture of the placed equipment (tents, blinds, stands, towers, feeders, climbing gear). The equipment itself is saved: position, direction, settings and units of every placed item, per map.</value>
+    <value>Pictures of your placed equipment.</value>
   </data>
   <data name="NotCovered_2" xml:space="preserve">
-    <value>In-game settings and controls (kept on this PC).</value>
+    <value>Game settings and controls, and anything else the game keeps only on your PC.</value>
   </data>
   <data name="NotCovered_3" xml:space="preserve">
-    <value>Client-side state that was never sent to the server.</value>
+    <value>Your vehicle's position, map markers, lines you drew, and your last position or start point.</value>
   </data>
   <data name="NotCovered_4" xml:space="preserve">
-    <value>Other players' data (only the public profile of a handle you type is saved).</value>
+    <value>Data of other players.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Data only the game's own load carries (achievement earn times, own minigame score outside the top 30, mission counters, the units setting, reserve licences); the website has no endpoint for it.</value>
+    <value>Achievement dates, your own minigame score outside the top 30, mission counters, the units setting and your reserve licences.</value>
+  </data>
+  <data name="NotCovered_6" xml:space="preserve">
+    <value>Gift codes.</value>
   </data>
   <data name="Group_profile" xml:space="preserve">
     <value>Profile</value>
@@ -194,7 +194,7 @@
     <value>Kill pages and photos</value>
   </data>
   <data name="GroupDesc_kills" xml:space="preserve">
-    <value>Score sheet of every scored kill, photo of every kill that has one (many requests)</value>
+    <value>Score sheet of every scored kill, photo of every kill that has one</value>
   </data>
   <data name="Group_account" xml:space="preserve">
     <value>Account</value>
@@ -212,16 +212,16 @@
     <value>Photos</value>
   </data>
   <data name="GroupDesc_photos" xml:space="preserve">
-    <value>Gallery pictures at full size (large)</value>
+    <value>Gallery pictures at full size</value>
   </data>
   <data name="Group_history" xml:space="preserve">
     <value>Competition history</value>
   </data>
   <data name="GroupDesc_history" xml:space="preserve">
-    <value>Result in every finished competition the website still lists, about the last 7 days only (hundreds of requests)</value>
+    <value>Result in every finished competition the website still lists, about the last 7 days only</value>
   </data>
   <data name="Older" xml:space="preserve">
-    <value>Also follow older editions (estimate: up to 7,000 more requests, 2 hours or more)</value>
+    <value>Also follow older editions</value>
   </data>
   <data name="Group_messages" xml:space="preserve">
     <value>Messages</value>
@@ -363,5 +363,92 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>no user id in the reply</value>
+  </data>
+  <data name="Tag_Slow" xml:space="preserve">
+    <value>slow</value>
+  </data>
+  <data name="Tip_Slow" xml:space="preserve">
+    <value>Can take a long time. You are asked to confirm before the backup starts.</value>
+  </data>
+  <data name="Slow_kills" xml:space="preserve">
+    <value>One request for each hunt, each scored kill and each kill picture: many requests.</value>
+  </data>
+  <data name="Slow_photos" xml:space="preserve">
+    <value>Large downloads, one request for each picture.</value>
+  </data>
+  <data name="Slow_history" xml:space="preserve">
+    <value>Hundreds of requests, tens of KB each.</value>
+  </data>
+  <data name="Slow_older" xml:space="preserve">
+    <value>Estimate: up to 7,000 more requests, 2 hours or more.</value>
+  </data>
+  <data name="Slow_Title" xml:space="preserve">
+    <value>This backup can take a long time</value>
+  </data>
+  <data name="Slow_Intro" xml:space="preserve">
+    <value>You ticked options that need many requests. The tool sends at most one request per second to each server, so the backup can take a long time:</value>
+  </data>
+  <data name="Slow_Outro" xml:space="preserve">
+    <value>The progress line shows the time left. You can cancel at any time: what is saved stays, and a later run with "Skip files already saved (resume)" continues from there.</value>
+  </data>
+  <data name="Slow_Start" xml:space="preserve">
+    <value>Start backup</value>
+  </data>
+  <data name="Slow_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="How_Link" xml:space="preserve">
+    <value>How does it work?</value>
+  </data>
+  <data name="How_1H" xml:space="preserve">
+    <value>It only reads</value>
+  </data>
+  <data name="How_1a" xml:space="preserve">
+    <value>The tool asks the official servers for your profile and saves what they answer, unchanged, in a folder on this PC. It never changes anything on the server.</value>
+  </data>
+  <data name="How_1b" xml:space="preserve">
+    <value>One exception: Messages, which is off unless you tick it. Opening an unread conversation can mark it as read, and nothing can undo that.</value>
+  </data>
+  <data name="How_2H" xml:space="preserve">
+    <value>Where it connects</value>
+  </data>
+  <data name="How_2a" xml:space="preserve">
+    <value>It connects only to the official servers listed in settings.json, next to backup.exe. You can open that file in a text editor.</value>
+  </data>
+  <data name="How_2b" xml:space="preserve">
+    <value>Your backup stays on this PC. Upload to a server is not available yet.</value>
+  </data>
+  <data name="How_3H" xml:space="preserve">
+    <value>Your sign-in</value>
+  </data>
+  <data name="How_3a" xml:space="preserve">
+    <value>To read your own account it uses the session of the running game. It never writes that session to a file, and sends it only to the official server.</value>
+  </data>
+  <data name="How_3b" xml:space="preserve">
+    <value>A public profile needs no sign-in: only public data is saved.</value>
+  </data>
+  <data name="How_3c" xml:space="preserve">
+    <value>It runs on this PC and needs no installation and no administrator rights.</value>
+  </data>
+  <data name="How_4H" xml:space="preserve">
+    <value>What stays on your PC</value>
+  </data>
+  <data name="How_4a" xml:space="preserve">
+    <value>The backup folder you choose, and a zip of it unless you turn "Save a zip" off. A small key file, claim.key, is kept in %APPDATA%\game-backup and copied into every backup.</value>
+  </data>
+  <data name="How_4b" xml:space="preserve">
+    <value>Keep the zip private: it holds your account's data, your Steam id (with "My account") and claim.key.</value>
+  </data>
+  <data name="How_5H" xml:space="preserve">
+    <value>A copy of one moment</value>
+  </data>
+  <data name="How_5a" xml:space="preserve">
+    <value>A backup is your profile as it was while the backup ran. Anything you play, earn, buy or change in the game afterwards is not in it.</value>
+  </data>
+  <data name="How_5b" xml:space="preserve">
+    <value>To bring it up to date, run another backup: it goes into a new folder with the date and time in its name, and the first one stays as it was. "Skip files already saved" does not do that: it only continues a backup that did not finish.</value>
+  </data>
+  <data name="Msg_Finished" xml:space="preserve">
+    <value>Backup finished {0:g}. Anything you play, earn, buy or change in the game after that is not in it: run a new backup.</value>
   </data>
 </root>

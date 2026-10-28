@@ -43,7 +43,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         ("messages", false, Session.All),
     ];
 
-    public static string NotCovered => string.Join("\r\n", Loc.S("NotCovered_Title"), "- " + Loc.S("NotCovered_1"), "- " + Loc.S("NotCovered_2"), "- " + Loc.S("NotCovered_3"), "- " + Loc.S("NotCovered_4"), "- " + Loc.S("NotCovered_5"));
+    /// <summary>The items of the "What isn't saved?" dialog: only what is not in a backup.</summary>
+    public static string[] NotCovered => [.. Enumerable.Range(1, 6).Select(i => Loc.S("NotCovered_" + i))];
 
     /// <summary>The release version (the git tag, set by the build); "0.0.0-dev" for a local build. The +commit suffix the SDK adds is cut.</summary>
     public static string Version { get; } = (Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0-dev").Split('+')[0];
