@@ -274,4 +274,149 @@ public class SetupsTests
         var m = Read(Path.Combine(t.Path, "backup-7"), "manifest.json")["files"]!.AsArray();
         Assert.True(m.Count(x => x!["path"]!.ToString() == "Inventory_dict__user_id=7.json") == 1, "one manifest entry for the dict");
     }
+
+    // ---------- the big synthetic fixture: made-up ids and numbers, one of every kind the restore has to handle ----------
+
+    static string Loc(string x, string y, string z, string dir, int reserve) =>
+        $$"""{"pos":{"x":{{x}},"y":{{y}},"z":{{z}}},"dir":{{dir}},"reserve":{{reserve}}}""";
+
+    const string DirA = """{"x":-0.999,"y":0,"z":0.25}""";
+    const string FeederMeta = """{"reserve":2,"bait_amount":7,"bait_attractiveness":1,"penalty_remaining":0,"owner_note":9}""";
+
+    /// <summary>
+    /// One dict and one list reply with: a tent (a1), a tree stand (a2), a tower (a3), a feeder (a4: location reserve 3, metadata reserve 2),
+    /// climbing gear (a5, units 20), a slot-0 row that keeps a location (z0), a slot-23 row without a location (n1), a row with dir null (d1)
+    /// and a row only the dict has (o1). With <paramref name="lag"/> the dict still holds the feeder as it was before a refill.
+    /// </summary>
+    static (string Dict, string List) Big(bool lag = false)
+    {
+        var both = new (int Item, string Define, string Row)[]
+        {
+            (11, "TENT02", Row("a1", Loc("3144.645", "412.5", "-98.125", DirA, 1))),
+            (12, "TREE_STAND01", Row("a2", Loc("-501.5", "300", "77.75", DirA, 1), metadata: """{"tree_shape_key":5,"tree_shape_position_x":-501500,"tree_shape_position_y":300000,"tree_shape_position_z":77750}""")),
+            (14, "DEPLOYABLE_HUNTING_TOWER_01", Row("a3", Loc("10", "20", "30", DirA, 1), metadata: """{"deployable_timestamp":1700000000,"is_constructing":0}""")),
+            (13, "BEAR_BAIT_BARREL", Row("a4", Loc("-7.5", "8", "9.125", DirA, 3), metadata: FeederMeta)),
+            (354, "CLIMBING_GEAR_01", Row("a5", Loc("40", "50", "60", DirA, 8), units: "20")),
+            (11, "TENT02", Row("z0", Loc("1", "2", "3", DirA, 1), slot: 0)),
+            (11, "TENT02", Row("n1", null, units: "5", metadata: """{"k":1}""")),
+            (11, "TENT02", Row("d1", Loc("70", "80", "90", "null", 1))),
+        };
+        var dictRows = both.Select(r => r.Row == both[3].Row && lag ? (r.Item, Row("a4", Loc("-7.5", "8", "9.125", DirA, 3), metadata: FeederMeta.Replace("\"bait_amount\":7", "\"bait_amount\":3"))) : (r.Item, r.Row))
+            .Prepend((11, Row("o1", Loc("5", "5", "5", DirA, 1)))); // first in the reply, so that sorting is the file's work
+        return (Dict([.. dictRows]), ListOf(both));
+    }
+
+    static JsonNode Item(JsonNode setups, string guid) =>
+        setups["reserves"]!.AsArray().SelectMany(r => r!["items"]!.AsArray()).Single(i => i!["guid"]!.ToString() == guid)!;
+
+    /// <summary>Item 1: the list wins when both replies hold a row (the dict can lag a change); a row only the dict has is still there.</summary>
+    [Fact]
+    public async Task ListRowWinsOverDictAndDictOnlyRowStays()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big(lag: true);
+        await RunOwn(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, false, Setups, ct: TestContext.Current.CancellationToken);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(Item(s, "a4")["metadata"]!["bait_amount"]!.GetValue<int>() == 7, "the feeder has the list's metadata, not the lagging dict's");
+        Assert.True(Item(s, "o1")["in"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["dict"]), "a row only the dict has is kept");
+    }
+
+    /// <summary>Item 2: metadata, units or dir that differ between dict and list are listed (and raise the checks mark); identical replies list nothing.</summary>
+    [Fact]
+    public async Task MetadataUnitsOrDirDifferencesBetweenTheRepliesAreListed()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big(lag: true);
+        var e = Hosts.Make(new Fake(Tok) { InventoryDict = d, InventoryList = l }, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "", () => Tok, Setups, false, false, TestContext.Current.CancellationToken);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(s["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["a4"]) && e.SetupChecks, "only the lagging feeder is listed, the checks mark is set");
+
+        using var t2 = new TempDir("backup-test-setups-");
+        var (d2, l2) = Big();
+        d2 = d2.Replace("\"units\":20", "\"units\":25"); // a different climbing cost in the dict only
+        await RunOwn(new Fake(Tok) { InventoryDict = d2, InventoryList = l2 }, t2, false, Setups, ct: TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t2.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["a5"]), "units are compared too");
+
+        using var t3 = new TempDir("backup-test-setups-");
+        var rows = new (int, string, string)[] { (11, "TENT02", Row("p1", Loc("1", "2", "3", DirA, 1), metadata: "{\"k\":1}")) };
+        var e3 = Hosts.Make(new Fake(Tok) { InventoryDict = Dict([.. rows.Select(r => (r.Item1, r.Item3))]), InventoryList = ListOf(rows), WorldItems = Worlditems(("p1", P("1", "2", "3"), 1)) }, Path.Combine(t3.Path, "claim.key"));
+        await e3.Run(t3.Path, "", () => Tok, Setups, false, false, TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t3.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Count == 0 && !e3.SetupChecks, "identical replies: nothing listed, no mark");
+
+        using var t4 = new TempDir("backup-test-setups-");
+        var dirDiff = Dict((11, Row("p1", Loc("1", "2", "3", """{"x":0.5,"y":0,"z":0.25}""", 1), metadata: "{\"k\":1}")));
+        await RunOwn(new Fake(Tok) { InventoryDict = dirDiff, InventoryList = ListOf(rows) }, t4, false, Setups, ct: TestContext.Current.CancellationToken);
+        Assert.True(Read(Path.Combine(t4.Path, "backup-7"))["checks"]!["metadata_differs"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["p1"]), "dir is compared too");
+    }
+
+    /// <summary>Item 5: a placed row without a location is listed by guid (as before) and also saved whole.</summary>
+    [Fact]
+    public async Task PlacedRowWithoutLocationIsSavedWhole()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        await RunOwn(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, false, Setups, ct: TestContext.Current.CancellationToken);
+        var checks = Read(Path.Combine(t.Path, "backup-7"))["checks"]!;
+        Assert.True(checks["location_null"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["n1"]), "still listed by guid");
+        var rows = checks["location_null_rows"]!.AsArray();
+        Assert.True(rows.Count == 1 && rows[0]!.ToJsonString() == """{"guid":"n1","item_id":11,"units":5,"metadata":{"k":1}}""", $"the full row: {rows[0]?.ToJsonString()}");
+    }
+
+    /// <summary>Item 6: a valid position with dir null is listed in checks.dir_null; the item is still saved, with its position.</summary>
+    [Fact]
+    public async Task ItemWithoutDirectionIsListedAndStillSaved()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        var e = await RunOwnEngine(new Fake(Tok) { InventoryDict = d, InventoryList = l }, t, Setups);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        Assert.True(s["checks"]!["dir_null"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["d1"]) && e.SetupChecks, "d1 is the one without a direction");
+        var item = Item(s, "d1");
+        Assert.True(item["dir"] == null && item["pos"]!.ToJsonString() == """{"x":70,"y":80,"z":90}""", "saved with its position, dir null");
+    }
+
+    /// <summary>Item 8: with the profile group off the setups group fetches the catalogue itself, so kind and define are set even when only the dict has the rows; with the profile group on there is still one request.</summary>
+    [Fact]
+    public async Task CatalogueIsFetchedWhenTheProfileGroupIsOff()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, _) = Big();
+        var f = new Fake(Tok) { InventoryDict = d, Catalogue = Catalogue };
+        f.Down.Add("/v1/Inventory/list"); // the dict is the only source: the rows carry no define
+        await RunOwnEngine(f, t, Setups);
+        var s = Read(Path.Combine(t.Path, "backup-7"));
+        var a1 = Item(s, "a1");
+        Assert.True(a1["define"]!.ToString() == "TENT02" && a1["kind"]!.ToString() == "tent" && Item(s, "a4")["kind"]!.ToString() == "feeder", "define and kind from the catalogue");
+        Assert.True(f.Seen.Count(p => p == "/v1/Application/application") == 1 && Directory.GetFiles(Path.Combine(t.Path, "backup-7"), "Application_application*.json").Length == 1, "one request, one file");
+
+        using var t2 = new TempDir("backup-test-setups-");
+        var f2 = new Fake(Tok) { InventoryDict = d, Catalogue = Catalogue };
+        f2.Down.Add("/v1/Inventory/list");
+        await RunOwnEngine(f2, t2, new HashSet<string> { "profile", "setups" });
+        Assert.True(f2.Seen.Count(p => p == "/v1/Application/application") == 1, "with the profile group on the file is shared: still one request");
+    }
+
+    /// <summary>Items 3, 4, 7, 9: the written TEXT keeps the numbers digit for digit; a picked-up row is not placed; a guid only in worlditems is never a row; items are ordered by item id, then guid.</summary>
+    [Fact]
+    public async Task WrittenFileKeepsValuesByteExactAndOnlyRealRows()
+    {
+        using var t = new TempDir("backup-test-setups-");
+        var (d, l) = Big();
+        var e = await RunOwnEngine(new Fake(Tok) { InventoryDict = d, InventoryList = l, WorldItems = Worlditems(("w9", P("1", "2", "3"), 1), ("a1", P("3144.645", "412.5", "-98.125"), 1)) }, t, Setups);
+        var text = File.ReadAllText(Path.Combine(t.Path, "backup-7", "map-setups.json"));
+        Assert.True(text.Contains("\"x\": 3144.645,") && !text.Contains("3144.6449") && !text.Contains("3144.6450"), "pos 3144.645 stays 3144.645");
+        Assert.True(text.Contains("\"x\": -0.999,") && !text.Contains("-0.9989"), "dir -0.999 stays -0.999");
+        Assert.True(text.Contains("\"units\": 20,") && !text.Contains("20.0") && text.Contains("\"units\": 0,"), "units 20 stays 20 (not 20.0), units 0 stays 0");
+        var s = JsonNode.Parse(text)!;
+        var feeder = Item(s, "a4");
+        Assert.True(feeder["metadata"]!["reserve"]!.GetValue<int>() == 2 && feeder["metadata"]!["owner_note"]!.GetValue<int>() == 9, "the feeder keeps metadata.reserve 2 and its server-owned keys");
+        Assert.True(s["reserves"]!.AsArray().Single(r => r!["items"]!.AsArray().Any(i => i!["guid"]!.ToString() == "a4"))!["reserve"]!.GetValue<int>() == 3, "while its map is the web number, 3");
+        Assert.True(!text.Contains("\"z0\""), "the slot-0 row with a location is not in the file");
+        Assert.True(!text.Contains("w9") || s["checks"]!["only_in"]!["me"]!.AsArray().Select(x => x!.ToString()).SequenceEqual(["w9"]), "w9 appears only as a check");
+        Assert.True(!s["reserves"]!.AsArray().SelectMany(r => r!["items"]!.AsArray()).Any(i => i!["guid"]!.ToString() == "w9"), "a guid only in worlditems is never a row");
+        Assert.True(s["reserves"]!.AsArray().Select(r => (int)r!["reserve"]!).SequenceEqual([1, 3, 8]), "maps in order");
+        var one = s["reserves"]!.AsArray()[0]!["items"]!.AsArray();
+        Assert.True(one.Select(i => i!["guid"]!.ToString()).SequenceEqual(["a1", "d1", "o1", "a2", "a3"]) && one.Select(i => i!["item_id"]!.GetValue<int>()).SequenceEqual([11, 11, 11, 12, 14]), "item id, then guid");
+    }
 }
