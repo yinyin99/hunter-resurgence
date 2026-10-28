@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Обзор…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Выбрать папку назначения</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Создать ZIP-архив</value>
   </data>
@@ -93,9 +90,6 @@
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Загрузка на сервер: скоро появится</value>
-  </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Загрузка на сервер пока недоступна</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Начать</value>
@@ -106,14 +100,35 @@
   <data name="Cancelling" xml:space="preserve">
     <value>Отмена…</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Groups_All" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="Groups_None" xml:space="preserve">
+    <value>Снять выбор</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Идёт резервное копирование…</value>
+  </data>
+  <data name="Win_Minimize" xml:space="preserve">
+    <value>Свернуть</value>
+  </data>
+  <data name="Win_Maximize" xml:space="preserve">
+    <value>Развернуть</value>
+  </data>
+  <data name="Win_Restore" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="Win_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Ход резервного копирования</value>
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Открыть папку</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Открыть резервную копию в Проводнике</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Подробности</value>
@@ -247,8 +262,8 @@
   <data name="Status_Found" xml:space="preserve">
     <value>Сессия игры найдена в {0}</value>
   </data>
-  <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Настройки отсутствуют</value>
+  <data name="Status_Settings" xml:space="preserve">
+    <value>Файл settings.json отсутствует или неполный. Он идёт с backup.exe и должен лежать&#160;рядом.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Профиль не выбран</value>
@@ -348,8 +363,5 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>В ответе нет ID пользователя</value>
-  </data>
-  <data name="Err_Setting" xml:space="preserve">
-    <value>{0}: задайте «{1}» (нет значения или остался пример)</value>
   </data>
 </root>

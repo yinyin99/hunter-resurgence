@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Procurar…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Escolher a pasta de destino</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Criar um arquivo zip</value>
   </data>
@@ -93,9 +90,6 @@
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Enviar ao servidor: em breve</value>
-  </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Enviar ao servidor, ainda não disponível</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Iniciar</value>
@@ -106,14 +100,35 @@
   <data name="Cancelling" xml:space="preserve">
     <value>Cancelando…</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="Groups_All" xml:space="preserve">
+    <value>Selecionar tudo</value>
+  </data>
+  <data name="Groups_None" xml:space="preserve">
+    <value>Limpar seleção</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Backup em andamento…</value>
+  </data>
+  <data name="Win_Minimize" xml:space="preserve">
+    <value>Minimizar</value>
+  </data>
+  <data name="Win_Maximize" xml:space="preserve">
+    <value>Maximizar</value>
+  </data>
+  <data name="Win_Restore" xml:space="preserve">
+    <value>Restaurar</value>
+  </data>
+  <data name="Win_Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Progresso do backup</value>
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Abrir pasta</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Abrir o backup no Explorador de Arquivos</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Detalhes</value>
@@ -247,8 +262,8 @@
   <data name="Status_Found" xml:space="preserve">
     <value>Sessão do jogo encontrada às {0}</value>
   </data>
-  <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Configurações ausentes</value>
+  <data name="Status_Settings" xml:space="preserve">
+    <value>O arquivo settings.json está ausente ou incompleto. Vem com o backup.exe e deve ficar ao&#160;lado.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Nenhum perfil selecionado</value>
@@ -348,8 +363,5 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Nenhum ID de usuário na resposta</value>
-  </data>
-  <data name="Err_Setting" xml:space="preserve">
-    <value>{0}: defina “{1}” (ausente ou ainda um valor de exemplo)</value>
   </data>
 </root>

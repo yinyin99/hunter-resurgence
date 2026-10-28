@@ -82,9 +82,6 @@
   <data name="Browse" xml:space="preserve">
     <value>Examinar…</value>
   </data>
-  <data name="Browse_Name" xml:space="preserve">
-    <value>Elegir la carpeta de destino</value>
-  </data>
   <data name="Zip" xml:space="preserve">
     <value>Crear un archivo zip</value>
   </data>
@@ -93,9 +90,6 @@
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Subir al servidor: próximamente</value>
-  </data>
-  <data name="Upload_Name" xml:space="preserve">
-    <value>Subir al servidor, aún no disponible</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Iniciar</value>
@@ -106,14 +100,35 @@
   <data name="Cancelling" xml:space="preserve">
     <value>Cancelando…</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Groups_All" xml:space="preserve">
+    <value>Seleccionar todo</value>
+  </data>
+  <data name="Groups_None" xml:space="preserve">
+    <value>No seleccionar nada</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Copia de seguridad en curso…</value>
+  </data>
+  <data name="Win_Minimize" xml:space="preserve">
+    <value>Minimizar</value>
+  </data>
+  <data name="Win_Maximize" xml:space="preserve">
+    <value>Maximizar</value>
+  </data>
+  <data name="Win_Restore" xml:space="preserve">
+    <value>Restaurar</value>
+  </data>
+  <data name="Win_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Progreso de la copia de seguridad</value>
   </data>
   <data name="Open_Folder" xml:space="preserve">
     <value>Abrir carpeta</value>
-  </data>
-  <data name="Open_Name" xml:space="preserve">
-    <value>Abrir la copia de seguridad en el Explorador de archivos</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Detalles</value>
@@ -247,8 +262,8 @@
   <data name="Status_Found" xml:space="preserve">
     <value>Sesión del juego encontrada a las {0}</value>
   </data>
-  <data name="Msg_SettingsMissing" xml:space="preserve">
-    <value>Falta la configuración</value>
+  <data name="Status_Settings" xml:space="preserve">
+    <value>Falta settings.json o está incompleto. Viene con backup.exe y debe estar a su&#160;lado.</value>
   </data>
   <data name="Msg_NoProfile" xml:space="preserve">
     <value>Ningún perfil seleccionado</value>
@@ -348,8 +363,5 @@
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>No hay ningún ID de usuario en la respuesta</value>
-  </data>
-  <data name="Err_Setting" xml:space="preserve">
-    <value>{0}: define «{1}» (falta o sigue siendo un valor de ejemplo)</value>
   </data>
 </root>

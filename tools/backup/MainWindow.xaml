@@ -2,10 +2,13 @@
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:local="clr-namespace:Backup"
                  Width="880" Height="690" MinWidth="720" MinHeight="600"
-                 WindowBackdropType="Mica" ExtendsContentIntoTitleBar="True"
-                 WindowStartupLocation="CenterScreen">
+                 WindowBackdropType="None" ExtendsContentIntoTitleBar="True"
+                 WindowStartupLocation="CenterScreen"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="ShowWhile" />
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
@@ -13,6 +16,16 @@
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a ring outside the button in StartFocusRingBrush (white; the palette's text colour in high contrast, App.xaml.cs). The -3 margin is off the 4 scale on purpose: with the 2 px stroke it leaves a 2 px gap to the button, -4 would leave 3 and -2 only 1 -->
+        <Style x:Key="StartFocus">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="-3" Stroke="{DynamicResource StartFocusRingBrush}" StrokeThickness="2" RadiusX="7" RadiusY="7" SnapsToDevicePixels="True" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <Grid>
@@ -24,36 +37,39 @@
 
         <Grid x:Name="Body" Grid.Row="1" Margin="16,0,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" /> <!-- the inputs scroll in the room left above Start, the result and Details, which stay in view -->
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- cards: locked while a backup runs. The group list takes the space that is left and scrolls, so the folder card, Start and Details stay on a small screen -->
+            <!-- cards: locked while a backup runs (LockInputs disables the controls, not the status line or the heading). They scroll as one when the window is short; Start, the result bar and Details are below the scroll and never leave the window -->
+            <local:CardScroll x:Name="Scroller" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8" Background="Transparent"> <!-- the 8 px strip above Start is the edge of the scroll region: scrolled text never touches the button. Transparent: the wheel still scrolls while the cards are locked -->
             <Grid x:Name="Inputs">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <Grid Margin="0,0,0,6">
+                        <Grid Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ui:SymbolIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
-                            <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
-                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Top" />
+                            <local:DecorIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                            <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Center" BorderBrush="{DynamicResource LangBoxEdgeBrush}" />
                         </Grid>
-                        <WrapPanel>
-                            <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" />
-                            <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" />
-                            <ui:TextBox x:Name="Who" Width="230" Margin="12,0,0,0" IsEnabled="False" />
+                        <WrapPanel x:Name="SourceRow">
+                            <!-- one Tab stop for the pair; the arrow keys move and select -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0" KeyboardNavigation.TabNavigation="Once" KeyboardNavigation.DirectionalNavigation="Cycle">
+                                <RadioButton x:Name="OwnRadio" GroupName="Source" IsChecked="True" MinWidth="0" Margin="0,0,16,0" Padding="0,0,4,0" />
+                                <RadioButton x:Name="PublicRadio" GroupName="Source" MinWidth="0" Padding="0,0,4,0" />
+                            </StackPanel>
+                            <ui:TextBox x:Name="Who" Width="230" IsEnabled="False" ClearButtonEnabled="False" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -62,17 +78,34 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" Margin="0,0,0,4" />
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <UniformGrid x:Name="Groups" Columns="2" />
-                        </ScrollViewer>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="GroupsTitle" FontWeight="SemiBold" VerticalAlignment="Center" AutomationProperties.HeadingLevel="Level1" />
+                            <ui:HyperlinkButton x:Name="SelectAll" Grid.Column="1" Padding="8,4" />
+                            <ui:HyperlinkButton x:Name="SelectNone" Grid.Column="2" Margin="4,0,0,0" Padding="8,4" />
+                        </Grid>
+                        <!-- two columns in group order, left one first; each stacks on its own, so a long description or the older-editions switch never leaves a gap under the cell beside it. BuildRows fills them -->
+                        <Grid x:Name="Groups" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel x:Name="ColLeft" />
+                            <StackPanel x:Name="ColRight" Grid.Column="1">
+                                <ui:ToggleSwitch x:Name="Older" Margin="28,0,0,4" MinHeight="28" Padding="0,4,4,4" IsChecked="False" IsEnabled="False" />
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </Border>
 
-                <Border Style="{StaticResource Card}" Grid.Row="2">
-                    <Grid>
+                <Border Style="{StaticResource Card}" Grid.Row="2" Margin="0">
+                    <Grid x:Name="Options">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -82,32 +115,38 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.ColumnSpan="2" Margin="0,0,0,6">
+                        <Grid Grid.ColumnSpan="2" Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ui:TextBox x:Name="OutDir" />
+                            <ui:TextBox x:Name="OutDir" ClearButtonEnabled="False" />
                             <ui:Button x:Name="Browse" Grid.Column="1" Margin="8,0,0,0" />
                         </Grid>
-                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" />
-                        <ui:ToggleSwitch x:Name="Older" Grid.Row="2" Grid.Column="1" IsChecked="False" IsEnabled="False" />
+                        <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
+                        <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
+                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" MinHeight="28" Padding="0,4,4,4" />
                     </Grid>
                 </Border>
             </Grid>
+            </local:CardScroll>
 
             <Grid Grid.Row="1" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" />
-                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock x:Name="ProgressText" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                    <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="4" />
+                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" FocusVisualStyle="{StaticResource StartFocus}" />
+                <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="ProgressText" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
+                    <!-- Bar draws no track while it sweeps (the total is not known yet): this one keeps the sweep on a rail -->
+                    <Grid>
+                        <Border Height="8" CornerRadius="4" Background="{DynamicResource ProgressBarBorderBrush}" Visibility="{Binding IsIndeterminate, ElementName=Bar, Converter={StaticResource ShowWhile}}" />
+                        <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="8" Visibility="Hidden" />
+                    </Grid>
                 </StackPanel>
+                <ui:HyperlinkButton x:Name="NotCoveredLink" Grid.Column="2" VerticalAlignment="Center" />
             </Grid>
 
             <Grid Grid.Row="2">
@@ -115,22 +154,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ui:InfoBar x:Name="Result" IsOpen="False" IsClosable="False" Margin="0,0,0,8" />
+                <local:ResultBar x:Name="Result" IsOpen="False" IsClosable="False" Margin="0,0,0,8" />
                 <ui:Button x:Name="OpenBtn" Grid.Column="1" Margin="8,0,0,8" VerticalAlignment="Center" Visibility="Collapsed" />
             </Grid>
 
-            <Grid Grid.Row="4">
+            <Grid Grid.Row="3">
                 <Expander x:Name="Details" VerticalAlignment="Stretch">
-                    <TextBox x:Name="LogBox" Height="155" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
+                    <TextBox x:Name="LogBox" Height="156" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" FontSize="12"
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" />
                 </Expander>
-                <ui:Button x:Name="NotCoveredLink" Appearance="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,44,0" />
-                <Popup x:Name="NotCoveredPopup" PlacementTarget="{Binding ElementName=NotCoveredLink}" Placement="Top" StaysOpen="False"
-                       AllowsTransparency="True" PopupAnimation="Fade">
-                    <Border Style="{StaticResource Card}" Background="{DynamicResource ApplicationBackgroundBrush}" Padding="14,10" Margin="8" MaxWidth="600">
-                        <TextBlock x:Name="NotCoveredText" TextWrapping="Wrap" />
-                    </Border>
-                </Popup>
             </Grid>
         </Grid>
     </Grid>
