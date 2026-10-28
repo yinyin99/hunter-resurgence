@@ -65,7 +65,7 @@ sealed partial class Engine
             // finished editions never change: a saved one is read back by resume, a failed one is asked again by the next run and does not stop the others
             var body = await Get(Q("Page_content/competitions_new", false, ("id", id), ("lang", "en"), ("entrants_limit", "100")));
             if (body == null) { Miss("competitions_new", "no data", edition: id); log($"! history: edition {id} failed"); continue; }
-            if (Json(body) is not JsonObject e) continue;
+            if (Json(body) is not JsonObject e) { Miss("competitions_new", "not an edition", edition: id); log($"! history: edition {id} is not an edition (reply is not an object)"); continue; } // saved, but nothing to read
             if (OlderEditions) Queue(e["competitions"]);
             found.Add((long.TryParse(id, out var n) ? n : 0, Edition(id, e)));
         }

@@ -294,4 +294,19 @@ public class HistoryTests
         Assert.True(h["complete"]!.GetValue<bool>() && h["failed"]!.AsArray().Count == 0 && h["totals"]!["editions"]!.GetValue<int>() == 45 && e2.Failed == 0, "complete, nothing failed, all 45 editions");
         Assert.True(Offsets(f2).SequenceEqual(["20"]) && EditionIds(f2).Order().SequenceEqual(Enumerable.Range(21, 20).Append(45).Order()), $"only what was missing was asked ({string.Join(",", Offsets(f2))})");
     }
+
+    /// <summary>An edition reply that is saved but not an object (null, an array) is no edition: listed in failed with its own reason, not counted as a failed request, and the file is not complete.</summary>
+    [Fact]
+    public async Task SavedReplyThatIsNoEditionMakesTheFileIncomplete()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var f = World(_ => PreviousPage(2, [1, 2]), id => id == 2 ? "null" : id == 1 ? "[]" : EditionReply(id, []));
+        var log = new List<string>();
+        var e = await Run(f, t, log: log.Add);
+        var h = History(t);
+        var names = h["failed"]!.AsArray().Select(x => x!["id"] + ":" + x["reason"]).Order().ToArray();
+        Assert.True(!h["complete"]!.GetValue<bool>() && names.SequenceEqual(["1:not an edition", "2:not an edition"]) && h["totals"]!["editions"]!.GetValue<int>() == 0, $"both listed with their reason: {Reasons(h)}");
+        Assert.True(e.Failed == 0 && Directory.GetFiles(Path.Combine(t.Path, "backup-7"), "Page_content_competitions_new*").Length == 2, "saved, not counted as failed requests");
+        Assert.True(log.Contains("! history: edition 2 is not an edition (reply is not an object)"), "logged");
+    }
 }
