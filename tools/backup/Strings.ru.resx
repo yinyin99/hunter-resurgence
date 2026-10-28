@@ -380,7 +380,7 @@
     <value>Большие загрузки, один запрос на каждое фото.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Сотни запросов, по несколько десятков КБ каждый.</value>
+    <value>Сотни запросов, по несколько десятков КБ каждый; около получаса.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Оценка: до 7000 дополнительных запросов, 2 часа и больше.</value>

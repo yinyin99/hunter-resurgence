@@ -380,7 +380,7 @@
     <value>Descargas pesadas, una solicitud por cada foto.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Cientos de solicitudes, de decenas de KB cada una.</value>
+    <value>Cientos de solicitudes, de decenas de KB cada una; aproximadamente media hora.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimación: hasta 7000 solicitudes más, 2 horas o más.</value>

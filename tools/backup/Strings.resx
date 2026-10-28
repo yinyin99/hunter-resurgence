@@ -380,7 +380,7 @@
     <value>Large downloads, one request for each picture.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Hundreds of requests, tens of KB each.</value>
+    <value>Hundreds of requests, tens of KB each; about half an hour.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimate: up to 7,000 more requests, 2 hours or more.</value>

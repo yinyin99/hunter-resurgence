@@ -74,7 +74,7 @@ The group is off by default and uses public reads, so it works in public-profile
 - **A window of about 7 days.** The list holds only the newest 250 finished editions, about the last week. A backup made more than a week after a win does not contain it unless the older-editions switch is on.
 - **Entrants capped at 100.** The server returns at most the best 100 entrants of an edition. A player ranked lower is not in the reply; that edition is `not_listed: true` (no rank is guessed). A win cannot be missing.
 - **Older editions (a separate switch, off by default).** Every edition reply lists earlier editions of the same type. With the switch on, the tool follows them, each edition once, past the window of the list. That can be thousands of requests (an estimate: up to about 7,000 more, 2 hours or more at one request per second per host). The switch is only available while the history group is ticked.
-- **Cost and resume.** Without the switch it is hundreds of requests, tens of KB each. Resume skips editions whose file is saved (finished editions never change); an edition that failed is asked again on the next run and does not stop the others.
+- **Cost and resume.** Without the switch it is hundreds of requests, tens of KB each, and takes about half an hour: the list pages are slow (often over a minute each, a few run into the 120 second timeout and are retried). There is no shorter timeout: the slow replies are good ones. Resume skips editions whose file is saved (finished editions never change); an edition that failed is asked again on the next run and does not stop the others.
 
 ### Two modes
 

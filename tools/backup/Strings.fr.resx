@@ -380,7 +380,7 @@
     <value>Téléchargements volumineux, une requête par photo.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Des centaines de requêtes, quelques dizaines de Ko chacune.</value>
+    <value>Des centaines de requêtes, quelques dizaines de Ko chacune ; environ une demi-heure.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimation : jusqu’à 7 000 requêtes de plus, 2 heures ou plus.</value>

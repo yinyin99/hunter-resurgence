@@ -380,7 +380,7 @@
     <value>Große Downloads, eine Anfrage pro Foto.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Hunderte Anfragen, je einige zehn KB.</value>
+    <value>Hunderte Anfragen, je einige zehn KB; dauert etwa eine halbe Stunde.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Schätzung: bis zu 7.000 weitere Anfragen, 2 Stunden oder mehr.</value>
