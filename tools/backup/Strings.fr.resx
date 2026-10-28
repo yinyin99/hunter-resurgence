@@ -106,6 +106,9 @@
   <data name="Cancelling" xml:space="preserve">
     <value>Annulation…</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Progression de la sauvegarde</value>
   </data>

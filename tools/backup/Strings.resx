@@ -106,6 +106,9 @@
   <data name="Cancelling" xml:space="preserve">
     <value>Cancelling…</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Bar_Name" xml:space="preserve">
     <value>Backup progress</value>
   </data>

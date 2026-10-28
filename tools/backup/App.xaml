@@ -12,6 +12,7 @@
 
             <!-- Blazor app tokens (src/Ui/wwwroot/theme.css) over WPF UI's Dark keys. Direct keys beat the merged dictionaries.
                  Dark.xaml binds most brush colors with StaticResource, so those are overridden as brushes here.
+                 The window background is set in MainWindow.xaml.cs (FluentWindow resets it) and the window text colour in MainWindow.xaml.
                  The accent is set in App.xaml.cs: accent keys set only here did not hold (ticks and toggles rendered system blue). -->
 
             <!-- keyboard focus ring: accent token -->
@@ -32,12 +33,27 @@
             <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#888888" />
             <SolidColorBrush x:Key="TextFillColorDisabledBrush" Color="#666666" />
 
+            <!-- controls take their text colour from their own keys, not from TextFillColorPrimaryBrush -->
+            <SolidColorBrush x:Key="ButtonForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="CheckBoxForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="RadioButtonForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ToggleSwitchContentForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ComboBoxForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ComboBoxItemForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ExpanderHeaderForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="InfoBarTitleForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="MessageBoxForeground" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="ContentDialogForeground" Color="#EEEEEE" />
+
             <!-- fields (.field): surface-3, line-2 border, text-2 text, accent focus border (TextControlFocusedBorderBrush is already the accent) -->
             <SolidColorBrush x:Key="TextControlBackground" Color="#1C1C1C" />
             <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#222222" />
             <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1C1C1C" />
-            <SolidColorBrush x:Key="TextControlElevationBorderBrush" Color="#333333" />
+            <SolidColorBrush x:Key="TextControlElevationBorderBrush" Color="#707070" /> <!-- 3.4:1 on the field -->
             <SolidColorBrush x:Key="TextControlForeground" Color="#DDDDDD" />
+            <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#8A8A8A" /> <!-- 4.9:1 on the field, dimmer than typed text -->
             <SolidColorBrush x:Key="ComboBoxBackground" Color="#1C1C1C" />
             <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#1C1C1C" />
             <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#222222" />
@@ -60,8 +76,8 @@
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="#FFFFFF" />
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressed" Color="#FFFFFF" />
 
-            <!-- progress track: surface-6 -->
-            <SolidColorBrush x:Key="ProgressBarBackground" Color="#333333" />
+            <!-- progress track: the template draws it with the border brush (the 2px inside the margin), 3:1 on the card and the window -->
+            <SolidColorBrush x:Key="ProgressBarBorderBrush" Color="#666666" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

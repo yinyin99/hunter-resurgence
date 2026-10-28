@@ -4,7 +4,8 @@
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  Width="880" Height="690" MinWidth="720" MinHeight="600"
                  WindowBackdropType="None" ExtendsContentIntoTitleBar="True"
-                 WindowStartupLocation="CenterScreen">
+                 WindowStartupLocation="CenterScreen"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}">
     <Window.Resources>
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
@@ -13,6 +14,16 @@
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <!-- Start sits on the accent fill, so the accent focus ring vanishes: a white ring outside the button -->
+        <Style x:Key="StartFocus">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="-3" Stroke="White" StrokeThickness="2" RadiusX="7" RadiusY="7" SnapsToDevicePixels="True" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <Grid>
@@ -24,7 +35,7 @@
 
         <Grid x:Name="Body" Grid.Row="1" Margin="16,0,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="*" MinHeight="420" /> <!-- status card, two group rows and the folder card: the list scrolls below that, it never collapses -->
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -47,7 +58,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <ui:SymbolIcon x:Name="StatusIcon" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
-                            <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                            <TextBlock x:Name="StatusText" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
                             <ComboBox x:Name="LangBox" Grid.Column="2" MinWidth="130" Margin="12,0,0,0" VerticalAlignment="Top" />
                         </Grid>
                         <WrapPanel>
@@ -103,9 +114,9 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" />
+                <ui:Button x:Name="Start" Appearance="Primary" Width="150" Height="36" HorizontalContentAlignment="Center" FocusVisualStyle="{StaticResource StartFocus}" />
                 <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock x:Name="ProgressText" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="ProgressText" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.LiveSetting="Polite" />
                     <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Height="4" />
                 </StackPanel>
             </Grid>
@@ -125,12 +136,6 @@
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" />
                 </Expander>
                 <ui:Button x:Name="NotCoveredLink" Appearance="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,44,0" />
-                <Popup x:Name="NotCoveredPopup" PlacementTarget="{Binding ElementName=NotCoveredLink}" Placement="Top" StaysOpen="False"
-                       AllowsTransparency="True" PopupAnimation="Fade">
-                    <Border Style="{StaticResource Card}" Background="{DynamicResource ApplicationBackgroundBrush}" Padding="14,10" Margin="8" MaxWidth="600">
-                        <TextBlock x:Name="NotCoveredText" TextWrapping="Wrap" />
-                    </Border>
-                </Popup>
             </Grid>
         </Grid>
     </Grid>

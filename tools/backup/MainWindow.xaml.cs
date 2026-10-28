@@ -63,7 +63,7 @@ public partial class MainWindow : FluentWindow
         };
         Start.Click += OnStart;
         OpenBtn.Click += (_, _) => OpenResult();
-        NotCoveredLink.Click += (_, _) => NotCoveredPopup.IsOpen = true;
+        NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
         Details.Expanded += (_, _) => { GrowFor(true); RenderLog(); };
         Details.Collapsed += (_, _) => GrowFor(false);
         watchTimer.Tick += (_, _) => Tick();
@@ -71,6 +71,7 @@ public partial class MainWindow : FluentWindow
         watchTimer.Start();
         ApplyLanguage();
         ApplyMode();
+        ContentRendered += (_, _) => SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush"); // FluentWindow resets it to its own dark grey when it applies the backdrop
         Loaded += (_, _) => FitHeight();
         Closed += (_, _) => { watchTimer.Stop(); runTimer.Stop(); cts?.Cancel(); };
     }
@@ -78,6 +79,7 @@ public partial class MainWindow : FluentWindow
     /// <summary>Longer languages need taller cards, and a result bar takes room too: the window is as tall as its content (never taller than the screen). The log, when open, keeps the room GrowFor gave it.</summary>
     void FitHeight()
     {
+        UpdateLayout(); // settle pending changes first: the manual Measure below left them half-measured (Start kept the width of "Cancelling…" and its label sat off-centre)
         var chrome = ActualHeight - Body.ActualHeight;
         Body.Measure(new Size(Body.ActualWidth, double.PositiveInfinity));
         var area = SystemParameters.WorkArea;
@@ -113,7 +115,6 @@ public partial class MainWindow : FluentWindow
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
-        NotCoveredText.Text = Engine.NotCovered;
         BuildRows();
         if (cfg == null) // the settings error is worded in the language too
             try { Settings.Load(); } catch (Exception e) when (e is InvalidOperationException or IOException or System.Text.Json.JsonException) { cfgError = e.Message; }
@@ -137,7 +138,7 @@ public partial class MainWindow : FluentWindow
         for (int i = 0; i < boxes.Length; i++)
         {
             if (old != null) (boxes[i].IsChecked, boxes[i].IsEnabled) = (old[i].IsChecked, old[i].IsEnabled);
-            if (!boxes[i].IsEnabled) boxes[i].ToolTip = Loc.S("Tip_Public");
+            Describe(i);
             Groups.Children.Add(boxes[i]);
         }
         boxes[HistoryAt].Checked += (_, _) => SyncOlder(); // not Click: a keyboard, screen-reader or code change of the tick counts too
@@ -157,6 +158,7 @@ public partial class MainWindow : FluentWindow
     CheckBox Row((string Key, bool On, Engine.Session Needs) g)
     {
         string label = Loc.S("Group_" + g.Key), descText = Loc.S("GroupDesc_" + g.Key);
+        string tagText = g.Needs == Engine.Session.None ? "" : Loc.S(g.Needs == Engine.Session.All ? "Tag_All" : "Tag_Part");
         var title = new WrapPanel();
         title.Children.Add(new TextBlock { Text = label, FontWeight = FontWeights.SemiBold });
         if (g.Needs != Engine.Session.None)
@@ -165,7 +167,7 @@ public partial class MainWindow : FluentWindow
             {
                 Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(6, 0, 6, 1), CornerRadius = new CornerRadius(8),
                 ToolTip = Loc.S(g.Needs == Engine.Session.All ? "Tip_All" : "Tip_Part"),
-                Child = new TextBlock { Text = Loc.S(g.Needs == Engine.Session.All ? "Tag_All" : "Tag_Part"), FontSize = 11 },
+                Child = new TextBlock { Text = tagText, FontSize = 11 },
             };
             tag.SetResourceReference(Border.BackgroundProperty, "ControlFillColorSecondaryBrush"); // by reference, so a theme switch restyles it
             title.Children.Add(tag);
@@ -175,10 +177,39 @@ public partial class MainWindow : FluentWindow
         var desc = new TextBlock { Text = descText, FontSize = 12, TextWrapping = TextWrapping.Wrap };
         desc.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         text.Children.Add(desc);
-        var box = new CheckBox { Content = text, IsChecked = g.On, MinWidth = 0, Margin = new Thickness(0, 0, 8, 2) };
-        System.Windows.Automation.AutomationProperties.SetName(box, $"{label}: {descText}");
+        var box = new QuietCheckBox { Content = text, IsChecked = g.On, MinWidth = 0, Margin = new Thickness(0, 0, 8, 2) };
+        System.Windows.Automation.AutomationProperties.SetName(box, tagText.Length > 0 ? $"{label}, {tagText}" : label);
         ToolTipService.SetShowOnDisabled(box, true);
         return box;
+    }
+
+    /// <summary>The row's checkbox says label and tag in its Name and the description in its HelpText; its inner texts and tick glyph would be read a second time, so it exposes no children.</summary>
+    sealed class QuietCheckBox : CheckBox
+    {
+        public QuietCheckBox() => SetResourceReference(StyleProperty, typeof(CheckBox)); // an implicit style does not reach a subclass
+        protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer() => new Peer(this);
+
+        sealed class Peer(CheckBox box) : System.Windows.Automation.Peers.CheckBoxAutomationPeer(box)
+        {
+            protected override List<System.Windows.Automation.Peers.AutomationPeer>? GetChildrenCore() => null;
+        }
+    }
+
+    /// <summary>Tooltip and screen-reader help of row i: the description, and why the row is off in Public mode.</summary>
+    void Describe(int i)
+    {
+        var box = boxes![i];
+        var why = box.IsEnabled ? null : Loc.S("Tip_Public");
+        box.ToolTip = why;
+        System.Windows.Automation.AutomationProperties.SetHelpText(box, why == null ? Loc.S("GroupDesc_" + Engine.Groups[i].Key) : $"{Loc.S("GroupDesc_" + Engine.Groups[i].Key)}. {why}");
+    }
+
+    /// <summary>WPF does not raise LiveRegionChanged itself when a live TextBlock's text changes; a screen reader only hears the change when this does.</summary>
+    static void Announce(TextBlock t, string text)
+    {
+        if (t.Text == text) return;
+        t.Text = text;
+        System.Windows.Automation.Peers.UIElementAutomationPeer.FromElement(t)?.RaiseAutomationEvent(System.Windows.Automation.Peers.AutomationEvents.LiveRegionChanged);
     }
 
     /// <summary>Public mode: the groups that are all token-only are switched off and say why; the choice comes back with My account.</summary>
@@ -194,7 +225,7 @@ public partial class MainWindow : FluentWindow
             if (!own && boxes[i].IsEnabled) remembered[i] = boxes[i].IsChecked == true;
             boxes[i].IsEnabled = own;
             boxes[i].IsChecked = own ? remembered[i] : false;
-            boxes[i].ToolTip = own ? null : Loc.S("Tip_Public");
+            Describe(i);
         }
     }
 
@@ -216,7 +247,7 @@ public partial class MainWindow : FluentWindow
         }
         if (text == lastStatus) return; // nothing changed: no layout work
         lastStatus = text;
-        StatusText.Text = text;
+        Announce(StatusText, text);
         StatusIcon.Symbol = icon;
     }
 
@@ -234,6 +265,7 @@ public partial class MainWindow : FluentWindow
         if (keys.Count == 0) { Show(InfoBarSeverity.Warning, () => (Loc.S("Msg_Nothing"), Loc.S("Msg_NothingText")), null); return; }
 
         cts = new();
+        Start.Appearance = ControlAppearance.Secondary; // Cancel is not the primary action
         Result.IsOpen = false;
         OpenBtn.Visibility = Visibility.Collapsed;
         Inputs.IsEnabled = false;
@@ -297,10 +329,12 @@ public partial class MainWindow : FluentWindow
         Inputs.IsEnabled = true;
         Start.IsEnabled = true;
         Start.Content = Loc.S("Start");
+        Start.Appearance = ControlAppearance.Primary;
         Bar.IsIndeterminate = false;
         ProgressText.Text = "";
-        Bar.Value = Bar.Maximum;
+        Bar.Value = sev == InfoBarSeverity.Success ? Bar.Maximum : 0; // a full bar only for a finished run
         Show(sev, text, path);
+        (OpenBtn.Visibility == Visibility.Visible ? OpenBtn : Start).Focus(); // the focused Cancel button was disabled and focus fell to the window
         lastStatus = "";
         Tick();
     }
@@ -321,7 +355,7 @@ public partial class MainWindow : FluentWindow
             int min = (int)Math.Ceiling(left / 60);
             eta = " · " + (left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60));
         }
-        ProgressText.Text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
+        Announce(ProgressText, $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}");
     }
 
     void Show(InfoBarSeverity sev, Func<(string Title, string Msg)> text, string? path)
@@ -332,6 +366,8 @@ public partial class MainWindow : FluentWindow
         (Result.Title, Result.Message) = text();
         OpenBtn.Visibility = resultPath.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         Result.IsOpen = true;
+        System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(this)?.RaiseNotificationEvent( // the InfoBar's own texts are not in the control view
+            System.Windows.Automation.AutomationNotificationKind.ActionCompleted, System.Windows.Automation.AutomationNotificationProcessing.ImportantMostRecent, $"{Result.Title}. {Result.Message}", "BackupResult");
         FitHeight();
     }
 
@@ -340,6 +376,17 @@ public partial class MainWindow : FluentWindow
         if (resultPath.Length == 0) return;
         var arg = File.Exists(resultPath) ? $"/select,\"{resultPath}\"" : $"\"{resultPath}\"";
         Process.Start(new ProcessStartInfo("explorer.exe", arg) { UseShellExecute = false });
+    }
+
+    async Task ShowNotCovered()
+    {
+        var box = new Wpf.Ui.Controls.MessageBox
+        {
+            Title = Loc.S("NotCovered_Link"), Owner = this, CloseButtonText = Loc.S("Close"),
+            Content = new TextBlock { Text = Engine.NotCovered, TextWrapping = TextWrapping.Wrap, MaxWidth = 520 },
+        };
+        await box.ShowDialogAsync();
+        NotCoveredLink.Focus();
     }
 
     // ---------- log ----------
