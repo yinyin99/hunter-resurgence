@@ -314,7 +314,7 @@
     <value>{0} conversations non lues ont été ouvertes et apparaissent maintenant comme lues.</value>
   </data>
   <data name="Msg_HuntsShort" xml:space="preserve">
-    <value>Seules {0} des {1} chasses listées par le serveur ont été sauvegardées.</value>
+    <value>Seules {0} des {1} chasses de la liste des chasses ont été sauvegardées.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Les pages de prélèvements et les photos n’ont pas été sauvegardées ; cochez-les pour une sauvegarde complète.</value>
@@ -380,7 +380,7 @@
     <value>Téléchargements volumineux, une requête par photo.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Des centaines de requêtes, quelques dizaines de Ko chacune.</value>
+    <value>Des centaines de requêtes, quelques dizaines de Ko chacune ; environ une demi-heure.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimation : jusqu’à 7 000 requêtes de plus, 2 heures ou plus.</value>

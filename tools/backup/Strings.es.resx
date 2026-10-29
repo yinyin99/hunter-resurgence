@@ -314,7 +314,7 @@
     <value>Se abrieron {0} conversaciones no leídas y ahora figuran como leídas.</value>
   </data>
   <data name="Msg_HuntsShort" xml:space="preserve">
-    <value>Solo se guardaron {0} de las {1} cacerías que lista el servidor.</value>
+    <value>Solo se guardaron {0} de las {1} cacerías de la lista de cacerías.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Las páginas de muertes y las fotos no se guardaron; márcalas para una copia completa.</value>
@@ -380,7 +380,7 @@
     <value>Descargas pesadas, una solicitud por cada foto.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Cientos de solicitudes, de decenas de KB cada una.</value>
+    <value>Cientos de solicitudes, de decenas de KB cada una; aproximadamente media hora.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimación: hasta 7000 solicitudes más, 2 horas o más.</value>

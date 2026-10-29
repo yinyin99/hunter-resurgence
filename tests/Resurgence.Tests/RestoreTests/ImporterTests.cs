@@ -89,8 +89,11 @@ public class ImporterTests
         Assert.Equal(1, lr.Model.Identity.Format);
         Assert.Equal("unknown", lr.Report.Complete);
         var shortHunts = SyntheticZip.Own();
-        shortHunts.Manifest["checks"] = JsonNode.Parse("""{"hunts":{"total":3,"listed":2,"saved":2}}""");
-        Assert.Contains("hunts: 2 of the 3 the server lists were saved", shortHunts.Read().Report.Missing);
+        shortHunts.Manifest["checks"] = JsonNode.Parse("""{"hunts":{"listed":3,"saved":2}}""");
+        Assert.Contains("hunts: 2 of the 3 in the hunt list were saved", shortHunts.Read().Report.Missing);
+        var oldFlag = SyntheticZip.Own(); // v0.4.0 compared with the list's window count: every listed hunt saved is no gap
+        oldFlag.Manifest["checks"] = JsonNode.Parse("""{"hunts":{"total":3,"listed":2,"saved":2}}""");
+        Assert.DoesNotContain(oldFlag.Read().Report.Missing, x => x.StartsWith("hunts:"));
 
         var f2 = SyntheticZip.Own().Read();
         Assert.Equal(2, f2.Model.Identity.Format);

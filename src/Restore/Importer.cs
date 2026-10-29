@@ -69,8 +69,9 @@ public static class Importer
                 ("friends", "/v1/User/friendslist", false), ("hunts", "/v1/Expedition/list", false),
             })
                 if (!All(endpoint).Any()) Missing(part, ownOnly);
-            if (m["checks"]?["hunts"] is JsonObject h) // format 2: the tool saw fewer hunts saved than the server lists
-                missing.Add($"hunts: {Int(h["saved"])} of the {Int(h["total"])} the server lists were saved");
+            // format 2: listed hunts whose reply was not saved. v0.4.0 also wrote "total" (a window count of the list, not the player's hunts) and could flag saved == listed: not a gap
+            if (m["checks"]?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl && hs < hl)
+                missing.Add($"hunts: {hs} of the {hl} in the hunt list were saved");
 
             var unsupported = new List<string>();
             foreach (var g in c.Files.Where(f => !used.Contains(f.Path)).GroupBy(f => f.Endpoint).OrderBy(g => g.Key, StringComparer.Ordinal))

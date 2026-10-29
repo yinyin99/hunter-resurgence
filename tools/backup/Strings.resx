@@ -314,7 +314,7 @@
     <value>{0} unread conversations were opened and now show as read.</value>
   </data>
   <data name="Msg_HuntsShort" xml:space="preserve">
-    <value>Only {0} of the {1} hunts the server lists were saved.</value>
+    <value>Only {0} of the {1} hunts in the hunt list were saved.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Kill pages and photos were not saved; tick them for a complete backup.</value>
@@ -380,7 +380,7 @@
     <value>Large downloads, one request for each picture.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Hundreds of requests, tens of KB each.</value>
+    <value>Hundreds of requests, tens of KB each; about half an hour.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimate: up to 7,000 more requests, 2 hours or more.</value>

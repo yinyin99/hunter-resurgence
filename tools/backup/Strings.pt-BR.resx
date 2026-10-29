@@ -314,7 +314,7 @@
     <value>{0} conversas não lidas foram abertas e agora aparecem como lidas.</value>
   </data>
   <data name="Msg_HuntsShort" xml:space="preserve">
-    <value>Só {0} das {1} caçadas listadas pelo servidor foram salvas.</value>
+    <value>Só {0} das {1} caçadas da lista de caçadas foram salvas.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>As páginas de abates e as fotos não foram salvas; marque-as para um backup completo.</value>
@@ -380,7 +380,7 @@
     <value>Downloads grandes, uma solicitação por foto.</value>
   </data>
   <data name="Slow_history" xml:space="preserve">
-    <value>Centenas de solicitações, algumas dezenas de KB cada.</value>
+    <value>Centenas de solicitações, algumas dezenas de KB cada; cerca de meia hora.</value>
   </data>
   <data name="Slow_older" xml:space="preserve">
     <value>Estimativa: até 7.000 solicitações a mais, 2 horas ou mais.</value>
