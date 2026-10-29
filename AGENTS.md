@@ -14,6 +14,13 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
   - `docs/deploy.md`: `deploy/` and the workflows
 - A change in behaviour updates its doc in the same pull request.
 
+## Working
+
+- Every task gets its own git worktree and branch from `origin/main`: `git fetch --prune`, then `git worktree add ../<name> -b <type>/<name> origin/main`. The main checkout stays on `main`; other work may be in progress there.
+- Every edit and command targets the worktree by absolute path, so nothing lands in the main checkout by accident.
+- Push from the main checkout (`git -C <main checkout> push -u origin <branch>`), because local hooks resolve their paths from it.
+- After the merge, remove the worktree (`git worktree remove ../<name>`) and the local branch.
+
 ## Gotchas
 
 - Changing UI text means changing every translation. The backup tool has six in `tools/backup/Strings*.resx`; the launcher and website have 19 in `src/Ui/Strings*.resx`. `TranslationsTests` checks that every file has the same keys and `{0}` placeholders.
