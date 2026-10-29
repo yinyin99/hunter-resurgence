@@ -1,0 +1,8 @@
+# Local test: builds the image and serves https://localhost with a self-signed chain (docs/deploy.md, "Local test").
+services:
+  web:
+    image: web:dev
+    build: { context: .., dockerfile: src/Web/Dockerfile }
+  caddy:
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro

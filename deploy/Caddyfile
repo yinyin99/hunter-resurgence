@@ -1,0 +1,15 @@
+# The website on its own domain (SITE_DOMAIN in .env), behind Cloudflare with an origin certificate.
+{$SITE_DOMAIN} {
+	tls /certs/origin.pem /certs/origin.key
+	encode zstd gzip
+	header -Server
+	reverse_proxy web:8080 {
+		# the client of Cloudflare: trustworthy because the firewall lets only Cloudflare reach 80 and 443
+		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		# SignalR fallbacks (server-sent events, long polling) unbuffered
+		flush_interval -1
+	}
+}
+
+# other projects' sites on this host (docs/deploy.md)
+import /etc/caddy/sites/*.caddy

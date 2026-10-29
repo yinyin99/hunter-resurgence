@@ -1,0 +1,39 @@
+# The website behind Caddy (docs/deploy.md). Values come from .env next to this file; host-only additions go in compose.override.yml.
+name: web
+services:
+  web:
+    image: ${WEB_IMAGE}:${WEB_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      FORWARDED_TRUSTED: 172.30.10.0/24 # the internal network below, nothing else
+    networks: [internal] # not on the shared edge network
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"] # the image has no curl
+      interval: 30s
+      start_period: 10s
+  caddy:
+    image: caddy:2.11
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro # Cloudflare origin certificates, never committed
+      - ./sites:/etc/caddy/sites:ro # site files of other projects
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [internal, edge]
+    depends_on:
+      web: { condition: service_healthy }
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+networks:
+  internal:
+    ipam: { config: [{ subnet: 172.30.10.0/24 }] }
+  edge: # shared with other projects; created once: docker network create edge
+    external: true
+    name: edge

@@ -5,6 +5,11 @@ settings.json
 # backup output
 backup-*/
 game-backup/
+# deploy/: real values and other projects' files live on the VPS only
+deploy/.env
+deploy/certs/
+deploy/compose.override.yml
+deploy/sites/*.caddy
 
 # UI migration references: kept in the private repo
 docs/UI_INVENTORY.md
