@@ -1,4 +1,6 @@
 .shell { min-height: 100vh; padding-top: var(--h-statusbar); background: var(--bg-page); }
+/* room for the fixed work-in-progress banner (WipBanner), so it never covers the end of the page */
+.shell.web { padding-bottom: 48px; }
 .page { width: var(--w-container); margin: 0 auto; }
 .body { display: flex; align-items: stretch; margin-top: 10px; }
 .public .body { margin-top: 40px; }

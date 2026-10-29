@@ -1,0 +1,2 @@
+/* fixed at the bottom: the top bars are fixed at the top; an open dialog is in the top layer, above it */
+.wip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9000; padding: 6px 10px; border-top: 1px solid var(--accent); background: var(--bg-bar-bottom); color: var(--fg-body); font-size: 12px; line-height: 16px; text-align: center; }

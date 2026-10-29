@@ -1,0 +1,4 @@
+@inject HostMode Mode
+
+@* the website only: everything behind it is a mock *@
+@if (!Mode.Launcher) { <div class="wip" role="status">@L["Wip.Banner"]</div> }

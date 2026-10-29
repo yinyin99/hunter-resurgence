@@ -8,6 +8,7 @@
 @inject ILauncherBridge Bridge
 
 <div class="shell @(Mode.Launcher ? "launcher" : "web")">
+    <WipBanner />
     @if (isPublic)
     {
         <PublicBar />

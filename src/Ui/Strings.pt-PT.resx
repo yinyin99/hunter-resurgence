@@ -73,6 +73,7 @@
   <data name="Alert.No" xml:space="preserve"><value>Não</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Fechar</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICAÇÃO ETÁRIA</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: nada aqui é real ainda. Os servidores oficiais funcionam até 2026-11-11.</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Política de Privacidade</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Contrato de Licença de Utilizador Final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLÍTICA DE PRIVACIDADE</value></data>

@@ -73,6 +73,7 @@
   <data name="Alert.No" xml:space="preserve"><value>Нет</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Закрыть</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ВОЗРАСТНЫЕ РЕЙТИНГИ</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Работа ведётся: пока здесь ничего не настоящее. Официальные серверы работают до 2026-11-11.</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Конфиденциальность</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Лицензионное соглашение</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</value></data>
