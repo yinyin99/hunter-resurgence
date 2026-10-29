@@ -70,8 +70,9 @@ public static class Importer
             })
                 if (!All(endpoint).Any()) Missing(part, ownOnly);
             // format 2: listed hunts whose reply was not saved. v0.4.0 also wrote "total" (a window count of the list, not the player's hunts) and could flag saved == listed: not a gap
-            if (m["checks"]?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl && hs < hl)
-                missing.Add($"hunts: {hs} of the {hl} in the hunt list were saved");
+            if (m["checks"]?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl)
+                if (h["list_failed"] is JsonValue lf && lf.TryGetValue<bool>(out var cut) && cut) missing.Add($"hunts: the hunt list did not load completely ({hs} of the {hl} listed were saved)");
+                else if (hs < hl) missing.Add($"hunts: {hs} of the {hl} in the hunt list were saved");
 
             var unused = c.Files.Where(f => !used.Contains(f.Path)).ToList();
             foreach (var f in unused) extras[f.Path] = f.Json?.DeepClone();

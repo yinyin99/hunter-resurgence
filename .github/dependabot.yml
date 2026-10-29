@@ -26,6 +26,10 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    # bumped by hand with global.json and every packages.lock.json in one change (docs/deploy.md); a tag-only bump breaks the locked restore
+    ignore:
+      - dependency-name: "dotnet/sdk"
+      - dependency-name: "dotnet/aspnet"
   - package-ecosystem: docker-compose
     directory: /deploy
     schedule:

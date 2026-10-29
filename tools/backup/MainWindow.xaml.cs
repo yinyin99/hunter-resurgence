@@ -447,7 +447,7 @@ public partial class MainWindow : FluentWindow
             var gone = run.Dead;
             var killsOff = !keys.Contains("kills") || !keys.Contains("photos");
             var opened = run.MessagesOpened;
-            var (huntsSaved, huntsListed) = (run.HuntsSaved, run.HuntsListed);
+            var (huntsSaved, huntsListed, huntsListFailed) = (run.HuntsSaved, run.HuntsListed, run.HuntsListFailed);
             var huntsShort = huntsListed != null;
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
             sev = failed == 0 && !setupCheck && !huntsShort ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
@@ -457,7 +457,7 @@ public partial class MainWindow : FluentWindow
                 + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
                 + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
-                + (huntsShort ? " " + Loc.F("Msg_HuntsShort", huntsSaved!, huntsListed!) : "")
+                + (huntsListFailed ? " " + Loc.F("Msg_HuntsListFailed", huntsSaved!) : huntsShort ? " " + Loc.F("Msg_HuntsShort", huntsSaved!, huntsListed!) : "")
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : "")
                 + (failed == 0 ? "\n" + Loc.F("Msg_Finished", finished) : ""));
             done = true;

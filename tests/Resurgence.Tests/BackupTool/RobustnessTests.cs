@@ -127,6 +127,40 @@ public class RobustnessTests
         }
     }
 
+    /// <summary>An Expedition/list page that gave no file cuts the list short: checks.hunts is written with list_failed, even when every listed hunt was saved; a resumed run that gets the page drops it.</summary>
+    [Fact]
+    public async Task FailedHuntListPageIsFlagged()
+    {
+        static HttpResponseMessage? List(string path, string form, int? downAt)
+        {
+            if (path != "/v1/Expedition/list") return null;
+            var off = int.Parse(System.Text.RegularExpressions.Regex.Match(form, @"offset=(\d+)").Groups[1].Value);
+            if (off == downAt) return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
+            var rows = Enumerable.Range(off, Math.Max(0, Math.Min(50, 80 - off))).Select(i => "{\"id\":" + (1000 + i) + "}"); // 80 hunts: pages of 50 and 30
+            return new HttpResponseMessage { Content = new StringContent("{\"total\":" + Math.Min(80 - off, 51) + ",\"expeditions\":[" + string.Join(",", rows) + "]}") };
+        }
+        using var t = new TempDir("backup-test-v05-");
+        var e1 = await Run(new Fake(Tok) { Custom = (p, form) => List(p, form, 50) }, t, ["hunts"]);
+        var m1 = Manifest(Path.Combine(t.Path, "backup-7"));
+        Assert.True(m1["checks"]?.ToJsonString() == """{"hunts":{"listed":50,"saved":50,"list_failed":true}}""" && e1.HuntsListFailed && (e1.HuntsListed, e1.HuntsSaved) == (50, 50) && e1.Failed == 1,
+            $"second page failed, the 50 listed saved: flagged ({m1["checks"]?.ToJsonString()}, {e1.Failed} failed)");
+
+        var e2 = await Run(new Fake(Tok) { Custom = (p, form) => List(p, form, null) }, t, ["hunts"]);
+        var m2 = Manifest(Path.Combine(t.Path, "backup-7"));
+        Assert.True(!m2.AsObject().ContainsKey("checks") && !e2.HuntsListFailed && e2.HuntsListed == null && e2.Failed == 0, $"the resumed run gets the page: no flag ({m2["checks"]?.ToJsonString()})");
+
+        using var t2 = new TempDir("backup-test-v05-");
+        var e3 = await Run(new Fake(Tok) { Custom = (p, form) => List(p, form, 0) }, t2, ["hunts"]);
+        Assert.True(Manifest(Path.Combine(t2.Path, "backup-7"))["checks"]?.ToJsonString() == """{"hunts":{"listed":0,"saved":0,"list_failed":true}}""" && e3.HuntsListFailed, "first page failed: nothing listed, still flagged");
+
+        foreach (var (_, culture, _) in Loc.Languages)
+        {
+            var c = System.Globalization.CultureInfo.GetCultureInfo(culture);
+            var text = string.Format(c, Loc.Rm.GetString("Msg_HuntsListFailed", c)!, 50);
+            Assert.True(text.Contains("50") && !text.Contains('{'), $"{culture}: {text}");
+        }
+    }
+
     /// <summary>F5: the hunts are read newest first, whatever order the list has, so the kill sheets of the latest hunts come first.</summary>
     [Fact]
     public async Task KillSheetsAreFetchedNewestHuntFirst()

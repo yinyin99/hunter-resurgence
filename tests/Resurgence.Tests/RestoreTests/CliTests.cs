@@ -34,12 +34,16 @@ public class CliTests
         var noItems = Path.Combine(temp.Path, "empty.json");
         File.WriteAllText(noItems, """{"season":1}""");
         var noCatalogue = Run(zip, model, "--catalogue", noItems);
-        Assert.Equal((1, "refused: not an item catalogue: no items list"), (noCatalogue.Code, noCatalogue.Err.Trim()));
+        Assert.Equal((1, "refused: InvalidDataException: not an item catalogue: no items list"), (noCatalogue.Code, noCatalogue.Err.Trim()));
         var notJson = Path.Combine(temp.Path, "broken.json");
         File.WriteAllText(notJson, "{ nope");
         var bad = Run(zip, model, "--catalogue", notJson);
         Assert.Equal(1, bad.Code);
-        Assert.StartsWith("refused: ", bad.Err);
+        Assert.StartsWith("refused: JsonReaderException: ", bad.Err);
+        var notZip = Path.Combine(temp.Path, "plain.zip");
+        File.WriteAllText(notZip, "not a zip");
+        var refused = Run(notZip, model);
+        Assert.Equal((1, "refused: not a zip"), (refused.Code, refused.Err.Trim())); // a refused zip: the reason only, no type
         Assert.StartsWith("cannot read: ", Run(zip, model, "--catalogue", Path.Combine(temp.Path, "absent.json")).Err);
         Assert.Equal(2, Run(zip, "--catalogue").Code);
         Assert.Equal(2, Run().Code);

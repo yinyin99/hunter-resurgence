@@ -316,6 +316,9 @@
   <data name="Msg_HuntsShort" xml:space="preserve">
     <value>Só {0} das {1} caçadas da lista de caçadas foram salvas.</value>
   </data>
+  <data name="Msg_HuntsListFailed" xml:space="preserve">
+    <value>A lista de caçadas não carregou por completo: {0} caçadas foram salvas, outras podem estar faltando.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>As páginas de abates e as fotos não foram salvas; marque-as para um backup completo.</value>
   </data>

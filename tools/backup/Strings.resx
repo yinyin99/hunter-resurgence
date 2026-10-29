@@ -316,6 +316,9 @@
   <data name="Msg_HuntsShort" xml:space="preserve">
     <value>Only {0} of the {1} hunts in the hunt list were saved.</value>
   </data>
+  <data name="Msg_HuntsListFailed" xml:space="preserve">
+    <value>The hunt list did not load completely: {0} hunts were saved, more may be missing.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Kill pages and photos were not saved; tick them for a complete backup.</value>
   </data>

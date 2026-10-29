@@ -272,21 +272,23 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
     }
 
-    /// <summary>Set when a hunt in the list has no saved Public_user/expedition reply (HuntsSaved &lt; HuntsListed); both null when every listed hunt was saved.
-    /// Expedition/list's own "total" is not used: it counts the rows left from the page's offset, capped at limit + 1, not the player's hunts.</summary>
+    /// <summary>Set when a hunt in the list has no saved Public_user/expedition reply (HuntsSaved &lt; HuntsListed) or a list page gave no file (HuntsListFailed: the list is cut short,
+    /// so hunts can be missing that nothing counts); both null when neither happened. Expedition/list's own "total" is not used: it counts the rows left from the page's offset, capped at limit + 1, not the player's hunts.</summary>
     public int? HuntsListed { get; private set; }
     public int? HuntsSaved { get; private set; }
+    public bool HuntsListFailed { get; private set; }
 
     /// <summary>Hunt list pages, then every hunt. With kills: the score sheet page and the picture of every scored kill too.</summary>
     async Task Hunts(bool kills)
     {
-        HuntsListed = HuntsSaved = null; // a resumed run counts again
+        (HuntsListed, HuntsSaved, HuntsListFailed) = (null, null, false); // a resumed run counts again
         var listed = new List<(string Id, long Start)>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
-            var page = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))));
-            var ex = page?["expeditions"] as JsonArray;
+            var body = await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString())));
+            if (body == null) { HuntsListFailed = true; break; } // no file: the pages after it are unknown
+            var ex = Json(body)?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
             listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
             if (ex.Count < 50) break;
@@ -309,10 +311,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 if (sheet != null || photo != null) found.Add((sheet, photo));
             }
         }
-        if (got < ids.Count)
+        if (got < ids.Count || HuntsListFailed)
         {
             (HuntsSaved, HuntsListed) = (got, ids.Count);
-            log($"! hunts: {got} of {ids.Count} listed saved");
+            log(HuntsListFailed ? $"! hunts: a list page failed, {got} of the {ids.Count} listed saved" : $"! hunts: {got} of {ids.Count} listed saved");
         }
         if (!kills) return;
         Need(found.Count(k => k.Sheet != null) + found.Count(k => k.Photo != null));
@@ -741,6 +743,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
         var checks = HuntsListed is { } hl ? new JsonObject { ["hunts"] = new JsonObject { ["listed"] = hl, ["saved"] = HuntsSaved } } : null;
+        if (HuntsListFailed && checks?["hunts"] is JsonObject hc) hc["list_failed"] = true; // only when true
         var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity, Checks: checks);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }

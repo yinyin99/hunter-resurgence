@@ -316,6 +316,9 @@
   <data name="Msg_HuntsShort" xml:space="preserve">
     <value>Solo se guardaron {0} de las {1} cacerías de la lista de cacerías.</value>
   </data>
+  <data name="Msg_HuntsListFailed" xml:space="preserve">
+    <value>La lista de cacerías no se cargó por completo: se guardaron {0} cacerías, puede que falten más.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Las páginas de muertes y las fotos no se guardaron; márcalas para una copia completa.</value>
   </data>
