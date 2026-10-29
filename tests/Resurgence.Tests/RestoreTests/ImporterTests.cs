@@ -44,7 +44,7 @@ public class ImporterTests
         var deepReply = SyntheticZip.Own().File("Me_friends.json", "/v1/Me/friends", Encoding.UTF8.GetBytes(new string('[', 70) + new string(']', 70)));
         Assert.Contains("Me_friends.json: not JSON or nested deeper than 64", deepReply.Read().Report.Rejected);
 
-        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 64 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
+        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 32 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
     }
 
     [Fact]
@@ -348,6 +348,12 @@ public class ImporterTests
         Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(JsonEntryBytes: 100)));
         Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(EntryBytes: 100, JsonEntryBytes: 1000))); // the smaller cap applies
         Assert.Equal("JSON content over 1000 bytes", z.Refused(new Limits(JsonTotalBytes: 1000)));
+        using var built = new System.IO.Compression.ZipArchive(new MemoryStream(z.Build()));
+        long Json(bool manifest) => built.Entries.Where(e => e.FullName.EndsWith(".json") && (e.FullName == "manifest.json") == manifest).Sum(e => e.Length);
+        var all = Json(true) + Json(false);
+        Assert.Equal($"JSON content over {all - 1} bytes", z.Refused(new Limits(JsonTotalBytes: all - 1))); // the replies alone fit: the manifest counts too
+        Assert.Null(Record.Exception(() => z.Read(limits: new Limits(JsonTotalBytes: all))));
+        Assert.Equal($"JSON content over {Json(true) - 1} bytes", z.Refused(new Limits(JsonTotalBytes: Json(true) - 1))); // the manifest alone is over
     }
 
     [Fact]
