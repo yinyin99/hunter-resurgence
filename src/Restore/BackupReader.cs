@@ -6,9 +6,10 @@ using System.Text.Json.Nodes;
 namespace Resurgence.Restore;
 
 /// <summary>The caps of a backup zip read for restore, all in one place. A zip over any of them is refused.
-/// MaxRatio applies to entries of at least RatioMinBytes (uncompressed bytes per compressed byte).</summary>
+/// MaxRatio applies to entries of at least RatioMinBytes (uncompressed bytes per compressed byte). JsonTotalBytes and JsonEntryBytes cap the
+/// .json entries that are parsed (a real backup holds under 4 MiB of JSON; pictures are bounded by EntryBytes and TotalBytes only).</summary>
 public sealed record Limits(int Entries = 20_000, long TotalBytes = 1L << 30, int EntryBytes = 64 << 20, int ManifestBytes = 64 << 20, int JsonDepth = 64,
-    int MaxRatio = 100, int RatioMinBytes = 1 << 20)
+    int MaxRatio = 100, int RatioMinBytes = 1 << 20, long JsonTotalBytes = 128L << 20, int JsonEntryBytes = 32 << 20)
 {
     public static readonly Limits Default = new();
 }
@@ -77,6 +78,7 @@ static class BackupReader
         var listed = new HashSet<string>(StringComparer.Ordinal) { mEntry.FullName, kEntry.FullName };
         var byName = entries.GroupBy(e => e.FullName, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
         int other = 0;
+        long jsonTotal = 0;
         foreach (var fe in (m["files"] as JsonArray ?? []).OfType<JsonObject>().OrderBy(x => Text(x["path"]), StringComparer.Ordinal))
         {
             if (Text(fe["path"]) is not { Length: > 0 } path) continue;
@@ -86,7 +88,9 @@ static class BackupReader
             if (!byName.TryGetValue(prefix + path, out var ze)) { missing.Add($"{path} (listed in the manifest, not in the zip)"); continue; }
             var json = path.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
             using var h = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-            var bytes = Bytes(ze, lim.EntryBytes, lim, ref total, h) ?? throw new RestoreException($"entry over {lim.EntryBytes} bytes: {path}");
+            var cap = json ? Math.Min(lim.EntryBytes, lim.JsonEntryBytes) : lim.EntryBytes;
+            var bytes = Bytes(ze, cap, lim, ref total, h) ?? throw new RestoreException($"{(json ? "JSON entry" : "entry")} over {cap} bytes: {path}");
+            if (json && (jsonTotal += bytes.Length) > lim.JsonTotalBytes) throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
             if (!Convert.ToHexStringLower(h.GetHashAndReset()).Equals(sha, StringComparison.OrdinalIgnoreCase)) { rejected.Add($"{path}: sha256 does not match the manifest"); continue; }
             if (fe["derived"] is JsonValue d && d.TryGetValue<bool>(out var isDerived) && isDerived) continue; // made by the tool: the raw replies decide
             if (!json) { other++; continue; }

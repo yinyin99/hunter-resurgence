@@ -44,7 +44,7 @@ public class ImporterTests
         var deepReply = SyntheticZip.Own().File("Me_friends.json", "/v1/Me/friends", Encoding.UTF8.GetBytes(new string('[', 70) + new string(']', 70)));
         Assert.Contains("Me_friends.json: not JSON or nested deeper than 64", deepReply.Read().Report.Rejected);
 
-        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 64 << 20, 64, 100, 1 << 20), Limits.Default);
+        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 64 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
     }
 
     [Fact]
@@ -330,5 +330,17 @@ public class ImporterTests
         Assert.Null(r.Model.Wallet);
         Assert.Contains("wallet (not in the zip)", r.Report.Missing);
         JsonSerializer.Serialize(r.Model, Importer.Json); // NaN or Infinity would throw here
+    }
+
+    [Fact]
+    public void JsonEntriesHaveTheirOwnCaps()
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.File("images/avatar.png", "/a.png", [.. Enumerable.Range(0, 5000).Select(i => (byte)(i * 7))]);
+        var biggestJson = 600; // the largest reply of PublicZip is the skill list, under 600 bytes
+        Assert.Contains("pictures and score pages: 1 file(s), not read", z.Read(limits: new Limits(JsonEntryBytes: biggestJson)).Report.Unsupported); // a 5000-byte picture is no JSON entry
+        Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(JsonEntryBytes: 100)));
+        Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(EntryBytes: 100, JsonEntryBytes: 1000))); // the smaller cap applies
+        Assert.Equal("JSON content over 1000 bytes", z.Refused(new Limits(JsonTotalBytes: 1000)));
     }
 }
