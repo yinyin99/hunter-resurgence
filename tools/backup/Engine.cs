@@ -12,8 +12,8 @@ using System.Text.RegularExpressions;
 
 namespace Backup;
 
-/// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply.</summary>
-sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null);
+/// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply. Date = the reply's HTTP Date header (the server's clock), when it sent one.</summary>
+sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null, DateTime? Date = null);
 
 /// <summary>Format 2 adds Format, Mode (own or public) and Identity (me, handle or id); a manifest without format is format 1.</summary>
 sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null,
@@ -122,7 +122,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         if (own && token == null) throw new InvalidOperationException(Loc.S("Err_NoToken"));
         var idr = own ? Q("Me/me", true) : idText.All(char.IsAsciiDigit) ? null : Q("Public_user/getByHostname", false, ("hostname", idText));
         identity = own ? "me" : idr == null ? "id" : "handle";
-        (int Status, byte[] Body)? idRes = null;
+        (int Status, byte[] Body, DateTimeOffset? Date)? idRes = null;
         if (idr == null) uid = idText;
         else
         {
@@ -156,7 +156,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         this.ct = stop.Token;
         try
         {
-            if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body);
+            if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
             // groups run side by side; each host's lane keeps its own requests one at a time
             try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
             catch when (fault != null) { }
@@ -471,7 +471,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             else
             {
                 b = File.ReadAllBytes(full);
-                if (known?.Sha256 == null) lock (files) files[name] = new(name, r.Path, Params(r), null, Hex(SHA256.HashData(b)), File.GetLastWriteTimeUtc(full), null);
+                if (known?.Sha256 == null) lock (files) files[name] = new(name, r.Path, Params(r), null, Hex(SHA256.HashData(b)), File.GetLastWriteTimeUtc(full), null, Date: known?.Date);
             }
             Interlocked.Increment(ref skipped);
             if (r.Abs == null) log($"have {name}");
@@ -504,7 +504,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 lock (files) files[name] = new(name, r.Path, Params(r), 404, null, DateTime.UtcNow, DeadError);
                 return null;
             }
-            if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body); return x.Body; } // "no entry" is an answer, not a failure
+            if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body, x.Date); return x.Body; } // "no entry" is an answer, not a failure
             if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");
             if (Leaks(r, x.Body)) return Fail(r, name, x.Status, "reply contains a token, not saved");
             if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
@@ -514,7 +514,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 await Task.Delay(PaceMs == 0 ? 0 : 3000, ct);
                 continue;
             }
-            Save(r, name, x.Status, x.Body);
+            Save(r, name, x.Status, x.Body, x.Date);
             return x.Body;
         }
     }
@@ -546,12 +546,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         return null;
     }
 
-    void Save(R r, string name, int status, byte[] body)
+    void Save(R r, string name, int status, byte[] body, DateTimeOffset? date)
     {
         var full = Path.Combine(dir, name);
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
         WriteAtomic(full, body);
-        lock (files) files[name] = new(name.Replace('\\', '/'), r.Path, Params(r), status, Hex(SHA256.HashData(body)), DateTime.UtcNow, null);
+        lock (files) files[name] = new(name.Replace('\\', '/'), r.Path, Params(r), status, Hex(SHA256.HashData(body)), DateTime.UtcNow, null, Date: date?.UtcDateTime);
         Interlocked.Increment(ref saved);
         if (Interlocked.Increment(ref sinceWrite) % 25 == 0) WriteManifest();
     }
@@ -614,7 +614,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 ? s.Apiv2Host : s.ApiHost;
 
-    async Task<(int Status, byte[] Body)?> Send(R r, Action<string>? gaveUp = null)
+    async Task<(int Status, byte[] Body, DateTimeOffset? Date)?> Send(R r, Action<string>? gaveUp = null)
     {
         var lane = lanes.GetOrAdd(Host(r), _ => new());
         await lane.Gate.WaitAsync(ct); // held through retries: a host that answers badly is not hit by a second request
@@ -635,7 +635,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     using var resp = await http.SendAsync(req, ct);
                     var body = await resp.Content.ReadAsByteArrayAsync(ct);
                     var st = (int)resp.StatusCode;
-                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body); }
+                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body, resp.Headers.Date); }
                     err = $"HTTP {st}";
                     if (st is 429 or 503 && resp.Headers.RetryAfter is { } ra) // the server says how long to wait
                         retryAfter = Math.Min(ra.Delta?.TotalMilliseconds ?? Math.Max(0, ((ra.Date ?? DateTimeOffset.UtcNow) - DateTimeOffset.UtcNow).TotalMilliseconds), RetryAfterCapMs);

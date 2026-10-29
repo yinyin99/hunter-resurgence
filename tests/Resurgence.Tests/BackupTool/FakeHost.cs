@@ -40,11 +40,20 @@ public sealed class Fake : HttpMessageHandler
     public readonly HashSet<string> NotFound = [];
     /// <summary>The first Times requests of Path answer Status with a Retry-After header of After seconds.</summary>
     public (string Path, int Times, int Status, int After)? Throttle;
+    /// <summary>The HTTP Date header of every response; null = none.</summary>
+    public DateTimeOffset? DateHeader;
     int throttled;
     readonly object gate = new();
     public Fake(string token) => Token = token;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
+    {
+        var r = await Respond(req, ct);
+        r.Headers.Date = DateHeader;
+        return r;
+    }
+
+    async Task<HttpResponseMessage> Respond(HttpRequestMessage req, CancellationToken ct)
     {
         var path = req.RequestUri!.AbsolutePath;
         var host = req.RequestUri.Host;

@@ -36,7 +36,9 @@ public class EngineTests
         using var _ = t;
         string tok = Tok;
         var groups = Hosts.AllGroups;
-        var f1 = new Fake(tok);
+        var at = new DateTimeOffset(2026, 10, 20, 8, 30, 15, TimeSpan.Zero);
+        var f1 = new Fake(tok) { DateHeader = at };
+        f1.Raw["/v1/Chat/conversations"] = "[]"u8.ToArray(); // an empty list still writes messages-index.json: a derived file
         var res = await Hosts.Make(f1, key).Run(tmp, "", () => tok, groups, true, true, TestContext.Current.CancellationToken);
         Assert.True(res.EndsWith(".zip") && File.Exists(res), "zip written");
         var m = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!;
@@ -51,10 +53,15 @@ public class EngineTests
         Assert.True(k.Length == 32 && m["claim_hash"]!.ToString() == Convert.ToHexStringLower(SHA256.HashData(k)), "claim hash matches claim.key");
         Assert.True(m["steam_id64"]?.ToString() == "76561197960265828", "own account: Steam id 100 -> steam_id64 76561197960265828");
         Assert.True(good.Any(e => e!["path"]!.ToString() == "Public_user_expedition__user_id=7__expedition_id=42.json") && f1.Seen.Count(p => p == "/v1/User/jwt") == 1, "expedition detail fetched, one JWT");
+        var replies = files.Where(e => e!["sha256"] != null && e["derived"] == null).ToList();
+        Assert.True(replies.Count > 10 && replies.All(e => e!["date"]?.ToString() == "2026-10-20T08:30:15Z"), "every saved reply has the server's Date header, ISO UTC");
+        Assert.True(files.Any(e => e!["derived"] != null) && files.Where(e => e!["error"] != null || e["derived"] != null).All(e => e!["date"] == null), "no date on a failed request or a derived file");
 
         var f2 = new Fake(tok);
         await Hosts.Make(f2, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         Assert.True(f2.Seen.Count == 2 && f2.Seen.Contains("/v1/Me/me") && f2.Seen.Contains("/v1/Mission/missions"), $"resume asks only identity and the unsaved reply ({f2.Seen.Count} requests)");
+        var me2 = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Single(e => e!["path"]!.ToString() == "Me_me.json")!;
+        Assert.True(me2["sha256"] != null && !me2.AsObject().ContainsKey("date"), "a reply saved without a Date header has no date key");
         var fz = new Fake(tok);
         var ez = Hosts.Make(fz, key);
         ez.SteamAccount = () => 0;
@@ -66,6 +73,7 @@ public class EngineTests
         await Hosts.Make(f3, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var m3 = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
         Assert.True(f3.Seen.Count == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
+        Assert.True(m3.All(e => e!["date"] == null), "no Date header (and files re-registered without a manifest): no date key");
 
         var f4 = new Fake("z");
         var e4 = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(f4, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken));
@@ -152,18 +160,21 @@ public class EngineTests
         var groups = Hosts.AllGroups;
         var full = await FullRun();
         using var cts = new CancellationTokenSource();
-        var fc = new Fake(tok) { DelayMs = 10, Cts = cts, CancelAt = n => n == 8 };
+        var fc = new Fake(tok) { DelayMs = 10, Cts = cts, CancelAt = n => n == 8, DateHeader = new DateTimeOffset(2026, 10, 20, 8, 0, 0, TimeSpan.Zero) };
         var ex = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(fc, key).Run(tmp, "", () => tok, groups, true, false, cts.Token));
         Assert.True(ex is OperationCanceledException, "cancel ends the run with OperationCanceledException");
         Assert.True(fc.StartedAtCancel == 8 && fc.Seen.Count == 8, $"no request starts after cancel ({fc.Seen.Count} started)");
         var saved = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["error"] == null).Select(e => e!["path"]!.ToString()).ToList();
         Assert.True(saved.Count > 0 && saved.All(p => File.Exists(Path.Combine(dir, p))) && !Directory.EnumerateFiles(dir, "*.part").Any(), $"cancelled run left a manifest of {saved.Count} saved files");
 
-        var fr = new Fake(tok);
+        var fr = new Fake(tok) { DateHeader = new DateTimeOffset(2026, 10, 21, 9, 0, 0, TimeSpan.Zero) };
         await Hosts.Make(fr, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var after = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["error"] == null).Select(e => e!["path"]!.ToString()).ToHashSet();
         Assert.True(after.SetEquals(full.Files), "resumed run completes the cancelled one");
         Assert.True(fr.Seen.Count < full.Requests, $"resume asked {fr.Seen.Count} requests instead of {full.Requests}");
+        var dated = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Where(e => e!["sha256"] != null).ToList();
+        static string Expected(string path, List<string> first) => first.Contains(path) && path != "Me_me.json" ? "2026-10-20T08:00:00Z" : "2026-10-21T09:00:00Z"; // the identity reply is asked again by every run
+        Assert.True(dated.Count > saved.Count && dated.All(e => e!["date"]?.ToString() == Expected(e["path"]!.ToString(), saved)), "files of the cancelled run keep its date, files of the resumed run get the new one");
     }
 
     [Fact]
