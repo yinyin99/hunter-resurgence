@@ -7,11 +7,12 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | File | Purpose |
 |---|---|
 | `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json` and its `aspnet` tag the runtime that SDK ships: a new SDK means `global.json`, both tags and every `packages.lock.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate` with that SDK) in one change, or the locked restore fails with NU1004 |
-| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web` |
+| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web`. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
 | `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate, then `import sites/*.caddy` |
 | `deploy/.env.example` | the three values of `.env` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
+| `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing |
 | `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK pull request |
 
@@ -59,7 +60,7 @@ services:
 - An **Origin Certificate** for `<domain>` (add `*.<domain>` if other sites will share it), saved on the VPS as `certs/origin.pem` and `certs/origin.key` (`chmod 600`). With these files Caddy requests no certificate of its own.
 - No HSTS header yet: add `Strict-Transport-Security` in the Caddyfile only after Full (strict) has worked for a day.
 
-Caddy passes Cloudflare's `CF-Connecting-IP` to the app as `X-Forwarded-For`, and the app accepts forwarded headers from the compose network only (`FORWARDED_TRUSTED`). The header is trustworthy only because the firewall lets nothing but Cloudflare reach ports 80 and 443.
+Caddy passes Cloudflare's `CF-Connecting-IP` to the app as `X-Forwarded-For`, and the app accepts forwarded headers from the compose network only (`FORWARDED_TRUSTED`). That network, `internal`, has a pinned subnet (`172.30.10.0/24` in `deploy/compose.yml`) and `FORWARDED_TRUSTED` repeats it: change both together. The header is trustworthy only because the firewall lets nothing but Cloudflare reach ports 80 and 443.
 
 ## Firewall
 
