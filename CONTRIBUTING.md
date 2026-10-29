@@ -23,9 +23,9 @@ dotnet test hunter-resurgence.slnx -c Release --no-build
 dotnet run --project src/Web
 ```
 
-The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`) and the library they share (`src/Ui`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
+The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`), the library they share (`src/Ui`) and the restore library (`src/Restore`, with a command-line stub in `src/Restore/Cli`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only, the restore tests build synthetic zips in memory; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
 
-The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md) and [docs/backup.md](docs/backup.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
+The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md), [docs/backup.md](docs/backup.md) and [docs/restore.md](docs/restore.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
 
 To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 

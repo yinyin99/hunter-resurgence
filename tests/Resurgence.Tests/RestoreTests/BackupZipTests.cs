@@ -1,9 +1,9 @@
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
-using Resurgence.Launcher;
+using Resurgence.Restore;
 
-namespace Resurgence.Tests.LauncherApp;
+namespace Resurgence.Tests.RestoreTests;
 
 /// <summary>The check of a backup zip made by the backup tool, on temp zips.</summary>
 public class BackupZipTests
