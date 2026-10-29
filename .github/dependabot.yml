@@ -1,4 +1,13 @@
 version: 2
+# A new .NET SDK means global.json, both Dockerfile tags and every packages.lock.json in one change (docs/deploy.md):
+# the SDK and the two images come as one pull request, and .github/workflows/dependabot-locks.yml adds the lock files to it.
+multi-ecosystem-groups:
+  dotnet-sdk:
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+      include: scope
 updates:
   - package-ecosystem: nuget
     directories:
@@ -19,17 +28,20 @@ updates:
       interval: weekly
     commit-message:
       prefix: ci
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: dotnet-sdk
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"] # a new .NET major is a migration (target framework), not an update
   - package-ecosystem: docker
     directory: /src/Web
-    schedule:
-      interval: weekly
-    commit-message:
-      prefix: build
-      include: scope
-    # bumped by hand with global.json and every packages.lock.json in one change (docs/deploy.md); a tag-only bump breaks the locked restore
+    patterns: ["dotnet/sdk", "dotnet/aspnet"]
+    multi-ecosystem-group: dotnet-sdk
     ignore:
-      - dependency-name: "dotnet/sdk"
-      - dependency-name: "dotnet/aspnet"
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker-compose
     directory: /deploy
     schedule:

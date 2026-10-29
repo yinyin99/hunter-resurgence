@@ -1,0 +1,41 @@
+name: dependabot-locks
+# A Dependabot SDK update (global.json, src/Web/Dockerfile) needs every packages.lock.json made with the new SDK, or the locked restore fails (NU1004).
+# This regenerates them on the pull request's branch and commits them; workflow_dispatch does the same for a branch by hand (docs/deploy.md).
+on:
+  pull_request:
+    paths: [global.json, src/Web/Dockerfile]
+  workflow_dispatch:
+permissions: {}
+jobs:
+  locks:
+    if: github.event_name == 'workflow_dispatch' || github.actor == 'dependabot[bot]'
+    runs-on: windows-latest # as ci: the backup tool is a Windows project
+    permissions:
+      contents: write # push the lock files
+      actions: write # start ci for that commit
+    env:
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.BRANCH }}
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - run: dotnet restore hunter-resurgence.slnx --force-evaluate
+      - name: Commit the lock files
+        id: commit
+        shell: bash
+        run: |
+          git add -- ':(glob)**/packages.lock.json'
+          if git diff --cached --quiet; then echo "::notice::lock files already match this SDK"; exit 0; fi
+          git diff --cached --stat
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "build: regenerate lock files for the new SDK"
+          git push origin "HEAD:$BRANCH"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+      # a push made with GITHUB_TOKEN starts no workflow; workflow_dispatch does, and its checks land on the new commit
+      - if: steps.commit.outputs.pushed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref "$BRANCH"
