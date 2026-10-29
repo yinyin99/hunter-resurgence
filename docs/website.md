@@ -17,6 +17,8 @@ dotnet run --project src/Web
 
 The development profile listens on `http://localhost:5080`.
 
+Deploy: the container image and the VPS setup are in [deploy.md](deploy.md).
+
 `settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). Without it the texts say "the game" and the links are left out. The real file is git-ignored.
 
 The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, menus, modals): use a current Chrome or Edge (the launcher's WebView2 runtime is one). Other browsers are not tested.
