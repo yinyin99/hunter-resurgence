@@ -295,4 +295,25 @@ public class ImporterTests
         over.Manifest["uid"] = new string('9', 40);
         Assert.Equal("manifest uid is too large for an id", over.Refused());
     }
+
+    [Fact]
+    public void PositionOutOfRangeIsNoLocation()
+    {
+        Assert.Equal((2_000_000_000, -2_000_000_000, (int?)null, (int?)null),
+            (Importer.Milli(JsonNode.Parse("2000000")), Importer.Milli(JsonNode.Parse("-2000000")), Importer.Milli(JsonNode.Parse("2000000.001")), Importer.Milli(JsonNode.Parse("1e27"))));
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Reply("/v1/Inventory/list", """
+            [{"item":{"id":620},"own":[{"id":9401,"slot":23,"units":0,"metadata":{},"location":{"pos":{"x":1e27,"y":0,"z":0},"dir":{"x":0,"y":0,"z":1},"reserve":1}}]},
+             {"item":{"id":630},"own":[{"id":9501,"slot":1,"units":0,"metadata":{},"location":{"pos":{"x":1,"y":-7.9e28,"z":0},"dir":{"x":0,"y":0,"z":1},"reserve":1}},
+                                       {"id":9502,"slot":1,"units":0,"metadata":{},"location":{"pos":{"x":1,"y":2,"z":3},"dir":{"x":1e27,"y":0,"z":0},"reserve":1}}]}]
+            """, ("user_id", SyntheticZip.Uid));
+        var r = z.Read();
+        Assert.DoesNotContain(r.Model.Items, i => i.Guid == 9401);
+        Assert.Contains("item 9401 (item 620) has a position that is not a number within 2000000 on each axis: read as no location", r.Report.Warnings);
+        Assert.Contains("placed item 9401 (item 620) has no location: not restored, kept in Extras", r.Report.Warnings);
+        var picked = r.Model.Items.Single(i => i.Guid == 9501);
+        Assert.Equal(((Vec3I?)null, (Vec3I?)null, (int?)null), (picked.Position, picked.Direction, picked.WebReserve));
+        Assert.Contains("item 9501 (item 630) has a position that is not a number within 2000000 on each axis: read as no location", r.Report.Warnings);
+        Assert.Null(r.Model.Items.Single(i => i.Guid == 9502).Direction);
+    }
 }

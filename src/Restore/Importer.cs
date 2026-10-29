@@ -153,6 +153,7 @@ public static class Importer
                 var slot = Int(row["slot"]) ?? 0;
                 var loc = row["location"] as JsonObject;
                 var pos = Vec(loc?["pos"]);
+                if (loc?["pos"] is not null && pos is null) warnings.Add($"item {guid} (item {itemId}) has a position that is not a number within {MaxWebUnits} on each axis: read as no location");
                 if (slot == 23 && pos is null)
                 {
                     warnings.Add($"placed item {guid} (item {itemId}) has no location: not restored, kept in Extras");
@@ -270,10 +271,13 @@ public static class Importer
     /// <summary>The JSON text as the server wrote it, for comparing ("null" when absent).</summary>
     static string Raw(JsonNode? n) => n?.ToJsonString() ?? "null";
 
-    /// <summary>Web units to integer millimetres: the number's decimal text times 1000, rounded half away from zero.
+    /// <summary>The largest web coordinate read as a position; beyond it a value is not a place on a map (and would overflow).</summary>
+    const decimal MaxWebUnits = 2_000_000;
+
+    /// <summary>Web units to integer millimetres: the number's decimal text times 1000, rounded half away from zero; null beyond ±MaxWebUnits.
     /// Never through double: 3144.645 * 1000 is 3144644.9999999995 there.</summary>
     internal static int? Milli(JsonNode? n) =>
-        decimal.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && Math.Round(d * 1000m, MidpointRounding.AwayFromZero) is var r && r is >= int.MinValue and <= int.MaxValue ? (int)r : null;
+        decimal.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && Math.Abs(d) <= MaxWebUnits ? (int)Math.Round(d * 1000m, MidpointRounding.AwayFromZero) : null;
 
     static Vec3I? Vec(JsonNode? n) => n is JsonObject o && Milli(o["x"]) is { } x && Milli(o["y"]) is { } y && Milli(o["z"]) is { } z ? new(x, y, z) : null;
 }
