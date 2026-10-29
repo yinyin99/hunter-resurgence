@@ -38,7 +38,12 @@ builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetReq
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 
+// behind the reverse proxy (deploy/): the client address and https come from FORWARDED_TRUSTED only; unset, nothing is forwarded
+builder.Services.Configure<ForwardedHeadersOptions>(o => ForwardedProxy.Configure(o, builder.Configuration["FORWARDED_TRUSTED"]));
+
 var app = builder.Build();
+// first: the cookie policy, the language cookie and the antiforgery read the scheme
+app.UseForwardedHeaders();
 // the antiforgery cookie too; the Appends below set Secure themselves for code scanning (browsers accept it on http://localhost)
 app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
 // ?lang=fr picks the language and remembers it in the culture cookie
