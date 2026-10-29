@@ -15,7 +15,9 @@ namespace Backup;
 /// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply.</summary>
 sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null);
 
-sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null);
+/// <summary>Format 2 adds Format, Mode (own or public) and Identity (me, handle or id); a manifest without format is format 1.</summary>
+sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null,
+    int? Format = null, string? Mode = null, string? Identity = null);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
@@ -91,7 +93,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
     readonly object renewing = new();
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
-    string uid = "", dir = "";
+    string uid = "", dir = "", identity = ""; // identity: how the account was named, me (own), handle or id (public)
     bool own, resume;
     DateTime jwtAt, started = DateTime.UtcNow;
     DateTime? completed;
@@ -119,6 +121,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         http.DefaultRequestHeaders.UserAgent.ParseAdd(UA);
         if (own && token == null) throw new InvalidOperationException(Loc.S("Err_NoToken"));
         var idr = own ? Q("Me/me", true) : idText.All(char.IsAsciiDigit) ? null : Q("Public_user/getByHostname", false, ("hostname", idText));
+        identity = own ? "me" : idr == null ? "id" : "handle";
         (int Status, byte[] Body)? idRes = null;
         if (idr == null) uid = idText;
         else
@@ -708,6 +711,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             var m = JsonSerializer.Deserialize<Manifest>(File.ReadAllBytes(p), J);
             foreach (var e in m?.Files ?? []) files[e.Path] = e;
             groupsSeen.UnionWith(m?.Groups ?? []);
+            // the folder holds own-account files (an old manifest has no mode: its Me/me reply tells): a public run continuing it keeps it own
+            if (m?.Mode == "own" || (m != null && m.Mode == null && (m.Files ?? []).Any(e => e.Path == "Me_me.json"))) identity = "me";
         }
         catch (JsonException) { } // damaged manifest: files on disk are re-registered by resume
     }
@@ -716,7 +721,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
-        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed);
+        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }
 

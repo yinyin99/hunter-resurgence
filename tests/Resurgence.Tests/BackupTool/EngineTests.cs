@@ -73,6 +73,49 @@ public class EngineTests
     }
 
     [Fact]
+    public async Task ManifestSaysFormatModeAndIdentity()
+    {
+        string tok = Tok;
+        async Task<(string Dir, JsonNode M)> Run(TempDir t, string idText, bool resume = false)
+        {
+            var d = await Hosts.Make(new Fake(tok), Path.Combine(t.Path, "claim.key")).Run(t.Path, idText, idText.Length == 0 ? () => tok : null, new HashSet<string> { "friends" }, resume, false, TestContext.Current.CancellationToken);
+            return (d, JsonNode.Parse(File.ReadAllText(Path.Combine(d, "manifest.json")))!);
+        }
+        static string Said(JsonNode m) => $"{m["format"]} {m["mode"]} {m["identity"]}";
+        static void MakeOld(string dir) // what every release up to format 1 wrote: no format, mode or identity, and not finished
+        {
+            Hosts.Unfinish(dir);
+            var p = Path.Combine(dir, "manifest.json");
+            var o = JsonNode.Parse(File.ReadAllText(p))!.AsObject();
+            foreach (var k in new[] { "format", "mode", "identity" }) o.Remove(k);
+            File.WriteAllText(p, o.ToJsonString());
+        }
+
+        using var own = new TempDir("backup-test-");
+        Assert.Equal("2 own me", Said((await Run(own, "")).M));
+        using var byHandle = new TempDir("backup-test-");
+        var h = await Run(byHandle, "hh");
+        Assert.Equal("2 public handle", Said(h.M));
+        using var byId = new TempDir("backup-test-");
+        var i = (await Run(byId, "7")).M;
+        Assert.True(Said(i) == "2 public id" && !i.AsObject().ContainsKey("handle"), $"public by id: {Said(i)}, no handle");
+
+        using var resumed = new TempDir("backup-test-");
+        var first = await Run(resumed, "");
+        Hosts.Unfinish(first.Dir);
+        var second = await Run(resumed, "7", resume: true);
+        Assert.True(second.Dir == first.Dir && Said(second.M) == "2 own me", $"a public run continuing an own folder keeps it own ({Said(second.M)})");
+
+        MakeOld(h.Dir);
+        Assert.Equal("2 public handle", Said((await Run(byHandle, "hh", resume: true)).M));
+        using var oldOwn = new TempDir("backup-test-");
+        var o = await Run(oldOwn, "");
+        MakeOld(o.Dir);
+        var o2 = await Run(oldOwn, "hh", resume: true);
+        Assert.True(o2.Dir == o.Dir && Said(o2.M) == "2 own me", $"an old manifest listing Me_me.json is own ({Said(o2.M)})");
+    }
+
+    [Fact]
     public async Task LanesNeverTwoRequestsAtOnceOnAHost()
     {
         Prepare(out var t, out var tmp, out var key, out var dir);
