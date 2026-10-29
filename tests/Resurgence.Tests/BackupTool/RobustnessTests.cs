@@ -80,6 +80,45 @@ public class RobustnessTests
         Assert.True(Directory.GetFiles(Path.Combine(dir, "kills")).Length == 3 && File.Exists(Path.Combine(dir, "kills", "score_900.html")) && !File.Exists(Path.Combine(dir, "kills", "score_901.html")), "kills/ holds the sheet and the two pictures");
     }
 
+    /// <summary>Format 2: fewer hunts saved than the total Expedition/list gives is flagged on the engine and in the manifest's checks.hunts; a complete run has no checks.</summary>
+    [Fact]
+    public async Task HuntsShortOfTheListTotalAreFlagged()
+    {
+        static async Task<(Engine E, JsonNode M)> Hunts(string list, Action<Fake>? tune = null)
+        {
+            using var t = new TempDir("backup-test-v04-");
+            var f = new Fake(Tok) { ExpeditionList = list };
+            tune?.Invoke(f);
+            var e = await Run(f, t, ["hunts"]);
+            return (e, Manifest(Path.Combine(t.Path, "backup-7")));
+        }
+        static string? Checks(JsonNode m) => m["checks"]?.ToJsonString();
+
+        var (e1, m1) = await Hunts("""{"total":3,"expeditions":[{"id":41},{"id":42}]}""", f => { f.HuntReplies["41"] = Kills(); f.HuntReplies["42"] = Kills(); });
+        Assert.True(Checks(m1) == """{"hunts":{"total":3,"listed":2,"saved":2}}""" && e1.HuntsTotal == 3 && e1.HuntsSaved == 2, $"list shorter than its total: flagged ({Checks(m1)})");
+
+        var (e2, m2) = await Hunts("""{"total":3,"expeditions":[{"id":41},{"id":42},{"id":43}]}""",
+            f => f.Custom = (p, form) => p == "/v1/Public_user/expedition" && form.Contains("expedition_id=43") ? new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") } : null);
+        var failed = m2["files"]!.AsArray().Where(x => x!["error"] != null).Select(x => x!["path"]!.ToString()).ToList();
+        Assert.True(Checks(m2) == """{"hunts":{"total":3,"listed":3,"saved":2}}""" && e2.HuntsSaved == 2 && failed.SequenceEqual(["Public_user_expedition__user_id=7__expedition_id=43.json"]), $"a hunt that failed: flagged, and listed as failed ({Checks(m2)}; {string.Join(",", failed)})");
+
+        var (e3, m3) = await Hunts("""{"total":1,"expeditions":[{"id":42}]}""");
+        Assert.True(!m3.AsObject().ContainsKey("checks") && e3.HuntsTotal == null && e3.HuntsSaved == null, "all saved: no checks key");
+
+        var (e4, m4) = await Hunts("""{"total":"3","expeditions":[{"id":41},{"id":42}]}""");
+        Assert.True(Checks(m4) == """{"hunts":{"total":3,"listed":2,"saved":2}}""" && e4.HuntsTotal == 3, "a total sent as a string is read");
+
+        var (e5, m5) = await Hunts("""{"expeditions":[{"id":41},{"id":42}]}""");
+        Assert.True(!m5.AsObject().ContainsKey("checks") && e5.HuntsTotal == null && e5.Failed == 0, "no total: nothing to compare, no flag");
+
+        foreach (var (_, culture, _) in Loc.Languages)
+        {
+            var c = System.Globalization.CultureInfo.GetCultureInfo(culture);
+            var text = string.Format(c, Loc.Rm.GetString("Msg_HuntsShort", c)!, 2, 3);
+            Assert.True(text.Contains('2') && text.Contains('3') && !text.Contains('{'), $"{culture}: {text}");
+        }
+    }
+
     /// <summary>F5: the hunts are read newest first, whatever order the list has, so the kill sheets of the latest hunts come first.</summary>
     [Fact]
     public async Task KillSheetsAreFetchedNewestHuntFirst()

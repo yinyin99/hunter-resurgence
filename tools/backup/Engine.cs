@@ -15,9 +15,9 @@ namespace Backup;
 /// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply. Date = the reply's HTTP Date header (the server's clock), when it sent one.</summary>
 sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null, DateTime? Date = null);
 
-/// <summary>Format 2 adds Format, Mode (own or public) and Identity (me, handle or id); a manifest without format is format 1.</summary>
+/// <summary>Format 2 adds Format, Mode (own or public), Identity (me, handle or id) and Checks (hunts: saved fewer than listed, omitted when complete); a manifest without format is format 1.</summary>
 sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null,
-    int? Format = null, string? Mode = null, string? Identity = null);
+    int? Format = null, string? Mode = null, string? Identity = null, JsonObject? Checks = null);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
@@ -272,14 +272,23 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
     }
 
+    /// <summary>Set when fewer hunts were saved than the total Expedition/list gives (the list ended early, a page or a hunt failed); null when none is missing.</summary>
+    public int? HuntsTotal { get; private set; }
+    public int? HuntsSaved { get; private set; }
+    int huntsListed;
+
     /// <summary>Hunt list pages, then every hunt. With kills: the score sheet page and the picture of every scored kill too.</summary>
     async Task Hunts(bool kills)
     {
+        HuntsTotal = HuntsSaved = null; // a resumed run counts again
+        long? listTotal = null;
         var listed = new List<(string Id, long Start)>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
-            var ex = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))))?["expeditions"] as JsonArray;
+            var page = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))));
+            listTotal ??= Num(page?["total"]);
+            var ex = page?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
             listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
             if (ex.Count < 50) break;
@@ -288,9 +297,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         Need(ids.Count);
         if (!kills) Sized("hunts");
         var found = new List<(string? Sheet, string? Photo)>(); // a score sheet only for a scored kill, a picture for every kill that has one
+        int got = 0;
         foreach (var id in ids)
         {
             var hunt = Json(await Get(Q("Public_user/expedition", false, ("user_id", uid), ("expedition_id", id))));
+            if (hunt != null) got++;
             foreach (var k in (hunt?["kills"] as JsonArray) ?? [])
             {
                 if (!kills) break;
@@ -298,6 +309,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 var photo = k?["kill"]?["photo"]?.ToString() is { Length: > 0 } ph ? ph : null;
                 if (sheet != null || photo != null) found.Add((sheet, photo));
             }
+        }
+        if (listTotal is { } t && got < t)
+        {
+            (huntsListed, HuntsSaved, HuntsTotal) = (listed.Count, got, (int)t);
+            log($"! hunts: {got} of {t} saved");
         }
         if (!kills) return;
         Need(found.Count(k => k.Sheet != null) + found.Count(k => k.Photo != null));
@@ -721,7 +737,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
-        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity);
+        var checks = HuntsTotal is { } ht ? new JsonObject { ["hunts"] = new JsonObject { ["total"] = ht, ["listed"] = huntsListed, ["saved"] = HuntsSaved } } : null;
+        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity, Checks: checks);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }
 
