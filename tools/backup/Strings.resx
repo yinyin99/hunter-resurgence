@@ -313,6 +313,9 @@
   <data name="Msg_MessagesOpened" xml:space="preserve">
     <value>{0} unread conversations were opened and now show as read.</value>
   </data>
+  <data name="Msg_HuntsShort" xml:space="preserve">
+    <value>Only {0} of the {1} hunts the server lists were saved.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Kill pages and photos were not saved; tick them for a complete backup.</value>
   </data>

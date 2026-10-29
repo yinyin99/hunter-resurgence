@@ -313,6 +313,9 @@
   <data name="Msg_MessagesOpened" xml:space="preserve">
     <value>Se abrieron {0} conversaciones no leídas y ahora figuran como leídas.</value>
   </data>
+  <data name="Msg_HuntsShort" xml:space="preserve">
+    <value>Solo se guardaron {0} de las {1} cacerías que lista el servidor.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Las páginas de muertes y las fotos no se guardaron; márcalas para una copia completa.</value>
   </data>

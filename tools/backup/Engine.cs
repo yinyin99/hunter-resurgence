@@ -12,10 +12,12 @@ using System.Text.RegularExpressions;
 
 namespace Backup;
 
-/// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply.</summary>
-sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null);
+/// <summary>Derived = made by the tool from saved replies (map-setups.json), not a server reply. Date = the reply's HTTP Date header (the server's clock), when it sent one.</summary>
+sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Params, int? Status, string? Sha256, DateTime TimeUtc, string? Error, bool? Derived = null, DateTime? Date = null);
 
-sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null);
+/// <summary>Format 2 adds Format, Mode (own or public), Identity (me, handle or id) and Checks (hunts: saved fewer than listed, omitted when complete); a manifest without format is format 1.</summary>
+sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null,
+    int? Format = null, string? Mode = null, string? Identity = null, JsonObject? Checks = null);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
@@ -91,7 +93,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
     readonly object renewing = new();
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
-    string uid = "", dir = "";
+    string uid = "", dir = "", identity = ""; // identity: how the account was named, me (own), handle or id (public)
     bool own, resume;
     DateTime jwtAt, started = DateTime.UtcNow;
     DateTime? completed;
@@ -119,7 +121,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         http.DefaultRequestHeaders.UserAgent.ParseAdd(UA);
         if (own && token == null) throw new InvalidOperationException(Loc.S("Err_NoToken"));
         var idr = own ? Q("Me/me", true) : idText.All(char.IsAsciiDigit) ? null : Q("Public_user/getByHostname", false, ("hostname", idText));
-        (int Status, byte[] Body)? idRes = null;
+        identity = own ? "me" : idr == null ? "id" : "handle";
+        (int Status, byte[] Body, DateTimeOffset? Date)? idRes = null;
         if (idr == null) uid = idText;
         else
         {
@@ -153,7 +156,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         this.ct = stop.Token;
         try
         {
-            if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body);
+            if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
             // groups run side by side; each host's lane keeps its own requests one at a time
             try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
             catch when (fault != null) { }
@@ -269,14 +272,23 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
     }
 
+    /// <summary>Set when fewer hunts were saved than the total Expedition/list gives (the list ended early, a page or a hunt failed); null when none is missing.</summary>
+    public int? HuntsTotal { get; private set; }
+    public int? HuntsSaved { get; private set; }
+    int huntsListed;
+
     /// <summary>Hunt list pages, then every hunt. With kills: the score sheet page and the picture of every scored kill too.</summary>
     async Task Hunts(bool kills)
     {
+        HuntsTotal = HuntsSaved = null; // a resumed run counts again
+        long? listTotal = null;
         var listed = new List<(string Id, long Start)>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
-            var ex = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))))?["expeditions"] as JsonArray;
+            var page = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))));
+            listTotal ??= Num(page?["total"]);
+            var ex = page?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
             listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
             if (ex.Count < 50) break;
@@ -285,9 +297,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         Need(ids.Count);
         if (!kills) Sized("hunts");
         var found = new List<(string? Sheet, string? Photo)>(); // a score sheet only for a scored kill, a picture for every kill that has one
+        int got = 0;
         foreach (var id in ids)
         {
             var hunt = Json(await Get(Q("Public_user/expedition", false, ("user_id", uid), ("expedition_id", id))));
+            if (hunt != null) got++;
             foreach (var k in (hunt?["kills"] as JsonArray) ?? [])
             {
                 if (!kills) break;
@@ -295,6 +309,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 var photo = k?["kill"]?["photo"]?.ToString() is { Length: > 0 } ph ? ph : null;
                 if (sheet != null || photo != null) found.Add((sheet, photo));
             }
+        }
+        if (listTotal is { } t && got < t)
+        {
+            (huntsListed, HuntsSaved, HuntsTotal) = (listed.Count, got, (int)t);
+            log($"! hunts: {got} of {t} saved");
         }
         if (!kills) return;
         Need(found.Count(k => k.Sheet != null) + found.Count(k => k.Photo != null));
@@ -374,7 +393,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         }
         if (list == null) return;
         var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => Num(x["total"]) != (int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
-        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
+        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["format"] = 1, ["tool_version"] = Version, ["uid"] = uid, ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
         WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
         lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);
@@ -468,7 +487,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             else
             {
                 b = File.ReadAllBytes(full);
-                if (known?.Sha256 == null) lock (files) files[name] = new(name, r.Path, Params(r), null, Hex(SHA256.HashData(b)), File.GetLastWriteTimeUtc(full), null);
+                if (known?.Sha256 == null) lock (files) files[name] = new(name, r.Path, Params(r), null, Hex(SHA256.HashData(b)), File.GetLastWriteTimeUtc(full), null, Date: known?.Date);
             }
             Interlocked.Increment(ref skipped);
             if (r.Abs == null) log($"have {name}");
@@ -501,7 +520,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 lock (files) files[name] = new(name, r.Path, Params(r), 404, null, DateTime.UtcNow, DeadError);
                 return null;
             }
-            if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body); return x.Body; } // "no entry" is an answer, not a failure
+            if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body, x.Date); return x.Body; } // "no entry" is an answer, not a failure
             if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");
             if (Leaks(r, x.Body)) return Fail(r, name, x.Status, "reply contains a token, not saved");
             if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
@@ -511,7 +530,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 await Task.Delay(PaceMs == 0 ? 0 : 3000, ct);
                 continue;
             }
-            Save(r, name, x.Status, x.Body);
+            Save(r, name, x.Status, x.Body, x.Date);
             return x.Body;
         }
     }
@@ -543,12 +562,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         return null;
     }
 
-    void Save(R r, string name, int status, byte[] body)
+    void Save(R r, string name, int status, byte[] body, DateTimeOffset? date)
     {
         var full = Path.Combine(dir, name);
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
         WriteAtomic(full, body);
-        lock (files) files[name] = new(name.Replace('\\', '/'), r.Path, Params(r), status, Hex(SHA256.HashData(body)), DateTime.UtcNow, null);
+        lock (files) files[name] = new(name.Replace('\\', '/'), r.Path, Params(r), status, Hex(SHA256.HashData(body)), DateTime.UtcNow, null, Date: date?.UtcDateTime);
         Interlocked.Increment(ref saved);
         if (Interlocked.Increment(ref sinceWrite) % 25 == 0) WriteManifest();
     }
@@ -611,7 +630,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 ? s.Apiv2Host : s.ApiHost;
 
-    async Task<(int Status, byte[] Body)?> Send(R r, Action<string>? gaveUp = null)
+    async Task<(int Status, byte[] Body, DateTimeOffset? Date)?> Send(R r, Action<string>? gaveUp = null)
     {
         var lane = lanes.GetOrAdd(Host(r), _ => new());
         await lane.Gate.WaitAsync(ct); // held through retries: a host that answers badly is not hit by a second request
@@ -632,7 +651,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     using var resp = await http.SendAsync(req, ct);
                     var body = await resp.Content.ReadAsByteArrayAsync(ct);
                     var st = (int)resp.StatusCode;
-                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body); }
+                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body, resp.Headers.Date); }
                     err = $"HTTP {st}";
                     if (st is 429 or 503 && resp.Headers.RetryAfter is { } ra) // the server says how long to wait
                         retryAfter = Math.Min(ra.Delta?.TotalMilliseconds ?? Math.Max(0, ((ra.Date ?? DateTimeOffset.UtcNow) - DateTimeOffset.UtcNow).TotalMilliseconds), RetryAfterCapMs);
@@ -708,6 +727,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             var m = JsonSerializer.Deserialize<Manifest>(File.ReadAllBytes(p), J);
             foreach (var e in m?.Files ?? []) files[e.Path] = e;
             groupsSeen.UnionWith(m?.Groups ?? []);
+            // the folder holds own-account files (an old manifest has no mode: its Me/me reply tells): a public run continuing it keeps it own
+            if (m?.Mode == "own" || (m != null && m.Mode == null && (m.Files ?? []).Any(e => e.Path == "Me_me.json"))) identity = "me";
         }
         catch (JsonException) { } // damaged manifest: files on disk are re-registered by resume
     }
@@ -716,7 +737,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
-        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed);
+        var checks = HuntsTotal is { } ht ? new JsonObject { ["hunts"] = new JsonObject { ["total"] = ht, ["listed"] = huntsListed, ["saved"] = HuntsSaved } } : null;
+        var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity, Checks: checks);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }
 

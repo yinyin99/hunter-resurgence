@@ -313,6 +313,9 @@
   <data name="Msg_MessagesOpened" xml:space="preserve">
     <value>Открыто непрочитанных переписок: {0}. Теперь они отображаются как прочитанные.</value>
   </data>
+  <data name="Msg_HuntsShort" xml:space="preserve">
+    <value>Сохранено охот: только {0} из {1}, которые перечисляет сервер.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Страницы убийств и фото не сохранены; отметьте их для полной копии.</value>
   </data>

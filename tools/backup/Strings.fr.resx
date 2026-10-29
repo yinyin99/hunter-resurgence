@@ -313,6 +313,9 @@
   <data name="Msg_MessagesOpened" xml:space="preserve">
     <value>{0} conversations non lues ont été ouvertes et apparaissent maintenant comme lues.</value>
   </data>
+  <data name="Msg_HuntsShort" xml:space="preserve">
+    <value>Seules {0} des {1} chasses listées par le serveur ont été sauvegardées.</value>
+  </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Les pages de prélèvements et les photos n’ont pas été sauvegardées ; cochez-les pour une sauvegarde complète.</value>
   </data>
