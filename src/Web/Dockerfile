@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build context: the repository root (docker build -f src/Web/Dockerfile .), for global.json, src/Ui and src/Services.
 # the SDK of global.json, as in CI and for the committed lock files
-FROM mcr.microsoft.com/dotnet/sdk:10.0.401 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.403 AS build
 WORKDIR /src
 COPY global.json ./
 # all sources before the restore: the SDK adds an implicit package reference only when it sees the project's .razor files
