@@ -316,4 +316,19 @@ public class ImporterTests
         Assert.Contains("item 9501 (item 630) has a position that is not a number within 2000000 on each axis: read as no location", r.Report.Warnings);
         Assert.Null(r.Model.Items.Single(i => i.Guid == 9502).Direction);
     }
+
+    [Fact]
+    public void NonFiniteNumbersAreSkipped()
+    {
+        var z = SyntheticZip.Own();
+        z.Reply("/v1/Skill/list", """{"weapon":{"200":10.2,"300":"NaN","301":"Infinity","302":1e400},"tracking":[],"spotting":[]}""", ("user_id", SyntheticZip.Uid));
+        z.Reply("/v1/Me/me", """{"id":1001,"handle":"sample","membershipType":"freeplay","ems":"NaN","gms":3}""");
+        var r = z.Read();
+        Assert.Equal([200], r.Model.Skills!.Weapon.Keys);
+        foreach (var k in new[] { "300", "301", "302" })
+            Assert.Contains($"skill weapon entry \"{k}\" is not an item id and a number: skipped", r.Report.Warnings);
+        Assert.Null(r.Model.Wallet);
+        Assert.Contains("wallet (not in the zip)", r.Report.Missing);
+        JsonSerializer.Serialize(r.Model, Importer.Json); // NaN or Infinity would throw here
+    }
 }

@@ -266,7 +266,8 @@ public static class Importer
 
     static int? Int(JsonNode? n) => Long(n) is { } l && l is >= int.MinValue and <= int.MaxValue ? (int)l : null;
 
-    static double? Dbl(JsonNode? n) => double.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) ? d : null;
+    /// <summary>A finite number: "NaN", "Infinity" or 1e400 is no number (and could not be written as JSON).</summary>
+    static double? Dbl(JsonNode? n) => double.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : null;
 
     /// <summary>The JSON text as the server wrote it, for comparing ("null" when absent).</summary>
     static string Raw(JsonNode? n) => n?.ToJsonString() ?? "null";
