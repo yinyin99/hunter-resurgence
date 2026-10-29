@@ -6,7 +6,7 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 
 | File | Purpose |
 |---|---|
-| `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json`: change both together |
+| `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json` and its `aspnet` tag the runtime that SDK ships: a new SDK means `global.json`, both tags and every `packages.lock.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate` with that SDK) in one change, or the locked restore fails with NU1004 |
 | `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web` |
 | `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate, then `import sites/*.caddy` |
 | `deploy/.env.example` | the three values of `.env` |
