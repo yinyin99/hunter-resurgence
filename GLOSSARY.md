@@ -30,7 +30,7 @@ _Avoid_: account data
 One copy of a profile at one moment, kept as a backup folder and a backup zip.
 
 **Backup folder**:
-The folder a backup writes, named after the account id and the date and time.
+The folder a backup writes, named after the account id; a later backup of the same profile adds the date and time.
 
 **Backup zip**:
 The zip of a backup folder; the file a player keeps private and later restores.
