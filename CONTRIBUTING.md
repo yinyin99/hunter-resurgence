@@ -23,21 +23,23 @@ dotnet test hunter-resurgence.slnx -c Release --no-build
 dotnet run --project src/Web
 ```
 
-The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`), the library they share (`src/Ui`) and the restore library (`src/Restore`, with a command-line stub in `src/Restore/Cli`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only, the restore tests build synthetic zips in memory; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
+The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`), the library they share (`src/Ui`), the service contracts and mocks (`src/Services`) and the restore library (`src/Restore`, with a command-line stub in `src/Restore/Cli`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only, the restore tests build synthetic zips in memory; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
 
-The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. See [docs/launcher.md](docs/launcher.md), [docs/website.md](docs/website.md), [docs/backup.md](docs/backup.md) and [docs/restore.md](docs/restore.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
+The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. The keys are listed in [docs/backup.md](docs/backup.md) and [docs/launcher.md](docs/launcher.md#settingsjson). `client_exe` is a bare exe name in the backup tool (it looks for the running process) and a path relative to the game folder in the launcher. See also [docs/website.md](docs/website.md) and [docs/restore.md](docs/restore.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
 
 To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 
 ```
-tools\backup\publish.cmd path\to\settings.json
+tools\backup\publish.cmd path\to\settings.json [version]
 ```
+
+The optional version (for example `1.2.3` or `1.2.3-rc.1`) is passed to `dotnet publish` as `-p:Version`; without it the build says `0.0.0-dev`. The zip is `tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip`.
 
 ## Releases
 
-Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, zip, SHA-256 in the release notes. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
+Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, zip, SHA-256 in the release notes and a build provenance attestation of the zip (skipped while the repository is private). The release is created as a draft, the zip is uploaded, then it is published, because a published release is immutable. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
-Separately, every push to `main` that passes CI runs `.github/workflows/deploy.yml`, which deploys the website to the VPS (see [docs/deploy.md](docs/deploy.md)). Its secrets are `DEPLOY_HOST`, `DEPLOY_USER` and `DEPLOY_KEY`; without them it deploys nothing.
+Separately, `.github/workflows/deploy.yml` runs (through `workflow_run`) after a successful `ci` run for a push to `main`, never directly on the push, and deploys the website to the VPS (see [docs/deploy.md](docs/deploy.md)). Its secrets are `DEPLOY_HOST`, `DEPLOY_USER` and `DEPLOY_KEY`; without them it deploys nothing.
 
 ### Versioning
 
@@ -46,7 +48,7 @@ The git tag is the only version: `vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-suf
 - Patch: fixes only.
 - Minor: anything new, including any change to the manifest format.
 - `-rc.N` (for example `v0.2.0-rc.1`): test builds. A tag with a suffix is published as a prerelease.
-- `1.0.0`: when the restore server accepts these backups.
+- `1.0.0`: when the community server accepts these backups.
 
 Tag with an annotated tag whose message lists the changes; it becomes the "Changes" section of the release notes:
 
@@ -61,6 +63,12 @@ git push origin v0.2.0
 - Release tags `vX.Y.Z` cannot be deleted or moved (tag ruleset, no bypass); disabling the ruleset is the only way out.
 - `-rc.N` prereleases are immutable too and stay public, so use them sparingly.
 - Pull requests from forks need the maintainer's approval before CI runs.
+
+## CI and updates
+
+`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and by hand. Two jobs: `build` (Windows: build and test the solution) and `docker` (Ubuntu: build the website's image, start it and check `/feed` and `/settings/language`).
+
+`.github/dependabot.yml` opens weekly pull requests in these groups: NuGet (`dotnet`: `Microsoft.*` and `System.*` together, other packages alone), `dotnet-sdk` (`global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of `src/Web/Dockerfile` as one pull request), GitHub Actions, and Docker Compose (the images of `deploy/`). `.github/workflows/dependabot-locks.yml` adds the regenerated `packages.lock.json` files to an SDK pull request. The SDK details are in [docs/deploy.md](docs/deploy.md).
 
 ## Commits
 
