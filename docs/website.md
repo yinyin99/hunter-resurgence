@@ -42,14 +42,14 @@ Only when the app runs in the Development environment (the default with `dotnet 
 |---|---|
 | `?mode=launcher` or `?mode=web` | renders the launcher view or the website view; remembered in a cookie. Screens built for the launcher can be looked at in a normal browser this way |
 | `?mock=<state>` | puts a mock service in a state (cookie too); `?mock=none` clears it |
-| `?lang=en` or `?lang=fr` | picks the language (this one works in every environment) |
+| `?lang=<code>` | picks the language: any of the 19 codes of `Languages.All` (`en`, `fr`, `de`, `pt-BR`, ...); this one works in every environment |
 | `?alert=<text>` | opens the alert dialog with that text |
 | `?modal=settings` or `?modal=initial` | opens the game settings dialog, or the first-start variant |
 
-States: `session:out` (the public site), `session:signup` (an account without a username), `patch:new-patch`, `patch:full-download`, `patch:launcher-update`, `patch:verifying`, `patch:extracting`, `patch:checksum`, `patch:files`, `patch:finishing`, `patch:done`, `patch:steam-update`, `patch:steam-only`, `patch:error` (the patch panel), `settings:first`, `signup:confirmed`, `account:bans`, `profile:photos` (the own gallery has photos), `start:hold`, `browser:hold` (stay in the progress state of the browser pages).
+States: all those of [launcher.md](launcher.md#development-switches) (patch panel, account, store, wallet, bank, friends, messages, missions, news, profile, `session:out` for the public site, `session:signup`, `eula`, `start:hold`, `browser:hold`, `poll:fast` ...), plus these, which exist only on the website: `competitions:many` (45 entrants on a competition's leaderboard, three pages), `servers:none` (no games), `loadouts` (three saved loadouts), `tents` (two tents on the map) and `membership` (the signed-in hunter has a membership).
 
 ## Languages
 
-English and French. All texts are .NET resources in `src/Ui/` (`Strings.resx`, English and fallback, and `Strings.fr.resx`), shared with the launcher. The website follows the browser's `Accept-Language` header, `?lang=` overrides it and is remembered in a cookie.
+The 19 languages and the resx files (`src/Ui/Strings.resx` and one `Strings.<code>.resx` each) are the launcher's: see [launcher.md](launcher.md#languages). The website picks the language from the browser's `Accept-Language` header, highest quality first, matching by `Languages.Match` (region ignored: `de-AT` is German, bare `pt` is Portuguese (Brazil), `no` and `nn` are Norwegian bokmål), else English. `?lang=<code>` overrides it and is remembered in a cookie.
 
-A test in `tests/Resurgence.Tests` checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
+A test in `tests/Resurgence.Tests` checks that all 18 non-English files have the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check any of them.

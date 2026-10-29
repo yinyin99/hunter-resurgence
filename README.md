@@ -11,17 +11,17 @@ Licensed under the [GNU AGPL-3.0](LICENSE).
 
 ## For players: the backup tool
 
-A small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. The app speaks English, French, Spanish, Portuguese, German and Russian, follows your Windows language and can be switched in the window. Details: [docs/backup.md](docs/backup.md).
+The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. It speaks English, French, Spanish, Portuguese, German and Russian, follows your Windows language and can be switched in the window. Details: [docs/backup.md](docs/backup.md).
 
 ![The backup tool's window](docs/img/backup.png)
 
 1. Download `backup-win-x64.zip` from the latest release and unpack it. Keep `backup.exe` and `settings.json` in the same folder.
-2. Start `backup.exe`. For your own account, open the game and start a hunt (the app can be open before or after); or choose "Public profile" and type a handle or id.
-3. Tick what to save, press Start. The result goes to `Documents\game-backup\backup-<id>` and a zip beside it. Keep that zip private.
+2. Start `backup.exe`. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.
+3. Tick what to save, press Start. The result goes to `Documents\game-backup\backup-<id>` (a later backup of the same profile adds `-<yyyyMMdd-HHmmss>`) and a backup zip `backup-<id>-<yyyyMMdd-HHmmss>.zip` beside it. Keep that backup zip private.
 
 **Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
 
-**Check the download.** The release notes list the SHA-256 of the zip. Compare it with yours:
+**Check the download.** The release notes list the SHA-256 of the release zip. Compare it with yours:
 
 ```
 Get-FileHash backup-win-x64.zip -Algorithm SHA256
@@ -29,7 +29,7 @@ Get-FileHash backup-win-x64.zip -Algorithm SHA256
 
 If the two differ, do not run it.
 
-To check that the zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
+To check that the release zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
 
 ```
 gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
@@ -37,14 +37,14 @@ gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 
 ## Roadmap
 
-The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play offline again, with the server on your own PC or local network, as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
+The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play offline again, with a local server on your own PC or local network, as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
 
-Solo means a single-player hunt on a server; multiplayer means hunting with others; offline means the server runs on your own PC or local network.
+Solo means a single-player hunt on a server; multiplayer means hunting with others; offline means a local server runs on your own PC or local network.
 
 | Step | What it brings | State |
 |---|---|---|
 | Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and do not run any setup tool before the shutdown if you still want the official servers | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
-| 1 | **Offline play**: run the server on your own PC (or another PC on your local network) with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
+| 1 | **Offline play**: run a local server on your own PC (or another PC on your local network) with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
 | 2 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC | After step 1 |
 | 3 | **Community server, accounts and restore**: a community server (the same code you can run yourself), sign in with your Steam account (email sign-in may follow), upload your backup zip to get your inventory, trophies, statistics, skills and wallet back; missions later | Planned |
 | 4 | **New launcher**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it once you set a Steam launch option | Planned |
@@ -55,12 +55,12 @@ Solo means a single-player hunt on a server; multiplayer means hunting with othe
 
 *New launcher (step 4): work in progress, mock data, images are placeholders.*
 
-A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the zip private.
+A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the backup zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the backup zip private.
 
 **No money, ever.** This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
 
-**Help wanted now:** native speakers who can check the app's French, Spanish, Portuguese (Brazil), German or Russian texts (`tools/backup/Strings.*.resx`) and the launcher and website French texts (`src/Ui/Strings.fr.resx`). Open an issue or a pull request.
+**Help wanted now:** native speakers who can check the backup tool's texts in its 5 non-English languages (French, Spanish, Portuguese (Brazil), German, Russian; `tools/backup/Strings.*.resx`) and the launcher's and website's texts in their 18 non-English languages (`src/Ui/Strings.*.resx`, list in `src/Ui/Languages.cs`). Open an issue or a pull request.
 
 ## Build
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). The launcher and the website are described in [docs/launcher.md](docs/launcher.md) and [docs/website.md](docs/website.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). The launcher and the website are described in [docs/launcher.md](docs/launcher.md) and [docs/website.md](docs/website.md), the restore library in [docs/restore.md](docs/restore.md) and the website's deploy in [docs/deploy.md](docs/deploy.md).

@@ -1,12 +1,12 @@
 # Launcher
 
-`src/Launcher/` is a Windows desktop app that will replace the game's own launcher once the community server exists. It runs beside the game's own launcher and does not change it. It never writes into the game's install folder.
+`src/Launcher/` is a Windows desktop app that will replace the old launcher once the community server exists. It runs beside the old launcher and does not change it. It never writes into the game folder.
 
 It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 control, so the Microsoft Edge WebView2 runtime must be installed (it comes with Windows 11). The screens are shared with the [website](website.md) and live in `src/Ui/`; the launcher only adds the window and the real services below.
 
 ## State
 
-The screens follow the original launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
+The screens follow the old launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
 
 Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures of the original are not included; each one is a neutral labelled box. The launcher is not usable for playing yet.
 
@@ -24,7 +24,7 @@ dotnet test tests/Resurgence.Tests -c Release
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
-The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files and temporary zips. They read and change nothing else on the PC. `dotnet test` exits 0 when every test passes.
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files and temporary backup zips. They read and change nothing else on the PC. `dotnet test` exits 0 when every test passes.
 
 ### Development switches
 
@@ -33,11 +33,13 @@ The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a te
 | `--route=/store` | opens that page first (the default is `/splash`, which goes on to the sign-in check) |
 | `--mock=<state>` | puts one mock service in a state, to see a screen that is hard to reach |
 
-States: `patch:new-patch`, `patch:full-download`, `patch:launcher-update`, `patch:verifying`, `patch:extracting`, `patch:checksum`, `patch:files`, `patch:finishing`, `patch:done`, `patch:steam-update`, `patch:steam-only`, `patch:error`, `settings:first` (the first-start dialog, on the mock settings), `signup:confirmed`, `account:bans`, `profile:photos`, `start:hold` (stay on the start screen), `session:signup` (an account without a username).
+States: `patch:new-patch`, `patch:new-patch-notes` (the same with a list of release notes), `patch:full-download`, `patch:launcher-update`, `patch:verifying`, `patch:extracting`, `patch:checksum`, `patch:files`, `patch:finishing`, `patch:done`, `patch:steam-update`, `patch:steam-only`, `patch:error`, `patch:launcher-ready`, `patch:exit-<code>` (the game ended with that code, for example `patch:exit-16001`), `settings:first` (the first-start dialog, on the mock settings), `signup:confirmed`, `account:bans`, `account:unconfirmed` (an address that is not confirmed), `account:steamfail` (disconnecting Steam fails), `account:resendfail` (an unconfirmed address whose resend fails), `profile:photos`, `profile:ongoing` (the latest hunt has not ended), `start:hold` (stay on the start screen), `session:signup` (an account without a username), `session:out` (signed out), `eula` (an account that has not accepted the agreements), `poll:fast` (the status bar and the messages page read again every 2 seconds instead of 30), `browser:hold` (the browser pages stay in their progress state).
+
+Social and content: `friends:requests` (three friend requests), `friends:incoming` (a request arrives after five seconds), `messages:unread` (one unread conversation), `messages:incoming` (a message arrives after five seconds), `missions:resume` and `missions:noresume` (the resume item is offered, with one owned or none), `missions:soon` (the day ends in a few seconds), `news:many` (six featured slides instead of two).
 
 Store, wallet and bank: `store:fail` (every purchase fails), `store:nosales` (nothing is on sale, so no Sales entry), `wallet:many` (more than one page of wallet rows), `bank:steam206` and `bank:steamerror` (the two Steam errors of a bank purchase). Buying in the store or the bank changes one mock wallet that the status bar and the wallet show (per website session, or per launcher run). The bank codes are `SAVE20` (20 % off) and `GIFT` (500 em$, once); a payment reference with `fail` in it, as in `/steam_callback/fail-1`, is a failed payment.
 
-The same states work on the website with `?mock=<state>`; see [website.md](website.md).
+The same states work on the website with `?mock=<state>`; see [website.md](website.md#development-switches), which also lists the states that exist only there.
 
 ## settings.json
 
@@ -46,13 +48,13 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | Key | Meaning |
 |---|---|
 | `steam_app_id` | Steam app id of the game. Digits only. |
-| `client_exe` | Path of the game's client exe, relative to the install folder. |
+| `client_exe` | Path of the game's client exe, relative to the game folder. (The [backup tool's](backup.md#settingsjson) own `settings.json` uses the same key for a bare exe name.) |
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |
 | `options_key_prefix` | The text that precedes each key name in the options file. |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
-| `link_*` | External links of the footer, the help pages and the menus: `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki` and `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, and the numbered lists `guide_1...`, `video_v1...`, `community_1...`. A link that is not set is not shown. |
+| `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
 
 Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game; they are filled from `game_name` and `game_full`. Absolute paths and paths with `..` in the file names are rejected.
 
@@ -61,9 +63,10 @@ Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game;
 Real today:
 
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
-- **launcher.json**: the language chosen in the language dialog is saved and used at the next start.
-- **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip` in the restore library `src/Restore`, see [restore.md](restore.md): size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the tests cover it.
+- **launcher.json**: the language chosen in the language dialog is saved and used at the next start; so are the game folder chosen by hand and whether game settings were saved once.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
+
+Not used yet: the restore library's quick check of a backup zip, `BackupZip` (see [restore.md](restore.md#backupzip)); the launcher does not call it.
 
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
@@ -71,10 +74,10 @@ Mock: sign-in (the code step accepts any six digits), sign-up, the news, the ser
 
 | File | Who writes it | Content |
 |---|---|---|
-| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, close the launcher when the game starts. A missing or damaged file means the defaults. |
+| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, and whether game settings were saved once (`game_settings_saved`: the first game start no longer asks). A missing or damaged file means the defaults. |
 | the game's graphics file | Game settings, on Save | fullscreen, resolution and refresh rate, scene complexity, texture, shadow, anti-aliasing, anisotropic filtering, vertical sync |
 | the game's options file | Game settings, on Save | volume, gamma, mouse and controller options, speeds, interface switches, scope quality |
-| `<file>.resurgence-backup` | Game settings, once | copy of each of those two files made before the first write; never overwritten |
+| `<file>.resurgence-backup` | Game settings, once | settings copy of each of those two files made before the first write; never overwritten |
 
 Game settings changes only the values you edit. Every other byte of both files stays as it was, and no line is ever added. A file with an unknown format is left alone. The game reads both files once at start and rewrites them itself, so Save is refused while the game runs. A missing file shows "Start the game once so it creates this file" and is read-only.
 
@@ -92,10 +95,10 @@ Press Play in Steam. The game's own files stay untouched.
 
 ## Languages
 
-English and French. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and `Strings.fr.resx`. The French texts are the original French of the old screens; the few new texts are in our own French.
+The UI has 19 languages (`Languages.All` in `src/Ui/Languages.cs`): English, French, German, Spanish, Portuguese (Brazil), Russian, Italian, Dutch, Polish, Portuguese (Portugal), Swedish, Danish, Norwegian (bokmål), Finnish, Czech, Hungarian, Romanian, Slovenian and Turkish. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and one `Strings.<code>.resx` per other language. The French texts are the original French of the old screens; the few new texts are in our own French.
 
-Game vocabulary (animal names, collectables and a few labels) is not written by hand: the resx keys `Term.species.<id>`, `Term.collectable.<id>` and `Term.ui.<name>` hold one text per old id and language. A service passes the id (the mocks pass the English name, which is matched to its term); a text without a term is shown as it is. To add a language, add its texts to `Strings.<lang>.resx` the same way.
+Game vocabulary (animal names, collectables and a few labels) is not written by hand: the resx keys `Term.species.<id>`, `Term.collectable.<id>` and `Term.ui.<name>` hold one text per old id and language. A service passes the id (the mocks pass the English name, which is matched to its term); a text without a term is shown as it is. To add a language, add its texts to `Strings.<code>.resx` the same way and list it in `Languages.All`.
 
 A text is a whole sentence: a link or bold part is a hole, never markup in the resx. `{0}...{1}` wrap the words (`L.Html`), or one hole is the whole link or name (`L.Frag`); a translation may move the holes. Counts are written without a plural noun (`Games shown: {0}`), so one string fits every number.
 
-At start the launcher uses the language saved in `launcher.json`, else the Windows display language when it is French, else English. A test checks that the French file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check `src/Ui/Strings.fr.resx`.
+At start the launcher uses the language saved in `launcher.json`, else the Windows display language when one of the 19 matches (`Languages.Match`: the region is ignored, so `de-AT` is German; bare `pt` is Portuguese (Brazil); `no` and `nn` are Norwegian bokmål), else English. A test (`tests/Resurgence.Tests/LauncherApp/TranslationsTests.cs`) checks that every other language file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check any of the `src/Ui/Strings.<code>.resx` files.
