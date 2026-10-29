@@ -39,7 +39,7 @@ gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 
 ## Website (work in progress)
 
-<SITE_URL> shows the new website. It is a preview: every page shows fixed, fictional data (you start signed in as `Hunter01`; sign out in the top bar for the public site; sign-in accepts any email address and any six digits), pictures are labelled boxes, and a banner on every page says so. It is not the game server, and no data you enter is saved. Use a current Chrome or Edge with JavaScript. Details: [docs/website.md](docs/website.md).
+[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. It is a preview: every page shows fixed, fictional data (you start signed in as `Hunter01`; sign out in the top bar for the public site; sign-in accepts any email address and any six digits), pictures are labelled boxes, and a banner on every page says so. It is not the game server, and no data you enter is saved. Use a current Chrome or Edge with JavaScript. Details: [docs/website.md](docs/website.md).
 
 ## Roadmap
 
