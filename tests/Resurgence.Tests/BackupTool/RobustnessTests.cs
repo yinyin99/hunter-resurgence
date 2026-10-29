@@ -80,36 +80,44 @@ public class RobustnessTests
         Assert.True(Directory.GetFiles(Path.Combine(dir, "kills")).Length == 3 && File.Exists(Path.Combine(dir, "kills", "score_900.html")) && !File.Exists(Path.Combine(dir, "kills", "score_901.html")), "kills/ holds the sheet and the two pictures");
     }
 
-    /// <summary>Format 2: fewer hunts saved than the total Expedition/list gives is flagged on the engine and in the manifest's checks.hunts; a complete run has no checks.</summary>
+    /// <summary>Format 2: a listed hunt whose Public_user/expedition reply was not saved is flagged on the engine and in the manifest's checks.hunts.
+    /// The list's "total" is a window count (rows left from the offset, capped at limit + 1), never compared.</summary>
     [Fact]
-    public async Task HuntsShortOfTheListTotalAreFlagged()
+    public async Task ListedHuntsNotSavedAreFlagged()
     {
-        static async Task<(Engine E, JsonNode M)> Hunts(string list, Action<Fake>? tune = null)
+        static async Task<(Engine E, JsonNode M)> Hunts(Action<Fake> tune)
         {
             using var t = new TempDir("backup-test-v04-");
-            var f = new Fake(Tok) { ExpeditionList = list };
-            tune?.Invoke(f);
+            var f = new Fake(Tok);
+            tune(f);
             var e = await Run(f, t, ["hunts"]);
             return (e, Manifest(Path.Combine(t.Path, "backup-7")));
         }
         static string? Checks(JsonNode m) => m["checks"]?.ToJsonString();
+        static HttpResponseMessage? Down(string path, string form, string id) => path == "/v1/Public_user/expedition" && form.EndsWith("expedition_id=" + id) // the last field of the form
+            ? new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") } : null;
+        // 120 hunts as the server pages them: total = rows left from the offset, at most limit + 1 (51, 51, 20)
+        static HttpResponseMessage? Window(string path, string form)
+        {
+            if (path != "/v1/Expedition/list") return null;
+            var off = int.Parse(System.Text.RegularExpressions.Regex.Match(form, @"offset=(\d+)").Groups[1].Value);
+            var rows = Enumerable.Range(off, Math.Max(0, Math.Min(50, 120 - off))).Select(i => "{\"id\":" + (1000 + i) + "}");
+            return new HttpResponseMessage { Content = new StringContent("{\"total\":" + Math.Min(120 - off, 51) + ",\"expeditions\":[" + string.Join(",", rows) + "]}") };
+        }
 
-        var (e1, m1) = await Hunts("""{"total":3,"expeditions":[{"id":41},{"id":42}]}""", f => { f.HuntReplies["41"] = Kills(); f.HuntReplies["42"] = Kills(); });
-        Assert.True(Checks(m1) == """{"hunts":{"total":3,"listed":2,"saved":2}}""" && e1.HuntsTotal == 3 && e1.HuntsSaved == 2, $"list shorter than its total: flagged ({Checks(m1)})");
+        var (e1, m1) = await Hunts(f => { f.ExpeditionList = """{"total":3,"expeditions":[{"id":41},{"id":42}]}"""; f.HuntReplies["41"] = Kills(); f.HuntReplies["42"] = "null"; });
+        Assert.True(Checks(m1) == null && e1.HuntsListed == null && e1.HuntsSaved == null, $"a total above the rows listed, every listed hunt saved (one reply is JSON null): no flag ({Checks(m1)})");
 
-        var (e2, m2) = await Hunts("""{"total":3,"expeditions":[{"id":41},{"id":42},{"id":43}]}""",
-            f => f.Custom = (p, form) => p == "/v1/Public_user/expedition" && form.Contains("expedition_id=43") ? new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") } : null);
+        var (e2, m2) = await Hunts(f => { f.ExpeditionList = """{"total":3,"expeditions":[{"id":41},{"id":42},{"id":43}]}"""; f.Custom = (p, form) => Down(p, form, "43"); });
         var failed = m2["files"]!.AsArray().Where(x => x!["error"] != null).Select(x => x!["path"]!.ToString()).ToList();
-        Assert.True(Checks(m2) == """{"hunts":{"total":3,"listed":3,"saved":2}}""" && e2.HuntsSaved == 2 && failed.SequenceEqual(["Public_user_expedition__user_id=7__expedition_id=43.json"]), $"a hunt that failed: flagged, and listed as failed ({Checks(m2)}; {string.Join(",", failed)})");
+        Assert.True(Checks(m2) == """{"hunts":{"listed":3,"saved":2}}""" && (e2.HuntsListed, e2.HuntsSaved) == (3, 2) && failed.SequenceEqual(["Public_user_expedition__user_id=7__expedition_id=43.json"]), $"a hunt that failed: flagged, and listed as failed ({Checks(m2)}; {string.Join(",", failed)})");
 
-        var (e3, m3) = await Hunts("""{"total":1,"expeditions":[{"id":42}]}""");
-        Assert.True(!m3.AsObject().ContainsKey("checks") && e3.HuntsTotal == null && e3.HuntsSaved == null, "all saved: no checks key");
+        var (e3, m3) = await Hunts(f => f.Custom = Window);
+        var hunts3 = m3["files"]!.AsArray().Count(x => x!["endpoint"]!.ToString() == "/v1/Public_user/expedition" && x["sha256"] != null);
+        Assert.True(Checks(m3) == null && e3.HuntsListed == null && e3.Failed == 0 && hunts3 == 120, $"120 hunts over three pages whose totals are 51, 51, 20: all saved, no flag ({Checks(m3)}, {hunts3} saved)");
 
-        var (e4, m4) = await Hunts("""{"total":"3","expeditions":[{"id":41},{"id":42}]}""");
-        Assert.True(Checks(m4) == """{"hunts":{"total":3,"listed":2,"saved":2}}""" && e4.HuntsTotal == 3, "a total sent as a string is read");
-
-        var (e5, m5) = await Hunts("""{"expeditions":[{"id":41},{"id":42}]}""");
-        Assert.True(!m5.AsObject().ContainsKey("checks") && e5.HuntsTotal == null && e5.Failed == 0, "no total: nothing to compare, no flag");
+        var (e4, m4) = await Hunts(f => f.Custom = (p, form) => Window(p, form) ?? Down(p, form, "1077"));
+        Assert.True(Checks(m4) == """{"hunts":{"listed":120,"saved":119}}""" && (e4.HuntsListed, e4.HuntsSaved) == (120, 119), $"one of 120 not saved: flagged against the rows listed, not a page total ({Checks(m4)})");
 
         foreach (var (_, culture, _) in Loc.Languages)
         {

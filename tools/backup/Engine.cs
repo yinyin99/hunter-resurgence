@@ -272,22 +272,20 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
     }
 
-    /// <summary>Set when fewer hunts were saved than the total Expedition/list gives (the list ended early, a page or a hunt failed); null when none is missing.</summary>
-    public int? HuntsTotal { get; private set; }
+    /// <summary>Set when a hunt in the list has no saved Public_user/expedition reply (HuntsSaved &lt; HuntsListed); both null when every listed hunt was saved.
+    /// Expedition/list's own "total" is not used: it counts the rows left from the page's offset, capped at limit + 1, not the player's hunts.</summary>
+    public int? HuntsListed { get; private set; }
     public int? HuntsSaved { get; private set; }
-    int huntsListed;
 
     /// <summary>Hunt list pages, then every hunt. With kills: the score sheet page and the picture of every scored kill too.</summary>
     async Task Hunts(bool kills)
     {
-        HuntsTotal = HuntsSaved = null; // a resumed run counts again
-        long? listTotal = null;
+        HuntsListed = HuntsSaved = null; // a resumed run counts again
         var listed = new List<(string Id, long Start)>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
             var page = Json(await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()))));
-            listTotal ??= Num(page?["total"]);
             var ex = page?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
             listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
@@ -300,8 +298,9 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         int got = 0;
         foreach (var id in ids)
         {
-            var hunt = Json(await Get(Q("Public_user/expedition", false, ("user_id", uid), ("expedition_id", id))));
-            if (hunt != null) got++;
+            var body = await Get(Q("Public_user/expedition", false, ("user_id", uid), ("expedition_id", id)));
+            if (body != null) got++; // null only when no reply was saved (a reply of JSON null is saved)
+            var hunt = Json(body);
             foreach (var k in (hunt?["kills"] as JsonArray) ?? [])
             {
                 if (!kills) break;
@@ -310,10 +309,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 if (sheet != null || photo != null) found.Add((sheet, photo));
             }
         }
-        if (listTotal is { } t && got < t)
+        if (got < ids.Count)
         {
-            (huntsListed, HuntsSaved, HuntsTotal) = (listed.Count, got, (int)t);
-            log($"! hunts: {got} of {t} saved");
+            (HuntsSaved, HuntsListed) = (got, ids.Count);
+            log($"! hunts: {got} of {ids.Count} listed saved");
         }
         if (!kills) return;
         Need(found.Count(k => k.Sheet != null) + found.Count(k => k.Photo != null));
@@ -741,7 +740,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Entry[] list;
         lock (files) list = [.. files.Values.OrderBy(e => e.Path, StringComparer.Ordinal)];
-        var checks = HuntsTotal is { } ht ? new JsonObject { ["hunts"] = new JsonObject { ["total"] = ht, ["listed"] = huntsListed, ["saved"] = HuntsSaved } } : null;
+        var checks = HuntsListed is { } hl ? new JsonObject { ["hunts"] = new JsonObject { ["listed"] = hl, ["saved"] = HuntsSaved } } : null;
         var m = new Manifest(Version, [.. groupsSeen], uid, handle, claimHash!, started, [.. list], steamId64, completed, Format: 2, Mode: identity == "me" ? "own" : "public", Identity: identity, Checks: checks);
         lock (manifestLock) WriteAtomic(Path.Combine(dir, "manifest.json"), JsonSerializer.SerializeToUtf8Bytes(m, J));
     }

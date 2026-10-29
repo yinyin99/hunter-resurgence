@@ -314,7 +314,7 @@
     <value>{0} ungelesene Unterhaltungen wurden geöffnet und gelten jetzt als gelesen.</value>
   </data>
   <data name="Msg_HuntsShort" xml:space="preserve">
-    <value>Nur {0} von {1} Jagden, die der Server auflistet, wurden gesichert.</value>
+    <value>Nur {0} der {1} Jagden aus der Jagdliste wurden gesichert.</value>
   </data>
   <data name="Msg_KillsOff" xml:space="preserve">
     <value>Abschuss-Seiten und Fotos wurden nicht gesichert; für eine vollständige Sicherung ankreuzen.</value>
