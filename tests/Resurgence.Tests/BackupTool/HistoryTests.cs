@@ -309,4 +309,19 @@ public class HistoryTests
         Assert.True(e.Failed == 0 && Directory.GetFiles(Path.Combine(t.Path, "backup-7"), "Page_content_competitions_new*").Length == 2, "saved, not counted as failed requests");
         Assert.True(log.Contains("! history: edition 2 is not an edition (reply is not an object)"), "logged");
     }
+
+    /// <summary>A list page that is saved but not an object ([] or null) is no list: listed in failed as "not a list" with its offset, the run goes on and the file is not complete.</summary>
+    [Fact]
+    public async Task SavedListPageThatIsNoObjectIsAMissNotACrash()
+    {
+        using var t = new TempDir("backup-test-history-");
+        var e = await Run(World(_ => "[]", id => EditionReply(id, [])), t);
+        var h = History(t);
+        Assert.True(!h["complete"]!.GetValue<bool>() && Reasons(h) == """{"request":"list_previous_competitions","offset":0,"reason":"not a list"}""" && e.Failed == 0, $"first page []: {Reasons(h)}");
+
+        using var t2 = new TempDir("backup-test-history-");
+        var e2 = await Run(World(off => off == 20 ? "null" : PreviousPage(30, [1, 2]), id => EditionReply(id, [])), t2);
+        var h2 = History(t2);
+        Assert.True(!h2["complete"]!.GetValue<bool>() && Reasons(h2) == """{"request":"list_previous_competitions","offset":20,"reason":"not a list"}""" && h2["totals"]!["editions"]!.GetValue<int>() == 2 && e2.Failed == 0, $"page at offset 20 null: {Reasons(h2)}");
+    }
 }

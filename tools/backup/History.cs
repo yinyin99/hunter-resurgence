@@ -36,11 +36,12 @@ sealed partial class Engine
         // (a request that gave no file is told from a reply of JSON null by Get itself: it returns null only when the request failed)
         Need(1);
         var first = await Get(Q("Page_content/list_previous_competitions", false, ("offset", "0"), ("limit", "20"), ("lang", "en")));
-        var page = Json(first);
+        var page = Json(first) as JsonObject; // a saved reply that is not an object ([] or null) has no list: never indexed by name, which would throw
         Queue(page?["competitions"]);
         var count = Num(page?["total"]);
         if (first == null) { Miss("list_previous_competitions", "no data", offset: 0); log("! history: list page offset 0 failed (the total is unknown)"); }
-        else if (count == null && page?["total"] is { } bad) // present but not a whole number: the rest of the list is not asked
+        else if (page == null) { Miss("list_previous_competitions", "not a list", offset: 0); log("! history: list page offset 0 is not a list (reply is not an object)"); }
+        else if (count == null && page["total"] is { } bad) // present but not a whole number: the rest of the list is not asked
         {
             Miss("list_previous_competitions", "total not readable", offset: 0);
             log($"! history: list total not readable: {bad.ToJsonString()}");
@@ -50,7 +51,8 @@ sealed partial class Engine
             Need(1);
             var more = await Get(Q("Page_content/list_previous_competitions", false, ("offset", off.ToString()), ("limit", "20"), ("lang", "en")));
             if (more == null) { Miss("list_previous_competitions", "no data", offset: off); log($"! history: list page offset {off} failed"); continue; }
-            Queue(Json(more)?["competitions"]);
+            if (Json(more) is not JsonObject p) { Miss("list_previous_competitions", "not a list", offset: off); log($"! history: list page offset {off} is not a list (reply is not an object)"); continue; }
+            Queue(p["competitions"]);
         }
         Need(1);
         var league = await Get(Q("Page_content/list_community_league_competitions", false, ("lang", "en")));
