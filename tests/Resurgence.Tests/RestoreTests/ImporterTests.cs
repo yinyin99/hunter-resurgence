@@ -282,4 +282,17 @@ public class ImporterTests
         foreach (var p in new[] { "Me_me.json", "Skill_list__user_id=1001.json" }) z.Entry(p).Remove("endpoint");
         Assert.Equal(ModelJson(SyntheticZip.Own().Read()), ModelJson(z.Read()));
     }
+
+    [Fact]
+    public void UidTooLargeForAnIdIsRefused()
+    {
+        var largest = SyntheticZip.PublicZip(byHandle: false);
+        largest.Manifest["uid"] = long.MaxValue.ToString();
+        Assert.Equal(long.MaxValue, largest.Read().Model.Profile.Id);
+        var over = SyntheticZip.PublicZip(byHandle: false);
+        over.Manifest["uid"] = "9223372036854775808";
+        Assert.Equal("manifest uid is too large for an id", over.Refused());
+        over.Manifest["uid"] = new string('9', 40);
+        Assert.Equal("manifest uid is too large for an id", over.Refused());
+    }
 }

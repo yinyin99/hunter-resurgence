@@ -54,6 +54,8 @@ static class BackupReader
 
         var uid = Text(m["uid"]) ?? throw new RestoreException("manifest has no uid");
         if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new RestoreException("manifest uid is not digits only");
+        if (!long.TryParse(uid, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _))
+            throw new RestoreException("manifest uid is too large for an id");
         var format = 1; // no format: every release before format 2
         if (m["format"] is { } f)
         {
