@@ -44,7 +44,7 @@ public class ImporterTests
         var deepReply = SyntheticZip.Own().File("Me_friends.json", "/v1/Me/friends", Encoding.UTF8.GetBytes(new string('[', 70) + new string(']', 70)));
         Assert.Contains("Me_friends.json: not JSON or nested deeper than 64", deepReply.Read().Report.Rejected);
 
-        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 64 << 20, 64, 100, 1 << 20), Limits.Default);
+        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 64 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
     }
 
     [Fact]
@@ -284,5 +284,91 @@ public class ImporterTests
         var z = SyntheticZip.Own();
         foreach (var p in new[] { "Me_me.json", "Skill_list__user_id=1001.json" }) z.Entry(p).Remove("endpoint");
         Assert.Equal(ModelJson(SyntheticZip.Own().Read()), ModelJson(z.Read()));
+    }
+
+    [Fact]
+    public void UidTooLargeForAnIdIsRefused()
+    {
+        var largest = SyntheticZip.PublicZip(byHandle: false);
+        largest.Manifest["uid"] = long.MaxValue.ToString();
+        Assert.Equal(long.MaxValue, largest.Read().Model.Profile.Id);
+        var over = SyntheticZip.PublicZip(byHandle: false);
+        over.Manifest["uid"] = "9223372036854775808";
+        Assert.Equal("manifest uid is too large for an id", over.Refused());
+        over.Manifest["uid"] = new string('9', 40);
+        Assert.Equal("manifest uid is too large for an id", over.Refused());
+    }
+
+    [Fact]
+    public void PositionOutOfRangeIsNoLocation()
+    {
+        Assert.Equal((2_000_000_000, -2_000_000_000, (int?)null, (int?)null),
+            (Importer.Milli(JsonNode.Parse("2000000")), Importer.Milli(JsonNode.Parse("-2000000")), Importer.Milli(JsonNode.Parse("2000000.001")), Importer.Milli(JsonNode.Parse("1e27"))));
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Reply("/v1/Inventory/list", """
+            [{"item":{"id":620},"own":[{"id":9401,"slot":23,"units":0,"metadata":{},"location":{"pos":{"x":1e27,"y":0,"z":0},"dir":{"x":0,"y":0,"z":1},"reserve":1}}]},
+             {"item":{"id":630},"own":[{"id":9501,"slot":1,"units":0,"metadata":{},"location":{"pos":{"x":1,"y":-7.9e28,"z":0},"dir":{"x":0,"y":0,"z":1},"reserve":1}},
+                                       {"id":9502,"slot":1,"units":0,"metadata":{},"location":{"pos":{"x":1,"y":2,"z":3},"dir":{"x":1e27,"y":0,"z":0},"reserve":1}}]}]
+            """, ("user_id", SyntheticZip.Uid));
+        var r = z.Read();
+        Assert.DoesNotContain(r.Model.Items, i => i.Guid == 9401);
+        Assert.Contains("item 9401 (item 620) has a position that is not a number within 2000000 on each axis: read as no location", r.Report.Warnings);
+        Assert.Contains("placed item 9401 (item 620) has no location: not restored, kept in Extras", r.Report.Warnings);
+        var picked = r.Model.Items.Single(i => i.Guid == 9501);
+        Assert.Equal(((Vec3I?)null, (Vec3I?)null, (int?)null), (picked.Position, picked.Direction, picked.WebReserve));
+        Assert.Contains("item 9501 (item 630) has a position that is not a number within 2000000 on each axis: read as no location", r.Report.Warnings);
+        Assert.Null(r.Model.Items.Single(i => i.Guid == 9502).Direction);
+    }
+
+    [Fact]
+    public void NonFiniteNumbersAreSkipped()
+    {
+        var z = SyntheticZip.Own();
+        z.Reply("/v1/Skill/list", """{"weapon":{"200":10.2,"300":"NaN","301":"Infinity","302":1e400},"tracking":[],"spotting":[]}""", ("user_id", SyntheticZip.Uid));
+        z.Reply("/v1/Me/me", """{"id":1001,"handle":"sample","membershipType":"freeplay","ems":"NaN","gms":3}""");
+        var r = z.Read();
+        Assert.Equal([200], r.Model.Skills!.Weapon.Keys);
+        foreach (var k in new[] { "300", "301", "302" })
+            Assert.Contains($"skill weapon entry \"{k}\" is not an item id and a number: skipped", r.Report.Warnings);
+        Assert.Null(r.Model.Wallet);
+        Assert.Contains("wallet (not in the zip)", r.Report.Missing);
+        JsonSerializer.Serialize(r.Model, Importer.Json); // NaN or Infinity would throw here
+    }
+
+    [Fact]
+    public void JsonEntriesHaveTheirOwnCaps()
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.File("images/avatar.png", "/a.png", [.. Enumerable.Range(0, 5000).Select(i => (byte)(i * 7))]);
+        var biggestJson = 600; // the largest reply of PublicZip is the skill list, under 600 bytes
+        Assert.Contains("pictures and score pages: 1 file(s), not read", z.Read(limits: new Limits(JsonEntryBytes: biggestJson)).Report.Unsupported); // a 5000-byte picture is no JSON entry
+        Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(JsonEntryBytes: 100)));
+        Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(EntryBytes: 100, JsonEntryBytes: 1000))); // the smaller cap applies
+        Assert.Equal("JSON content over 1000 bytes", z.Refused(new Limits(JsonTotalBytes: 1000)));
+    }
+
+    [Fact]
+    public void UnsupportedIsGroupedByPatternAndNoEntryIsOneLine()
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Reply($"/game/user/{SyntheticZip.Uid}/ranks", """[{"rank":1}]""");
+        z.Reply("/v1/Leaderboard/personal", """{"status":"done"}""", ("user_id", SyntheticZip.Uid), ("season_no", "0"));
+        z.Reply("/v1/Leaderboard/personal", """{"status":"done"}""", ("user_id", SyntheticZip.Uid), ("season_no", "1"));
+        foreach (var (id, status) in new[] { ("11", 200), ("12", 200), ("13", 404), ("14", 404) })
+            z.File($"game_user_leaderboards_antlers_single_{id}_personal_1001.json", $"/game/user/leaderboards/antlers/single/{id}/personal/1001",
+                Encoding.UTF8.GetBytes(status == 404 ? """{"message":"no entry"}""" : """{"score":5}"""), status: status);
+        var r = z.Read();
+        Assert.Equal(
+        [
+            "/game/user/*/ranks: 1 file(s), kept in Extras",
+            "/game/user/leaderboards/antlers/single/*/personal/*: 2 file(s), kept in Extras",
+            "/v1/Expedition/list: 1 file(s), kept in Extras",
+            "/v1/Leaderboard/personal: 2 file(s), kept in Extras",
+            "/v1/Public_user/expedition: 1 file(s), kept in Extras",
+            "/v1/User/friendslist: 1 file(s), kept in Extras",
+            "\"no entry\" answers (status 404): 2 file(s), kept in Extras",
+        ], r.Report.Unsupported);
+        Assert.Contains("game_user_leaderboards_antlers_single_13_personal_1001.json", r.Model.Extras.Keys); // never dropped
+        Assert.Contains("trophies: 1 rows (0 without a harvest)", r.Report.Restored);
     }
 }

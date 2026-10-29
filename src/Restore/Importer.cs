@@ -73,12 +73,14 @@ public static class Importer
             if (m["checks"]?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl && hs < hl)
                 missing.Add($"hunts: {hs} of the {hl} in the hunt list were saved");
 
-            var unsupported = new List<string>();
-            foreach (var g in c.Files.Where(f => !used.Contains(f.Path)).GroupBy(f => f.Endpoint).OrderBy(g => g.Key, StringComparer.Ordinal))
-            {
-                foreach (var f in g) extras[f.Path] = f.Json?.DeepClone();
-                if (g.Any(f => !partly.Contains(f.Path))) unsupported.Add($"{(g.Key.Length == 0 ? "unknown endpoint" : g.Key)}: {g.Count(f => !partly.Contains(f.Path))} file(s), kept in Extras");
-            }
+            var unused = c.Files.Where(f => !used.Contains(f.Path)).ToList();
+            foreach (var f in unused) extras[f.Path] = f.Json?.DeepClone();
+            unused.RemoveAll(f => partly.Contains(f.Path));
+            // ids in a path (/game/user/<uid>/ranks, one leaderboard per id) would give one line per file
+            static string Pattern(string ep) => string.Join('/', ep.Split('/').Select(s => s.Length > 0 && s.All(char.IsAsciiDigit) ? "*" : s));
+            var unsupported = unused.Where(f => f.Status != 404).GroupBy(f => Pattern(f.Endpoint)).OrderBy(g => g.Key, StringComparer.Ordinal)
+                .Select(g => $"{(g.Key.Length == 0 ? "unknown endpoint" : g.Key)}: {g.Count()} file(s), kept in Extras").ToList();
+            if (unused.Count(f => f.Status == 404) is > 0 and var none) unsupported.Add($"\"no entry\" answers (status 404): {none} file(s), kept in Extras");
             if (c.OtherFiles > 0) unsupported.Add($"pictures and score pages: {c.OtherFiles} file(s), not read");
 
             var model = new PlayerModel(identity, profile, account, wallet, items, skills, stats, achievements, trophies, lodges, extras);
@@ -154,6 +156,7 @@ public static class Importer
                 var slot = Int(row["slot"]) ?? 0;
                 var loc = row["location"] as JsonObject;
                 var pos = Vec(loc?["pos"]);
+                if (loc?["pos"] is not null && pos is null) warnings.Add($"item {guid} (item {itemId}) has a position that is not a number within {MaxWebUnits} on each axis: read as no location");
                 if (slot == 23 && pos is null)
                 {
                     warnings.Add($"placed item {guid} (item {itemId}) has no location: not restored, kept in Extras");
@@ -266,15 +269,19 @@ public static class Importer
 
     static int? Int(JsonNode? n) => Long(n) is { } l && l is >= int.MinValue and <= int.MaxValue ? (int)l : null;
 
-    static double? Dbl(JsonNode? n) => double.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) ? d : null;
+    /// <summary>A finite number: "NaN", "Infinity" or 1e400 is no number (and could not be written as JSON).</summary>
+    static double? Dbl(JsonNode? n) => double.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : null;
 
     /// <summary>The JSON text as the server wrote it, for comparing ("null" when absent).</summary>
     static string Raw(JsonNode? n) => n?.ToJsonString() ?? "null";
 
-    /// <summary>Web units to integer millimetres: the number's decimal text times 1000, rounded half away from zero.
+    /// <summary>The largest web coordinate read as a position; beyond it a value is not a place on a map (and would overflow).</summary>
+    const decimal MaxWebUnits = 2_000_000;
+
+    /// <summary>Web units to integer millimetres: the number's decimal text times 1000, rounded half away from zero; null beyond ±MaxWebUnits.
     /// Never through double: 3144.645 * 1000 is 3144644.9999999995 there.</summary>
     internal static int? Milli(JsonNode? n) =>
-        decimal.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && Math.Round(d * 1000m, MidpointRounding.AwayFromZero) is var r && r is >= int.MinValue and <= int.MaxValue ? (int)r : null;
+        decimal.TryParse(Str(n), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) && Math.Abs(d) <= MaxWebUnits ? (int)Math.Round(d * 1000m, MidpointRounding.AwayFromZero) : null;
 
     static Vec3I? Vec(JsonNode? n) => n is JsonObject o && Milli(o["x"]) is { } x && Milli(o["y"]) is { } y && Milli(o["z"]) is { } z ? new(x, y, z) : null;
 }
