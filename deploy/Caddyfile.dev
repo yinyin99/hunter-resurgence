@@ -1,0 +1,7 @@
+# Local test (compose.dev.yml): Caddy's own CA, which browsers and curl do not trust (curl -k).
+localhost {
+	tls internal
+	reverse_proxy web:8080 {
+		flush_interval -1
+	}
+}

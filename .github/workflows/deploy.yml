@@ -1,0 +1,60 @@
+name: deploy
+# After a green ci run of a push to main: build the website image, push it to GHCR as <sha> and latest, roll it out on the VPS (docs/deploy.md).
+# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice.
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+permissions:
+  contents: read
+  packages: write
+jobs:
+  deploy:
+    # a push to main of this repository only: pull requests (and so forks) never deploy, and no secret reaches them
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+    steps:
+      - name: Check the deploy secrets
+        id: secrets
+        run: |
+          if [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          else echo "::notice::DEPLOY_HOST, DEPLOY_USER or DEPLOY_KEY is not set: nothing deployed"; fi
+      # workflow_run runs this file from the default branch without a checkout of the tested commit
+      - if: steps.secrets.outputs.ok
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Build and push the image
+        if: steps.secrets.outputs.ok
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}-web"
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker build -f src/Web/Dockerfile --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" -t "$image:$SHA" -t "$image:latest" .
+          docker push --all-tags "$image"
+      # the running version is recorded on the host: WEB_TAG=<sha> in ~/web/.env
+      - name: Roll out
+        if: steps.secrets.outputs.ok
+        run: |
+          install -m 700 -d ~/.ssh
+          (umask 077; printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy)
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2> /dev/null
+          scp -i ~/.ssh/deploy deploy/compose.yml deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:web/"
+          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=$SHA/' .env && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
+      - if: always()
+        run: rm -f ~/.ssh/deploy

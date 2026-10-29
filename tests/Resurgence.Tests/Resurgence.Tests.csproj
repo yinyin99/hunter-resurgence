@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Launcher\Resurgence.Launcher.csproj" />
     <ProjectReference Include="..\..\tools\backup\backup.csproj" />
+    <ProjectReference Include="..\..\src\Web\Resurgence.Web.csproj" />
   </ItemGroup>
 
 </Project>
