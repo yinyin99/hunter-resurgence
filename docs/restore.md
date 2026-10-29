@@ -10,7 +10,7 @@ Until the server has its `import backup` command, a stub prints the report and w
 dotnet run --project src/Restore/Cli -- path\to\backup.zip [model.json] [--catalogue path\to\Application_application__lang=en.json]
 ```
 
-Without a second argument the model goes to `<zip name>.model.json` beside the zip. `--catalogue` takes the server's own copy of the game's item catalogue (an `Application/application` reply; never the one inside the zip being read) so the units rule is exact; without it the rule is `zero-only`. Exit code 0 = read, 1 = refused or unreadable (the message says why; any fault is reported, never a crash), 2 = wrong arguments. In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue.
+Without a second argument the model goes to `<zip name>.model.json` beside the zip. `--catalogue` takes the server's own copy of the game's item catalogue (an `Application/application` reply; never the one inside the zip being read) so the units rule is exact; without it the rule is `zero-only`. Exit code 0 = read, 1 = refused or unreadable (the message says why: `refused: <reason>` for a zip the reader refuses, `refused: <exception type>: <message>` for any other fault, such as a bad catalogue, never a crash), 2 = wrong arguments. In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue.
 
 ## What is refused, what is rejected
 

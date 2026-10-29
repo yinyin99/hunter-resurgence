@@ -39,9 +39,14 @@ public static class Program
             stderr.WriteLine($"cannot read: {e.Message}");
             return 1;
         }
-        catch (Exception e) // RestoreException, a bad catalogue, or a fault of the reader: never a crash
+        catch (RestoreException e)
         {
             stderr.WriteLine($"refused: {e.Message}");
+            return 1;
+        }
+        catch (Exception e) // a bad catalogue or a fault of the reader: its type says which, never a crash
+        {
+            stderr.WriteLine($"refused: {e.GetType().Name}: {e.Message}");
             return 1;
         }
     }
