@@ -459,8 +459,12 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebView.Wpf": "[10.0.120, )",
+          "Resurgence.Restore": "[1.0.0, )",
           "Resurgence.Ui": "[1.0.0, )"
         }
+      },
+      "resurgence.restore": {
+        "type": "Project"
       },
       "resurgence.services": {
         "type": "Project",

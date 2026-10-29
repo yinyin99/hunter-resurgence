@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ui\Resurgence.Ui.csproj" />
+    <ProjectReference Include="..\Restore\Resurgence.Restore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

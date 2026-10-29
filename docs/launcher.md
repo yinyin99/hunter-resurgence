@@ -62,7 +62,7 @@ Real today:
 
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
 - **launcher.json**: the language chosen in the language dialog is saved and used at the next start.
-- **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip`: size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the tests cover it.
+- **The check of a backup zip** made by the [backup tool](backup.md) (`BackupZip` in the restore library `src/Restore`, see [restore.md](restore.md): size, zip, `manifest.json`, `claim.key` against `claim_hash`). It has no screen in the new interface yet; the tests cover it.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).

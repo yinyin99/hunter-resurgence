@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Resurgence.Launcher;
+namespace Resurgence.Restore;
 
 public enum BackupError { TooBig, Unreadable, NotZip, NoManifest, BadManifest, NoClaimKey, ClaimMismatch }
 
@@ -49,7 +49,7 @@ public static class BackupZip
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return new(null, BackupError.Unreadable); }
     }
 
-    static bool IsAt(ZipArchiveEntry e, string name) =>
+    internal static bool IsAt(ZipArchiveEntry e, string name) =>
         e.FullName == name || (e.FullName.EndsWith("/" + name, StringComparison.Ordinal) && e.FullName.Count(c => c == '/') == 1);
 
     static Manifest? Parse(byte[]? json)
