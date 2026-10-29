@@ -21,7 +21,8 @@ public sealed class MockAccountService(string? mock = null) : IAccountService
         // the countries of the platform, with the four most played first as in the old list
         string[] first = ["Germany", "Russia", "United Kingdom", "United States"];
         var countries = CultureInfo.GetCultures(CultureTypes.SpecificCultures).Select(c => new RegionInfo(c.Name).EnglishName).Distinct().Order().Where(n => !first.Contains(n));
-        var zones = TimeZoneInfo.GetSystemTimeZones().Select(z => TimeZoneInfo.TryConvertWindowsIdToIanaId(z.Id, out var id) ? id : null).OfType<string>().Distinct().Order();
+        // IANA ids: Windows lists its own ids, Linux the IANA ones already
+        var zones = TimeZoneInfo.GetSystemTimeZones().Select(z => !OperatingSystem.IsWindows() ? z.Id : TimeZoneInfo.TryConvertWindowsIdToIanaId(z.Id, out var id) ? id : null).OfType<string>().Distinct().Order();
         return new([.. first, .. countries], [.. zones]);
     }
 
