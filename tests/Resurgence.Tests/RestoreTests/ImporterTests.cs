@@ -94,6 +94,9 @@ public class ImporterTests
         var oldFlag = SyntheticZip.Own(); // v0.4.0 compared with the list's window count: every listed hunt saved is no gap
         oldFlag.Manifest["checks"] = JsonNode.Parse("""{"hunts":{"total":3,"listed":2,"saved":2}}""");
         Assert.DoesNotContain(oldFlag.Read().Report.Missing, x => x.StartsWith("hunts:"));
+        var cutList = SyntheticZip.Own(); // a list page failed: every listed hunt saved is still a gap
+        cutList.Manifest["checks"] = JsonNode.Parse("""{"hunts":{"listed":50,"saved":50,"list_failed":true}}""");
+        Assert.Contains("hunts: the hunt list did not load completely (50 of the 50 listed were saved)", cutList.Read().Report.Missing);
 
         var f2 = SyntheticZip.Own().Read();
         Assert.Equal(2, f2.Model.Identity.Format);

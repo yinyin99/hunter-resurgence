@@ -30,4 +30,4 @@ No `format` in the manifest = format 1 (every release up to v0.3.0-rc.1); `forma
 
 ## Report
 
-`mode`, `complete` (`yes` = `completed_utc` present, `no`, `unknown` for a format 1 zip without it), the units rule used, and the lists `restored`, `unsupported`, `missing` (for example the wallet of a public zip, or the hunts `checks.hunts` says were saved short), `warnings`, `failed` and `rejected`. The same zip always gives the same model and report (items by item id, then guid).
+`mode`, `complete` (`yes` = `completed_utc` present, `no`, `unknown` for a format 1 zip without it), the units rule used, and the lists `restored`, `unsupported`, `missing` (for example the wallet of a public zip, or the hunts `checks.hunts` says were saved short or whose list did not load completely, `list_failed`), `warnings`, `failed` and `rejected`. The same zip always gives the same model and report (items by item id, then guid).
