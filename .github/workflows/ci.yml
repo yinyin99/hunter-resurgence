@@ -15,3 +15,17 @@ jobs:
           global-json-file: global.json
       - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet test hunter-resurgence.slnx -c Release --no-build
+  # the website's container image (deploy/): builds, starts, serves the banner and lists Linux time zones
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -f src/Web/Dockerfile -t web:ci .
+      - name: Smoke test
+        run: |
+          docker run -d --name web -p 8080:8080 web:ci
+          for _ in $(seq 1 30); do curl -sf http://localhost:8080/feed > feed.html && break; sleep 1; done
+          grep -q "Work in progress" feed.html
+          curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
+      - if: failure()
+        run: docker logs web
