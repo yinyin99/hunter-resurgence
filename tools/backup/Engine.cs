@@ -377,7 +377,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         }
         if (list == null) return;
         var capped = new JsonArray([.. rows.Cast<JsonObject>().Where(x => Num(x["total"]) != (int)x["messages"]!).Select(x => x["user_id"]!.DeepClone())]);
-        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
+        var bytes = Encoding.UTF8.GetBytes(new JsonObject { ["format"] = 1, ["tool_version"] = Version, ["uid"] = uid, ["threads"] = rows, ["checks"] = new JsonObject { ["possibly_capped"] = capped } }.ToJsonString(J));
         WriteAtomic(Path.Combine(dir, "messages-index.json"), bytes);
         lock (files) files["messages-index.json"] = new("messages-index.json", "derived", [], null, Hex(SHA256.HashData(bytes)), DateTime.UtcNow, null, true);
         Interlocked.Increment(ref saved);

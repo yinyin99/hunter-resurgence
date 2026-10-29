@@ -51,6 +51,17 @@ public class MessagesTests
         foreach (var id in new[] { 101, 102, 103 })
             Assert.Equal(Thread(2, 2), File.ReadAllText(Path.Combine(Dir(t), $"Chat_conversation__user_id={id}.json")));
         Assert.True(f.Forms.Where((_, i) => f.Seen[i] == ThreadPath).All(x => x.Contains(Tok)), "threads carry the token");
+
+        static JsonObject Index(TempDir t) => JsonNode.Parse(File.ReadAllText(Path.Combine(Dir(t), "messages-index.json")))!.AsObject();
+        var idx = Index(t);
+        Assert.Equal(["format", "tool_version", "uid", "threads", "checks"], idx.Select(p => p.Key));
+        Assert.True((int)idx["format"]! == 1 && idx["uid"]!.GetValue<string>() == "7" && idx["tool_version"]!.GetValue<string>().Length > 0, "format 1, uid as a string, tool_version");
+        Assert.Equal([101, 103, 102], idx["threads"]!.AsArray().Select(x => (int)x!["user_id"]!));
+        Assert.Empty(idx["checks"]!["possibly_capped"]!.AsArray());
+        using var empty = new TempDir("backup-test-msg-");
+        await Run(Host("[]"), empty, ["messages"]);
+        var e = Index(empty);
+        Assert.True(e.Select(p => p.Key).SequenceEqual(["format", "tool_version", "uid", "threads", "checks"]) && (int)e["format"]! == 1 && e["uid"]!.GetValue<string>() == "7" && e["threads"]!.AsArray().Count == 0, "an empty list still writes the index with format, tool_version, uid and no threads");
     }
 
     [Fact]
