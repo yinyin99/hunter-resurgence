@@ -72,12 +72,14 @@ public static class Importer
             if (m["checks"]?["hunts"] is JsonObject h) // format 2: the tool saw fewer hunts saved than the server lists
                 missing.Add($"hunts: {Int(h["saved"])} of the {Int(h["total"])} the server lists were saved");
 
-            var unsupported = new List<string>();
-            foreach (var g in c.Files.Where(f => !used.Contains(f.Path)).GroupBy(f => f.Endpoint).OrderBy(g => g.Key, StringComparer.Ordinal))
-            {
-                foreach (var f in g) extras[f.Path] = f.Json?.DeepClone();
-                if (g.Any(f => !partly.Contains(f.Path))) unsupported.Add($"{(g.Key.Length == 0 ? "unknown endpoint" : g.Key)}: {g.Count(f => !partly.Contains(f.Path))} file(s), kept in Extras");
-            }
+            var unused = c.Files.Where(f => !used.Contains(f.Path)).ToList();
+            foreach (var f in unused) extras[f.Path] = f.Json?.DeepClone();
+            unused.RemoveAll(f => partly.Contains(f.Path));
+            // ids in a path (/game/user/<uid>/ranks, one leaderboard per id) would give one line per file
+            static string Pattern(string ep) => string.Join('/', ep.Split('/').Select(s => s.Length > 0 && s.All(char.IsAsciiDigit) ? "*" : s));
+            var unsupported = unused.Where(f => f.Status != 404).GroupBy(f => Pattern(f.Endpoint)).OrderBy(g => g.Key, StringComparer.Ordinal)
+                .Select(g => $"{(g.Key.Length == 0 ? "unknown endpoint" : g.Key)}: {g.Count()} file(s), kept in Extras").ToList();
+            if (unused.Count(f => f.Status == 404) is > 0 and var none) unsupported.Add($"\"no entry\" answers (status 404): {none} file(s), kept in Extras");
             if (c.OtherFiles > 0) unsupported.Add($"pictures and score pages: {c.OtherFiles} file(s), not read");
 
             var model = new PlayerModel(identity, profile, account, wallet, items, skills, stats, achievements, trophies, lodges, extras);

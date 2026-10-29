@@ -343,4 +343,29 @@ public class ImporterTests
         Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(EntryBytes: 100, JsonEntryBytes: 1000))); // the smaller cap applies
         Assert.Equal("JSON content over 1000 bytes", z.Refused(new Limits(JsonTotalBytes: 1000)));
     }
+
+    [Fact]
+    public void UnsupportedIsGroupedByPatternAndNoEntryIsOneLine()
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Reply($"/game/user/{SyntheticZip.Uid}/ranks", """[{"rank":1}]""");
+        z.Reply("/v1/Leaderboard/personal", """{"status":"done"}""", ("user_id", SyntheticZip.Uid), ("season_no", "0"));
+        z.Reply("/v1/Leaderboard/personal", """{"status":"done"}""", ("user_id", SyntheticZip.Uid), ("season_no", "1"));
+        foreach (var (id, status) in new[] { ("11", 200), ("12", 200), ("13", 404), ("14", 404) })
+            z.File($"game_user_leaderboards_antlers_single_{id}_personal_1001.json", $"/game/user/leaderboards/antlers/single/{id}/personal/1001",
+                Encoding.UTF8.GetBytes(status == 404 ? """{"message":"no entry"}""" : """{"score":5}"""), status: status);
+        var r = z.Read();
+        Assert.Equal(
+        [
+            "/game/user/*/ranks: 1 file(s), kept in Extras",
+            "/game/user/leaderboards/antlers/single/*/personal/*: 2 file(s), kept in Extras",
+            "/v1/Expedition/list: 1 file(s), kept in Extras",
+            "/v1/Leaderboard/personal: 2 file(s), kept in Extras",
+            "/v1/Public_user/expedition: 1 file(s), kept in Extras",
+            "/v1/User/friendslist: 1 file(s), kept in Extras",
+            "\"no entry\" answers (status 404): 2 file(s), kept in Extras",
+        ], r.Report.Unsupported);
+        Assert.Contains("game_user_leaderboards_antlers_single_13_personal_1001.json", r.Model.Extras.Keys); // never dropped
+        Assert.Contains("trophies: 1 rows (0 without a harvest)", r.Report.Restored);
+    }
 }
