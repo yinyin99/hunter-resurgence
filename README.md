@@ -21,7 +21,7 @@ The backup tool is a small Windows app that saves your profile (statistics, inve
 
 **Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
 
-**Check the download.** The release notes list the SHA-256 of the zip. Compare it with yours:
+**Check the download.** The release notes list the SHA-256 of the release zip. Compare it with yours:
 
 ```
 Get-FileHash backup-win-x64.zip -Algorithm SHA256
@@ -29,7 +29,7 @@ Get-FileHash backup-win-x64.zip -Algorithm SHA256
 
 If the two differ, do not run it.
 
-To check that the zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
+To check that the release zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
 
 ```
 gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence

@@ -25,7 +25,7 @@ dotnet run --project src/Web
 
 The solution holds the backup tool (`tools/backup`), the launcher (`src/Launcher`), the website (`src/Web`), the library they share (`src/Ui`), the service contracts and mocks (`src/Services`) and the restore library (`src/Restore`, with a command-line stub in `src/Restore/Cli`). The tests are in `tests/Resurgence.Tests` (xUnit v3) and `dotnet test` exits 0 when every test passes: the backup tool's tests use a fake HTTP handler and a fake process, the launcher's use temporary files only, the restore tests build synthetic backup zips in memory; none reads or changes anything else on the PC or uses the network. The last command starts the website on `http://localhost:5080`.
 
-The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. The keys are listed in [docs/backup.md](docs/backup.md) and [docs/launcher.md](docs/launcher.md#settingsjson). `client_exe` is a bare exe name in the backup tool (it looks for the running process) and a path relative to the game folder in the launcher. See also [docs/website.md](docs/website.md) and [docs/restore.md](docs/restore.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
+The launcher, the website and the backup tool read a `settings.json` (next to the exe, or in `src/Web/`), with real values that are never committed. Start from `src/Launcher/settings.example.json` (the website reads the same keys for the names and links) or `tools/backup/settings.example.json`. The keys are listed in [docs/backup.md](docs/backup.md) and [docs/launcher.md](docs/launcher.md#settingsjson). See also [docs/website.md](docs/website.md) and [docs/restore.md](docs/restore.md). The website's container image and its deploy are in [docs/deploy.md](docs/deploy.md).
 
 To build the backup tool's distributable exe, create a `settings.json` (start from `tools/backup/settings.example.json`) and run:
 
@@ -33,11 +33,11 @@ To build the backup tool's distributable exe, create a `settings.json` (start fr
 tools\backup\publish.cmd path\to\settings.json [version]
 ```
 
-The optional version (for example `1.2.3` or `1.2.3-rc.1`) is passed to `dotnet publish` as `-p:Version`; without it the build says `0.0.0-dev`. The zip is `tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip`.
+The optional version (for example `1.2.3` or `1.2.3-rc.1`) is passed to `dotnet publish` as `-p:Version`; without it the build says `0.0.0-dev`. The release zip is `tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip`.
 
 ## Releases
 
-Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, zip, SHA-256 in the release notes and a build provenance attestation of the zip (skipped while the repository is private). The release is created as a draft, the zip is uploaded, then it is published, because a published release is immutable. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
+Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, release zip, SHA-256 in the release notes and a build provenance attestation of the release zip (skipped while the repository is private). The release is created as a draft, the release zip is uploaded, then it is published, because a published release is immutable. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
 Separately, `.github/workflows/deploy.yml` runs (through `workflow_run`) after a successful `ci` run for a push to `main`, never directly on the push, and deploys the website to the VPS (see [docs/deploy.md](docs/deploy.md)). Its secrets are `DEPLOY_HOST`, `DEPLOY_USER` and `DEPLOY_KEY`; without them it deploys nothing.
 

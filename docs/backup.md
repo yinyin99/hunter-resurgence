@@ -6,7 +6,7 @@
 
 The tool asks the official servers for your profile and saves what they answer, unchanged, in a folder on your PC. The one exception to its reading only is the optional Messages group: opening an unread conversation can mark it as read, and nothing can undo that.
 
-It connects only to the official servers listed in `settings.json`, next to `backup.exe`. Your backup stays on your PC; upload to a server is not available yet. To read your own account it uses the session of the running game ([how](#how-the-token-is-found)). It runs on your PC and needs no installation and no administrator rights. The backup folder, its backup zip and `claim.key` stay on your PC; keep the backup zip private ([Privacy](#privacy)).
+It connects only to the official servers listed in `settings.json`, next to `backup.exe`. Your backup stays on your PC; upload to a server is not available yet. To read your own account it uses the session of the running game ([how](#how-the-token-is-found)). It runs on your PC and needs no installation and no administrator rights. The backup folder, its backup zip and `claim.key` stay on your PC ([Privacy](#privacy)).
 
 A backup is a copy of your profile at one moment: as it was while the backup ran. Anything you play, earn, buy or change in the game afterwards is not in it: run another backup, which goes into a new folder with the date and time in its name. "Skip files already saved" only continues a run that did not finish.
 

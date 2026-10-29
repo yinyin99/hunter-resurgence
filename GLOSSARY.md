@@ -10,7 +10,7 @@ _Avoid_: live servers, old servers
 
 **Local server**:
 A server a player runs on their own PC or local network to play offline.
-_Avoid_: offline server, "the server"
+_Avoid_: offline server
 
 **Community server**:
 The shared server run by this project's maintainer; anyone can run the same code.
@@ -35,6 +35,10 @@ The folder a backup writes, named after the account id; a later backup of the sa
 **Backup zip**:
 The zip of a backup folder; the file a player keeps private and later restores.
 _Avoid_: zip (alone), archive
+
+**Release zip**:
+The download that holds the backup tool and its `settings.json`; not a backup zip.
+_Avoid_: the zip
 
 **My account**:
 The mode that backs up the player's own profile through the running game.
