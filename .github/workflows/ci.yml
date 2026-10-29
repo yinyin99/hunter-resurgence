@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # dependabot-locks.yml starts it for the lock-file commit it pushes (a push with GITHUB_TOKEN starts no workflow); never deploys (deploy.yml: push only)
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

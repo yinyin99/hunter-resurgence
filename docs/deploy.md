@@ -13,6 +13,9 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
 | `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
+| `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK pull request |
+
+**SDK updates.** Dependabot opens one weekly pull request, the `dotnet-sdk` multi-ecosystem group in `.github/dependabot.yml`, when a new SDK patch or feature band is out. It moves `global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of `src/Web/Dockerfile` together; a new .NET major is ignored, because it is a migration. `dependabot-locks.yml` then runs on that pull request. It restores with the new SDK (`dotnet restore hunter-resurgence.slnx --force-evaluate`), commits any changed lock files to the pull request's branch as "build: regenerate lock files for the new SDK", and starts `ci` for that commit by `workflow_dispatch`, since a push made with `GITHUB_TOKEN` starts no workflow. Merge once `build` and `docker` are green on the last commit. Check that the `aspnet` tag is the runtime that the new SDK ships: Dependabot bumps each tag to its own latest version. If the lock-file job fails, or `ci` stays red with NU1004: run the restore above on the pull request's branch with that SDK and push the lock files by hand, or start the job again with Actions, `dependabot-locks`, Run workflow, on the pull request's branch. After that commit, Dependabot no longer rebases the pull request; close it if it falls behind `main`, and the next run opens a new one.
 
 ## VPS prerequisites
 
