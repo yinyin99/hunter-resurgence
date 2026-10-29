@@ -55,7 +55,7 @@ Solo means a single-player hunt on a server; multiplayer means hunting with othe
 
 *New launcher (step 4): work in progress, mock data, images are placeholders.*
 
-A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the backup zip private.
+A restore can only bring back what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The claim key in the backup zip and the Steam account recorded by a backup made in **My account** mode are used as hints that a backup is yours; if two people claim the same profile, the claim may be reviewed. Keep the backup zip private.
 
 **No money, ever.** This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
 
