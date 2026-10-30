@@ -2,7 +2,7 @@
 
 Status: accepted
 
-The community server and the local server store profiles in SQLite: one database file per server, the same schema and the same migrations for both. The local server runs on a player's own PC, where nothing should need installing or running beside it; a SQLite file needs neither. The community server runs as one service on one VPS (see [deploy.md](../deploy.md)) and is sized for up to about 500 players at once, which one SQLite file in WAL mode on a local disk carries: readers never wait for the writer, and the writes of a hunt are small. One database for both keeps one code path for storing a restore, and anyone can run the community server's code without a database server ([GLOSSARY.md](../../GLOSSARY.md): "anyone can run the same code").
+The community server and the local server store profiles in SQLite: one database file per server, the same schema and the same migrations for both. The local server runs on a player's own PC, where nothing should need installing or running beside it; a SQLite file needs neither. The community server runs as one service on one VPS (see [deploy.md](../deploy.md)) and is sized for up to about 500 players at once, which one SQLite file in WAL mode on a local disk carries: readers never wait for the writer, and the writes of a hunt are small. One database for both keeps one code path for storing a restored profile, and anyone can run the community server's code without a database server ([GLOSSARY.md](../../GLOSSARY.md): "anyone can run the same code").
 
 ## Considered options
 
@@ -13,10 +13,10 @@ The community server and the local server store profiles in SQLite: one database
 ## Consequences
 
 - SQLite allows one writer at a time and one machine: the community server is one process on one VPS, and the database file sits on a local disk in a Docker volume, never on a network share.
-- In `deploy/compose.yml` the database is no service of its own: the community server's service mounts a named volume at `/data` and opens the file there. The volume outlives the container, so a deploy keeps the data; Compose stops the old container before it starts the new one, so two servers never write at once. The image runs as the non-root `$APP_UID`, so its Dockerfile creates `/data` owned by that user (an empty named volume takes the owner of the folder it is mounted over); otherwise the first write fails.
+- In `deploy/compose.yml` the database is no service of its own: the community server's service mounts a named volume at `/data` and opens the file there. The volume outlives the container, so a deploy keeps the data; Compose stops the old container before it starts the new one, so two servers never write at once. If the server's image runs as the non-root `$APP_UID` like `src/Web/Dockerfile`, its Dockerfile must create `/data` owned by that user (an empty named volume takes the owner of the folder it is mounted over); otherwise the first write fails.
 - Only the community server opens the file. The website reads and changes profiles through the community server's HTTP API, the contracts in `src/Services/Contracts/` that the launcher also uses.
 - A copy of the running database is made with SQLite's backup (`sqlite3 <file> ".backup <copy>"` or `VACUUM INTO`), not by copying the file, which can miss what is still in the `-wal` file.
-- The parts of a profile kept as raw JSON (`Extras`, trophy and lodge rows of `PlayerModel`) go in text columns; SQLite's JSON functions read them when needed.
+- The parts of a profile kept as raw JSON (`Extras`, the trophy and lodge rows, item metadata, user stats, and achievement values and triggers of `PlayerModel`) go in text columns; SQLite's JSON functions read them when needed.
 - Tests can use an in-memory SQLite database, so they still need no network and no service.
 - Revisit, with a new ADR that supersedes this one, when the community server needs more than about 500 players at once, more than one server process, or when writers wait on the database.
 - The library used to reach SQLite (and its entry in `THIRD-PARTY-NOTICES.md`) is chosen with the storage layer, not here.
