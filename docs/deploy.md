@@ -123,7 +123,7 @@ Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CO
 
 Without them (a fork, or no VPS yet) the run ends with a notice and deploys nothing. The host key is taken with `ssh-keyscan` at every run (trust on first use); the stricter option is a fourth secret with the pinned `known_hosts` line.
 
-Repository variable (Settings, Secrets and variables, Actions, Variables): `LINK_BACKUP`, the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip`. Without it the deploy removes the line and the site uses `link_backup` of `settings.json`, if any, else shows no backup tool button.
+Repository variable (Settings, Secrets and variables, Actions, Variables): `LINK_BACKUP`, the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip`. Without it the deploy removes the line and the site uses `link_backup` of `settings.json`, if any, else shows no backup tool button. A value that is not a plain `https://` URL (no spaces, `'`, `$` or `#`) fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the line.
 
 ## Rollback
 

@@ -65,6 +65,6 @@ jobs:
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy)
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2> /dev/null
           scp -i ~/.ssh/deploy deploy/compose.yml deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:web/"
-          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=$SHA/' .env && sed -i '/^LINK_BACKUP=/d' .env$link && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
+          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=$SHA/' .env && sed -i -e '/^LINK_BACKUP=/d' -e '\$a\\' .env$link && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
       - if: always()
         run: rm -f ~/.ssh/deploy
