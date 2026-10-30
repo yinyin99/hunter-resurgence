@@ -8,6 +8,16 @@ The screens follow the original website screen for screen (same theme, places, n
 
 The mock session starts signed in as a fictional hunter (`Hunter01`); sign out in the top bar to see the public site. Sign-in is the email, then a six-digit code (there is no password); the mock accepts any address with an `@` and any six digits.
 
+## Backup tool
+
+Until the official servers close, the work-in-progress banner of every website page (signed in or out, never the launcher) has a "Save your profile before then: download the backup tool" button. It opens a dialog (`src/Ui/Modals/BackupDialog.razor`) with README's three steps and the SmartScreen note, plus a "Download the backup tool" button. The steps follow README's "For players: the backup tool": change both together.
+
+The dialog also opens by itself on a browser's first visit, unless another dialog is open. The `backup_tool` cookie (one year) remembers that it was shown.
+
+The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). Without the key, neither the button nor the dialog is shown. For the live site, add it to the VPS `settings.json` (see [deploy.md](deploy.md)).
+
+From 2026-11-12 00:00 UTC both are hidden (`BackupDialog.Offered`).
+
 ## Build and run
 
 ```

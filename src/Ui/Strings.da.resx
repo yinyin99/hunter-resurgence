@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Luk</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ALDERSMÆRKNING</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Under udvikling: intet her er rigtigt endnu. De officielle servere kører indtil 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Gem din profil inden da: download backupværktøjet</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Gem din profil med backupværktøjet</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Backupværktøjet er en lille Windows-app, der gemmer din profil (statistik, inventar, trofæer, jagthistorik og mere) som filer på din pc, mens de officielle servere stadig kører, indtil 2026-11-11. Det læser kun; det ændrer intet på serveren.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Download backup-win-x64.zip, og pak den ud. Hold backup.exe og settings.json i samme mappe.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Start backup.exe. For din egen konto: åbn spillet og start en jagt (backupværktøjet kan være åbent før eller efter); eller vælg »Public profile« og skriv et handle eller id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Sæt flueben ved det, der skal gemmes, og tryk på »Start«. Resultatet er en backupmappe og en backup-zip i Documents\game-backup. Hold den backup-zip privat.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe-filen er ikke kodesigneret, så Windows viser måske »Windows beskyttede din pc / Ukendt udgiver«. Vælg »Flere oplysninger« og derefter »Kør alligevel«.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Download backupværktøjet</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privatlivspolitik</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Slutbrugerlicensaftale</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVATLIVSPOLITIK</value></data>

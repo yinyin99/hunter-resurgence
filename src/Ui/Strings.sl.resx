@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Zapri</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>OCENE</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>V izdelavi: nič od tega še ni resnično. Uradni strežniki delujejo do 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Pred tem shranite svoj profil: prenesite orodje za varnostno kopiranje</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Shranite svoj profil z orodjem za varnostno kopiranje</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Orodje za varnostno kopiranje je majhna aplikacija za Windows, ki vaš profil (statistiko, inventar, trofeje, zgodovino lovov in drugo) shrani kot datoteke na vaš računalnik, dokler uradni strežniki še delujejo, do 2026-11-11. Samo bere; na strežniku ne spremeni ničesar.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Prenesite backup-win-x64.zip in ga razširite. Datoteki backup.exe in settings.json naj bosta v isti mapi.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Zaženite backup.exe. Za svoj račun odprite igro in začnite lov (orodje je lahko odprto prej ali pozneje); ali izberite „Public profile“ in vpišite vzdevek ali id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Označite, kaj želite shraniti, in pritisnite „Start“. Rezultat je mapa varnostne kopije in zip varnostne kopije v Documents\game-backup. Ta zip obdržite zase.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Datoteka exe ni podpisana, zato lahko Windows prikaže „Windows protected your PC / Unknown publisher“. Izberite „More info“ in nato „Run anyway“.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Prenesite orodje za varnostno kopiranje</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Pravilnik o zasebnosti</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Licenčna pogodba za končnega uporabnika</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRAVILNIK O ZASEBNOSTI</value></data>

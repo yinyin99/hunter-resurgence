@@ -33,6 +33,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 
 - Changing UI text means changing every translation. The backup tool has six in `tools/backup/Strings*.resx`; the launcher and website have 19 in `src/Ui/Strings*.resx`. `TranslationsTests` checks that every file has the same keys and `{0}` placeholders.
 - The backup tool's "What isn't saved?" dialog (resx keys `NotCovered_<n>`) mirrors the "What is not saved" section of `docs/backup.md`. Change both together.
+- The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`) mirrors README's "For players: the backup tool" and quotes the backup tool's `Public_Radio` and `Start` labels. Change them together.
 
 ## Agent skills
 

@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ALTERSFREIGABEN</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>In Arbeit: nichts hier ist bereits echt. Die offiziellen Server laufen bis zum 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Sichern Sie Ihr Profil vorher: Backup-Tool herunterladen</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Profil mit dem Backup-Tool sichern</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Das Backup-Tool ist eine kleine Windows-App, die Ihr Profil (Statistiken, Inventar, Trophäen, Jagdverlauf und mehr) als Dateien auf Ihrem PC speichert, solange die offiziellen Server noch laufen, bis zum 2026-11-11. Es liest nur; auf dem Server ändert es nichts.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Laden Sie backup-win-x64.zip herunter und entpacken Sie es. Lassen Sie backup.exe und settings.json im selben Ordner.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Starten Sie backup.exe. Für Ihr eigenes Konto öffnen Sie das Spiel und starten eine Jagd (das Backup-Tool kann vorher oder nachher geöffnet werden); oder wählen Sie „Öffentliches Profil“ und geben Sie einen Handle oder eine ID ein.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Haken Sie an, was gesichert werden soll, und klicken Sie auf „Starten“. Das Ergebnis ist ein Backup-Ordner und ein Backup-Zip in Documents\game-backup. Behalten Sie dieses Backup-Zip für sich.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Die exe ist nicht code-signiert, daher zeigt Windows eventuell „Der Computer wurde durch Windows geschützt / Unbekannter Herausgeber“. Wählen Sie „Weitere Informationen“, dann „Trotzdem ausführen“.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Backup-Tool herunterladen</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Datenschutzerklärung</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Endbenutzer-Lizenzvertrag</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>DATENSCHUTZERKLÄRUNG</value></data>

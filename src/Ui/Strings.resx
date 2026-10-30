@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Close</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>RATINGS</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Work in progress: nothing here is real yet. The official servers run until 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Save your profile before then: download the backup tool</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Save your profile with the backup tool</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up, until 2026-11-11. It only reads; it changes nothing on the server.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Download backup-win-x64.zip and unpack it. Keep backup.exe and settings.json in the same folder.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Start backup.exe. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Tick what to save, press Start. The result is a backup folder and a backup zip in Documents\game-backup. Keep that backup zip private.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose "More info", then "Run anyway".</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Download the backup tool</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privacy Policy</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>End User License Agreement</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>

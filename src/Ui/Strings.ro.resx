@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Închideți</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASIFICĂRI</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Lucru în desfășurare: nimic de aici nu este încă real. Serverele oficiale funcționează până la 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Salvați-vă profilul până atunci: descărcați instrumentul de backup</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Salvați-vă profilul cu instrumentul de backup</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Instrumentul de backup este o mică aplicație Windows care vă salvează profilul (statistici, inventar, trofee, istoricul vânătorilor și altele) ca fișiere pe PC-ul dvs. cât timp serverele oficiale încă funcționează, până la 2026-11-11. Doar citește; nu modifică nimic pe server.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Descărcați backup-win-x64.zip și dezarhivați-l. Păstrați backup.exe și settings.json în același folder.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Porniți backup.exe. Pentru contul propriu, deschideți jocul și începeți o vânătoare (instrumentul poate fi deschis înainte sau după); sau alegeți „Public profile” și tastați un nume sau un id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Bifați ce doriți să salvați și apăsați „Start”. Rezultatul este un folder de backup și un zip de backup în Documents\game-backup. Păstrați acel zip privat.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Fișierul exe nu este semnat, așa că Windows poate afișa „Windows protected your PC / Unknown publisher”. Alegeți „More info”, apoi „Run anyway”.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Descărcați instrumentul de backup</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Politica de confidențialitate</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Acord de licență pentru utilizatorul final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITICA DE CONFIDENȚIALITATE</value></data>

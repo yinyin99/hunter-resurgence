@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Fechar</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICAÇÃO INDICATIVA</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: nada aqui é real ainda. Os servidores oficiais funcionam até 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Salve seu perfil antes disso: baixe a ferramenta de backup</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Salve seu perfil com a ferramenta de backup</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>A ferramenta de backup é um pequeno app para Windows que salva seu perfil (estatísticas, inventário, troféus, histórico de caçadas e mais) como arquivos no seu PC enquanto os servidores oficiais ainda funcionam, até 2026-11-11. Ela só lê; não altera nada no servidor.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Baixe backup-win-x64.zip e descompacte. Mantenha backup.exe e settings.json na mesma pasta.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Inicie backup.exe. Para a sua própria conta, abra o jogo e comece uma caçada (a ferramenta pode ser aberta antes ou depois); ou escolha “Perfil público” e digite um nome de usuário ou id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Marque o que salvar e clique em “Iniciar”. O resultado é uma pasta de backup e um zip de backup em Documents\game-backup. Não compartilhe esse zip.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>O exe não tem assinatura de código, então o Windows pode mostrar “O Windows protegeu o computador / Editor desconhecido”. Escolha “Mais informações” e depois “Executar assim mesmo”.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Baixar a ferramenta de backup</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Política de Privacidade</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Contrato de Licença do Usuário Final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLÍTICA DE PRIVACIDADE</value></data>

@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Zamknij</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>OCENY WIEKOWE</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Prace w toku: nic tutaj nie jest jeszcze prawdziwe. Oficjalne serwery działają do 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Zapisz swój profil wcześniej: pobierz narzędzie do kopii zapasowej</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Zapisz swój profil narzędziem do kopii zapasowej</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Narzędzie do kopii zapasowej to mała aplikacja dla Windows, która zapisuje Twój profil (statystyki, ekwipunek, trofea, historię polowań i więcej) jako pliki na Twoim PC, dopóki oficjalne serwery działają, do 2026-11-11. Tylko odczytuje dane; niczego nie zmienia na serwerze.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Pobierz backup-win-x64.zip i rozpakuj go. Trzymaj backup.exe i settings.json w tym samym folderze.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Uruchom backup.exe. Dla własnego konta otwórz grę i rozpocznij polowanie (narzędzie może być otwarte przed lub po); albo wybierz „Public profile” i wpisz nazwę lub id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Zaznacz, co zapisać, i naciśnij „Start”. Wynikiem jest folder kopii i plik zip kopii w Documents\game-backup. Nie udostępniaj tego pliku zip.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Plik exe nie jest podpisany, więc Windows może pokazać „System Windows ochronił ten komputer / Nieznany wydawca”. Wybierz „Więcej informacji”, a potem „Uruchom mimo to”.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Pobierz narzędzie do kopii zapasowej</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Polityka prywatności</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Umowa licencyjna użytkownika</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITYKA PRYWATNOŚCI</value></data>
