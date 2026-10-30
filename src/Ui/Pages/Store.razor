@@ -37,7 +37,8 @@
                 <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="store-bundle" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
                 <p class="price"><b>@b.Price em$</b></p>
-                <a href="/store/bundle/@b.Id" class="btn btn-primary">@L["Store.Details"]</a>
+                @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@
+                <button class="btn btn-primary" @onclick='() => Nav.NavigateTo($"/store/bundle/{b.Id}")'>@L["Store.Details"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</button>
             </div>
         }
     </div>
