@@ -1,6 +1,6 @@
 name: deploy
 # After a green ci run of a push to main: build the website image, push it to GHCR as <sha> and latest, roll it out on the VPS (docs/deploy.md).
-# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice.
+# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. LINK_BACKUP (repository variable) becomes the website's backup link.
 on:
   workflow_run:
     workflows: [ci]
@@ -51,11 +51,20 @@ jobs:
       # the running version is recorded on the host: WEB_TAG=<sha> in ~/web/.env
       - name: Roll out
         if: steps.secrets.outputs.ok
+        env:
+          LINK_BACKUP: ${{ vars.LINK_BACKUP }}
         run: |
+          # LINK_BACKUP (repository variable) goes into .env unquoted and into a single-quoted remote command: URL characters only, no ' $ # or spaces
+          link=""
+          if [ -n "$LINK_BACKUP" ]; then
+            url='^https://[A-Za-z0-9._~:/?@!&+,;=%-]+$'
+            [[ $LINK_BACKUP =~ $url ]] || { echo "::error::LINK_BACKUP is not an https URL"; exit 1; }
+            link=" && echo 'LINK_BACKUP=$LINK_BACKUP' >> .env"
+          fi
           install -m 700 -d ~/.ssh
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy)
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2> /dev/null
           scp -i ~/.ssh/deploy deploy/compose.yml deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:web/"
-          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=$SHA/' .env && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
+          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=$SHA/' .env && sed -i '/^LINK_BACKUP=/d' .env$link && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
       - if: always()
         run: rm -f ~/.ssh/deploy
