@@ -1,6 +1,6 @@
 # Restore library
 
-`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report. It has no database and no server types: storing the model is a later layer. It also holds `BackupZip`, a smaller check of a backup zip (see [BackupZip](#backupzip)).
+`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report. It has no database and no server types: storing the model is a later layer, in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)). It also holds `BackupZip`, a smaller check of a backup zip (see [BackupZip](#backupzip)).
 
 ## Run it
 
