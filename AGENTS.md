@@ -18,7 +18,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 
 - Every task gets its own git worktree and branch from `origin/main`: `git fetch --prune`, then `git worktree add ../<name> -b <type>/<name> origin/main`. The main checkout stays on `main`; other work may be in progress there.
 - Every edit and command targets the worktree by absolute path, so nothing lands in the main checkout by accident.
-- Push from the main checkout (`git -C <main checkout> push -u origin <branch>`), because local hooks resolve their paths from it.
+- Push from the task's worktree (`git push -u origin <branch>`). The pre-push hook runs there too and scans that worktree; it prints `clean` on success. Never use `--no-verify`.
 - After the merge, remove the worktree (`git worktree remove ../<name>`) and the local branch.
 
 ## Tasks
