@@ -135,7 +135,7 @@ The next deploy sets the tag again.
 
 ## Adding the server service or another site
 
-- **The game's community server, later:** a second service in `deploy/compose.yml`, on the `internal` network only, and a route in the Caddyfile (a `handle` block in the site, or its own host name). `FORWARDED_TRUSTED` trusts the whole `internal` network, so the server could set forwarded headers too; to narrow it, give `caddy` a fixed `ipv4_address` on `internal` and trust only that address.
+- **The game's community server, later:** a second service in `deploy/compose.yml`, on the `internal` network only, and a route in the Caddyfile (a `handle` block in the site, or its own host name). `FORWARDED_TRUSTED` trusts the whole `internal` network, so the server could set forwarded headers too; to narrow it, give `caddy` a fixed `ipv4_address` on `internal` and trust only that address. Its SQLite database file goes in a named volume of that service only, mounted at `/data`; the website reaches profiles through the server's API, never through the file ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 - **Another Compose project on the same VPS:** its public service joins the external network `edge` with a unique alias, and it gets a site file in `~/web/sites/`, for example `sites/other.caddy`:
 
 ```
