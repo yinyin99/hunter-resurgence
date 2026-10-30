@@ -2,4 +2,5 @@
 - No game files or data, and nothing about how knowledge of the game or its servers was obtained.
 - Before your first edit, read AGENTS.md and the docs it links: their rules bind you too.
 - Work only in this worktree and its branch. Never commit to `main`.
+- Run git and gh with the bash tool, never from eval or a script: the approval rules guard bash only. Merging is the maintainer's; never run `gh pr merge` or merge through the API.
 - Run `dotnet build hunter-resurgence.slnx -c Release` and `dotnet test hunter-resurgence.slnx -c Release --no-build` before calling a step done.
