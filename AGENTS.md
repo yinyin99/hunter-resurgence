@@ -21,6 +21,14 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 - Push from the main checkout (`git -C <main checkout> push -u origin <branch>`), because local hooks resolve their paths from it.
 - After the merge, remove the worktree (`git worktree remove ../<name>`) and the local branch.
 
+## Tasks
+
+- A task is a GitHub issue; its number `<n>` is the task id. The issue is the task record: Goal, Acceptance criteria, Plan (checkboxes) and Decisions in its body, progress as comments. Issues and PRs are public: the rules above apply to their text too.
+- `/new-task <n>` creates the task's worktree and branch: the name is `<n>-<slug>`. Before a session ends, `/checkpoint <n>` saves progress to the issue; `/resume-task <n>` picks it up.
+- When a plan is approved, copy it into the issue's Plan section as checkboxes before the first edit, and tick each step when it is done.
+- A task is finished when the build and tests pass, a PR with `Closes #<n>` in its body is open, and the `pr-reviewer` subagent says "ready to merge" (fix and run it again, at most 2 rounds). Then stop and wait: the maintainer reviews and merges (merge commit).
+- PR conversation and review summaries: `gh pr view <n> --comments`. Inline review comments: `gh api repos/{owner}/{repo}/pulls/<n>/comments`.
+
 ## Gotchas
 
 - Changing UI text means changing every translation. The backup tool has six in `tools/backup/Strings*.resx`; the launcher and website have 19 in `src/Ui/Strings*.resx`. `TranslationsTests` checks that every file has the same keys and `{0}` placeholders.
