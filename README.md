@@ -9,6 +9,10 @@ Unofficial fan project. Not affiliated with, endorsed by or connected to the dev
 
 Licensed under the [GNU AGPL-3.0](LICENSE).
 
+## Website (work in progress)
+
+[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. It is a preview: every page shows fixed, fictional data (you start signed in as `Hunter01`; sign out in the top bar for the public site; sign-in accepts any email address and any six digits), pictures are labelled boxes, and a banner on every page says so. It is not the game server, and no data you enter is saved. Use a current Chrome or Edge with JavaScript. Details: [docs/website.md](docs/website.md).
+
 ## For players: the backup tool
 
 The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. It speaks six languages and follows your Windows language. Details: [docs/backup.md](docs/backup.md); what it stores and sends: [privacy](docs/backup.md#privacy).
@@ -36,10 +40,6 @@ To check that the release zip was built by this repository's release workflow fr
 ```
 gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 ```
-
-## Website (work in progress)
-
-[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. It is a preview: every page shows fixed, fictional data (you start signed in as `Hunter01`; sign out in the top bar for the public site; sign-in accepts any email address and any six digits), pictures are labelled boxes, and a banner on every page says so. It is not the game server, and no data you enter is saved. Use a current Chrome or Edge with JavaScript. Details: [docs/website.md](docs/website.md).
 
 ## Roadmap
 
