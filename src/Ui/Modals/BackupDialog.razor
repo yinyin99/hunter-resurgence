@@ -1,0 +1,22 @@
+@inject ModalService Modal
+
+@* the backup tool's download and quick tutorial; website only, opened from the work-in-progress banner (WipBanner) *@
+<div class="backup dialog-card" role="dialog" aria-modal="true" aria-labelledby="backup-title">
+    <button class="close" aria-label="@L["Alert.Close"]" @onclick="Modal.Close">&times;</button>
+    <h2 id="backup-title">@L["Backup.Title"]</h2>
+    <p>@L["Backup.Intro"]</p>
+    <ol>
+        <li>@L["Backup.Step1"]</li>
+        <li>@L["Backup.Step2"]</li>
+        <li>@L["Backup.Step3"]</li>
+    </ol>
+    <p class="note">@L["Backup.SmartScreen"]</p>
+    <ExternalLink Key="backup" Class="btn btn-primary btn-large">@L["Backup.Download"] <Icon Name="download" /></ExternalLink>
+</div>
+
+@code {
+    /// <summary>The official servers close on 2026-11-11: the backup tool is offered through that day (UTC), and only when settings.json has link_backup.</summary>
+    static readonly DateTime Until = new(2026, 11, 12, 0, 0, 0, DateTimeKind.Utc);
+
+    public static bool Offered(Branding brand, DateTime utcNow) => utcNow < Until && brand.Link("backup") is not null;
+}

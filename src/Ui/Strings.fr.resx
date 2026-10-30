@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICATIONS</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>En cours de développement : rien ici n’est encore réel. Les serveurs officiels fonctionnent jusqu’au 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Sauvegardez votre profil d’ici là : téléchargez l’outil de sauvegarde</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Sauvegardez votre profil avec l’outil de sauvegarde</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>L’outil de sauvegarde est une petite application Windows qui enregistre votre profil (statistiques, inventaire, trophées, historique de chasse et plus) sous forme de fichiers sur votre PC tant que les serveurs officiels fonctionnent, jusqu’au 2026-11-11. Il ne fait que lire ; il ne modifie rien sur le serveur.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Téléchargez backup-win-x64.zip et décompressez-le. Gardez backup.exe et settings.json dans le même dossier.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Lancez backup.exe. Pour votre propre compte, ouvrez le jeu et lancez une chasse (l’outil peut être ouvert avant ou après) ; ou choisissez « Profil public » et saisissez un pseudo ou un id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Cochez ce qu’il faut sauvegarder, puis cliquez sur « Démarrer ». Le résultat est un dossier de sauvegarde et un zip de sauvegarde dans Documents\game-backup. Gardez ce zip pour vous.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>L’exe n’est pas signé, Windows peut donc afficher « Windows a protégé votre ordinateur / Éditeur inconnu ». Choisissez « Informations complémentaires », puis « Exécuter quand même ».</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Télécharger l’outil de sauvegarde</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Politique de confidentialité</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Contrat de licence utilisateur final</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITIQUE DE CONFIDENTIALITÉ</value></data>

@@ -1,4 +1,24 @@
 @inject HostMode Mode
+@inject Branding Brand
+@inject ModalService Modal
+@inject IJSRuntime JS
 
-@* the website only: everything behind it is a mock *@
-@if (!Mode.Launcher) { <div class="wip" role="status">@L["Wip.Banner"]</div> }
+@* the website only: everything behind it is a mock; until the official servers close it also offers the backup tool *@
+@if (!Mode.Launcher)
+{
+    <div class="wip" role="status">@L["Wip.Banner"]@if (offered) { <text> </text><button type="button" class="backup" @onclick="Open">@L["Backup.Banner"]</button> }</div>
+}
+
+@code {
+    bool offered => !Mode.Launcher && BackupDialog.Offered(Brand, DateTime.UtcNow);
+
+    // the dialog opens by itself once per browser (cookie backup_tool), unless another dialog is already open
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !offered || Modal.Type is not null) return;
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        if (await shell.InvokeAsync<bool>("firstTime", "backup_tool")) Open();
+    }
+
+    void Open() => Modal.Show<BackupDialog>();
+}

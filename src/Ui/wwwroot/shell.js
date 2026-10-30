@@ -81,3 +81,10 @@ export function showPopover(id) {
     const el = document.getElementById(id);
     if (el && !el.matches(':popover-open')) el.showPopover();
 }
+
+// True the first time this browser asks for the cookie `name`, which it then sets for a year (the backup tool dialog opens once).
+export function firstTime(name) {
+    if (document.cookie.split('; ').some((c) => c.startsWith(name + '='))) return false;
+    document.cookie = `${name}=1; max-age=31536000; path=/; samesite=lax; secure`;
+    return true;
+}

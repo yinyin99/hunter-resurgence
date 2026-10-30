@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Закрыть</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ВОЗРАСТНЫЕ РЕЙТИНГИ</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Работа ведётся: пока здесь ничего не настоящее. Официальные серверы работают до 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Сохраните профиль заранее: скачайте инструмент резервного копирования</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Сохраните профиль с помощью инструмента резервного копирования</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Инструмент резервного копирования — небольшое приложение для Windows, которое сохраняет ваш профиль (статистику, инвентарь, трофеи, историю охоты и многое другое) в виде файлов на вашем ПК, пока официальные серверы ещё работают, до 2026-11-11. Он только читает данные и ничего не меняет на сервере.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>Скачайте backup-win-x64.zip и распакуйте его. Держите backup.exe и settings.json в одной папке.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>Запустите backup.exe. Для своей учётной записи откройте игру и начните охоту (инструмент можно открыть до или после); или выберите «Публичный профиль» и введите имя или id.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Отметьте, что сохранить, и нажмите «Начать». Результат — папка резервной копии и zip-архив резервной копии в Documents\game-backup. Никому не передавайте этот архив.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe-файл не подписан, поэтому Windows может показать «Система Windows защитила ваш компьютер / Неизвестный издатель». Нажмите «Подробнее», затем «Выполнить в любом случае».</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Скачать инструмент резервного копирования</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Конфиденциальность</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Лицензионное соглашение</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</value></data>

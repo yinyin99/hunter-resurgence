@@ -74,6 +74,14 @@
   <data name="Alert.Close" xml:space="preserve"><value>Kapat</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>YAŞ DERECELENDİRMELERİ</value></data>
   <data name="Wip.Banner" xml:space="preserve"><value>Çalışma sürüyor: burada henüz hiçbir şey gerçek değil. Resmi sunucular 2026-11-11 tarihine kadar çalışır.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Profilinizi o zamana kadar kaydedin: yedekleme aracını indirin</value></data>
+  <data name="Backup.Title" xml:space="preserve"><value>Profilinizi yedekleme aracıyla kaydedin</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Yedekleme aracı, resmi sunucular hâlâ açıkken, 2026-11-11 tarihine kadar profilinizi (istatistikler, envanter, ödüller, av geçmişi ve daha fazlası) bilgisayarınıza dosya olarak kaydeden küçük bir Windows uygulamasıdır. Yalnızca okur; sunucuda hiçbir şeyi değiştirmez.</value></data>
+  <data name="Backup.Step1" xml:space="preserve"><value>backup-win-x64.zip dosyasını indirip açın. backup.exe ile settings.json aynı klasörde kalsın.</value></data>
+  <data name="Backup.Step2" xml:space="preserve"><value>backup.exe dosyasını başlatın. Kendi hesabınız için oyunu açın ve bir av başlatın (yedekleme aracı önce ya da sonra açılabilir); veya “Public profile” seçeneğini seçip bir kullanıcı adı ya da id yazın.</value></data>
+  <data name="Backup.Step3" xml:space="preserve"><value>Kaydedilecekleri işaretleyin ve “Start” düğmesine basın. Sonuç, Documents\game-backup içinde bir yedek klasörü ve bir yedek zip dosyasıdır. Bu yedek zip dosyasını kimseyle paylaşmayın.</value></data>
+  <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe kod imzalı değildir, bu yüzden Windows “Windows bilgisayarınızı korudu / Bilinmeyen yayımcı” gösterebilir. “Daha fazla bilgi” ve ardından “Yine de çalıştır” seçeneğini seçin.</value></data>
+  <data name="Backup.Download" xml:space="preserve"><value>Yedekleme aracını indir</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Gizlilik Politikası</value></data>
   <data name="Footer.Eula" xml:space="preserve"><value>Son Kullanıcı Lisans Sözleşmesi</value></data>
   <data name="Footer.Privacy.Title" xml:space="preserve"><value>GİZLİLİK POLİTİKASI</value></data>
