@@ -66,7 +66,7 @@ git push origin v0.2.0
 
 ## CI and updates
 
-`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and by hand. Two jobs: `build` (Windows: build and test the solution) and `docker` (Ubuntu: build the website's image, start it and check `/feed` and `/settings/language`).
+`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and by hand. Two jobs: `build` (Windows: build and test the solution, then run `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and check that the release zip holds exactly `backup.exe` and `settings.json`, so a change that breaks the publish fails the pull request and not a release tag) and `docker` (Ubuntu: build the website's image, start it and check `/feed` and `/settings/language`).
 
 `.github/dependabot.yml` opens weekly pull requests in these groups: NuGet (`dotnet`: `Microsoft.*` and `System.*` together, other packages alone), `dotnet-sdk` (`global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of `src/Web/Dockerfile` as one pull request), GitHub Actions, and Docker Compose (the images of `deploy/`). `.github/workflows/dependabot-locks.yml` adds the regenerated `packages.lock.json` files to an SDK pull request. The SDK details are in [docs/deploy.md](docs/deploy.md).
 

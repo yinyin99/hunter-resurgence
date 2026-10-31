@@ -17,6 +17,18 @@ jobs:
           global-json-file: global.json
       - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet test hunter-resurgence.slnx -c Release --no-build
+      # the release's publish and zip step, with the example settings: a change that breaks it fails the pull request, not a release tag (tags cannot be reused)
+      - name: Publish the backup tool
+        shell: cmd
+        run: tools\backup\publish.cmd tools\backup\settings.example.json 0.0.0-ci
+      - name: Check the release zip
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"))
+          $names = ($zip.Entries.FullName | Sort-Object) -join ","
+          $zip.Dispose()
+          if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
   # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, and lists Linux time zones
   docker:
     runs-on: ubuntu-latest
