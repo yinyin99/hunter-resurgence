@@ -35,6 +35,8 @@ The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, me
 
 The JavaScript modules of `src/Ui/wwwroot` (`shell.js`) are imported by their plain path, `./_content/Resurgence.Ui/shell.js`. On the website, `<ImportMap />` in `src/Web/Components/App.razor` maps that path to the fingerprinted file (`shell.<hash>.js`, served `immutable`), whose URL changes with every build, so a browser never runs a `shell.js` from an older deploy. The plain URL is not enough: the app sends it with `no-cache`, but Cloudflare's Browser Cache TTL raises that to 4 hours. The CI docker smoke test checks that `/feed` names the fingerprinted file. The launcher needs no map: its BlazorWebView serves every file with `no-store`.
 
+The paw favicon (`favicon.ico`, `favicon.svg`, which turns light in a dark theme, `favicon-32.png` and `apple-touch-icon.png`) lives in `src/Web/wwwroot/`, and `App.razor` links it through `@Assets[...]`, so its URLs are fingerprinted and served `immutable`, while the plain paths such as `/favicon.ico` answer too.
+
 ## Two views of one app
 
 The website is signed-in or public:
