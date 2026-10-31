@@ -7,7 +7,7 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | File | Purpose |
 |---|---|
 | `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json` and its `aspnet` tag the runtime that SDK ships: a new SDK means `global.json`, both tags and every `packages.lock.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate` with that SDK) in one change, or the locked restore fails with NU1004 |
-| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web`. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
+| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web`. The named volume `dataprotection` keeps the website's cookie-signing keys (`/home/app/.aspnet/DataProtection-Keys`) across deploys, so cookies stay valid; the Dockerfile gives that folder to the app user, and a new named volume takes its owner. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
 | `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate, then `import sites/*.caddy` |
 | `deploy/.env.example` | the three values of `.env` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
@@ -170,5 +170,4 @@ In the browser's network tab a WebSocket to `/_blazor` (status 101) stays open w
 
 ## Known limits
 
-- The Data Protection keys (antiforgery tokens) are not persisted: a new container makes new ones. Open pages lose their circuit at a deploy anyway and reload with new tokens.
 - Everything is a mock; the banner text has to change when that does.

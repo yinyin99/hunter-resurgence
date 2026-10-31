@@ -7,6 +7,7 @@ services:
     environment:
       FORWARDED_TRUSTED: 172.30.10.0/24 # the internal network below, nothing else
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
+    volumes: ["dataprotection:/home/app/.aspnet/DataProtection-Keys"] # cookie-signing keys, kept across deploys
     networks: [internal] # not on the shared edge network
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
@@ -32,6 +33,7 @@ services:
 volumes:
   caddy_data: {}
   caddy_config: {}
+  dataprotection: {}
 networks:
   internal:
     ipam: { config: [{ subnet: 172.30.10.0/24 }] }
