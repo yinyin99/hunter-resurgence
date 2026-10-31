@@ -172,6 +172,8 @@ curl -sS https://localhost/ -o /dev/null                                     # f
 
 In the browser's network tab a WebSocket to `/_blazor` (status 101) stays open while you move between pages. Stop with `docker compose -f deploy/compose.yml -f deploy/compose.dev.yml down`.
 
+Do not make your browser trust Caddy's local CA: the app's HSTS header would then force `localhost` to https for a year, and `dotnet run` on `http://localhost:5080` would stop loading in that browser.
+
 ## Known limits
 
 - Everything is a mock; the banner text has to change when that does.
