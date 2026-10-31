@@ -492,10 +492,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             Interlocked.Increment(ref dead);
             return null;
         }
-        if ((resume || r.Keep) && !r.Fresh && File.Exists(full))
+        Entry? known = null;
+        if ((resume || r.Keep) && !r.Fresh) lock (files) files.TryGetValue(name, out known);
+        // an optional reply with no status on record can be a 404 that a killed run saved before its manifest was written: ask again so the answer keeps its status
+        if ((resume || r.Keep) && !r.Fresh && File.Exists(full) && !(r.Opt && known?.Status is null))
         {
-            Entry? known;
-            lock (files) files.TryGetValue(name, out known);
             byte[] b;
             if (r.Abs != null && known?.Sha256 != null) b = []; // a picture: nothing parses it, do not read it back
             else

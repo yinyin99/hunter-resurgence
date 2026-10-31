@@ -381,6 +381,24 @@ public class ImporterTests
         Assert.Contains("trophies: 1 rows (0 without a harvest)", r.Report.Restored);
     }
 
+    /// <summary>#76: a harvest file without a status (a resumed backup run re-registered it after a hard kill) is a trophy only when its body is a harvest record.</summary>
+    [Theory]
+    [InlineData("null")]
+    [InlineData("""{"message":"not found"}""")]
+    public void HarvestWithoutStatusThatHoldsNoHarvestIsNotATrophy(string body)
+    {
+        var z = SyntheticZip.Own();
+        z.File("game_user_harvest_72.json", "/game/user/harvest/72", Encoding.UTF8.GetBytes(body));
+        z.Entry("game_user_harvest_72.json").Remove("status");
+        z.Entry("game_user_harvest_71.json").Remove("status"); // a real harvest without a status is still a trophy
+        var r = z.Read();
+        Assert.Equal(["71"], r.Model.Trophies.Where(t => t.Source == "/game/user/harvest").Select(t => t.Id));
+        Assert.Contains("1 harvest file(s) without a status hold no harvest record: not restored as trophies, kept in Extras", r.Report.Warnings);
+        Assert.Contains(r.Report.Restored, l => l.StartsWith("trophies: ", StringComparison.Ordinal) && l.EndsWith("(1 without a harvest)", StringComparison.Ordinal));
+        Assert.Contains("game_user_harvest_72.json", r.Model.Extras.Keys);
+        Assert.DoesNotContain(r.Report.Unsupported, l => l.StartsWith("/game/user/harvest", StringComparison.Ordinal));
+    }
+
     /// <summary>#74: a node with the wrong shape is not read and gives a warning; [] is this API's empty map and reads as empty, with no warning. The restore always finishes.</summary>
     [Theory]
     [InlineData("[]")]

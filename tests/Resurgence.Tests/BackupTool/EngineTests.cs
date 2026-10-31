@@ -72,7 +72,9 @@ public class EngineTests
         var f3 = new Fake(tok);
         await Hosts.Make(f3, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var m3 = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
-        Assert.True(f3.Seen.Count == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
+        var optional = f3.Seen.Where(p => p.Contains("/personal/") || p.StartsWith("/game/user/harvest/")).ToList();
+        Assert.True(f3.Seen.Count(p => !optional.Contains(p) && p != "/v1/User/jwt") == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
+        Assert.True(optional.Count == 5 && (int)m3.Single(e => e!["path"]!.ToString() == "game_user_harvest_102.json")!["status"]! == 404, "#76: an optional reply with no status on record is asked again, so its 404 keeps its status");
         Assert.True(m3.All(e => e!["date"] == null), "no Date header (and files re-registered without a manifest): no date key");
 
         var f4 = new Fake("z");
