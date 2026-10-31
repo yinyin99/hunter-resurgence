@@ -306,7 +306,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             foreach (var k in (hunt?["kills"] as JsonArray) ?? [])
             {
                 if (!kills) break;
-                var sheet = k?["kill"]?["score"] != null ? k["id"]?.ToString() : null;
+                var sheet = k?["kill"]?["score"] != null && k["id"]?.ToString() is { Length: > 0 } sid && sid.All(char.IsAsciiDigit) ? sid : null; // digits only: the id becomes a file name
                 var photo = k?["kill"]?["photo"]?.ToString() is { Length: > 0 } ph ? ph : null;
                 if (sheet != null || photo != null) found.Add((sheet, photo));
             }
