@@ -456,7 +456,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     static IEnumerable<(string K, string V)> Pub(R r) => (r.P ?? []).Where(p => p.K != "oauth_consumer_key"); // never in a file name, the log or the manifest
 
-    static string FileName(R r) => Clean(r.Path.TrimStart('/')[(r.Path.StartsWith("/v1/") ? 3 : 0)..] + string.Concat(Pub(r).Select(p => $"__{p.K}={p.V}"))) + ".json";
+    internal static string FileName(R r) => Clean(r.Path.TrimStart('/')[(r.Path.StartsWith("/v1/") ? 3 : 0)..] + string.Concat(Pub(r).Select(p => $"__{p.K}={p.V}"))) + ".json";
 
     static JsonNode? Json(byte[]? b)
     {
