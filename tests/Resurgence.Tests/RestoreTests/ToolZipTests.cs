@@ -5,11 +5,11 @@ using Resurgence.Tests.BackupTool;
 
 namespace Resurgence.Tests.RestoreTests;
 
-/// <summary>Restore on a zip the backup tool wrote, against the fake host: the writer and the reader agree on the format (manifest fields, file names, entry separators).</summary>
+/// <summary>Restore on a backup zip the backup tool wrote, against the fake host: the writer and the reader agree on the format (manifest fields, file names, entry separators).</summary>
 public class ToolZipTests
 {
     [Fact]
-    public async Task RestoresAZipTheBackupToolWrote()
+    public async Task RestoresABackupZipTheBackupToolWrote()
     {
         using var t = new TempDir("backup-test-");
         var tok = new string('a', 40); // built at run time: a 40-character literal looks like a hex secret to the pre-push check
@@ -39,6 +39,7 @@ public class ToolZipTests
         // the reader's fallback when a manifest gives no endpoint: every reply's file name maps back to what the manifest says
         var replies = JsonNode.Parse(File.ReadAllText(Path.Combine(t.Path, "backup-7", "manifest.json")))!["files"]!.AsArray()
             .Where(e => e!["sha256"] != null && e["derived"] == null && e["path"]!.ToString().EndsWith(".json", StringComparison.Ordinal)).Select(e => e!).ToList();
+        Assert.NotEmpty(replies); // a filter that matches nothing would make the check below pass on nothing
         Assert.Equal(replies.Select(e => $"{e["path"]} -> {e["endpoint"]} {string.Join('&', e["params"]!.AsObject().Select(p => $"{p.Key}={p.Value}"))}"),
             replies.Select(e => e["path"]!.ToString() is var p && Endpoints.FromName(p) is { } x ? $"{p} -> {x.Endpoint} {string.Join('&', x.Params.Select(kv => $"{kv.Key}={kv.Value}"))}" : $"{p} -> (no endpoint)"));
     }
