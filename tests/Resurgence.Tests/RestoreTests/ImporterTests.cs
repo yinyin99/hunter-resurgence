@@ -42,7 +42,7 @@ public class ImporterTests
         var deepManifest = SyntheticZip.Own(); // the manifest is 4 deep (files, entry, params)
         Assert.Contains("nested too deep", deepManifest.Refused(new Limits(JsonDepth: 3)));
         var deepReply = SyntheticZip.Own().File("Me_friends.json", "/v1/Me/friends", Encoding.UTF8.GetBytes(new string('[', 70) + new string(']', 70)));
-        Assert.Contains("Me_friends.json: not JSON or nested deeper than 64", deepReply.Read().Report.Rejected);
+        Assert.Contains("Me_friends.json: not JSON, nested deeper than 64 or with a duplicate key", deepReply.Read().Report.Rejected);
 
         Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 32 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
     }
@@ -78,6 +78,20 @@ public class ImporterTests
         nested.Prefix = "backup-1001/";
         Assert.Equal(ModelJson(SyntheticZip.Own().Read()), ModelJson(nested.Read()));
         Assert.Equal("not a zip", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream("not a zip"u8.ToArray()))).Message);
+    }
+
+    [Fact]
+    public void DuplicateKeyRejectsTheReplyOrRefusesTheZip()
+    {
+        var reply = SyntheticZip.Own();
+        reply.Reply("/v1/Skill/list", """{"weapon":{"200":1},"weapon":{"200":2},"tracking":[],"spotting":[]}""", ("user_id", SyntheticZip.Uid));
+        var r = reply.Read();
+        Assert.Contains("Skill_list__user_id=1001.json: not JSON, nested deeper than 64 or with a duplicate key", r.Report.Rejected);
+        Assert.Null(r.Model.Skills);
+
+        var manifest = SyntheticZip.Own();
+        manifest.ManifestText = s => "{\"uid\":\"" + SyntheticZip.Uid + "\"," + s[1..]; // Build adds uid too: two uid keys
+        Assert.Equal("manifest.json is not a JSON object (or nested too deep, or has a duplicate key)", manifest.Refused());
     }
 
     [Fact]
