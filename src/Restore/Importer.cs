@@ -40,6 +40,14 @@ public static class Importer
 
         void Missing(string part, bool ownOnly = false) => missing.Add(ownOnly && !own ? $"{part} (public zip)" : $"{part} (not in the zip)");
 
+        /// <summary>n as an object. Absent, null and [] (this API sends [] for an empty map) are none; anything else is not read, with a warning.</summary>
+        JsonObject? Obj(JsonNode? n, string what)
+        {
+            if (n is JsonObject o) return o;
+            if (n is not (null or JsonArray { Count: 0 })) warnings.Add($"{what} is not an object: not read");
+            return null;
+        }
+
         public Restored Map()
         {
             var m = c.Manifest;
@@ -70,7 +78,7 @@ public static class Importer
             })
                 if (!All(endpoint).Any()) Missing(part, ownOnly);
             // format 2: listed hunts whose reply was not saved. v0.4.0 also wrote "total" (a window count of the list, not the player's hunts) and could flag saved == listed: not a gap
-            if (m["checks"]?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl)
+            if (Obj(m["checks"], "the manifest's checks")?["hunts"] is JsonObject h && Int(h["saved"]) is { } hs && Int(h["listed"]) is { } hl)
                 if (h["list_failed"] is JsonValue lf && lf.TryGetValue<bool>(out var cut) && cut) missing.Add($"hunts: the hunt list did not load completely ({hs} of the {hl} listed were saved)");
                 else if (hs < hl) missing.Add($"hunts: {hs} of the {hl} in the hunt list were saved");
 
@@ -137,7 +145,7 @@ public static class Importer
                 {
                     if (from == "list" && rows.TryGetValue(guid, out var had)) // the dict can lag a change: the list wins
                     {
-                        var diff = new[] { "metadata", "units", "dir" }.Where(k => Raw(k == "dir" ? had.Row["location"]?["dir"] : had.Row[k]) != Raw(k == "dir" ? o["location"]?["dir"] : o[k])).ToList();
+                        var diff = new[] { "metadata", "units", "dir" }.Where(k => Raw(k == "dir" ? (had.Row["location"] as JsonObject)?["dir"] : had.Row[k]) != Raw(k == "dir" ? (o["location"] as JsonObject)?["dir"] : o[k])).ToList();
                         if (diff.Count > 0) warnings.Add($"item {guid}: Inventory/list and Inventory/dict differ in {string.Join(", ", diff)}: the list is used");
                     }
                     rows[guid] = (itemId, o);
@@ -148,14 +156,16 @@ public static class Importer
                 foreach (var (key, group) in d)
                     foreach (var r in group as JsonArray ?? []) Add(key, r, "dict");
             foreach (var g in list as JsonArray ?? [])
-                foreach (var r in g?["own"] as JsonArray ?? []) Add(BackupReader.Text(g?["item"]?["id"]), r, "list");
+                if (g is JsonObject go)
+                    foreach (var r in go["own"] as JsonArray ?? []) Add(BackupReader.Text((go["item"] as JsonObject)?["id"]), r, "list");
+                else if (g is not (null or JsonArray { Count: 0 })) Add(null, g, "list"); // no item id: kept in Extras as an inventory row not read
 
             var items = new List<ItemRow>();
             var placedNoLocation = new JsonArray();
             foreach (var (guid, (itemId, row)) in rows.OrderBy(r => r.Value.ItemId).ThenBy(r => r.Key))
             {
                 var slot = Int(row["slot"]) ?? 0;
-                var loc = row["location"] as JsonObject;
+                var loc = Obj(row["location"], $"item {guid} (item {itemId}) location");
                 var pos = Vec(loc?["pos"]);
                 if (loc?["pos"] is not null && pos is null) warnings.Add($"item {guid} (item {itemId}) has a position that is not a number within {MaxWebUnits} on each axis: read as no location");
                 if (slot == 23 && pos is null)
@@ -205,7 +215,7 @@ public static class Importer
             int? Score(string game)
             {
                 var r = One("/v1/Page_content/minigames_list", used, "game_id", game);
-                return r is null ? null : Int(r["position"]?["score"]);
+                return r is null ? null : Int(Obj(Obj(r, $"Page_content/minigames_list (game {game})")?["position"], $"Page_content/minigames_list (game {game}) position")?["score"]);
             }
             var (bust, lane) = (Score("0"), Score("1"));
             if (st is null) Missing("statistics");
@@ -230,7 +240,7 @@ public static class Importer
                 (arr as JsonArray ?? []).OfType<JsonObject>().Select(r => new RawRow(source, BackupReader.Text(r["id"]) ?? "", r.DeepClone()));
             var listed = One("/v1/Trophy/list", used);
             if (listed is null) Missing("trophies");
-            trophies.AddRange(Rows("/v1/Trophy/list", listed?["trophies"]));
+            trophies.AddRange(Rows("/v1/Trophy/list", Obj(listed, "Trophy/list")?["trophies"]));
             var mine = One("/game/user/trophies", used);
             if (mine is null) Missing("own trophies and harvests", ownOnly: true);
             trophies.AddRange(Rows("/game/user/trophies", mine));

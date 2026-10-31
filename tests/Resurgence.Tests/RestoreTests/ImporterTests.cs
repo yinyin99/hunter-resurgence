@@ -380,4 +380,31 @@ public class ImporterTests
         Assert.Contains("game_user_leaderboards_antlers_single_13_personal_1001.json", r.Model.Extras.Keys); // never dropped
         Assert.Contains("trophies: 1 rows (0 without a harvest)", r.Report.Restored);
     }
+
+    /// <summary>#74: a node with the wrong shape is not read and gives a warning; [] is this API's empty map and reads as empty, with no warning. The restore always finishes.</summary>
+    [Theory]
+    [InlineData("[]")]
+    [InlineData("[1]")]
+    [InlineData("7")]
+    [InlineData("\"x\"")]
+    public void UnexpectedShapesAreWarningsNotACrash(string v)
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Manifest["checks"] = JsonNode.Parse(v);
+        z.Reply("/v1/Trophy/list", v, ("user_id", SyntheticZip.Uid), ("offset", "0"), ("limit", "100000"));
+        z.Reply("/v1/Page_content/minigames_list", $$"""{"records":[],"total":10,"position":{{v}}}""", ("offset", "0"), ("limit", "1"), ("game_id", "0"), ("user_id", SyntheticZip.Uid));
+        z.Reply("/v1/Page_content/minigames_list", v, ("offset", "0"), ("limit", "1"), ("game_id", "1"), ("user_id", SyntheticZip.Uid));
+        z.Reply("/v1/Inventory/list", $$$"""
+            [{{{v}}}, {"item":{{{v}}},"own":[{"id":9601,"slot":1,"units":0,"metadata":{}}]},
+             {"item":{"id":500},"own":[{"id":9001,"slot":1,"units":3,"metadata":{},"location":{{{v}}}}]}]
+            """, ("user_id", SyntheticZip.Uid));
+        var r = z.Read();
+        var empty = v == "[]";
+        foreach (var w in new[] { "the manifest's checks", "Trophy/list", "Page_content/minigames_list (game 0) position", "Page_content/minigames_list (game 1)", "item 9001 (item 500) location" })
+            Assert.True(r.Report.Warnings.Contains($"{w} is not an object: not read") != empty, $"{w} with {v}");
+        Assert.Contains($"{(empty ? 1 : 2)} inventory row(s) without a numeric item id or row id: kept in Extras", r.Report.Warnings);
+        Assert.Null(r.Model.Items.Single(i => i.Guid == 9001).Position); // restored, with no location
+        Assert.Equal(((int?)null, (int?)null), (r.Model.Stats!.BustThroughScore, r.Model.Stats.LaneBanditScore));
+        Assert.Contains("trophies: 0 rows (0 without a harvest)", r.Report.Restored);
+    }
 }
