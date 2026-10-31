@@ -280,6 +280,24 @@ public class RobustnessTests
         Assert.True(bad == 4 && e.FailureSummary.Contains("unexpected reply"), $"4 failed as not data ({bad}) and the summary says so ({e.FailureSummary})");
     }
 
+    /// <summary>A dropped identity reply is a failed request like any other: in the manifest, logged, counted, and the run is not finished (restore reads the mode and the wallet from that file).</summary>
+    [Fact]
+    public async Task DroppedIdentityReplyIsAFailedRequest()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Raw["/v1/Me/me"] = """{"id":7,"handle":"hh","refresh_token":"x"}"""u8.ToArray();
+        var log = new List<string>();
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"), log.Add);
+        await e.Run(t.Path, "", () => Tok, new HashSet<string> { "profile" }, true, false, TestContext.Current.CancellationToken);
+        var dir = Path.Combine(t.Path, "backup-7");
+        var m = Manifest(dir);
+        var me = m["files"]!.AsArray().Single(x => x!["path"]!.ToString() == "Me_me.json")!;
+        Assert.True(!File.Exists(Path.Combine(dir, "Me_me.json")) && me["sha256"] == null && me["error"]!.ToString().Contains("token"), "the identity reply is listed as failed, not saved");
+        Assert.True(e.Failed == 1 && log.Any(l => l.Contains("Me/me") && l.Contains("token")), $"counted ({e.Failed}) and logged");
+        Assert.True(m["completed_utc"] == null, "the run is not finished");
+    }
+
     /// <summary>F8: pictures of the four known formats are saved, anything else is not.</summary>
     [Fact]
     public async Task PicturesNeedAnImageHeader()

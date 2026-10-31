@@ -156,7 +156,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         this.ct = stop.Token;
         try
         {
-            if (idr != null && !Leaks(idr, idRes!.Value.Body)) Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
+            if (idr != null)
+            {
+                if (Leaks(idr, idRes!.Value.Body)) Fail(idr, FileName(idr), idRes.Value.Status, "reply contains a token, not saved"); // restore reads mode and wallet from this file: say why it is missing
+                else Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
+            }
             // groups run side by side; each host's lane keeps its own requests one at a time
             try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
             catch when (fault != null) { }
