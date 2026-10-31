@@ -10,6 +10,8 @@ The screens follow the old launcher and its website screen for screen: the same 
 
 Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures of the original are not included; each one is a neutral labelled box. The launcher is not usable for playing yet.
 
+Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
+
 ## The service layer
 
 Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, news, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings.
@@ -54,7 +56,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `options_key_prefix` | The text that precedes each key name in the options file. |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
-| `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip; the website only), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
+| `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
 
 Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game; they are filled from `game_name` and `game_full`. Absolute paths and paths with `..` in the file names are rejected.
 
