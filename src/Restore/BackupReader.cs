@@ -53,7 +53,7 @@ static class BackupReader
         var mBytes = Bytes(mEntry, lim.ManifestBytes, lim, ref total, null) ?? throw new RestoreException($"manifest.json is over {lim.ManifestBytes} bytes");
         long jsonTotal = mBytes.Length; // the manifest is parsed JSON too
         if (jsonTotal > lim.JsonTotalBytes) throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
-        var m = Parse(mBytes, lim) as JsonObject ?? throw new RestoreException("manifest.json is not a JSON object (or nested too deep)");
+        var m = Parse(mBytes, lim) as JsonObject ?? throw new RestoreException("manifest.json is not a JSON object (or nested too deep, or has a duplicate key)");
 
         var uid = Text(m["uid"]) ?? throw new RestoreException("manifest has no uid");
         if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new RestoreException("manifest uid is not digits only");
@@ -96,8 +96,8 @@ static class BackupReader
             if (fe["derived"] is JsonValue d && d.TryGetValue<bool>(out var isDerived) && isDerived) continue; // made by the tool: the raw replies decide
             if (!json) { other++; continue; }
             JsonNode? node;
-            try { node = JsonNode.Parse(bytes, documentOptions: new() { MaxDepth = lim.JsonDepth }); }
-            catch (JsonException) { rejected.Add($"{path}: not JSON or nested deeper than {lim.JsonDepth}"); continue; }
+            try { node = JsonNode.Parse(bytes, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false }); }
+            catch (JsonException) { rejected.Add($"{path}: not JSON, nested deeper than {lim.JsonDepth} or with a duplicate key"); continue; }
             var (ep, ps) = Text(fe["endpoint"]) is { } e && e.StartsWith('/')
                 ? (e, (fe["params"] as JsonObject ?? []).ToDictionary(p => p.Key, p => Text(p.Value) ?? "", StringComparer.Ordinal))
                 : Endpoints.FromName(path) ?? ("", new Dictionary<string, string>());
@@ -114,7 +114,7 @@ static class BackupReader
 
     static JsonNode? Parse(byte[] b, Limits lim)
     {
-        try { return JsonNode.Parse(b, documentOptions: new() { MaxDepth = lim.JsonDepth }); }
+        try { return JsonNode.Parse(b, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false }); }
         catch (JsonException) { return null; }
     }
 

@@ -19,6 +19,8 @@ sealed class SyntheticZip
     /// <summary>Entries written as they are, outside the manifest (tampering).</summary>
     public readonly List<(string Name, byte[] Body)> Raw = [];
     public string Prefix = "";
+    /// <summary>Edits the manifest text after it is serialized (a manifest no JsonObject can hold).</summary>
+    public Func<string, string> ManifestText = s => s;
     public byte[] ClaimKey = Key;
     public CompressionLevel Level = CompressionLevel.Optimal;
 
@@ -54,7 +56,7 @@ sealed class SyntheticZip
         using (var z = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
             void Put(string name, byte[] body) { using var s = z.CreateEntry(name, Level).Open(); s.Write(body); }
-            Put(Prefix + "manifest.json", Encoding.UTF8.GetBytes(m.ToJsonString()));
+            Put(Prefix + "manifest.json", Encoding.UTF8.GetBytes(ManifestText(m.ToJsonString())));
             Put(Prefix + "claim.key", ClaimKey);
             foreach (var (e, body) in files) if (body is not null) Put(Prefix + (string)e["path"]!, body);
             foreach (var (name, body) in Raw) Put(name, body);
