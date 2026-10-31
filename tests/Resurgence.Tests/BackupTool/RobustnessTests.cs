@@ -209,16 +209,44 @@ public class RobustnessTests
         Assert.True(Engine.SecondsLeft(0, 5, 4, 9, 100) == null && Engine.SecondsLeft(0, 5, 30, 5, 100) == null && Engine.SecondsLeft(0, 0, 30, 100, 100) == null, "under 5 s, no progress, or finished: no estimate");
     }
 
-    /// <summary>F6: a host lane that gave up on N requests in a row ends the run with a clear exception; what was saved is kept.</summary>
+    /// <summary>F6: a host lane that gave up on N requests in a row is spent: nothing more is sent to it, its other requests fail, the run goes on and is not finished.</summary>
     [Fact]
-    public async Task HostThatKeepsFailingEndsTheRunAfterTheBudget()
+    public async Task HostThatKeepsFailingIsNotAskedAfterTheBudget()
     {
         using var t = new TempDir("backup-test-v03-");
         var f = new Fake(Tok) { DeadHost = "apiv2.test" };
-        var ex = await Assert.ThrowsAsync<HostSilentException>(() => Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 5)));
-        Assert.True(ex.Message.Contains("apiv2.test") && ex.Message.Contains('3'), "the message names the host and the count");
-        Assert.True(f.Starts["apiv2.test"].Count == 5 + 2, $"one back-off cycle (5 attempts), then one attempt each until the 3rd give-up ({f.Starts["apiv2.test"].Count} attempts)");
-        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "manifest.json")) && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] == null, "the manifest of what was saved is written, the run is not finished");
+        var e = await Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 5));
+        Assert.True(e.SilentHosts.SequenceEqual([("apiv2.test", 3)]), "the host and the count are reported");
+        Assert.True(f.Starts["apiv2.test"].Count == 5 + 2, $"one back-off cycle (5 attempts), then one attempt each until the 3rd give-up, then nothing ({f.Starts["apiv2.test"].Count} attempts)");
+        var dir = Path.Combine(t.Path, "backup-7");
+        Assert.True(Manifest(dir)["completed_utc"] == null && e.Failed > 3, $"the unsent requests are failed, the run is not finished ({e.Failed} failed)");
+        Assert.True(File.Exists(Path.Combine(dir, "Statistics_total__user_id=7.json")), "the other host's requests of the same group were saved");
+    }
+
+    /// <summary>F6: a dead picture host does not stop the groups on healthy hosts: the map setups group, which runs last, still saves map-setups.json.</summary>
+    [Fact]
+    public async Task DeadPictureHostStillLetsTheMapSetupsBeSaved()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { DeadHost = "photo.test", ExpeditionList = """{"total":6,"expeditions":[{"id":1},{"id":2},{"id":3},{"id":4},{"id":5},{"id":6}]}""" };
+        var e = await Run(f, t, ["profile", "kills", "setups"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 0));
+        var dir = Path.Combine(t.Path, "backup-7");
+        Assert.True(File.Exists(Path.Combine(dir, "map-setups.json")), "map-setups.json is saved");
+        Assert.True(File.Exists(Path.Combine(dir, "Statistics_total__user_id=7.json")) && f.Seen.Count(p => p == "/v1/Public_user/expedition") == 6, "the other groups ran to the end");
+        Assert.True(f.Starts["photo.test"].Count == 5 + 2 && e.Failed == 6 && e.SilentHosts.Select(h => h.Host).SequenceEqual(["photo.test"]), $"the 6 pictures failed, 7 attempts were sent ({f.Starts["photo.test"].Count}), the host is named");
+        Assert.True(Manifest(dir)["completed_utc"] == null, "the run is not finished");
+    }
+
+    /// <summary>F6: a 403 on a picture is that file's answer: asked once, failed (a later run asks again), and it does not count towards the host's give-up budget.</summary>
+    [Fact]
+    public async Task ForbiddenPictureIsNotRetriedAsAnOutage()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/k.jpg" ? new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden) { Content = new StringContent("forbidden") } : null };
+        var e = await Run(f, t, ["kills"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (1, 5));
+        Assert.True(f.Seen.Count(p => p == "/k.jpg") == 1 && e.Failed == 1 && e.SilentHosts.Length == 0, $"one request, one failed file, no outage ({f.Seen.Count(p => p == "/k.jpg")} requests, {e.Failed} failed)");
+        var entry = Manifest(Path.Combine(t.Path, "backup-7"))["files"]!.AsArray().Single(x => x!["endpoint"]!.ToString() == "/k.jpg")!;
+        Assert.True(entry["status"]!.GetValue<int>() == 403 && entry["error"]!.ToString() == "error reply", "listed as failed with its status");
     }
 
     /// <summary>F6: an answer between failures starts the count again, so a flaky host is not cut off.</summary>

@@ -295,9 +295,6 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Backup failed</value>
   </data>
-  <data name="Msg_Stopped" xml:space="preserve">
-    <value>Backup stopped</value>
-  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>{0} saved, {1} skipped (already there), {2} failed.</value>
   </data>
@@ -364,8 +361,8 @@
   <data name="Err_Lookup" xml:space="preserve">
     <value>lookup failed (unknown handle?)</value>
   </data>
-  <data name="Err_HostSilent" xml:space="preserve">
-    <value>{0} stopped answering ({1} requests in a row failed), so the rest was not tried. What was saved is kept: run again later with resume on.</value>
+  <data name="Msg_HostSilent" xml:space="preserve">
+    <value>{0} stopped answering ({1} requests in a row failed), so the rest of its requests were not tried.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>no user id in the reply</value>

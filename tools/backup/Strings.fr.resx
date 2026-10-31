@@ -295,9 +295,6 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Échec de la sauvegarde</value>
   </data>
-  <data name="Msg_Stopped" xml:space="preserve">
-    <value>Sauvegarde interrompue</value>
-  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Sauvegardés : {0}, ignorés (déjà présents) : {1}, en échec : {2}.</value>
   </data>
@@ -364,8 +361,8 @@
   <data name="Err_Lookup" xml:space="preserve">
     <value>Échec de la recherche (pseudo inconnu ?)</value>
   </data>
-  <data name="Err_HostSilent" xml:space="preserve">
-    <value>{0} ne répond plus ({1} requêtes de suite ont échoué), le reste n’a donc pas été essayé. Ce qui a été sauvegardé est conservé : relancez plus tard avec la reprise activée.</value>
+  <data name="Msg_HostSilent" xml:space="preserve">
+    <value>{0} ne répond plus ({1} requêtes de suite ont échoué), les autres requêtes vers ce serveur n’ont donc pas été essayées.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>Aucun identifiant d’utilisateur dans la réponse</value>

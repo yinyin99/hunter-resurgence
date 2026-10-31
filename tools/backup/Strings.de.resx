@@ -295,9 +295,6 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Sicherung fehlgeschlagen</value>
   </data>
-  <data name="Msg_Stopped" xml:space="preserve">
-    <value>Sicherung abgebrochen</value>
-  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>{0} gesichert, {1} übersprungen (bereits vorhanden), {2} fehlgeschlagen.</value>
   </data>
@@ -364,8 +361,8 @@
   <data name="Err_Lookup" xml:space="preserve">
     <value>Abfrage fehlgeschlagen (unbekannter Nickname?)</value>
   </data>
-  <data name="Err_HostSilent" xml:space="preserve">
-    <value>{0} antwortet nicht mehr ({1} Anfragen in Folge sind fehlgeschlagen), der Rest wurde deshalb nicht versucht. Das Gesicherte bleibt erhalten: später mit Fortsetzen erneut starten.</value>
+  <data name="Msg_HostSilent" xml:space="preserve">
+    <value>{0} antwortet nicht mehr ({1} Anfragen in Folge sind fehlgeschlagen), die übrigen Anfragen an diesen Server wurden deshalb nicht versucht.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>keine Benutzer-ID in der Antwort</value>
