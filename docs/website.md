@@ -33,6 +33,8 @@ Deploy: the container image and the VPS setup are in [deploy.md](deploy.md).
 
 The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, menus, modals): use a current Chrome or Edge (the launcher's WebView2 runtime is one). Other browsers are not tested.
 
+The JavaScript modules of `src/Ui/wwwroot` (`shell.js`) are imported by their plain path, `./_content/Resurgence.Ui/shell.js`. On the website, `<ImportMap />` in `src/Web/Components/App.razor` maps that path to the fingerprinted file (`shell.<hash>.js`, served `immutable`), whose URL changes with every build, so a browser never runs a `shell.js` from an older deploy. The plain URL is not enough: the app sends it with `no-cache`, but Cloudflare's Browser Cache TTL raises that to 4 hours. The CI docker smoke test checks that `/feed` names the fingerprinted file. The launcher needs no map: its BlazorWebView serves every file with `no-store`.
+
 ## Two views of one app
 
 The website is signed-in or public:
