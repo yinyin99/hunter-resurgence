@@ -504,8 +504,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 if (known?.Sha256 == null) lock (files) files[name] = new(name, r.Path, Params(r), null, Hex(SHA256.HashData(b)), File.GetLastWriteTimeUtc(full), null, Date: known?.Date);
             }
             // an optional reply with no status on record can be a 404 that a killed run saved before its manifest was written: ask again so the answer keeps its status.
-            // It stays listed (registered above) when it cannot be asked or the request fails.
-            if (!r.Opt || known?.Status is not null)
+            // A failed request's status does not count: no saved file stands behind it. The file stays listed (registered above) when it cannot be asked or the request fails.
+            if (!r.Opt || known is { Sha256: not null, Status: not null })
             {
                 Interlocked.Increment(ref skipped);
                 if (r.Abs == null) log($"have {name}");
