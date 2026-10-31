@@ -164,7 +164,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             catch when (fault != null) { }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
             if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
-            lock (files) if (!files.Values.Any(e => e.Error != null && e.Error != DeadError)) completed = DateTime.UtcNow; // whole = no entry left to retry, including failed ones an earlier run left that this one did not repeat: the next run is a new snapshot
+            lock (files) if (failed == 0 && !files.Values.Any(e => e.Error != null && e.Error != DeadError)) completed = DateTime.UtcNow; // whole = nothing failed in this run and no entry left to retry, including failed ones an earlier run left that this one did not repeat: the next run is a new snapshot
         }
         finally { WriteManifest(); }
         log($"{saved} files saved, {skipped} already there, {failed} not saved (see manifest.json; run again with 'skip files already saved' to retry)");

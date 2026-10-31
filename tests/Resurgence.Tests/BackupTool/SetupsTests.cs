@@ -211,6 +211,7 @@ public class SetupsTests
         Assert.True(s["sources"]!["dict"]!.ToString() == "unavailable" && s["reserves"]![0]!["items"]![0]!["pos"]!["x"]!.GetValue<int>() == 99, "dict unavailable; the item comes from the fresh list, not the older dict file");
         var entry = Read(dir, "manifest.json")["files"]!.AsArray().Single(x => x!["path"]!.ToString() == "Inventory_dict__user_id=7.json")!;
         Assert.True(e.Failed == 1 && !e.SetupChecks && entry["error"] == null, "one failed request counted, no check flag; the older dict entry stays as it was");
+        Assert.True(!e.Whole && Read(dir, "manifest.json")["completed_utc"] == null, "a failed request whose older file stays is still not a finished run");
         Assert.True(!File.ReadAllText(Path.Combine(dir, "map-setups.json")).Contains(Tok), "no token in the file");
     }
 
