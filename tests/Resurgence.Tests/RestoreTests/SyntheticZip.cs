@@ -22,10 +22,7 @@ sealed class SyntheticZip
     public byte[] ClaimKey = Key;
     public CompressionLevel Level = CompressionLevel.Optimal;
 
-    public static string NameOf(string endpoint, (string K, string V)[] ps) =>
-        (endpoint.StartsWith("/v1/") ? endpoint[4..] : endpoint.TrimStart('/')).Replace('/', '_') + string.Concat(ps.Select(p => $"__{p.K}={p.V}")) + ".json";
-
-    public SyntheticZip Reply(string endpoint, string json, params (string K, string V)[] ps) => File(NameOf(endpoint, ps), endpoint, Encoding.UTF8.GetBytes(json), ps);
+    public SyntheticZip Reply(string endpoint, string json, params (string K, string V)[] ps) => File(Backup.Engine.FileName(new Backup.R(endpoint, ps)), endpoint, Encoding.UTF8.GetBytes(json), ps);
 
     public SyntheticZip File(string path, string endpoint, byte[] body, (string K, string V)[]? ps = null, int status = 200, bool derived = false)
     {
