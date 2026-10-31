@@ -29,7 +29,7 @@ jobs:
           $names = ($zip.Entries.FullName | Sort-Object) -join ","
           $zip.Dispose()
           if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
-  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, and lists Linux time zones
+  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, and sends the security headers
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -42,5 +42,13 @@ jobs:
           grep -q "Work in progress" feed.html
           grep -qE '_content/Resurgence\.Ui/shell\.[a-z0-9]+\.js' feed.html # the import map sends shell.js to its fingerprinted file (docs/website.md)
           curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
+          # the security headers on a page and on the 404 page (docs/website.md#security-headers)
+          for path in /feed /no-such-page; do
+            curl -s -D headers.txt -o /dev/null "http://localhost:8080$path"
+            grep -qi '^strict-transport-security: max-age=31536000' headers.txt
+            grep -qi '^x-content-type-options: nosniff' headers.txt
+            grep -qi '^referrer-policy: strict-origin-when-cross-origin' headers.txt
+            grep -qi "^content-security-policy: frame-ancestors 'none'" headers.txt
+          done
       - if: failure()
         run: docker logs web

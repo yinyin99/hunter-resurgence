@@ -43,7 +43,18 @@ builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 builder.Services.Configure<ForwardedHeadersOptions>(o => ForwardedProxy.Configure(o, builder.Configuration["FORWARDED_TRUSTED"]));
 
 var app = builder.Build();
-// first: the cookie policy, the language cookie and the antiforgery read the scheme
+// security headers on every response, first so static files, the 404 page and the Blazor endpoints all carry them (docs/website.md#security-headers)
+app.Use((ctx, next) =>
+{
+    var h = ctx.Response.Headers;
+    h.StrictTransportSecurity = "max-age=31536000"; // browsers ignore it over http (dotnet run, the CI smoke test)
+    h.XContentTypeOptions = "nosniff";
+    h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    // not frameable (clickjacking); a wider policy would have to allow the inline import map and the offerwall iframe
+    h.ContentSecurityPolicy = "frame-ancestors 'none'";
+    return next();
+});
+// before the cookie policy, the language cookie and the antiforgery, which read the scheme
 app.UseForwardedHeaders();
 // the antiforgery cookie too; the Appends below set Secure themselves for code scanning (browsers accept it on http://localhost)
 app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
@@ -86,6 +97,7 @@ if (app.Environment.IsDevelopment())
     });
 app.UseAntiforgery();
 app.MapStaticAssets();
-app.MapRazorComponents<App>().AddInteractiveServerRenderMode().AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
+// no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = null).AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
 
 app.Run();

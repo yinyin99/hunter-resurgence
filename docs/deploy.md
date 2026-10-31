@@ -13,7 +13,7 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
 | `.github/workflows/ci.yml` | the `build` job also runs `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and checks that the release zip holds exactly `backup.exe` and `settings.json` (the release's publish step, without a tag) |
-| `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), and that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing |
+| `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing, and that `/feed` and a 404 carry the security headers ([website.md](website.md#security-headers)) |
 | `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK pull request |
 | `.github/actions/setup-sdk/action.yml` | installs exactly the SDK of `global.json` for `ci`, `release` and `dependabot-locks`: it reads `sdk.version`, turns `rollForward` off in the runner's copy of `global.json` (never committed), runs `setup-dotnet` with that version and prints `dotnet --version` |
@@ -62,7 +62,7 @@ services:
 - DNS: a proxied (orange cloud) `A` record for `<domain>` pointing at the VPS. For `www`: a proxied record with any placeholder target (for example `AAAA 100::`) and a Redirect Rule from `www.<domain>` to `https://<domain>`, keeping the path and the query string, 301. The VPS serves only `<domain>`.
 - SSL/TLS mode **Full (strict)**; Always Use HTTPS on; minimum TLS version 1.2; WebSockets on (the default, Blazor needs them).
 - An **Origin Certificate** for `<domain>` (add `*.<domain>` if other sites will share it), saved on the VPS as `certs/origin.pem` and `certs/origin.key` (`chmod 600`). With these files Caddy requests no certificate of its own.
-- No HSTS header yet: add `Strict-Transport-Security` in the Caddyfile only after Full (strict) has worked for a day.
+- The app sends HSTS (`max-age=31536000`, this host only) and the other security headers itself ([website.md](website.md#security-headers)); do not add them in the Caddyfile or Cloudflare too.
 
 Caddy passes Cloudflare's `CF-Connecting-IP` to the app as `X-Forwarded-For`, and the app accepts forwarded headers from the compose network only (`FORWARDED_TRUSTED`). That network, `internal`, has a pinned subnet (`172.30.10.0/24` in `deploy/compose.yml`) and `FORWARDED_TRUSTED` repeats it: change both together. The header is trustworthy only because the firewall lets nothing but Cloudflare reach ports 80 and 443.
 
