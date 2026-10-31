@@ -1,6 +1,6 @@
 # Restore library
 
-`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report. It has no database and no server types: storing the model is a later layer, in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)). It also holds `BackupZip`, a smaller check of a backup zip (see [BackupZip](#backupzip)).
+`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report. It has no database and no server types: storing the model is a later layer, in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
 ## Run it
 
@@ -15,22 +15,6 @@ Without a second argument the model goes to `<backup zip name>.model.json` besid
 ## What is refused, what is rejected
 
 The backup zip is read once, in memory; nothing is extracted. The whole backup zip is **refused** when it breaks a cap (`Limits`: 20,000 entries, 1 GiB of content, 64 MiB per entry, 32 MiB for the manifest, 128 MiB of JSON in total, `manifest.json` included, and 32 MiB per JSON entry (a real backup holds under 4 MiB of JSON), JSON nesting 64, more than 100:1 compression for an entry of 1 MiB or more), has an unsafe entry name (`..`, a rooted path, a drive letter, a backslash), has no `manifest.json` at the root or one folder down, a manifest that does not parse, a `uid` that is not digits only or too large for a 64-bit id, no `claim.key` or one that does not hash to `claim_hash`, a `format` newer than 2, or an identity reply whose `id` is not the manifest `uid`. A single file is **rejected** (and reported) when its SHA-256 differs from the manifest or it is not valid JSON; a file the manifest does not list is rejected too. Manifest entries with an `error` or no `sha256` are missing data, listed under `failed`, not a fault of the backup zip.
-
-## BackupZip
-
-`BackupZip.Read(path)` is a separate, smaller check: it opens a backup zip, reads `manifest.json` and `claim.key` and returns a `BackupResult`: either `Info` (`Uid`, `Handle`, `ToolVersion`, `StartedUtc`, `Groups`, `SteamId64`, the file and failed counts, and the same per endpoint) or one `BackupError`; a bad file never throws. It reads nothing else and sends nothing. Its caps are its own, not `Limits`: a file over `MaxZipBytes` (512 MiB) is `TooBig`, a manifest over `MaxManifestBytes` (64 MiB) is `BadManifest`, a `claim.key` over 1 KiB is `ClaimMismatch`. It does not check entry names, entry counts, compression or file hashes.
-
-| `BackupError` | When |
-|---|---|
-| `TooBig` | the file is over 512 MiB |
-| `Unreadable` | an I/O or access error |
-| `NotZip` | not a zip |
-| `NoManifest` | no `manifest.json` at the root or one folder down |
-| `BadManifest` | it does not parse, is over 64 MiB, or has no `uid` or `claim_hash` |
-| `NoClaimKey` | no `claim.key` beside the manifest |
-| `ClaimMismatch` | the SHA-256 of `claim.key` is not `claim_hash` (or the key is over 1 KiB) |
-
-The launcher does not call it yet; only the tests do.
 
 ## Version and mode
 

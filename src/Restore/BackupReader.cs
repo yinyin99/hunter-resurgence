@@ -47,8 +47,8 @@ static class BackupReader
         var entries = zip.Entries.Where(e => !e.FullName.EndsWith('/')).ToList();
         long total = 0;
 
-        // the tool zips the folder's content; a zip made by hand may keep the folder as one level (as BackupZip accepts)
-        var mEntry = entries.FirstOrDefault(e => BackupZip.IsAt(e, "manifest.json")) ?? throw new RestoreException("no manifest.json");
+        // the tool zips the folder's content; a zip made by hand may keep the folder as one level
+        var mEntry = entries.FirstOrDefault(e => IsAt(e, "manifest.json")) ?? throw new RestoreException("no manifest.json");
         var prefix = mEntry.FullName[..^"manifest.json".Length];
         var mBytes = Bytes(mEntry, lim.ManifestBytes, lim, ref total, null) ?? throw new RestoreException($"manifest.json is over {lim.ManifestBytes} bytes");
         long jsonTotal = mBytes.Length; // the manifest is parsed JSON too
@@ -111,6 +111,10 @@ static class BackupReader
     /// <summary>Zip-slip: no "..", no rooted path, no drive letter, no backslash.</summary>
     static bool SafeName(string n) =>
         n.Length > 0 && !n.Contains('\\') && !n.Contains(':') && !n.StartsWith('/') && n.Split('/').All(p => p != ".." && p != ".");
+
+    /// <summary>name at the root or one folder down.</summary>
+    static bool IsAt(ZipArchiveEntry e, string name) =>
+        e.FullName == name || (e.FullName.EndsWith("/" + name, StringComparison.Ordinal) && e.FullName.Count(c => c == '/') == 1);
 
     static JsonNode? Parse(byte[] b, Limits lim)
     {
