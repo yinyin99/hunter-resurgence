@@ -86,10 +86,10 @@ public class RobustnessTests
     {
         using var t = new TempDir("backup-test-v71-");
         var f = new Fake(Tok);
-        f.HuntReplies["42"] = "{\"kills\":[{\"id\":\"..\\\\..\\\\x\",\"kill\":{\"score\":1.5}},{\"id\":\"../../y\",\"kill\":{\"score\":1.5}}]}";
+        f.HuntReplies["42"] = "{\"kills\":[{\"id\":\"..\\\\..\\\\..\\\\..\\\\x\",\"kill\":{\"score\":1.5}},{\"id\":\"../../../../y\",\"kill\":{\"score\":1.5}}]}";
         var e = await Run(f, t, ["kills"]);
-        Assert.True(!f.Seen.Contains("/user/x/score/"), "no score sheet is fetched for a non-numeric id");
-        Assert.True(!File.Exists(Path.Combine(t.Path, "x.html")) && !File.Exists(Path.Combine(t.Path, "backup-7", "x.html")) && !Directory.GetFiles(t.Path, "score_*", SearchOption.AllDirectories).Any(), "nothing written outside kills/");
+        Assert.True(e.Failed == 0 && !f.Seen.Contains("/user/x/score/"), "no score sheet is fetched for a non-numeric id");
+        Assert.True(!Directory.GetFiles(t.Path, "*.html", SearchOption.AllDirectories).Any(), "no score sheet is written anywhere under the temp folder");
     }
 
     /// <summary>Format 2: a listed hunt whose Public_user/expedition reply was not saved is flagged on the engine and in the manifest's checks.hunts.
