@@ -17,7 +17,7 @@ jobs:
           global-json-file: global.json
       - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet test hunter-resurgence.slnx -c Release --no-build
-  # the website's container image (deploy/): builds, starts, serves the banner and lists Linux time zones
+  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, and lists Linux time zones
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -28,6 +28,7 @@ jobs:
           docker run -d --name web -p 8080:8080 web:ci
           for _ in $(seq 1 30); do curl -sf http://localhost:8080/feed > feed.html && break; sleep 1; done
           grep -q "Work in progress" feed.html
+          grep -qE '_content/Resurgence\.Ui/shell\.[a-z0-9]+\.js' feed.html # the import map sends shell.js to its fingerprinted file (docs/website.md)
           curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
       - if: failure()
         run: docker logs web

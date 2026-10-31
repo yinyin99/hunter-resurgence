@@ -12,7 +12,7 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | `deploy/.env.example` | the three values of `.env` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
-| `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing |
+| `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), and that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing |
 | `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK pull request |
 
