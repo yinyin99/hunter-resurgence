@@ -1,0 +1,21 @@
+name: setup-sdk
+description: Installs exactly the SDK of global.json (needs the checkout first)
+runs:
+  using: composite
+  steps:
+    # with rollForward latestFeature, setup-dotnet and dotnet take the newest 10.0 SDK of the runner, which makes other lock files and other packages
+    # than the committed ones (the locked restore then fails with NU1004). rollForward is turned off in this checkout's global.json only; nothing commits it.
+    - id: sdk
+      shell: pwsh
+      run: |
+        $g = Get-Content global.json -Raw | ConvertFrom-Json
+        $v = "$($g.sdk.version)"
+        if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "global.json sdk.version is not MAJOR.MINOR.PATCH: '$v'" }
+        "version=$v" >> $env:GITHUB_OUTPUT
+        $g.sdk | Add-Member -NotePropertyName rollForward -NotePropertyValue disable -Force # also when global.json has none
+        $g | ConvertTo-Json -Depth 5 -Compress | Set-Content global.json
+    - uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: ${{ steps.sdk.outputs.version }}
+    - shell: pwsh
+      run: dotnet --version

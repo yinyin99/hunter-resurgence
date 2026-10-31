@@ -10,11 +10,11 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      RestoreLockedMode: "true" # every restore of this job (build, test) fails with NU1004 when a packages.lock.json does not match its project
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v6
-        with:
-          global-json-file: global.json
+      - uses: ./.github/actions/setup-sdk
       - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet test hunter-resurgence.slnx -c Release --no-build
   # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, and lists Linux time zones

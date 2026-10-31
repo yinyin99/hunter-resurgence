@@ -37,7 +37,7 @@ The optional version (for example `1.2.3` or `1.2.3-rc.1`) is passed to `dotnet 
 
 ## Releases
 
-Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, release zip, SHA-256 in the release notes and a build provenance attestation of the release zip (skipped while the repository is private). The release is created as a draft, the release zip is uploaded, then it is published, because a published release is immutable. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
+Pushing a tag `v*` runs `.github/workflows/release.yml`: build, test, publish, release zip, SHA-256 in the release notes and a build provenance attestation of the release zip (skipped while the repository is private). It builds with exactly the SDK of `global.json` and restores in locked mode (see [CI and updates](#ci-and-updates)). The release is created as a draft, the release zip is uploaded, then it is published, because a published release is immutable. It needs one repository secret per settings key, all required (a missing one fails the release): `API_HOST`, `APIV2_HOST`, `WEB_HOST`, `PHOTO_HOST`, `STATIC_HOST`, `AVATAR_HOST`, `OAUTH_CONSUMER_KEY`, `CLIENT_EXE`.
 
 Separately, `.github/workflows/deploy.yml` runs (through `workflow_run`) after a successful `ci` run for a push to `main`, never directly on the push, and deploys the website to the VPS (see [docs/deploy.md](docs/deploy.md)). Its secrets are `DEPLOY_HOST`, `DEPLOY_USER` and `DEPLOY_KEY`; without them it deploys nothing.
 
@@ -66,7 +66,7 @@ git push origin v0.2.0
 
 ## CI and updates
 
-`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and by hand. Two jobs: `build` (Windows: build and test the solution) and `docker` (Ubuntu: build the website's image, start it and check `/feed` and `/settings/language`).
+`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and by hand. Two jobs: `build` (Windows: build and test the solution) and `docker` (Ubuntu: build the website's image, start it and check `/feed` and `/settings/language`). `build` and the release install exactly the SDK of `global.json` (`.github/actions/setup-sdk`) and restore in locked mode: a pull request that changes a `PackageReference` without its `packages.lock.json` fails with NU1004. Regenerate the lock files with `dotnet restore hunter-resurgence.slnx --force-evaluate` and commit them. Details: [docs/deploy.md](docs/deploy.md).
 
 `.github/dependabot.yml` opens weekly pull requests in these groups: NuGet (`dotnet`: `Microsoft.*` and `System.*` together, other packages alone), `dotnet-sdk` (`global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of `src/Web/Dockerfile` as one pull request), GitHub Actions, and Docker Compose (the images of `deploy/`). `.github/workflows/dependabot-locks.yml` adds the regenerated `packages.lock.json` files to an SDK pull request. The SDK details are in [docs/deploy.md](docs/deploy.md).
 

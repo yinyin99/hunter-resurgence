@@ -9,11 +9,11 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
+    env:
+      RestoreLockedMode: "true" # every restore of this job (build, test, publish.cmd) fails with NU1004 when a packages.lock.json does not match its project
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v6
-        with:
-          global-json-file: global.json
+      - uses: ./.github/actions/setup-sdk
       # The tag is the only version: vX.Y.Z or vX.Y.Z-suffix, checked before anything is built.
       - name: Version from the tag
         shell: pwsh
