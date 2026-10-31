@@ -98,5 +98,6 @@
             await module.DisposeAsync();
         }
         catch (JSDisconnectedException) { } // the circuit is already gone: nothing to clean up in the browser
+        catch (JSException) { } // launcher: after a reload the JS runtime talks to the new page, where this module instance does not exist
     }
 }

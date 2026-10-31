@@ -31,7 +31,7 @@ static class LauncherServices
         services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
         services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
         services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>()));
-        services.AddSingleton<ModalService>();
+        services.AddScoped<ModalService>();
         services.AddScoped<ILanguageSwitcher, LauncherLanguageSwitcher>();
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
     }
