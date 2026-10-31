@@ -26,6 +26,9 @@ public sealed class Branding
     /// <summary>External link by short key (news, forum, support, ...); null when not configured.</summary>
     public string? Link(string key) => Get("link_" + key);
 
+    /// <summary>This branding with link_<paramref name="key"/> set to <paramref name="url"/>, which wins over settings.json; an empty or missing url keeps the current link.</summary>
+    public Branding WithLink(string key, string? url) => string.IsNullOrEmpty(url) ? this : new(new Dictionary<string, string>(values) { ["link_" + key] = url });
+
     /// <summary>{game} is the short name, {GAME} the same in capitals, {game_full} the name with its edition.</summary>
     public string Expand(string text) => text.Replace("{game_full}", GameFull).Replace("{game}", GameName).Replace("{GAME}", GameName.ToUpperInvariant());
 }

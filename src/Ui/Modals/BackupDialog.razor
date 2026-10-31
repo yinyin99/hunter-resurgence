@@ -15,7 +15,7 @@
 </div>
 
 @code {
-    /// <summary>The official servers close on 2026-11-11: the backup tool is offered through that day (UTC), and only when settings.json has link_backup.</summary>
+    /// <summary>The official servers close on 2026-11-11: the backup tool is offered through that day (UTC), and only when there is a backup link (link_backup of settings.json, or the website's LINK_BACKUP variable).</summary>
     static readonly DateTime Until = new(2026, 11, 12, 0, 0, 0, DateTimeKind.Utc);
 
     public static bool Offered(Branding brand, DateTime utcNow) => utcNow < Until && brand.Link("backup") is not null;

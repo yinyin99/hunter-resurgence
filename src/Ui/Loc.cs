@@ -30,10 +30,10 @@ public sealed class Loc(IStringLocalizerFactory factory, Branding branding) : IS
 
 public static class UiLocalization
 {
-    /// <summary>Localisation with the game name and links of the settings.json at <paramref name="settingsPath"/>.</summary>
-    public static IServiceCollection AddUiLocalization(this IServiceCollection services, string settingsPath) => services
+    /// <summary>Localisation with the game name and links of <paramref name="branding"/>.</summary>
+    public static IServiceCollection AddUiLocalization(this IServiceCollection services, Branding branding) => services
         .AddLocalization()
-        .AddSingleton(Branding.Load(settingsPath))
+        .AddSingleton(branding)
         .AddSingleton<IStringLocalizer<Strings>, Loc>();
 }
 
