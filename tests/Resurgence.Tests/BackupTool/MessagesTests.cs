@@ -84,6 +84,21 @@ public class MessagesTests
     }
 
     [Fact]
+    public async Task SavedListIsKeptWhenSkipSavedIsOff()
+    {
+        using var t = new TempDir("backup-test-msg-");
+        var f1 = Host();
+        var inner = f1.Custom;
+        f1.Custom = (p, form) => p == ThreadPath && form.Contains("user_id=103") ? new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("{\"errorCode\":9}") } : inner!(p, form);
+        await Run(f1, t, ["messages"]); // unfinished: one thread failed
+
+        var f2 = Host("""[{"user_id":101,"read":1},{"user_id":102,"read":1},{"user_id":103,"read":1}]"""); // everything shows as read now
+        await Run(f2, t, ["messages"], resume: false);
+        Assert.DoesNotContain(ListPath, f2.Seen);
+        Assert.Equal(List, File.ReadAllText(Path.Combine(Dir(t), "Chat_conversations.json")));
+    }
+
+    [Fact]
     public async Task OpenedUnreadCountAndItsText()
     {
         using var t = new TempDir("backup-test-msg-");

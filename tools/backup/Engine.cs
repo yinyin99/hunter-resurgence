@@ -20,8 +20,9 @@ sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, stri
     int? Format = null, string? Mode = null, string? Identity = null, JsonObject? Checks = null);
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
-/// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file.</summary>
-sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false);
+/// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file,
+/// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off.</summary>
+sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false);
 
 /// <summary>Read-only backup: raw replies to files, manifest.json, optional zip. One instance per run.</summary>
 sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Action<int, int> progress, string keyPath)
@@ -378,7 +379,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Need(1);
         // opening a thread can mark it read: the list is saved first as the original state
-        var list = Json(await Get(Q("Chat/conversations", true))) as JsonArray;
+        var list = Json(await Get(Q("Chat/conversations", true) with { Keep = true })) as JsonArray;
         var entries = (list ?? []).OfType<JsonObject>().Where(c => c["user_id"] != null).ToList();
         Need(entries.Count);
         var rows = new JsonArray();
@@ -483,7 +484,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             Interlocked.Increment(ref dead);
             return null;
         }
-        if (resume && !r.Fresh && File.Exists(full))
+        if ((resume || r.Keep) && !r.Fresh && File.Exists(full))
         {
             Entry? known;
             lock (files) files.TryGetValue(name, out known);
