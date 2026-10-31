@@ -37,6 +37,19 @@ The JavaScript modules of `src/Ui/wwwroot` (`shell.js`) are imported by their pl
 
 The paw favicon (`favicon.ico`, `favicon.svg`, which turns light in a dark theme, `favicon-32.png` and `apple-touch-icon.png`) lives in `src/Web/wwwroot/`, and `App.razor` links it through `@Assets[...]`, so its URLs are fingerprinted and served `immutable`, while the plain paths such as `/favicon.ico` answer too.
 
+## Security headers
+
+A middleware, the first one in `src/Web/Program.cs`, adds these headers to every response (pages, static files, the 404 page, the Blazor endpoints):
+
+| Header | Value |
+|---|---|
+| `Strict-Transport-Security` | `max-age=31536000` (one year, this host only: no `includeSubDomains`, no `preload`) |
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Content-Security-Policy` | `frame-ancestors 'none'` |
+
+HSTS is sent over http too (`dotnet run`, the CI smoke test): browsers ignore it there. The CSP only forbids framing (clickjacking); a wider policy would have to allow the inline `<ImportMap />` script and the offerwall iframe (`src/Ui/Modals/OfferwallModal.razor`). Blazor's own `frame-ancestors 'self'` header is turned off (`ContentSecurityFrameAncestorsPolicy = null` in `Program.cs`) so this is the only CSP. Responses that issue an antiforgery token also get `X-Frame-Options: SAMEORIGIN` from the antiforgery; browsers ignore it because the CSP is there. The CI docker smoke test checks all four on `/feed` and on a 404.
+
 ## Two views of one app
 
 The website is signed-in or public:
