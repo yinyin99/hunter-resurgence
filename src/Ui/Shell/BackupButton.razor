@@ -1,0 +1,9 @@
+@inject HostMode Mode
+@inject Branding Brand
+@inject ModalService Modal
+
+@* website and launcher, until the official servers close: left of the top bar's logo when the website window has room, else just under the logo *@
+@if (BackupDialog.Offered(Brand, DateTime.UtcNow))
+{
+    <button type="button" class="btn btn-large backup-btn @(Mode.Launcher ? "" : "web")" @onclick="() => Modal.Show<BackupDialog>()">@L["Backup.Banner"] <Icon Name="download" /></button>
+}

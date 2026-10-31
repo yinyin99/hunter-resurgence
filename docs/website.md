@@ -10,13 +10,13 @@ The mock session starts signed in as a fictional hunter (`Hunter01`); sign out i
 
 ## Backup tool
 
-Until the official servers close, the work-in-progress banner of every website page (signed in or out, never the launcher) has a "Save your profile before then: download the backup tool" button. It opens a dialog (`src/Ui/Modals/BackupDialog.razor`) with README's three steps and the SmartScreen note, plus a "Download the backup tool" button. The steps follow README's "For players: the backup tool": change both together.
+Until the official servers close, every website page (signed in or out) offers the backup tool twice. The work-in-progress banner has a "Save your profile before then: download the backup tool" link. A large orange button with the same text and a download icon (`src/Ui/Shell/BackupButton.razor`) sits at the top left: in the window margin left of the top bar's logo when the window is at least 1880px wide, otherwise just under the logo. It stays in place while the page scrolls. The plain pages of `BrowserLayout` (`/auto-login`, `/email/verify`, `/email/confirm`, `/email/change`, `/thank-you`, `/logout`) have only the banner link. The launcher shows the same button, always under the logo, but no banner. Both open a dialog (`src/Ui/Modals/BackupDialog.razor`) with README's three steps and the SmartScreen note, plus a "Download the backup tool" button. The steps follow README's "For players: the backup tool": change both together.
 
 The dialog also opens by itself on a browser's first visit, unless another dialog is open. The `backup_tool` cookie (one year) remembers that it was shown.
 
-The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). The `LINK_BACKUP` environment variable wins over it; the live site gets it from the repository variable `LINK_BACKUP` at every deploy ([deploy.md](deploy.md#deploys)). Without the key and the variable, neither the button nor the dialog is shown.
+The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). The `LINK_BACKUP` environment variable wins over it; the live site gets it from the repository variable `LINK_BACKUP` at every deploy ([deploy.md](deploy.md#deploys)). Without the key and the variable, neither the banner link, the orange button nor the dialog is shown.
 
-From 2026-11-12 00:00 UTC both are hidden (`BackupDialog.Offered`).
+From 2026-11-12 00:00 UTC all are hidden (`BackupDialog.Offered`).
 
 ## Build and run
 

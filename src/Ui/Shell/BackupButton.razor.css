@@ -1,0 +1,10 @@
+/* fixed just under the top bar's logo (launcher: logo at 8px; website: 8px into the centred column);
+   on a website window wide enough, in the margin left of the column, 36px clear so the quick-nav strip (left -27px, 25px wide) stays free.
+   z-index above the public bar (9001) and the banner (9000); open dialogs and popovers are in the top layer, above it */
+.backup-btn { position: fixed; z-index: 9002; top: calc(var(--h-statusbar) + 6px); left: 8px; box-sizing: border-box; width: 280px; background-color: var(--accent); color: #fff; }
+.backup-btn:hover { background-color: var(--accent-hover); color: #fff; }
+.web { left: max(8px, calc(50% - var(--w-container) / 2 + 8px)); }
+/* 1220 + 2 x (280 + 36 + 8) = 1868 */
+@media (min-width: 1880px) {
+    .web { top: 4px; left: auto; right: calc(50% + var(--w-container) / 2 + 36px); }
+}
