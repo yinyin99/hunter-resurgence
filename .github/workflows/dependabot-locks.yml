@@ -20,21 +20,8 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false # the restore runs NuGet and MSBuild code: no token in .git/config; only the push step gets it
-      # exactly the SDK of global.json, the Dockerfile's sdk tag: with rollForward latestFeature, setup-dotnet and dotnet take the newest 10.0 SDK
-      # and would write the lock files of that one (the Docker build's locked restore then fails with NU1004). global.json itself is not committed.
-      - id: sdk
-        shell: pwsh
-        run: |
-          $g = Get-Content global.json -Raw | ConvertFrom-Json
-          $v = "$($g.sdk.version)"
-          if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "global.json sdk.version is not MAJOR.MINOR.PATCH: '$v'" }
-          "version=$v" >> $env:GITHUB_OUTPUT
-          $g.sdk | Add-Member -NotePropertyName rollForward -NotePropertyValue disable -Force # also when global.json has none
-          $g | ConvertTo-Json -Depth 5 -Compress | Set-Content global.json
-      - uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: ${{ steps.sdk.outputs.version }}
-      - run: dotnet --version
+      # exactly the SDK of global.json, the Dockerfile's sdk tag, or the lock files would be those of the newest 10.0 SDK of the runner (action: .github/actions/setup-sdk)
+      - uses: ./.github/actions/setup-sdk
       - run: dotnet restore hunter-resurgence.slnx --force-evaluate
       - name: Commit the lock files
         id: commit

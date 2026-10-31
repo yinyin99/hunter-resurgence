@@ -10,11 +10,11 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      RestoreLockedMode: "true" # every restore of this job (build, test, publish.cmd) fails with NU1004 when a packages.lock.json does not match its project
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v6
-        with:
-          global-json-file: global.json
+      - uses: ./.github/actions/setup-sdk
       - run: dotnet build hunter-resurgence.slnx -c Release
       - run: dotnet test hunter-resurgence.slnx -c Release --no-build
       # the release's publish and zip step, with the example settings: a change that breaks it fails the pull request, not a release tag (tags cannot be reused)
