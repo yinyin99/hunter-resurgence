@@ -65,7 +65,7 @@ Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game;
 Real today:
 
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
-- **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)). The game folder chosen by hand and whether game settings were saved once are saved there too and used at the next start.
+- **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so is whether game settings were saved once (the next game start no longer asks). The game folder chosen by hand is saved there too and used from the next start.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 
 Not used yet: the restore library's quick check of a backup zip, `BackupZip` (see [restore.md](restore.md#backupzip)); the launcher does not call it.
