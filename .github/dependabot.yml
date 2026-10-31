@@ -23,7 +23,7 @@ updates:
       dotnet:
         patterns: ["Microsoft.*", "System.*"]
   - package-ecosystem: github-actions
-    directory: /
+    directories: ["/", "/.github/actions/*"] # "/" covers the workflows; the composite actions (setup-sdk uses setup-dotnet) are looked up per folder
     schedule:
       interval: weekly
     commit-message:
