@@ -68,8 +68,6 @@ Real today:
 - **launcher.json**: the language chosen in the language dialog is saved and used at the next start; so are the game folder chosen by hand and whether game settings were saved once.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 
-Not used yet: the restore library's quick check of a backup zip, `BackupZip` (see [restore.md](restore.md#backupzip)); the launcher does not call it.
-
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
 ## Files on the PC
