@@ -64,6 +64,21 @@ public class RobustnessTests
         Assert.True(Folders(t).Length == 1 && e3.Failed == 0 && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] != null, "the retry completes the same backup");
     }
 
+    /// <summary>A resumed run that does not repeat the failed requests of the earlier run (their group is unticked) must not stamp the backup finished.</summary>
+    [Fact]
+    public async Task ResumedRunWithoutTheFailedGroupIsNotFinished()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f1 = new Fake(Tok);
+        f1.Down.Add("/v1/Public_user/expedition");
+        var e1 = await Run(f1, t, ["hunts"]);
+        Assert.True(e1.Failed > 0 && !e1.Whole);
+
+        var e2 = await Run(new Fake(Tok), t, ["profile"]);
+        Assert.True(e2.Failed == 0, $"the second run itself lost nothing ({e2.Failed})");
+        Assert.True(Folders(t).Length == 1 && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] == null && !e2.Whole, "failed entries of the earlier run still block the stamp");
+    }
+
     static string Kills(params (int Id, double? Score, string? Photo)[] k) => "{\"kills\":[" + string.Join(",", k.Select(x =>
         "{\"id\":" + x.Id + ",\"kill\":{\"score\":" + (x.Score?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null") + (x.Photo == null ? "" : ",\"photo\":\"" + x.Photo + "\"") + "}}")) + "]}";
 

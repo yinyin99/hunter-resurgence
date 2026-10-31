@@ -68,6 +68,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     public int Failed => failed;
     /// <summary>Pictures and pages the server no longer has (404): listed in the manifest, not a failure, nothing to run again for.</summary>
     public int Dead => dead;
+    /// <summary>The run ended whole: no manifest entry is left to retry (this run's and the earlier runs' it continued). Only then the result bar shows success.</summary>
+    public bool Whole => completed != null;
     /// <summary>Plain words for the result bar, in the UI language: which groups lost requests and why. Empty when nothing failed.</summary>
     public string FailureSummary
     {
@@ -167,7 +169,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             catch when (fault != null) { }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
             if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
-            if (failed == 0) completed = DateTime.UtcNow; // a run that ended whole (not cancelled, nothing left to retry) is final: the next run is a new snapshot
+            lock (files) if (failed == 0 && !files.Values.Any(e => e.Error != null && e.Error != DeadError)) completed = DateTime.UtcNow; // whole = nothing failed in this run and no entry left to retry, including failed ones an earlier run left that this one did not repeat: the next run is a new snapshot
         }
         finally { WriteManifest(); }
         log($"{saved} files saved, {skipped} already there, {failed} not saved (see manifest.json; run again with 'skip files already saved' to retry)");
