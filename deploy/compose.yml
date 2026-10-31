@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     environment:
       FORWARDED_TRUSTED: 172.30.10.0/24 # the internal network below, nothing else
+      LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
     networks: [internal] # not on the shared edge network
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]

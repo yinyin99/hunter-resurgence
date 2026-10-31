@@ -14,7 +14,7 @@ public partial class MainWindow : Window
     {
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
-        services.AddUiLocalization(Settings.FilePath);
+        services.AddUiLocalization(Branding.Load(Settings.FilePath));
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         // dev aid: resurgence-launcher.exe --mock=patch:new-patch shows a patch state, --mock=settings:first the first start dialog, --mock=session:signup an account without a username

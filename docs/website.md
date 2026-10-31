@@ -14,7 +14,7 @@ Until the official servers close, the work-in-progress banner of every website p
 
 The dialog also opens by itself on a browser's first visit, unless another dialog is open. The `backup_tool` cookie (one year) remembers that it was shown.
 
-The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). Without the key, neither the button nor the dialog is shown. For the live site, add it to the VPS `settings.json` (see [deploy.md](deploy.md)).
+The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). The `LINK_BACKUP` environment variable wins over it; the live site gets it from the repository variable `LINK_BACKUP` at every deploy ([deploy.md](deploy.md#deploys)). Without the key and the variable, neither the button nor the dialog is shown.
 
 From 2026-11-12 00:00 UTC both are hidden (`BackupDialog.Offered`).
 

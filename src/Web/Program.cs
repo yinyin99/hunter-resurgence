@@ -12,7 +12,8 @@ using Resurgence.Web.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddUiLocalization(Path.Combine(builder.Environment.ContentRootPath, "settings.json"));
+// LINK_BACKUP: set by the deploy from the repository variable of the same name (docs/deploy.md); it wins over link_backup of settings.json
+builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json")).WithLink("backup", builder.Configuration["LINK_BACKUP"]));
 builder.Services.AddMockServices();
 builder.Services.AddScoped<HostMode>();
 // one mock session per browser circuit, so signing in or out in one tab does not change the others

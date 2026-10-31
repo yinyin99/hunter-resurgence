@@ -43,9 +43,9 @@ WEB_IMAGE=ghcr.io/<owner>/<repo>-web
 WEB_TAG=latest
 ```
 
-`WEB_IMAGE` is in lower case. Every deploy rewrites the `WEB_TAG` line with the commit sha it rolled out, so the line has to exist.
+`WEB_IMAGE` is in lower case. Every deploy rewrites the `WEB_TAG` line with the commit sha it rolled out, so the line has to exist. Every deploy also replaces the `LINK_BACKUP=<url>` line with the repository variable `LINK_BACKUP` (no line when the variable is unset); compose passes it to `web`.
 
-`settings.json` (game name and links, see [launcher.md](launcher.md#settingsjson)) is optional. To use one, put it in `~/web/` and mount it in `compose.override.yml`, which Compose reads next to `compose.yml` and deploys never overwrite:
+`settings.json` (game name and the other links, see [launcher.md](launcher.md#settingsjson)) is optional. The backup tool link comes from the `LINK_BACKUP` variable, which wins over `link_backup` of the file. To use one, put it in `~/web/` and mount it in `compose.override.yml`, which Compose reads next to `compose.yml` and deploys never overwrite:
 
 ```yaml
 services:
@@ -111,7 +111,7 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 `.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets):
 
 1. builds the image from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `:latest`;
-2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images.
+2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>` and `LINK_BACKUP` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images.
 
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
@@ -122,6 +122,8 @@ Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CO
 | `DEPLOY_KEY` | the private half of that user's SSH key (no passphrase) |
 
 Without them (a fork, or no VPS yet) the run ends with a notice and deploys nothing. The host key is taken with `ssh-keyscan` at every run (trust on first use); the stricter option is a fourth secret with the pinned `known_hosts` line.
+
+Repository variable (Settings, Secrets and variables, Actions, Variables): `LINK_BACKUP`, the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip`. Without it the deploy removes the line and the site uses `link_backup` of `settings.json`, if any, else shows no backup tool button. A value that is not a plain `https://` URL (no spaces, `'`, `$` or `#`) fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the line.
 
 ## Rollback
 
