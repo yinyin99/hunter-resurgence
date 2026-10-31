@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <PackageReference Include="WPF-UI" Version="4.2.0" />
     <!-- the WPF SDK drops these two from the implicit usings; Engine and Settings use them -->
     <Using Include="System.IO" />
     <Using Include="System.Net.Http" />
