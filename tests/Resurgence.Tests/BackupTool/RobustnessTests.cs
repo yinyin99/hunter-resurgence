@@ -80,6 +80,18 @@ public class RobustnessTests
         Assert.True(Directory.GetFiles(Path.Combine(dir, "kills")).Length == 3 && File.Exists(Path.Combine(dir, "kills", "score_900.html")) && !File.Exists(Path.Combine(dir, "kills", "score_901.html")), "kills/ holds the sheet and the two pictures");
     }
 
+    /// <summary>#71: a kill id from the server is a file name; one with path segments is skipped, nothing is written outside the backup folder.</summary>
+    [Fact]
+    public async Task KillIdWithPathSegmentsWritesNothingOutside()
+    {
+        using var t = new TempDir("backup-test-v71-");
+        var f = new Fake(Tok);
+        f.HuntReplies["42"] = "{\"kills\":[{\"id\":\"..\\\\..\\\\x\",\"kill\":{\"score\":1.5}},{\"id\":\"../../y\",\"kill\":{\"score\":1.5}}]}";
+        var e = await Run(f, t, ["kills"]);
+        Assert.True(!f.Seen.Contains("/user/x/score/"), "no score sheet is fetched for a non-numeric id");
+        Assert.True(!File.Exists(Path.Combine(t.Path, "x.html")) && !File.Exists(Path.Combine(t.Path, "backup-7", "x.html")) && !Directory.GetFiles(t.Path, "score_*", SearchOption.AllDirectories).Any(), "nothing written outside kills/");
+    }
+
     /// <summary>Format 2: a listed hunt whose Public_user/expedition reply was not saved is flagged on the engine and in the manifest's checks.hunts.
     /// The list's "total" is a window count (rows left from the offset, capped at limit + 1), never compared.</summary>
     [Fact]
