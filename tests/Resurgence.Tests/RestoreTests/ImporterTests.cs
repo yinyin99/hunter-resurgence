@@ -394,6 +394,7 @@ public class ImporterTests
         z.Reply("/v1/Trophy/list", v, ("user_id", SyntheticZip.Uid), ("offset", "0"), ("limit", "100000"));
         z.Reply("/v1/Page_content/minigames_list", $$"""{"records":[],"total":10,"position":{{v}}}""", ("offset", "0"), ("limit", "1"), ("game_id", "0"), ("user_id", SyntheticZip.Uid));
         z.Reply("/v1/Page_content/minigames_list", v, ("offset", "0"), ("limit", "1"), ("game_id", "1"), ("user_id", SyntheticZip.Uid));
+        z.Reply("/v1/Inventory/dict", $$"""{"500":[{"id":9001,"slot":1,"units":3,"metadata":{},"location":{{v}}}]}""", ("user_id", SyntheticZip.Uid));
         z.Reply("/v1/Inventory/list", $$$"""
             [{{{v}}}, {"item":{{{v}}},"own":[{"id":9601,"slot":1,"units":0,"metadata":{}}]},
              {"item":{"id":500},"own":[{"id":9001,"slot":1,"units":3,"metadata":{},"location":{{{v}}}}]}]
