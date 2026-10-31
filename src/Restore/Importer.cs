@@ -244,13 +244,14 @@ public static class Importer
             var mine = One("/game/user/trophies", used);
             if (mine is null) Missing("own trophies and harvests", ownOnly: true);
             trophies.AddRange(Rows("/game/user/trophies", mine));
-            int none = 0;
+            int none = 0, noRecord = 0;
             foreach (var f in c.Files.Where(f => f.Endpoint.StartsWith("/game/user/harvest/", StringComparison.Ordinal)))
             {
-                used.Add(f.Path);
-                if (f.Status == 404) none++; // "no harvest" is an answer
-                else trophies.Add(new("/game/user/harvest", f.Endpoint["/game/user/harvest/".Length..], f.Json?.DeepClone()));
+                if (f.Status == 404) { used.Add(f.Path); none++; } // "no harvest" is an answer
+                else if (f.Status is null && !IsHarvest(f.Json)) { partly.Add(f.Path); none++; noRecord++; } // a 404 a resumed run re-registered without its status: kept in Extras, not a trophy
+                else { used.Add(f.Path); trophies.Add(new("/game/user/harvest", f.Endpoint["/game/user/harvest/".Length..], f.Json?.DeepClone())); }
             }
+            if (noRecord > 0) warnings.Add($"{noRecord} harvest file(s) without a status hold no harvest record: not restored as trophies, kept in Extras");
 
             var lodges = new List<RawRow>();
             var lodgeList = One($"/game/user/{c.Uid}/lodges", used);
@@ -269,6 +270,9 @@ public static class Importer
         }
 
         static DateTime? Date(JsonNode? n) => n is JsonValue v && v.TryGetValue<DateTime>(out var d) ? d.ToUniversalTime() : null;
+
+        /// <summary>A harvest record: an object with at least one member and no error member. null, [], {}, a scalar or an error object is none.</summary>
+        static bool IsHarvest(JsonNode? n) => n is JsonObject { Count: > 0 } o && !o.ContainsKey("message") && !o.ContainsKey("error") && !o.ContainsKey("errorCode");
     }
 
     // ---------- reply values: this API sends numbers as JSON numbers or as numeric strings ----------

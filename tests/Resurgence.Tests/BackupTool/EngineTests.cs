@@ -72,8 +72,27 @@ public class EngineTests
         var f3 = new Fake(tok);
         await Hosts.Make(f3, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
         var m3 = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
-        Assert.True(f3.Seen.Count == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
+        var optional = f3.Seen.Where(p => p.Contains("/personal/") || p.StartsWith("/game/user/harvest/")).ToList();
+        Assert.True(f3.Seen.Count(p => !optional.Contains(p) && p != "/v1/User/jwt") == 2 && m3.Count(e => e!["error"] == null) == good.Count, "resume re-registers files without a manifest");
+        Assert.True(optional.Count == 5 && (int)m3.Single(e => e!["path"]!.ToString() == "game_user_harvest_102.json")!["status"]! == 404, "#76: an optional reply with no status on record is asked again, so its 404 keeps its status");
         Assert.True(m3.All(e => e!["date"] == null), "no Date header (and files re-registered without a manifest): no date key");
+        bool Listed(string path) => JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Single(e => e!["path"]!.ToString() == path) is { } e && e["sha256"] != null && e["error"] == null;
+        File.Delete(Path.Combine(dir, "manifest.json"));
+        await Hosts.Make(new Fake(tok), key).Run(tmp, "7", null, groups, true, false, TestContext.Current.CancellationToken);
+        Assert.True(Listed("game_user_harvest_101.json"), "#76: a saved optional reply a public profile run cannot ask stays listed");
+        File.Delete(Path.Combine(dir, "manifest.json"));
+        var f5 = new Fake(tok);
+        f5.Down.Add("/game/user/harvest/101");
+        await Hosts.Make(f5, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
+        Assert.True(f5.Seen.Contains("/game/user/harvest/101") && Listed("game_user_harvest_101.json"), "#76: a saved optional reply whose re-ask fails stays listed, not failed");
+        var mp = Path.Combine(dir, "manifest.json");
+        var mf = JsonNode.Parse(File.ReadAllText(mp))!;
+        var h102 = mf["files"]!.AsArray().Single(e => e!["path"]!.ToString() == "game_user_harvest_102.json")!.AsObject();
+        (h102["status"], h102["sha256"], h102["error"]) = (502, null, "error reply"); // failed once with a status, then a killed run saved the 404 without writing its manifest
+        File.WriteAllText(mp, mf.ToJsonString());
+        var f6 = new Fake(tok);
+        await Hosts.Make(f6, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken);
+        Assert.True(f6.Seen.Contains("/game/user/harvest/102") && JsonNode.Parse(File.ReadAllText(mp))!["files"]!.AsArray().Single(e => e!["path"]!.ToString() == "game_user_harvest_102.json")!["status"]!.GetValue<int>() == 404, "#76: a failed request's status is no status on record: the saved file is asked again");
 
         var f4 = new Fake("z");
         var e4 = await Assert.ThrowsAnyAsync<Exception>(() => Hosts.Make(f4, key).Run(tmp, "", () => tok, groups, true, false, TestContext.Current.CancellationToken));
