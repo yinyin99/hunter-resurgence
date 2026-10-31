@@ -7,6 +7,8 @@ namespace Resurgence.Launcher;
 /// <summary>Saves the choice in launcher.json, applies the culture to this process and reloads the page.</summary>
 public sealed class LauncherLanguageSwitcher(LauncherEnv env, NavigationManager nav) : ILanguageSwitcher
 {
+    internal NavigationManager Nav => nav;
+
     public void Set(string code)
     {
         env.Prefs.Language = code;
