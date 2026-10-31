@@ -295,9 +295,6 @@
   <data name="Msg_Failed" xml:space="preserve">
     <value>Не удалось создать резервную копию</value>
   </data>
-  <data name="Msg_Stopped" xml:space="preserve">
-    <value>Копирование остановлено</value>
-  </data>
   <data name="Msg_Counts" xml:space="preserve">
     <value>Сохранено: {0}, пропущено (уже есть): {1}, с ошибкой: {2}.</value>
   </data>
@@ -364,8 +361,8 @@
   <data name="Err_Lookup" xml:space="preserve">
     <value>Поиск не удался (неизвестный ник?)</value>
   </data>
-  <data name="Err_HostSilent" xml:space="preserve">
-    <value>{0} перестал отвечать (подряд не удались запросов: {1}), поэтому остальное не пробовали. Сохранённое осталось: запустите снова позже с включённым продолжением.</value>
+  <data name="Msg_HostSilent" xml:space="preserve">
+    <value>{0} перестал отвечать (подряд не удались запросов: {1}), поэтому остальные запросы к нему не пробовали.</value>
   </data>
   <data name="Err_NoUid" xml:space="preserve">
     <value>В ответе нет ID пользователя</value>

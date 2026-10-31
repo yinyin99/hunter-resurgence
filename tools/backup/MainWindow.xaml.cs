@@ -439,12 +439,13 @@ public partial class MainWindow : FluentWindow
         bool resume = Skip.IsChecked == true, zip = Zip.IsChecked == true;
         var ct = cts.Token;
         InfoBarSeverity sev; Func<(string Title, string Msg)> text; string? path = null;
-        bool done = false; // the run came back whole (with or without gaps): full bar; cancelled, stopped or failed: empty
+        bool done = false; // the run came back whole (with or without gaps): full bar; cancelled or failed: empty
         try
         {
             path = await Task.Run(() => run.Run(outDir, who, own ? () => watcher!.Token : null, keys, resume, zip, ct));
             var (saved, skipped, failed, stale, whole) = (run.Saved, run.Skipped, run.Failed, run.TokenStale, run.Whole);
             var gone = run.Dead;
+            var silent = run.SilentHosts;
             var killsOff = !keys.Contains("kills") || !keys.Contains("photos");
             var opened = run.MessagesOpened;
             var (huntsSaved, huntsListed, huntsListFailed) = (run.HuntsSaved, run.HuntsListed, run.HuntsListFailed);
@@ -453,7 +454,7 @@ public partial class MainWindow : FluentWindow
             sev = whole && !setupCheck && !huntsShort ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             var finished = DateTime.Now;
             text = () => (Loc.S(whole ? "Msg_Saved" : "Msg_SavedGaps"),
-                Loc.F("Msg_Counts", saved, skipped, failed) + (stale ? " " + Loc.S("Msg_Stale") : !whole ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
+                Loc.F("Msg_Counts", saved, skipped, failed) + string.Concat(silent.Select(x => " " + Loc.F("Msg_HostSilent", x.Host, x.GiveUps))) + (stale ? " " + Loc.S("Msg_Stale") : !whole ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
                 + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
                 + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
                 + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
@@ -461,13 +462,6 @@ public partial class MainWindow : FluentWindow
                 + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : "")
                 + (whole ? "\n" + Loc.F("Msg_Finished", finished) : ""));
             done = true;
-        }
-        catch (HostSilentException ex)
-        {
-            sev = InfoBarSeverity.Warning;
-            var opened = run.MessagesOpened;
-            text = () => (Loc.S("Msg_Stopped"), ex.Message + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : ""));
-            path = run.Folder;
         }
         catch (OperationCanceledException)
         {

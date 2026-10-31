@@ -56,7 +56,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
 
     /// <summary>Minimum gap between two request starts on one host, and the first retry wait (doubles, 4 retries).</summary>
     public int PaceMs = 1000, BackoffMs = 5000;
-    /// <summary>A host lane that gave up on this many requests in a row ends the run (what was saved is kept); the longest wait a Retry-After header can ask for.</summary>
+    /// <summary>A host lane that gave up on this many requests in a row is spent: its other requests are not sent and count as failed, the other hosts run on; the longest wait a Retry-After header can ask for.</summary>
     public int GiveUpLimit = 20, RetryAfterCapMs = 120_000;
     /// <summary>The Steam account id of the signed-in Steam user, 0 = nobody. Read-only registry; a field so the tests do not depend on this PC.</summary>
     public Func<uint> SteamAccount = ReadSteamAccount;
@@ -79,6 +79,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 return string.Join(" ", problems.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => Loc.F(p.Value == ServerError ? "Fail_Server" : p.Value == NotData ? "Fail_NotData" : "Fail_Refused", Loc.S("Group_" + p.Key))));
         }
     }
+    /// <summary>The hosts that stopped answering for good in this run (their budget of give-ups in a row was spent) and how many give-ups that took; the requests after it failed unsent.</summary>
+    public (string Host, int GiveUps)[] SilentHosts => [.. lanes.Where(l => l.Value.Spent).OrderBy(l => l.Key, StringComparer.Ordinal).Select(l => (l.Key, l.Value.GiveUps))];
     /// <summary>Requests actually sent, retries included (the UI's time estimate).</summary>
     public int Sent => sent;
     /// <summary>Key of the group of the request that last finished, for the progress line.</summary>
@@ -89,8 +91,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     public bool TotalKnown { get { lock (unsized) return unsized.Count == 0; } }
 
     /// <summary>One request at a time per host, at most one start per PaceMs. Hosts run side by side.</summary>
-    /// <summary>Dead = a request gave up after its retries: the rest of the run gets one attempt per request, no back-off, until one answers.</summary>
-    sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead; public int GiveUps; }
+    /// <summary>Dead = a request gave up after its retries: the rest of the run gets one attempt per request, no back-off, until one answers. Spent = GiveUpLimit give-ups in a row: nothing more is sent to this host in this run.</summary>
+    sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead, Spent; public int GiveUps; }
 
     string? token, jwt, handle, claimHash;
     Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
@@ -533,7 +535,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 return null;
             }
             if (r.Opt && x.Status == 404) { Save(r, name, 404, x.Body, x.Date); return x.Body; } // "no entry" is an answer, not a failure
-            if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale ? "token refused" : "error reply");
+            if (!Ok(r, x.Status, x.Body)) return Fail(r, name, x.Status, TokenStale && r.Abs == null ? "token refused" : "error reply");
             if (Leaks(r, x.Body)) return Fail(r, name, x.Status, "reply contains a token, not saved");
             if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
             if (ready != null && !ready(x.Body))
@@ -648,6 +650,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await lane.Gate.WaitAsync(ct); // held through retries: a host that answers badly is not hit by a second request
         try
         {
+            if (lane.Spent)
+            {
+                gaveUp?.Invoke("host not answering, not tried");
+                return null;
+            }
             for (int n = 0; ; n++)
             {
                 var wait = lane.Last.AddMilliseconds(PaceMs) - DateTime.UtcNow;
@@ -663,7 +670,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     using var resp = await http.SendAsync(req, ct);
                     var body = await resp.Content.ReadAsByteArrayAsync(ct);
                     var st = (int)resp.StatusCode;
-                    if (st is not (403 or 407 or 429 or >= 500)) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body, resp.Headers.Date); }
+                    // a 403 on a picture or a score sheet is the answer for that file, not an outage
+                    if (!(st is 407 or 429 or >= 500 || (st == 403 && r.Abs == null))) { (lane.Dead, lane.GiveUps) = (false, 0); return (st, body, resp.Headers.Date); }
                     err = $"HTTP {st}";
                     if (st is 429 or 503 && resp.Headers.RetryAfter is { } ra) // the server says how long to wait
                         retryAfter = Math.Min(ra.Delta?.TotalMilliseconds ?? Math.Max(0, ((ra.Date ?? DateTimeOffset.UtcNow) - DateTimeOffset.UtcNow).TotalMilliseconds), RetryAfterCapMs);
@@ -677,7 +685,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                     log(lane.Dead ? $"! host not answering, try again later: {r.Path} ({err})" : $"! giving up on {r.Path}: {err}");
                     lane.Dead = true;
                     gaveUp?.Invoke(err);
-                    if (++lane.GiveUps >= GiveUpLimit) throw new HostSilentException(Host(r), lane.GiveUps);
+                    if (++lane.GiveUps >= GiveUpLimit)
+                    {
+                        lane.Spent = true;
+                        log($"! {Host(r)} stopped answering: its other requests are not tried");
+                    }
                     return null;
                 }
                 var d = retryAfter > 0 ? (int)retryAfter : BackoffMs << n;
@@ -775,6 +787,3 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         return k;
     }
 }
-
-/// <summary>A host lane gave up on <see cref="Engine.GiveUpLimit"/> requests in a row: trying the rest would only wait.</summary>
-sealed class HostSilentException(string host, int count) : InvalidOperationException(Loc.F("Err_HostSilent", host, count));
