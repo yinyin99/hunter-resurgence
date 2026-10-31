@@ -35,4 +35,10 @@
     <InternalsVisibleTo Include="Resurgence.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- WPF writes the UI thread's culture back after every dispatcher operation, which pins the culture of the start;
+         without that, a language chosen later (the process default culture) shows after the page reloads -->
+    <RuntimeHostConfigurationOption Include="Switch.MS.Internal.DoNotUseCulturePreservingDispatcherOperations" Value="true" />
+  </ItemGroup>
+
 </Project>

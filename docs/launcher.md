@@ -65,7 +65,7 @@ Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game;
 Real today:
 
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
-- **launcher.json**: the language chosen in the language dialog is saved and used at the next start; so are the game folder chosen by hand and whether game settings were saved once.
+- **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so are the game folder chosen by hand and whether game settings were saved once.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 
 Not used yet: the restore library's quick check of a backup zip, `BackupZip` (see [restore.md](restore.md#backupzip)); the launcher does not call it.
@@ -104,3 +104,5 @@ Game vocabulary (animal names, collectables and a few labels) is not written by 
 A text is a whole sentence: a link or bold part is a hole, never markup in the resx. `{0}...{1}` wrap the words (`L.Html`), or one hole is the whole link or name (`L.Frag`); a translation may move the holes. Counts are written without a plural noun (`Games shown: {0}`), so one string fits every number.
 
 At start the launcher uses the language saved in `launcher.json`, else the Windows display language when one of the 19 matches (`Languages.Match`: the region is ignored, so `de-AT` is German; bare `pt` is Portuguese (Brazil); `no` and `nn` are Norwegian bokmål), else English. A test (`tests/Resurgence.Tests/LauncherApp/TranslationsTests.cs`) checks that every other language file has the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check any of the `src/Ui/Strings.<code>.resx` files.
+
+Choosing a language (the language dialog, or Save under Settings, Language & time zone) saves it in `launcher.json`, makes it the process's default culture and reloads the page: the same page shows in the new language, still signed in, with the dialog closed. Only `CultureInfo.DefaultThreadCurrentCulture`/`DefaultThreadCurrentUICulture` are set, never `CurrentCulture`/`CurrentUICulture`: an assignment to those on the UI thread would keep it on the old language. For the same reason the launcher sets WPF's switch `Switch.MS.Internal.DoNotUseCulturePreservingDispatcherOperations` in `Resurgence.Launcher.csproj`; without it WPF writes the UI thread's culture back after every dispatcher operation, which keeps the language of the start.
