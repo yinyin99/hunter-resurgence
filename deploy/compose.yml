@@ -9,7 +9,8 @@ services:
       SERVER_URL: http://server:8080 # the website's server-side calls to the community server
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
     volumes: ["dataprotection:/home/app/.aspnet/DataProtection-Keys"] # cookie-signing keys, kept across deploys
-    networks: [internal] # not on the shared edge network
+    networks:
+      internal: { ipv4_address: 172.30.10.3 } # fixed too: a container that starts before Caddy would otherwise take Caddy's .2 and Caddy could not start
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
@@ -22,7 +23,8 @@ services:
     volumes:
       - serverdata:/data # the SQLite databases (ADR 0001); the image gives /data to the app user
       - ${SERVER_DIR}:/srv:ro # the operator's files, never committed: settings.json, the game install, recordings, mirror (docs/deploy.md)
-    networks: [internal]
+    networks:
+      internal: { ipv4_address: 172.30.10.4 } # fixed, see web
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
