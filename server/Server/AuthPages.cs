@@ -20,12 +20,12 @@ public static class AuthPages
     /// <summary>The page the launcher shows. Signed out: sign in with Steam in the player's own browser (the launcher's
     /// cannot load Steam's pages) or, as a second link, in this window. Signed in: Play, which asks the server for a
     /// launch URL and hands it to the launcher.</summary>
-    public static string Start(string? handle) => Page(handle is null
-        ? """
+    public static string Start(string? handle, string page = "/") => Page(handle is null
+        ? $"""
           <h1>Welcome</h1><p>Sign in with Steam to play on this server.</p>
           <p><button id="steam" type="button">Sign in with Steam</button></p>
           <p id="code"></p>
-          <p class="small"><a href="/auth/steam/login?next=%2F">Sign in inside this window instead</a></p>
+          <p class="small"><a href="/auth/steam/login?next={Uri.EscapeDataString(page)}">Sign in inside this window instead</a></p>
           """
         : $"""
           <h1>Hello, {E(handle)}</h1><p><button id="play" type="button">Play</button></p>

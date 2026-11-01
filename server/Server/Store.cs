@@ -259,15 +259,37 @@ public sealed class Store
     /// <summary>A new token for the account (the game's session, an API access token, a JWT: all the same here). The
     /// database keeps only its hash, so this is the one time anyone sees it. lifetime null: it never expires. prefix:
     /// text in front of the random part (a JWT's header and payload).</summary>
-    public string CreateToken(long accountId, TimeSpan? lifetime = null, string prefix = "")
+    public string CreateToken(long accountId, TimeSpan? lifetime = null, string prefix = "") =>
+        AddToken(prefix + Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(20)), accountId, lifetime);  // 40 hex, the shape of the game's session
+
+    /// <summary>Keep a token somebody else built (a signed JWT); returns it.</summary>
+    public string AddToken(string token, long accountId, TimeSpan? lifetime = null)
     {
-        var token = prefix + Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(20));  // 40 hex, the shape of the game's session
         var now = Now();
         using var con = Open();
         con.Exec("INSERT INTO tokens (hash, account_id, created_ts, expires_ts) VALUES (?, ?, ?, ?)",
                  Hash(token), accountId, now, lifetime is { } l ? now + (long)l.TotalSeconds : null);
         return token;
     }
+
+    /// <summary>The HMAC key of the JWTs (HS256): 32 random bytes in a file beside the database, made on first use. The
+    /// client never checks a signature; the server does when a refresh token comes back.</summary>
+    public byte[] JwtKey
+    {
+        get
+        {
+            if (jwtKey is { } known) return known;
+            lock (keyGate)
+            {
+                var file = path + ".jwtkey";
+                if (!File.Exists(file)) File.WriteAllBytes(file, RandomNumberGenerator.GetBytes(32));
+                return jwtKey = File.ReadAllBytes(file);
+            }
+        }
+    }
+
+    volatile byte[]? jwtKey;
+    readonly Lock keyGate = new();
 
     /// <summary>The account a token belongs to; null when it is unknown, expired or its account is banned.</summary>
     public long? ResolveToken(string token)
