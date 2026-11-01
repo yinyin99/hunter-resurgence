@@ -12,7 +12,7 @@ The mock session starts signed in as a fictional hunter (`Hunter01`); sign out i
 
 Without `SERVER_URL` (development, the CI smoke test) everything above holds: the mock session and the email sign-in panel.
 
-With `SERVER_URL` set (for example `http://server:8080`, the community server's address on the internal network) the website uses the server's Steam sign-in, which both serve on the same domain behind one reverse proxy. The proxy sends `/auth/*` to the server ([deploy.md](deploy.md#adding-the-server-service-or-another-site)).
+With `SERVER_URL` set (for example `http://server:8080`, the community server's address on the internal network) the website uses the server's Steam sign-in, which both serve on the same domain behind one reverse proxy. The server's `web_host` setting must be this website's domain, and the proxy sends `/auth/*` to the server ([deploy.md](deploy.md#adding-the-server-service-or-another-site)).
 
 - **Sign in**: "Already a hunter? Sign in" in the public bar (`src/Ui/Shell/PublicBar.razor`) is a plain link to `/auth/steam/login?next=<current path>`, a full page load. The server sends the player to Steam, asks for a handle the first time, sets the session cookie `hr_session` (HttpOnly, 30 days) and returns to `next`.
 - **Who is signed in**: `ServerSessionService` (`src/Services/`) asks the server `GET /auth/me` with the browser's cookie; 200 gives the handle, anything else (401, no answer within 5 s, an error) means signed out and never reaches the page. The paths and the JSON are in `src/Services/Contracts/ServerSessionApi.cs`. Nothing is cached: every read asks again.

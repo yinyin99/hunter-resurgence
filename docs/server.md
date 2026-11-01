@@ -48,7 +48,7 @@ The database is in WAL mode with `synchronous=NORMAL` and a 5 s busy timeout, co
 
 ## Sign-in and tokens
 
-With `offline_mode` false (a community server) players sign in with Steam; nothing is served to a request without a token that resolves. With it true none of the following is on: the start page, the launcher's calls and the replies that carry tokens are the replay's, as before. Steam's OpenID 2.0 needs no key. No Steam name, e-mail or address is read or kept: only the 17-digit Steam id, the handle the player picks and the game data.
+With `offline_mode` false (a community server) players sign in with Steam; the endpoints that act for a player need a token that resolves (recorded replies, archives, the mirror, the launcher's calls and the start page are public). With it true none of the following is on (the `/auth/*` endpoints, the start page, the launcher's calls and the replies that carry tokens are the replay's, as before). Steam's OpenID 2.0 needs no key. No Steam name, e-mail or address is read or kept: only the 17-digit Steam id, the handle the player picks and the game data.
 
 **The sign-in, in steps** (on `web_host` for the website, on `signup_host` for the launcher; the origin is `https://<that host>`):
 
@@ -67,7 +67,7 @@ With `offline_mode` false (a community server) players sign in with Steam; nothi
 |---|---|---|
 | session (`X-Hun-Session`) | `Launch/start`, the start page | 7 days |
 | access (`oauth_access_token`) | `Launch/start`, the start page, `Oauth/token` | 1 day |
-| refresh | `Launch/start`, the start page | 30 days; `Oauth/token` (`oauth_refresh_token`) returns a new access token and the same refresh token |
+| refresh (starts with `r`) | `Launch/start`, the start page | 30 days; only these renew; `Oauth/token` (`oauth_refresh_token`) returns a new access token and the same refresh token |
 | JWT (`Bearer`) | `User/jwt`, on the game host and the API host, for the `oauth_access_token` of its JSON or form body | 30 minutes; three dot-separated parts whose payload has `sub`, `iat` and `exp` (the client reads `exp`); the third part is random, not a signature |
 | web session cookie | the sign-in | 30 days |
 
@@ -75,7 +75,9 @@ Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token
 
 **The launcher's own calls** (`EmoteLauncher/token`, `initialise`, `compatibleHardware`, `ping`, under the game host) are answered without recordings: `err` 0, placeholder `access_token` and `refresh_token` (the launcher only needs them to be something other than `"0"`), no files to download, `compatible` 1. The Steam session ticket that `token` receives is not checked: checking it takes a Steam Web API key (Valve's documentation asks for the game's publisher key, and one page also allows an ordinary key on the public host, rate limited), and the server runs without any key, so any client could send any ticket. Signing in is the browser's Steam sign-in above.
 
-**User ids**: an account of the server's own gets the next id from 2,000,000,000 (`Store.FirstServerId`) to 2,147,483,647 (int32, the game's width); ids that come from a backup are below that, so they never collide. The allocation and the insert are one step under a lock (one server process, [ADR 0001](adr/0001-sqlite-for-profiles.md)). A restore that brings a user id and handle replaces the id and handle of an account that has not played (no row in `expeditions` and `events`, only its starting rows); it must not change the id of an account that has. The rest of the account (Steam id, tokens, sessions) stays.
+**User ids**: an account of the server's own gets the next id from 2,000,000,000 (`Store.FirstServerId`) to 2,147,483,647 (int32, the game's width); ids that come from a backup are below that, so they never collide. The allocation and the insert are one step under a lock (one server process, [ADR 0001](adr/0001-sqlite-for-profiles.md)). The rule for the restore (not built yet): a restore that brings a user id and handle may replace the id and handle of an account that has not played (no row in `expeditions` and `events`, only its starting rows); it must not change the id of an account that has. The rest of the account (Steam id, tokens, sessions) stays.
+
+**`web_host` must be the website's public domain** (the website sends the host the browser used, and the server picks its sign-in by it).
 
 **Handles**: 3 to 20 characters, ASCII letters, digits, `-` and `_`, starting with a letter or a digit; unique whatever the case (`Handles.Problem`, the column is NOCASE).
 
