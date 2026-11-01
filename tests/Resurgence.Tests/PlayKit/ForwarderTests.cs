@@ -46,6 +46,8 @@ public class ForwarderTests
                 lock (log)
                     log.Add(new(ctx.Request.Method, ctx.Features.Get<IHttpRequestFeature>()!.RawTarget,
                         ctx.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase), ms.ToArray()));
+                ctx.Response.Headers["Alt-Svc"] = "h3=\":443\"";
+                if (ctx.Request.Path == "/nocontent") { ctx.Response.StatusCode = 204; return; }
                 ctx.Response.StatusCode = 207;
                 ctx.Response.Headers["X-Reply"] = "r\u00E9ponse";
                 ctx.Response.ContentType = "application/octet-stream";
@@ -136,6 +138,40 @@ public class ForwarderTests
         using var head = await http.SendAsync(new HttpRequestMessage(HttpMethod.Head, Forwarder.Addresses(fwd)[0] + "/h"));
         Assert.Equal(HttpStatusCode.MultiStatus, head.StatusCode);
         Assert.Empty(await head.Content.ReadAsByteArrayAsync());
+    }
+
+    [Fact]
+    public async Task AChunkedReplyReachesTheGameWithContentLengthAndNoHopHeaders()
+    {
+        await using var origin = await Origin.Start(); // answers without a length: chunked
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/connect", HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(Reply.Length, resp.Content.Headers.ContentLength);
+        Assert.False(resp.Headers.TransferEncodingChunked ?? false);
+        Assert.Equal(Reply, await resp.Content.ReadAsByteArrayAsync());
+        Assert.False(resp.Headers.Contains("Alt-Svc"));
+    }
+
+    [Fact]
+    public async Task A204KeepsTheConnectionUsable()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(origin.Url);
+        var port = new Uri(Forwarder.Addresses(fwd)[0]).Port;
+        // a raw socket: HttpClient would quietly retry a dropped connection on a new one
+        using var tcp = new System.Net.Sockets.TcpClient();
+        await tcp.ConnectAsync(IPAddress.Loopback, port);
+        using var stream = tcp.GetStream();
+        stream.ReadTimeout = 10_000;
+        foreach (var path in new[] { "/nocontent", "/connect" })
+            await stream.WriteAsync(Encoding.ASCII.GetBytes($"GET {path} HTTP/1.1\r\nHost: x.test\r\n\r\n"));
+        var text = new StringBuilder();
+        var buf = new byte[8192];
+        while (!text.ToString().Contains("HTTP/1.1 207") && await stream.ReadAsync(buf) is var n and > 0)
+            text.Append(Encoding.Latin1.GetString(buf, 0, n));
+        Assert.StartsWith("HTTP/1.1 204", text.ToString());
+        Assert.Contains("HTTP/1.1 207", text.ToString());
     }
 
     [Fact]

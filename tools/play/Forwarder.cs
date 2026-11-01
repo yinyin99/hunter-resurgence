@@ -17,7 +17,7 @@ static class Forwarder
     public const string HostHeader = "X-Game-Host";
 
     static readonly HashSet<string> Hop = new(StringComparer.OrdinalIgnoreCase)
-        { "Connection", "Keep-Alive", "Proxy-Connection", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "Host" };
+        { "Connection", "Keep-Alive", "Proxy-Connection", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "Host", "Alt-Svc" };
 
     /// <summary>Not started. <paramref name="tls"/> null: no HTTPS listener. A port of 0 lets Windows choose (the tests).</summary>
     public static WebApplication Build(Uri server, X509Certificate2? tls, int httpsPort, int httpPort)
@@ -58,9 +58,14 @@ static class Forwarder
             {
                 using var resp = await http.SendAsync(msg, HttpCompletionOption.ResponseHeadersRead, ctx.RequestAborted);
                 ctx.Response.StatusCode = (int)resp.StatusCode;
+                // The game's V1 reader needs a Content-Length (the official server sends one); a proxy in front of the server (Cloudflare) turns the reply into a chunked one.
+                // So buffer the body and send its length. HEAD has no body: its headers, Content-Length included, go through.
+                var head = HttpMethods.IsHead(req.Method);
+                var body = head ? Array.Empty<byte>() : await resp.Content.ReadAsByteArrayAsync(ctx.RequestAborted);
                 foreach (var h in resp.Headers.Concat(resp.Content.Headers))
-                    if (!Hop.Contains(h.Key)) ctx.Response.Headers.Append(h.Key, h.Value.ToArray());
-                if (!HttpMethods.IsHead(req.Method)) await resp.Content.CopyToAsync(ctx.Response.Body, ctx.RequestAborted);
+                    if (!Hop.Contains(h.Key) && (head || !h.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))) ctx.Response.Headers.Append(h.Key, h.Value.ToArray());
+                if (!head && ctx.Response.StatusCode is not (204 or 304)) ctx.Response.ContentLength = body.Length;
+                if (body.Length > 0) await ctx.Response.Body.WriteAsync(body, ctx.RequestAborted); // a 204 or 304 has none, and writing even an empty body to one throws
             }
             catch (Exception e) when (e is HttpRequestException or TaskCanceledException or IOException)
             {
