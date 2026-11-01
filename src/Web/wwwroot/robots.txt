@@ -1,0 +1,30 @@
+# SEO backlink crawlers: no visitors, all server-rendered load
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+User-agent: *
+Disallow: /_blazor/
+Disallow: /auto-login
+Disallow: /logout
+Disallow: /email/
+Disallow: /thank-you
+Disallow: /steam_callback/
+Disallow: /signup/
+Disallow: /splash
+Disallow: /welcome
+Disallow: /eula
+Disallow: /dashboard
+Disallow: /bank
+Disallow: /wallet
+Disallow: /settings
+Disallow: /messages
+Disallow: /new-message
+Disallow: /launch-map
+Disallow: /servers
+Disallow: /tutorials
+Disallow: /game-management
+Disallow: /invite-friends
+Disallow: /missions
