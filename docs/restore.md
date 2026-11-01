@@ -1,16 +1,12 @@
 # Restore library
 
-`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report. It has no database and no server types: storing the model is a later layer, in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
+`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report (layer A). It has no database and no server types. Storing the model is layer B, in the server (`server/Server/Restorer.cs`, [below](#storing-the-model)), in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
 ## Run it
 
-Until the server has its `import backup` command, a stub prints the report and writes the model as JSON:
+`server import backup <zip> [--account <id>]` restores a zip into the server's database and prints the report: [docs/server.md](server.md#import-a-backup-zip). It reads the zip with the server's own item catalogue (an `Application/application` reply, never the one inside the zip being read) so the units rule is exact; without a catalogue the rule is `zero-only`. A zip the reader refuses prints `refused: <reason>`; a file that cannot be read prints `cannot read: <message>`; both exit 1.
 
-```
-dotnet run --project src/Restore/Cli -- path\to\backup.zip [model.json] [--catalogue path\to\Application_application__lang=en.json]
-```
-
-Without a second argument the model goes to `<backup zip name>.model.json` beside the backup zip. `--catalogue` takes the server's own copy of the game's item catalogue (an `Application/application` reply; never the one inside the backup zip being read) so the units rule is exact; without it the rule is `zero-only`. Exit code 0 = read, 1 = refused or unreadable (the message says why: `refused: <reason>` for a backup zip the reader refuses, `cannot read: <message>` when a file cannot be read (an `IOException`: the backup zip or the catalogue is missing or locked), `refused: <exception type>: <message>` for any other fault, such as a bad catalogue, never a crash), 2 = wrong arguments. In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue.
+In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue.
 
 ## What is refused, what is rejected
 
@@ -32,3 +28,25 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 ## Report
 
 `mode`, `complete` (`yes` = `completed_utc` present, `no`, `unknown` for a format 1 backup zip without it), the units rule used, and the lists `restored`, `unsupported`, `missing` (for example the wallet of a public backup zip, or the hunts `checks.hunts` says were saved short or whose list did not load completely, `list_failed`), `warnings`, `failed` and `rejected`. The same backup zip always gives the same model and report (items by item id, then guid).
+
+## Storing the model
+
+`Restorer.Import(state, zipPath, account, dataDir)` turns the model into the rows of one account in one transaction: `ClearModel`, the inserts, the audit row. The same zip always gives the same rows. Any zip is accepted and replaces the account's profile (no merge); hunt history stays. Before replacing an existing account the whole database is copied with `VACUUM INTO <db>.bak-<UTC time>`. Every imported zip is kept as `restores/<account id>/<SHA-256>.zip` in the data folder, so a disputed account can be reset and imported again.
+
+| Model | Rows |
+|---|---|
+| `Items` | `items`. `Units` as read (layer A applied the catalogue). A placed item's `Position` and `Direction` (millimetres) go into its metadata under `__position` and `__direction` (the table has no columns for them); the connect reply moves them back to the row's `position` and `direction`. `WebReserve` is dropped: the connect row has none |
+| `Wallet` | `wallet` (`em`, `gm`); a zip without one (a public zip) stores 0 |
+| `Skills` | `skills`: weapon by item id, tracking and spotting by species slot; `xp` is `Skills.Xp(level plus progress)`. A zip without skills stores a new player's 59 + 59 |
+| `Profile`, the zip's own `Me/me` | `profile`: the reply of `Me/me` without `ems`, `gms` and `unread_messages`, over the typed profile fields (`id` and `handle` are the account's) |
+| `Stats` | `statistics` |
+| `Achievements` | `achievements` (earn times in `triggers`) |
+| `Trophies`, `Lodges` | `trophies`, `lodges` as read |
+| `Extras` | `extras`, keyed by the path in the zip |
+| `Account`, `Profile` | the account's `account` object (the connect reply's): handle, `user_id`, `account_id` (= the user id), hostname, gender, hunterscore, membership, avatar URL, the importer's defaults for `face` and the Facebook fields |
+
+What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (hints, never proof: an account's `steam_id64` is only one the server verified); the web reserve of placed items.
+
+The target is the zip's user id, created from the zip's handle (`user-<id>` without one) when it does not exist; a handle that another account has refuses the import. `--account <id>` targets an existing account, whatever the zip's user id: the account keeps its id and takes the zip's handle only when nobody else has it. A local server (`offline_mode` true) with no `--account` restores into the local account, the one the game connects as.
+
+An account with a `profile` row is a restored account. For it the server answers from its rows, not the recorded reply: the connect reply's `account`, `inventory`, `wallet`, `skills`, `user_stats` (statistics, achievements with their earn times, minigame scores, `first_time` 0), `account_info` (`steam_id` is the account's verified one or empty; no e-mail) and the `network` handle, host and user id; `Me/me`; `Skill/list`, `Statistics/total` and `Achievement/stats` for the account's own user id. Everything else of those replies still comes from the recording: the world data, `boost`, `competitions`, `inventory.infos` and `active_services`, the expedition, and the other profile reads (trophy list, hunts, missions, friends, the apiv2 profile). Accounts without a `profile` row keep today's answers.

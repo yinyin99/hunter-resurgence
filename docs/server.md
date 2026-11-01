@@ -7,7 +7,7 @@ At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, sc
 ## Run it
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | coverage
+dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | coverage
 ```
 
 `serve` is the default. The settings file is `--settings <file>`, else the environment variable `SERVER_SETTINGS`, else `settings.json` in the current folder. It is never committed (`.gitignore`); start from `server/Server/settings.example.json`. Relative paths are relative to the settings file.
@@ -33,7 +33,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 ## How a request is answered
 
 1. A request for `telemetry_host` or `crash_host` gets 204 and is kept in `telemetry.jsonl`.
-2. The player state answers what it owns: `heartbeat`, `disconnect`, `connect`, the photo upload and photo files on the game host; `Inventory/move_multiple2`, `Inventory/buy`, `Launch/start`, `User/jwt`, `Oauth/token`, `Chat/conversations`, `Chat/conversation`, `Skill/list`, and the lists that wrap a recorded base reply (`Splash/list_active`, `Public_user/expedition`, `Expedition/list`, `Me/poll`, `Me/me`) on the API host; the harvest pages on the API v2 host; the sign-in and start page on the website and signup hosts, and the old launcher's own calls on the game host ([Sign-in and tokens](#sign-in-and-tokens)); the kill details page on the website host.
+2. The player state answers what it owns: `heartbeat`, `disconnect`, `connect`, the photo upload and photo files on the game host; `Inventory/move_multiple2`, `Inventory/buy`, `Launch/start`, `User/jwt`, `Oauth/token`, `Chat/conversations`, `Chat/conversation`, `Skill/list`, `Statistics/total`, `Achievement/stats` (the last three for a restored account's own user id, see [Import a backup zip](#import-a-backup-zip)), and the lists that wrap a recorded base reply (`Splash/list_active`, `Public_user/expedition`, `Expedition/list`, `Me/poll`, `Me/me`) on the API host; the harvest pages on the API v2 host; the sign-in and start page on the website and signup hosts, and the old launcher's own calls on the game host ([Sign-in and tokens](#sign-in-and-tokens)); the kill details page on the website host.
 3. Everything else, in this order: an archive file in the URL's own folder, the recorded reply (a JSONP callback is swapped), the mirror, an archive file found by its name, an empty 200 for a request that was only recorded as unchanged, else a miss: `null` under `/v1/`, `{"err": 0}` on the game host, 404 on the API v2 host. A miss is written to the miss log, keys only.
 
 The state answer wins; a handler that has nothing to say returns control to step 3, so a reply is never made up where a recorded one exists.
@@ -84,6 +84,14 @@ Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token
 **Endpoints** (the OpenAPI document `game` lists them): `GET /auth/steam/login`, `GET /auth/steam/return`, `GET|POST /auth/handle`, `GET|POST /auth/confirm`, `POST /auth/link`, `GET /auth/link/<code>`, `GET /auth/me` (`{userId, handle}`, or 401), `POST /auth/signout`, `POST /auth/launch`, `GET /` on `signup_host`, on both hosts. A state-changing request must come from a page of the same origin: its `Origin` is the origin, or it has no `Origin` and carries `X-Requested-With`. The website reaches them through the proxy; the website's own use is in [website.md](website.md#sign-in).
 
 A restart forgets the logins in progress (the player starts the sign-in again); sessions, accounts and tokens are in the database.
+
+## Import a backup zip
+
+```
+dotnet run --project server/Server -c Release -- [--settings <file>] import backup <zip> [--account <id>]
+```
+
+Restores a [backup zip](backup.md) into `state.db` in `data_dir` and prints the report: what the reader found (restored, unsupported, missing, warnings), the rows stored per table, and what was dropped and why. It runs on its own, with no server running, and needs the recordings like `admin` does. Any zip is accepted, and it replaces the account's profile (items, wallet, skills, profile, statistics, achievements, trophies, lodges, saved replies); hunt history stays, no merge. The old database is copied first to `state.db.bak-<UTC time>`; the zip is kept as `restores/<account id>/<SHA-256>.zip`; importing the same zip twice gives the same rows (and a second audit row). The account is the zip's user id (created from the zip's handle when it does not exist), `--account <id>` names an existing one, and a local server (`offline_mode` true) restores into the local account, the one the game connects as. Exit code 1 for a refused zip, an unreadable file, a missing `--account` target or a handle another account has. The model, the dropped fields and what the server then answers from the rows are in [docs/restore.md](restore.md#storing-the-model).
 
 ## Behind a reverse proxy
 
