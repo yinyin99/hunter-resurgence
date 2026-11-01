@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Usage" xml:space="preserve">
+    <value>play setup [--force]   Einmalige Einrichtung: leitet die Servernamen des Spiels auf diesen PC um und vertraut dafür einem lokalen Zertifikat.
+play setup --remove    Macht alles rückgängig, was setup geändert hat.
+play run               Schickt das Spiel zum Community-Server. Lassen Sie es beim Spielen laufen.</value>
+  </data>
+  <data name="SettingsMissing" xml:space="preserve">
+    <value>settings.json nicht gefunden: {0}. Lassen Sie sie neben play.exe liegen.</value>
+  </data>
+  <data name="SettingsBroken" xml:space="preserve">
+    <value>settings.json ist kein gültiges JSON.</value>
+  </data>
+  <data name="SettingsKey" xml:space="preserve">
+    <value>settings.json: Setzen Sie "{0}" (fehlt oder ist noch ein Platzhalter).</value>
+  </data>
+  <data name="SettingsUrl" xml:space="preserve">
+    <value>settings.json: "{0}" muss eine https-Adresse ohne Abfrage sein.</value>
+  </data>
+  <data name="SettingsHost" xml:space="preserve">
+    <value>settings.json: "{0}" ist kein Hostname.</value>
+  </data>
+  <data name="TooEarly" xml:space="preserve">
+    <value>Die offiziellen Server bleiben bis zum {0} online. Eine Einrichtung jetzt würde das Spiel stattdessen zum Community-Server schicken. Führen Sie setup an diesem Tag oder später erneut aus (--force schaltet trotzdem jetzt um).</value>
+  </data>
+  <data name="SetupPlan" xml:space="preserve">
+    <value>setup ändert drei Dinge auf diesem PC und sonst nichts (Spieldateien werden nie angefasst):
+1. Die Windows-Hosts-Datei ({3}): {0} Servernamen des Spiels zeigen auf diesen PC, zwischen zwei markierten Zeilen.
+2. Ihre Windows-Vertrauensliste (nur Ihr Benutzer): eine lokale Zertifizierungsstelle namens "{1}". Sie kann nur für diese {0} Namen bürgen; ihr Schlüssel wird gelöscht, sobald setup endet, und nie gespeichert.
+3. Ein Zertifikat für diese Namen. Sein Schlüssel lässt sich nicht exportieren und bleibt in Ihrem Windows-Profil; die Zertifikatsdatei liegt in {2}.
+Machen Sie alles jederzeit rückgängig: play setup --remove
+Die Namen:</value>
+  </data>
+  <data name="SetupTrust" xml:space="preserve">
+    <value>Windows fragt jetzt, ob der Zertifizierungsstelle vertraut werden soll. Wählen Sie Ja.</value>
+  </data>
+  <data name="Elevate" xml:space="preserve">
+    <value>Windows fragt jetzt nach Administratorrechten, um die Hosts-Datei zu ändern (eigene Abfrage). Wählen Sie Ja. Nur diese Änderung läuft als Administrator.</value>
+  </data>
+  <data name="HostsFailed" xml:space="preserve">
+    <value>Die Hosts-Datei wurde nicht geändert (Berechtigung verweigert oder von einem Sicherheitsprogramm blockiert). Führen Sie den Befehl erneut aus; play setup --remove macht das Getane rückgängig.</value>
+  </data>
+  <data name="SetupDone" xml:space="preserve">
+    <value>Fertig. Als Nächstes: Starten Sie 2-run.cmd (oder play run) und lassen Sie es offen, dann das Spiel. Beim ersten Mal fragt die Windows-Firewall nach dem Spiel: Klicken Sie auf Zugriff zulassen.</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>Hosts-Block, Zertifizierungsstelle und Zertifikat entfernt. Das Spiel spricht wieder mit seinen eigenen Servern.</value>
+  </data>
+  <data name="RunNoLeaf" xml:space="preserve">
+    <value>Kein Zertifikat gefunden. Führen Sie zuerst setup aus.</value>
+  </data>
+  <data name="RunLeafExpired" xml:space="preserve">
+    <value>Das Zertifikat ist abgelaufen. Führen Sie setup erneut aus: Es erstellt ein neues.</value>
+  </data>
+  <data name="RunNoHosts" xml:space="preserve">
+    <value>Warnung: Die Hosts-Datei hat keinen Block von setup (nicht ausgeführt oder entfernt), das Spiel spricht also weiter mit seinen eigenen Servern.</value>
+  </data>
+  <data name="RunPortBusy" xml:space="preserve">
+    <value>Port 80 oder 443 kann nicht abgehört werden: {0}
+Schließen Sie das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie dieses Werkzeugs), und versuchen Sie es erneut.</value>
+  </data>
+  <data name="RunStarted" xml:space="preserve">
+    <value>Das Spiel wird zu {0} geschickt. Lassen Sie dieses Fenster beim Spielen offen; schließen Sie es oder drücken Sie Strg+C zum Beenden.</value>
+  </data>
+</root>

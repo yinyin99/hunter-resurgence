@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Usage" xml:space="preserve">
+    <value>play setup [--force]   Разовая настройка: направляет имена серверов игры на этот ПК и доверяет для них локальному сертификату.
+play setup --remove    Отменяет всё, что изменил setup.
+play run               Отправляет игру на сервер сообщества. Не закрывайте, пока играете.</value>
+  </data>
+  <data name="SettingsMissing" xml:space="preserve">
+    <value>settings.json не найден: {0}. Держите его рядом с play.exe.</value>
+  </data>
+  <data name="SettingsBroken" xml:space="preserve">
+    <value>settings.json — некорректный JSON.</value>
+  </data>
+  <data name="SettingsKey" xml:space="preserve">
+    <value>settings.json: задайте "{0}" (отсутствует или всё ещё заглушка).</value>
+  </data>
+  <data name="SettingsUrl" xml:space="preserve">
+    <value>settings.json: "{0}" должен быть адресом https без параметров.</value>
+  </data>
+  <data name="SettingsHost" xml:space="preserve">
+    <value>settings.json: "{0}" не является именем узла.</value>
+  </data>
+  <data name="TooEarly" xml:space="preserve">
+    <value>Официальные серверы работают до {0}. Если настроить сейчас, игра вместо них пойдёт на сервер сообщества. Запустите setup снова в этот день или позже (--force переключает всё равно сейчас).</value>
+  </data>
+  <data name="SetupPlan" xml:space="preserve">
+    <value>setup меняет на этом ПК три вещи и больше ничего (файлы игры никогда не трогаются):
+1. Файл hosts Windows ({3}): {0} имён серверов игры указывают на этот ПК, между двумя помеченными строками.
+2. Ваш список доверенных сертификатов Windows (только ваш пользователь): локальный центр сертификации "{1}". Он может ручаться только за эти {0} имён; его ключ удаляется сразу после setup и нигде не сохраняется.
+3. Сертификат для этих имён. Его ключ нельзя экспортировать, он остаётся в вашем профиле Windows; файл сертификата лежит в {2}.
+Отменить всё можно в любой момент: play setup --remove
+Имена:</value>
+  </data>
+  <data name="SetupTrust" xml:space="preserve">
+    <value>Сейчас Windows спросит, доверять ли центру сертификации. Выберите «Да».</value>
+  </data>
+  <data name="Elevate" xml:space="preserve">
+    <value>Сейчас Windows запросит права администратора на изменение файла hosts (отдельное окно). Выберите «Да». От имени администратора выполняется только это изменение.</value>
+  </data>
+  <data name="HostsFailed" xml:space="preserve">
+    <value>Файл hosts не изменён (отказано в доступе или заблокировано программой безопасности). Выполните команду ещё раз; play setup --remove отменяет сделанное.</value>
+  </data>
+  <data name="SetupDone" xml:space="preserve">
+    <value>Готово. Дальше: запустите 2-run.cmd (или play run), не закрывайте его, затем запустите игру. В первый раз брандмауэр Windows спросит про игру: нажмите «Разрешить».</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>Блок hosts, центр сертификации и сертификат удалены. Игра снова обращается к своим серверам.</value>
+  </data>
+  <data name="RunNoLeaf" xml:space="preserve">
+    <value>Сертификат не найден. Сначала запустите setup.</value>
+  </data>
+  <data name="RunLeafExpired" xml:space="preserve">
+    <value>Срок действия сертификата истёк. Запустите setup снова: он создаст новый.</value>
+  </data>
+  <data name="RunNoHosts" xml:space="preserve">
+    <value>Внимание: в файле hosts нет блока setup (не запускался или удалён), поэтому игра всё ещё обращается к своим серверам.</value>
+  </data>
+  <data name="RunPortBusy" xml:space="preserve">
+    <value>Не удалось слушать порт 80 или 443: {0}
+Закройте программу, которая его занимает (другой сервер или вторая копия этого средства), и повторите.</value>
+  </data>
+  <data name="RunStarted" xml:space="preserve">
+    <value>Игра отправляется на {0}. Не закрывайте это окно, пока играете; закройте его или нажмите Ctrl+C, чтобы остановить.</value>
+  </data>
+</root>

@@ -95,5 +95,12 @@ The game's graphics and options files, which the launcher can edit.
 The copy of a game settings file the launcher makes before its first write.
 _Avoid_: backup
 
+**Player kit**:
+The Windows tool that sends the game to the community server: a one-time `setup` and the `run` forwarder.
+_Avoid_: remote play tool, helper
+
+**Forwarder**:
+The part of the player kit that answers the game on the player's PC and relays each request unchanged to the community server.
+
 **Website**:
 This project's website: profiles, trophies, leaderboards and account pages.

@@ -41,6 +41,10 @@ To check that the release zip was built by this repository's release workflow fr
 gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 ```
 
+## For players: the player kit
+
+The player kit is a small Windows tool that lets the game reach the community server: a one-time setup (it edits the Windows hosts file and trusts a local certificate that is only good for the game's server names) and a helper you keep open while you play. It never changes the game's files, and one command undoes everything. It is not released yet. Setup refuses to run before 2026-11-11, so you keep the official servers until they close. Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md).
+
 ## Roadmap
 
 The official servers close on 2026-11-11. The game needs them even for single-player hunts. The first goal is to let you play offline again, with a local server on your own PC or local network, as soon as possible after that date; sharing a server, accounts and the new launcher follow. There are no dates, and the order can change when a step turns out easier or harder than expected.
@@ -51,7 +55,7 @@ Solo means a single-player hunt on a server; multiplayer means hunting with othe
 |---|---|---|
 | Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and do not run any setup tool before the shutdown if you still want the official servers | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
 | 1 | **Offline play**: run a local server on your own PC (or another PC on your local network) with your own copy of the game. For now, a one-time command-line setup edits your Windows hosts file and installs a local certificate for the game's addresses (the method may change); both can be removed again with one command. No launcher yet. You can restore your own backup zip (inventory, trophies, statistics, skills and wallet). Hunting, kills, harvest, score, gold and XP come first; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. The game's files stay unchanged | First, after the shutdown |
-| 2 | **Remote play**: prove that the game can play on a community server over the internet, through a small helper on your PC | After step 1 |
+| 2 | **Remote play**: the game plays on a community server over the internet, through a small helper on your PC (the player kit) | In development: [docs/play.md](docs/play.md); no release yet |
 | 3 | **Community server, accounts and restore**: a community server (the same code you can run yourself), sign in with your Steam account (email sign-in may follow), upload your backup zip to get your inventory, trophies, statistics, skills and wallet back; missions later | Planned |
 | 4 | **New launcher**: sign in, choose a server, start a hunt, change the game settings; Steam's Play button opens it once you set a Steam launch option | In development: the screens and the game settings editor work, with mock data; no download yet |
 | 5 | **New website**: profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only; no money, ever: no donations, no ads, nothing is sold), missions and friends | Work in progress: the screens are live with mock data ([preview](#website-work-in-progress)); real data needs the community server |
@@ -71,7 +75,7 @@ This project and the community server run by its maintainer take no donations (n
 
 ## Help wanted: translators
 
-Native speakers can check the backup tool's texts in its 5 non-English languages (`tools/backup/Strings.*.resx`) and the launcher's and website's texts in their 18 non-English languages (`src/Ui/Strings.*.resx`, list in `src/Ui/Languages.cs`). A test checks that each set has the same keys and `{0}` placeholders ([backup tool](docs/backup.md#languages), [launcher and website](docs/launcher.md#languages)). Open an issue or a pull request.
+Native speakers can check the backup tool's texts in its 5 non-English languages (`tools/backup/Strings.*.resx`), the player kit's console texts (`tools/play/Strings.*.resx`) and the launcher's and website's texts in their 18 non-English languages (`src/Ui/Strings.*.resx`, list in `src/Ui/Languages.cs`). A test checks that each set has the same keys and `{0}` placeholders ([backup tool](docs/backup.md#languages), [launcher and website](docs/launcher.md#languages)). Open an issue or a pull request.
 
 ## Documentation
 
@@ -79,6 +83,7 @@ Native speakers can check the backup tool's texts in its 5 non-English languages
 - [GLOSSARY.md](GLOSSARY.md): the project's words.
 - [AGENTS.md](AGENTS.md): where things are and the working rules for coding agents.
 - [docs/backup.md](docs/backup.md): the backup tool.
+- [docs/play.md](docs/play.md): the player kit.
 - [docs/launcher.md](docs/launcher.md): the launcher.
 - [docs/website.md](docs/website.md): the website and the shared UI library.
 - [docs/restore.md](docs/restore.md): the restore library.
