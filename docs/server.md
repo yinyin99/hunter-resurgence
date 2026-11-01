@@ -114,6 +114,8 @@ With recordings that cover every input, the replies are the ones the recordings 
 
 **The `infos` of the connect reply** are the definitions of the account's own items, one per distinct `item_id`, in order of first appearance, as the game's server sends them. The client compares the two lists by index and crashes right after `connect` when `infos` is longer than `items` (a new account with a four-item kit and the recorded player's definitions did), so the recorded connect's `infos` are only a source of definitions, never sent whole.
 
+A definition not in the samples is built from the catalogue; an ammo's is completed with the `extra.ammo` ballistics of the install's item definitions, which the client requires (it crashes right after `connect` for an account that owns such an ammo without them).
+
 Still answered only from recordings (without them: a miss, `null` under `/v1/`): the launcher and website pages and their assets, the sign-up host, the avatar and photo hosts, news, `Launch/start` (its tokens), `User/jwt`, the lists that wrap a recorded base reply (`Me/poll`, `Me/me`, `Expedition/list`, `Public_user/expedition`, `Splash/list_active`) and the profile, statistics, wallet-history, mission, challenge, leaderboard and friend pages. `coverage --no-recordings` prints the exact list.
 
 ## The facts file

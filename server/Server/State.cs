@@ -392,7 +392,7 @@ public sealed partial class State
     /// <summary>The account of the recorded connect: the one account of a local server, and the one a request that no
     /// token resolves gets while offline.</summary>
     public readonly long LocalAccount;
-    readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new();
+    readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new(), ballistics = new();
     readonly Dictionary<long, string?> reserves = new();
     readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
     readonly JsonObject locale, connect, start;
@@ -469,7 +469,11 @@ public sealed partial class State
             return Py.L(d["id"]);
         }
         foreach (var d in Arr(itemDefs))
+        {
             family[Py.L(d!["id"])] = Root(d.AsObject());
+            if (d["extra"]?["ammo"] is JsonObject ammo)
+                ballistics[Py.L(d["id"])] = ammo;
+        }
         Store = new Store(dbPath);
         Store.PurgeExpired();
         var local = connect["account"] as JsonObject ?? new JsonObject();
@@ -818,14 +822,15 @@ public sealed partial class State
             return info;
         if (!items.TryGetValue(itemId, out var a) || a.Count == 0)
             return null;
-        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots, arm_type and ammo ballistics
-        // (the sample has every ammo); the other fields match the known definitions except a few fitItems lists
+        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots and arm_type; the client reads those only when present.
+        // An ammo's ballistics (velocity_falloff, wounding_factor, ...) it reads unguarded and crashes without: they come from the install's item definitions.
+        // The other fields match the known definitions except a few fitItems lists
         var inv = a["inventory"]!;
         var fit = new List<JsonNode?>();
         foreach (var (_, f) in a["fit"]!.AsObject())
             foreach (var x in f!.AsArray())
                 fit.Add(x!["id"]);
-        return new JsonObject
+        var built = new JsonObject
         {
             ["item_id"] = itemId, ["name"] = C(a["name"]), ["description"] = C(a["description"]), ["define"] = C(a["define"]),
             ["type"] = C(a["type"]), ["group"] = C(a["group"]), ["cat"] = C(a["cat"]), ["client_type"] = C(a["client_type"]),
@@ -834,6 +839,10 @@ public sealed partial class State
             ["fitItems"] = new JsonArray(fit.OrderBy(Py.D).Select(C).ToArray()), ["image"] = C(a["image"]),
             ["variationName"] = C(a["variationname"]), ["units"] = C(G(a["units"] as JsonObject ?? new JsonObject(), "count", -2)),
         };
+        if (ballistics.TryGetValue(itemId, out var ammo))
+            foreach (var (k, v) in ammo)
+                built[k] = C(v);
+        return built;
     }
 
     /// <summary>The store script's getPrice: the item's first row in the Application/discounts reply, if active, taken off
