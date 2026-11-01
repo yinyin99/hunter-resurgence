@@ -7,6 +7,13 @@ public static class ProtocolLiterals
     /// <summary>Path prefix of the game server's RPC class: heartbeat, disconnect and connect hang below it.</summary>
     public const string RpcBase = "/json/rgc-01-00/Hunter_GameClient";
 
+    /// <summary>Path prefix of the old launcher's own calls to the game server: token, initialise, compatibleHardware, ping.</summary>
+    public const string LauncherBase = "/json/rgc-01-00/EmoteLauncher";
+
+    /// <summary>The scheme of the launch URL the old launcher gives the game. The client's environment check looks for the
+    /// game's name anywhere in that URL, so a host name of the operator's choice cannot make it fail.</summary>
+    public const string LaunchScheme = "thehunter";
+
     /// <summary>The image the client shows in its toasts (a path on the static host).</summary>
     public const string IconPath = "/static/img/huntericon.png";
 

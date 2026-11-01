@@ -15,10 +15,12 @@ namespace Resurgence.Server;
 /// <summary>Console: request lines and TLS failures on the console. WorkDir: the miss log and the admin status there.
 /// TrustedProxies: peers whose HostHeader names the game host the client asked for (a proxy between client and server).
 /// MaxBodyBytes: the request body limit of every endpoint but the admin API's. AdminListeners: the only listeners that
-/// serve the admin API (null: every listener).</summary>
+/// serve the admin API (null: every listener). SteamHttp: how the sign-in asks Steam to
+/// confirm an assertion (default: a plain client; tests pass a fake one).</summary>
 public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console,
     IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes,
-    IReadOnlyList<(IPAddress Address, int Port)>? AdminListeners = null);
+    IReadOnlyList<(IPAddress Address, int Port)>? AdminListeners = null,
+    HttpClient? SteamHttp = null);
 
 public static class ServerApp
 {
@@ -67,6 +69,7 @@ public static class ServerApp
         }
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"),
             o.WorkDir is null ? null : Path.Combine(o.WorkDir, "telemetry.jsonl")));
+        builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
         builder.Services.AddProblemDetails();
         builder.Services.AddOpenApi("game", d =>
         {
@@ -212,9 +215,9 @@ public sealed class Loopback : IAsyncDisposable
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
     public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes,
-        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null)
+        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null, HttpClient? steamHttp = null)
     {
-        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners), k => k.Listen(IPAddress.Loopback, 0));
+        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners, SteamHttp: steamHttp), k => k.Listen(IPAddress.Loopback, 0));
         await app.StartAsync();
         var port = new Uri(app.Urls.First()).Port;
         var http = new HttpClient(new SocketsHttpHandler

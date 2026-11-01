@@ -3,6 +3,7 @@
 // the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback), so every reply
 // stays the recorded one.
 using System.ComponentModel;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -89,11 +90,29 @@ public static class GameApi
             api.MapExactPost(game, LAUNCH_START, r => Own(game, r, a =>
                 {
                     s.NoteLaunch(a, r.Body);
-                    return null;  // the reply itself is replayed
+                    return s.Online ? new(200, JsonAnyOrigin(), Py.DumpBytes(game.Tokens!.Launch(a)), "state") : null;  // offline: the recorded reply
                 }))
                .WithName("LaunchStart").WithSummary("Launch a hunt in a reserve")
-               .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one); the reply is the recorded one.")
+               .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one). Reply: `{access_token, refresh_token, "
+                                + "session, status}` with fresh tokens of the player; a local server replays the recorded one.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
+            // the game's JWT, asked for by the game on its own host and by the pages on the API host; a local server replays the recorded one
+            Func<Req, Reply?> jwt = r => !s.Online ? null : Own(game, r,
+                a => new(200, JsonAnyOrigin(), Py.DumpBytes(new JsonObject { ["token"] = game.Tokens!.Jwt(a) }), "state"), WithJsonToken(r));
+            foreach (var (group, name) in new[] { (gs, "GameJwt"), (api, "ApiJwt") })
+                group.MapExactPost(game, JWT, jwt).WithName(name).WithSummary("A JWT for the game API v2")
+                     .WithDescription("`{token}`: a three-part token that expires in 30 minutes and resolves to the account of `oauth_access_token`.")
+                     .Body<TokenForm>("application/json").Produces(200, contentType: "application/json");
+            api.MapExactPost(game, OAUTH_TOKEN, r => !s.Online ? null : FormValue(r, "oauth_refresh_token") is { } refresh
+                    && s.Store.ResolveToken(refresh) is { } owner
+                    ? new(200, JsonAnyOrigin(), Py.DumpBytes(game.Tokens!.Renew(refresh, owner)), "state") : Denied(game, r))
+               .WithName("RenewToken").WithSummary("A new access token for a refresh token")
+               .WithDescription("`{access_token, refresh_token, expires, user_id, account_id}`; the refresh token is not rotated.")
+               .Produces(200, contentType: "application/json");
+            gs.MapMethods(ProtocolLiterals.LauncherBase + "/{**rest}", ["GET", "POST"], Handle(game, r => s.Online ? LauncherCall(r) : null))
+              .WithName("LauncherCalls").WithSummary("The old launcher's own calls: token, initialise, compatibleHardware, ping")
+              .WithDescription("Answered without recordings on a community server; a local server replays them.");
+            app.MapAuth(game);
             api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
                .WithName("ChatConversations").WithSummary("Inbox threads")
                .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")
@@ -213,9 +232,47 @@ public static class GameApi
         group.MapPost(path, Handle(game, r => r.Method == "POST" && r.Path == path ? handle(r) : null));
 
     /// <summary>Run a state endpoint for the account of the request's token; a token that is unknown, expired or banned
-    /// gets the expired-token reply (Denied), unless the state is offline, which answers it as the local account.</summary>
-    static Reply? Own(Game game, Req r, Func<long, Reply?> handle) =>
-        game.State!.Authenticate(r.Tokens()) is { } account ? handle(account) : Denied(game, r);
+    /// gets the expired-token reply (Denied), unless the state is offline, which answers it as the local account.
+    /// tokens: the ones to try instead of the request's own (User/jwt carries its token in a JSON body).</summary>
+    static Reply? Own(Game game, Req r, Func<long, Reply?> handle, IEnumerable<string>? tokens = null) =>
+        game.State!.Authenticate(tokens ?? r.Tokens()) is { } account ? handle(account) : Denied(game, r);
+
+    /// <summary>The request's tokens and, when the body is JSON, its `oauth_access_token`.</summary>
+    static IEnumerable<string> WithJsonToken(Req r)
+    {
+        foreach (var t in r.Tokens())
+            yield return t;
+        if ((r.Header("Content-Type") ?? "").Contains("json") && r.Body.Length is > 0 and < 4096)
+        {
+            JsonNode? body = null;
+            try { body = JsonNode.Parse(r.Body); }
+            catch (JsonException) { }
+            if ((body as JsonObject)?["oauth_access_token"] is JsonValue v && v.TryGetValue<string>(out var token))
+                yield return token;
+        }
+    }
+
+    static string? FormValue(Req r, string name)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
+        return form.TryGetValue(name, out var v) ? v[0] : Py.ParseQs(r.Query).TryGetValue(name, out var q) ? q[0] : null;
+    }
+
+    /// <summary>The old launcher's own calls to the game server, answered without any recording: nothing in them is
+    /// read but their success. The Steam ticket of `token` is not checked (it cannot be, without the publisher's key).</summary>
+    static Reply? LauncherCall(Req r)
+    {
+        var name = r.Path[(ProtocolLiterals.LauncherBase.Length + 1)..].Split('/')[0];
+        var body = name switch
+        {
+            "token" => """{"err":0,"access_token":"none","refresh_token":"none","expires":0,"user_id":0,"account_id":0,"user_info":{"status":"ok","country":"","state":"","currency":"USD"}}""",
+            "initialise" => """{"err":0,"user_handle":"","executable":"","size":0,"package":{"version":1,"current_version":1,"size":0,"size_as_string":"0 B","files":[]},"ftp":{"enabled":0,"ip":"","user_name":"","password":"","port":0,"flags":0}}""",
+            "compatibleHardware" => """{"compatible":1,"err":0}""",
+            "ping" => """{"err":0}""",
+            _ => null,
+        };
+        return body is null ? null : new(200, Json(), Encoding.ASCII.GetBytes(body), "state");
+    }
 
     /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
     /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
@@ -236,7 +293,7 @@ public static class GameApi
 
     static RouteHandlerBuilder Body<T>(this RouteHandlerBuilder b, string contentType) => b.WithMetadata(new BodyDoc(typeof(T), contentType));
 
-    static RouteHandlerBuilder QueryParams(this RouteHandlerBuilder b, params (string Name, string Description)[] parameters) =>
+    internal static RouteHandlerBuilder QueryParams(this RouteHandlerBuilder b, params (string Name, string Description)[] parameters) =>
         b.WithMetadata([.. parameters.Select(p => new ParamDoc(p.Name, false, p.Description))]);
 
     static RouteHandlerBuilder PathParams(this RouteHandlerBuilder b, params (string Name, string Description)[] parameters) =>
