@@ -370,6 +370,8 @@ public sealed class State
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
     readonly JsonNode? skillList;
     readonly bool offline;
+    /// <summary>A community server: every request needs a token, and the sign-in, start page and issued tokens are on.</summary>
+    public bool Online => !offline;
     /// <summary>The server's database: accounts, tokens and every player's rows.</summary>
     public readonly Store Store;
     /// <summary>The account of the recorded connect: the one account of a local server, and the one a request that no
@@ -448,6 +450,7 @@ public sealed class State
         foreach (var d in Arr(itemDefs))
             family[Py.L(d!["id"])] = Root(d.AsObject());
         Store = new Store(dbPath);
+        Store.PurgeExpired();
         var local = AccountTemplate();
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
