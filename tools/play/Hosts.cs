@@ -46,10 +46,11 @@ static class Hosts
     /// <summary>Adds the block (<paramref name="hosts"/>) or removes it (null) in the hosts file at <paramref name="path"/>. False when nothing had to change; throws UnauthorizedAccessException without administrator rights.</summary>
     public static bool Apply(string path, IReadOnlyCollection<string>? hosts)
     {
-        var text = File.ReadAllText(path);
+        // Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte
+        var text = Encoding.Latin1.GetString(File.ReadAllBytes(path));
         var next = hosts is null ? Remove(text) : Add(text, hosts);
         if (next == text) return false;
-        File.WriteAllText(path, next, new UTF8Encoding(false));
+        File.WriteAllText(path, next, Encoding.Latin1);
         return true;
     }
 

@@ -58,4 +58,18 @@ public class HostsTests
         Assert.Equal(original, File.ReadAllBytes(path));
         Assert.False(Hosts.Apply(path, null)); // nothing left to remove: no write, so no administrator prompt
     }
+
+    [Fact]
+    public void ApplyKeepsABomAndBytesThatAreNotUtf8()
+    {
+        using var dir = new TempDir("play-hosts-");
+        var path = Path.Combine(dir.Path, "hosts");
+        byte[] original = [0xEF, 0xBB, 0xBF, .. "# caf"u8, 0xE9, .. "\r\n127.0.0.1 localhost\r\n"u8];
+        File.WriteAllBytes(path, original);
+
+        Assert.True(Hosts.Apply(path, Names));
+        Assert.Equal(original, File.ReadAllBytes(path)[..original.Length]);
+        Assert.True(Hosts.Apply(path, null));
+        Assert.Equal(original, File.ReadAllBytes(path));
+    }
 }
