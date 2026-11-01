@@ -109,14 +109,29 @@ public sealed class Store
 
     readonly string connectionString;
 
+    readonly string path;
+
     public Store(string path)
     {
+        this.path = path;
         connectionString = new SqliteConnectionStringBuilder { DataSource = path, Pooling = true }.ToString();
         Migrate();
     }
 
     /// <summary>A pooled connection for one account (null: only the shared tables, accounts and tokens).</summary>
     public Db Open(long? account = null) => new(connectionString, account);
+
+    /// <summary>A consistent copy of the whole database beside it (`VACUUM INTO`, file name `&lt;db&gt;.bak-&lt;UTC time&gt;`); returns its path.</summary>
+    public string Backup()
+    {
+        var stamp = $"{path}.bak-{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}";
+        var target = stamp;
+        for (var n = 1; File.Exists(target); n++)
+            target = $"{stamp}-{n}";
+        using var con = Open();
+        con.Script($"VACUUM INTO '{target.Replace("'", "''")}'");
+        return target;
+    }
 
     void Migrate()
     {
@@ -172,6 +187,13 @@ public sealed class Store
     {
         using var con = Open();
         return con.Scalar("SELECT handle FROM accounts WHERE id = ?", id) as string;
+    }
+
+    /// <summary>The Steam id the account signed in with; null when it has none.</summary>
+    public string? SteamId64(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT steam_id64 FROM accounts WHERE id = ?", id) as string;
     }
 
     /// <summary>The connect reply's `account` object of an account.</summary>
