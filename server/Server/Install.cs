@@ -46,6 +46,7 @@ public static class Install
         if (!File.Exists(file)) return null;
         var c = JsonNode.Parse(File.ReadAllText(file, Encoding.UTF8)) as JsonObject ?? throw new InvalidDataException($"{file}: not a JSON object");
         string host(string key) => (string)cfg[key]!;
+        var web = host("game_web_host");
 
         var account = (c["account"] as JsonObject ?? []).DeepClone().AsObject();
         account["account_id"] = LocalUserId;
@@ -55,7 +56,7 @@ public static class Install
         account["hunterscore"] = 0;
         account["membership"] = 0;
         account["fullbody_avatar"] = 0;
-        account["avatar_url"] = $"https://{host("avatar_host")}/256/1.png";
+        account["avatar_url"] = $"https://{web}/media/avatar/256/1.png";
         c["account"] = account;
         c["account_info"] = new JsonObject
         {
@@ -65,19 +66,19 @@ public static class Install
         };
         c["network"] = new JsonObject
         {
-            ["clients"] = null, ["handle"] = LocalHandle, ["host"] = LocalUserId, ["ip"] = "127.0.0.1", ["max_players"] = 8,
+            ["clients"] = new JsonArray(), ["handle"] = LocalHandle, ["host"] = LocalUserId, ["ip"] = null, ["max_players"] = 8,
             ["singleplayer"] = true, ["user_id"] = LocalUserId,
         };
-        var web = host("web_host");
+        // one host serves everything; the punch-through server is not used in single player
         c["config"] = new JsonObject
         {
             ["domains"] = new JsonObject
             {
-                ["main"] = web.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? web[4..] : web,
-                ["subdomains"] = new JsonObject { ["avatar"] = $"https://{host("avatar_host")}/", ["static"] = $"https://{host("static_host")}/" },
+                ["main"] = $"https://{web}",
+                ["subdomains"] = new JsonObject { ["avatar"] = $"https://{web}/media/avatar/", ["static"] = $"https://{web}/" },
             },
             ["enable_logging"] = false,
-            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = "127.0.0.1", ["port"] = 9090 } },
+            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = "127.0.0.1", ["port"] = 10000 } },
         };
         if (c["expedition"] is JsonObject e) e["expedition_id"] = 0;
 

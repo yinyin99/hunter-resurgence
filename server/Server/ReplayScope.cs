@@ -37,9 +37,9 @@ public static class ReplayScope
     public static readonly IReadOnlyList<Rule> Rules =
     [
         // ---- GLOBAL: the same reply for every player
-        Global("api", "/v1/Application/(application|discounts)"),  // the catalogue and the discounts
+        Global("api", "/v1/Application/(application|discounts|client_application)"),  // the catalogue (the in-game pages' share of it) and the discounts
         Global("api", "/v1/Store/products2"),
-        Global("api", "/v1/Splash/list_active"),  // the splash list (the server's notice is put first)
+        Global("api", "/v1/Splash/(list_active|feed_data)"),  // the splash list and the launcher news (the server's notice is put first)
         Global("api", "/v1/(Campaign|Community_Campaign)/get_active_stylesheet"),
         Global("api", "/v1/Membership/get_type"),  // what each membership type gives
         Global("api", "/v1/Membership_Bundle/get_active"),  // the bundles on sale
@@ -48,19 +48,19 @@ public static class ReplayScope
         Global("api", "/v1/Sidebar_Counter/getTemplate"),
         Global("gs", ProtocolLiterals.RpcBase + "/ping"),  // the client's ping
         Global("gs", "/"),
-        Global("web", "/(static|content|dist|feed)/.*"),  // the website's files and its news feed
-        Global("web", "/v1/splash/feed_data"),
+        Global("web", "/(static|content|dist|feed|media)/.*"),  // the website's files, its news feed and the pictures
+        Global("web", "/(client|launcher)"),  // the in-game pages' shell and the launcher's page (a community server answers the second itself)
         Global("web", "/v1/json/emotelauncher/ping"),
 
         // ---- PER PLAYER, answered from the database where the state has a handler (State.*Reply); otherwise the empty reply
         Own("Me/me", MeShape),
-        Own("Me/poll", """{"counter": 0, "unread_messages": 0, "avatar": "", "ems": 0, "gms": 0, "friend_requests": 0}"""),
+        Own("Me/poll", """{"counter": 0, "unread_messages": 0, "avatar": "", "ems": 0, "gms": 0, "friend_requests": 0, "campaign_stylesheet": false, "community_campaign_stylesheet": false, "active_campaign": false, "last_hunt_update_ts": 0}"""),
         Own("Me/friends", """{"friends": [], "requests": [], "pending": [], "requestCount": 0, "friendCount": 0}"""),
         Own("Me/accept_license", "true"),  // the license is accepted on every new account
         Own("User/friendslist", """{"total": 0, "friends": []}"""),
         Own("Friend/add", "false"),
         Own("Network/list", "[]"),  // the live multiplayer games: this server has none
-        Own("Expedition/list", """{"total": 0, "expeditions": []}"""),
+        Own("Expedition/list", """{"total": 0, "has_more": false, "expeditions": []}"""),
         Own("Expedition/animal", "null"),
         Own("Public_user/expedition", "null"),
         Own("Public_user/getByHostname", "null"),
@@ -77,7 +77,8 @@ public static class ReplayScope
         Own("Launch/tutorial", HandlerError),  // the tutorial's tokens are the recorded player's: none is handed out
         Own("Wallet/(bank_transactions|silver_transactions|transactions)", "[]"),
         Own("Wallet/spent", """{"spent": 0.0, "silver_spent": 0.0}"""),
-        Own("Mission/missions", """{"available": [], "states": {}}"""),  // missions are the operator's to decide: none yet
+        Own("Mission/missions", """{"active": [], "completed": [], "available": [], "states": {}}"""),  // missions are the operator's to decide: none yet
+        Own("Game/user/loadout", "[]"),  // the loadouts: none stored
         Own("Mission/activate", "false"),
         Own("Daily_Mission/get_daily_missions_calendar",
             """{"is_frozen": 1, "broken_streak_info": {"has_broken_streak": false, "streak_larger": 0}, "calendar": []}"""),
@@ -109,7 +110,7 @@ public static class ReplayScope
     /// web API's (any case).</summary>
     public static Rule? Find(Replay.Game game, Req r)
     {
-        var host = r.Host == game.Api ? "api" : r.Host == game.Apiv2 ? "apiv2" : r.Host == game.Gs ? "gs" : r.Host == game.Web ? "web" : null;
+        var host = r.Host == game.Api ? "api" : r.Host == game.Apiv2 ? "apiv2" : r.Host == game.Gs ? "gs" : r.Host == game.Web || r.Host == game.GameWeb ? "web" : null;
         if (host is null) return null;
         if (host == "web" && r.Path.StartsWith("/v1/", StringComparison.OrdinalIgnoreCase) && Rules.FirstOrDefault(x => x.Host == "api" && x.Pattern.IsMatch(r.Path)) is { } api)
             return api;
@@ -120,5 +121,5 @@ public static class ReplayScope
     /// of a game host that is not a global rule and not a CORS preflight (no body, no data); false on the asset hosts.</summary>
     public static bool Denied(Replay.Game game, Req r) =>
         game.State is { Online: true } && r.Method != "OPTIONS"
-        && (r.Host == game.Api || r.Host == game.Apiv2 || r.Host == game.Gs || r.Host == game.Web) && Find(game, r) is not { Global: true };
+        && (r.Host == game.Api || r.Host == game.Apiv2 || r.Host == game.Gs || r.Host == game.Web || r.Host == game.GameWeb) && Find(game, r) is not { Global: true };
 }

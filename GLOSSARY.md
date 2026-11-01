@@ -82,7 +82,7 @@ The game's original launcher.
 The page the community server shows in the old launcher: sign in with Steam, then Play.
 
 **Launch URL**:
-The address the old launcher gives the game to connect: the server's host and the player's session, access and refresh tokens.
+The address the launcher gives the game to connect: the game web host and the player's session, access and refresh tokens.
 
 **Game folder**:
 The folder where the game is installed.

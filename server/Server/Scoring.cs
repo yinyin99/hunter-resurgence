@@ -17,10 +17,10 @@ public static class Scoring
     public static readonly HashSet<int> BIRDS_AG = [7, 15, 16, 27, 28, 29, 33, 34, 35, 47, 51];
     public static readonly HashSet<int> FLYING = [6, 11];  // animal_state flying, flying (not spooked)
 
-    /// <summary>Config-dependent globals: static_host and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
+    /// <summary>Config-dependent globals: game_web_host (the score sheets' images) and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
     public static void Load(JsonObject cfg, string? variantsFile)
     {
-        StaticHost = (string)cfg["static_host"]!;
+        StaticHost = (string)cfg["game_web_host"]!;
         Variants = new();
         var path = variantsFile;
         if (path is null || !File.Exists(path)) return;

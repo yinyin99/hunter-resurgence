@@ -2,7 +2,7 @@
 
 `server/Server` is the game server: the local server a player runs on their own PC, and the code of the community server. Tests: `server/Server.Tests`. One SQLite database per server ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
-At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: the game's install archives, recorded replies and a mirror folder. It needs no recordings to start: the player state is built from the operator's own install and the facts file ([Starting data](#starting-data)). The new launcher is a later step ([README](../README.md#roadmap)).
+At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: the game's install archives, recorded replies and a mirror folder. It needs no recordings to start: the player state is built from the operator's own install and the facts file ([Starting data](#starting-data)). The current game build (one web host, signed tokens) is described in [The current build](#the-current-build).
 
 ## Run it
 
@@ -14,7 +14,10 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 | Key | Meaning |
 |---|---|
-| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `web_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host`, `crash_host` | The 13 host names the game asks for. All are required. The server routes by the `Host` of a request |
+| `web_host` | Required. **Our website's public domain**: the sign-in pages and the account pages are served under it (the website forwards the browser's `Host`, and the Steam return address is built from it) |
+| `game_web_host` | Required. **The game's own web host**: the one name the current build sends everything to ([The current build](#the-current-build)). It is not our domain: a player's hosts file points it to their PC, and the request reaches the server in the `host_header` header |
+| `crash_host` | The host the game's crash reports go to (answered 204). Recommended |
+| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it. Left out, each is a placeholder (`<role>.invalid`) that no client asks for. The server routes by the `Host` of a request |
 | `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and hold the item and species definitions, and its sample files (`game/json_connect_results.json`, `game/json_inventory.json`) seed the connect reply and the item definitions ([Starting data](#starting-data)). Read only |
 | `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
 | `recordings_dir` | Default `recordings`: Optional: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
@@ -50,6 +53,44 @@ A recording holds one player's replies, so with `offline_mode` false step 3 repl
 | Website | `static`, `content`, `dist`, `feed`, the splash feed, the launcher ping | `/user/<handle>/score/` | every other path (the miss reply; a GET still finds a page of the operator's mirror folder) |
 
 The website's `/v1/` paths are the API's, in any case. Empty replies are the shapes in the table (`[]`, `{}`, `null`, or an object with empty members). A new account's connect reply and `Me/me` carry its own ids, handle and empty statistics, never the recorded player's. Another player's data is not served yet (a profile page of a friend shows empty); missions and competitions are the operator's to decide.
+
+## The current build
+
+The current client build sends all its traffic to `game_web_host`, with lower-case paths and JSON bodies. `NewBuild.Rewrite` (before routing) turns a request for that host into the one the handlers know, so every handler, recording and rule below is the old one:
+
+| Request on `game_web_host` | Becomes |
+|---|---|
+| `/v1/json/<service>/<method>` (the game's RPC: `connect`, `heartbeat`, `disconnect`) | the game server's path and host; the body stays JSON. Other `/v1/json/...` paths stay on the web host (the launcher's ping) |
+| any other `/v1/<module>/<method>`, any case | the API host, the path in the case of the handlers (or the recordings'); a JSON body becomes a form (`a=1&b=2`, nested values as their JSON text) |
+| everything else (`/client`, `/static/...`, `/content/...`, `/media/...`) | unchanged: the archive, the recordings, the mirror (`<mirror_dir>/<game_web_host>/...`) answer it |
+
+The server's own answers for this build:
+
+| Path | Answer | Replay scope |
+|---|---|---|
+| `POST /auth/jwt/refresh` | A new access JWT (`exp` = now + 900 s) and refresh JWT, in the body (`expires_in`, `access_token`, `refresh_token`) and the access and refresh cookies (the refresh one for the path `/auth/jwt/refresh` only). The only credential is a refresh JWT this server signed (`typ` refresh: body `refresh_token` or the cookie); an access JWT, a session id or any other token gets 401. Nothing valid: 401. A local server: the local account. `scp` is 4 for `X-App-Id: client`, else 1 | - |
+| `POST /auth/emotelauncher/token` | Always 401 `auth.invalid_steam_ticket` (a Steam ticket cannot be checked, [above](#sign-in-and-tokens)): the launcher falls back to the page | - |
+| `GET /launcher` | The start page ([above](#sign-in-and-tokens)): sign in, then `ewlauncher.startGame(<launch URL>)`. A local server: the recorded page | global |
+| `POST /v1/session/start_single_player` | `{session_id, network_id}` (the session is the first segment of the launch URL a launcher builds from it, and the game's `X-Hun-Session`) and the session and network id as cookies; opens the expedition at `lodge_id` in `reserve` | - |
+| `connect`, `heartbeat` | As before (they read `X-Hun-Session`, else `Authorization: Bearer`). The first heartbeat's `event 6` rows with quantity 0 use nothing up | - |
+| `POST /v1/application/client_application` | The recorded reply, else the catalogue of the player state (species with their permitted ammo, items, reserves, locations; missions only if the recording has them) | global |
+| `GET /v1/splash/feed_data` | `{posts, splashes}`: the recording with the server's notice first in `splashes`, else only the notice | global |
+| `GET /v1/application/application` | The recorded reply (recordings are matched by method, so one of the current build's GET; none without a recording) | global |
+| `GET /v1/game/user/loadout` | `[]` | per player, empty reply |
+| `POST /v1/mission/missions` | `{active, completed, available, states}`, all empty | per player, empty reply |
+| `POST /v1/network/list` | `[]` | per player, empty reply |
+| `POST /v1/inventory/move_multiple2`, `inventory/buy`, `me/me`, `me/poll` (adds `active_campaign`, `campaign_stylesheet`, `community_campaign_stylesheet`, `last_hunt_update_ts`), `expedition/list` (`has_more` next to `total`) | The old handlers | per player, from the database |
+| `/client`, `/static/...`, `/content/...`, `/media/...` | The mirror | global |
+
+**Recordings of the current build** are found too: `NewBuild.Alias` adds, for every recorded request to `game_web_host` that the rewrite would move, the key of the moved request (the original stays).
+
+**The old build** is no longer served by the server's own start page and connect reply: the launch URL, `config.domains`, `network` and the photo links are the current build's. Its other handlers keep their paths.
+
+**Tokens.** The launch URL is `<scheme>://<game_web_host>/<session>/lang/en_US/access_token/<JWT>/refresh_token/<JWT>`. Both JWTs are HS256-signed with a key the server makes in a file beside the database (`state.db.jwtkey`) and carry `sub`, `user_id` (the account), `iss`, `scp`, `typ` (`access`/`refresh`), `iat`, `exp`, `jti`. Each is also stored in `tokens` like every other token, so a ban or a delete ends it, and every endpoint that takes a token takes them. The client does not check the signature; the server does when a refresh token comes back. An expired token is never sent: the game crashes on one.
+
+**Sign-in on two hosts.** On our website (`web_host`) it is as above. In the launcher (`game_web_host`, through the player's forwarder) the page asks `POST /auth/link` for a code; the reply's `url` points the player's own browser to `https://<web_host>/auth/steam/login?link=<code>`, because only our domain has a certificate the browser trusts. The browser signs in and confirms there, and the launcher, polling `GET /auth/link/<code>` on the game host, receives the session cookie for that host.
+
+**Settings the current build needs**: `web_host`, `game_web_host` and `crash_host`. The player's kit redirects `game_web_host` and `crash_host` only; `web_host` is ours and is never redirected.
 
 ## Starting data
 
@@ -110,7 +151,7 @@ With `offline_mode` false (a community server) players sign in with Steam; the e
 
 **The launcher's start page** is `GET /` on `signup_host` (the launcher loads it with `#/launcher/start`; the hash never reaches the server). The old launcher's browser (Chromium 25, TLS 1.1) cannot be expected to load Steam's pages, so the page signs in through the player's own browser, in the style of a device code: the page asks `POST /auth/link` for a code and opens `https://<signup-host>/auth/steam/login?link=<code>` with `ewlauncher.openURL` (a second link on the page signs in inside the launcher's window instead, which may fail). The player's browser runs steps 1 to 4, then shows "Sign in the launcher that shows the code `ABCD-EFGH`?" (the first 8 characters of the code); the player confirms, and the launcher, polling `GET /auth/link/<code>` every 2 s, gets `ok` with the `hr_session` cookie once and reloads. The confirmation matters: without it, anyone could send a victim a link made from their own code. Signed in, the page shows "Play": `POST /auth/launch` returns `{"url": <launch URL>}`, and the page calls `ewlauncher.startGame(url)`. The page is plain HTML and ES5, English only.
 
-**The launch URL** is `<scheme>://<gameserver_host>/<session>/lang/en_US/access_token/<access>/refresh_token/<refresh>`, three fresh tokens of the signed-in account; the scheme (`ProtocolLiterals.LaunchScheme`, the one literal that names the game) carries the name the client's environment check looks for anywhere in the URL. `gameserver_host` must not contain `dev` or `beta` (the same check). Whether the client takes a scheme other than the one it was shipped with is untested.
+**The launch URL** is `<scheme>://<game_web_host>/<session>/lang/en_US/access_token/<access JWT>/refresh_token/<refresh JWT>` ([The current build](#the-current-build)), three fresh tokens of the signed-in account; the scheme (`ProtocolLiterals.LaunchScheme`, the one literal that names the game) carries the name the client's environment check looks for anywhere in the URL. `game_web_host` must not contain `dev` or `beta` (the same check).
 
 **Tokens** (all in `tokens`, hashed; every token resolves everywhere: the lifetimes limit a leak, they are not different powers):
 
@@ -118,8 +159,10 @@ With `offline_mode` false (a community server) players sign in with Steam; the e
 |---|---|---|
 | session (`X-Hun-Session`) | `Launch/start`, the start page | 7 days |
 | access (`oauth_access_token`) | `Launch/start`, the start page, `Oauth/token` | 1 day |
-| refresh (starts with `r`) | `Launch/start`, the start page | 30 days; only these renew; `Oauth/token` (`oauth_refresh_token`) returns a new access token and the same refresh token |
+| refresh (starts with `r`) | `Launch/start` | 30 days; the only ones `Oauth/token` renews; `Oauth/token` (`oauth_refresh_token`) returns a new access token and the same refresh token |
 | JWT (`Bearer`) | `User/jwt`, on the game host and the API host, for the `oauth_access_token` of its JSON or form body | 30 minutes; three dot-separated parts whose payload has `sub`, `iat` and `exp` (the client reads `exp`); the third part is random, not a signature |
+| access JWT (`Bearer`, `oauth_access_token`) | `/auth/jwt/refresh`, the launch URL ([The current build](#the-current-build)) | 900 s; HS256-signed, kept in `tokens` |
+| refresh JWT | the same, the cookie | 30 days; renews only through `/auth/jwt/refresh`; not rotated (the game may keep presenting the one of its launch URL), so it ends with its 30 days, a ban or a delete |
 | web session cookie | the sign-in | 30 days |
 
 Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token` answer a request without a valid token as every other state endpoint does (the expired-token reply).
@@ -128,11 +171,11 @@ Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token
 
 **User ids**: an account of the server's own gets the next id from 2,000,000,000 (`Store.FirstServerId`) to 2,147,483,647 (int32, the game's width); ids that come from a backup are below that, so they never collide. The allocation and the insert are one step under a lock (one server process, [ADR 0001](adr/0001-sqlite-for-profiles.md)). The rule for the restore (not built yet): a restore that brings a user id and handle may replace the id and handle of an account that has not played (no row in `expeditions` and `events`, only its starting rows); it must not change the id of an account that has. The rest of the account (Steam id, tokens, sessions) stays.
 
-**`web_host` must be the website's public domain** (the website sends the host the browser used, and the server picks its sign-in by it).
+**`web_host` must be the website's public domain** (the website sends the host the browser used, and the server picks its sign-in by it); the game's own web host is `game_web_host`.
 
 **Handles**: 3 to 20 characters, ASCII letters, digits, `-` and `_`, starting with a letter or a digit; unique whatever the case (`Handles.Problem`, the column is NOCASE).
 
-**Endpoints** (the OpenAPI document `game` lists them): `GET /auth/steam/login`, `GET /auth/steam/return`, `GET|POST /auth/handle`, `GET|POST /auth/confirm`, `POST /auth/link`, `GET /auth/link/<code>`, `GET /auth/me` (`{userId, handle}`, or 401), `POST /auth/signout`, `POST /auth/launch`, `GET /` on `signup_host`, on both hosts. A state-changing request must come from a page of the same origin: its `Origin` is the origin, or it has no `Origin` and carries `X-Requested-With`. The website reaches them through the proxy; the website's own use is in [website.md](website.md#sign-in).
+**Endpoints** (the OpenAPI document `game` lists them): `GET /auth/steam/login`, `GET /auth/steam/return`, `GET|POST /auth/handle`, `GET|POST /auth/confirm`, `POST /auth/link`, `GET /auth/link/<code>`, `GET /auth/me` (`{userId, handle}`, or 401), `POST /auth/signout`, `POST /auth/launch`, on `web_host`, `signup_host` and `game_web_host`; `GET /` on `signup_host` and `GET /launcher` on `game_web_host` (the start page); `POST /auth/jwt/refresh` and `POST /auth/emotelauncher/token` on `game_web_host` only. A state-changing request must come from a page of the same origin: its `Origin` is the origin, or it has no `Origin` and carries `X-Requested-With`. The website reaches them through the proxy; the website's own use is in [website.md](website.md#sign-in).
 
 A restart forgets the logins in progress (the player starts the sign-in again); sessions, accounts and tokens are in the database.
 

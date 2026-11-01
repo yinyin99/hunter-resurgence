@@ -42,6 +42,16 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void OnlyTheTwoWebHostsAreRequiredAndTheOthersAreNamesNoClientAsks()
+    {
+        var o = Minimal();
+        foreach (var k in Replay.HostKeys.Where(k => k is not ("web_host" or "game_web_host"))) o.Remove(k);
+        var s = Load(o);
+        Assert.Equal(("web.test", "api.invalid"), ((string)s.Cfg["web_host"]!, (string)s.Cfg["api_host"]!));
+        Assert.Equal(Replay.HostKeys.Length, Replay.HostKeys.Select(k => (string)s.Cfg[k]!).Distinct().Count());  // distinct: the server routes by them
+    }
+
+    [Fact]
     public void AllOptionsAreRead()
     {
         var o = Minimal();
@@ -66,7 +76,8 @@ public class SettingsTests : IDisposable
     }
 
     [Theory]
-    [InlineData("api_host", null, "api_host: missing")]
+    [InlineData("web_host", null, "web_host: missing")]
+    [InlineData("game_web_host", null, "game_web_host: missing")]
     [InlineData("install_dir", null, "install_dir: missing")]
     [InlineData("listeners", null, "listeners: needs at least one")]
     [InlineData("trusted_proxies", "not an address", "trusted_proxies")]

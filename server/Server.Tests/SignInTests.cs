@@ -395,7 +395,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, reply.Status);
         var url = (string)JsonNode.Parse(reply.Body)!["url"]!;
         var m = System.Text.RegularExpressions.Regex.Match(url,
-            $@"\A{ProtocolLiterals.LaunchScheme}://gameserver\.test/([0-9a-f]{{40}})/lang/en_US/access_token/([0-9a-f]{{40}})/refresh_token/(r[0-9a-f]{{40}})\z");
+            $@"\A{ProtocolLiterals.LaunchScheme}://game_web\.test/([0-9a-f]{{40}})/lang/en_US/access_token/([\w-]+\.[\w-]+\.[\w-]+)/refresh_token/([\w-]+\.[\w-]+\.[\w-]+)\z");
         Assert.True(m.Success, url);
         foreach (var token in new[] { m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value })
             Assert.Equal(Store.FirstServerId, state.Store.ResolveToken(token));

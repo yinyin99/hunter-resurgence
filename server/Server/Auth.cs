@@ -20,6 +20,8 @@ public static class Lifetimes
     public const string RefreshPrefix = "r";
     public static readonly TimeSpan Refresh = TimeSpan.FromDays(30);
     public static readonly TimeSpan Jwt = TimeSpan.FromMinutes(30);
+    /// <summary>The signed access JWT of the current build: the game reads its `exp` and asks for a new one before it runs out.</summary>
+    public static readonly TimeSpan AccessJwt = TimeSpan.FromSeconds(900);
     public static readonly TimeSpan Cookie = TimeSpan.FromDays(30);
     /// <summary>From the click on "sign in" to the end of the handle choice or the confirmation.</summary>
     public static readonly TimeSpan Login = TimeSpan.FromMinutes(15);
@@ -36,14 +38,57 @@ public static class Handles
         Valid.IsMatch(handle) ? null : "A name has 3 to 20 letters, digits, - or _ and starts with a letter or a digit.";
 }
 
-/// <summary>The game's credentials for one account: what Launch/start, User/jwt and Oauth/token hand out.</summary>
-public sealed class GameTokens(Store store, string gameserverHost)
+/// <summary>The game's credentials for one account: what Launch/start, User/jwt and Oauth/token hand out, and the signed
+/// JWTs of the current build (the launch URL, /auth/jwt/refresh).</summary>
+public sealed class GameTokens(Store store, string webHost)
 {
-    /// <summary>The launch URL the old launcher hands to the game. The scheme carries the game's name (the client's
-    /// environment check looks for it anywhere in the URL); the host must not contain dev or beta.</summary>
-    public string LaunchUrl(long account) =>
-        $"{ProtocolLiterals.LaunchScheme}://{gameserverHost}/{store.CreateToken(account, Lifetimes.Session)}/lang/en_US"
-        + $"/access_token/{store.CreateToken(account, Lifetimes.Access)}/refresh_token/{store.CreateToken(account, Lifetimes.Refresh, Lifetimes.RefreshPrefix)}";
+    /// <summary>The launch URL the launcher hands to the game: a fresh session, access and refresh JWT. The scheme
+    /// carries the game's name (the client's environment check looks for it anywhere in the URL); the host must not
+    /// contain dev or beta.</summary>
+    public string LaunchUrl(long account, string? session = null) =>
+        $"{ProtocolLiterals.LaunchScheme}://{webHost}/{session ?? store.CreateToken(account, Lifetimes.Session)}/lang/en_US"
+        + $"/access_token/{Access(account, GameScope)}/refresh_token/{Refresh(account, GameScope)}";
+
+    /// <summary>The `scp` claim: 4 for the game client, 1 for the launcher page and the website.</summary>
+    public const int GameScope = 4, WebScope = 1;
+
+    public string Access(long account, int scope) => Sign(account, "access", scope, Lifetimes.AccessJwt);
+
+    public string Refresh(long account, int scope) => Sign(account, "refresh", scope, Lifetimes.Refresh);
+
+    /// <summary>An HS256 JWT with the claims of the current build, kept in `tokens` like every other token (so a ban or a
+    /// delete ends it). The client never checks the signature; <see cref="RefreshedAccount"/> does.</summary>
+    public string Sign(long account, string type, int scope, TimeSpan life)
+    {
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        static string B64(byte[] b) => Convert.ToBase64String(b).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+        var payload = new JsonObject
+        {
+            ["sub"] = account, ["iss"] = ProtocolLiterals.JwtIssuer, ["scp"] = scope, ["typ"] = type, ["iat"] = now,
+            ["exp"] = now + (long)life.TotalSeconds, ["jti"] = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(16)), ["user_id"] = account,
+        };
+        var signed = B64("""{"alg":"HS256","typ":"JWT"}"""u8.ToArray()) + "." + B64(Encoding.UTF8.GetBytes(payload.ToJsonString()));
+        return store.AddToken(signed + "." + B64(HMACSHA256.HashData(store.JwtKey, Encoding.ASCII.GetBytes(signed))), account, life);
+    }
+
+    /// <summary>The account of a refresh JWT that this server signed, that is not expired and is still in `tokens`; else null.</summary>
+    public long? RefreshedAccount(string token)
+    {
+        var parts = token.Split('.');
+        if (parts.Length != 3) return null;
+        try
+        {
+            byte[] Unb64(string s) => Convert.FromBase64String(s.Replace('-', '+').Replace('_', '/').PadRight((s.Length + 3) / 4 * 4, '='));
+            var mac = HMACSHA256.HashData(store.JwtKey, Encoding.ASCII.GetBytes(parts[0] + "." + parts[1]));
+            if (!CryptographicOperations.FixedTimeEquals(mac, Unb64(parts[2]))) return null;
+            var claims = JsonNode.Parse(Unb64(parts[1]))!;
+            return (string?)claims["typ"] == "refresh" && (long)claims["exp"]! > DateTimeOffset.UtcNow.ToUnixTimeSeconds() ? store.ResolveToken(token) : null;
+        }
+        catch (Exception e) when (e is FormatException or System.Text.Json.JsonException or NullReferenceException or InvalidCastException)
+        {
+            return null;  // not one of ours
+        }
+    }
 
     public JsonObject Launch(long account) => new()
     {
@@ -77,7 +122,9 @@ public sealed class GameTokens(Store store, string gameserverHost)
 
 /// <summary>The sign-in itself. One instance per server: the logins in progress are in memory (a restart only makes a
 /// player start the sign-in again), the accounts and the cookie sessions are in the database.</summary>
-public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null)
+/// <param name="siteHost">Our website's domain, and gameWebHost the game's own web host: the launcher page there sends the player's browser
+/// to our site for Steam (the browser trusts our certificate; it does not reach the game's host), and learns the result by polling.</param>
+public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null)
 {
     public const string SessionCookie = "hr_session";
     const string LoginCookie = "hr_login";
@@ -284,7 +331,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return Json(200, new JsonObject
         {
             ["code"] = code, ["userCode"] = UserCode(code),
-            ["url"] = Origin(r) + "/auth/steam/login?link=" + code, ["expires"] = (long)Lifetimes.Link.TotalSeconds,
+            ["url"] = (r.Host == gameWebHost && siteHost is not null ? "https://" + siteHost : Origin(r)) + "/auth/steam/login?link=" + code, ["expires"] = (long)Lifetimes.Link.TotalSeconds,
         });
     }
 
@@ -328,5 +375,5 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     /// <summary>GET / on the signup host: the launcher's start page.</summary>
     public Reply StartPage(Req r) =>
-        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null));
+        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null, r.Path));
 }

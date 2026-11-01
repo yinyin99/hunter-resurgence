@@ -38,11 +38,15 @@ public static class Replay
     public const string ACHIEVEMENT_STATS = "/v1/Achievement/stats";
     public const string INVENTORY_LIST = "/v1/Inventory/list";
     public const string TROPHY_LIST = "/v1/Trophy/list";
+    // the current build's paths, lower case as it sends them (the old ones above are canonical in their own case; NewBuild.Canonical maps any case to them)
+    public const string START_SINGLE_PLAYER = "/v1/session/start_single_player";
+    public const string CLIENT_APPLICATION = "/v1/application/client_application";
+    public const string FEED_DATA = "/v1/splash/feed_data";
     public const string LOCALE_PREFIX = "/static/built/js/locale/";
     public const string WEB_SCRIPT_SUFFIX = "_compiled_web.min.js";
 
     // the hosts the server answers for: one settings key each
-    public static readonly string[] HostKeys = ["gameserver_host", "api_host", "apiv2_host", "signup_host", "web_host", "static_host",
+    public static readonly string[] HostKeys = ["gameserver_host", "api_host", "apiv2_host", "signup_host", "web_host", "game_web_host", "static_host",
         "static_legacy_host", "map_host", "photo_host", "avatar_host", "news_host", "telemetry_host", "crash_host"];
 
     public record struct Key(string Method, string Host, string Path, string? Params);
@@ -250,6 +254,7 @@ public static class Replay
     /// connect sample in the install.</summary>
     public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
     {
+        NewBuild.Alias(table, cfg);
         var e = table.Entries;
         var gsHost = S(cfg, "gameserver_host").ToLowerInvariant();
         var apiHost = S(cfg, "api_host").ToLowerInvariant();
@@ -288,8 +293,8 @@ public static class Replay
             if (facts.ReserveConnect(r, ethical) is { } body) reserves[r] = body;
         foreach (var (r, rec) in table.Connects)
             reserves[int.Parse(r)] = rec.Body;
-        return new State(System.IO.Path.Combine(workDir, "state.db"), connect, $"https://{S(cfg, "gameserver_host")}",
-            $"https://{S(cfg, "static_host")}{ProtocolLiterals.IconPath}",
+        return new State(System.IO.Path.Combine(workDir, "state.db"), connect, $"https://{S(cfg, "game_web_host")}",
+            $"https://{S(cfg, "game_web_host")}{ProtocolLiterals.IconPath}",
             app != null ? (JsonObject)JsonNode.Parse(app.Body)! : Install.Application(S(cfg, "install_dir"), facts, item), locale,
             web.Length > 0 ? ScorePage.TextureNames(Encoding.UTF8.GetString(web)) : facts.Textures,
             discounts != null ? (JsonArray)JsonNode.Parse(discounts.Body)! : [],
@@ -325,7 +330,8 @@ public static class Replay
         public readonly JsonObject Cfg;
         public readonly State? State;
         public readonly string MirrorDir;
-        public readonly string Gs, Apiv2, Api, Web, Signup;
+        /// <summary>Web: our website's domain (sign-in, account pages). GameWeb: the game's own web host, where all of the current build's traffic arrives.</summary>
+        public readonly string Gs, Apiv2, Api, Web, GameWeb, Signup;
         public readonly HashSet<string> Sinks;
         /// <summary>The game's credentials; null without player state.</summary>
         public readonly GameTokens? Tokens;
@@ -337,10 +343,17 @@ public static class Replay
             Apiv2 = S(cfg, "apiv2_host").ToLowerInvariant();
             Api = S(cfg, "api_host").ToLowerInvariant();
             Web = S(cfg, "web_host").ToLowerInvariant();
+            GameWeb = S(cfg, "game_web_host").ToLowerInvariant();
             Sinks = SinkHosts(cfg);
             Signup = S(cfg, "signup_host").ToLowerInvariant();
-            Tokens = state is null ? null : new GameTokens(state.Store, S(cfg, "gameserver_host"));
+            Tokens = state is null ? null : new GameTokens(state.Store, S(cfg, "game_web_host"));
         }
+
+        /// <summary>The API paths of the recordings by lower-case name, as recorded (the recordings are keyed by the raw path).</summary>
+        public Dictionary<string, string> RecordedApiPaths => recordedApiPaths ??= Table.Entries.Keys.Where(k => k.Host == Api && k.Path.StartsWith("/v1/", StringComparison.Ordinal))
+            .Select(k => k.Path).Distinct().GroupBy(p => p, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+        Dictionary<string, string>? recordedApiPaths;
 
         /// <summary>The recorded reply for this request: the one recorded with the same query/form params when it is
         /// usable (tier ≥ 1), else the newest one for method, host and path.</summary>
