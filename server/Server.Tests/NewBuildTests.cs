@@ -312,6 +312,18 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         Assert.False(table.Entries.ContainsKey(new("GET", "api.test", "/client", null)));  // a page stays where it is
     }
 
+    [Fact]
+    public void TestTheConnectReplyNeverCarriesAnEventOrItsAmmo()
+    {
+        var connect = Fixtures.CONNECT;
+        connect["ingame_event"] = new JsonObject { ["name"] = "season", ["define"] = "SEASON", ["reserves"] = new JsonArray(2) };
+        connect["species_ammo"] = new JsonArray(new JsonObject { ["species_id"] = "17", ["ammo"] = new JsonArray(999) });  // a silver-only row
+        var own = new State(Path.Combine(tmp, "event.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
+        var reply = JsonNode.Parse(own.ConnectReply(own.LocalAccount))!;
+        Assert.Null(reply["ingame_event"]);
+        Assert.Equal("[241,14]", reply["species_ammo"]![0]!["ammo"]!.ToJsonString());
+    }
+
     // ---- what a recording may answer
 
     [Theory]

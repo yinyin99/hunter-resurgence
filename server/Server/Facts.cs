@@ -147,6 +147,10 @@ public sealed class Facts
         return items;
     }
 
+    /// <summary>Where a start item is worn or held: the first slot of its type above the backpack (0) and the pockets (1); 0 when the type has none.</summary>
+    public long StartSlot(string? type) =>
+        (Obj("types")[type ?? ""]?["slots"] as JsonArray ?? []).Select(Py.L).FirstOrDefault(s => s > 1);
+
     /// <summary>The item ids and the wallet of a new account.</summary>
     public (long[] Items, JsonObject Wallet) Start()
     {

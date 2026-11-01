@@ -99,7 +99,7 @@ public static class Install
         c["spawn"] = new JsonArray();
         c["competitions"] = new JsonArray();
 
-        // inventory, wallet and skills of a new account: the facts file's start kit, a wallet, every skill at level 1
+        // inventory, wallet and skills of a new account: the facts file's start kit (each item equipped: the client crashes on an empty one), a wallet, every skill at level 1
         var (kit, wallet) = facts.Start();
         var byId = itemDefinitions.OfType<JsonObject>().Where(d => d["id"] is not null).ToDictionary(d => Py.L(d["id"]), d => d);
         var items = new JsonArray();
@@ -108,7 +108,7 @@ public static class Install
             var units = byId.TryGetValue(id, out var d) && d["units"] is { } u && Py.IsNum(u) && Py.D(u) > 0 ? u.DeepClone() : null;
             items.Add(new JsonObject
             {
-                ["item_id"] = id, ["slot"] = 0, ["guid"] = (items.Count + 1).ToString(), ["metadata"] = new JsonObject(), ["units"] = units,
+                ["item_id"] = id, ["slot"] = facts.StartSlot((string?)d?["type"]), ["guid"] = (items.Count + 1).ToString(), ["metadata"] = new JsonObject(), ["units"] = units,
             });
         }
         var inventory = c["inventory"] as JsonObject ?? [];

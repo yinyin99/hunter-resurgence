@@ -110,7 +110,7 @@ public class InstallTests : IDisposable
     {
         var c = Template();
         // 404 has no definition: no units; 14 comes as a full stack; the stack of -2 units is none
-        Eq("""[{"item_id": 257, "slot": 0, "guid": "1", "metadata": {}, "units": null}, {"item_id": 14, "slot": 0, "guid": "2", "metadata": {}, "units": 30}, {"item_id": 404, "slot": 0, "guid": "3", "metadata": {}, "units": null}]""", c["inventory"]!["items"]);
+        Eq("""[{"item_id": 257, "slot": 2, "guid": "1", "metadata": {}, "units": null}, {"item_id": 14, "slot": 8, "guid": "2", "metadata": {}, "units": 30}, {"item_id": 404, "slot": 0, "guid": "3", "metadata": {}, "units": null}]""", c["inventory"]!["items"]);
         Eq("""{"em": 1000, "gm": 0}""", c["wallet"]);
         Eq("""{"spotting": [1, 1], "tracking": [1, 1], "weapon": {}}""", c["skills"]);
     }
