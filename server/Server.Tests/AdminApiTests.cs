@@ -16,7 +16,7 @@ public class AdminApiTests : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        var ammo = O("""{"item_id": 13, "name": ".270 Soft Point", "units": 10}""");  // from the install's json_inventory.json
+        var ammo = O("""{"item_id": 13, "name": "Test Cartridge", "units": 10}""");
         state = new State(Path.Combine(tmp, "state.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, sampleInfos: [ammo]);
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
@@ -35,7 +35,7 @@ public class AdminApiTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.NotFound, (await Post("/admin/grants/items", new { itemId = 99999 })).StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, (await Post("/admin/grants/items", new { itemId = 13, count = 0 })).StatusCode);
         var granted = await Post("/admin/grants/items", new { itemId = 13, count = 2 });
-        Assert.Equal("""{"itemId":13,"count":2,"name":".270 Soft Point"}""", await granted.Content.ReadAsStringAsync());
+        Assert.Equal("""{"itemId":13,"count":2,"name":"Test Cartridge"}""", await granted.Content.ReadAsStringAsync());
         var refused = await Post("/admin/grants/currency", new { currency = "gm", amount = -1000 });
         Assert.Equal((HttpStatusCode.Conflict, "application/problem+json"), (refused.StatusCode, refused.Content.Headers.ContentType?.MediaType));
         Assert.Equal(HttpStatusCode.BadRequest, (await Post("/admin/grants/currency", new { currency = "silver", amount = 1 })).StatusCode);

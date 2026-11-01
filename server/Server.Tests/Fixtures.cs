@@ -29,7 +29,7 @@ public static class Fixtures
                            {"id": 10, "name": "Test Bullet", "sponsor_image": "testbrand_logo.jpg"},
                            {"id": 14, "name": "Test Shot A"}, {"id": 241, "name": "Test Shot B"}],
                  "reserves": [{"id": 2, "name": "Test Reserve"}],
-                 "locations": [{"id": 101, "pos": {"y": 217, "x": -8172, "z": 5228}, "type": "LODGE", "reserve": 2}]}
+                 "locations": [{"id": 101, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": 2}]}
                 """);
             app["items"]!.AsArray().Add(TEST_LURE);
             return app;
@@ -64,7 +64,7 @@ public static class Fixtures
                               {"item_id": 10, "slot": 1, "guid": "200", "metadata": {}, "units": 10}],
                     "infos": [{"item_id": 10, "units": 10}, {"item_id": 512, "units": null}],
                     "active_services": {}},
-                 "expedition": {"expedition_id": 482917305, "lodge": 100, "x": -10380.0, "y": 215.0, "z": 7926.0},
+                 "expedition": {"expedition_id": 730218845, "lodge": 100, "x": -9150.0, "y": 140.0, "z": 4875.0},
                  "account": {"handle": "hunter", "user_id": 7, "avatar_url": "https://avatar.test/256/1.png"},
                  "wallet": {"em": 182.0, "gm": 33.0}}
                 """);
@@ -77,24 +77,24 @@ public static class Fixtures
         }
     }
 
-    // py_data item.json: 614 is a variant of 5 (one weapon skill); 257 its own family
+    // a variant item has a parent: variant and parent share one weapon skill; the shotgun is its own family
     public static JsonArray ITEM_DEFS => (JsonArray)JsonNode.Parse("""
-        [{"id": 5, "define": "WIN_BOLT_ACTION_RIFLE"},
-         {"id": 614, "define": "BOLT_ACTION_RIFLE_243_01", "parent": "WIN_BOLT_ACTION_RIFLE"},
-         {"id": 257, "define": "SINGLE_SHOT_SHOTGUN_01"}]
+        [{"id": 5, "define": "TEST_RIFLE"},
+         {"id": 706, "define": "TEST_RIFLE_VARIANT", "parent": "TEST_RIFLE"},
+         {"id": 391, "define": "TEST_SHOTGUN"}]
         """)!;
 
     public static JsonObject LEVELS => new()
     {
-        ["weapon"] = O("""{"5": 1, "614": 1, "257": 1}"""),
+        ["weapon"] = O("""{"5": 1, "706": 1, "391": 1}"""),
         ["tracking"] = new JsonArray(Enumerable.Repeat(1, 18).Select(n => (JsonNode?)n).ToArray()),
         ["spotting"] = new JsonArray(Enumerable.Repeat(1, 17).Append(2).Select(n => (JsonNode?)n).ToArray()),
     };
 
-    // recorded Skill/list, older than the connect: the rabbit (17) spotting level 2 is not in it yet
+    // skill list older than the connect: the rabbit (17) spotting level 2 is not in it yet
     public static JsonObject NUMBERS => new()
     {
-        ["weapon"] = O("""{"5": 1.14, "614": 1.14, "257": 1.007}"""),
+        ["weapon"] = O("""{"5": 1.14, "706": 1.14, "391": 1.007}"""),
         ["tracking"] = new JsonArray(Enumerable.Repeat(1.007, 18).Select(n => (JsonNode?)n).ToArray()),
         ["spotting"] = new JsonArray(Enumerable.Repeat(1.007, 18).Select(n => (JsonNode?)n).ToArray()),
     };
@@ -105,7 +105,7 @@ public static class Fixtures
 
     public static JsonObject O(string json) => JsonNode.Parse(json)!.AsObject();
 
-    /// <summary>Python == of parsed JSON, with the actual value in the failure message.</summary>
+    /// <summary>Equality of parsed JSON values, with the actual value in the failure message.</summary>
     public static void Eq(string expected, JsonNode? actual) => Eq(JsonNode.Parse(expected), actual);
 
     public static void Eq(JsonNode? expected, JsonNode? actual) =>
