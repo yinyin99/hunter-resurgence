@@ -739,8 +739,8 @@ public sealed partial class State
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
             rows = Items(con);
-            // The client walks `infos` against `items` by index and crashes if there are more definitions than items; the game's own server sends
-            // the definitions of the account's items only (in order of first appearance), never the whole catalogue
+            // Send one definition per distinct owned item id, in order of first appearance, as the game's server does; a list longer than
+            // the items stops the game after connect, so never the whole catalogue
             var infosOut = new JsonArray(rows.Select(r => Py.L(r!["item_id"])).Distinct()
                 .Select(ItemInfo).Where(i => Py.Truthy(i)).Select(i => C(i)).ToArray());
             var inv = (JsonObject)inventory.DeepClone();
@@ -822,8 +822,8 @@ public sealed partial class State
             return info;
         if (!items.TryGetValue(itemId, out var a) || a.Count == 0)
             return null;
-        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots and arm_type; the client reads those only when present.
-        // An ammo's ballistics (velocity_falloff, wounding_factor, ...) it reads unguarded and crashes without: they come from the install's item definitions.
+        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots and arm_type; the game does not need them.
+        // An ammo needs its ballistics (velocity_falloff, wounding_factor, ...) to get past connect: they come from the install's item definitions.
         // The other fields match the known definitions except a few fitItems lists
         var inv = a["inventory"]!;
         var fit = new List<JsonNode?>();
