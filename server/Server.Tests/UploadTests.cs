@@ -191,8 +191,11 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var bomb = await Upload(ms.ToArray());
         Assert.Equal((400, "invalid"), (bomb.Reply.Status, Status(bomb.Body)));
         Assert.Contains("compressed more than", (string)bomb.Body["message"]!);
-        var big = await Upload(new byte[Uploads.MaxZipBytes + 1]);
-        Assert.Equal((413, "too_large"), (big.Reply.Status, Status(big.Body)));
+        // Expect: 100-continue, so the client stops when the server refuses (a reset mid-send fails on Linux)
+        var big = await server.SendAsync("POST", "web.test", "/account/restore",
+            [("Content-Type", "application/zip"), ("X-Requested-With", "XMLHttpRequest"), ("Expect", "100-continue"), ("Cookie", "hr_session=" + cookie)],
+            new byte[Uploads.MaxZipBytes + 1]);
+        Assert.Equal((413, "too_large"), (big.Status, Status(JsonNode.Parse(big.Body)!)));
         Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         Assert.True(state.Store.AccountExists(player));
         Assert.Equal(0L, Count(player, "uploads"));
