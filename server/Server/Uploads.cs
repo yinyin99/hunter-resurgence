@@ -1,6 +1,6 @@
 // The community upload: a signed-in player's backup zip and what the server does with it (docs/server.md#upload-a-backup-zip).
-// A claim in a zip (its Steam id, its user id, its handle) is a hint, never proof: a full restore needs the zip's Steam id
-// to be the one the player signed in with, and happens once per game user id on this server.
+// A zip whose Steam id is the one the player signed in with restores automatically, once per game user id on this server.
+// That match is enough for the restore, not proof of ownership; disputes go to the operator, who can reset the account from the kept zip.
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;

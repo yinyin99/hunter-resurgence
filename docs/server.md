@@ -105,7 +105,7 @@ On a community server (`offline_mode` false) a signed-in player restores their o
 
 **Limits.** One upload at a time per account and four on the whole server (`429`, status `busy`); a body over 64 MiB is `413` (`too_large`) and is not read; the reader's caps apply (`Limits`, with 256 MiB of content instead of 1 GiB, 100:1 compression, 20,000 entries, JSON depth 64), so a zip bomb is `400` (`invalid`) before anything is parsed. An account may have 3 zips waiting for review; a fourth is `429` and not kept. The zip is held in memory and in a temporary file of `data_dir/uploads-tmp`, deleted when the upload ends.
 
-**Rules.** A claim in a zip (Steam id, user id, handle) is a hint, never proof.
+**Rules.** A zip whose Steam id matches the signed-in one restores automatically, once per game user id, with an audit row. A match is enough for that; it is not proof of ownership, because anyone holding the zip can edit the field. Disputes go to the operator, who reviews the kept zip and can reset the account from it.
 
 | The zip | Result | `status` |
 |---|---|---|

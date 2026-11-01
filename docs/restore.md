@@ -45,7 +45,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | `Extras` | `extras`, keyed by the path in the zip |
 | `Account`, `Profile` | the account's `account` object (the connect reply's): handle, `user_id`, `account_id` (= the user id), hostname, gender, hunterscore, membership, avatar URL, the importer's defaults for `face` and the Facebook fields |
 
-What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (hints, never proof: an account's `steam_id64` is only one the server verified); the web reserve of placed items.
+What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (a Steam id match allows an automatic restore but is not proof of ownership, and an account's `steam_id64` is only one the server verified); the web reserve of placed items.
 
 The target is the zip's user id, created from the zip's handle (`user-<id>` without one) when it does not exist; a handle that another account has refuses the import. `--account <id>` targets an existing account, whatever the zip's user id: the account keeps its id and takes the zip's handle only when nobody else has it. A local server (`offline_mode` true) with no `--account` restores into the local account, the one the game connects as.
 
