@@ -56,7 +56,7 @@ switch (cmd)
     case "admin": Admin([.. words.Skip(1)]); break;
     case "import": Import([.. words.Skip(1)]); break;
     case "review": Review([.. words.Skip(1)]); break;
-    case "coverage": await Coverage(); break;
+    case "coverage": await Coverage(words.Contains("--no-recordings")); break;
     default: Die($"unknown command {cmd}: serve | admin | import | review | coverage"); break;
 }
 return 0;
@@ -99,7 +99,7 @@ void Admin(string[] a)
         Die(AdminUsage);
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
-    if (state == null) { Die("no recorded connect: nothing to seed the player state from"); return; }
+    if (state == null) { Die("no recorded connect and no connect sample in the install: nothing to seed the player state from"); return; }
     if (a[0] == "item")
     {
         if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(state.LocalAccount, itemId, count))
@@ -163,13 +163,35 @@ void Review(string[] a)
     }
 }
 
-// Replay every recorded request on a redirected host through the server (player state off) and list what it can't
-// answer faithfully. Hosts are printed as their settings key (api, static, ...), never by name.
-async Task Coverage()
+// Replay every recorded request on a redirected host through the server and list what it can't answer faithfully.
+// Default: the recordings answer and the player state is off. --no-recordings: the server as it starts without
+// recordings or mirror (player state from the install and the facts file, on a temporary database), so what is listed
+// as unanswered still needs a recording. Hosts are printed as their settings key (api, static, ...), never by name.
+async Task Coverage(bool noRecordings)
 {
     var cfg = settings.Cfg;
     var table = Table(out var hars);
-    await using var server = await Loopback.StartAsync(new Replay.Game(table, cfg, null, settings.MirrorDir));
+    var scratch = noRecordings ? Directory.CreateTempSubdirectory("coverage").FullName : null;
+    try
+    {
+        var served = noRecordings ? new Replay.HarTable() : table;
+        var state = noRecordings ? Replay.LoadState(cfg, served, scratch!) : null;
+        if (noRecordings && state is null) Die("no connect sample in the install: nothing to start the player state from");
+        await using var server = await Loopback.StartAsync(new Replay.Game(served, cfg, state, noRecordings ? Path.Combine(scratch!, "mirror") : settings.MirrorDir));
+        await ReplayAll(server, cfg, hars);
+    }
+    finally
+    {
+        if (scratch is not null)
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            Directory.Delete(scratch, true);
+        }
+    }
+}
+
+async Task ReplayAll(Loopback server, JsonObject cfg, List<string> hars)
+{
     var hosts = Replay.RedirectedHosts(cfg).ToHashSet();
     hosts.ExceptWith(Replay.SinkHosts(cfg));
     var roles = Replay.HostKeys.ToDictionary(k => ((string)cfg[k]!).ToLowerInvariant(), k => k[..^"_host".Length]);
@@ -185,6 +207,7 @@ async Task Coverage()
             var req = e!["request"]!;
             var resp = e["response"]!;
             var (host, path, query) = Replay.SplitUrl((string)req["url"]!);
+            var masked = System.Text.RegularExpressions.Regex.Replace(path, @"[0-9a-fA-F]{16,}|\d{4,}", "<id>");  // tokens and ids of people stay out of the report
             if (!hosts.Contains(host)) continue;
             var method = ((string)req["method"]!).ToUpperInvariant();
             var post = req["postData"] as JsonObject;
@@ -193,11 +216,11 @@ async Task Coverage()
             Bump(sources, r.Source);
             var status = Py.L(resp["status"]);
             var role = roles.GetValueOrDefault(host, "other");
-            if (r.Source is "weak" or "miss") Bump(unanswered, (method, role, path, status));
+            if (r.Source is "weak" or "miss") Bump(unanswered, (method, role, masked, status));
             else if (status == 200)
             {
-                Bump(total, (method, role, path));
-                if (!r.Body.AsSpan().SequenceEqual(Replay.ResponseBody(resp["content"]))) Bump(differs, (method, role, path));
+                Bump(total, (method, role, masked));
+                if (!r.Body.AsSpan().SequenceEqual(Replay.ResponseBody(resp["content"]))) Bump(differs, (method, role, masked));
             }
         }
     Console.WriteLine("answers:");
@@ -222,7 +245,7 @@ async Task Serve()
     Console.WriteLine($"table: {table.Entries.Keys.Count(k => k.Params is null)} keys from {hars.Count} recordings in {Py.Fixed((DateTime.UtcNow - t0).TotalSeconds, 1)}s");
     Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)settings.Cfg["install_dir"]!).Count} entries");
     var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
-    Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect)"));
+    Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
     var certs = new List<X509Certificate2>();
     try
     {
