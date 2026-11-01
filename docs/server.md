@@ -7,7 +7,7 @@ At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, sc
 ## Run it
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | review ... | coverage | backup <folder> [keep]
+dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | review ... | coverage
 ```
 
 `serve` is the default. The settings file is `--settings <file>`, else the environment variable `SERVER_SETTINGS`, else `settings.json` in the current folder. It is never committed (`.gitignore`); start from `server/Server/settings.example.json`. Relative paths are relative to the settings file.
@@ -32,8 +32,6 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 `serve` needs no change to the PC: it does not read or require the Windows hosts file. How the client is pointed at the server is not part of the server.
 
 `admin item <item_id> [count]`, `admin em|gm <amount>` and `admin spawn <reserve> <animal> <males> [females] [x z radius]` change the player in `data_dir` from the command line; `coverage` replays every request of the recordings through the server and lists what it cannot answer, naming hosts by their settings key and masking ids and tokens in paths. `coverage --no-recordings` replays them against the server as it starts without recordings and without the mirror (player state from the install and the facts file, on a temporary database): what it lists as unanswered still needs a recording.
-
-`backup <folder> [keep]` copies every `*.db` of `data_dir` to `<folder>/<name>-<yyyymmdd>.db` with SQLite's `VACUUM INTO` (consistent while the server runs) and keeps the newest `keep` (default 7) copies of each; the community server's daily backup is this command ([deploy.md](deploy.md#backups)).
 
 ## How a request is answered
 

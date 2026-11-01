@@ -1,12 +1,11 @@
-# The website and the community server behind Caddy (docs/deploy.md). Values come from .env next to this file; host-only additions go in compose.override.yml.
+# The website behind Caddy (docs/deploy.md). Values come from .env next to this file; host-only additions go in compose.override.yml.
 name: web
 services:
   web:
     image: ${WEB_IMAGE}:${WEB_TAG:-latest}
     restart: unless-stopped
     environment:
-      FORWARDED_TRUSTED: 172.30.10.2 # Caddy's fixed address on the internal network below, nothing else
-      SERVER_URL: http://server:8080 # the website's server-side calls to the community server
+      FORWARDED_TRUSTED: 172.30.10.0/24 # the internal network below, nothing else
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
     volumes: ["dataprotection:/home/app/.aspnet/DataProtection-Keys"] # cookie-signing keys, kept across deploys
     networks: [internal] # not on the shared edge network
@@ -16,32 +15,6 @@ services:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"] # the image has no curl
       interval: 30s
       start_period: 10s
-  server:
-    image: ${SERVER_IMAGE}:${SERVER_TAG:-latest}
-    restart: unless-stopped
-    volumes:
-      - serverdata:/data # the SQLite databases (ADR 0001); the image gives /data to the app user
-      - ${SERVER_DIR}:/srv:ro # the operator's files, never committed: settings.json, the game install, recordings, mirror (docs/deploy.md)
-    networks: [internal]
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges:true]
-    healthcheck:
-      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"] # the image has no curl
-      interval: 30s
-      start_period: 30s # it loads the recordings first
-  server-backup: # a consistent copy of every database once a day, seven kept (docs/deploy.md, "Backups")
-    image: ${SERVER_IMAGE}:${SERVER_TAG:-latest}
-    restart: unless-stopped
-    entrypoint: ["sh", "-c", "while true; do dotnet server.dll backup /backups 7 || echo backup failed; sleep 86400; done"]
-    volumes:
-      - serverdata:/data # read-write only because a database in WAL mode is opened through its -shm file
-      - serverbackups:/backups
-      - ${SERVER_DIR}:/srv:ro
-    network_mode: none
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges:true]
-    depends_on:
-      server: { condition: service_healthy }
   caddy:
     image: caddy:2.11
     restart: unless-stopped
@@ -54,18 +27,13 @@ services:
       - ./sites:/etc/caddy/sites:ro # site files of other projects
       - caddy_data:/data
       - caddy_config:/config
-    networks:
-      internal: { ipv4_address: 172.30.10.2 } # fixed: trusted_proxies of the server and FORWARDED_TRUSTED of the website name it
-      edge: {}
+    networks: [internal, edge]
     depends_on:
       web: { condition: service_healthy }
-      server: { condition: service_healthy }
 volumes:
   caddy_data: {}
   caddy_config: {}
   dataprotection: {}
-  serverdata: {}
-  serverbackups: {}
 networks:
   internal:
     ipam: { config: [{ subnet: 172.30.10.0/24 }] }

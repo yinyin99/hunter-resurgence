@@ -74,21 +74,3 @@ jobs:
           done
       - if: failure()
         run: docker logs web
-  # the community server's container image (deploy/): builds, starts on plain HTTP with an empty install, answers, may write /data, and the backup command runs
-  docker-server:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: docker build -f server/Server/Dockerfile -t server:ci .
-      - name: Smoke test
-        run: |
-          mkdir -p srv/install
-          jq '.install_dir = "install" | del(.variants_file) | .data_dir = "/data" | .listeners = [{address: "0.0.0.0", port: 8080}]' server/Server/settings.example.json > srv/settings.json
-          docker volume create serverdata
-          docker run -d --name server -p 8080:8080 -v serverdata:/data -v "$PWD/srv:/srv:ro" server:ci
-          for _ in $(seq 1 30); do [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" != 000 ] && break; sleep 1; done
-          [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" != 000 ]
-          docker exec server sh -c 'touch /data/probe && rm /data/probe' # the app user owns the volume
-          docker exec server dotnet server.dll backup /backups 7
-      - if: failure()
-        run: docker logs server

@@ -37,7 +37,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"] # a new .NET major is a migration (target framework), not an update
   - package-ecosystem: docker
-    directories: [/src/Web, /server/Server]
+    directory: /src/Web
     patterns: ["dotnet/sdk", "dotnet/aspnet"]
     multi-ecosystem-group: dotnet-sdk
     ignore:

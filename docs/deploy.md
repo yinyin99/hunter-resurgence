@@ -1,16 +1,15 @@
-# Deploy the website and the community server
+# Deploy the website
 
 ## What this is
 
-The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. The website is the **mock** website: every page shows fixed, fictional data. A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says so; change or remove it when real features arrive.
+The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. It is the **mock** website: every page shows fixed, fictional data. It is not the game server. A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says so; change or remove it when real features arrive.
 
 | File | Purpose |
 |---|---|
 | `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json` and its `aspnet` tag the runtime that SDK ships: a new SDK means `global.json`, both tags and every `packages.lock.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate` with that SDK) in one change, or the locked restore fails with NU1004 |
-| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web` and `server`, plus `server-backup` ([Backups](#backups)). `server` and `server-backup` are on `internal` only (`server-backup` on no network). The named volume `dataprotection` keeps the website's cookie-signing keys (`/home/app/.aspnet/DataProtection-Keys`) across deploys, so cookies stay valid; the Dockerfile gives that folder to the app user, and a new named volume takes its owner. `serverdata` holds the server's databases at `/data`, `serverbackups` the copies. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
-| `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate: game requests and `/auth/*` to `server`, the rest to `web` ([routing](#the-community-server)); then `import sites/*.caddy` |
-| `deploy/.env.example` | the values of `.env` |
-| `server/Server/Dockerfile` | the community server's image, like the website's (same SDK and runtime tags, bumped together; build context: the repository root): non-root, listens on plain HTTP on port 8080 (the proxy's side), `SERVER_SETTINGS=/srv/settings.json`, and creates `/data` and `/backups` owned by the app user, because an empty named volume takes the owner of the folder it is mounted over |
+| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web`. The named volume `dataprotection` keeps the website's cookie-signing keys (`/home/app/.aspnet/DataProtection-Keys`) across deploys, so cookies stay valid; the Dockerfile gives that folder to the app user, and a new named volume takes its owner. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
+| `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate, then `import sites/*.caddy` |
+| `deploy/.env.example` | the three values of `.env` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
 | `.github/workflows/ci.yml` | the `build` job also runs `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and checks that the release zip holds exactly `backup.exe` and `settings.json` (the release's publish step, without a tag); the same for `tools\play\publish.cmd` and the player kit's zip (`play.exe`, `settings.json`, three `.cmd` files) |
@@ -47,12 +46,9 @@ compose.override.yml      optional, host-only additions (below)
 SITE_DOMAIN=<domain>
 WEB_IMAGE=ghcr.io/<owner>/<repo>-web
 WEB_TAG=latest
-SERVER_IMAGE=ghcr.io/<owner>/<repo>-server
-SERVER_TAG=latest
-SERVER_DIR=/home/deploy/server
 ```
 
-`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>` line with the repository variable `LINK_BACKUP` (no line when the variable is unset); compose passes it to `web`.
+`WEB_IMAGE` is in lower case. Every deploy rewrites the `WEB_TAG` line with the commit sha it rolled out, so the line has to exist. Every deploy also replaces the `LINK_BACKUP=<url>` line with the repository variable `LINK_BACKUP` (no line when the variable is unset); compose passes it to `web`.
 
 The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `LINK_BACKUP` and `SERVER_URL`. `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send `/auth/*` to the server for the sign-in links to work.
 
@@ -71,7 +67,7 @@ services:
 - An **Origin Certificate** for `<domain>` (add `*.<domain>` if other sites will share it), saved on the VPS as `certs/origin.pem` and `certs/origin.key` (`chmod 600`). With these files Caddy requests no certificate of its own.
 - The app sends HSTS (`max-age=31536000`, this host only) and the other security headers itself ([website.md](website.md#security-headers)); do not add them in the Caddyfile or Cloudflare too.
 
-Caddy passes Cloudflare's `CF-Connecting-IP` to the apps as `X-Forwarded-For`. The website accepts forwarded headers from Caddy's address only (`FORWARDED_TRUSTED`): `caddy` has a fixed address on `internal` (`172.30.10.2`, in a pinned subnet `172.30.10.0/24`, both in `deploy/compose.yml`), and `FORWARDED_TRUSTED` and the server's `trusted_proxies` repeat it: change them together. The header is trustworthy only because the firewall lets nothing but Cloudflare reach ports 80 and 443.
+Caddy passes Cloudflare's `CF-Connecting-IP` to the app as `X-Forwarded-For`, and the app accepts forwarded headers from the compose network only (`FORWARDED_TRUSTED`). That network, `internal`, has a pinned subnet (`172.30.10.0/24` in `deploy/compose.yml`) and `FORWARDED_TRUSTED` repeats it: change both together. The header is trustworthy only because the firewall lets nothing but Cloudflare reach ports 80 and 443.
 
 ## Firewall
 
@@ -112,17 +108,17 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 
 ## First start
 
-1. Copy `deploy/compose.yml` and `deploy/Caddyfile` to `~/web/`, create `.env`, `certs/` and `sites/` (above), and the server's folder ([The community server](#the-community-server)).
-2. Make the images public once they exist (after the first deploy run): GitHub, the packages `<repo>-web` and `<repo>-server` of `<owner>`, Package settings, Change visibility, Public. The repository is public and the images hold no secrets, so the VPS pulls without a login. (If they must stay private: `docker login ghcr.io` on the VPS with a token that has `read:packages` only.)
-3. `cd ~/web && docker compose up -d`, then `docker compose ps`: `web` and `server` healthy, `caddy` and `server-backup` running.
+1. Copy `deploy/compose.yml` and `deploy/Caddyfile` to `~/web/`, create `.env`, `certs/` and `sites/` (above).
+2. Make the image public once it exists (after the first deploy run): GitHub, the package `<repo>-web` of `<owner>`, Package settings, Change visibility, Public. The repository is public and the image holds no secrets, so the VPS pulls without a login. (If it must stay private: `docker login ghcr.io` on the VPS with a token that has `read:packages` only.)
+3. `cd ~/web && docker compose up -d`, then `docker compose ps`: `web` healthy, `caddy` running.
 4. Open `https://<domain>/` through Cloudflare.
 
 ## Deploys
 
 `.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets):
 
-1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
-2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>` and `LINK_BACKUP` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
+1. builds the image from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `:latest`;
+2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>` and `LINK_BACKUP` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images.
 
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
@@ -138,73 +134,17 @@ Repository variable (Settings, Secrets and variables, Actions, Variables): `LINK
 
 ## Rollback
 
-The running versions are the `WEB_TAG` and `SERVER_TAG` lines of `~/web/.env`. Every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
+The running version is the `WEB_TAG` line of `~/web/.env`. Every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
 
 ```
-ssh deploy@<vps> "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' -e 's/^SERVER_TAG=.*/SERVER_TAG=<older sha>/' .env && docker compose up -d"
+ssh deploy@<vps> "cd web && sed -i 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' .env && docker compose up -d"
 ```
 
 The next deploy sets the tag again.
 
-## The community server
+## Adding the server service or another site
 
-**Routing** (`deploy/Caddyfile`, one domain `<domain>`, in this order):
-
-| Request | Goes to |
-|---|---|
-| carries the header `X-Game-Host` (every request of a player's local forwarder, for every game host name, the signup host included) | `server:8080`, header kept |
-| path `/auth/*` (the `@server_paths` matcher, the one place to change the server's website-facing paths) | `server:8080`, `X-Game-Host` removed |
-| anything else | `web:8080`, `X-Game-Host` removed |
-
-The server believes `X-Game-Host` only from `trusted_proxies`, so a client cannot choose a game host except through Caddy, and Caddy's address is the only one listed. The server builds its sign-in links as `https://` plus the request's `Host`, which Caddy passes on unchanged, and the website forwards the browser's `Host` in its server-side calls (`SERVER_URL=http://server:8080`, set in compose).
-
-**What the operator puts on the VPS**, in `SERVER_DIR` (default `~/server/`, in `.env`; mounted read-only at `/srv`), never committed:
-
-```
-settings.json     from server/Server/settings.example.json, with the real values (below)
-install/          the operator's own copy of the game's install folder
-recordings/       the operator's recordings (server.md)
-mirror/           the saved static pages (server.md)
-variants.json     optional
-```
-
-`settings.json` for this stack, relative paths being relative to the file:
-
-- `web_host`: the website's public domain, `<domain>` (`SITE_DOMAIN`). The server and the website share it: the website forwards the browser's `Host`, and the server's cookies and Steam return links are made for it.
-- the other 12 host keys: the game's real host names (the ones the operator's recordings show).
-- `install_dir`: `install`; `data_dir`: `/data` (the volume); `recordings_dir`, `mirror_dir`, `variants_file` as in the folder above.
-- `listeners`: `[{ "address": "0.0.0.0", "port": 8080 }]`: plain HTTP, no `cert`, no `admin` (the admin API is for a person at the machine and is never behind the proxy).
-- `trusted_proxies`: `["172.30.10.2"]`, Caddy's address; `host_header`: `X-Game-Host`.
-
-`docker compose up -d` after any change of `settings.json` (the server reads it at start). The server image is public like the website's and contains no game files.
-
-## Backups
-
-`server-backup` is a second service of the server's own image: once a day (every 24 hours from its start) it runs `server backup /backups 7`, which makes a consistent copy of every database of `/data` with SQLite's `VACUUM INTO` (not a file copy, [ADR 0001](adr/0001-sqlite-for-profiles.md)) as `<name>-<yyyymmdd>.db` in the volume `serverbackups`, and keeps the newest 7 of each. It is safe while the server runs. A sidecar instead of a host cron line because it needs nothing on the host (no `sqlite3`, no cron entry, no path to the volume), is deployed and rolled back with the server, and uses the server's `SQLitePCL` build, so the copy is made by the same SQLite that wrote the file; the price is that a daily copy on the same disk is no protection against losing the VPS: copy `serverbackups` off the machine now and then (`docker compose cp server-backup:/backups ./offsite`, then `scp`).
-
-**Restore drill**, to run once after the first deploy and then every few months: check that the newest copy opens and holds data, on a scratch volume, with nothing of production touched.
-
-```
-cd ~/web && set -a && . ./.env && set +a
-docker volume create drill
-docker run --rm --user 0 -v drill:/data -v web_serverbackups:/backups:ro -v "$SERVER_DIR:/srv:ro" --entrypoint sh $SERVER_IMAGE:$SERVER_TAG -c 'cp /backups/state-<yyyymmdd>.db /data/state.db && dotnet server.dll backup /tmp/check 1'
-docker volume rm drill
-```
-
-The last command of the container opens the restored database and copies all of it; it prints `backup: …` when the file is sound and fails when it is not.
-
-**Restore for real** (data lost or corrupt): stop both services that open the files, put the copy in place, remove the old `-wal` and `-shm` files, start again.
-
-```
-cd ~/web && docker compose stop server server-backup
-docker compose run --rm --no-deps --entrypoint sh server-backup -c 'cp /backups/state-<yyyymmdd>.db /data/state.db && rm -f /data/state.db-wal /data/state.db-shm'
-docker compose up -d
-```
-
-Repeat the `cp` for every other database of `/data` that was lost (`ls /backups` shows the names). The players' progress is what the copy held: the hours since it was made are gone.
-
-## Adding another site
-
+- **The game's community server, later:** a second service in `deploy/compose.yml`, on the `internal` network only, and a route in the Caddyfile (a `handle` block in the site, or its own host name). `FORWARDED_TRUSTED` trusts the whole `internal` network, so the server could set forwarded headers too; to narrow it, give `caddy` a fixed `ipv4_address` on `internal` and trust only that address. Its SQLite database file goes in a named volume of that service only, mounted at `/data`; the website reaches profiles through the server's API, never through the file ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 - **Another Compose project on the same VPS:** its public service joins the external network `edge` with a unique alias, and it gets a site file in `~/web/sites/`, for example `sites/other.caddy`:
 
 ```
@@ -225,7 +165,7 @@ docker network create edge
 docker compose -f deploy/compose.yml -f deploy/compose.dev.yml up --build -d --wait
 ```
 
-The override builds the images as `web:dev` and `server:dev` and serves `https://localhost` with Caddy's own local CA, which nothing trusts (`curl -k`, or accept the warning in the browser). The stack starts `server` too, so `SERVER_DIR` (an environment variable or `deploy/.env`, `SITE_DOMAIN=localhost` likewise) must name a folder with a `settings.json` like the one above, a `trusted_proxies` entry of `172.30.10.2` included; `Caddyfile.dev` routes everything to `web`:
+The override builds the image as `web:dev` and serves `https://localhost` with Caddy's own local CA, which nothing trusts (`curl -k`, or accept the warning in the browser):
 
 ```
 curl -ksf https://localhost/feed | grep "Work in progress"

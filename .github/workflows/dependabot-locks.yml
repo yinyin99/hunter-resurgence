@@ -1,9 +1,9 @@
 name: dependabot-locks
-# A Dependabot SDK update (global.json, src/Web/Dockerfile, server/Server/Dockerfile) needs every packages.lock.json made with the new SDK, or the locked restore fails (NU1004).
+# A Dependabot SDK update (global.json, src/Web/Dockerfile) needs every packages.lock.json made with the new SDK, or the locked restore fails (NU1004).
 # This regenerates them on the pull request's branch and commits them; workflow_dispatch does the same for a branch by hand (docs/deploy.md).
 on:
   pull_request:
-    paths: [global.json, src/Web/Dockerfile, server/Server/Dockerfile]
+    paths: [global.json, src/Web/Dockerfile]
   workflow_dispatch:
 permissions: {}
 jobs:

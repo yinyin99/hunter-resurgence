@@ -1,40 +1,13 @@
-# The website and the community server on one domain (SITE_DOMAIN in .env), behind Cloudflare with an origin certificate.
-# The server's address is server:8080, on the internal network only; it believes X-Game-Host only from this Caddy's fixed address (docs/deploy.md).
-
-# the client of Cloudflare: trustworthy because the firewall lets only Cloudflare reach 80 and 443
-(client_ip) {
-	header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
-}
-
+# The website on its own domain (SITE_DOMAIN in .env), behind Cloudflare with an origin certificate.
 {$SITE_DOMAIN} {
 	tls /certs/origin.pem /certs/origin.key
 	encode zstd gzip
 	header -Server
-
-	# the server's own paths on the website's domain: sign-in and what goes with it. The one place to change them.
-	@server_paths path /auth/*
-	# every game request of a player's local forwarder: the hostname the game asked for is in X-Game-Host
-	@game header X-Game-Host *
-
-	handle @game {
-		reverse_proxy server:8080 {
-			import client_ip
-		}
-	}
-	handle @server_paths {
-		reverse_proxy server:8080 {
-			import client_ip
-			# the browser's Host decides here, never a header a visitor set
-			header_up -X-Game-Host
-		}
-	}
-	handle {
-		reverse_proxy web:8080 {
-			import client_ip
-			header_up -X-Game-Host
-			# SignalR fallbacks (server-sent events, long polling) unbuffered
-			flush_interval -1
-		}
+	reverse_proxy web:8080 {
+		# the client of Cloudflare: trustworthy because the firewall lets only Cloudflare reach 80 and 443
+		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		# SignalR fallbacks (server-sent events, long polling) unbuffered
+		flush_interval -1
 	}
 }
 
