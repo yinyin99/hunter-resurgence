@@ -117,8 +117,9 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), Bearer(game.Tokens!.Access(Account, 4)))).Status);
         Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", game.Tokens!.Access(Account, 4)))).Status);  // a JWT is no session
         Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject())).Status);
-        // the game's own session is a credential too (it arrives with the launch URL)
-        Assert.Equal(200, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", state.Store.CreateToken(Account, Lifetimes.Session)), ("X-App-Id", "client"))).Status);
+        // a session id is no credential either
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", state.Store.CreateToken(Account, Lifetimes.Session)), ("X-App-Id", "client"))).Status);
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject { ["refresh_token"] = game.Tokens!.Access(Account, 4) })).Status);  // nor an access JWT in the body
     }
 
     [Fact]

@@ -41,8 +41,8 @@ public static class AuthApi
         var gameWeb = app.MapGroup("/auth").RequireHost(game.GameWeb).WithGroupName("game").WithTags("Game credentials (game_web_host)");
         gameWeb.MapPost("/jwt/refresh", Always(r => Refresh(game, r))).WithName("JwtRefresh")
              .WithSummary("A fresh access JWT and refresh JWT")
-             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else for the game's session (`X-Hun-Session`), "
-                              + "else, on a local server, the local account. The access JWT expires in 900 s; a stored token is never replayed.")
+             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else, on a local server, the local account. "
+                              + "The access JWT expires in 900 s; a stored token is never replayed.")
              .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json");
         gameWeb.MapPost("/emotelauncher/token", Always(_ => new(401, Json(), SteamTicketRefused, "auth"))).WithName("SteamTicket")
              .WithSummary("The launcher's Steam ticket: always refused, so the launcher shows the sign-in page")
@@ -59,11 +59,9 @@ public static class AuthApi
     static readonly byte[] SteamTicketRefused = """{"error":{"code":"auth.invalid_steam_ticket","message":"Invalid steam ticket. Token verification failed","details":[{"loc":null,"msg":null,"type":null}]}}"""u8.ToArray();
 
     /// <summary>POST /auth/jwt/refresh: the game and the launcher page ask for a new access JWT before the old one runs out.
-    /// The credential is a refresh JWT this server signed (body or cookie), or the game's session (a token that is not a
-    /// JWT); Bearer and body tokens and a JWT in the session header do not count. ponytail: the token model is flat (every token
-    /// resolves everywhere, docs/server.md), so an access token can still start a session (start_single_player) that refreshes;
-    /// separate kinds of token would need a kind column in `tokens`. A refresh token is not rotated (the game may keep presenting the one of its launch URL); it ends
-    /// with its 30 days, a ban or a delete.</summary>
+    /// Only a refresh JWT this server signed (`typ` refresh: body or cookie) is a credential; an access JWT, a session id or
+    /// any other token gets the 401. A local server answers for its one account. ponytail: a refresh token is not rotated
+    /// (the game may keep presenting the one of its launch URL); it ends with its 30 days, a ban or a delete.</summary>
     internal static Reply Refresh(Game game, Req r)
     {
         JsonObject? body = null;
@@ -72,7 +70,7 @@ public static class AuthApi
         var tokens = game.Tokens!;
         var account = new[] { (string?)body?["refresh_token"], SignIn.CookieOf(r, ProtocolLiterals.RefreshCookie) }
             .Select(t => t is { Length: > 0 } ? tokens.RefreshedAccount(t) : null).FirstOrDefault(a => a is not null)
-            ?? game.State!.Authenticate(r.Header("X-Hun-Session") is { Length: > 0 } session && !session.Contains('.') ? [session] : []);
+            ?? (game.State!.Online ? null : game.State.LocalAccount);  // a local server's one player needs no credential
         if (account is not { } id)
             return new(401, Json(), """{"error":{"code":"auth.invalid_refresh_token","message":"Invalid refresh token","details":[]}}"""u8.ToArray(), "denied");
         var scope = r.Header("X-App-Id") == "client" ? GameTokens.GameScope : GameTokens.WebScope;
