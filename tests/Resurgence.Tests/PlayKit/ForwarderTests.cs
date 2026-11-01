@@ -139,6 +139,18 @@ public class ForwarderTests
     }
 
     [Fact]
+    public async Task AChunkedReplyReachesTheGameWithContentLengthAndNoHopHeaders()
+    {
+        await using var origin = await Origin.Start(); // answers without a length: chunked
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/connect", HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(Reply.Length, resp.Content.Headers.ContentLength);
+        Assert.False(resp.Headers.TransferEncodingChunked ?? false);
+        Assert.Equal(Reply, await resp.Content.ReadAsByteArrayAsync());
+    }
+
+    [Fact]
     public async Task AnUnreachableServerIs502()
     {
         var dead = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
