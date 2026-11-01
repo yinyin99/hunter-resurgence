@@ -272,7 +272,8 @@ public static class Replay
             File.Exists(sample) ? (JsonArray)JsonNode.Parse(File.ReadAllText(sample, Encoding.UTF8))!["infos"]!.DeepClone() : [],
             table.Connects.ToDictionary(kv => int.Parse(kv.Key), kv => kv.Value.Body),
             skillList != null ? JsonNode.Parse(skillList.Body) : null,
-            item != null ? (JsonArray)JsonNode.Parse(ArcList.ReadEntry(item))! : []);
+            item != null ? (JsonArray)JsonNode.Parse(ArcList.ReadEntry(item))! : [],
+            offline: (bool?)cfg["offline_mode"] ?? true);  // a request no token resolves is the local account's; false on a community server
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)

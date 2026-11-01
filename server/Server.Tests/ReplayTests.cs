@@ -79,7 +79,7 @@ public class ReplayTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await server.DisposeAsync();
-        Directory.Delete(tmp, true);
+        Fixtures.DeleteDir(tmp);
     }
 
     static void Same((byte[] Body, string Source) expected, Reply actual)
@@ -230,9 +230,9 @@ public class ReplayTests : IAsyncLifetime
     {
         var state = new State(Path.Combine(tmp, "state.db"), Py.DumpBytes(Fixtures.CONNECT), Fixtures.BASE, Fixtures.ICON,
             Fixtures.APP, Fixtures.LOCALE, Fixtures.TEXTURES);
-        var u11 = JsonNode.Parse(state.HeartbeatReply(Encoding.ASCII.GetBytes(
+        var u11 = JsonNode.Parse(state.HeartbeatReply(Fixtures.ME, Encoding.ASCII.GetBytes(
             "{\"events\": [{\"event\": 4, \"hash\": 1, \"photo_type\": 2}, {\"event\": 3, \"individual\": 9, \"extended_species\": 17}]}")))!["updates"]![0]!;
-        state.UploadReply(new Uri((string)u11["url"]!).Query.TrimStart('?'), "jpeg"u8.ToArray());
+        state.UploadReply(Fixtures.ME, new Uri((string)u11["url"]!).Query.TrimStart('?'), "jpeg"u8.ToArray());
         await using var withState = await Loopback.StartAsync(new Game(table, Cfg, state, mirror));
         async Task<string> Source(string method, string host, string path, params (string, string)[] headers) =>
             (await withState.SendAsync(method, host, path, headers)).Source;
@@ -244,7 +244,7 @@ public class ReplayTests : IAsyncLifetime
         // a CORS preflight for a state endpoint is the replay's, a HEAD for a stored photo the state's
         Assert.Equal("miss", await Source("OPTIONS", "api.test", BUY, ("Origin", "https://web.test"), ("Access-Control-Request-Method", "POST")));
         Assert.Equal("state", await Source("OPTIONS", "apiv2.test", "/game/user/harvest/1", ("Origin", "https://web.test"), ("Access-Control-Request-Method", "GET")));
-        Assert.Equal("state", await Source("HEAD", "gameserver.test", "/photos/1-2.jpg"));
+        Assert.Equal("state", await Source("HEAD", "gameserver.test", "/photos/7/1-2.jpg"));
     }
 
     [Fact]

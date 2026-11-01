@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Web;
+using Microsoft.Data.Sqlite;
 using Resurgence.Server;
 
 namespace Resurgence.Server.Tests;
@@ -10,6 +11,14 @@ public static class Fixtures
 {
     public const string BASE = "https://gameserver.test";
     public const string ICON = "https://static.test/icon.png";
+    public const long ME = 7;  // the user id of CONNECT's account: the local account of a State built from it
+
+    /// <summary>Delete a test folder: the pooled connections to its database files go first, or Windows keeps them locked.</summary>
+    public static void DeleteDir(string dir)
+    {
+        SqliteConnection.ClearAllPools();
+        Directory.Delete(dir, true);
+    }
 
     public static JsonObject TEST_LURE => O("""
         {"id": 19, "name": "Test Lure", "description": "Draws deer.", "define": "TEST_LURE",

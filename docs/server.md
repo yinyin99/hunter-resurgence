@@ -2,7 +2,7 @@
 
 `server/Server` is the game server: the local server a player runs on their own PC, and the code of the community server. Tests: `server/Server.Tests`. One SQLite database per server ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
-At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: recorded replies, the game's install archives and a mirror folder. Accounts, importers that need no recordings and the new launcher's sign-in are later steps ([README](../README.md#roadmap)).
+At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: recorded replies, the game's install archives and a mirror folder. Importers that need no recordings, the issuing of tokens and the new launcher's sign-in are later steps ([README](../README.md#roadmap)).
 
 ## Run it
 
@@ -16,10 +16,11 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 |---|---|
 | `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `web_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host`, `crash_host` | The 13 host names the game asks for. All are required. The server routes by the `Host` of a request |
 | `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and its sample files seed the item definitions. Read only |
-| `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
+| `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
 | `recordings_dir` | Default `recordings`: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets |
+| `offline_mode` | Default `true`: a request that no token resolves is the local account's (a player's own PC). `false` on a community server: it gets the reply of an expired token, see [Accounts](#accounts) |
 | `listeners` | Required: a list of `{address, port}`; add `cert` and `key` (PEM files) for HTTPS. Plain HTTP is a listener without them. `"admin": true` (loopback addresses only) makes it serve the admin API, see below. Every listener speaks HTTP/1.1 only |
 | `trusted_proxies` | Addresses or `address/prefix` of the proxies in front of the server (default none) |
 | `host_header` | Default `X-Game-Host`, see below |
@@ -37,7 +38,13 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 The state answer wins; a handler that has nothing to say returns control to step 3, so a reply is never made up where a recorded one exists.
 
-The server holds no sign-in: tokens are not checked.
+## Accounts
+
+Every player is in `state.db`. `accounts` holds the game's user id, the Steam id (optional, unique), the handle (unique, case does not matter), the time of the one-shot claim, a banned flag and the connect reply's `account` object; `tokens` maps a token to an account and keeps only its SHA-256 hash. No e-mail, real name or address is stored. Every per-player table has an `account_id`. The ids a restored backup brings (item guids, kill ids) are unique per account, so two accounts can both own item 100 or kill 1; the ids the server hands out (expeditions, photos) are unique in the whole database and always looked up together with the account. A new account starts with the recorded connect's inventory, wallet and skills (`State.CreateAccount`). A database from before accounts is refused: delete it.
+
+A request's account comes from its token. The tokens it carries are tried in this order, the first that resolves wins: the `X-Hun-Session` header (game host), `Authorization: Bearer` (API v2 host), `oauth_access_token` in the form or the query (API host). A token that is unknown, expired or of a banned account does not resolve. When none does, the request is the local account's if `offline_mode` is true, else it is refused: `{"errorCode": 5, "message": "token expired"}` with status 200 on the API host, status 401 on the game host (`{"err": 1}`) and on the API v2 host. A CORS preflight carries no token and is answered by the replay. Photo links name the account (`/photos/<account id>/<file>`) and need no token; the kill details page finds the account by the handle in its URL (on a local server any handle is the local account). The `admin` commands and the admin API act on the local account.
+
+The database is in WAL mode with `synchronous=NORMAL` and a 5 s busy timeout, connections are pooled, every transaction starts with `BEGIN IMMEDIATE`, and the schema and its migrations run once at startup under `PRAGMA user_version`. A database call is scoped to one account: the SQL names it as `$a`, and a statement that touches a per-player table without it throws, so a forgotten filter fails in the tests and never reads another player's rows.
 
 ## Behind a reverse proxy
 

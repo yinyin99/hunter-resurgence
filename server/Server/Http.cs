@@ -30,10 +30,30 @@ public sealed record Req(string Method, string Host, string Path, string Query, 
         ctx.Items[typeof(Req)] = req;
         return req;
     }
+
+    /// <summary>The tokens this request carries, in the order to try them: the game server's `X-Hun-Session` header, the
+    /// `Authorization: Bearer` JWT of the game API v2, and the `oauth_access_token` of a web API call (form body or
+    /// query). Which one a call has depends on the host; the state resolves the first one it knows.</summary>
+    public IEnumerable<string> Tokens()
+    {
+        if (Header("X-Hun-Session") is { Length: > 0 } session)
+            yield return session;
+        if (Header("Authorization") is { } auth && auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) && auth.Length > 7)
+            yield return auth[7..].Trim();
+        var form = Py.ParseQs(Query);
+        if ((Header("Content-Type") ?? "").Contains("x-www-form-urlencoded"))
+            foreach (var (k, v) in Py.ParseQs(Encoding.UTF8.GetString(Body)))
+                if (!form.TryAdd(k, v))
+                    form[k].AddRange(v);
+        if (form.TryGetValue("oauth_access_token", out var tokens))
+            foreach (var token in tokens)
+                if (token.Length > 0)
+                    yield return token;
+    }
 }
 
 /// <summary>A game reply: status, headers in order, body, and where it came from (state, stub, har, patch, archive,
-/// mirror, weak, sink, miss) for the log. 204 has no Content-Length; HEAD gets the headers only.</summary>
+/// mirror, weak, sink, denied, miss) for the log. 204 has no Content-Length; HEAD gets the headers only.</summary>
 public sealed record Reply(int Status, List<(string Name, string Value)> Headers, byte[] Body, string Source) : IResult
 {
     public async Task ExecuteAsync(HttpContext ctx)
