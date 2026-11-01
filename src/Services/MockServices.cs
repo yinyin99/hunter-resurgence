@@ -26,5 +26,6 @@ public static class MockServices
         .AddSingleton<IServersService, MockServersService>()
         .AddSingleton<IPatchService, MockPatchService>()
         .AddSingleton<IGameSettingsService, MockGameSettingsService>()
+        .AddSingleton<IRestoreService, MockRestoreService>()
         .AddSingleton<ILauncherBridge, MockLauncherBridge>();
 }

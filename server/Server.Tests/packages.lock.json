@@ -226,11 +226,15 @@
           "xunit.v3.runner.common": "[4.0.2]"
         }
       },
+      "resurgence.restore": {
+        "type": "Project"
+      },
       "server": {
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": "[10.0.12, )",
           "Microsoft.Data.Sqlite": "[10.0.12, )",
+          "Resurgence.Restore": "[1.0.0, )",
           "Swashbuckle.AspNetCore.SwaggerUI": "[10.3.0, )"
         }
       }

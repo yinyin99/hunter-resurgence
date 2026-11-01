@@ -1,9 +1,10 @@
-// Entry point: serve (default), admin, coverage. Every command reads settings.json: --settings <file>, else the
+// Entry point: serve (default), admin, import, review, coverage. Every command reads settings.json: --settings <file>, else the
 // SERVER_SETTINGS environment variable, else settings.json in the current folder (docs/server.md).
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Resurgence.Restore;
 using Resurgence.Server;
 
 const string AdminUsage = """
@@ -14,6 +15,24 @@ const string AdminUsage = """
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
+    """;
+
+const string ImportUsage = """
+    Restore a backup zip into an account of state.db in the data folder (the zip's reader is src/Restore).
+
+    Usage (repo root): dotnet run --project server/Server -- import backup <zip> [--account <id>]
+    Any zip is accepted. The account's profile (items, wallet, skills, profile, statistics, achievements, trophies, lodges) is
+    replaced, not merged; hunt history stays; the old database is copied beside it first. Without --account the account is the zip's
+    user id (created when it does not exist), on a local server (offline_mode true) the local account. The zip is kept in the data folder.
+    """;
+
+const string ReviewUsage = """
+    The backup zips players uploaded: every one is kept for an operator and never restored automatically.
+
+    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> | review reject <id>
+    list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
+    approve restores it by the community rules (once per game user id, never a user id another account holds, the account's user id
+    changes only before it has played) and prints the report or the refusal; reject deletes the kept zip and its row.
     """;
 
 var words = args.ToList();
@@ -35,8 +54,10 @@ switch (cmd)
 {
     case "serve": await Serve(); break;
     case "admin": Admin([.. words.Skip(1)]); break;
+    case "import": Import([.. words.Skip(1)]); break;
+    case "review": Review([.. words.Skip(1)]); break;
     case "coverage": await Coverage(); break;
-    default: Die($"unknown command {cmd}: serve | admin | coverage"); break;
+    default: Die($"unknown command {cmd}: serve | admin | import | review | coverage"); break;
 }
 return 0;
 
@@ -91,6 +112,54 @@ void Admin(string[] a)
         var balance = state.Give(state.LocalAccount, a[0], amount);
         if (balance == null) Die($"{a[0]} unchanged: balance would drop below 0");
         Console.WriteLine($"{a[0]} balance: {Py.Str(balance)}");
+    }
+}
+
+void Import(string[] a)
+{
+    long? account = null;
+    if (a.Length is not (2 or 4) || a[0] != "backup" || (a.Length == 4 && (a[2] != "--account" || !long.TryParse(a[3], out var id) || id < 1)))
+        Die(ImportUsage);
+    if (a.Length == 4) account = long.Parse(a[3]);
+    Directory.CreateDirectory(settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+    if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+    if (account is null && (bool?)settings.Cfg["offline_mode"] != false)
+        account = state.LocalAccount;  // a local server has one account, the one the client connects as
+    try
+    {
+        Console.Write(Restorer.Import(state, a[1], account, settings.DataDir).Report);
+    }
+    catch (RestoreException e) { Die($"refused: {e.Message}"); }
+    catch (IOException e) { Die($"cannot read: {e.Message}"); }
+}
+
+void Review(string[] a)
+{
+    long id = 0;
+    if (!(a is ["list"] || (a is ["approve" or "reject", var n] && long.TryParse(n, out id)))) Die(ReviewUsage);
+    Directory.CreateDirectory(settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+    if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+    var uploads = new Uploads(state, settings.DataDir);
+    switch (a[0])
+    {
+        case "list":
+            var kept = uploads.List();
+            foreach (var p in kept)
+                Console.WriteLine($"{p.Id}\taccount {p.Account}\tuser id {p.UserId}\thandle {p.Handle ?? "(unreadable)"}\t{DateTimeOffset.FromUnixTimeSeconds(p.Ts):u}\t{(p.SteamMatch ? "steam id matches" : "steam id does not match")}\t{p.Note}");
+            if (kept.Count == 0) Console.WriteLine("nothing waits for review");
+            break;
+        case "approve":
+            var done = uploads.Approve(id);
+            if (done.Kind != "restored") Die($"refused: {done.Message}");
+            Console.WriteLine(done.Message);
+            Console.Write(done.Report);
+            break;
+        default:
+            if (!uploads.Reject(id)) Die($"no kept zip {id}");
+            Console.WriteLine($"rejected {id}: the zip and its row are deleted");
+            break;
     }
 }
 

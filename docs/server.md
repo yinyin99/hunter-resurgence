@@ -7,7 +7,7 @@ At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, sc
 ## Run it
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | coverage
+dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | review ... | coverage
 ```
 
 `serve` is the default. The settings file is `--settings <file>`, else the environment variable `SERVER_SETTINGS`, else `settings.json` in the current folder. It is never committed (`.gitignore`); start from `server/Server/settings.example.json`. Relative paths are relative to the settings file.
@@ -33,7 +33,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 ## How a request is answered
 
 1. A request for `telemetry_host` or `crash_host` gets 204 and is kept in `telemetry.jsonl`.
-2. The player state answers what it owns: `heartbeat`, `disconnect`, `connect`, the photo upload and photo files on the game host; `Inventory/move_multiple2`, `Inventory/buy`, `Launch/start`, `User/jwt`, `Oauth/token`, `Chat/conversations`, `Chat/conversation`, `Skill/list`, and the lists that wrap a recorded base reply (`Splash/list_active`, `Public_user/expedition`, `Expedition/list`, `Me/poll`, `Me/me`) on the API host; the harvest pages on the API v2 host; the sign-in and start page on the website and signup hosts, and the old launcher's own calls on the game host ([Sign-in and tokens](#sign-in-and-tokens)); the kill details page on the website host.
+2. The player state answers what it owns: `heartbeat`, `disconnect`, `connect`, the photo upload and photo files on the game host; `Inventory/move_multiple2`, `Inventory/buy`, `Launch/start`, `User/jwt`, `Oauth/token`, `Chat/conversations`, `Chat/conversation`, `Skill/list`, `Statistics/total`, `Achievement/stats` (the last three for a restored account's own user id, see [Import a backup zip](#import-a-backup-zip)), and the lists that wrap a recorded base reply (`Splash/list_active`, `Public_user/expedition`, `Expedition/list`, `Me/poll`, `Me/me`) on the API host; the harvest pages on the API v2 host; the sign-in and start page on the website and signup hosts, and the old launcher's own calls on the game host ([Sign-in and tokens](#sign-in-and-tokens)); the kill details page on the website host.
 3. Everything else, in this order: an archive file in the URL's own folder, the recorded reply (a JSONP callback is swapped), the mirror, an archive file found by its name, an empty 200 for a request that was only recorded as unchanged, else a miss: `null` under `/v1/`, `{"err": 0}` on the game host, 404 on the API v2 host. A miss is written to the miss log, keys only.
 
 The state answer wins; a handler that has nothing to say returns control to step 3, so a reply is never made up where a recorded one exists.
@@ -84,6 +84,52 @@ Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token
 **Endpoints** (the OpenAPI document `game` lists them): `GET /auth/steam/login`, `GET /auth/steam/return`, `GET|POST /auth/handle`, `GET|POST /auth/confirm`, `POST /auth/link`, `GET /auth/link/<code>`, `GET /auth/me` (`{userId, handle}`, or 401), `POST /auth/signout`, `POST /auth/launch`, `GET /` on `signup_host`, on both hosts. A state-changing request must come from a page of the same origin: its `Origin` is the origin, or it has no `Origin` and carries `X-Requested-With`. The website reaches them through the proxy; the website's own use is in [website.md](website.md#sign-in).
 
 A restart forgets the logins in progress (the player starts the sign-in again); sessions, accounts and tokens are in the database.
+
+## Import a backup zip
+
+```
+dotnet run --project server/Server -c Release -- [--settings <file>] import backup <zip> [--account <id>]
+```
+
+Restores a [backup zip](backup.md) into `state.db` in `data_dir` and prints the report: what the reader found (restored, unsupported, missing, warnings), the rows stored per table, and what was dropped and why. It runs on its own, with no server running, and needs the recordings like `admin` does. Any zip is accepted, and it replaces the account's profile (items, wallet, skills, profile, statistics, achievements, trophies, lodges, saved replies); hunt history stays, no merge. The old database is copied first to `state.db.bak-<UTC time>`; the zip is kept as `restores/<account id>/<SHA-256>.zip`; importing the same zip twice gives the same rows (and a second audit row). The account is the zip's user id (created from the zip's handle when it does not exist), `--account <id>` names an existing one, and a local server (`offline_mode` true) restores into the local account, the one the game connects as. Exit code 1 for a refused zip, an unreadable file, a missing `--account` target or a handle another account has. The model, the dropped fields and what the server then answers from the rows are in [docs/restore.md](restore.md#storing-the-model).
+
+## Upload a backup zip
+
+On a community server (`offline_mode` false) a signed-in player uploads their own backup from the website ([docs/website.md](website.md#restore-and-your-data)). The website's server calls these endpoints over `SERVER_URL`, with the player's session cookie (`hr_session`), on `web_host` under `/account/`. An upload is never restored by itself: an operator approves it (below). A browser never calls them itself, so the reverse proxy does not have to route `/account/` to the server (and `/auth/` still has to be). With `offline_mode` true they do not exist (the replay answers), and `import backup` above is the local way.
+
+| Endpoint | |
+|---|---|
+| `GET /account/restore` | `{restoredUserId, review: [{ts, note}]}`: the backup user id this account restored (once), or null, and the zips kept for the operator. 401 when signed out |
+| `POST /account/restore` | The zip is the request body, at most 64 MiB. Answers `{status, message}` (below). Needs the cookie and `X-Requested-With` or a same-origin `Origin` (a form of another site cannot set either) |
+| `POST /account/delete` | Form `confirm=delete`, same checks: deletes the account and all its data (below), clears the cookie |
+
+**Limits.** One upload at a time per account and four on the whole server (`429`, status `busy`); a body over 64 MiB is `413` (`too_large`) and is not read; the reader's caps apply (`Limits`, with 256 MiB of content instead of 1 GiB, 100:1 compression, 20,000 entries, JSON depth 64), so a zip bomb is `400` (`invalid`) before anything is parsed. An account may have 3 zips waiting for an operator; a fourth is `429` and not kept. The zip is held in memory and in a temporary file of `data_dir/uploads-tmp`, deleted when the upload ends.
+
+**Rules.** Every zip that the reader accepts is kept for an operator and never restored automatically. Whether the zip's Steam id is the one the player signed in with is shown to the operator as information, not as proof: anyone holding the zip can edit the field.
+
+| The zip | Result | `status` |
+|---|---|---|
+| Not a zip, or refused by the reader (caps, unsafe names, no manifest, a claim key that does not match) | `400`, nothing kept | `invalid` |
+| A user id that was restored before (by this account or any other) | Refused, nothing kept: "a backup can be restored once" | `already` |
+| A user id another account holds | Refused, nothing kept | `taken` |
+| Any other zip | Kept as `restores/<account id>/<SHA-256>.zip`, a row in `uploads`; nothing is restored. The player is told that an operator will check it | `review` |
+
+**Review.** The operator works the kept zips with the server's command line (no web page):
+
+```
+dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> | reject <id>
+```
+
+`list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only). `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; `reject <id>` deletes the kept zip and its `uploads` row. Like `import backup` it runs on its own and needs the recordings.
+
+| `approve` | Result |
+|---|---|
+| The user id was not restored before, is not held by another account, is from 1 to 1,999,999,999, and the account has not played (no row in `expeditions` and `events`) or already has that user id | Full restore, once per game user id: the profile rows are replaced, the account takes the zip's user id and (when it is a plain name of at most 32 characters nobody else has; otherwise it keeps its own) the zip's handle. The Steam id, tokens and sessions follow it. One audit row, one row in `restored_ids`; the row in `uploads` goes, the zip stays. The whole database is **not** copied (`Store.Backup` is the local rule): the kept zip is the way back |
+| A user id restored before, held by another account, outside that range, or an account that has played and would have to change its user id | Refused with the reason; the zip stays kept until the operator rejects it |
+
+A user id is restored once, enforced by the primary key of `restored_ids`, so two uploads at the same moment cannot both win. If a restore turns out wrong, the operator deletes the account's rows (or the account) and imports the kept zip again with `import backup <zip> --account <id>`; deleting the account frees its user id.
+
+**Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row, the tokens, the cookie sessions, the review rows and the restored user id; then the account's `restores/<id>/` and `photos/<id>/` folders. The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
 
 ## Behind a reverse proxy
 

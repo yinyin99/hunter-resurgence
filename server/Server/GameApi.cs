@@ -18,7 +18,8 @@ public static class GameApi
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
     static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
 
-    public static void MapGame(this WebApplication app, Game game)
+    /// <summary>dataDir: the server's data folder, where the account's own pages (/account/) keep and delete files; none: they are off.</summary>
+    public static void MapGame(this WebApplication app, Game game, string? dataDir = null)
     {
         var s = game.State;
         app.Map("/{**path}", Handle(game, _ => new Reply(204, [], [], "sink")))
@@ -113,6 +114,7 @@ public static class GameApi
               .WithName("LauncherCalls").WithSummary("The old launcher's own calls: token, initialise, compatibleHardware, ping")
               .WithDescription("Answered without recordings on a community server; a local server replays them.");
             app.MapAuth(game);
+            if (dataDir is not null) app.MapAccount(game, dataDir);
             api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
                .WithName("ChatConversations").WithSummary("Inbox threads")
                .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")
@@ -127,6 +129,19 @@ public static class GameApi
                .WithDescription("The player's own skills from the state (level plus the fraction of its span); other players' "
                                 + "replies are replayed.")
                .Body<UserForm>(Form).Produces<SkillNumbers>();
+            api.MapExactPost(game, STATISTICS_TOTAL, r => Own(game, r, a => s.StatisticsReply(a, r.Body) is { Length: > 0 } reply
+                    ? new(200, JsonAnyOrigin(), reply, "state")
+                    : null))
+               .WithName("StatisticsTotal").WithSummary("Statistics of a player")
+               .WithDescription("The player's own restored statistics (`data`, `distance`, `duration`); other players' and unrestored "
+                                + "accounts' replies are replayed.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, ACHIEVEMENT_STATS, r => Own(game, r, a => s.AchievementReply(a, r.Body) is { Length: > 0 } reply
+                    ? new(200, JsonAnyOrigin(), reply, "state")
+                    : null))
+               .WithName("AchievementStats").WithSummary("Achievements of a player with their earn times")
+               .WithDescription("The player's own restored achievements; other players' and unrestored accounts' replies are replayed.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
                 ? new(hit.Status, hit.Headers, SplashWithNotice(hit.Body), "patch")
@@ -151,6 +166,8 @@ public static class GameApi
                 api.MapExactPost(game, path, r => game.Recorded(r) is not { Tier: >= 1 } hit ? null : Own(game, r, a =>
                     {
                         var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
+                        if (path == ME)
+                            reply = s.MeReply(a, reply) ?? reply;
                         var wallet = s.Wallet(a);
                         reply["gms"] = wallet["gm"]!.DeepClone();
                         reply["ems"] = wallet["em"]!.DeepClone();
@@ -158,7 +175,8 @@ public static class GameApi
                         return new(hit.Status, hit.Headers, Py.DumpBytes(reply), "state");
                     }))
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
-                   .WithDescription("The recorded reply with `gms`, `ems` and `unread_messages` from the state.")
+                   .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
+                                    + "`unread_messages` from the state.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");

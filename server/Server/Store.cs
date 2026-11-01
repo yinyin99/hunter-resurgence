@@ -13,10 +13,10 @@ public sealed class Store
     /// <summary>Tables with an `account_id` column: Db refuses SQL on them that does not bind the account.</summary>
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
-         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit"];
+         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 2;
+    public const int Version = 3;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -26,6 +26,17 @@ public sealed class Store
             hash TEXT PRIMARY KEY,                           -- SHA-256 of the cookie value, hex
             account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
             expires_ts INTEGER NOT NULL);
+        """;
+
+    // the zips a community upload kept without restoring them (manual review), and the user ids a restore has taken: one
+    // account restores a game user id once, so the id is the key of a table of its own (not per player: it is the check across players)
+    const string Uploads = $"""
+        CREATE TABLE uploads (
+            id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, zip_sha256 TEXT NOT NULL, user_id INTEGER, note TEXT NOT NULL);
+        CREATE INDEX uploads_account ON uploads (account_id, id);
+        CREATE TABLE restored_ids (
+            user_id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, ts INTEGER NOT NULL);
+        CREATE INDEX restored_ids_account ON restored_ids (account_id);
         """;
 
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
@@ -50,6 +61,7 @@ public sealed class Store
             expires_ts INTEGER);
         CREATE INDEX tokens_account ON tokens (account_id);
         {WebSessions}
+        {Uploads}
 
         CREATE TABLE items (
             {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER,
@@ -109,14 +121,29 @@ public sealed class Store
 
     readonly string connectionString;
 
+    readonly string path;
+
     public Store(string path)
     {
+        this.path = path;
         connectionString = new SqliteConnectionStringBuilder { DataSource = path, Pooling = true }.ToString();
         Migrate();
     }
 
     /// <summary>A pooled connection for one account (null: only the shared tables, accounts and tokens).</summary>
     public Db Open(long? account = null) => new(connectionString, account);
+
+    /// <summary>A consistent copy of the whole database beside it (`VACUUM INTO`, file name `&lt;db&gt;.bak-&lt;UTC time&gt;`); returns its path.</summary>
+    public string Backup()
+    {
+        var stamp = $"{path}.bak-{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}";
+        var target = stamp;
+        for (var n = 1; File.Exists(target); n++)
+            target = $"{stamp}-{n}";
+        using var con = Open();
+        con.Script($"VACUUM INTO '{target.Replace("'", "''")}'");
+        return target;
+    }
 
     void Migrate()
     {
@@ -132,8 +159,11 @@ public sealed class Store
                 throw new InvalidOperationException("the database predates accounts: delete it and start again");
             con.Script(Schema);
         }
-        else if (version == 1)
-            con.Script(WebSessions);
+        else
+        {
+            if (version < 2) con.Script(WebSessions);
+            if (version < 3) con.Script(Uploads);
+        }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
         con.Commit();
@@ -172,6 +202,36 @@ public sealed class Store
     {
         using var con = Open();
         return con.Scalar("SELECT handle FROM accounts WHERE id = ?", id) as string;
+    }
+
+    /// <summary>Has the account played: a hunt was opened (`expeditions`) or an event came in (`events`). Only its starting rows otherwise.</summary>
+    public bool Played(long id)
+    {
+        using var con = Open(id);
+        return con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a LIMIT 1") is not null
+            || con.Scalar("SELECT 1 FROM events WHERE account_id = $a LIMIT 1") is not null;
+    }
+
+    /// <summary>The account that restored a backup of this game user id (once per user id); null when none has.</summary>
+    public long? RestoredBy(long userId)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT account_id FROM restored_ids WHERE user_id = ?", userId) as long?;
+    }
+
+    /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
+    /// sessions, its Steam id and handle. Files are the caller's.</summary>
+    public void DeleteAccount(long id)
+    {
+        using var con = Open();
+        con.Exec("DELETE FROM accounts WHERE id = ?", id);
+    }
+
+    /// <summary>The Steam id the account signed in with; null when it has none.</summary>
+    public string? SteamId64(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT steam_id64 FROM accounts WHERE id = ?", id) as string;
     }
 
     /// <summary>The connect reply's `account` object of an account.</summary>

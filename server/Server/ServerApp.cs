@@ -154,7 +154,7 @@ public static class ServerApp
         // localhost is not a game host: without this, the replay's fallback would answer a cross-site CORS preflight for
         // the admin API with the requesting origin echoed, and the browser would then send the POST
         app.MapFallback("/{**path}", () => TypedResults.NotFound()).RequireHost(LocalHosts).ExcludeFromDescription();
-        app.MapGame(o.Game);
+        app.MapGame(o.Game, o.WorkDir);
         return app;
     }
 

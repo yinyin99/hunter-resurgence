@@ -1,0 +1,83 @@
+@page "/restore"
+@using Microsoft.AspNetCore.Components.Forms
+@inject IRestoreService Service
+@inject NavigationManager Nav
+
+<PageTitle>@L["Restore.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@L["Restore.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
+    <section class="panel box">
+        <p>@L["Restore.Intro"]</p>
+        <ul>
+            <li>@L["Restore.Rule1"]</li>
+            <li>@L["Restore.Rule2"]</li>
+            <li>@L["Restore.Rule3"]</li>
+            <li>@L["Restore.Rule4"]</li>
+        </ul>
+        @if (status?.RestoredUserId is { } restored) { <p class="alert ok">@L["Restore.Restored", restored]</p> }
+        @if (status is { Review: > 0 }) { <p class="alert">@L["Restore.Waiting", status.Review]</p> }
+        <div class="pick">
+            <label for="zip">@L["Restore.Choose"]</label>
+            <InputFile id="zip" OnChange="Picked" accept=".zip,application/zip" disabled="@busy" />
+            <button type="button" class="btn btn-primary" disabled="@(busy || file is null)" @onclick="Send">@L[busy ? "Restore.Working" : "Restore.Upload"]</button>
+        </div>
+        @if (result is not null)
+        {
+            <div class="alert @(result.Status == "restored" ? "ok" : result.Status == "review" ? "" : "bad")" role="alert">
+                <b>@L["Restore.Result." + result.Status]</b>
+                @if (result.Message.Length > 0) { <p>@result.Message</p> }
+                @if (result.Report is { Length: > 0 }) { <details><summary>@L["Restore.Details"]</summary><pre>@result.Report</pre></details> }
+            </div>
+        }
+        <p><a href="/your-data">@L["Restore.DataLink"]</a></p>
+    </section>
+    <section class="panel box">
+        <h3>@L["Restore.Delete.Title"]</h3>
+        <p>@L["Restore.Delete.Text"]</p>
+        <p><label><input type="checkbox" class="tick" @bind="confirmDelete" /> @L["Restore.Delete.Confirm"]</label></p>
+        <button type="button" class="btn btn-danger" disabled="@(!confirmDelete || busy)" @onclick="Delete">@L["Restore.Delete.Button"]</button>
+        @if (deleteFailed) { <p class="alert bad" role="alert">@L["Restore.Delete.Failed"]</p> }
+    </section>
+</div>
+
+@code {
+    RestoreStatus? status;
+    RestoreResult? result;
+    IBrowserFile? file;
+    bool busy, confirmDelete, deleteFailed;
+
+    protected override async Task OnInitializedAsync() => status = await Service.StatusAsync();
+
+    void Picked(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+        result = null;
+    }
+
+    async Task Send()
+    {
+        if (file is null) return;
+        busy = true;
+        result = null;
+        if (file.Size > ServerAccountApi.MaxZipBytes)
+            result = new("too_large", "");
+        else
+        {
+            await using var zip = file.OpenReadStream(ServerAccountApi.MaxZipBytes);
+            result = await Service.UploadAsync(zip, file.Size);
+        }
+        status = await Service.StatusAsync();
+        file = null;
+        busy = false;
+    }
+
+    async Task Delete()
+    {
+        busy = true;
+        deleteFailed = !await Service.DeleteAsync();
+        busy = false;
+        // the account is gone: a full page load shows the public site
+        if (!deleteFailed) Nav.NavigateTo("/feed", forceLoad: true);
+    }
+}
