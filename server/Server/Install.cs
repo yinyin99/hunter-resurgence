@@ -103,12 +103,15 @@ public static class Install
         var (kit, wallet) = facts.Start();
         var byId = itemDefinitions.OfType<JsonObject>().Where(d => d["id"] is not null).ToDictionary(d => Py.L(d["id"]), d => d);
         var items = new JsonArray();
+        var taken = new HashSet<long>();
         foreach (var id in kit)
         {
             var units = byId.TryGetValue(id, out var d) && d["units"] is { } u && Py.IsNum(u) && Py.D(u) > 0 ? u.DeepClone() : null;
+            var slot = facts.StartSlot((string?)d?["type"], taken);
+            taken.Add(slot);
             items.Add(new JsonObject
             {
-                ["item_id"] = id, ["slot"] = facts.StartSlot((string?)d?["type"]), ["guid"] = (items.Count + 1).ToString(), ["metadata"] = new JsonObject(), ["units"] = units,
+                ["item_id"] = id, ["slot"] = slot, ["guid"] = (items.Count + 1).ToString(), ["metadata"] = new JsonObject(), ["units"] = units,
             });
         }
         var inventory = c["inventory"] as JsonObject ?? [];
