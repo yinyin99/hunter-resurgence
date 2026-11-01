@@ -570,13 +570,15 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = old.Open())
         {
             con.Exec("DROP TABLE web_sessions");
+            con.Exec("DROP TABLE uploads");
+            con.Exec("DROP TABLE restored_ids");
             con.Exec("PRAGMA user_version = 1");
         }
         var migrated = new Store(file);
         migrated.CreateAccount(5, "five", new JsonObject());
         Assert.Equal(5L, migrated.ResolveWebSession(migrated.CreateWebSession(5, TimeSpan.FromDays(1))));
         using var check = migrated.Open();
-        Assert.Equal(2L, check.Scalar("PRAGMA user_version"));
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
 
     [Fact]
