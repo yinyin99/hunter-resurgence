@@ -729,20 +729,16 @@ public sealed partial class State
     public byte[] ConnectReply(long account)
     {
         var inventory = connect["inventory"]!.AsObject();
-        var connectInfos = inventory["infos"]!.AsArray();
         JsonArray rows;
         JsonNode? expeditionId, locationId, reserve;
         using (var con = Con(account))
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
             rows = Items(con);
-            var added = rows.Select(r => Py.L(r!["item_id"])).Distinct()
-                .Where(id => !connectInfos.Any(i => Py.Eq(i!["item_id"], JsonValue.Create(id)))).Order()
-                .Select(ItemInfo).ToList();
-            var infosOut = (JsonArray)connectInfos.DeepClone();
-            foreach (var i in added)
-                if (Py.Truthy(i))
-                    infosOut.Add(C(i));
+            // The client walks `infos` against `items` by index and crashes if there are more definitions than items; the game's own server sends
+            // the definitions of the account's items only (in order of first appearance), never the whole catalogue
+            var infosOut = new JsonArray(rows.Select(r => Py.L(r!["item_id"])).Distinct()
+                .Select(ItemInfo).Where(i => Py.Truthy(i)).Select(i => C(i)).ToArray());
             var inv = (JsonObject)inventory.DeepClone();
             inv["items"] = rows;
             inv["infos"] = infosOut;

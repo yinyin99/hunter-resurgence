@@ -57,6 +57,16 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
+    public void TestConnectInfosAreTheOwnedItemsOnly()
+    {
+        var connect = CONNECT;
+        connect["inventory"]!["items"]!.AsArray().RemoveAt(0);  // the recorded player's 512 is not this account's: its info must not go out
+        var own = new State(Path.Combine(tmp, "own.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
+        var inv = Reply(own.ConnectReply(ME))["inventory"]!;
+        Eq("[10]", new JsonArray(inv["infos"]!.AsArray().Select(i => i!["item_id"]!.DeepClone()).ToArray()));  // the client crashes with more infos than items
+    }
+
+    [Fact]
     public void TestMovePersistsAcrossRestart()
     {
         Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!)));
