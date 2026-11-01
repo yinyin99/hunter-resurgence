@@ -51,10 +51,10 @@ public class AdminApiTests : IAsyncLifetime
     {
         const long other = 8;
         state.CreateAccount(other, "second");
-        var before = state.Wallet(ME)["gm"];
+        var before = state.Wallet(ME)["gm"]!.GetValue<double>();
         Assert.Equal("""{"currency":"gm","amount":38}""", await (await Post("/admin/grants/currency?account=second", new { currency = "gm", amount = 5 })).Content.ReadAsStringAsync());
-        Assert.Equal(before, state.Wallet(ME)["gm"]);
-        Assert.Equal(state.Wallet(other)["gm"], (await server.Http.GetFromJsonAsync<Dictionary<string, double>>("http://localhost/admin/wallet?account=8"))!["gm"]);
+        Assert.Equal(before, state.Wallet(ME)["gm"]!.GetValue<double>());
+        Assert.Equal(state.Wallet(other)["gm"]!.GetValue<double>(), (await server.Http.GetFromJsonAsync<Dictionary<string, double>>("http://localhost/admin/wallet?account=8"))!["gm"]);
         var items = state.Inventory(ME).Count;
         Assert.Equal(HttpStatusCode.OK, (await Post("/admin/grants/items?account=second", new { itemId = 13 })).StatusCode);
         Assert.Equal(items, state.Inventory(ME).Count);
