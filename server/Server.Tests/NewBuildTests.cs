@@ -195,6 +195,19 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
     // ---- the pages' calls
 
     [Fact]
+    public async Task TestMeReadWithGetAnswersEachAccountItsOwnProfile()
+    {
+        const long other = Account + 1;
+        state.CreateAccount(other, "second");
+        foreach (var (id, handle) in new[] { (Account, "tester"), (other, "second") })
+        {
+            var me = Body(await Get("/v1/Me/me?locale=en_US", Bearer((await Tokens(id)).Access)));
+            Assert.Equal((id, handle), ((long)me["id"]!, (string)me["handle"]!));
+        }
+        Assert.NotEqual("state", (await Get("/v1/Me/me")).Source);  // no token: no profile
+    }
+
+    [Fact]
     public async Task TestLowerCasePathsAndJsonBodiesReachTheHandlers()
     {
         var (access, _) = await Tokens();

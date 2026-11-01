@@ -191,7 +191,8 @@ public static class GameApi
                                 + "server: empty).")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
-                api.MapExactPost(game, path, r => game.Base(r) is not { } hit ? null : Own(game, r, a =>
+            {
+                Func<Req, Reply?> profile = r => game.Base(r) is not { } hit ? null : Own(game, r, a =>
                     {
                         var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
                         if (path == ME)
@@ -211,11 +212,16 @@ public static class GameApi
                         reply["ems"] = wallet["em"]!.DeepClone();
                         reply["unread_messages"] = s.Unread(a);
                         return new(hit.Status, hit.Headers, Py.DumpBytes(reply), "state");
-                    }))
+                    });
+                api.MapExactPost(game, path, profile)
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
                                     + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+                if (path == ME)  // the in-game page reads it with GET and its JWT
+                    api.MapGet(path, Handle(game, r => r.Method == "GET" && r.Path == path ? profile(r) : null)).WithName("MeGet")
+                       .WithSummary("Own profile, read with the game API v2 JWT").Produces(200, contentType: "application/json");
+            }
             // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
                .WithName("InventoryList").WithSummary("Owned items with their definitions")
