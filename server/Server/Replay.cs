@@ -241,20 +241,28 @@ public static class Replay
         ];
     }
 
-    /// <summary>Player state on workDir/state.db built from the recorded replies; null without a recorded connect.</summary>
+    /// <summary>Player state on workDir/state.db. Each input is the operator's recording when there is one, else what the
+    /// install and the facts file give (Install, Facts): the connect reply, the application catalogue, the locale
+    /// labels, the texture names and the populations of every reserve. Discounts and the player's skill list come from
+    /// recordings only (without them: no discounts, fresh skills). Null when there is neither a recorded connect nor a
+    /// connect sample in the install.</summary>
     public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
     {
         var e = table.Entries;
         var gsHost = S(cfg, "gameserver_host").ToLowerInvariant();
         var apiHost = S(cfg, "api_host").ToLowerInvariant();
         var staticHost = S(cfg, "static_host").ToLowerInvariant();
-        if (!e.TryGetValue(new("POST", gsHost, CONNECT, null), out var gsConnect)) return null;
+        var facts = Facts.Default;
+        var item = Install.ItemDefinitions(S(cfg, "install_dir"));  // the item definitions the game keeps in its archives: the `parent` chain groups weapon variants into the family that shares one weapon skill
+        var recorded = e.TryGetValue(new("POST", gsHost, CONNECT, null), out var gsConnect);
+        var connect = recorded ? gsConnect!.Body : Install.Connect(cfg, facts, item);
+        if (connect is null) return null;
         e.TryGetValue(new("POST", apiHost, APPLICATION, null), out var app);
         // the launcher's locale script: one call that wraps a JSON object
         byte[] Script(Func<string, bool> pick) =>
             e.FirstOrDefault(kv => kv.Key.Params is null && kv.Key.Method == "GET" && kv.Key.Host == staticHost && pick(kv.Key.Path)).Value?.Body ?? [];
         var script = Script(p => p.StartsWith(LOCALE_PREFIX, StringComparison.Ordinal));
-        JsonObject locale = [];
+        var locale = facts.Labels;
         if (script.Length > 0)
         {
             var a = Array.IndexOf(script, (byte)'(') + 1;
@@ -265,18 +273,24 @@ public static class Replay
         var web = Script(p => p.EndsWith(WEB_SCRIPT_SUFFIX, StringComparison.Ordinal));
         e.TryGetValue(new("GET", apiHost, DISCOUNTS, null), out var discounts);
         var sample = System.IO.Path.Combine(S(cfg, "install_dir"), "game", "json_inventory.json");  // item definitions update 10 sends
-        var uid = ((JsonObject?)JsonNode.Parse(gsConnect.Body)!["account"])?["user_id"];
+        var uid = ((JsonObject?)JsonNode.Parse(connect)!["account"])?["user_id"];
         e.TryGetValue(new("POST", apiHost, SKILL_LIST, ParamsKey([("user_id", [Py.Str(uid)])])), out var skillList);
-        var item = ArcList.Find("item.json", ArcList.ArchiveIndex(S(cfg, "install_dir")));  // the item definitions the game keeps in its archives
-        return new State(System.IO.Path.Combine(workDir, "state.db"), gsConnect.Body, $"https://{S(cfg, "gameserver_host")}",
+        // populations and permitted ammo per reserve: the facts file's, a recorded connect of the reserve wins
+        var ethical = JsonNode.Parse(connect)!["ethical"] as JsonArray ?? [];
+        var reserves = new Dictionary<int, byte[]>();
+        foreach (var r in facts.Reserves)
+            if (facts.ReserveConnect(r, ethical) is { } body) reserves[r] = body;
+        foreach (var (r, rec) in table.Connects)
+            reserves[int.Parse(r)] = rec.Body;
+        return new State(System.IO.Path.Combine(workDir, "state.db"), connect, $"https://{S(cfg, "gameserver_host")}",
             $"https://{S(cfg, "static_host")}{ProtocolLiterals.IconPath}",
-            app != null ? (JsonObject)JsonNode.Parse(app.Body)! : [], locale,
-            ScorePage.TextureNames(Encoding.UTF8.GetString(web)),
+            app != null ? (JsonObject)JsonNode.Parse(app.Body)! : Install.Application(S(cfg, "install_dir"), facts, item), locale,
+            web.Length > 0 ? ScorePage.TextureNames(Encoding.UTF8.GetString(web)) : facts.Textures,
             discounts != null ? (JsonArray)JsonNode.Parse(discounts.Body)! : [],
             File.Exists(sample) ? (JsonArray)JsonNode.Parse(File.ReadAllText(sample, Encoding.UTF8))!["infos"]!.DeepClone() : [],
-            table.Connects.ToDictionary(kv => int.Parse(kv.Key), kv => kv.Value.Body),
+            reserves,
             skillList != null ? JsonNode.Parse(skillList.Body) : null,
-            item != null ? (JsonArray)JsonNode.Parse(ArcList.ReadEntry(item))! : [],
+            item,
             offline: (bool?)cfg["offline_mode"] ?? true);  // a request no token resolves is the local account's; false on a community server
     }
 

@@ -45,9 +45,9 @@ public static class GameApi
         if (s != null)
         {
             gs.MapExactPost(game, CONNECT, r => Own(game, r, a =>
-                    new(200, game.Table.Entries[new("POST", game.Gs, CONNECT, null)].Headers, s.ConnectReply(a), "state")))
+                    new(200, game.Table.Entries.TryGetValue(new("POST", game.Gs, CONNECT, null), out var recorded) ? recorded.Headers : Json(), s.ConnectReply(a), "state")))
               .WithName("Connect").WithSummary("Start a hunt session")
-              .WithDescription("The recorded connect reply with the saved inventory, wallet, skills and the open expedition "
+              .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
                                + "reserve. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
