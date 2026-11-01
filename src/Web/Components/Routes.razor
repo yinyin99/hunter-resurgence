@@ -1,5 +1,6 @@
 @inject HostMode Mode
 @inject ISessionService Sessions
+@inject ServerCookie ServerCookie
 
 <Router AppAssembly="typeof(Program).Assembly"
         AdditionalAssemblies="new[] { typeof(Strings).Assembly }"
@@ -14,10 +15,14 @@
     [Parameter] public bool Launcher { get; set; }
     [Parameter] public bool Dev { get; set; }
     [Parameter] public string? Mock { get; set; }
+    /// <summary>With SERVER_URL: the browser's session cookie and host, taken from the request by App.razor.</summary>
+    [Parameter] public string? Cookie { get; set; }
+    [Parameter] public string? Host { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         (Mode.Launcher, Mode.Dev, Mode.Mock) = (Launcher, Dev, Mock);
+        (ServerCookie.Value, ServerCookie.Host) = (Cookie, Host);
         if (Dev) await Mode.ApplyMockSessionAsync(Sessions);
     }
 }
