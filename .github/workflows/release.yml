@@ -61,31 +61,36 @@ jobs:
             if (-not $s[$k]) { throw "repository secret for $k is missing" }
           }
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
-          # the player kit's settings.json: the community server and the 13 host names the game asks for
-          $p = [ordered]@{
-            server_url         = $env:PLAY_SERVER_URL
-            gameserver_host    = $env:GAMESERVER_HOST
-            api_host           = $env:API_HOST
-            apiv2_host         = $env:APIV2_HOST
-            signup_host        = $env:SIGNUP_HOST
-            web_host           = $env:WEB_HOST
-            static_host        = $env:STATIC_HOST
-            static_legacy_host = $env:STATIC_LEGACY_HOST
-            map_host           = $env:MAP_HOST
-            photo_host         = $env:PHOTO_HOST
-            avatar_host        = $env:AVATAR_HOST
-            news_host          = $env:NEWS_HOST
-            telemetry_host     = $env:TELEMETRY_HOST
-            crash_host         = $env:CRASH_HOST
+          # the player kit's settings.json: the community server and the 13 host names the game asks for. Only when PLAY_SERVER_URL is set: without it the release has the backup tool alone.
+          if (-not $env:PLAY_SERVER_URL) { Write-Host "PLAY_SERVER_URL is not set: no player kit in this release" }
+          else {
+            $p = [ordered]@{
+              server_url         = $env:PLAY_SERVER_URL
+              gameserver_host    = $env:GAMESERVER_HOST
+              api_host           = $env:API_HOST
+              apiv2_host         = $env:APIV2_HOST
+              signup_host        = $env:SIGNUP_HOST
+              web_host           = $env:WEB_HOST
+              static_host        = $env:STATIC_HOST
+              static_legacy_host = $env:STATIC_LEGACY_HOST
+              map_host           = $env:MAP_HOST
+              photo_host         = $env:PHOTO_HOST
+              avatar_host        = $env:AVATAR_HOST
+              news_host          = $env:NEWS_HOST
+              telemetry_host     = $env:TELEMETRY_HOST
+              crash_host         = $env:CRASH_HOST
+            }
+            foreach ($k in $p.Keys) {
+              if (-not $p[$k]) { throw "repository secret for $k is missing" }
+            }
+            $p | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\play-settings.json"
+            "PLAY=1" >> $env:GITHUB_ENV
           }
-          foreach ($k in $p.Keys) {
-            if (-not $p[$k]) { throw "repository secret for $k is missing" }
-          }
-          $p | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\play-settings.json"
       - name: Publish and zip
         shell: cmd
         run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json" ${{ env.VERSION }}
       - name: Publish and zip the player kit
+        if: env.PLAY == '1'
         shell: cmd
         run: tools\play\publish.cmd "%RUNNER_TEMP%\play-settings.json" ${{ env.VERSION }}
       # Build provenance (attestations need a public repository on this plan: skipped while private).
@@ -96,6 +101,11 @@ jobs:
           subject-path: |
             tools/backup/bin/Release/net10.0-windows/win-x64/backup-win-x64.zip
             tools/backup/bin/Release/net10.0-windows/win-x64/publish/backup.exe
+      - name: Attest the player kit
+        if: ${{ env.PLAY == '1' && !github.event.repository.private }}
+        uses: actions/attest@v4
+        with:
+          subject-path: |
             tools/play/bin/Release/net10.0-windows/win-x64/play-win-x64.zip
             tools/play/bin/Release/net10.0-windows/win-x64/publish/play.exe
       - name: Release
@@ -107,7 +117,8 @@ jobs:
           $zip = "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"
           $playZip = "tools\play\bin\Release\net10.0-windows\win-x64\play-win-x64.zip"
           $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          $playSha = (Get-FileHash $playZip -Algorithm SHA256).Hash.ToLower()
+          $play = $env:PLAY -eq '1'
+          if ($play) { $playSha = (Get-FileHash $playZip -Algorithm SHA256).Hash.ToLower() }
           # checkout may turn an annotated tag into a lightweight one: fetch the real tag object, then use its message if there is one
           git fetch --force origin "refs/tags/${env:TAG}:refs/tags/${env:TAG}"
           $notes = ""
@@ -115,13 +126,16 @@ jobs:
             $msg = (git tag -l --format='%(contents)' $env:TAG) -join "`n"
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
-          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`nSHA-256 of play-win-x64.zip:`n`n$playSha`n`nThe exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers. settings.json in the play zip holds the community server's address and the same host names: the player kit needs them to point the game at that server."
+          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($play) { "SHA-256 of play-win-x64.zip:`n`n$playSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
+          if ($play) { $notes += " settings.json in the play zip holds the community server's address and the same host names: the player kit needs them to point the game at that server." }
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
           gh release create $env:TAG --draft --title $env:TAG --notes-file notes.md @flags
           if ($LASTEXITCODE -ne 0) { exit 1 }
-          gh release upload $env:TAG $zip $playZip
+          gh release upload $env:TAG $zip
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($play) { gh release upload $env:TAG $playZip }
           if ($LASTEXITCODE -ne 0) { exit 1 }
           gh release edit $env:TAG --draft=false
           if ($LASTEXITCODE -ne 0) { exit 1 }
