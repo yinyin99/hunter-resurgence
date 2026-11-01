@@ -88,6 +88,8 @@ public sealed class RequestLog(bool console, string? missesPath, string? telemet
     public void Write(Req r, Reply reply)
     {
         Replied?.Invoke(r, reply);
+        // a pending sign-in poll comes about once a second: no console line (the poll that completes, and errors, still get one)
+        var show = console && !(r.Path.StartsWith("/auth/link/", StringComparison.Ordinal) && reply.Status == 200 && Encoding.UTF8.GetString(reply.Body).Contains("pending"));
         JsonObject? line = null;
         if (reply.Source == "miss" && missesPath != null && !ServerApp.IsLocalOrigin(r.Header("Origin")))  // Swagger UI is not the client
             line = new JsonObject
@@ -112,11 +114,11 @@ public sealed class RequestLog(bool console, string? missesPath, string? telemet
                 ["body"] = Encoding.UTF8.GetString(r.Body, 0, Math.Min(r.Body.Length, 64 * 1024)),
             }
             : null;
-        if (!console && line is null && tele is null)
+        if (!show && line is null && tele is null)
             return;
         lock (gate)
         {
-            if (console)
+            if (show)
                 Console.WriteLine($"{reply.Source,-6} {reply.Status} {r.Method} {r.Host}{r.Path}");
             if (line != null)  // text mode: OS line ending
                 File.AppendAllText(missesPath!, Py.Dumps(line) + Environment.NewLine, new UTF8Encoding(false));
