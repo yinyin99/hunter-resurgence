@@ -116,9 +116,11 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     static string ReturnTo(Req r, string login) => Origin(r) + "/auth/steam/return?login=" + login;
 
-    public static string? CookieOf(Req r, string name)
+    public static string? CookieOf(Req r, string name) => CookieOf(r.Header("Cookie"), name);
+
+    public static string? CookieOf(string? header, string name)
     {
-        foreach (var part in (r.Header("Cookie") ?? "").Split(';'))
+        foreach (var part in (header ?? "").Split(';'))
         {
             var eq = part.IndexOf('=');
             if (eq > 0 && part[..eq].Trim() == name) return part[(eq + 1)..].Trim();
