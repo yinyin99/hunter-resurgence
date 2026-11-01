@@ -155,7 +155,7 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
-    public void ABuiltAmmoDefinitionCarriesTheBallisticsTheClientReadsUnguarded()
+    public void ABuiltAmmoDefinitionCarriesTheBallisticsTheGameNeeds()
     {
         var state = LoadState(cfg, new HarTable(), tmp)!;
         Eq("""{"velocity_falloff": 1, "penetration_factor": 22, "wounding_factor": 28, "ammo_velocity": 400, "mass": 0.02}""",
