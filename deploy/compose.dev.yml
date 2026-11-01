@@ -6,3 +6,8 @@ services:
   caddy:
     volumes:
       - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+  server:
+    image: server:dev
+    build: { context: .., dockerfile: server/Server/Dockerfile }
+  server-backup:
+    image: server:dev
