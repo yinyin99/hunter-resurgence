@@ -11,6 +11,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
   - `docs/launcher.md`: `src/Launcher`
   - `docs/website.md`: `src/Web` and `src/Ui`
   - `docs/restore.md`: `src/Restore`
+  - `docs/server.md`: `server/Server`
   - `docs/deploy.md`: `deploy/` and the workflows
 - A change in behaviour updates its doc in the same pull request.
 
