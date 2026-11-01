@@ -10,9 +10,16 @@ public static class ProtocolLiterals
     /// <summary>Path prefix of the old launcher's own calls to the game server: token, initialise, compatibleHardware, ping.</summary>
     public const string LauncherBase = "/json/rgc-01-00/EmoteLauncher";
 
-    /// <summary>The scheme of the launch URL the old launcher gives the game. The client's environment check looks for the
+    /// <summary>Path prefix of the game server's RPC class in the current build: connect and heartbeat hang below it, on the web host.</summary>
+    public const string WebRpcBase = "/v1/json/hunter_gameclient";
+
+    /// <summary>The scheme of the launch URL the launcher gives the game. The client's environment check looks for the
     /// game's name anywhere in that URL, so a host name of the operator's choice cannot make it fail.</summary>
-    public const string LaunchScheme = "thehunter";
+    public const string LaunchScheme = "hunter";
+
+    /// <summary>The cookies of the game's tokens and of a started session, and the issuer claim of the JWTs.</summary>
+    public const string AccessCookie = "__theh-access", RefreshCookie = "__theh-refresh", LaunchSessionCookie = "th_launch_session_id",
+        LaunchNetworkCookie = "th_launch_network_id", JwtIssuer = "urn:thc:auth";
 
     /// <summary>The image the client shows in its toasts (a path on the static host).</summary>
     public const string IconPath = "/static/img/huntericon.png";

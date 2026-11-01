@@ -20,7 +20,7 @@ public static class Scoring
     /// <summary>Config-dependent globals: static_host and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
     public static void Load(JsonObject cfg, string? variantsFile)
     {
-        StaticHost = (string)cfg["static_host"]!;
+        StaticHost = (string)cfg["game_web_host"]!;
         Variants = new();
         var path = variantsFile;
         if (path is null || !File.Exists(path)) return;

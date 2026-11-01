@@ -118,6 +118,7 @@ public static class ServerApp
             if (InAny(ctx.Connection.RemoteIpAddress, o.TrustedProxies) && ctx.Request.Headers[o.HostHeader] is { Count: 1 } game
                 && HostName.IsMatch(game[0]!))
                 ctx.Request.Host = new HostString(game[0]!);
+            await NewBuild.Rewrite(ctx, o.Game);  // the current build's one-host requests, before routing
             if (IsLocal(ctx))
             {
                 if (!direct)
