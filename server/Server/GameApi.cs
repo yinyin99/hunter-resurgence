@@ -259,7 +259,7 @@ public static class GameApi
     }
 
     /// <summary>The old launcher's own calls to the game server, answered without any recording: nothing in them is
-    /// read but their success. The Steam ticket of `token` is not checked (it cannot be, without the publisher's key).</summary>
+    /// read but their success. The Steam ticket of `token` is not checked (checking it needs a Steam Web API key, which the server does not have).</summary>
     static Reply? LauncherCall(Req r)
     {
         var name = r.Path[(ProtocolLiterals.LauncherBase.Length + 1)..].Split('/')[0];
