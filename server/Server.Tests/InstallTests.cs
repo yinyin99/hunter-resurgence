@@ -116,11 +116,19 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
-    public void TheShippedStartKitOwnsTheDefaultsOfTheClothingSlots()
+    public void ASecondKitItemOfATypeWaitsInTheBackpack()
     {
-        // the inventory page fills an empty legs or feet slot with a default item it must find among the owned ones
-        Assert.Contains(39L, Facts.Default.Start().Items);
-        Assert.Contains(59L, Facts.Default.Start().Items);
+        var two = Facts.Parse(FACTS.Replace("[257, 14, 404]", "[257, 257]"));
+        var c = JsonNode.Parse(Install.Connect(cfg, two, Install.ItemDefinitions(install))!)!;
+        Eq("""[{"item_id": 257, "slot": 2, "guid": "1", "metadata": {}, "units": null}, {"item_id": 257, "slot": 0, "guid": "2", "metadata": {}, "units": null}]""", c["inventory"]!["items"]);
+    }
+
+    [Fact]
+    public void TheShippedStartKitOwnsTheDefaultClothingOfTheInventoryPage()
+    {
+        // the page fills an empty body, legs or feet slot with its default (188, 39, 59) found among the owned items; without it the page cannot be closed
+        foreach (var id in new long[] { 188, 39, 59 })
+            Assert.Contains(id, Facts.Default.Start().Items);
     }
 
     [Fact]
