@@ -1,10 +1,11 @@
-// Entry point: serve (default), admin, import, review, coverage. Every command reads settings.json: --settings <file>, else the
+// Entry point: serve (default), admin, import, review, coverage, backup. Every command reads settings.json: --settings <file>, else the
 // SERVER_SETTINGS environment variable, else settings.json in the current folder (docs/server.md).
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Resurgence.Restore;
+using Microsoft.Data.Sqlite;
 using Resurgence.Server;
 
 const string AdminUsage = """
@@ -57,7 +58,35 @@ switch (cmd)
     case "import": Import([.. words.Skip(1)]); break;
     case "review": Review([.. words.Skip(1)]); break;
     case "coverage": await Coverage(words.Contains("--no-recordings")); break;
-    default: Die($"unknown command {cmd}: serve | admin | import | review | coverage"); break;
+    case "backup":
+        if (words.Count is not (2 or 3)) Die("usage: backup <folder> [keep, default 7]");
+        Backup(words[1], words.Count == 3 ? int.Parse(words[2], CultureInfo.InvariantCulture) : 7);
+        break;
+    default: Die($"unknown command {cmd}: serve | admin | import | review | coverage | backup"); break;
+}
+
+// A consistent copy of every database of data_dir (VACUUM INTO, not a file copy: ADR 0001) as <name>-<yyyyMMdd>.db in
+// <folder>; only the newest <keep> copies of each database stay. Safe while the server runs.
+void Backup(string folder, int keep)
+{
+    Directory.CreateDirectory(folder);
+    var day = DateTime.UtcNow.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+    foreach (var db in Directory.GetFiles(settings.DataDir, "*.db"))
+    {
+        var name = Path.GetFileNameWithoutExtension(db);
+        var copy = Path.Combine(folder, $"{name}-{day}.db");
+        File.Delete(copy);
+        using (var con = new SqliteConnection($"Data Source={db};Mode=ReadOnly;Pooling=False"))
+        {
+            con.Open();
+            using var cmd = con.CreateCommand();
+            cmd.CommandText = "VACUUM INTO $to";
+            cmd.Parameters.AddWithValue("$to", copy);
+            cmd.ExecuteNonQuery();
+        }
+        foreach (var old in Directory.GetFiles(folder, name + "-????????.db").OrderDescending().Skip(keep)) File.Delete(old);
+        Console.WriteLine($"backup: {copy}");
+    }
 }
 return 0;
 
