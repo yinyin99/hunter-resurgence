@@ -81,14 +81,14 @@ void Admin(string[] a)
     if (state == null) { Die("no recorded connect: nothing to seed the player state from"); return; }
     if (a[0] == "item")
     {
-        if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(itemId, count))
+        if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(state.LocalAccount, itemId, count))
             Die($"item {itemId}: unknown or bad count (1 to {AdminApi.MaxStacks})");
         Console.WriteLine($"granted {count} x {Py.Str(state.ItemInfo(itemId)!["name"])} ({itemId})");
     }
     else
     {
         if (!AdminApi.ValidAmount(amount)) Die($"{a[1]}: not a number from -2^53 to 2^53");
-        var balance = state.Give(a[0], amount);
+        var balance = state.Give(state.LocalAccount, a[0], amount);
         if (balance == null) Die($"{a[0]} unchanged: balance would drop below 0");
         Console.WriteLine($"{a[0]} balance: {Py.Str(balance)}");
     }

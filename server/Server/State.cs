@@ -1,99 +1,14 @@
-// Player state in SQLite, seeded from the recorded connect reply.
-// Deleting the database file resets to the recording.
+// Player state in SQLite, one account per player in the server's one database; a new account is seeded from the
+// recorded connect reply. Every method that touches a player takes the account id; the Db it opens is scoped to it.
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Data.Sqlite;
 
 namespace Resurgence.Server;
 
-/// <summary>One sqlite connection plus the transaction of a Python `with con:` block (Begin … Commit; Dispose rolls
-/// back). Plain `?` placeholders bind in order like sqlite3's; `?N` ones by number.</summary>
-public sealed class Db : IDisposable
-{
-    readonly SqliteConnection con;
-    SqliteTransaction? tx;
-
-    public Db(string path)
-    {
-        con = new SqliteConnection($"Data Source={path};Pooling=False");
-        con.Open();
-    }
-
-    public void Begin() => tx = con.BeginTransaction();
-
-    public void Commit()
-    {
-        tx!.Commit();
-        tx.Dispose();
-        tx = null;
-    }
-
-    SqliteCommand Cmd(string sql, object?[] args)
-    {
-        var cmd = con.CreateCommand();
-        cmd.Transaction = tx;
-        var sb = new StringBuilder(sql.Length + 8);
-        var n = 0;
-        for (var i = 0; i < sql.Length; i++)
-        {
-            sb.Append(sql[i]);
-            if (sql[i] == '?' && (i + 1 == sql.Length || !char.IsAsciiDigit(sql[i + 1]))) sb.Append(++n);
-        }
-        cmd.CommandText = sb.ToString();
-        for (var i = 0; i < args.Length; i++)
-            cmd.Parameters.AddWithValue($"?{i + 1}", args[i] switch
-            {
-                null => DBNull.Value,
-                JsonNode j => Py.Sql(j),
-                bool b => b ? 1L : 0L,
-                var v => v,
-            });
-        return cmd;
-    }
-
-    public int Exec(string sql, params object?[] args)
-    {
-        using var c = Cmd(sql, args);
-        return c.ExecuteNonQuery();
-    }
-
-    public List<object[]> Rows(string sql, params object?[] args)
-    {
-        using var c = Cmd(sql, args);
-        using var r = c.ExecuteReader();
-        var rows = new List<object[]>();
-        while (r.Read())
-        {
-            var row = new object[r.FieldCount];
-            r.GetValues(row);
-            rows.Add(row);
-        }
-        return rows;
-    }
-
-    public object? Scalar(string sql, params object?[] args)
-    {
-        using var c = Cmd(sql, args);
-        return c.ExecuteScalar();
-    }
-
-    public long Insert(string sql, params object?[] args)
-    {
-        Exec(sql, args);
-        return (long)Scalar("SELECT last_insert_rowid()")!;
-    }
-
-    public void Dispose()
-    {
-        tx?.Dispose();
-        con.Dispose();
-    }
-}
-
-/// <summary>State-backed replies; one sqlite connection per call (handlers run on many threads).</summary>
+/// <summary>State-backed replies; one pooled sqlite connection per call (handlers run on many threads).</summary>
 public sealed class State
 {
     public const string UPLOAD_PATH = "/upload/storage/v1/b/photos/o";  // object-storage upload shape the client uses
@@ -104,8 +19,6 @@ public sealed class State
     // (the client sends heartbeats about every 20 s)
     public const int HEARTBEAT_TIMEOUT = 120;
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
-    static readonly (string Column, string Kind)[] EXPEDITION_COLUMNS =
-        [("first_event", "INTEGER"), ("distance", "INTEGER"), ("last_seen", "REAL")];  // added after v1
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
@@ -115,51 +28,27 @@ public sealed class State
     static readonly string[] RESERVE_KEYS = ["populations", "species_ammo"];
     const long COLOUR = 4294967040;
 
-    /// <summary>Open the state db; seed items and wallet from connect_reply['inventory'] / ['wallet'] on first use.</summary>
-    public static Db ConnectDb(string path, JsonObject connectReply)
+    /// <summary>The server's starting data for a new account: items and wallet from the recorded connect, skills from its
+    /// levels and the recorded Skill/list. The one source an importer's rows replace (call inside the account's transaction).</summary>
+    void SeedFromConnect(Db con)
     {
-        var con = new Db(path);
-        try
-        {
-            con.Exec("CREATE TABLE IF NOT EXISTS items (guid INTEGER PRIMARY KEY, item_id INTEGER NOT NULL,"
-                     + " slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER)");
-            con.Exec("CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, event INTEGER, body TEXT NOT NULL)");
-            con.Exec("CREATE TABLE IF NOT EXISTS kills (kill_id INTEGER PRIMARY KEY, individual INTEGER,"
-                     + " species INTEGER, harvest TEXT NOT NULL)");
-            con.Exec("CREATE TABLE IF NOT EXISTS pending (id INTEGER PRIMARY KEY, body TEXT NOT NULL)");
-            con.Exec("CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY, hash INTEGER, photo_type INTEGER,"
-                     + " shot_id INTEGER, individual INTEGER, file TEXT)");
-            con.Exec("CREATE TABLE IF NOT EXISTS harvests (kill_id INTEGER PRIMARY KEY, body TEXT NOT NULL)");
-            con.Exec("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, sender INTEGER NOT NULL,"
-                     + " content TEXT NOT NULL, ts INTEGER NOT NULL, read INTEGER NOT NULL DEFAULT 0)");
-            con.Exec("CREATE TABLE IF NOT EXISTS wallet (currency TEXT PRIMARY KEY, amount REAL NOT NULL)");
-            con.Exec("CREATE TABLE IF NOT EXISTS skills (kind TEXT, key INTEGER, xp REAL NOT NULL, PRIMARY KEY (kind, key))");
-            con.Exec("CREATE TABLE IF NOT EXISTS expeditions (id INTEGER PRIMARY KEY, reserve INTEGER, location_id INTEGER,"
-                     + " start_ts REAL NOT NULL, end_ts REAL)");
-            var have = con.Rows("PRAGMA table_info(expeditions)").Select(r => (string)r[1]).ToHashSet();
-            foreach (var (column, kind) in EXPEDITION_COLUMNS)
-                if (!have.Contains(column))
-                    con.Exec($"ALTER TABLE expeditions ADD COLUMN {column} {kind}");
-            con.Begin();
-            if ((long)con.Scalar("SELECT COUNT(*) FROM items")! == 0)
-                foreach (var i in connectReply["inventory"]!["items"]!.AsArray())
-                    con.Exec("INSERT INTO items VALUES (?, ?, ?, ?, ?)",
-                             long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
-            if ((long)con.Scalar("SELECT COUNT(*) FROM wallet")! == 0)
-                foreach (var (currency, amount) in connectReply["wallet"] as JsonObject ?? new JsonObject())
-                    con.Exec("INSERT INTO wallet VALUES (?, ?)", currency, amount);
-            con.Commit();
-            return con;
-        }
-        catch
-        {
-            con.Dispose();
-            throw;
-        }
+        foreach (var i in connect["inventory"]!["items"]!.AsArray())
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
+                     long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
+        foreach (var (currency, amount) in connect["wallet"] as JsonObject ?? new JsonObject())
+            con.Exec("INSERT INTO wallet (account_id, currency, amount) VALUES ($a, ?, ?)", currency, amount);
+        foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(connect["skills"]) ? connect["skills"]!.AsObject() : new JsonObject(),
+                                                   Py.Truthy(skillList) ? skillList!.AsObject() : new JsonObject()))
+            con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", kind, key, xp);
     }
 
+    /// <summary>The next id of a table keyed (account_id, id): ids are per account, and restored rows keep the zip's.
+    /// Call inside a transaction.</summary>
+    static long NextId(Db con, string table, string column) =>
+        (long)con.Scalar($"SELECT COALESCE(MAX({column}), 0) + 1 FROM {table} WHERE account_id = $a")!;
+
     /// <summary>Rows in the connect reply's inventory.items shape (guid as a string).</summary>
-    public static JsonArray Items(Db con) => new(con.Rows("SELECT * FROM items ORDER BY guid").Select(r => (JsonNode?)new JsonObject
+    public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r => (JsonNode?)new JsonObject
     {
         ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])),
         ["metadata"] = JsonNode.Parse((string)r[3]), ["units"] = Py.FromSql(r[4]),
@@ -169,9 +58,9 @@ public sealed class State
     /// null when the currency is missing or the balance would drop below 0.</summary>
     public static JsonNode? AddCurrency(Db con, string currency, object amount)
     {
-        if (con.Exec("UPDATE wallet SET amount = amount + ?1 WHERE currency = ?2 AND amount + ?1 >= 0", amount, currency) == 0)
+        if (con.Exec("UPDATE wallet SET amount = amount + ?1 WHERE account_id = $a AND currency = ?2 AND amount + ?1 >= 0", amount, currency) == 0)
             return null;
-        return Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE currency = ?", currency)[0][0]);
+        return Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency)[0][0]);
     }
 
     /// <summary>Add a slot-0 row with a full stack per item id and queue their update 10 (call inside a transaction).
@@ -186,13 +75,14 @@ public sealed class State
             infos[itemId] = info(itemId);
             var units = infos[itemId]!["units"];
             units = units is null || Is(units, -2) ? null : units;
-            var guid = con.Insert("INSERT INTO items VALUES (NULL, ?, 0, '{}', ?)", itemId, units);
+            var guid = NextId(con, "items", "guid");
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", guid, itemId, units);
             rows.Add(new JsonObject
             {
                 ["item_id"] = itemId, ["slot"] = 0, ["guid"] = guid.ToString(), ["metadata"] = new JsonObject(), ["units"] = C(units),
             });
         }
-        con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject
+        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject
         {
             ["items"] = new JsonObject { ["items"] = rows, ["infos"] = new JsonArray(infos.Values.Select(C).ToArray()) },
             ["update"] = 10,
@@ -245,47 +135,48 @@ public sealed class State
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates)
     {
         con.Begin();
-        con.Exec("UPDATE expeditions SET last_seen = ? WHERE end_ts IS NULL", Py.Now());
-        var updates = new JsonArray(con.Rows("SELECT id, body FROM pending ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
-        con.Exec("DELETE FROM pending");
+        con.Exec("UPDATE expeditions SET last_seen = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now());
+        var updates = new JsonArray(con.Rows("SELECT id, body FROM pending WHERE account_id = $a ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
+        con.Exec("DELETE FROM pending WHERE account_id = $a");
         foreach (var node in events)
         {
             var e = node!.AsObject();
             JsonNode? species = null;
-            con.Exec("INSERT INTO events (event, body) VALUES (?, ?)", e["event"], Py.Dumps(e));
+            con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, ?, ?)", e["event"], Py.Dumps(e));
             if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
             {
-                var row = con.Rows("SELECT body FROM events WHERE event = 7 AND json_extract(body, '$.individual') = ?"
+                var row = con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ?"
                                    + " ORDER BY id DESC LIMIT 1", e["individual"]).FirstOrDefault();
                 species = row is null ? null : Parse(row[0])["species"];
                 foreach (var toast in skillUpdates(con, e, species))
-                    con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(toast));
+                    con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(toast));
             }
             if (Is(e["event"], 1))
             {
                 if (ammoCheck(e, species) is { } warning)
                 {
-                    con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(warning.Toast));
-                    con.Exec("INSERT INTO messages (sender, content, ts) VALUES (?, ?, ?)", SYSTEM_SENDER, warning.Message, (long)Py.Now());
+                    con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(warning.Toast));
+                    con.Exec("INSERT INTO messages (account_id, sender, content, ts) VALUES ($a, ?, ?, ?)", SYSTEM_SENDER, warning.Message, (long)Py.Now());
                 }
             }
             else if (Is(e["event"], 6) && Py.IsDigit(Py.Str(G(e, "item", ""))))
                 con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
-                         + " WHERE guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
+                         + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
-                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE guid = ?",
+                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
-                var killId = con.Insert("INSERT INTO kills (individual, species, harvest) VALUES (?, ?, ?)",
-                                        e["individual"], e["extended_species"], harvest);
+                var killId = NextId(con, "kills", "kill_id");
+                con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
+                         killId, e["individual"], e["extended_species"], harvest);
                 var (e7, e22) = KillEvents(con, e["individual"], harvest);
                 var hits = KillHits(con, e["individual"], harvest);
                 var disqualified = hits.Any(h => ammoCheck(h, e7["species"]) is not null);
                 var (score, scoreType, css) = disqualified ? (null, null, 0.0) : trophy(e, e7, e22, hits.Count > 0 ? hits[^1] : null);
-                var expedition = con.Rows("SELECT id, reserve FROM expeditions ORDER BY id DESC LIMIT 1").FirstOrDefault();
-                con.Exec("INSERT INTO harvests (kill_id, body) VALUES (?, ?)", killId, Py.Dumps(harvestPage(
+                var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
                     e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
                 var update = new JsonObject
                 {
@@ -298,13 +189,13 @@ public sealed class State
                     ["kill_id"] = killId,
                     ["css"] = css,
                 };
-                con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(update));
+                con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
                 if (Py.RoundInt(css) > 0)
                     updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css)), ["type"] = "gm", ["update"] = 15 });
             }
             else if (Is(e["event"], 4))
             {
-                var photoId = con.Insert("INSERT INTO photos (hash, photo_type, shot_id, individual) VALUES (?, ?, ?, ?)",
+                var photoId = con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual) VALUES ($a, ?, ?, ?, ?)",
                                          e["hash"], e["photo_type"], e["shot_id"], e["individual"]);
                 var update = new JsonObject
                 {
@@ -323,10 +214,10 @@ public sealed class State
     /// <summary>Hit events (event 1) on the animal of a kill since its latest spawn (individual ids are reused across
     /// sessions). harvest is the kill's stored event 3 JSON, identical to its events row.</summary>
     public static List<JsonObject> KillHits(Db con, JsonNode? individual, string harvest) => con.Rows(
-        "WITH k AS (SELECT MAX(id) AS id FROM events WHERE event = 3 AND body = ?2)"
-        + " SELECT body FROM events, k WHERE event = 1 AND json_extract(body, '$.individual') = ?1 AND events.id < k.id"
-        + " AND events.id > COALESCE((SELECT MAX(id) FROM events WHERE event = 7"
-        + " AND json_extract(body, '$.individual') = ?1 AND id < k.id), 0) ORDER BY events.id", individual, harvest)
+        "WITH k AS (SELECT MAX(id) AS id FROM events WHERE account_id = $a AND event = 3 AND body = ?2)"
+        + " SELECT body FROM events, k WHERE account_id = $a AND event = 1 AND individual = ?1 AND events.id < k.id"
+        + " AND events.id > COALESCE((SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7"
+        + " AND individual = ?1 AND id < k.id), 0) ORDER BY events.id", individual, harvest)
         .Select(r => Parse(r[0])).ToList();
 
     /// <summary>(event 7, event 22) of a kill: the latest of each for its individual before its event 3; {} when missing.</summary>
@@ -335,8 +226,8 @@ public sealed class State
         JsonObject Latest(long ev)
         {
             var row = con.Rows(
-                "WITH k AS (SELECT MAX(id) AS id FROM events WHERE event = 3 AND body = ?2)"
-                + " SELECT body FROM events, k WHERE event = ?3 AND json_extract(body, '$.individual') = ?1"
+                "WITH k AS (SELECT MAX(id) AS id FROM events WHERE account_id = $a AND event = 3 AND body = ?2)"
+                + " SELECT body FROM events, k WHERE account_id = $a AND event = ?3 AND individual = ?1"
                 + " AND events.id < k.id ORDER BY events.id DESC LIMIT 1", individual, harvest, ev).FirstOrDefault();
             return row is null ? new JsonObject() : Parse(row[0]);
         }
@@ -345,9 +236,9 @@ public sealed class State
 
     /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT (call inside a transaction).</summary>
     public static void CloseStale(Db con) =>
-        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT);
+        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT);
 
-    public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events")!;
+    public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a")!;
 
     /// <summary>Public_user/expedition `stats` (the Statistics/total shape the site's formatStats/formatAnimals read), as
     /// the site sends for a finished hunt: `data` holds `achievements` first, then `weapon` and
@@ -369,7 +260,7 @@ public sealed class State
         JsonObject Species(JsonNode? sp) =>
             SetDefault(animal, Py.Str(sp), () => new JsonObject { ["spots"] = 0, ["tracks"] = 0, ["kills"] = 0, ["ethical_kills"] = 0 });
 
-        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE id > ? AND event IN (1, 11, 12, 21)"
+        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND id > ? AND event IN (1, 11, 12, 21)"
                                    + " ORDER BY id", firstEvent))
         {
             var (eventId, ev, e) = ((long)r[0], Py.FromSql(r[1]), Parse(r[2]));
@@ -384,8 +275,8 @@ public sealed class State
                 Inc(Ammo(e), "misses");
             else if (seen.Add(Py.Str(ev) + "\n" + Py.Dumps(e["individual"])))
             {
-                var row = con.Rows("SELECT json_extract(body, '$.species') FROM events WHERE event = 7"
-                                   + " AND json_extract(body, '$.individual') = ? AND id < ? ORDER BY id DESC LIMIT 1",
+                var row = con.Rows("SELECT json_extract(body, '$.species') FROM events WHERE account_id = $a AND event = 7"
+                                   + " AND individual = ? AND id < ? ORDER BY id DESC LIMIT 1",
                                    e["individual"], eventId).FirstOrDefault();
                 if (row is not null)
                     Inc(Species(Py.FromSql(row[0])), Is(ev, 11) ? "spots" : "tracks");
@@ -427,14 +318,14 @@ public sealed class State
     public static string? SavePhoto(Db con, string photosDir, long photoId, byte[] data, string part = "")
     {
         con.Begin();
-        var row = con.Rows("SELECT photo_type FROM photos WHERE id = ?", photoId).FirstOrDefault();
+        var row = con.Rows("SELECT photo_type FROM photos WHERE account_id = $a AND id = ?", photoId).FirstOrDefault();
         if (row is null || row[0] is string)  // photo_type comes from the heartbeat: a string could carry a path
             return null;
         var name = $"{photoId}-{Py.Str(Py.FromSql(row[0]))}{(part != "" ? "-" + part : "")}.jpg";
         Directory.CreateDirectory(photosDir);
         File.WriteAllBytes(Path.Combine(photosDir, name), data);
         if (part == "")
-            con.Exec("UPDATE photos SET file = ? WHERE id = ?", name, photoId);
+            con.Exec("UPDATE photos SET file = ? WHERE account_id = $a AND id = ?", name, photoId);
         con.Commit();
         return name;
     }
@@ -448,11 +339,11 @@ public sealed class State
     {
         var @new = new List<(JsonNode? Key, long Guid)>();  // Python dict: keys compared with ==
         con.Begin();
-        var nextGuid = (con.Scalar("SELECT MAX(guid) FROM items") is long max ? max : 0) + 1;
+        var nextGuid = NextId(con, "items", "guid");
         foreach (var node in cloned)
         {
             var c = node!.AsObject();
-            con.Exec("INSERT INTO items VALUES (?, ?, 0, '{}', ?)",
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)",
                      nextGuid, c["item_id"], TryKey(c["item_id"], out var id) ? defaultUnits.GetValueOrDefault(id) : null);
             var i = @new.FindIndex(x => Py.Eq(x.Key, c["item_guid"]));
             if (i >= 0) @new[i] = (@new[i].Key, nextGuid);
@@ -465,7 +356,7 @@ public sealed class State
             var i = @new.FindIndex(x => Py.Eq(x.Key, m["item_guid"]));
             var guid = i >= 0 ? @new[i].Guid.ToString() : Py.Str(m["item_guid"]);
             if (Py.IsDigit(guid))
-                con.Exec("UPDATE items SET slot = ? WHERE guid = ?", m["slot_id"], long.Parse(guid));
+                con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", m["slot_id"], long.Parse(guid));
         }
         con.Commit();
         if (@new.Count == 0)
@@ -476,7 +367,14 @@ public sealed class State
         return reply;
     }
 
-    readonly string dbPath, photosDir, baseUrl, iconUrl, avatarBase;
+    readonly string photosDir, baseUrl, iconUrl, avatarBase;
+    readonly JsonNode? skillList;
+    readonly bool offline;
+    /// <summary>The server's database: accounts, tokens and every player's rows.</summary>
+    public readonly Store Store;
+    /// <summary>The account of the recorded connect: the one account of a local server, and the one a request that no
+    /// token resolves gets while offline.</summary>
+    public readonly long LocalAccount;
     readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new();
     readonly Dictionary<long, string?> reserves = new();
     readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
@@ -496,12 +394,14 @@ public sealed class State
     /// json_inventory.json sample (`infos`); reserveConnects: {reserve id: connect body recorded after a Launch/start of
     /// that reserve}, the source of that reserve's RESERVE_KEYS; skillList: the player's recorded Skill/list reply, seeds
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
-    /// that shares one weapon skill.</summary>
+    /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
+    /// false: it is refused (a community server).</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
-                 Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null)
+                 Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true)
     {
-        this.dbPath = dbPath;
+        this.skillList = skillList;
+        this.offline = offline;
         Spawns = new Spawner(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "spawn.json"));
         photosDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "photos");
         this.baseUrl = baseUrl;
@@ -533,7 +433,7 @@ public sealed class State
             defaultUnits[Py.L(i!["item_id"])] = i["units"];
         // permitted ammo per species id, all species (species_ammo is the reserve's subset)
         ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
-        var (scheme, netloc) = SchemeNetloc(Py.Str(G(Account(), "avatar_url", "")));
+        var (scheme, netloc) = SchemeNetloc(Py.Str(G(AccountTemplate(), "avatar_url", "")));
         avatarBase = $"{scheme}://{netloc}";  // the notice sender's icons live on the avatar host
         var byDefine = new Dictionary<string, JsonObject>();
         foreach (var d in Arr(itemDefs))
@@ -547,16 +447,41 @@ public sealed class State
         }
         foreach (var d in Arr(itemDefs))
             family[Py.L(d!["id"])] = Root(d.AsObject());
-        using var con = ConnectDb(dbPath, connect);
-        con.Begin();
-        if (con.Rows("SELECT 1 FROM skills LIMIT 1").Count == 0)
-            foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(connect["skills"]) ? connect["skills"]!.AsObject() : new JsonObject(),
-                                                       Py.Truthy(skillList) ? skillList!.AsObject() : new JsonObject()))
-                con.Exec("INSERT OR IGNORE INTO skills VALUES (?, ?, ?)", kind, key, xp);
-        con.Commit();
+        Store = new Store(dbPath);
+        var local = AccountTemplate();
+        LocalAccount = Py.L(G(local, "user_id", 1));
+        if (!Store.AccountExists(LocalAccount))
+            Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: SeedFromConnect);
     }
 
-    JsonObject Account() => G(connect, "account", null) as JsonObject ?? new JsonObject();
+    /// <summary>The recorded connect's `account`: the template of every new account, and the local account's.</summary>
+    JsonObject AccountTemplate() => G(connect, "account", null) as JsonObject ?? new JsonObject();
+
+    /// <summary>The connect reply's `account` object of this account.</summary>
+    JsonObject Account(long account) => Store.AccountJson(account);
+
+    /// <summary>A new account with the server's starting data (SeedFromConnect). Its connect `account` is the recorded
+    /// one with this user id and handle. id is the game's user id; throws when the id, the handle or the Steam id is taken.</summary>
+    public void CreateAccount(long id, string handle, string? steamId64 = null)
+    {
+        var account = (JsonObject)AccountTemplate().DeepClone();
+        account["user_id"] = id;
+        account["handle"] = handle;
+        Store.CreateAccount(id, handle, account, steamId64, SeedFromConnect);
+    }
+
+    /// <summary>The account of a request: the first of its tokens that resolves. None does: the local account on a local
+    /// server, null (refuse) on a community server.</summary>
+    public long? Authenticate(IEnumerable<string> tokens)
+    {
+        foreach (var token in tokens)
+            if (Store.ResolveToken(token) is { } account)
+                return account;
+        return offline ? LocalAccount : null;
+    }
+
+    /// <summary>The account a public page of a handle shows; the local account for any handle on a local server.</summary>
+    public long? AccountForHandle(string handle) => offline ? LocalAccount : Store.AccountByHandle(handle);
 
     string? SpeciesName(JsonNode? sp)
     {
@@ -604,8 +529,8 @@ public sealed class State
         else if (Is(e["event"], 12) && sp is not null)
         {
             // the n-th clue on this animal since the latest hunt's first event (this one is already stored)
-            var n = (long)con.Scalar("SELECT COUNT(*) FROM events WHERE event = 12 AND json_extract(body, '$.individual') = ?"
-                                     + " AND id > COALESCE((SELECT first_event FROM expeditions ORDER BY id DESC LIMIT 1), 0)",
+            var n = (long)con.Scalar("SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ?"
+                                     + " AND id > COALESCE((SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)",
                                      e["individual"])!;
             (kind, keys, gain, name) = ("tracking", [sp], Skills.TrackXp(n), SpeciesName(sp));
         }
@@ -618,15 +543,15 @@ public sealed class State
             name = Lookup(items, weapon)?["name"] is { } n ? Py.Str(n) : null;
             keys = [weapon, .. family.Where(kv => Py.Eq(JsonValue.Create(kv.Value), fam) && !Py.Eq(JsonValue.Create(kv.Key), weapon))
                                      .Select(kv => (object?)kv.Key)];
-            con.Exec("INSERT OR IGNORE INTO skills VALUES ('weapon', ?, ?)", weapon, Skills.FRESH_XP);
+            con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, 'weapon', ?, ?)", weapon, Skills.FRESH_XP);
         }
         else
             return [];
-        var row = con.Rows("SELECT xp FROM skills WHERE kind = ? AND key = ?", kind, keys[0]).FirstOrDefault();
+        var row = con.Rows("SELECT xp FROM skills WHERE account_id = $a AND kind = ? AND key = ?", kind, keys[0]).FirstOrDefault();
         if (row is null)  // a species outside the 59 skill slots
             return [];
         foreach (var k in keys)
-            con.Exec("UPDATE skills SET xp = ROUND(xp + ?, 1) WHERE kind = ? AND key = ?", gain, kind, k);
+            con.Exec("UPDATE skills SET xp = ROUND(xp + ?, 1) WHERE account_id = $a AND kind = ? AND key = ?", gain, kind, k);
         var xp = Convert.ToDouble(row[0]);
         var level = Py.L(Skills.Value(xp + gain));
         if (level <= Py.L(Skills.Value(xp)))
@@ -640,11 +565,11 @@ public sealed class State
 
     /// <summary>{weapon: {id: n}, tracking: [n], spotting: [n]} with n = number(xp): the shape of Skill/list
     /// (Skills.Value) and of the connect's `skills` (levels).</summary>
-    JsonObject SkillNumbers(Func<double, JsonNode> number)
+    JsonObject SkillNumbers(long account, Func<double, JsonNode> number)
     {
         List<object[]> rows;
-        using (var con = Con())
-            rows = con.Rows("SELECT kind, key, xp FROM skills ORDER BY kind, key");
+        using (var con = Con(account))
+            rows = con.Rows("SELECT kind, key, xp FROM skills WHERE account_id = $a ORDER BY kind, key");
         var weapon = new JsonObject();
         foreach (var r in rows.Where(r => (string)r[0] == "weapon"))
             weapon[Py.Str(Py.FromSql(r[1]))] = number(Convert.ToDouble(r[2]));
@@ -653,31 +578,31 @@ public sealed class State
     }
 
     /// <summary>Skill/list for the player's user_id; null for anyone else (their recorded reply is replayed).</summary>
-    public byte[]? SkillListReply(byte[] formBody)
+    public byte[]? SkillListReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
-        if (userId != Py.Str(Account()["user_id"]))
+        if (userId != Py.Str(Account(account)["user_id"]))
             return null;
-        return Py.DumpBytes(SkillNumbers(Skills.Value));
+        return Py.DumpBytes(SkillNumbers(account, Skills.Value));
     }
 
     JsonObject Sender() => new() { ["handle"] = "Server", ["user_id"] = SYSTEM_SENDER, ["avatar"] = $"{avatarBase}/256/10000000.png" };
 
-    public long Unread()
+    public long Unread(long account)
     {
-        using var con = Con();
-        return (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE read = 0")!;
+        using var con = Con(account);
+        return (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE account_id = $a AND read = 0")!;
     }
 
     /// <summary>Chat/conversations: the notice sender's thread (the only sender this server has), newest message as preview.</summary>
-    public byte[] ConversationsReply()
+    public byte[] ConversationsReply(long account)
     {
         object[]? newest;
         long unread;
-        using (var con = Con())
+        using (var con = Con(account))
         {
-            newest = con.Rows("SELECT content, ts FROM messages ORDER BY id DESC LIMIT 1").FirstOrDefault();
-            unread = (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE read = 0")!;
+            newest = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+            unread = (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE account_id = $a AND read = 0")!;
         }
         // ponytail: empty inbox reply assumed to be []
         if (newest is null)
@@ -690,16 +615,16 @@ public sealed class State
     }
 
     /// <summary>Chat/conversation user_id=&lt;id&gt;: the thread, newest first; reading it marks it read.</summary>
-    public byte[] ConversationReply(byte[] formBody)
+    public byte[] ConversationReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         var sender = Py.IsDigit(userId) ? long.Parse(userId) : -1;
         List<object[]> rows;
-        using (var con = Con())
+        using (var con = Con(account))
         {
             con.Begin();
-            rows = con.Rows("SELECT content, ts FROM messages WHERE sender = ? ORDER BY id DESC", sender);
-            con.Exec("UPDATE messages SET read = 1 WHERE sender = ?", sender);
+            rows = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a AND sender = ? ORDER BY id DESC", sender);
+            con.Exec("UPDATE messages SET read = 1 WHERE account_id = $a AND sender = ?", sender);
             con.Commit();
         }
         return Py.DumpBytes(new JsonObject
@@ -715,7 +640,7 @@ public sealed class State
         });
     }
 
-    Db Con() => ConnectDb(dbPath, connect);
+    Db Con(long account) => Store.Open(account);
 
     /// <summary>(x, y, z) of a start location: its Application/application `pos`, else the recorded connect's.</summary>
     (JsonNode? X, JsonNode? Y, JsonNode? Z) StartPosition(JsonNode? locationId)
@@ -729,13 +654,13 @@ public sealed class State
 
     /// <summary>Connect: the recorded reply with the current inventory and the open expedition (opened here if no
     /// Launch/start came first, e.g. a direct launch), starting at its location.</summary>
-    public byte[] ConnectReply()
+    public byte[] ConnectReply(long account)
     {
         var inventory = connect["inventory"]!.AsObject();
         var connectInfos = inventory["infos"]!.AsArray();
         JsonArray rows;
         JsonNode? expeditionId, locationId, reserve;
-        using (var con = Con())
+        using (var con = Con(account))
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
             rows = Items(con);
@@ -756,20 +681,20 @@ public sealed class State
                 ["text"] = TOAST_TEXT, ["colour"] = COLOUR, ["destination"] = iconUrl, ["update"] = 3, ["timer"] = -1, ["type"] = 100,
             });
             // delete first: a login that connects twice still shows one toast
-            con.Exec("DELETE FROM pending WHERE body = ?", toast);
-            con.Exec("INSERT INTO pending (body) VALUES (?)", toast);
+            con.Exec("DELETE FROM pending WHERE account_id = $a AND body = ?", toast);
+            con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", toast);
             CloseStale(con);
             // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
             // with the first heartbeat
-            con.Exec("DELETE FROM pending WHERE json_extract(body, '$.update') = 10");
-            var row = con.Rows("SELECT id, location_id, reserve FROM expeditions WHERE end_ts IS NULL"
+            con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
+            var row = con.Rows("SELECT id, location_id, reserve FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
                                + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (row is not null)
                 (expeditionId, locationId, reserve) = (Py.FromSql(row[0]), Py.FromSql(row[1]), Py.FromSql(row[2]));
             else
             {
                 var lodge = connect["expedition"]!["lodge"];
-                expeditionId = con.Insert("INSERT INTO expeditions (location_id, start_ts, first_event) VALUES (?, ?, ?)",
+                expeditionId = con.Insert("INSERT INTO expeditions (account_id, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?)",
                                           lodge, Py.Now(), LastEvent(con));
                 (locationId, reserve) = (C(lodge), null);
             }
@@ -792,8 +717,9 @@ public sealed class State
                 reply[k] = C(v);
         reply["inventory"] = inventory;
         reply["expedition"] = expedition;
-        reply["wallet"] = Wallet();
-        reply["skills"] = SkillNumbers(xp => Py.L(Skills.Value(xp)));
+        reply["account"] = Store.AccountJson(account);
+        reply["wallet"] = Wallet(account);
+        reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
@@ -839,7 +765,7 @@ public sealed class State
 
     /// <summary>Inventory/buy item_id, amount, wallet: charge now; the items (update 10) and the new balance (update 15)
     /// come with the next heartbeat, also mid-hunt.</summary>
-    public byte[] BuyReply(byte[] formBody)
+    public byte[] BuyReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (itemId, amount, wallet) = (Form1(form, "item_id"), Form1(form, "amount"), Form1(form, "wallet"));
@@ -850,24 +776,24 @@ public sealed class State
               && !Is(item["type"], SERVICE) && Py.IsDigit(amount) && long.Parse(amount) > 0))
             return BUY_FAILED;
         var price = Price(item, key) * long.Parse(amount);  // ponytail: amount > 1 untested
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
         var balance = AddCurrency(con, currency, -price);
         if (balance is null)
             return BUY_FAILED;
         Deliver(con, Enumerable.Repeat(Py.L(item["id"]), (int)long.Parse(amount)), ItemInfo);
-        con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject { ["amount"] = balance, ["type"] = currency, ["update"] = 15 }));
+        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = balance, ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return Py.DumpBytes(new JsonObject { ["price"] = (double)price, ["success"] = true });
     }
 
     /// <summary>Admin: add count items; a running hunt gets them with its next heartbeat (update 10), else the next
     /// connect carries them. False for an item without a definition.</summary>
-    public bool GrantItems(long itemId, long count = 1)
+    public bool GrantItems(long account, long itemId, long count = 1)
     {
         if (!Py.Truthy(ItemInfo(itemId)))
             return false;
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
         Deliver(con, Enumerable.Repeat(itemId, (int)count), ItemInfo);
         con.Commit();
@@ -876,40 +802,40 @@ public sealed class State
 
     /// <summary>Admin: add amount (negative: take) to a wallet currency, sent as update 15; the new balance, or null
     /// (unchanged) when the currency is missing or would drop below 0.</summary>
-    public JsonNode? Give(string currency, double amount)
+    public JsonNode? Give(long account, string currency, double amount)
     {
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
         var balance = AddCurrency(con, currency, amount);
         if (balance is not null)
-            con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
+            con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return balance;
     }
 
     /// <summary>Heartbeat update 5: the running client activates a dormant population group (`group` = its 1-based
     /// record index).</summary>
-    public void WakeGroup(long populationId, int group)
+    public void WakeGroup(long account, long populationId, int group)
     {
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
-        con.Exec("INSERT INTO pending (body) VALUES (?)",
+        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)",
                  Py.Dumps(new JsonObject { ["update"] = 5, ["population_id"] = populationId, ["group"] = group }));
         con.Commit();
     }
 
     /// <summary>Inventory rows in the connect reply's `inventory.items` shape.</summary>
-    public JsonArray Inventory()
+    public JsonArray Inventory(long account)
     {
-        using var con = Con();
+        using var con = Con(account);
         return Items(con);
     }
 
-    public JsonObject Wallet()
+    public JsonObject Wallet(long account)
     {
-        using var con = Con();
+        using var con = Con(account);
         var wallet = new JsonObject();
-        foreach (var r in con.Rows("SELECT currency, amount FROM wallet"))
+        foreach (var r in con.Rows("SELECT currency, amount FROM wallet WHERE account_id = $a"))
             wallet[(string)r[0]] = Py.FromSql(r[1]);
         return wallet;
     }
@@ -937,7 +863,7 @@ public sealed class State
     }
 
     /// <summary>The client's disconnect call: close the open expedition; its body carries distance_travelled.</summary>
-    public void Disconnect(byte[] body)
+    public void Disconnect(long account, byte[] body)
     {
         JsonNode? distance;
         try
@@ -948,22 +874,22 @@ public sealed class State
         {
             distance = null;
         }
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
-        con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE end_ts IS NULL", Py.Now(), distance);
+        con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now(), distance);
         con.Commit();
     }
 
-    public byte[] MoveMultiple2Reply(byte[] formBody)
+    public byte[] MoveMultiple2Reply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
         var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
-        using var con = Con();
+        using var con = Con(account);
         return Py.DumpBytes(MoveMultiple2(con, mapping, cloned, defaultUnits));
     }
 
-    public byte[] HeartbeatReply(byte[] body)
+    public byte[] HeartbeatReply(long account, byte[] body)
     {
         JsonArray events;
         try
@@ -975,7 +901,7 @@ public sealed class State
         {
             events = new JsonArray();
         }
-        using var con = Con();
+        using var con = Con(account);
         return Py.DumpBytes(new JsonObject
         {
             ["updates"] = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates), ["err"] = 0,
@@ -983,15 +909,15 @@ public sealed class State
     }
 
     /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`.</summary>
-    public void NoteLaunch(byte[] formBody)
+    public void NoteLaunch(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start"));
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
         var now = Py.Now();
-        con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE end_ts IS NULL", now);
-        con.Exec("INSERT INTO expeditions (reserve, location_id, start_ts, first_event) VALUES (?, ?, ?, ?)",
+        con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now);
+        con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?, ?)",
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
         con.Commit();
     }
@@ -1012,37 +938,38 @@ public sealed class State
     };
 
     /// <summary>GET /game/user/harvest/&lt;kill_id&gt; body, or null for an unknown kill.</summary>
-    public byte[]? HarvestReply(long killId)
+    public byte[]? HarvestReply(long account, long killId)
     {
-        using var con = Con();
-        var row = con.Rows("SELECT body FROM harvests WHERE kill_id = ?", killId).FirstOrDefault();
+        using var con = Con(account);
+        var row = con.Rows("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", killId).FirstOrDefault();
         return row is null ? null : Encoding.UTF8.GetBytes((string)row[0]);
     }
 
     /// <summary>Public_user/expedition: the latest server expedition and its kills; the recorded reply if none yet.</summary>
-    public byte[] ExpeditionReply(byte[] recorded)
+    public byte[] ExpeditionReply(long account, byte[] recorded)
     {
         object[] row;
         JsonArray kills;
         JsonNode? stats = null;
-        using (var con = Con())
+        using (var con = Con(account))
         {
             con.Begin();
             CloseStale(con);
             con.Commit();
             var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance FROM expeditions"
-                                 + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                                 + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (found is null)
                 return recorded;
             row = found;
             var expeditionId = Py.FromSql(row[0]);
             var rows = con.Rows(
-                "SELECT k.kill_id, k.individual, k.harvest, h.body FROM kills k JOIN harvests h USING (kill_id)"
-                + " WHERE json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", expeditionId);
+                "SELECT k.kill_id, k.individual, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
+                + " WHERE k.account_id = $a AND json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", expeditionId);
             var hits = new Dictionary<long, List<JsonObject>>();
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry((long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
+            var userId = Account(account)["user_id"];
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
             // stats are null mid-hunt; expeditions from before first_event have no scope
             if (row[4] is not DBNull && row[5] is not DBNull)
             {
@@ -1072,16 +999,16 @@ public sealed class State
     }
 
     /// <summary>GET &lt;web-host&gt;/user/&lt;handle&gt;/score/?id=&lt;kill_id&gt;: kill details HTML, or null for an unknown kill.</summary>
-    public byte[]? ScorePageReply(long killId)
+    public byte[]? ScorePageReply(long account, long killId)
     {
         object[] row;
         List<JsonObject> hits;
         JsonObject page, e7, e22;
         object[]? expedition;
-        using (var con = Con())
+        using (var con = Con(account))
         {
-            var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h USING (kill_id)"
-                                 + " WHERE k.kill_id = ?", killId).FirstOrDefault();
+            var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
+                                 + " WHERE k.account_id = $a AND k.kill_id = ?", killId).FirstOrDefault();
             if (found is null)
                 return null;
             row = found;
@@ -1089,14 +1016,15 @@ public sealed class State
             var harvest = (string)row[1];
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
             (e7, e22) = KillEvents(con, individual, harvest);
-            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE id = ?",
+            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
                                   page["expedition_id"]).FirstOrDefault();
         }
         var e3 = Parse(row[1]);
         var sp = G(e3, "extended_species", -1);
         var f = Features(e3, e7, e22);
-        var entry = KillEntry(killId, e3, page, hits, page["expedition_id"]);
-        var handle = Py.Str(G(Account(), "handle", ""));
+        var owner = Account(account);
+        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"]);
+        var handle = Py.Str(G(owner, "handle", ""));
         var last = hits.Count > 0 ? hits[^1] : e3;
         var (x, y, z) = StartPosition(expedition is null ? null : Py.FromSql(expedition[2]));
         var killInfo = (JsonObject)entry["kill"]!.DeepClone();
@@ -1146,21 +1074,22 @@ public sealed class State
     /// <summary>Expedition/list: server expeditions (newest first) ahead of the recorded ones.
     ///
     /// Only the first page is merged; later pages replay the recording.</summary>
-    public byte[] ExpeditionListReply(byte[] recorded, byte[] formBody)
+    public byte[] ExpeditionListReply(long account, byte[] recorded, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
         if (offset is not ("" or "0"))
             return recorded;
         List<object[]> rows;
-        using (var con = Con())
+        using (var con = Con(account))
         {
             con.Begin();
             CloseStale(con);
             con.Commit();
             rows = con.Rows(
                 "SELECT e.id, e.reserve, e.location_id, e.start_ts, e.end_ts, (SELECT COUNT(*) FROM harvests"
-                + " WHERE json_extract(body, '$.expedition_id') = e.id) FROM expeditions e ORDER BY e.id DESC");
+                + " WHERE account_id = $a AND json_extract(body, '$.expedition_id') = e.id)"
+                + " FROM expeditions e WHERE e.account_id = $a ORDER BY e.id DESC");
         }
         var reply = JsonNode.Parse(recorded)!.AsObject();
         var ours = rows.Select(r => (JsonNode?)new JsonObject
@@ -1180,7 +1109,7 @@ public sealed class State
     }
 
     /// <summary>One Public_user/expedition kill.</summary>
-    JsonObject KillEntry(long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId)
+    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId)
     {
         var confirm = DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
                                           DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
@@ -1204,17 +1133,17 @@ public sealed class State
                 ["photo"] = null, ["harvest_value"] = Py.D(G(e3, "harvest_value", 0)) / 1000,
                 ["scoreType"] = Py.Truthy(page["score_type"]) ? C(page["score_type"]) : null,
             },
-            ["userId"] = C(Account()["user_id"]), ["species"] = C(page["species"]),
+            ["userId"] = C(userId), ["species"] = C(page["species"]),
             ["texture"] = C(page["texture_id"]), ["id"] = killId,
         };
     }
 
     /// <summary>Mark a stored harvest taxidermized; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
-    public bool Taxidermize(long killId)
+    public bool Taxidermize(long account, long killId)
     {
-        using var con = Con();
+        using var con = Con(account);
         con.Begin();
-        var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE kill_id = ?", killId);
+        var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE account_id = $a AND kill_id = ?", killId);
         con.Commit();
         return n == 1;
     }
@@ -1223,32 +1152,40 @@ public sealed class State
         $"{baseUrl}{UPLOAD_PATH}?uploadType=resumable&upload_id={photoId}" + (part != "" ? $"&part={part}" : "");
 
     /// <summary>POST of a photo to UploadUrl(): store it, reply like GCS (storage#object), 404 if the id is unknown.</summary>
-    public (int Status, byte[] Body) UploadReply(string query, byte[] data)
+    public (int Status, byte[] Body) UploadReply(long account, string query, byte[] data)
     {
         var q = Py.ParseQs(query);
         var photoId = Form1(q, "upload_id");
         var part = q.TryGetValue("part", out var p) && p is ["thumb"] ? "thumb" : "";
         string? name;
-        using (var con = Con())
-            name = Py.IsDigit(photoId) ? SavePhoto(con, photosDir, long.Parse(photoId), data, part) : null;
+        using (var con = Con(account))
+            name = Py.IsDigit(photoId) ? SavePhoto(con, AccountPhotos(account), long.Parse(photoId), data, part) : null;
         if (string.IsNullOrEmpty(name))
             return (404, "{\"error\": {\"code\": 404, \"message\": \"No such upload\"}}"u8.ToArray());
         var md5 = Convert.ToBase64String(MD5.HashData(data));
         var now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+        var path = $"{PHOTO_PREFIX}{account.ToString(CultureInfo.InvariantCulture)}/{name}";
         return (200, Py.DumpBytes(new JsonObject
         {
-            ["kind"] = "storage#object", ["id"] = $"{PHOTO_PREFIX}{name}", ["name"] = name, ["bucket"] = "photos",
-            ["selfLink"] = $"{baseUrl}{PHOTO_PREFIX}{name}", ["mediaLink"] = $"{baseUrl}{PHOTO_PREFIX}{name}",
+            ["kind"] = "storage#object", ["id"] = path, ["name"] = name, ["bucket"] = "photos",
+            ["selfLink"] = $"{baseUrl}{path}", ["mediaLink"] = $"{baseUrl}{path}",
             ["generation"] = "1", ["metageneration"] = "1", ["contentType"] = "image/jpeg", ["storageClass"] = "STANDARD",
             ["size"] = data.Length.ToString(), ["md5Hash"] = md5, ["timeCreated"] = now, ["updated"] = now,
         }));
     }
 
-    /// <summary>GET &lt;PHOTO_PREFIX&gt;&lt;name&gt; → stored file path or null.</summary>
+    string AccountPhotos(long account) => Path.Combine(photosDir, account.ToString(CultureInfo.InvariantCulture));
+
+    /// <summary>GET &lt;PHOTO_PREFIX&gt;&lt;account id&gt;/&lt;name&gt; → stored file path or null. The URL names the account: a photo
+    /// is a public picture, shown by its link without a token.</summary>
     public string? PhotoFile(string path)
     {
-        var name = path.StartsWith(PHOTO_PREFIX, StringComparison.Ordinal) ? path[PHOTO_PREFIX.Length..] : path;
-        var f = Path.Combine(photosDir, name);
+        var rest = path.StartsWith(PHOTO_PREFIX, StringComparison.Ordinal) ? path[PHOTO_PREFIX.Length..] : path;
+        var slash = rest.IndexOf('/');
+        if (slash < 0 || !long.TryParse(rest[..slash], NumberStyles.None, CultureInfo.InvariantCulture, out var account))
+            return null;
+        var name = rest[(slash + 1)..];
+        var f = Path.Combine(AccountPhotos(account), name);
         return name.IndexOfAny(['/', '\\', ':']) < 0 && File.Exists(f) ? f : null;  // ':' would make it drive-relative
     }
 

@@ -24,7 +24,7 @@ public class AdminApiTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await server.DisposeAsync();
-        Directory.Delete(tmp, true);
+        DeleteDir(tmp);
     }
 
     Task<HttpResponseMessage> Post(string path, object body) => server.Http.PostAsJsonAsync($"http://localhost{path}", body);
@@ -40,7 +40,7 @@ public class AdminApiTests : IAsyncLifetime
         Assert.Equal((HttpStatusCode.Conflict, "application/problem+json"), (refused.StatusCode, refused.Content.Headers.ContentType?.MediaType));
         Assert.Equal(HttpStatusCode.BadRequest, (await Post("/admin/grants/currency", new { currency = "silver", amount = 1 })).StatusCode);
         Assert.Equal("""{"currency":"gm","amount":100}""", await (await Post("/admin/grants/currency", new { currency = "gm", amount = 67 })).Content.ReadAsStringAsync());
-        var updates = JsonNode.Parse(state.HeartbeatReply("{\"events\": []}"u8.ToArray()))!["updates"]!.AsArray();
+        var updates = JsonNode.Parse(state.HeartbeatReply(ME, "{\"events\": []}"u8.ToArray()))!["updates"]!.AsArray();
         Eq("[10, 15]", new JsonArray(updates.Select(u => u!["update"]!.DeepClone()).ToArray()));
         var leak = await server.Http.GetAsync("http://api.test/admin/wallet");  // game hosts never reach the admin API
         Assert.Equal((HttpStatusCode.NotFound, 0L), (leak.StatusCode, leak.Content.Headers.ContentLength ?? 0));
@@ -74,7 +74,7 @@ public class AdminApiTests : IAsyncLifetime
         Assert.Equal((HttpStatusCode.BadRequest, "application/problem+json"), (status, type));
         (status, type, _) = await Problem(await server.Http.GetAsync("http://localhost/admin/items/abc"));
         Assert.Equal((HttpStatusCode.NotFound, "application/problem+json"), (status, type));
-        Assert.Equal(33.0, Py.D(state.Wallet()["gm"]));  // nothing granted
+        Assert.Equal(33.0, Py.D(state.Wallet(ME)["gm"]));  // nothing granted
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class AdminApiTests : IAsyncLifetime
                 new StringContent($$"""{"currency": "gm", "amount": {{amount}}}""", System.Text.Encoding.UTF8, "application/json"));
             Assert.Equal((HttpStatusCode.BadRequest, "application/problem+json"), (r.StatusCode, r.Content.Headers.ContentType?.MediaType));
         }
-        Assert.Equal(33.0, Py.D(state.Wallet()["gm"]));
+        Assert.Equal(33.0, Py.D(state.Wallet(ME)["gm"]));
     }
 
     [Fact]

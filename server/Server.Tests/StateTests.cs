@@ -12,7 +12,7 @@ public abstract class StateTestBase : IDisposable
     protected string Db => Path.Combine(tmp, "state.db");
     protected State state = null!;
 
-    public void Dispose() => Directory.Delete(tmp, true);
+    public void Dispose() => DeleteDir(tmp);
 
     protected static JsonNode Reply(byte[] body) => JsonNode.Parse(body)!;
 
@@ -20,15 +20,15 @@ public abstract class StateTestBase : IDisposable
         Encoding.ASCII.GetBytes("{\"events\": [" + string.Join(", ", events.Select(e => Py.Dumps(e))) + "]}");
 
     /// <summary>A heartbeat with these events; its updates.</summary>
-    protected JsonArray Hb(params JsonNode[] events) => Reply(state.HeartbeatReply(Events(events)))["updates"]!.AsArray();
+    protected JsonArray Hb(params JsonNode[] events) => Reply(state.HeartbeatReply(ME, Events(events)))["updates"]!.AsArray();
 
-    protected JsonArray HbOf(State s) => Reply(s.HeartbeatReply("{\"events\": []}"u8.ToArray()))["updates"]!.AsArray();
+    protected JsonArray HbOf(State s) => Reply(s.HeartbeatReply(ME, "{\"events\": []}"u8.ToArray()))["updates"]!.AsArray();
 
     /// <summary>{guid: item} of the connect reply's inventory.</summary>
     protected JsonObject Items(State? s = null)
     {
         var items = new JsonObject();
-        foreach (var i in Reply((s ?? state).ConnectReply())["inventory"]!["items"]!.AsArray())
+        foreach (var i in Reply((s ?? state).ConnectReply(ME))["inventory"]!["items"]!.AsArray())
             items[(string)i!["guid"]!] = i.DeepClone();
         return items;
     }
@@ -59,7 +59,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestMovePersistsAcrossRestart()
     {
-        Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!)));
+        Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!)));
         var reopened = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);  // same db: no reseed
         Eq("12", Items(reopened)["100"]!["slot"]);
     }
@@ -67,8 +67,8 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestConnectQueuesOneToast()
     {
-        state.ConnectReply();
-        state.ConnectReply();
+        state.ConnectReply(ME);
+        state.ConnectReply(ME);
         var updates = Hb();
         Assert.Single(updates);
         Eq("3", updates[0]!["update"]);
@@ -79,7 +79,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestCloneGetsNewGuidAndSlot()
     {
-        var reply = Reply(state.MoveMultiple2Reply(Form(
+        var reply = Reply(state.MoveMultiple2Reply(ME, Form(
             JsonNode.Parse("""[{"item_guid": "new_item_1", "slot_id": 13}, {"item_guid": 200, "slot_id": 0}]""")!,
             JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 10}]"""))));
         var guid = Py.Str(reply["new_item_1"]);
@@ -92,19 +92,19 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestUnknownGuidsIgnored()
     {
-        state.MoveMultiple2Reply(Form(JsonNode.Parse("""[{"item_guid": 999, "slot_id": 5}, {"item_guid": "new_item_x", "slot_id": 5}]""")!));
+        state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": 999, "slot_id": 5}, {"item_guid": "new_item_x", "slot_id": 5}]""")!));
         Assert.Equal(["100", "200"], Items().Select(kv => kv.Key).Order(StringComparer.Ordinal));
     }
 
     [Fact]
     public void TestHarvestScoreArrivesNextHeartbeatOnce()
     {
-        JsonNode HbReply(params JsonNode[] events) => Reply(state.HeartbeatReply(Events(events)));
+        JsonNode HbReply(params JsonNode[] events) => Reply(state.HeartbeatReply(ME, Events(events)));
         Eq("""{"updates": [], "err": 0}""", HbReply(O("""{"event": 3, "individual": 71, "extended_species": 1}""")));
         var score = Assert.Single(HbReply()["updates"]!.AsArray())!;
         Eq("""[6, 71, 1, "No score"]""", T(score["update"], score["individual"], score["kill_id"], score["score_text"]));
         Assert.Empty(HbReply()["updates"]!.AsArray());
-        Assert.Equal("{\"updates\": [], \"err\": 0}"u8.ToArray(), state.HeartbeatReply("not json"u8.ToArray()));
+        Assert.Equal("{\"updates\": [], \"err\": 0}"u8.ToArray(), state.HeartbeatReply(ME, "not json"u8.ToArray()));
     }
 
     [Fact]
@@ -114,15 +114,15 @@ public class InventoryTests : StateTestBase
         Eq("[11, 77, 2]", T(u11["update"], u11["hash"], u11["photo_type"]));
         var url = new Uri((string)u11["url"]!);
         Assert.Equal(BASE, url.GetLeftPart(UriPartial.Authority));
-        var (status, receiptBody) = state.UploadReply(url.Query.TrimStart('?'), [0xff, 0xd8, .. "jpeg"u8]);
+        var (status, receiptBody) = state.UploadReply(ME, url.Query.TrimStart('?'), [0xff, 0xd8, .. "jpeg"u8]);
         var receipt = Reply(receiptBody);
         Eq("""[200, "storage#object", "6"]""", T(status, receipt["kind"], receipt["size"]));
         var media = new Uri((string)receipt["mediaLink"]!).AbsolutePath;
         Assert.Equal([0xff, 0xd8, .. "jpeg"u8], File.ReadAllBytes(state.PhotoFile(media)!));
-        Assert.Equal(404, state.UploadReply("upload_id=999", "x"u8.ToArray()).Status);
+        Assert.Equal(404, state.UploadReply(ME, "upload_id=999", "x"u8.ToArray()).Status);
         Assert.Null(state.PhotoFile("/photos/../state.db"));
-        state.UploadReply(new Uri((string)u11["thumb_url"]!).Query.TrimStart('?'), "thumb"u8.ToArray());
-        Assert.Equal("thumb"u8.ToArray(), File.ReadAllBytes(state.PhotoFile("/photos/1-2-thumb.jpg")!));
+        state.UploadReply(ME, new Uri((string)u11["thumb_url"]!).Query.TrimStart('?'), "thumb"u8.ToArray());
+        Assert.Equal("thumb"u8.ToArray(), File.ReadAllBytes(state.PhotoFile("/photos/7/1-2-thumb.jpg")!));
         Assert.Equal([0xff, 0xd8, .. "jpeg"u8], File.ReadAllBytes(state.PhotoFile(media)!));
     }
 
@@ -145,7 +145,7 @@ public class InventoryTests : StateTestBase
         }
         // photo_type comes from the heartbeat: a string is never used as part of the file name
         var u11 = Assert.Single(Hb(O("""{"event": 4, "hash": 5, "photo_type": "..\\..\\escaped"}""")))!;
-        Assert.Equal(404, state.UploadReply(new Uri((string)u11["url"]!).Query.TrimStart('?'), "x"u8.ToArray()).Status);
+        Assert.Equal(404, state.UploadReply(ME, new Uri((string)u11["url"]!).Query.TrimStart('?'), "x"u8.ToArray()).Status);
         Assert.Empty(Directory.GetFiles(tmp, "*escaped*", SearchOption.AllDirectories));
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(tmp)!, "*escaped*"));
     }
@@ -160,7 +160,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestHarvestPageFromSpawnAndKill()
     {
-        state.NoteLaunch("start=101&reserve=2&oauth_access_token=x"u8.ToArray());
+        state.NoteLaunch(ME, "start=101&reserve=2&oauth_access_token=x"u8.ToArray());
         Hb(O("""{"event": 7, "individual": 81, "species": 1, "gender": 1, "weight_grams": 1, "texture": 5}"""),
            O("""{"event": 1, "individual": 81, "distance_cms": 1, "organ2": 1}"""));  // an earlier spawn of the same individual id does not leak into the later kill
         Hb(O("""{"event": 7, "individual": 81, "species": 1, "gender": 0, "weight_grams": 64350, "texture": 0}"""),
@@ -173,16 +173,16 @@ public class InventoryTests : StateTestBase
               "fur_texture": "", "scale": 0.9, "antlers_score_percentage": 0.25, "trophy_integrity": 91250,
               "harvest_value": 70250, "wound_time": 4500}
              """));
-        var page = Reply(state.HarvestReply(1)!);
+        var page = Reply(state.HarvestReply(ME, 1)!);
         Eq("""["MULE_DEER", 0, 64350, 0, 2, 20817, false]""", T(page["species_define"], page["gender"], page["weight"],
                                                                 page["texture_id"], page["reserve_id"], page["antlers_seed"], page["taxidermized"]));
-        Assert.True(state.Taxidermize(1));
-        var taxidermized = Reply(state.HarvestReply(1)!)["taxidermized"];
+        Assert.True(state.Taxidermize(ME, 1));
+        var taxidermized = Reply(state.HarvestReply(ME, 1)!)["taxidermized"];
         Assert.True(Py.IsBool(taxidermized) && (bool)taxidermized!);
-        Assert.Null(state.HarvestReply(2));
-        Assert.False(state.Taxidermize(2));
+        Assert.Null(state.HarvestReply(ME, 2));
+        Assert.False(state.Taxidermize(ME, 2));
 
-        var reply = Reply(state.ExpeditionReply("{\"replayed\": 1}"u8.ToArray()));
+        var reply = Reply(state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray()));
         var expedition = reply["expedition"]!;
         Eq("""{"id": 1, "reserve": 2, "location_id": 101, "end_ts": null}""", new JsonObject
         {
@@ -195,7 +195,7 @@ public class InventoryTests : StateTestBase
         Eq("""[{"distance": 82500, "weapon_id": 5, "organ": 8388610, "ammo_id": 10}]""", kill["hits"]);
         Eq("[91.25, 70.25, 4.5]", T(kill["kill"]!["trophy_integrity"], kill["kill"]!["harvest_value"], kill["kill"]!["wound_time"]));
 
-        var score = Encoding.UTF8.GetString(state.ScorePageReply(1)!);
+        var score = Encoding.UTF8.GetString(state.ScorePageReply(ME, 1)!);
         foreach (var cell in new[]
                  {
                      "<a href=\"/#store/item/5\">Test Rifle</a>", "<span title=\"Test Scope\">",
@@ -204,7 +204,7 @@ public class InventoryTests : StateTestBase
                      "class=\"sponsor-image sponsor-testbrand_logo\"",
                  })
             Assert.Contains(cell, score);
-        Assert.Null(state.ScorePageReply(2));
+        Assert.Null(state.ScorePageReply(ME, 2));
     }
 
     static JsonObject MuleAntler(int beam, int[] h, int[] g)  // event 22 antler: main beam (type 0) and points G-1..G-4, mm
@@ -230,9 +230,9 @@ public class InventoryTests : StateTestBase
         Assert.Contains(updates, u => Py.Eq(u, O("""{"amount": 99.0, "type": "gm", "update": 15}""")));  // 33 + round(66.4)
         var score = Assert.Single(Hb(), u => Py.Eq(u!["update"], 6))!;
         Eq("""[168.8186, "Score: 168.8186", 66.4]""", T(score["score"], score["score_text"], score["css"]));
-        Eq("168.8186", Reply(state.HarvestReply(1)!)["score"]);
-        Eq("99.0", Reply(state.ConnectReply())["wallet"]!["gm"]);
-        var page = Encoding.UTF8.GetString(state.ScorePageReply(1)!);
+        Eq("168.8186", Reply(state.HarvestReply(ME, 1)!)["score"]);
+        Eq("99.0", Reply(state.ConnectReply(ME))["wallet"]!["gm"]);
+        var page = Encoding.UTF8.GetString(state.ScorePageReply(ME, 1)!);
         Assert.Contains("Trophy score: 168.8186", page);
         Assert.Contains("scoring/antlers_mule.png", page);  // the worked B&C sheet, not the "no data" block
     }
@@ -266,12 +266,12 @@ public class InventoryTests : StateTestBase
         // tines: 10 in inside span + 50 per side (20 beam + 15 tines + 10 burr + 5 beam circumference) + 50 = 110, css 1.1 x 100 x 85 / 155;
         // horn: (60000 + 58000) / 2000 + (90 + 88 + 300) / 10 = 106.8, css 1.3 x 100 x 91.8 / 435
         Eq("[[110.0, 60.3], [106.8, 27.4]]", scores);
-        Eq("120.0", Reply(state.ConnectReply())["wallet"]!["gm"]);  // 33 + 60 + 27
+        Eq("120.0", Reply(state.ConnectReply(ME))["wallet"]!["gm"]);  // 33 + 60 + 27
         // worked sheets, not the "no data" block: the axis deer (kill 1) gets a tines sheet, the feral goat (kill 2) a CIC horn sheet
-        var axisPage = Encoding.UTF8.GetString(state.ScorePageReply(1)!);
+        var axisPage = Encoding.UTF8.GetString(state.ScorePageReply(ME, 1)!);
         Assert.Contains("Length of Typical Tines T-3", axisPage);
         Assert.Contains("Common (M)", axisPage);  // these spawns carry no texture
-        Assert.Contains("Length of horn, left", Encoding.UTF8.GetString(state.ScorePageReply(2)!));
+        Assert.Contains("Length of horn, left", Encoding.UTF8.GetString(state.ScorePageReply(ME, 2)!));
     }
 
     [Fact]
@@ -330,7 +330,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestNonPermittedHitWarnsAndDisqualifies()
     {
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         // a permitted hit does not save a kill that also took a non-permitted one
         Hb(O("""{"event": 7, "individual": 413, "species": 17, "gender": 0, "weight_grams": 1100, "feature": 1100250}"""),
            O("""{"event": 1, "individual": 413, "ammunition_id": 14, "weapon_id": 391}"""),
@@ -348,15 +348,15 @@ public class InventoryTests : StateTestBase
             ["trophy_shot"] = C(score["trophy_shot"]), ["score_text"] = C(score["score_text"]),
             ["score"] = C(score["score"]), ["css"] = C(score["css"]),
         });
-        var kill = Assert.Single(Reply(state.ExpeditionReply("{}"u8.ToArray()))["kills"]!.AsArray())!;
+        var kill = Assert.Single(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]!.AsArray())!;
         Eq("[false, null]", T(kill["kill"]!["ethical"], kill["kill"]!["score"]));
-        Assert.Equal(1, state.Unread());
-        var thread = Assert.Single(Reply(state.ConversationsReply()).AsArray())!;
+        Assert.Equal(1, state.Unread(ME));
+        var thread = Assert.Single(Reply(state.ConversationsReply(ME)).AsArray())!;
         Eq("[1024, 0]", T(thread["user_id"], thread["read"]));
-        var message = Assert.Single(Reply(state.ConversationReply("user_id=1024"u8.ToArray()))["messages"]!.AsArray())!;
+        var message = Assert.Single(Reply(state.ConversationReply(ME, "user_id=1024"u8.ToArray()))["messages"]!.AsArray())!;
         Assert.Equal("Wrong ammunition for Test Rabbit. Permitted: Test Shot B, Test Shot A.", (string)message["content"]!);
-        Assert.Equal(0, state.Unread());
-        Eq("1", Reply(state.ConversationsReply())[0]!["read"]);
+        Assert.Equal(0, state.Unread(ME));
+        Eq("1", Reply(state.ConversationsReply(ME))[0]!["read"]);
     }
 
     [Fact]
@@ -375,26 +375,26 @@ public class InventoryTests : StateTestBase
     public void TestExpeditionLifecycle()
     {
         var upstreamList = "{\"total\": 11, \"expeditions\": [{\"id\": 730218841}]}"u8.ToArray();
-        Assert.Equal("{\"replayed\": 1}"u8.ToArray(), state.ExpeditionReply("{\"replayed\": 1}"u8.ToArray()));  // none yet: replay
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
-        var first = Reply(state.ConnectReply())["expedition"]!["expedition_id"];
-        Eq(first, Reply(state.ConnectReply())["expedition"]!["expedition_id"]);  // 2nd connect
-        state.Disconnect([]);
-        var second = Reply(state.ConnectReply())["expedition"]!["expedition_id"];  // direct launch: opens one
+        Assert.Equal("{\"replayed\": 1}"u8.ToArray(), state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray()));  // none yet: replay
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        var first = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];
+        Eq(first, Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"]);  // 2nd connect
+        state.Disconnect(ME, []);
+        var second = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];  // direct launch: opens one
         Assert.False(Py.Eq(second, first));
-        var listed = Reply(state.ExpeditionListReply(upstreamList, "user_id=1&limit=2&offset=0"u8.ToArray()));
+        var listed = Reply(state.ExpeditionListReply(ME, upstreamList, "user_id=1&limit=2&offset=0"u8.ToArray()));
         Assert.Equal("13", Py.Dumps(listed["total"]));  // stays an int
         Eq(T(second, first), new JsonArray(listed["expeditions"]!.AsArray().Select(e => C(e!["id"])).ToArray()));
         Assert.Equal([true, false], listed["expeditions"]!.AsArray().Select(e => e!["end_ts"] is null));
-        Eq(second, Reply(state.ExpeditionReply("{}"u8.ToArray()))["expedition"]!["id"]);
-        Assert.Equal(upstreamList, state.ExpeditionListReply(upstreamList, "limit=10&offset=10"u8.ToArray()));
+        Eq(second, Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["expedition"]!["id"]);
+        Assert.Equal(upstreamList, state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));
     }
 
     [Fact]
     public void TestBuyDeliversWithNextHeartbeat()
     {
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
-        var reply = s.BuyReply("item_id=19&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray());
+        var reply = s.BuyReply(ME, "item_id=19&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray());
         Eq("""{"price": 9.0, "success": true}""", Reply(reply));  // 170 at 95 % off
         var updates = HbOf(s);
         Assert.Equal(2, updates.Count);
@@ -412,9 +412,9 @@ public class InventoryTests : StateTestBase
     public void TestBuyWithoutFundsChangesNothing()
     {
         foreach (var form in new[] { "item_id=19&amount=2&wallet=GOLD", "item_id=19&amount=1&wallet=SILVER", "item_id=5&amount=1" })
-            Eq("""{"success": false}""", Reply(state.BuyReply(Encoding.ASCII.GetBytes(form))));
+            Eq("""{"success": false}""", Reply(state.BuyReply(ME, Encoding.ASCII.GetBytes(form))));
         Assert.Empty(HbOf(state));
-        Eq("182.0", state.Wallet()["em"]);
+        Eq("182.0", state.Wallet(ME)["em"]);
         Assert.Equal(2, Items().Count);
     }
 
@@ -443,9 +443,9 @@ public class InventoryTests : StateTestBase
         var s = new State(Path.Combine(tmp, "buy.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,  // own db: 112 em
                           discounts: discounts, sampleInfos: new JsonArray(info.DeepClone()));
         Assert.Equal("{\"price\": 37.0, \"success\": true}"u8.ToArray(),
-                     s.BuyReply("item_id=6&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray()));  // 730 at 95 % off
-        Eq("75.0", s.Wallet()["em"]);  // Me/poll ems
-        var reply = Reply(s.ConnectReply());
+                     s.BuyReply(ME, "item_id=6&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray()));  // 730 at 95 % off
+        Eq("75.0", s.Wallet(ME)["em"]);  // Me/poll ems
+        var reply = Reply(s.ConnectReply(ME));
         Eq("""{"em": 75.0, "gm": 33.0}""", reply["wallet"]);
         var row = (JsonObject)reply["inventory"]!["items"]!.AsArray().Single(i => Py.Eq(i!["item_id"], 6))!.DeepClone();
         row.Remove("guid");  // a new guid
@@ -466,7 +466,7 @@ public class InventoryTests : StateTestBase
              {"item_id": 19, "percentage": 95, "start_ts": 0, "end_ts": 1099511627776}]
             """)!;
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: discounts);
-        Eq("""{"price": 170.0, "success": true}""", Reply(s.BuyReply("item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
+        Eq("""{"price": 170.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
     }
 
     [Fact]
@@ -486,12 +486,12 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestConnectStartsAtLaunchedLodge()
     {
-        state.NoteLaunch("start=101&loctype=LODGE&reserve=2&time=540"u8.ToArray());
-        var spawn = Reply(state.ConnectReply())["expedition"]!;
+        state.NoteLaunch(ME, "start=101&loctype=LODGE&reserve=2&time=540"u8.ToArray());
+        var spawn = Reply(state.ConnectReply(ME))["expedition"]!;
         Eq("[101, -6420.0, 150.0, 3310.0]", T(spawn["lodge"], spawn["x"], spawn["y"], spawn["z"]));
-        Eq("-6420", Reply(state.ExpeditionReply("{}"u8.ToArray()))["expedition"]!["x"]);
-        state.Disconnect([]);
-        spawn = Reply(state.ConnectReply())["expedition"]!;  // direct launch: the connect's own lodge
+        Eq("-6420", Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["expedition"]!["x"]);
+        state.Disconnect(ME, []);
+        spawn = Reply(state.ConnectReply(ME))["expedition"]!;  // direct launch: the connect's own lodge
         Eq("[100, -9150.0]", T(spawn["lodge"], spawn["x"]));
     }
 
@@ -500,10 +500,10 @@ public class InventoryTests : StateTestBase
     {
         var ammo = O("""{"item_id": 13, "name": "Test Cartridge", "units": 10}""");
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, sampleInfos: new JsonArray(ammo.DeepClone()));
-        Assert.False(s.GrantItems(99999));
-        Assert.True(s.GrantItems(13, 2));
-        Assert.Null(s.Give("gm", -1000));  // below 0: refused
-        Eq("100.0", s.Give("gm", 67));
+        Assert.False(s.GrantItems(ME, 99999));
+        Assert.True(s.GrantItems(ME, 13, 2));
+        Assert.Null(s.Give(ME, "gm", -1000));  // below 0: refused
+        Eq("100.0", s.Give(ME, "gm", 67));
         var updates = HbOf(s);
         Assert.Equal(2, updates.Count);
         var (items, balance) = (updates[0]!, updates[1]!);
@@ -515,7 +515,7 @@ public class InventoryTests : StateTestBase
     public void TestLastHuntStatsAfterDisconnect()
     {
         Hb(O("""{"event": 1, "individual": 5, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1}"""));  // before the hunt
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         Hb(O("""{"event": 7, "individual": 5, "species": 1}"""), O("""{"event": 7, "individual": 6, "species": 4}"""),
            O("""{"event": 11, "individual": 5}"""), O("""{"event": 11, "individual": 5}"""),
            O("""{"event": 12, "individual": 6, "track_type": 24}"""),
@@ -523,9 +523,9 @@ public class InventoryTests : StateTestBase
            O("""{"event": 1, "individual": 5, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 4000}"""),
            O("""{"event": 1, "individual": 5, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 6000}"""),
            O("""{"event": 3, "individual": 5, "extended_species": 1}"""));
-        Assert.Null(Reply(state.ExpeditionReply("{}"u8.ToArray()))["stats"]);  // ongoing
-        state.Disconnect("{\"distance_travelled\": 466, \"shots_fired\": 3, \"shots_hit\": 2}"u8.ToArray());
-        var stats = Reply(state.ExpeditionReply("{}"u8.ToArray()))["stats"]!;
+        Assert.Null(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]);  // ongoing
+        state.Disconnect(ME, "{\"distance_travelled\": 466, \"shots_fired\": 3, \"shots_hit\": 2}"u8.ToArray());
+        var stats = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!;
         Eq("466", stats["distance"]);
         // finished hunt: achievements first, zero counters left out, Statistics/total key order
         Assert.Equal("""
@@ -539,7 +539,7 @@ public class InventoryTests : StateTestBase
         // spots and tracks count once per animal (the identified-track event does not count) under the animal's species;
         // a hit and a miss count per shot under weapon and ammo; the hit's distance is cm x 10; the kill counts for
         // the species and for the ammo of its last hit; the hunt's distance is the disconnect's
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         Hb(O("""{"event": 7, "individual": 31, "species": 1}"""), O("""{"event": 7, "individual": 32, "species": 1}"""),
            O("""{"event": 7, "individual": 33, "species": 4}"""), O("""{"event": 7, "individual": 34, "species": 17}"""));
         Hb(O("""{"event": 11, "individual": 31}"""), O("""{"event": 11, "individual": 32}"""), O("""{"event": 11, "individual": 31}"""));
@@ -549,8 +549,8 @@ public class InventoryTests : StateTestBase
         Hb(O("""{"event": 21, "weapon_id": 5, "ammunition_id": 10}"""),
            O("""{"event": 1, "individual": 31, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 8200}"""),
            O("""{"event": 3, "individual": 31, "extended_species": 1}"""));
-        state.Disconnect("""{"distance_travelled": 740, "shots_fired": 2, "shots_hit": 1}"""u8.ToArray());
-        var stats = Reply(state.ExpeditionReply("{}"u8.ToArray()))["stats"]!;
+        state.Disconnect(ME, """{"distance_travelled": 740, "shots_fired": 2, "shots_hit": 1}"""u8.ToArray());
+        var stats = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!;
         Eq("740", stats["distance"]);
         Eq("""
            {"achievements": [], "weapon": {"5": {"10": {"ethical_kills": 1, "hits": 1, "misses": 1, "kills": 1, "distance": 82000}}},
@@ -561,9 +561,9 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestHuntEndsAtLastHeartbeatWithoutDisconnect()
     {
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
-        state.HeartbeatReply("{\"events\": []}"u8.ToArray());
-        Assert.Null(Reply(state.ExpeditionReply("{}"u8.ToArray()))["stats"]);  // still within the timeout
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(ME, "{\"events\": []}"u8.ToArray());
+        Assert.Null(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]);  // still within the timeout
         double lastSeen;
         using (var con = new SqliteConnection($"Data Source={Db};Pooling=False"))  // the client quit: last heartbeat 200 s ago
         {
@@ -577,11 +577,11 @@ public class InventoryTests : StateTestBase
             get.CommandText = "SELECT last_seen FROM expeditions";
             lastSeen = (double)get.ExecuteScalar()!;
         }
-        var reply = Reply(state.ExpeditionReply("{}"u8.ToArray()));
+        var reply = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()));
         Assert.Equal((long)lastSeen, Py.L(reply["expedition"]!["end_ts"]));
         Assert.True(Py.IsInt(reply["expedition"]!["end_ts"]) && Py.IsInt(reply["expedition"]!["start_ts"]));  // whole seconds once closed
         Assert.NotNull(reply["stats"]);
-        Assert.False(Py.Eq(Reply(state.ConnectReply())["expedition"]!["expedition_id"], reply["expedition"]!["id"]));  // a later connect opens a new one
+        Assert.False(Py.Eq(Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"], reply["expedition"]!["id"]));  // a later connect opens a new one
     }
 
     static JsonNode? C(JsonNode? n) => n?.DeepClone();
@@ -596,15 +596,15 @@ public class SkillTests : StateTestBase
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
     }
 
-    JsonNode Numbers() => Reply(state.SkillListReply("user_id=7"u8.ToArray())!);
+    JsonNode Numbers() => Reply(state.SkillListReply(ME, "user_id=7"u8.ToArray())!);
 
     [Fact]
     public void TestSeedAndReplies()
     {
-        Assert.Null(state.SkillListReply("user_id=8"u8.ToArray()));  // another player: replayed recording
+        Assert.Null(state.SkillListReply(ME, "user_id=8"u8.ToArray()));  // another player: replayed recording
         var numbers = Numbers();
         Eq("[1.14, 2, 1.007]", T(numbers["weapon"]!["5"], numbers["spotting"]![17], numbers["spotting"]![16]));
-        Eq(LEVELS, Reply(state.ConnectReply())["skills"]);
+        Eq(LEVELS, Reply(state.ConnectReply(ME))["skills"]);
     }
 
     [Fact]
@@ -629,11 +629,11 @@ public class SkillTests : StateTestBase
     {
         // clue XP is paid per animal and hunt: 16 clues on one animal and 2 on another add 8.4 mule deer tracking
         static JsonObject Clue(int individual) => new() { ["event"] = 12, ["individual"] = individual, ["track_type"] = 4 };
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         Hb([O("""{"event": 7, "individual": 67, "species": 1}"""), .. Repeat(Clue(67), 3), O("""{"event": 13, "individual": 67}""")]);
         Hb([.. Repeat(Clue(67), 13), O("""{"event": 7, "individual": 112, "species": 1}"""), Clue(112), Clue(112)]);
         Eq("1.567", Numbers()["tracking"]![1]);  // 0.1 + 6.4 + 2.0
-        state.NoteLaunch("start=100&reserve=2"u8.ToArray());  // a new hunt counts the same animal from its first clue
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // a new hunt counts the same animal from its first clue
         Hb(Clue(67));
         Eq("1.62", Numbers()["tracking"]![1]);  // + 0.8
     }
@@ -649,7 +649,7 @@ public class SkillTests : StateTestBase
             ["text"] = "Test Rifle: level 2 reached", ["colour"] = 4294967040,
             ["destination"] = ICON, ["update"] = 3, ["timer"] = 1000, ["type"] = 100,
         }), Hb());
-        Eq("2", Reply(state.ConnectReply())["skills"]!["weapon"]!["706"]);  // same family
+        Eq("2", Reply(state.ConnectReply(ME))["skills"]!["weapon"]!["706"]);  // same family
     }
 
     [Fact]

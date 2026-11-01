@@ -22,13 +22,13 @@ public class SpawnerTests : StateTestBase
         connect["spawn_licenses"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)(i is 1 or 36 ? 2 : 1)).ToArray());
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES,
                           reserveConnects: new() { [2] = Encoding.ASCII.GetBytes(RESERVE) });
-        state.NoteLaunch("start=100&loctype=LODGE&reserve=2"u8.ToArray());
+        state.NoteLaunch(ME, "start=100&loctype=LODGE&reserve=2"u8.ToArray());
     }
 
     static Spawner.Request Req(string animal = "mule_deer", int males = 3, bool dormant = false) =>
         new(2, animal, males, 0, -7200, 1200, 15, 120, 120, false, dormant);
 
-    JsonObject Connect() => (JsonObject)Reply(state.ConnectReply());
+    JsonObject Connect() => (JsonObject)Reply(state.ConnectReply(ME));
 
     [Fact]
     public void AddedGroupChangesOnlyPopulationsAndLicenses()
@@ -86,7 +86,7 @@ public class SpawnerTests : StateTestBase
         var groups = Connect()["populations"]![0]!["groups"]!.AsArray();
         Eq("0", groups[1]!["enabled"]);
         var a = state.Spawns.LastApplied.Single();
-        state.WakeGroup(a.PopulationId, a.Group);
+        state.WakeGroup(ME, a.PopulationId, a.Group);
         var update = Hb().Single(u => Py.Eq(u!["update"], 5))!;
         Eq("""{"update": 5, "population_id": 101, "group": 1}""", update);
     }

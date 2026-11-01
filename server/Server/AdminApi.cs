@@ -23,12 +23,12 @@ public static class AdminApi
 
         admin.MapGet("/wallet", Results<Ok<Dictionary<string, double>>, ProblemHttpResult> () => state is null
                 ? NoState()
-                : TypedResults.Ok(state.Wallet().ToDictionary(kv => kv.Key, kv => Py.D(kv.Value))))
+                : TypedResults.Ok(state.Wallet(state.LocalAccount).ToDictionary(kv => kv.Key, kv => Py.D(kv.Value))))
              .WithName("GetWallet").WithSummary("Balance per currency (em, gm)").ProducesProblem(503);
 
         admin.MapGet("/inventory", Results<Ok<JsonArray>, ProblemHttpResult> () => state is null
                 ? NoState()
-                : TypedResults.Ok(state.Inventory()))
+                : TypedResults.Ok(state.Inventory(state.LocalAccount)))
              .WithName("GetInventory").WithSummary("Owned items: item_id, slot (0 = stash), guid, metadata, units").ProducesProblem(503);
 
         admin.MapGet("/items/{itemId:long}", Results<Ok<JsonObject>, ProblemHttpResult> (long itemId) =>
@@ -47,7 +47,7 @@ public static class AdminApi
                 if (state is null)
                     return NoState();
                 var itemId = grant.ItemId!.Value;
-                if (!state.GrantItems(itemId, grant.Count))
+                if (!state.GrantItems(state.LocalAccount, itemId, grant.Count))
                     return TypedResults.Problem($"item {itemId} has no definition", statusCode: 404, title: "Unknown item");
                 return TypedResults.Ok(new ItemGrantResult(itemId, grant.Count, Py.Str(state.ItemInfo(itemId)!["name"])));
             })
@@ -66,7 +66,7 @@ public static class AdminApi
                     return TypedResults.ValidationProblem(errors);
                 if (state is null)
                     return NoState();
-                return state.Give(grant.Currency!, grant.Amount!.Value) is { } balance
+                return state.Give(state.LocalAccount, grant.Currency!, grant.Amount!.Value) is { } balance
                     ? TypedResults.Ok(new Balance(grant.Currency!, Py.D(balance)))
                     : TypedResults.Problem($"{grant.Currency} unchanged: the balance would drop below 0", statusCode: 409, title: "Insufficient balance");
             })
@@ -107,7 +107,7 @@ public static class AdminApi
                     return TypedResults.ValidationProblem(errors);
                 if (state is null)
                     return NoState();
-                state.WakeGroup(wake.PopulationId!.Value, wake.Group!.Value);
+                state.WakeGroup(state.LocalAccount, wake.PopulationId!.Value, wake.Group!.Value);
                 return TypedResults.Ok();
             })
              .WithName("WakeSpawn").WithSummary("Wake a dormant group in the running hunt")

@@ -25,35 +25,35 @@ public static class GameApi
 
         var gs = Group(app, game.Gs, "Game server (gameserver_host)");
         gs.MapExactPost(game, HEARTBEAT, r => s != null
-                ? new(200, Json(), s.HeartbeatReply(r.Body), "state")
+                ? Own(game, r, a => new(200, Json(), s.HeartbeatReply(a, r.Body), "state"))
                 : new(200, Json(), IdleHeartbeat, "stub"))
           .WithName("Heartbeat").WithSummary("Store hunt events, return the queued updates")
           .WithDescription("Every 20–60 s during a hunt. Updates queued by earlier heartbeats come first (trophy score, items, "
                            + "balances, toasts); photo requests get their upload URL at once. Without player state: always "
                            + "`{\"updates\": [], \"err\": 0}`.")
           .Body<HeartbeatRequest>("application/json").Produces<HeartbeatReply>();
-        gs.MapExactPost(game, DISCONNECT, r =>
+        gs.MapExactPost(game, DISCONNECT, r => s is null ? new(200, Json(), NoError, "stub") : Own(game, r, a =>
             {
-                s?.Disconnect(r.Body);
-                return new(200, Json(), NoError, s != null ? "state" : "stub");
-            })
+                s.Disconnect(a, r.Body);
+                return new(200, Json(), NoError, "state");
+            }))
           .WithName("Disconnect").WithSummary("End the hunt")
           .WithDescription("Closes the open expedition with the session's `distance_travelled`.")
           .Body<DisconnectRequest>("application/json").Produces<ErrReply>();
         if (s != null)
         {
-            gs.MapExactPost(game, CONNECT, _ =>
-                    new(200, game.Table.Entries[new("POST", game.Gs, CONNECT, null)].Headers, s.ConnectReply(), "state"))
+            gs.MapExactPost(game, CONNECT, r => Own(game, r, a =>
+                    new(200, game.Table.Entries[new("POST", game.Gs, CONNECT, null)].Headers, s.ConnectReply(a), "state")))
               .WithName("Connect").WithSummary("Start a hunt session")
               .WithDescription("The recorded connect reply with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
                                + "reserve. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
-            gs.MapExactPost(game, State.UPLOAD_PATH, r =>
+            gs.MapExactPost(game, State.UPLOAD_PATH, r => Own(game, r, a =>
                 {
-                    var (status, body) = s.UploadReply(r.Query, r.Body);
+                    var (status, body) = s.UploadReply(a, r.Query, r.Body);
                     return new(status, [("Content-Type", "application/json; charset=UTF-8")], body, "state");
-                })
+                }))
               .WithName("UploadPhoto").WithSummary("Upload a requested photo (GCS resumable-upload shape)")
               .WithDescription("Target of the `update: 11` URL a heartbeat photo request (event 4) gets. Stores the JPEG in "
                                + "the photos folder; replies like GCS `storage#object`, 404 for an unknown upload id.")
@@ -65,19 +65,20 @@ public static class GameApi
                     ? new(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(f), "state")
                     : null);
             gs.MapGet(State.PHOTO_PREFIX + "{**name}", photo)
-              .WithName("Photo").WithSummary("A stored photo").WithDescription("Photos uploaded through UploadPhoto, by file name.")
-              .PathParams(("name", "`<photo id>-<photo_type>[-thumb].jpg`")).Produces(200, contentType: "image/jpeg");
+              .WithName("Photo").WithSummary("A stored photo")
+              .WithDescription("Photos uploaded through UploadPhoto, by account id and file name. Public: the link is the access.")
+              .PathParams(("name", "`<account id>/<photo id>-<photo_type>[-thumb].jpg`")).Produces(200, contentType: "image/jpeg");
             gs.MapMethods(State.PHOTO_PREFIX + "{**name}", ["HEAD"], photo).ExcludeFromDescription();
         }
 
         var api = Group(app, game.Api, "Web API (api_host, /v1)");
         if (s != null)
         {
-            api.MapExactPost(game, MOVE_MULTIPLE2, r => new(200, JsonAnyOrigin(), s.MoveMultiple2Reply(r.Body), "state"))
+            api.MapExactPost(game, MOVE_MULTIPLE2, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.MoveMultiple2Reply(a, r.Body), "state")))
                .WithName("MoveItems").WithSummary("Move inventory items between slots, clone stacks")
                .WithDescription("Reply `null`, or `{placeholder: new guid}` when stacks were cloned. Plain HTTP in the client.")
                .Body<MoveMultiple2Form>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, BUY, r => new(200, JsonAnyOrigin(), s.BuyReply(r.Body), "state"))
+            api.MapExactPost(game, BUY, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.BuyReply(a, r.Body), "state")))
                .WithName("Buy").WithSummary("Buy a catalogue item")
                .WithDescription("Charges now (the item's first Application/discounts row if active, rounded half up, as the "
                                 + "store shows it); the items (`update: 10`) and the new balance (`update: 15`) come with the "
@@ -85,24 +86,24 @@ public static class GameApi
                                 + "still the balance. `{\"success\": false}` for an unknown item, a missing price, a service or "
                                 + "too little currency.")
                .Body<BuyForm>(Form).Produces<BuyReply>();
-            api.MapExactPost(game, LAUNCH_START, r =>
+            api.MapExactPost(game, LAUNCH_START, r => Own(game, r, a =>
                 {
-                    s.NoteLaunch(r.Body);
+                    s.NoteLaunch(a, r.Body);
                     return null;  // the reply itself is replayed
-                })
+                }))
                .WithName("LaunchStart").WithSummary("Launch a hunt in a reserve")
                .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one); the reply is the recorded one.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, CHAT_CONVERSATIONS, _ => new(200, JsonAnyOrigin(), s.ConversationsReply(), "state"))
+            api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
                .WithName("ChatConversations").WithSummary("Inbox threads")
                .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")
                .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, CHAT_CONVERSATION, r => new(200, JsonAnyOrigin(), s.ConversationReply(r.Body), "state"))
+            api.MapExactPost(game, CHAT_CONVERSATION, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationReply(a, r.Body), "state")))
                .WithName("ChatConversation").WithSummary("One thread, newest first; marks it read")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, SKILL_LIST, r => s.SkillListReply(r.Body) is { Length: > 0 } reply
+            api.MapExactPost(game, SKILL_LIST, r => Own(game, r, a => s.SkillListReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
-                    : null)
+                    : null))
                .WithName("SkillList").WithSummary("Skill numbers of a player")
                .WithDescription("The player's own skills from the state (level plus the fraction of its span); other players' "
                                 + "replies are replayed.")
@@ -116,29 +117,27 @@ public static class GameApi
         if (s != null)
         {
             api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Recorded(r) is { Tier: >= 1 } hit
-                    ? new(hit.Status, hit.Headers, s.ExpeditionReply(hit.Body), "state")
+                    ? Own(game, r, a => new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body), "state"))
                     : null)
                .WithName("LastHunt").WithSummary("The latest expedition with its kills and stats")
                .WithDescription("`stats` stays null while the hunt is open; the recorded reply until the first server hunt.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Recorded(r) is { Tier: >= 1 } hit
-                    ? new(hit.Status, hit.Headers, s.ExpeditionListReply(hit.Body, r.Body), "state")
+                    ? Own(game, r, a => new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state"))
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
                .WithDescription("Server expeditions ahead of the recorded ones on the first page; later pages are replayed.")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
-                api.MapExactPost(game, path, r =>
+                api.MapExactPost(game, path, r => game.Recorded(r) is not { Tier: >= 1 } hit ? null : Own(game, r, a =>
                     {
-                        if (game.Recorded(r) is not { Tier: >= 1 } hit)
-                            return null;
                         var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
-                        var wallet = s.Wallet();
+                        var wallet = s.Wallet(a);
                         reply["gms"] = wallet["gm"]!.DeepClone();
                         reply["ems"] = wallet["em"]!.DeepClone();
-                        reply["unread_messages"] = s.Unread();
+                        reply["unread_messages"] = s.Unread(a);
                         return new(hit.Status, hit.Headers, Py.DumpBytes(reply), "state");
-                    })
+                    }))
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply with `gms`, `ems` and `unread_messages` from the state.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
@@ -151,11 +150,14 @@ public static class GameApi
                     return null;
                 var id = long.Parse(m.Groups[1].Value);
                 var taxidermize = m.Groups[2].Success;
+                var account = s.Authenticate(r.Tokens());  // a CORS preflight carries no token: with none it is the replay's
                 if (r.Method == "OPTIONS")
-                    return Has(s.HarvestReply(id)) ? new(204, Cors(r.Header), [], "state") : null;
-                if (r.Method == "GET" && !taxidermize && s.HarvestReply(id) is { Length: > 0 } page)
+                    return account is { } owner && Has(s.HarvestReply(owner, id)) ? new(204, Cors(r.Header), [], "state") : null;
+                if (account is not { } a)
+                    return r.Method is "GET" or "POST" ? Denied(game, r) : null;
+                if (r.Method == "GET" && !taxidermize && s.HarvestReply(a, id) is { Length: > 0 } page)
                     return new(200, [("Content-Type", "application/vnd.game.user.trophy_lodge.harvest+json"), .. Cors(r.Header)], page, "state");
-                if (r.Method == "POST" && taxidermize && s.Taxidermize(id))
+                if (r.Method == "POST" && taxidermize && s.Taxidermize(a, id))
                     return new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state");
                 return null;
             });
@@ -179,7 +181,9 @@ public static class GameApi
                     if (r.Method != "GET" || !ScorePath.IsMatch(r.Path))
                         return null;
                     var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
-                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) ? s.ScorePageReply(kid) : null;
+                    var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
+                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) && s.AccountForHandle(handle) is { } account
+                        ? s.ScorePageReply(account, kid) : null;
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
                .WithName("ScorePage").WithSummary("Kill details page of a server kill")
@@ -207,6 +211,20 @@ public static class GameApi
     /// trailing slash, percent-encodings and dot segments.</summary>
     static RouteHandlerBuilder MapExactPost(this RouteGroupBuilder group, Game game, string path, Func<Req, Reply?> handle) =>
         group.MapPost(path, Handle(game, r => r.Method == "POST" && r.Path == path ? handle(r) : null));
+
+    /// <summary>Run a state endpoint for the account of the request's token; a token that is unknown, expired or banned
+    /// gets the expired-token reply (Denied), unless the state is offline, which answers it as the local account.</summary>
+    static Reply? Own(Game game, Req r, Func<long, Reply?> handle) =>
+        game.State!.Authenticate(r.Tokens()) is { } account ? handle(account) : Denied(game, r);
+
+    /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
+    /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
+    /// server. ponytail: the game server's and the game client's own reply to an expired session is not known; err 1 is a guess.</summary>
+    static Reply Denied(Game game, Req r) =>
+        r.Host == game.Api ? new(200, JsonAnyOrigin(), "{\"errorCode\": 5, \"message\": \"token expired\"}"u8.ToArray(), "denied")
+        : r.Host == game.Apiv2 ? new(401, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)],
+            "{\"id\":\"server\",\"code\":\"unauthorized\",\"status\":401,\"detail\":\"token expired\"}"u8.ToArray(), "denied")
+        : new(401, Json(), "{\"err\": 1}"u8.ToArray(), "denied");
 
     // ---- OpenAPI documentation (metadata only: requests are parsed by the handlers, never bound or content-type matched)
 
