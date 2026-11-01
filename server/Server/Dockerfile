@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0.403 AS build
 WORKDIR /src
 COPY global.json ./
 COPY server/Server ./server/Server
+COPY src/Restore ./src/Restore
 # portable (no runtime identifier), so the committed lock file applies as it is
 RUN dotnet restore server/Server/Server.csproj --locked-mode
 RUN dotnet publish server/Server/Server.csproj -c Release --no-restore -o /out
