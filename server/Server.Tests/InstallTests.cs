@@ -214,4 +214,18 @@ public class InstallTests : IDisposable
         Assert.Equal(Fixtures.ME, state.LocalAccount);
         Assert.Equal(Py.Dumps(connect["wallet"]), Py.Dumps(JsonNode.Parse(state.ConnectReply(Fixtures.ME))!["wallet"]));
     }
+
+    [Fact]
+    public void ANewAccountNeverStartsFromARecordedConnect()
+    {
+        var connect = Fixtures.CONNECT;
+        connect["account"]!["avatar_url"] = "https://operator.test/me.png";
+        var state = LoadState(cfg, Recorded(connect), tmp)!;
+        state.CreateAccount(5000, "newcomer");
+        var reply = JsonNode.Parse(state.ConnectReply(5000))!;
+        Eq("""{"em": 1000, "gm": 0}""", reply["wallet"]);  // the facts file's start, not the recording's
+        Assert.NotEqual(Py.Dumps(connect["inventory"]!["items"]), Py.Dumps(reply["inventory"]!["items"]));
+        Assert.Equal("https://avatar.test/256/1.png", (string)reply["account"]!["avatar_url"]!);
+        Assert.NotEqual((string)connect["account"]!["avatar_url"]!, (string)reply["account"]!["avatar_url"]!);
+    }
 }
