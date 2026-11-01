@@ -129,16 +129,19 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestPhotoNamesStayInThePhotosFolder()
     {
-        var cwd = Environment.CurrentDirectory;
-        try
+        if (OperatingSystem.IsWindows())  // drive-relative names exist only there
         {
-            Environment.CurrentDirectory = tmp;  // a drive-relative name ("C:x") resolves against the current directory
-            File.WriteAllText(Path.Combine(tmp, "secret.txt"), "x");
-            Assert.Null(state.PhotoFile($"/photos/{Path.GetPathRoot(tmp)![..2]}secret.txt"));
-        }
-        finally
-        {
-            Environment.CurrentDirectory = cwd;
+            var cwd = Environment.CurrentDirectory;
+            try
+            {
+                Environment.CurrentDirectory = tmp;  // a drive-relative name ("C:x") resolves against the current directory
+                File.WriteAllText(Path.Combine(tmp, "secret.txt"), "x");
+                Assert.Null(state.PhotoFile($"/photos/{Path.GetPathRoot(tmp)![..2]}secret.txt"));
+            }
+            finally
+            {
+                Environment.CurrentDirectory = cwd;
+            }
         }
         // photo_type comes from the heartbeat: a string is never used as part of the file name
         var u11 = Assert.Single(Hb(O("""{"event": 4, "hash": 5, "photo_type": "..\\..\\escaped"}""")))!;
