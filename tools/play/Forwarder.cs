@@ -65,7 +65,7 @@ static class Forwarder
                 foreach (var h in resp.Headers.Concat(resp.Content.Headers))
                     if (!Hop.Contains(h.Key) && (head || !h.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))) ctx.Response.Headers.Append(h.Key, h.Value.ToArray());
                 if (!head && ctx.Response.StatusCode is not (204 or 304)) ctx.Response.ContentLength = body.Length;
-                await ctx.Response.Body.WriteAsync(body, ctx.RequestAborted);
+                if (body.Length > 0) await ctx.Response.Body.WriteAsync(body, ctx.RequestAborted); // a 204 or 304 has none, and writing even an empty body to one throws
             }
             catch (Exception e) when (e is HttpRequestException or TaskCanceledException or IOException)
             {
