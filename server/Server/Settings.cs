@@ -6,8 +6,9 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Server;
 
-/// <summary>One address and port to listen on. Cert and Key (PEM files) make it HTTPS; without them it is plain HTTP.</summary>
-public sealed record Listener(IPAddress Address, int Port, string? Cert, string? Key);
+/// <summary>One address and port to listen on. Cert and Key (PEM files) make it HTTPS; without them it is plain HTTP.
+/// Admin: the admin API, Swagger UI and the OpenAPI documents are served on this listener (loopback addresses only).</summary>
+public sealed record Listener(IPAddress Address, int Port, string? Cert, string? Key, bool Admin = false);
 
 public sealed class Settings
 {
@@ -61,7 +62,11 @@ public sealed class Settings
             string? cert = Text(o, "cert"), key = Text(o, "key");
             if ((cert is null) != (key is null))
                 throw new InvalidDataException("listeners: cert and key go together");
-            listeners.Add(new(address, port, cert is null ? null : Path.GetFullPath(cert, baseDir), key is null ? null : Path.GetFullPath(key, baseDir)));
+            var admin = o["admin"] is null ? false
+                : o["admin"] is JsonValue a && a.TryGetValue<bool>(out var flag) ? flag : throw new InvalidDataException("listeners: admin is true or false");
+            if (admin && !IPAddress.IsLoopback(address))
+                throw new InvalidDataException("listeners: admin needs a loopback address");
+            listeners.Add(new(address, port, cert is null ? null : Path.GetFullPath(cert, baseDir), key is null ? null : Path.GetFullPath(key, baseDir), admin));
         }
 
         var proxies = new List<IPNetwork>();

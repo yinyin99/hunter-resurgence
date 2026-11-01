@@ -77,6 +77,19 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void ListenersAreAdminOnlyWhenMarkedAndLoopback()
+    {
+        var o = Minimal();
+        Assert.False(Load(o).Listeners[0].Admin);
+        o["listeners"] = new JsonArray(new JsonObject { ["address"] = "127.0.0.1", ["port"] = 80, ["admin"] = true });
+        Assert.True(Load(o).Listeners[0].Admin);
+        o["listeners"] = new JsonArray(new JsonObject { ["address"] = "0.0.0.0", ["port"] = 80, ["admin"] = true });
+        Assert.Contains("loopback", Assert.Throws<InvalidDataException>(() => Load(o)).Message);
+        o["listeners"] = new JsonArray(new JsonObject { ["address"] = "127.0.0.1", ["port"] = 80, ["admin"] = "yes" });
+        Assert.Contains("admin is true or false", Assert.Throws<InvalidDataException>(() => Load(o)).Message);
+    }
+
+    [Fact]
     public void ListenerCertNeedsItsKey()
     {
         var o = Minimal();

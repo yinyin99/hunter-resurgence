@@ -14,9 +14,11 @@ namespace Resurgence.Server;
 
 /// <summary>Console: request lines and TLS failures on the console. WorkDir: the miss log and the admin status there.
 /// TrustedProxies: peers whose HostHeader names the game host the client asked for (a proxy between client and server).
-/// MaxBodyBytes: the request body limit of every endpoint but the admin API's.</summary>
+/// MaxBodyBytes: the request body limit of every endpoint but the admin API's. AdminListeners: the only listeners that
+/// serve the admin API (null: every listener).</summary>
 public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console,
-    IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes);
+    IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes,
+    IReadOnlyList<(IPAddress Address, int Port)>? AdminListeners = null);
 
 public static class ServerApp
 {
@@ -35,12 +37,18 @@ public static class ServerApp
         return nets.Any(n => n.Contains(peer));
     }
 
-    /// <summary>The admin API, Swagger UI and the OpenAPI documents are for a person at this machine: the peer is a
-    /// loopback address (the peer address, not a header) and nothing says a proxy relayed the request, because a proxy on
-    /// this machine is a loopback peer too.</summary>
-    static bool IsDirectLocal(HttpContext ctx, string hostHeader) =>
-        ctx.Connection.RemoteIpAddress is { } peer && IPAddress.IsLoopback(peer)
-        && !ForwardingHeaders.Append(hostHeader).Any(h => ctx.Request.Headers.ContainsKey(h));
+    /// <summary>The admin API, Swagger UI and the OpenAPI documents are for a person at this machine. A request qualifies
+    /// when it came in on an admin listener, its peer is a loopback address (the peer address, not a header) and nothing
+    /// says a proxy relayed it: a proxy on this machine is a loopback peer too, and the listener it connects to is not an
+    /// admin listener.</summary>
+    public static bool IsDirectLocal(IPAddress? peer, IPAddress? localAddress, int localPort, IHeaderDictionary headers, string hostHeader,
+        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners)
+    {
+        static IPAddress? V4(IPAddress? a) => a is { IsIPv4MappedToIPv6: true } ? a.MapToIPv4() : a;
+        return peer is not null && IPAddress.IsLoopback(peer)
+            && (adminListeners is null || adminListeners.Any(l => l.Port == localPort && Equals(V4(l.Address), V4(localAddress))))
+            && !ForwardingHeaders.Append(hostHeader).Any(headers.ContainsKey);
+    }
 
     /// <summary>Swagger UI's origin (http://localhost or 127.0.0.1, port 80), not other local web content.</summary>
     public static bool IsLocalOrigin(string? origin) =>
@@ -70,8 +78,7 @@ public static class ServerApp
                     Description = "What the server answers from the player state. Every other request "
                                   + "on these hosts replays the recordings, then the install archives and the web mirror; the rest is "
                                   + "logged to the miss log. Bodies are parsed as the client sends them (form or JSON) "
-                                  + "whatever the Content-Type. Each operation's server is its host from the settings, "
-                                  + "redirected to 127.0.0.1 by the hosts block.",
+                                  + "whatever the Content-Type. Each operation's server is its host from the settings.",
                 };
                 // routing drops a template's trailing slash; the client asks for this page with it
                 if (doc.Paths.Remove("/user/{handle}/score", out var scorePage))
@@ -102,7 +109,8 @@ public static class ServerApp
         var app = builder.Build();
         app.Use(async (ctx, next) =>
         {
-            var direct = IsDirectLocal(ctx, o.HostHeader);
+            var direct = IsDirectLocal(ctx.Connection.RemoteIpAddress, ctx.Connection.LocalIpAddress, ctx.Connection.LocalPort, ctx.Request.Headers,
+                o.HostHeader, o.AdminListeners);
             // behind a proxy the game host arrives in a header; only the proxies of this server are believed
             if (InAny(ctx.Connection.RemoteIpAddress, o.TrustedProxies) && ctx.Request.Headers[o.HostHeader] is { Count: 1 } game
                 && HostName.IsMatch(game[0]!))
@@ -203,9 +211,10 @@ public sealed class Loopback : IAsyncDisposable
 
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
-    public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes)
+    public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes,
+        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null)
     {
-        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes), k => k.Listen(IPAddress.Loopback, 0));
+        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners), k => k.Listen(IPAddress.Loopback, 0));
         await app.StartAsync();
         var port = new Uri(app.Urls.First()).Port;
         var http = new HttpClient(new SocketsHttpHandler

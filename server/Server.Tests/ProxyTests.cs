@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Http;
 
 namespace Resurgence.Server.Tests;
 
@@ -60,6 +61,35 @@ public class ProxyTests
             using var refused = await server.Http.SendAsync(request);
             Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
         }
+    }
+
+    [Fact]
+    public async Task AdminIsRefusedOnAListenerThatIsNotMarkedAdmin()
+    {
+        await using var server = await Loopback.StartAsync(Game(), adminListeners: [(IPAddress.Loopback, 1)]);
+        foreach (var path in new[] { "/admin/status", "/swagger/index.html" })
+        {
+            using var refused = await server.Http.GetAsync("http://localhost" + path);
+            Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        }
+    }
+
+    [Theory]
+    [InlineData("127.0.0.1", "127.0.0.1", 80, null, true)]
+    [InlineData("::1", "::1", 80, null, true)]
+    [InlineData("::ffff:127.0.0.1", "127.0.0.1", 80, null, true)]
+    [InlineData("203.0.113.9", "127.0.0.1", 80, null, false)]      // a peer that is not loopback
+    [InlineData("10.0.0.5", "127.0.0.1", 80, null, false)]
+    [InlineData("127.0.0.1", "127.0.0.1", 80, "X-Forwarded-For", false)]
+    [InlineData("127.0.0.1", "127.0.0.1", 80, "X-Game-Host", false)]
+    [InlineData("127.0.0.1", "127.0.0.1", 8081, null, false)]     // not an admin listener
+    public void DirectLocalMeansLoopbackPeerAdminListenerAndNoRelayHeader(string peer, string local, int port, string? header, bool expected)
+    {
+        var headers = new HeaderDictionary();
+        if (header != null) headers[header] = "x";
+        var admin = new[] { (IPAddress.Loopback, 80), (IPAddress.IPv6Loopback, 80) };
+        Assert.Equal(expected, ServerApp.IsDirectLocal(IPAddress.Parse(peer), IPAddress.Parse(local), port, headers, "X-Game-Host", admin));
+        Assert.Equal(expected || port == 8081 && header is null, ServerApp.IsDirectLocal(IPAddress.Parse(peer), IPAddress.Parse(local), port, headers, "X-Game-Host", null));
     }
 
     [Fact]

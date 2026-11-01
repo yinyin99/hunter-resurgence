@@ -158,7 +158,8 @@ async Task Serve()
     try
     {
         var app = ServerApp.Build(new ServerOptions(new Replay.Game(table, settings.Cfg, state, settings.MirrorDir), hars.Count, settings.DataDir,
-            Console: true, settings.TrustedProxies, settings.HostHeader, settings.MaxBodyBytes), k =>
+            Console: true, settings.TrustedProxies, settings.HostHeader, settings.MaxBodyBytes,
+            AdminListeners: [.. settings.Listeners.Where(l => l.Admin).Select(l => (l.Address, l.Port))]), k =>
         {
             foreach (var l in settings.Listeners)
             {
@@ -173,7 +174,7 @@ async Task Serve()
                 k.Listen(l.Address, l.Port, o => { o.Protocols = HttpProtocols.Http1; if (tls != null) o.UseHttps(tls); });
             }
         });
-        Console.WriteLine("listening on " + string.Join(", ", settings.Listeners.Select(l => $"{(l.Cert is null ? "http" : "https")}://{l.Address}:{l.Port}")));
+        Console.WriteLine("listening on " + string.Join(", ", settings.Listeners.Select(l => $"{(l.Cert is null ? "http" : "https")}://{l.Address}:{l.Port}{(l.Admin ? " (admin)" : "")}")));
         await app.RunAsync();
     }
     finally

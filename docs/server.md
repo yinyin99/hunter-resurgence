@@ -15,12 +15,12 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | Key | Meaning |
 |---|---|
 | `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `web_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host`, `crash_host` | The 13 host names the game asks for. All are required. The server routes by the `Host` of a request |
-| `install_dir` | The game's install folder: its archives answer image and map requests (`game/archives`) and its sample files seed the item definitions. Read only |
+| `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and its sample files seed the item definitions. Read only |
 | `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
 | `recordings_dir` | Default `recordings`: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets |
-| `listeners` | Required: a list of `{address, port}`; add `cert` and `key` (PEM files) for HTTPS. Plain HTTP is a listener without them. Every listener speaks HTTP/1.1 only |
+| `listeners` | Required: a list of `{address, port}`; add `cert` and `key` (PEM files) for HTTPS. Plain HTTP is a listener without them. `"admin": true` (loopback addresses only) makes it serve the admin API, see below. Every listener speaks HTTP/1.1 only |
 | `trusted_proxies` | Addresses or `address/prefix` of the proxies in front of the server (default none) |
 | `host_header` | Default `X-Game-Host`, see below |
 | `max_body_bytes` | Default 16 MiB: the request body limit. The admin API's is 64 KiB |
@@ -45,7 +45,7 @@ A proxy in front of the server speaks plain HTTP to it (a listener without `cert
 
 ## Admin API
 
-`/admin/*`, Swagger UI (`/swagger`) and the OpenAPI documents are for a person at the server's machine. A request is served only when its `Host` is `localhost` or `127.0.0.1`, its peer address (not a header) is a loopback address, and it carries no header that says a proxy relayed it (`X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `Forwarded`, `Via`, `X-Real-IP`, the `host_header`); any other request for those names gets 403. The last rule matters because a proxy on the same machine is a loopback peer too. Admin bodies are limited to 64 KiB. Open the admin API on a VPS through an SSH tunnel to a loopback listener.
+`/admin/*`, Swagger UI (`/swagger`) and the OpenAPI documents are for a person at the server's machine. A request is served only when all of these hold: its `Host` is `localhost` or `127.0.0.1`; it came in on a listener marked `"admin": true`; its peer address (not a header) is a loopback address; and it carries no header that says a proxy relayed it (`X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `Forwarded`, `Via`, `X-Real-IP`, the `host_header`). Any other request for those names gets 403. No listener is an admin listener unless marked, and a proxy on the same machine is a loopback peer too, so keep the listener a proxy connects to unmarked and give the admin API its own loopback listener (for example `127.0.0.1:8081`, reached from the VPS through an SSH tunnel). Admin bodies are limited to 64 KiB.
 
 ## Tests
 
