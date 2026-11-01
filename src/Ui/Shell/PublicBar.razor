@@ -1,9 +1,17 @@
 @inject ISessionService Sessions
+@inject NavigationManager Nav
 
 <header class="public">
     <div class="inner">
         <a class="logo" href="/feed"><AssetSlot Name="logo-large" Width="300" Height="50" /></a>
         <div class="signin">
+            @if (SignInUrl is { } url)
+            {
+                @* the community server signs in: a full page load to Steam and back (Blazor's router would take a plain link for a page) *@
+                <a class="toggle" href="@url" @onclick="SignIn" @onclick:preventDefault><span class="ask">@L["Public.Already"]</span> <span class="in">@L["Public.SignIn"]</span></a>
+            }
+            else
+            {
             <button type="button" class="toggle" popovertarget="signin"><span class="ask">@L["Public.Already"]</span> <span class="in">@L["Public.SignIn"]</span> <Icon Name="caret-down" /></button>
             <form id="signin" class="panel" popover @onsubmit="Submit" novalidate>
                 @if (!codeSent)
@@ -21,11 +29,18 @@
                     <button type="submit" class="btn btn-primary">@L[codeSent ? "Signin.Submit" : "Signin.SendCode"]</button>
                 </div>
             </form>
+            }
         </div>
     </div>
 </header>
 
 @code {
+    /// <summary>Where the community server signs in and comes back to the page the player is on; null: the e-mail panel.</summary>
+    string? SignInUrl => Sessions.SignInUrl("/" + Nav.ToBaseRelativePath(Nav.Uri));
+
+    // read again at the click: the bar is not rendered again when the page changes
+    void SignIn() => Nav.NavigateTo(SignInUrl!, forceLoad: true);
+
     bool codeSent;
     string email = "", code = "";
     string? error;

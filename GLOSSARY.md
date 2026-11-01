@@ -78,6 +78,12 @@ _Avoid_: new launcher (outside the roadmap)
 **Old launcher**:
 The game's original launcher.
 
+**Start page**:
+The page the community server shows in the old launcher: sign in with Steam, then Play.
+
+**Launch URL**:
+The address the old launcher gives the game to connect: the server's host and the player's session, access and refresh tokens.
+
 **Game folder**:
 The folder where the game is installed.
 _Avoid_: install folder

@@ -24,6 +24,8 @@ public static class Replay
     public const string DISCOUNTS = "/v1/Application/discounts";
     public const string SPLASH = "/v1/Splash/list_active";
     public const string LAUNCH_START = "/v1/Launch/start";
+    public const string JWT = "/v1/User/jwt";
+    public const string OAUTH_TOKEN = "/v1/Oauth/token";
     public const string APPLICATION = "/v1/Application/application";
     public const string PUBLIC_EXPEDITION = "/v1/Public_user/expedition";
     public const string EXPEDITION_LIST = "/v1/Expedition/list";
@@ -300,8 +302,10 @@ public static class Replay
         public readonly JsonObject Cfg;
         public readonly State? State;
         public readonly string MirrorDir;
-        public readonly string Gs, Apiv2, Api, Web;
+        public readonly string Gs, Apiv2, Api, Web, Signup;
         public readonly HashSet<string> Sinks;
+        /// <summary>The game's credentials; null without player state.</summary>
+        public readonly GameTokens? Tokens;
 
         public Game(HarTable table, JsonObject cfg, State? state, string mirrorDir)
         {
@@ -311,6 +315,8 @@ public static class Replay
             Api = S(cfg, "api_host").ToLowerInvariant();
             Web = S(cfg, "web_host").ToLowerInvariant();
             Sinks = SinkHosts(cfg);
+            Signup = S(cfg, "signup_host").ToLowerInvariant();
+            Tokens = state is null ? null : new GameTokens(state.Store, S(cfg, "gameserver_host"));
         }
 
         /// <summary>The recorded reply for this request: the one recorded with the same query/form params when it is

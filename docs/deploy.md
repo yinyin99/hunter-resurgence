@@ -50,6 +50,8 @@ WEB_TAG=latest
 
 `WEB_IMAGE` is in lower case. Every deploy rewrites the `WEB_TAG` line with the commit sha it rolled out, so the line has to exist. Every deploy also replaces the `LINK_BACKUP=<url>` line with the repository variable `LINK_BACKUP` (no line when the variable is unset); compose passes it to `web`.
 
+The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `LINK_BACKUP` and `SERVER_URL`. `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send `/auth/*` to the server for the sign-in links to work.
+
 `settings.json` (game name and the other links, see [launcher.md](launcher.md#settingsjson)) is optional. The backup tool link comes from the `LINK_BACKUP` variable, which wins over `link_backup` of the file. To use one, put it in `~/web/` and mount it in `compose.override.yml`, which Compose reads next to `compose.yml` and deploys never overwrite:
 
 ```yaml

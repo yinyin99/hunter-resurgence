@@ -1,12 +1,27 @@
 @page "/logout"
 @layout BrowserLayout
 @inject ISessionService Sessions
+@inject NavigationManager Nav
 
 <PageTitle>@L["App.Name"]</PageTitle>
 
-<BrowserNotice Text="@L["Browser.Logout"]" />
+@if (Sessions.SignInUrl("/") is null)
+{
+    <BrowserNotice Text="@L["Browser.Logout"]" />
+}
+else
+{
+    @* the community server's session: opening this address (a link on any site) signs nobody out; the button does *@
+    <div class="browser-notice"><button type="button" class="btn btn-primary" @onclick="SignOut">@L["Tip.SignOut"]</button></div>
+}
 
 @code {
-    // the old page clears the login and sends the browser on to the website; the mock host stays on the notice
-    protected override Task OnInitializedAsync() => Sessions.SignOutAsync();
+    // the old page clears the login and sends the browser on to the website; the mock host signs out at once and stays on the notice
+    protected override Task OnInitializedAsync() => Sessions.SignInUrl("/") is null ? Sessions.SignOutAsync() : Task.CompletedTask;
+
+    async Task SignOut()
+    {
+        await Sessions.SignOutAsync();
+        Nav.NavigateTo("/feed", replace: true);
+    }
 }

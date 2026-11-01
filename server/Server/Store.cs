@@ -16,9 +16,21 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 1;
+    public const int Version = 2;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
+
+    // the cookie of the website and of the launcher's start page; a separate table, so a cookie is never a game token
+    const string WebSessions = """
+        CREATE TABLE web_sessions (
+            hash TEXT PRIMARY KEY,                           -- SHA-256 of the cookie value, hex
+            account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+            expires_ts INTEGER NOT NULL);
+        """;
+
+    /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
+    /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
+    public const long FirstServerId = 2_000_000_000;
 
     // Ids that come from outside (a restored zip's guid and kill_id) are keyed with the account; the ids the server
     // allocates for the client (expedition, photo) stay rowids and are looked up with the account as well.
@@ -37,6 +49,7 @@ public sealed class Store
             created_ts INTEGER NOT NULL,
             expires_ts INTEGER);
         CREATE INDEX tokens_account ON tokens (account_id);
+        {WebSessions}
 
         CREATE TABLE items (
             {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER,
@@ -118,8 +131,11 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'items'")! > 0)
                 throw new InvalidOperationException("the database predates accounts: delete it and start again");
             con.Script(Schema);
-            con.Script($"PRAGMA user_version = {Version}");
         }
+        else if (version == 1)
+            con.Script(WebSessions);
+        if (version < Version)
+            con.Script($"PRAGMA user_version = {Version}");
         con.Commit();
     }
 
@@ -141,6 +157,21 @@ public sealed class Store
     {
         using var con = Open();
         return con.Scalar("SELECT id FROM accounts WHERE handle = ?", handle) as long?;
+    }
+
+    /// <summary>The next free user id of the server's own range. Callers that then create the account hold one lock, so
+    /// two sign-ins never get the same one (one server process, ADR 0001).</summary>
+    public long NextServerId()
+    {
+        using var con = Open();
+        var next = ((con.Scalar("SELECT MAX(id) FROM accounts WHERE id >= ?", FirstServerId) as long?) ?? FirstServerId - 1) + 1;
+        return next <= int.MaxValue ? next : throw new InvalidOperationException("the server's user ids are used up");
+    }
+
+    public string? HandleOf(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT handle FROM accounts WHERE id = ?", id) as string;
     }
 
     /// <summary>The connect reply's `account` object of an account.</summary>
@@ -166,10 +197,11 @@ public sealed class Store
     // ---- tokens
 
     /// <summary>A new token for the account (the game's session, an API access token, a JWT: all the same here). The
-    /// database keeps only its hash, so this is the one time anyone sees it. lifetime null: it never expires.</summary>
-    public string CreateToken(long accountId, TimeSpan? lifetime = null)
+    /// database keeps only its hash, so this is the one time anyone sees it. lifetime null: it never expires. prefix:
+    /// text in front of the random part (a JWT's header and payload).</summary>
+    public string CreateToken(long accountId, TimeSpan? lifetime = null, string prefix = "")
     {
-        var token = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(20));  // 40 hex, the shape of the game's session
+        var token = prefix + Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(20));  // 40 hex, the shape of the game's session
         var now = Now();
         using var con = Open();
         con.Exec("INSERT INTO tokens (hash, account_id, created_ts, expires_ts) VALUES (?, ?, ?, ?)",
@@ -184,6 +216,39 @@ public sealed class Store
         return con.Scalar("SELECT t.account_id FROM tokens t JOIN accounts a ON a.id = t.account_id"
                           + " WHERE t.hash = ? AND (t.expires_ts IS NULL OR t.expires_ts > ?) AND a.banned = 0",
                           Hash(token), Now()) as long?;
+    }
+
+    // ---- web sessions (the cookie of the website and of the start page)
+
+    public string CreateWebSession(long accountId, TimeSpan lifetime)
+    {
+        var cookie = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
+        using var con = Open();
+        con.Exec("INSERT INTO web_sessions (hash, account_id, expires_ts) VALUES (?, ?, ?)", Hash(cookie), accountId, Now() + (long)lifetime.TotalSeconds);
+        return cookie;
+    }
+
+    /// <summary>The account of a cookie; null when it is unknown, expired or its account is banned.</summary>
+    public long? ResolveWebSession(string cookie)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT s.account_id FROM web_sessions s JOIN accounts a ON a.id = s.account_id"
+                          + " WHERE s.hash = ? AND s.expires_ts > ? AND a.banned = 0", Hash(cookie), Now()) as long?;
+    }
+
+    public void DeleteWebSession(string cookie)
+    {
+        using var con = Open();
+        con.Exec("DELETE FROM web_sessions WHERE hash = ?", Hash(cookie));
+    }
+
+    /// <summary>Drop the tokens and cookies that have expired (at startup).</summary>
+    public void PurgeExpired()
+    {
+        using var con = Open();
+        var now = Now();
+        con.Exec("DELETE FROM tokens WHERE expires_ts <= ?", now);
+        con.Exec("DELETE FROM web_sessions WHERE expires_ts <= ?", now);
     }
 
     static string Hash(string token) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));

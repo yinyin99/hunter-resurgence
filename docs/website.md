@@ -8,6 +8,18 @@ The screens follow the original website screen for screen (same theme, places, n
 
 The mock session starts signed in as a fictional hunter (`Hunter01`); sign out in the top bar to see the public site. Sign-in is the email, then a six-digit code (there is no password); the mock accepts any address with an `@` and any six digits.
 
+## Sign-in
+
+Without `SERVER_URL` (development, the CI smoke test) everything above holds: the mock session and the email sign-in panel.
+
+With `SERVER_URL` set (for example `http://server:8080`, the community server's address on the internal network) the website uses the server's Steam sign-in, which both serve on the same domain behind one reverse proxy. The server's `web_host` setting must be this website's domain, and the proxy sends `/auth/*` to the server ([deploy.md](deploy.md#adding-the-server-service-or-another-site)).
+
+- **Sign in**: "Already a hunter? Sign in" in the public bar (`src/Ui/Shell/PublicBar.razor`) is a plain link to `/auth/steam/login?next=<current path>`, a full page load. The server sends the player to Steam, asks for a handle the first time, sets the session cookie `hr_session` (HttpOnly, 30 days) and returns to `next`.
+- **Who is signed in**: `ServerSessionService` (`src/Services/`) asks the server `GET /auth/me` with the browser's cookie; 200 gives the handle, anything else (401, no answer within 5 s, an error) means signed out and never reaches the page. The paths and the JSON are in `src/Services/Contracts/ServerSessionApi.cs`. Nothing is cached: every read asks again.
+- **Sign out**: the sign-out button opens `/logout`, which only shows a "Sign Out" button (opening the address signs nobody out); the click calls `POST /auth/signout` with the cookie and `X-Requested-With: XMLHttpRequest`, then shows the public site. The server deletes the session; if it cannot be reached the website is signed out for that tab only.
+- **The cookie reaches the server** because the website forwards it: `src/Web/Components/App.razor` reads `hr_session` and the request's `Host` from the page request and passes them to `Routes` as parameters (the page's component marker is protected by data protection, so the browser cannot read it), where they fill a per-circuit holder. Blazor's `HttpContext` is not reliable once the circuit runs, so nothing reads it later. The server picks its site by `Host`, so the website sends the host the browser used.
+- **Still mock**: the store, profile, wallet, friends, messages, missions and every other page, and the handle and score (`HunterScore` is 0). The e-mail, handle and agreements methods of the session do not apply (the agreements count as accepted).
+
 ## Backup tool
 
 Until the official servers close, every website page (signed in or out) offers the backup tool twice. The work-in-progress banner has a "Save your profile before then: download the backup tool" link. A large orange button with the same text and a download icon (`src/Ui/Shell/BackupButton.razor`) sits at the top left: in the window margin left of the top bar's logo when the window is at least 1880px wide, otherwise just under the logo. It stays in place while the page scrolls. The plain pages of `BrowserLayout` (`/auto-login`, `/email/verify`, `/email/confirm`, `/email/change`, `/thank-you`, `/logout`) have only the banner link. The launcher shows the same button, always under the logo, but no banner. Both open a dialog (`src/Ui/Modals/BackupDialog.razor`) with README's three steps and the SmartScreen note, plus a "Download the backup tool" button. The steps follow README's "For players: the backup tool": change both together.

@@ -16,8 +16,19 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json")).WithLink("backup", builder.Configuration["LINK_BACKUP"]));
 builder.Services.AddMockServices();
 builder.Services.AddScoped<HostMode>();
-// one mock session per browser circuit, so signing in or out in one tab does not change the others
-builder.Services.AddScoped<ISessionService>(sp => new MockSessionService(() => sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<ServerCookie>();
+if (builder.Configuration["SERVER_URL"] is { Length: > 0 } serverUrl)
+{
+    // SERVER_URL (docs/website.md#sign-in): the session is the community server's, reached by its internal address; the player's cookie is sent by hand
+    builder.Services.AddHttpClient("server", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromSeconds(5); })
+        .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
+    builder.Services.AddScoped<ISessionService>(sp => new ServerSessionService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSessionService>>()));
+}
+else
+{
+    // one mock session per browser circuit, so signing in or out in one tab does not change the others
+    builder.Services.AddScoped<ISessionService>(sp => new MockSessionService(() => sp.GetRequiredService<HostMode>().Mock));
+}
 // the development states (?mock=patch:..., ?mock=settings:first) are per browser circuit too
 builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));

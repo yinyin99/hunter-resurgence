@@ -12,6 +12,8 @@ public interface ISessionService
     Task<Session?> CurrentAsync();
     /// <summary>Raised after a sign-in or sign-out so the shell can switch between the public and the signed-in bar.</summary>
     event Action? Changed;
+    /// <summary>Set when signing in is a page load of the community server (the website with SERVER_URL): where to go, to come back to the local path <paramref name="next"/>. Null: sign in with the e-mail methods below.</summary>
+    string? SignInUrl(string next) => null;
     Task<Result> RequestCodeAsync(string email);
     /// <param name="register">The account is new: the session has no handle yet.</param>
     Task<Result> SignInAsync(string email, string code, bool register = false);
