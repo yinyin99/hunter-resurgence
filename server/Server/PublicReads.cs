@@ -67,6 +67,26 @@ public sealed partial class State
         return C(MeOf(con, account)["avatar"]);
     }
 
+    /// <summary>The in-game pages' catalogue: the keys they read of the application catalogue (species with the permitted ammo of
+    /// each, items, reserves, locations; the missions only when the catalogue has them).</summary>
+    public byte[] ClientApplicationReply()
+    {
+        var reply = new JsonObject();
+        foreach (var key in (string[])["items", "locale", "locations", "mission_groups", "missions", "reserves", "season", "species"])
+            reply[key] = C(application[key]) ?? key switch { "locale" => JsonValue.Create("en_us"), "season" => JsonValue.Create(0), _ => new JsonArray() };
+        foreach (var sp in reply["species"]!.AsArray().OfType<JsonObject>())
+            if (sp["ethicalAmmo"] is null && Py.L(sp["id"]) is >= 0 and var id && id < ethicalAmmo.Count)
+                sp["ethicalAmmo"] = C(ethicalAmmo[(int)id]);
+        return Py.DumpBytes(reply);
+    }
+
+    /// <summary>When the account last hunted (the end of its newest expedition, else the last heartbeat): Me/poll's `last_hunt_update_ts`, 0 before a first hunt.</summary>
+    public double LastHuntUpdate(long account)
+    {
+        using var con = Con(account);
+        return Convert.ToDouble(con.Scalar("SELECT COALESCE(MAX(COALESCE(end_ts, last_seen, start_ts)), 0) FROM expeditions WHERE account_id = $a"));
+    }
+
     /// <summary>Inventory/list of the account: a row per owned item with its definition and the owned rows. ponytail: a placed
     /// item's `location` is null (its position is not sent).</summary>
     public byte[] InventoryListReply(long account)

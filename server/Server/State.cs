@@ -173,7 +173,7 @@ public sealed partial class State
                     con.Exec("INSERT INTO messages (account_id, sender, content, ts) VALUES ($a, ?, ?, ?)", SYSTEM_SENDER, warning.Message, (long)Py.Now());
                 }
             }
-            else if (Is(e["event"], 6) && Py.IsDigit(Py.Str(G(e, "item", ""))))
+            else if (Is(e["event"], 6) && Py.IsDigit(Py.Str(G(e, "item", ""))) && Py.Truthy(G(e, "quantity", 0)))  // the first heartbeat lists every item with 0
                 con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
                          + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
@@ -382,6 +382,7 @@ public sealed partial class State
     }
 
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
+    readonly JsonObject application;
     readonly JsonNode? skillList;
     readonly bool offline;
     /// <summary>A community server: every request needs a token, and the sign-in, start page and issued tokens are on.</summary>
@@ -424,6 +425,7 @@ public sealed partial class State
         photosDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "photos");
         this.baseUrl = baseUrl;
         this.iconUrl = iconUrl;
+        this.application = application;
         foreach (var s in Arr(G(application, "species", null)))
             species[Py.L(s!["id"])] = s.AsObject();
         foreach (var i in Arr(G(application, "items", null)))
@@ -452,8 +454,10 @@ public sealed partial class State
             defaultUnits[Py.L(i!["item_id"])] = i["units"];
         // permitted ammo per species id, all species (species_ammo is the reserve's subset)
         ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
-        var (scheme, netloc) = SchemeNetloc(Py.Str(G(AccountTemplate(), "avatar_url", "")));
-        avatarBase = $"{scheme}://{netloc}";  // the notice sender's icons live on the avatar host
+        var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
+        var (scheme, netloc) = SchemeNetloc(avatarUrl);
+        // the account's picture is `<base>/256/<id>.png`; the notice sender's icons live beside it
+        avatarBase = avatarUrl.IndexOf("/256/", StringComparison.Ordinal) is var cut and > 0 ? avatarUrl[..cut] : $"{scheme}://{netloc}";
         var byDefine = new Dictionary<string, JsonObject>();
         foreach (var d in Arr(itemDefs))
             byDefine[(string)d!["define"]!] = d.AsObject();
@@ -797,7 +801,7 @@ public sealed partial class State
             {
                 RestoredReads.Connect(con, reply, me, Store.SteamId64(account));
                 if (Online && reply["network"] is JsonObject network)
-                    network["ip"] = "0.0.0.0";
+                    network["ip"] = null;  // single player sends none
             }
         }
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
@@ -992,7 +996,7 @@ public sealed partial class State
     public void NoteLaunch(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
-        var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start"));
+        var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();
@@ -1185,6 +1189,7 @@ public sealed partial class State
         reply["expeditions"] = new JsonArray((Py.IsDigit(limit) ? expeditions.Take((int)Math.Min(long.Parse(limit), int.MaxValue)) : expeditions).ToArray());
         var total = G(reply, "total", 0);
         reply["total"] = Py.IsInt(total) ? JsonValue.Create(Py.L(total) + ours.Count) : JsonValue.Create(Py.D(total) + ours.Count);
+        reply["has_more"] = Py.IsDigit(limit) && expeditions.Count > long.Parse(limit);  // the current build asks for this instead of `total`
         return Py.DumpBytes(reply);
     }
 

@@ -3,6 +3,7 @@
 // the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback): a local server's
 // recorded reply, a community server's empty one (ReplayScope).
 using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -98,6 +99,24 @@ public static class GameApi
                .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one). Reply: `{access_token, refresh_token, "
                                 + "session, status}` with fresh tokens of the player; a local server replays the recorded one.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, START_SINGLE_PLAYER, r => Own(game, r, a =>
+                {
+                    s.NoteLaunch(a, r.Body);
+                    var (session, network) = (s.Store.CreateToken(a, Lifetimes.Session), 7_000_000_000L + RandomNumberGenerator.GetInt32(1_000_000_000));
+                    List<(string, string)> headers = [.. JsonAnyOrigin()];
+                    foreach (var path in new[] { "/", START_SINGLE_PLAYER[..(START_SINGLE_PLAYER.LastIndexOf('/') + 1)] })  // the launcher reads them from either path
+                        headers.AddRange([("Set-Cookie", $"{ProtocolLiterals.LaunchSessionCookie}={session}; Path={path}; SameSite=lax; Secure"),
+                                          ("Set-Cookie", $"{ProtocolLiterals.LaunchNetworkCookie}={network}; Path={path}; SameSite=lax; Secure")]);
+                    return new(200, headers, Py.DumpBytes(new JsonObject { ["session_id"] = session, ["network_id"] = network }), "state");
+                }))
+               .WithName("StartSinglePlayer").WithSummary("Start a single-player session in a reserve")
+               .WithDescription("Opens a new expedition at `lodge_id` in `reserve` (closing any open one). Reply `{session_id, network_id}`: the session is the "
+                                + "first segment of the launch URL (and the game's `X-Hun-Session`), and it is set as cookies too.")
+               .Body<StartSinglePlayerForm>("application/json").Produces(200, contentType: "application/json");
+            api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(), "state"))
+               .WithName("ClientApplication").WithSummary("The catalogue the in-game pages read")
+               .WithDescription("The recorded reply when the operator has one, else the species, items, reserves and locations of the player state (no missions).")
+               .Body<LangForm>("application/json").Produces(200, contentType: "application/json");
             // the game's JWT, asked for by the game on its own host and by the pages on the API host; a local server replays the recorded one
             Func<Req, Reply?> jwt = r => !s.Online ? null : Own(game, r,
                 a => new(200, JsonAnyOrigin(), Py.DumpBytes(new JsonObject { ["token"] = game.Tokens!.Jwt(a) }), "state"), WithJsonToken(r));
@@ -150,6 +169,9 @@ public static class GameApi
                 : null)
            .WithName("Splashes").WithSummary("Launcher news splashes")
            .WithDescription("The recorded list with a server notice first.").Produces(200, contentType: "application/json");
+        api.MapGet(FEED_DATA, Handle(game, r => r.Method == "GET" && r.Path == FEED_DATA ? FeedData(game, r) : null))
+           .WithName("FeedData").WithSummary("Launcher news: `{posts, splashes}`")
+           .WithDescription("The recorded reply with the server notice first in `splashes`; without a recording `posts` is empty.").Produces(200, contentType: "application/json");
         if (s != null)
         {
             // Base: the recorded reply on a local server, the endpoint's empty shape on a community server (ReplayScope).
@@ -174,8 +196,16 @@ public static class GameApi
                         var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
                         if (path == ME)
                             reply = s.MeReply(a, reply) ?? reply;
-                        else if (s.Online)
-                            reply["avatar"] = s.Avatar(a);
+                        else
+                        {
+                            if (s.Online)
+                                reply["avatar"] = s.Avatar(a);
+                            // the current build's keys, whatever the base reply had
+                            reply["campaign_stylesheet"] ??= false;
+                            reply["community_campaign_stylesheet"] ??= false;
+                            reply["active_campaign"] ??= false;
+                            reply["last_hunt_update_ts"] = s.LastHuntUpdate(a);
+                        }
                         var wallet = s.Wallet(a);
                         reply["gms"] = wallet["gm"]!.DeepClone();
                         reply["ems"] = wallet["em"]!.DeepClone();
@@ -184,7 +214,7 @@ public static class GameApi
                     }))
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
-                                    + "`unread_messages` from the state. A community server builds them from the account alone.")
+                                    + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
@@ -329,6 +359,16 @@ public static class GameApi
         return body is null ? null : new(200, Json(), Encoding.ASCII.GetBytes(body), "state");
     }
 
+    /// <summary>splash/feed_data `{posts, splashes}`: the recording's (posts as they were), the server's notice first in the splashes.</summary>
+    static Reply FeedData(Game game, Req r)
+    {
+        JsonObject reply = new() { ["posts"] = new JsonArray(), ["splashes"] = new JsonArray() };
+        try { if (game.Recorded(r) is { Tier: >= 1 } hit && JsonNode.Parse(hit.Body) is JsonObject recorded) reply = recorded; }
+        catch (JsonException) { }
+        reply["splashes"] = JsonNode.Parse(SplashWithNotice(Py.DumpBytes(reply["splashes"] as JsonArray ?? [])));
+        return new(200, JsonAnyOrigin(), Py.DumpBytes(reply), "patch");
+    }
+
     /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
     /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
     /// server. ponytail: the game server's and the game client's own reply to an expired session is not known; err 1 is a guess.</summary>
@@ -393,6 +433,12 @@ public static class GameApi
     public sealed record UserForm(long user_id, string? oauth_access_token);
 
     public sealed record ExpeditionListForm(long user_id, long limit, long offset);
+
+    public sealed record StartSinglePlayerForm(
+        [property: Description("Start time of day, minutes")] long time, long loadout_id,
+        [property: Description("Start location id (a lodge)")] long lodge_id, long reserve, string? oauth_access_token);
+
+    public sealed record LangForm(string lang);
 
     public sealed record TokenForm(string? oauth_access_token);
 
