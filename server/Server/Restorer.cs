@@ -22,9 +22,7 @@ public static class Restorer
     /// <exception cref="RestoreException">The zip is refused, the target does not exist, or the new account's handle is taken.</exception>
     public static Result Import(State state, string zipPath, long? target, string dataDir)
     {
-        string sha;
-        using (var f = File.OpenRead(zipPath))
-            sha = Convert.ToHexStringLower(SHA256.HashData(f));
+        var sha = Sha256(zipPath);
         var read = Importer.Read(zipPath, state.Catalogue);
         var model = read.Model;
         var uid = long.Parse(model.Identity.Uid);  // layer A: digits only and a 64-bit id
@@ -46,10 +44,28 @@ public static class Restorer
             var owner = zipHandle is null ? null : store.AccountByHandle(zipHandle);
             handle = zipHandle is not null && (owner is null || owner == id) ? zipHandle : (string)store.AccountJson(id)["handle"]!;
         }
-        var account = AccountObject(exists ? store.AccountJson(id) : state.NewAccount(id, handle), model, id, handle);
-        var kept = Path.Combine(dataDir, "restores", id.ToString(), sha + ".zip");
+        return Apply(state, zipPath, sha, read, id, id, handle, exists, backupDatabase: true, dataDir, null);
+    }
+
+    public static string Sha256(string path)
+    {
+        using var f = File.OpenRead(path);
+        return Convert.ToHexStringLower(SHA256.HashData(f));
+    }
+
+    /// <summary>Write the model into the account `current` (created when it does not exist) and keep the zip. finalId: the id
+    /// the account has afterwards (a restore that adopts the zip's user id; every row, token and session moves with it).
+    /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
+    /// (the local rule; a community server keeps the zip as the way back instead).</summary>
+    internal static Result Apply(State state, string zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
+                                 bool backupDatabase, string dataDir, Action<Db>? within)
+    {
+        var model = read.Model;
+        var store = state.Store;
+        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle);
+        var kept = Path.Combine(dataDir, "restores", finalId.ToString(), sha + ".zip");
         var copied = !File.Exists(kept);
-        var backup = exists ? store.Backup() : null;
+        var backup = exists && backupDatabase ? store.Backup() : null;
         if (copied)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
@@ -58,17 +74,19 @@ public static class Restorer
         var report = "";
         void Write(Db con)
         {
-            report = Rows(con, model, read.Report, id, handle, exists, sha, backup);
+            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup);
+            within?.Invoke(con);
+            if (finalId != current) Adopt(con, current, finalId);
         }
         try
         {
             if (!exists)
-                store.CreateAccount(id, handle, account, null, Write);
+                store.CreateAccount(current, handle, account, null, Write);
             else
             {
-                using var con = store.Open(id);
+                using var con = store.Open(current);
                 con.Begin();
-                con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), id);
+                con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
                 Write(con);
                 con.Commit();
             }
@@ -78,7 +96,26 @@ public static class Restorer
             if (copied) File.Delete(kept);
             throw;
         }
-        return new(id, !exists, sha, report);
+        var before = Path.Combine(dataDir, "restores", current.ToString());
+        if (finalId != current && Directory.Exists(before))  // zips kept for review under the old id follow the account
+        {
+            foreach (var file in Directory.GetFiles(before))
+                File.Move(file, Path.Combine(Path.GetDirectoryName(kept)!, Path.GetFileName(file)), overwrite: true);
+            Directory.Delete(before);
+        }
+        return new(finalId, !exists, sha, report);
+    }
+
+    /// <summary>Give the account (and its rows, tokens, sessions and claimed user ids) another user id, inside the caller's
+    /// transaction: the foreign keys are checked at its end, when every row has moved.</summary>
+    static void Adopt(Db con, long from, long to)
+    {
+        con.Script("PRAGMA defer_foreign_keys = ON");
+        foreach (var table in Store.PlayerTables)
+            con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = $a", to);
+        foreach (var table in new[] { "tokens", "web_sessions", "restored_ids" })
+            con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
+        con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
     }
 
     /// <summary>The connect reply's `account` object: base (the account's own, or the recorded one for a new account) with the
