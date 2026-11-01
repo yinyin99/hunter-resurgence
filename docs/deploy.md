@@ -12,7 +12,7 @@ The [website](website.md) (`src/Web/`) in a container on one Ubuntu 24.04 VPS, b
 | `deploy/.env.example` | the three values of `.env` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
-| `.github/workflows/ci.yml` | the `build` job also runs `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and checks that the release zip holds exactly `backup.exe` and `settings.json` (the release's publish step, without a tag) |
+| `.github/workflows/ci.yml` | the `build` job also runs `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and checks that the release zip holds exactly `backup.exe` and `settings.json` (the release's publish step, without a tag); the same for `tools\play\publish.cmd` and the player kit's zip (`play.exe`, `settings.json`, three `.cmd` files) |
 | `.github/workflows/ci.yml` | the `server-ubuntu` job runs the server's tests on Ubuntu ([server.md](server.md#tests)); the Windows run of them is part of the `build` job |
 | `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing, that `/robots.txt` is served ([website.md](website.md#build-and-run)), and that `/feed` and a 404 carry the security headers ([website.md](website.md#security-headers)) |
 | `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
