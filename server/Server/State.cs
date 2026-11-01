@@ -20,6 +20,8 @@ public sealed class State
     public const int HEARTBEAT_TIMEOUT = 120;
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
+    /// <summary>Metadata keys of a restored item's placement: the items table has no columns for them (see <see cref="Items"/>).</summary>
+    public const string POSITION = "__position", DIRECTION = "__direction";
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
@@ -47,11 +49,22 @@ public sealed class State
     static long NextId(Db con, string table, string column) =>
         (long)con.Scalar($"SELECT COALESCE(MAX({column}), 0) + 1 FROM {table} WHERE account_id = $a")!;
 
-    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string).</summary>
-    public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r => (JsonNode?)new JsonObject
+    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A restored placed item keeps its
+    /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
+    /// here as the row's own members.</summary>
+    public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
     {
-        ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])),
-        ["metadata"] = JsonNode.Parse((string)r[3]), ["units"] = Py.FromSql(r[4]),
+        var metadata = JsonNode.Parse((string)r[3])!.AsObject();
+        var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
+        foreach (var (key, member) in new[] { (POSITION, "position"), (DIRECTION, "direction") })
+            if (metadata.TryGetPropertyValue(key, out var value))
+            {
+                metadata.Remove(key);
+                row[member] = value;
+            }
+        row["metadata"] = metadata;
+        row["units"] = Py.FromSql(r[4]);
+        return (JsonNode?)row;
     }).ToArray());
 
     /// <summary>Add amount (negative: spend) to a wallet currency (call inside a transaction); return the new balance, or
@@ -463,14 +476,26 @@ public sealed class State
     /// <summary>The connect reply's `account` object of this account.</summary>
     JsonObject Account(long account) => Store.AccountJson(account);
 
-    /// <summary>A new account with the server's starting data (SeedFromConnect). Its connect `account` is the recorded
-    /// one with this user id and handle. id is the game's user id; throws when the id, the handle or the Steam id is taken.</summary>
-    public void CreateAccount(long id, string handle, string? steamId64 = null)
+    /// <summary>The connect `account` object of a new account: the recorded one with this user id and handle.</summary>
+    public JsonObject NewAccount(long id, string handle)
     {
         var account = (JsonObject)AccountTemplate().DeepClone();
         account["user_id"] = id;
         account["handle"] = handle;
-        Store.CreateAccount(id, handle, account, steamId64, SeedFromConnect);
+        return account;
+    }
+
+    /// <summary>A new account with the server's starting data (SeedFromConnect). id is the game's user id; throws when the
+    /// id, the handle or the Steam id is taken.</summary>
+    public void CreateAccount(long id, string handle, string? steamId64 = null) =>
+        Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, SeedFromConnect);
+
+    /// <summary>The item catalogue a restore reads units by (the Application/application reply); null without one.</summary>
+    public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items);
+
+    sealed class ItemCatalogue(Dictionary<long, JsonObject> items) : Restore.IItemCatalogue
+    {
+        public bool HasUnits(int itemId) => items.TryGetValue(itemId, out var item) && item["units"] is JsonObject;
     }
 
     /// <summary>The account of a request: the first of its tokens that resolves. None does: the local account on a local
@@ -587,6 +612,30 @@ public sealed class State
         if (userId != Py.Str(Account(account)["user_id"]))
             return null;
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
+    }
+
+    /// <summary>Statistics/total for the player's user_id from the restored rows; null for anyone else and for an account
+    /// without a restored profile (their recorded reply is replayed).</summary>
+    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+
+    /// <summary>Achievement/stats, as <see cref="StatisticsReply"/>.</summary>
+    public byte[]? AchievementReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.AchievementStats);
+
+    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read)
+    {
+        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
+        if (userId != Py.Str(Account(account)["user_id"]))
+            return null;
+        using var con = Con(account);
+        return RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
+    }
+
+    /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
+    /// profile lacks empty (a zip without its own Me/me); null for any other account.</summary>
+    public JsonObject? MeReply(long account, JsonObject recorded)
+    {
+        using var con = Con(account);
+        return RestoredReads.Me(con) is { } me ? RestoredReads.FillMissing(me, recorded) : null;
     }
 
     JsonObject Sender() => new() { ["handle"] = "Server", ["user_id"] = SYSTEM_SENDER, ["avatar"] = $"{avatarBase}/256/10000000.png" };
@@ -723,6 +772,9 @@ public sealed class State
         reply["account"] = Store.AccountJson(account);
         reply["wallet"] = Wallet(account);
         reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
+        using (var con = Con(account))
+            if (RestoredReads.Me(con) is { } me)  // a restored account: its own stats and login data, not the recorded player's
+                RestoredReads.Connect(con, reply, me, Store.SteamId64(account));
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }

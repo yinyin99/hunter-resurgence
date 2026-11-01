@@ -34,6 +34,8 @@ public static class Replay
     public const string CHAT_CONVERSATIONS = "/v1/Chat/conversations";
     public const string CHAT_CONVERSATION = "/v1/Chat/conversation";
     public const string SKILL_LIST = "/v1/Skill/list";
+    public const string STATISTICS_TOTAL = "/v1/Statistics/total";
+    public const string ACHIEVEMENT_STATS = "/v1/Achievement/stats";
     public const string LOCALE_PREFIX = "/static/built/js/locale/";
     public const string WEB_SCRIPT_SUFFIX = "_compiled_web.min.js";
 
