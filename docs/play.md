@@ -54,7 +54,7 @@ The kit sends everything the game sends, including your sign-in tokens, to the o
 | Key | Meaning |
 |---|---|
 | `server_url` | The community server's `https://` address, without a query. The one setting that changes the server |
-| every `*_host` key | The game's server names (the 13 `*_host` keys of the server's `settings.json`, see [server.md](server.md#run-it)). They go into the hosts block and into the certificate. Only plain host names are accepted; a name starting with `www.` also redirects the bare name |
+| every `*_host` key | The game's server names: the current build needs `game_web_host` (everything it sends) and `crash_host` (crash reports); the older `*_host` keys of the server's `settings.json` ([server.md](server.md#run-it)) are only for the old build. Never `web_host`: that is the community server's own website. They go into the hosts block and into the certificate. Only plain host names are accepted; a name starting with `www.` also redirects the bare name |
 
 The host list is data: a new name needs a new `settings.json`, not a new build.
 
