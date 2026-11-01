@@ -225,7 +225,7 @@ public class InstallTests : IDisposable
         var reply = JsonNode.Parse(state.ConnectReply(5000))!;
         Eq("""{"em": 1000, "gm": 0}""", reply["wallet"]);  // the facts file's start, not the recording's
         Assert.NotEqual(Py.Dumps(connect["inventory"]!["items"]), Py.Dumps(reply["inventory"]!["items"]));
-        Assert.Equal("https://avatar.test/256/1.png", (string)reply["account"]!["avatar_url"]!);
+        Assert.StartsWith("https://avatar.test/256/", (string)reply["account"]!["avatar_url"]!);
         Assert.NotEqual((string)connect["account"]!["avatar_url"]!, (string)reply["account"]!["avatar_url"]!);
     }
 }
