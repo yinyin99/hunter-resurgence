@@ -10,24 +10,6 @@ namespace Resurgence.Server;
 
 public static class Replay
 {
-    public static class Paths
-    {
-        public static readonly string Root = FindRoot();
-        public static readonly string Work = System.IO.Path.Combine(Root, "data");
-        public static readonly string Mirror = System.IO.Path.Combine(Root, "mirror");
-        public static readonly string Recordings = System.IO.Path.Combine(Root, "recordings");
-
-        // the folder that holds settings.json, searched upwards from the exe
-        static string FindRoot()
-        {
-            for (var d = new DirectoryInfo(AppContext.BaseDirectory); d != null; d = d.Parent)
-                if (File.Exists(System.IO.Path.Combine(d.FullName, "settings.json"))) return d.FullName;
-            Console.Error.WriteLine("settings.json not found");
-            Environment.Exit(1);
-            return "";
-        }
-    }
-
     static readonly HashSet<string> DropHeaders = ["content-encoding", "content-length", "transfer-encoding", "connection", "keep-alive", "alt-svc", "date", "server"];
     static readonly HashSet<string> VolatileParams = ["oauth_access_token", "access_token", "callback", "_", "session_ticket"];
     static readonly Regex Jsonp = new(@"^\s*[\w$.]+\(", RegexOptions.ECMAScript);
@@ -65,9 +47,6 @@ public static class Replay
         public readonly OrderedDictionary<Key, Hit> Entries = new();
         public readonly Dictionary<string, (string Started, byte[] Body)> Connects = new();
     }
-
-    public static JsonObject LoadCfg() =>
-        (JsonObject)JsonNode.Parse(File.ReadAllText(System.IO.Path.Combine(Paths.Root, "settings.json")))!;
 
     static string S(JsonObject cfg, string key) => (string)cfg[key]!;
 

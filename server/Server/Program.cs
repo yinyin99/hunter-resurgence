@@ -1,6 +1,6 @@
-// Entry point: serve (default), admin, coverage.
+// Entry point: serve (default), admin, coverage. Every command reads settings.json: --settings <file>, else the
+// SERVER_SETTINGS environment variable, else settings.json in the current folder (docs/server.md).
 using System.Globalization;
-using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -16,12 +16,25 @@ const string AdminUsage = """
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
     """;
 
-Scoring.Load(Replay.LoadCfg(), Replay.Paths.Root);
-var cmd = args.Length > 0 ? args[0] : "serve";
+var words = args.ToList();
+string? settingsFile = null;
+if (words.IndexOf("--settings") is var at and >= 0)
+{
+    if (at + 1 >= words.Count) Die("--settings needs a file");
+    settingsFile = words[at + 1];
+    words.RemoveRange(at, 2);
+}
+settingsFile ??= Environment.GetEnvironmentVariable("SERVER_SETTINGS") ?? "settings.json";
+Settings settings = null!;
+try { settings = Settings.Load(settingsFile); }
+catch (Exception e) when (e is InvalidDataException or IOException) { Die(e.Message); }
+Scoring.Load(settings.Cfg, settings.VariantsFile);
+
+var cmd = words.Count > 0 ? words[0] : "serve";
 switch (cmd)
 {
     case "serve": await Serve(); break;
-    case "admin": Admin(args[1..]); break;
+    case "admin": Admin([.. words.Skip(1)]); break;
     case "coverage": await Coverage(); break;
     default: Die($"unknown command {cmd}: serve | admin | coverage"); break;
 }
@@ -33,22 +46,22 @@ static void Die(string message)
     Environment.Exit(1);
 }
 
-static Replay.HarTable Table(out List<string> hars)
+Replay.HarTable Table(out List<string> hars)
 {
-    hars = Directory.Exists(Replay.Paths.Recordings)
-        ? Directory.GetFiles(Replay.Paths.Recordings, "*" + Recordings.Ext).OrderBy(p => p.ToLowerInvariant(), StringComparer.Ordinal).ToList()
+    hars = Directory.Exists(settings.RecordingsDir)
+        ? Directory.GetFiles(settings.RecordingsDir, "*" + Recordings.Ext).OrderBy(p => p.ToLowerInvariant(), StringComparer.Ordinal).ToList()
         : [];
     return Replay.BuildTable(hars);
 }
 
-static void Admin(string[] a)
+void Admin(string[] a)
 {
     if (a.Length > 0 && a[0] == "spawn")
     {
         var n = a.Skip(3).Select(s => int.TryParse(s, out var v) ? (int?)v : null).ToArray();
         int reserve = 0;
         if (a.Length < 4 || !int.TryParse(a[1], out reserve) || n.Any(v => v is null) || n.Length is 3 or 4 or > 5) Die(AdminUsage);
-        var spawner = new Spawner(Path.Combine(Replay.Paths.Work, "spawn.json"));
+        var spawner = new Spawner(Path.Combine(settings.DataDir, "spawn.json"));
         var req = new Spawner.Request(reserve, a[2], n[0], n.Length > 1 ? n[1] : 0, n.Length > 2 ? n[2] : null, n.Length > 3 ? n[3] : null,
                                       n.Length > 4 ? n[4] : null, null, null, null, null);
         var errors = Spawner.Validate(req);
@@ -63,8 +76,8 @@ static void Admin(string[] a)
             ? !long.TryParse(a[1], out itemId) || (a.Length == 3 && !long.TryParse(a[2], out count))
             : !double.TryParse(a[1], NumberStyles.Float, CultureInfo.InvariantCulture, out amount))
         Die(AdminUsage);
-    Directory.CreateDirectory(Replay.Paths.Work);
-    var state = Replay.LoadState(Replay.LoadCfg(), Table(out _), Replay.Paths.Work);
+    Directory.CreateDirectory(settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the player state from"); return; }
     if (a[0] == "item")
     {
@@ -83,11 +96,11 @@ static void Admin(string[] a)
 
 // Replay every recorded request on a redirected host through the server (player state off) and list what it can't
 // answer faithfully. Hosts are printed as their settings key (api, static, ...), never by name.
-static async Task Coverage()
+async Task Coverage()
 {
-    var cfg = Replay.LoadCfg();
+    var cfg = settings.Cfg;
     var table = Table(out var hars);
-    await using var server = await Loopback.StartAsync(new Replay.Game(table, cfg, null, Replay.Paths.Mirror));
+    await using var server = await Loopback.StartAsync(new Replay.Game(table, cfg, null, settings.MirrorDir));
     var hosts = Replay.RedirectedHosts(cfg).ToHashSet();
     hosts.ExceptWith(Replay.SinkHosts(cfg));
     var roles = Replay.HostKeys.ToDictionary(k => ((string)cfg[k]!).ToLowerInvariant(), k => k[..^"_host".Length]);
@@ -129,26 +142,42 @@ static async Task Coverage()
         Console.WriteLine($"{n,5}/{total[key]} {key.Item1} {key.Item2}{key.Item3}");
 }
 
-static async Task Serve()
+async Task Serve()
 {
-    string cert = Path.Combine(Replay.Paths.Work, "leaf.pem"), key = Path.Combine(Replay.Paths.Work, "leaf.key");
-    if (!(File.Exists(cert) && File.Exists(key))) Die("no certificate: put leaf.pem and leaf.key in the data folder");
-    var cfg = Replay.LoadCfg();
-    Directory.CreateDirectory(Replay.Paths.Work);
+    foreach (var l in settings.Listeners)
+        foreach (var file in new[] { l.Cert, l.Key })
+            if (file is not null && !File.Exists(file)) Die($"{file}: not found (listener {l.Address}:{l.Port})");
+    Directory.CreateDirectory(settings.DataDir);
     var t0 = DateTime.UtcNow;
     var table = Table(out var hars);
     Console.WriteLine($"table: {table.Entries.Keys.Count(k => k.Params is null)} keys from {hars.Count} recordings in {Py.Fixed((DateTime.UtcNow - t0).TotalSeconds, 1)}s");
-    Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)cfg["install_dir"]!).Count} entries");
-    var state = Replay.LoadState(cfg, table, Replay.Paths.Work);
-    Console.WriteLine("player state: " + (state != null ? Path.Combine(Replay.Paths.Work, "state.db") : "off (no recorded connect)"));
-    using var pem = X509Certificate2.CreateFromPemFile(cert, key);
-    using var tls = X509CertificateLoader.LoadPkcs12(pem.Export(X509ContentType.Pkcs12), null);  // SChannel can't use a PEM load's ephemeral key; disposing deletes its key file
-    var app = ServerApp.Build(new ServerOptions(new Replay.Game(table, cfg, state, Replay.Paths.Mirror), hars.Count, Replay.Paths.Work, Console: true), k =>
+    Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)settings.Cfg["install_dir"]!).Count} entries");
+    var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
+    Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect)"));
+    var certs = new List<X509Certificate2>();
+    try
     {
-        // HTTP/1.1 only: ALPN would move the client's embedded browser to h2. TLS versions: the OS default
-        k.Listen(IPAddress.Loopback, 443, l => { l.Protocols = HttpProtocols.Http1; l.UseHttps(tls); });
-        k.Listen(IPAddress.Loopback, 80, l => l.Protocols = HttpProtocols.Http1);
-    });
-    Console.WriteLine("listening on 127.0.0.1:443 and :80; admin API and docs: http://localhost/swagger");
-    await app.RunAsync();
+        var app = ServerApp.Build(new ServerOptions(new Replay.Game(table, settings.Cfg, state, settings.MirrorDir), hars.Count, settings.DataDir,
+            Console: true, settings.TrustedProxies, settings.HostHeader, settings.MaxBodyBytes), k =>
+        {
+            foreach (var l in settings.Listeners)
+            {
+                X509Certificate2? tls = null;
+                if (l.Cert is not null)
+                {
+                    using var pem = X509Certificate2.CreateFromPemFile(l.Cert, l.Key);
+                    // SChannel can't use a PEM load's ephemeral key
+                    certs.Add(tls = X509CertificateLoader.LoadPkcs12(pem.Export(X509ContentType.Pkcs12), null));
+                }
+                // HTTP/1.1 only: ALPN would move the client's embedded browser to h2. TLS versions: the OS default
+                k.Listen(l.Address, l.Port, o => { o.Protocols = HttpProtocols.Http1; if (tls != null) o.UseHttps(tls); });
+            }
+        });
+        Console.WriteLine("listening on " + string.Join(", ", settings.Listeners.Select(l => $"{(l.Cert is null ? "http" : "https")}://{l.Address}:{l.Port}")));
+        await app.RunAsync();
+    }
+    finally
+    {
+        foreach (var c in certs) c.Dispose();  // disposing deletes a loaded key's temporary file
+    }
 }

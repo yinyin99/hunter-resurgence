@@ -46,12 +46,12 @@ public static class Scoring
     }
 
     /// <summary>Config-dependent globals: static_host and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
-    public static void Load(JsonObject cfg, string root)
+    public static void Load(JsonObject cfg, string? variantsFile)
     {
         StaticHost = (string)cfg["static_host"]!;
         Variants = new();
-        var path = Path.Combine(root, "work", "scoring", "variant.json");
-        if (!File.Exists(path)) return;
+        var path = variantsFile;
+        if (path is null || !File.Exists(path)) return;
         foreach (var v in JsonNode.Parse(File.ReadAllText(path))!.AsArray())
             Variants[(int)Py.L(v!["id"])] = (Py.D(v["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
     }
