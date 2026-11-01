@@ -3,6 +3,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -10,14 +12,35 @@ using Microsoft.OpenApi;
 
 namespace Resurgence.Server;
 
-/// <summary>Console: request lines and TLS failures on the console. WorkDir: the miss log and the admin status there.</summary>
-public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console);
+/// <summary>Console: request lines and TLS failures on the console. WorkDir: the miss log and the admin status there.
+/// TrustedProxies: peers whose HostHeader names the game host the client asked for (a proxy between client and server).
+/// MaxBodyBytes: the request body limit of every endpoint but the admin API's.</summary>
+public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console,
+    IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes);
 
 public static class ServerApp
 {
     public static readonly string[] LocalHosts = ["localhost", "127.0.0.1"];
 
     static bool IsLocal(HttpContext ctx) => LocalHosts.Contains(ctx.Request.Host.Host, StringComparer.OrdinalIgnoreCase);
+
+    const long AdminMaxBodyBytes = 64 * 1024;
+    static readonly string[] ForwardingHeaders = ["X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "Forwarded", "Via", "X-Real-IP"];
+    static readonly Regex HostName = new(@"\A[A-Za-z0-9][A-Za-z0-9.\-]*(:\d{1,5})?\z", RegexOptions.ECMAScript);
+
+    static bool InAny(IPAddress? peer, IReadOnlyList<IPNetwork>? nets)
+    {
+        if (peer is null || nets is null) return false;
+        if (peer.IsIPv4MappedToIPv6) peer = peer.MapToIPv4();
+        return nets.Any(n => n.Contains(peer));
+    }
+
+    /// <summary>The admin API, Swagger UI and the OpenAPI documents are for a person at this machine: the peer is a
+    /// loopback address (the peer address, not a header) and nothing says a proxy relayed the request, because a proxy on
+    /// this machine is a loopback peer too.</summary>
+    static bool IsDirectLocal(HttpContext ctx, string hostHeader) =>
+        ctx.Connection.RemoteIpAddress is { } peer && IPAddress.IsLoopback(peer)
+        && !ForwardingHeaders.Append(hostHeader).Any(h => ctx.Request.Headers.ContainsKey(h));
 
     /// <summary>Swagger UI's origin (http://localhost or 127.0.0.1, port 80), not other local web content.</summary>
     public static bool IsLocalOrigin(string? origin) =>
@@ -71,12 +94,39 @@ public static class ServerApp
         builder.WebHost.ConfigureKestrel(k =>
         {
             k.AddServerHeader = false;
-            k.Limits.MaxRequestBodySize = null;
+            k.Limits.MaxRequestBodySize = o.MaxBodyBytes;
             k.ResponseHeaderEncodingSelector = _ => Encoding.Latin1;  // replayed header values are Latin-1, like Python's send_header
             listen(k);
         });
 
         var app = builder.Build();
+        app.Use(async (ctx, next) =>
+        {
+            var direct = IsDirectLocal(ctx, o.HostHeader);
+            // behind a proxy the game host arrives in a header; only the proxies of this server are believed
+            if (InAny(ctx.Connection.RemoteIpAddress, o.TrustedProxies) && ctx.Request.Headers[o.HostHeader] is { Count: 1 } game
+                && HostName.IsMatch(game[0]!))
+                ctx.Request.Host = new HostString(game[0]!);
+            if (IsLocal(ctx))
+            {
+                if (!direct)
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return;
+                }
+                if (ctx.Request.Path.StartsWithSegments("/admin"))
+                {
+                    if (ctx.Request.ContentLength > AdminMaxBodyBytes)
+                    {
+                        ctx.Response.StatusCode = StatusCodes.Status413PayloadTooLarge;
+                        return;
+                    }
+                    ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = AdminMaxBodyBytes;  // a chunked body has no length to check
+                }
+            }
+            await next();
+        });
+        app.UseRouting();  // after the middleware above: routing matches the host it may have rewritten
         // failures, binding failures and unknown admin paths as problem details too; scoped, the replay's empty replies
         // and the game hosts' failures stay as they were
         app.UseWhen(ctx => IsLocal(ctx) && ctx.Request.Path.StartsWithSegments("/admin"), admin => admin.UseExceptionHandler().UseStatusCodePages());
@@ -153,9 +203,9 @@ public sealed class Loopback : IAsyncDisposable
 
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
-    public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null)
+    public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes)
     {
-        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false), k => k.Listen(IPAddress.Loopback, 0));
+        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes), k => k.Listen(IPAddress.Loopback, 0));
         await app.StartAsync();
         var port = new Uri(app.Urls.First()).Port;
         var http = new HttpClient(new SocketsHttpHandler
