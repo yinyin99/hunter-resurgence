@@ -29,7 +29,7 @@ jobs:
           $names = ($zip.Entries.FullName | Sort-Object) -join ","
           $zip.Dispose()
           if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
-  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, and sends the security headers
+  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, serves robots.txt, and sends the security headers
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +42,7 @@ jobs:
           grep -q "Work in progress" feed.html
           grep -qE '_content/Resurgence\.Ui/shell\.[a-z0-9]+\.js' feed.html # the import map sends shell.js to its fingerprinted file (docs/website.md)
           curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
+          curl -sf http://localhost:8080/robots.txt | grep -q '^User-agent: MJ12bot' # docs/website.md
           # the security headers on a page and on the 404 page (docs/website.md#security-headers)
           for path in /feed /no-such-page; do
             curl -s -D headers.txt -o /dev/null "http://localhost:8080$path"

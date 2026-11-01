@@ -37,6 +37,8 @@ The JavaScript modules of `src/Ui/wwwroot` (`shell.js`) are imported by their pl
 
 The paw favicon (`favicon.ico`, `favicon.svg`, which turns light in a dark theme, `favicon-32.png` and `apple-touch-icon.png`) lives in `src/Web/wwwroot/`, and `App.razor` links it through `@Assets[...]`, so its URLs are fingerprinted and served `immutable`, while the plain paths such as `/favicon.ico` answer too.
 
+`src/Web/wwwroot/robots.txt` (served at `/robots.txt`) turns away two SEO backlink crawlers, `MJ12bot` and `serpstatbot`: they sent most of the website's requests and brought no visitors, and every page they fetch is rendered on the server. It also keeps the Blazor hub (`/_blazor/`) and the pages that give a crawler only an empty shell or a redirect out of search engines: sign-in, sign-up, payment, per-session and launcher-only pages. The news, profiles, competitions, leaderboards, store, help and download stay open. It is a request, not access control: the CDN's bot rules handle crawlers that ignore it. The CI docker smoke test checks that it is served.
+
 ## Security headers
 
 A middleware, the first one in `src/Web/Program.cs`, adds these headers to every response (pages, static files, the 404 page, the Blazor endpoints):
