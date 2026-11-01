@@ -32,7 +32,8 @@ public class InstallTests : IDisposable
         [{"id": 257, "define": "TEST_SHOTGUN", "cat": "WEAPON", "group": "ITEM_GROUP_WEAPON", "type": "WEAPON", "name": "Test Shotgun",
           "price": 0, "units": -2, "inventory": {"weight": 3500}},
          {"id": 14, "define": "TEST_SHELLS", "cat": "AMMO", "group": "ITEM_GROUP_AMMO", "type": "AMMO", "name": "Test Shells",
-          "price": 4, "silver_price": 68, "units": 30, "unit_name": "shells", "inventory": {"weight": 850}, "sponsor_image": "brand.jpg"},
+          "price": 4, "silver_price": 68, "units": 30, "unit_name": "shells", "inventory": {"weight": 850}, "sponsor_image": "brand.jpg",
+          "extra": {"ammo": {"velocity_falloff": 1, "penetration_factor": 22, "wounding_factor": 28, "ammo_velocity": 400, "mass": 0.02}}},
          {"id": 15, "define": "TEST_SLUGS", "cat": "AMMO", "group": "ITEM_GROUP_AMMO", "type": "AMMO", "client_type": "SPECIAL",
           "name": "Test Slugs", "price": 9, "units": 10, "unit_name": "slugs"}]
         """;
@@ -151,6 +152,15 @@ public class InstallTests : IDisposable
         Eq("""{"name": "Test Shells", "notbuyable": 0, "units": {"count": 30, "name": "shells"}, "sponsor_image": "brand.jpg", "silver_price": 68}""",
            Pick(items[1]!, "name", "notbuyable", "units", "sponsor_image", "silver_price"));
         Assert.Equal(77, (int)items[2]!["client_type"]!);  // an explicit client type comes from the table, else it is the type
+    }
+
+    [Fact]
+    public void ABuiltAmmoDefinitionCarriesTheBallisticsTheClientReadsUnguarded()
+    {
+        var state = LoadState(cfg, new HarTable(), tmp)!;
+        Eq("""{"velocity_falloff": 1, "penetration_factor": 22, "wounding_factor": 28, "ammo_velocity": 400, "mass": 0.02}""",
+           Pick(state.ItemInfo(14)!, "velocity_falloff", "penetration_factor", "wounding_factor", "ammo_velocity", "mass"));
+        Assert.Null(state.ItemInfo(15)!["velocity_falloff"]);  // a definition without any stays without
     }
 
     static JsonObject Pick(JsonNode n, params string[] keys) =>
