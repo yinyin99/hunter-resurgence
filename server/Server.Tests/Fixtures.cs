@@ -15,7 +15,7 @@ public static class Fixtures
         {"id": 19, "name": "Test Lure", "description": "Draws deer.", "define": "TEST_LURE",
          "type": 4, "group": 13, "cat": 4, "client_type": 4, "image": "caller_test_lure", "variationname": null,
          "units": null, "fit": {}, "inventory": {"slots": [0, 1, 11], "capacity": 0, "weight": 500},
-         "price": 150, "silver_price": 1900, "notbuyable": 0}
+         "price": 170, "silver_price": 1900, "notbuyable": 0}
         """);
 
     public static JsonObject APP

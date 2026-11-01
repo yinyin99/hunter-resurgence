@@ -43,8 +43,8 @@ public class InventoryTests : StateTestBase
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
         Scoring.StaticHost = "static.test";
         Scoring.OwnLogo = "testlogo";
-        // variant.json bounds pinned: tests don't read files
-        Scoring.Variants = new() { [1] = (20, 246, 1.2), [17] = (800, 2000, 0.73) };
+        // variant bounds are pinned so tests don't read files
+        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };
     }
 
     [Fact]
@@ -221,17 +221,17 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestMuleDeerBuckScoresAndPaysGold()
     {
-        // expected score 168.8186 (columns less the difference), css 79.0 = 1.2 x 100 x (168.8186 - 20) / 226
+        // expected score 168.8186 (columns less the difference), css 66.4 = 1.1 x 100 x (168.8186 - 30) / 230
         var e22 = O("""{"event": 22, "individual": 460, "greatest_spread": 640, "tip_to_tip_spread": 600, "inside_spread_of_main_beams": 560}""");
         e22["right_antler"] = MuleAntler(750, [125, 125, 100, 100], [125, 500, 375, 250]);
         e22["left_antler"] = MuleAntler(800, [150, 125, 125, 100], [125, 450, 375, 250]);
         var updates = Hb(O("""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 1}"""),
                          e22, O("""{"event": 3, "individual": 460, "extended_species": 1, "trophy_integrity": 100000}"""));
-        Assert.Contains(updates, u => Py.Eq(u, O("""{"amount": 112.0, "type": "gm", "update": 15}""")));  // 33 + round(79.0)
+        Assert.Contains(updates, u => Py.Eq(u, O("""{"amount": 99.0, "type": "gm", "update": 15}""")));  // 33 + round(66.4)
         var score = Assert.Single(Hb(), u => Py.Eq(u!["update"], 6))!;
-        Eq("""[168.8186, "Score: 168.8186", 79.0]""", T(score["score"], score["score_text"], score["css"]));
+        Eq("""[168.8186, "Score: 168.8186", 66.4]""", T(score["score"], score["score_text"], score["css"]));
         Eq("168.8186", Reply(state.HarvestReply(1)!)["score"]);
-        Eq("112.0", Reply(state.ConnectReply())["wallet"]!["gm"]);
+        Eq("99.0", Reply(state.ConnectReply())["wallet"]!["gm"]);
         var page = Encoding.UTF8.GetString(state.ScorePageReply(1)!);
         Assert.Contains("Trophy score: 168.8186", page);
         Assert.Contains("scoring/antlers_mule.png", page);  // the worked B&C sheet, not the "no data" block
@@ -249,8 +249,8 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestAxisDeerAndFeralGoatScore()
     {
-        Scoring.Variants[40] = (10, 500, 0.73);
-        Scoring.Variants[54] = (20, 215, 1);
+        Scoring.Variants[40] = (15, 450, 1.3);
+        Scoring.Variants[54] = (25, 180, 1.1);
         // the tines and horn-length families map the trophy event to their own feature sets
         var axisDeer = O("""{"event": 22, "individual": 540, "greatest_spread": 300, "inside_spread_of_main_beams": 254}""");
         axisDeer["left_antler"] = Antler([254, 127, 100, 100], [(0, 508), (1, 127), (2, 254)]);
@@ -263,10 +263,10 @@ public class InventoryTests : StateTestBase
            O("""{"event": 7, "individual": 541, "species": 40, "gender": 0, "weight_grams": 48800}"""), feralGoat,
            O("""{"event": 3, "individual": 541, "extended_species": 40}"""));
         var scores = new JsonArray(Hb().Where(u => Py.Eq(u!["update"], 6)).Select(u => (JsonNode?)T(u!["score"], u["css"])).ToArray());
-        // tines: 10 in inside span + 50 per side (20 beam + 15 tines + 10 burr + 5 beam circumference) + 50 = 110, css 100 x 90 / 195;
-        // horn: (60000 + 58000) / 2000 + (90 + 88 + 300) / 10 = 106.8, css 0.73 x 100 x 96.8 / 490
-        Eq("[[110.0, 46.2], [106.8, 14.4]]", scores);
-        Eq("93.0", Reply(state.ConnectReply())["wallet"]!["gm"]);  // 33 + 46 + 14
+        // tines: 10 in inside span + 50 per side (20 beam + 15 tines + 10 burr + 5 beam circumference) + 50 = 110, css 1.1 x 100 x 85 / 155;
+        // horn: (60000 + 58000) / 2000 + (90 + 88 + 300) / 10 = 106.8, css 1.3 x 100 x 91.8 / 435
+        Eq("[[110.0, 60.3], [106.8, 27.4]]", scores);
+        Eq("120.0", Reply(state.ConnectReply())["wallet"]!["gm"]);  // 33 + 60 + 27
         // worked sheets, not the "no data" block: the axis deer (kill 1) gets a tines sheet, the feral goat (kill 2) a CIC horn sheet
         var axisPage = Encoding.UTF8.GetString(state.ScorePageReply(1)!);
         Assert.Contains("Length of Typical Tines T-3", axisPage);
@@ -279,9 +279,9 @@ public class InventoryTests : StateTestBase
     {
         var updates = Hb(O("""{"event": 7, "individual": 412, "species": 17, "gender": 1, "weight_grams": 1431, "feature": 1431250, "texture": 0}"""),
                          O("""{"event": 3, "individual": 412, "extended_species": 17}"""));
-        Assert.Contains(updates, u => Py.Eq(u, O("""{"amount": 71.0, "type": "gm", "update": 15}""")));  // 33 + round(38.4)
+        Assert.Contains(updates, u => Py.Eq(u, O("""{"amount": 95.0, "type": "gm", "update": 15}""")));  // 33 + round(62.3)
         var score = Assert.Single(Hb(), u => Py.Eq(u!["update"], 6))!;
-        Eq("[1431.25, 38.4]", T(score["score"], score["css"]));  // weight_mg / 1000; css = 0.73 x 100 x (1431.25 - 800) / 1200
+        Eq("[1431.25, 62.3]", T(score["score"], score["css"]));  // weight_mg / 1000; css = 0.9 x 100 x (1431.25 - 600) / 1200
     }
 
     [Fact]
@@ -395,7 +395,7 @@ public class InventoryTests : StateTestBase
     {
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
         var reply = s.BuyReply("item_id=19&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray());
-        Eq("""{"price": 8.0, "success": true}""", Reply(reply));  // 150 at 95 % off
+        Eq("""{"price": 9.0, "success": true}""", Reply(reply));  // 170 at 95 % off
         var updates = HbOf(s);
         Assert.Equal(2, updates.Count);
         var (items, balance) = (updates[0]!, updates[1]!);
@@ -403,7 +403,7 @@ public class InventoryTests : StateTestBase
         Eq("[10, 19, 0, null]", T(items["update"], row["item_id"], row["slot"], row["units"]));
         var info = Assert.Single(items["items"]!["infos"]!.AsArray())!;
         Eq("[19, [0, 1, 11], 500, -2]", T(info["item_id"], info["allowedSlots"], info["weight"], info["units"]));  // built from the catalogue record
-        Eq("""{"amount": 174.0, "type": "em", "update": 15}""", balance);
+        Eq("""{"amount": 173.0, "type": "em", "update": 15}""", balance);
         Assert.Empty(HbOf(s));
         Eq("19", Items(s)[(string)row["guid"]!]!["item_id"]);
     }
@@ -421,12 +421,12 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestBuyBetweenHunts()
     {
-        // launcher store, no hunt running, 106 em; item 6's rows in discount-list order (later rows start in the future)
+        // launcher store, no hunt running, 112 em; item 6's rows in discount-list order (later rows start in the future)
         var connect = CONNECT;
-        connect["wallet"]!["em"] = 106.0;
+        connect["wallet"]!["em"] = 112.0;
         var app = APP;
         app["items"]!.AsArray().Add(O("""
-            {"id": 6, "name": "Test Rifle Two", "price": 650, "silver_price": 9800, "notbuyable": 0, "type": 1}
+            {"id": 6, "name": "Test Rifle Two", "price": 730, "silver_price": 9800, "notbuyable": 0, "type": 1}
             """));
         var info = O("""
             {"allowedSlots": [0, 1, 2, 3, 30, 40], "group": 1, "name": "Test Rifle Two", "weight": 4000,
@@ -440,20 +440,20 @@ public class InventoryTests : StateTestBase
              {"id": 9002, "item_id": 6, "percentage": 100, "start_ts": 1950000000, "end_ts": 1099511627776},
              {"id": 9003, "item_id": 6, "percentage": 100, "start_ts": 1950000900, "end_ts": 1099511627776}]
             """)!;
-        var s = new State(Path.Combine(tmp, "buy.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,  // own db: 106 em
+        var s = new State(Path.Combine(tmp, "buy.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,  // own db: 112 em
                           discounts: discounts, sampleInfos: new JsonArray(info.DeepClone()));
-        Assert.Equal("{\"price\": 33.0, \"success\": true}"u8.ToArray(),
-                     s.BuyReply("item_id=6&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray()));  // 650 at 95 % off
-        Eq("73.0", s.Wallet()["em"]);  // Me/poll ems
+        Assert.Equal("{\"price\": 37.0, \"success\": true}"u8.ToArray(),
+                     s.BuyReply("item_id=6&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray()));  // 730 at 95 % off
+        Eq("75.0", s.Wallet()["em"]);  // Me/poll ems
         var reply = Reply(s.ConnectReply());
-        Eq("""{"em": 73.0, "gm": 33.0}""", reply["wallet"]);
+        Eq("""{"em": 75.0, "gm": 33.0}""", reply["wallet"]);
         var row = (JsonObject)reply["inventory"]!["items"]!.AsArray().Single(i => Py.Eq(i!["item_id"], 6))!.DeepClone();
         row.Remove("guid");  // a new guid
         Eq("""{"item_id": 6, "slot": 0, "metadata": {}, "units": null}""", row);
         Eq(info, reply["inventory"]!["infos"]!.AsArray().Single(i => Py.Eq(i!["item_id"], 6)));
         // the first heartbeat: the balance again, no update 10 (the connect toast aside)
         var updates = HbOf(s);
-        Eq("""{"amount": 73.0, "type": "em", "update": 15}""", updates[0]);
+        Eq("""{"amount": 75.0, "type": "em", "update": 15}""", updates[0]);
         Assert.DoesNotContain(updates, u => Py.Eq(u!["update"], 10));
     }
 
@@ -466,7 +466,7 @@ public class InventoryTests : StateTestBase
              {"item_id": 19, "percentage": 95, "start_ts": 0, "end_ts": 1099511627776}]
             """)!;
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: discounts);
-        Eq("""{"price": 150.0, "success": true}""", Reply(s.BuyReply("item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
+        Eq("""{"price": 170.0, "success": true}""", Reply(s.BuyReply("item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
     }
 
     [Fact]
