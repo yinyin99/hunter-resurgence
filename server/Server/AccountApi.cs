@@ -82,9 +82,9 @@ public static class AccountApi
                 return Outcome(uploads.Accept(account, zip));
             })
             .WithName("AccountRestore").WithSummary("Upload a backup zip (raw body)")
-            .WithDescription("The zip is the request body (at most 64 MiB), one upload at a time per account. A My-account backup whose Steam id is the "
-                             + "signed-in one is restored once per game user id; any other zip is kept for review and nothing is restored. "
-                             + "Answers `{status, message, report}`: status `restored`, `review`, `already`, `taken`, `invalid`, `busy` or `too_large`.")
+            .WithDescription("The zip is the request body (at most 64 MiB), one upload at a time per account. A readable zip is kept for an operator "
+                             + "and never restored automatically (`server review approve <id>`). "
+                             + "Answers `{status, message}`: status `review`, `already`, `taken`, `invalid`, `busy` or `too_large`.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/delete", async (HttpContext ctx) =>

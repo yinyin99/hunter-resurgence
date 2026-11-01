@@ -1,6 +1,6 @@
 // The community upload: a signed-in player's backup zip and what the server does with it (docs/server.md#upload-a-backup-zip).
-// A zip whose Steam id is the one the player signed in with restores automatically, once per game user id on this server.
-// That match is enough for the restore, not proof of ownership; disputes go to the operator, who can reset the account from the kept zip.
+// Every zip is kept for the operator and never restored automatically: `review approve <id>` runs the rules and the restore.
+// A Steam id match is shown to the operator as information, not proof of ownership.
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
@@ -8,8 +8,8 @@ using Resurgence.Restore;
 
 namespace Resurgence.Server;
 
-/// <summary>What an upload came to. Kind: restored, review (kept for the operator, nothing restored), already (this user id
-/// was restored before), taken (another account holds the user id), invalid (not a usable backup), busy, too_large.
+/// <summary>What an upload came to. Kind: restored (only an operator's approve), review (kept for the operator, nothing restored), already (this user id
+/// was restored before), taken (another account holds the user id), refused (the user id is not accepted, or the account has played), invalid (not a usable backup), busy, too_large.
 /// Message is plain words for the player; Report the technical report of a restore.</summary>
 public sealed record UploadOutcome(int Status, string Kind, string Message, string? Report = null);
 
@@ -90,47 +90,32 @@ public sealed class Uploads(State state, string dataDir)
         {
             return new(400, "invalid", $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
         }
-        var model = read.Model;
-        var uid = long.Parse(model.Identity.Uid);
+        var uid = long.Parse(read.Model.Identity.Uid);
         lock (decide)
         {
-            if (Store.RestoredBy(uid) is not null)
-                return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed. If something went wrong, ask the operator to reset it.");
-            var steam = Store.SteamId64(account);
-            if (uid < 1 || uid >= Store.FirstServerId)
-                return Review(account, sha, path, uid, "its user id is not one this server accepts",
-                    "This backup has a user id this server does not accept.");
-            if (model.Identity.SteamId64 is null)
-                return Review(account, sha, path, uid, "the backup names no Steam account",
-                    "This backup does not say which Steam account it belongs to (a public backup, or one from an older backup tool).");
-            if (model.Identity.SteamId64 != steam)
-                return Review(account, sha, path, uid, "the backup names another Steam account than the signed-in one",
-                    "This backup was made for a different Steam account than the one you are signed in with.");
-            if (uid != account && Store.AccountExists(uid))
-                return new(409, "taken", "Another account on this server already has this backup's user id. Nothing was changed. Ask the operator.");
-            if (uid != account && Store.Played(account))
-                return Review(account, sha, path, uid, "the account has played, so its user id cannot change",
-                    "You have already played with this account, so its user id cannot change to the one in the backup.");
-
-            var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
-            var current = (string)Store.AccountJson(account)["handle"]!;
-            var adopt = zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
-            var handle = adopt ? zipHandle! : current;
-            try
-            {
-                var result = Restorer.Apply(state, path, sha, read, account, uid, handle, exists: true, backupDatabase: false, dataDir,
-                    con => con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now()));
-                return new(200, "restored", Summary(model, handle != current, zipHandle is not null && !adopt), result.Report);
-            }
-            catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the user id or the handle was taken between the check and the write
-            {
-                return new(409, "taken", "This backup's user id or name was taken a moment ago. Nothing was changed. Ask the operator.");
-            }
+            // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
+            if (Refusal(account, uid) is { Kind: "already" or "taken" } refused) return refused;
+            return Review(account, sha, path, uid, "waiting for the operator");
         }
     }
 
+    /// <summary>The rules of a restore (the operator's approve runs them again): once per game user id, no user id another
+    /// account holds, a user id other than the account's own only before the account has played. Null: allowed.</summary>
+    UploadOutcome? Refusal(long account, long uid)
+    {
+        if (Store.RestoredBy(uid) is not null)
+            return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed. If something went wrong, ask the operator to reset it.");
+        if (uid < 1 || uid >= Store.FirstServerId)
+            return new(409, "refused", "This backup has a user id this server does not accept.");
+        if (uid != account && Store.AccountExists(uid))
+            return new(409, "taken", "Another account on this server already has this backup's user id. Nothing was changed. Ask the operator.");
+        if (uid != account && Store.Played(account))
+            return new(409, "refused", "The account has already played, so its user id cannot change to the one in the backup.");
+        return null;
+    }
+
     /// <summary>Keep the zip for the operator and write nothing of it into the account.</summary>
-    UploadOutcome Review(long account, string sha, string path, long uid, string note, string why)
+    UploadOutcome Review(long account, string sha, string path, long uid, string note)
     {
         using var con = Store.Open(account);
         con.Begin();
@@ -138,27 +123,112 @@ public sealed class Uploads(State state, string dataDir)
         if (!known)
         {
             if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
-                return new(429, "busy", $"{why} {MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
+                return new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
             var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
             File.Copy(path, kept, overwrite: true);
             con.Exec("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, ?, ?, ?, ?)", Store.Now(), sha, uid, note);
         }
         con.Commit();
-        return new(200, "review", $"{why} It was kept, and nothing was restored. The operator will look at it.");
+        return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
+    }
+
+    /// <summary>A kept zip waiting for the operator. SteamMatch is information only (the zip's Steam id is the account's verified one), not proof.</summary>
+    public sealed record Pending(long Id, long Account, long Ts, long? UserId, string? Handle, bool SteamMatch, string Note, string Sha);
+
+    sealed record Row(long Id, long Account, long Ts, long? UserId, string Note, string Sha);
+
+    List<Row> Rows(long? id = null)
+    {
+        List<long> accounts;
+        using (var all = Store.Open())
+            accounts = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+        var rows = new List<Row>();
+        foreach (var a in accounts)
+        {
+            using var con = Store.Open(a);
+            foreach (var r in con.Rows("SELECT id, ts, user_id, note, zip_sha256 FROM uploads WHERE account_id = $a ORDER BY id"))
+                if (id is null || (long)r[0] == id)
+                    rows.Add(new((long)r[0], a, (long)r[1], r[2] as long?, (string)r[3], (string)r[4]));
+        }
+        return rows;
+    }
+
+    string Kept(Row r) => Path.Combine(dataDir, "restores", r.Account.ToString(), r.Sha + ".zip");
+
+    /// <summary>The kept zips, oldest first, each with what the zip says of itself (handle null when the file cannot be read now).</summary>
+    public List<Pending> List() => Rows().Select(r =>
+    {
+        PlayerModel? m = null;
+        try { m = Importer.Read(Kept(r), state.Catalogue, ZipLimits).Model; }
+        catch (Exception e) when (e is RestoreException or InvalidDataException or IOException) { }
+        var steam = m?.Identity.SteamId64;
+        return new Pending(r.Id, r.Account, r.Ts, r.UserId, m is null ? null : m.Profile.Handle ?? m.Identity.Handle,
+                           steam is not null && steam == Store.SteamId64(r.Account), r.Note, r.Sha);
+    }).ToList();
+
+    /// <summary>The operator's approve: the rules above, then the restore (the kept zip stays, the waiting row goes). Status 404: no such id.</summary>
+    public UploadOutcome Approve(long id)
+    {
+        lock (decide)
+        {
+            if (Rows(id).SingleOrDefault() is not { } row) return new(404, "unknown", $"No kept zip {id}.");
+            var path = Kept(row);
+            Restored read;
+            try { read = Importer.Read(path, state.Catalogue, ZipLimits); }
+            catch (Exception e) when (e is RestoreException or InvalidDataException or IOException)
+            {
+                return new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed.");
+            }
+            var model = read.Model;
+            var uid = long.Parse(model.Identity.Uid);
+            var account = row.Account;
+            if (Refusal(account, uid) is { } refused) return refused;
+            var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
+            var current = (string)Store.AccountJson(account)["handle"]!;
+            var adopt = zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
+            var handle = adopt ? zipHandle! : current;
+            try
+            {
+                var result = Restorer.Apply(state, path, row.Sha, read, account, uid, handle, exists: true, backupDatabase: false, dataDir,
+                    con =>
+                    {
+                        con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
+                        con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
+                    });
+                return new(200, "restored", Summary(model, handle != current, zipHandle is not null && !adopt), result.Report);
+            }
+            catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the user id or the handle was taken between the check and the write
+            {
+                return new(409, "taken", "This backup's user id or name was taken a moment ago. Nothing was changed.");
+            }
+        }
+    }
+
+    /// <summary>The operator's reject: delete the kept zip and its row. False: no such id.</summary>
+    public bool Reject(long id)
+    {
+        lock (decide)
+        {
+            if (Rows(id).SingleOrDefault() is not { } row) return false;
+            using (var con = Store.Open(row.Account))
+                con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
+            File.Delete(Kept(row));
+            return true;
+        }
     }
 
     static string Summary(PlayerModel m, bool handleChanged, bool handleKept)
     {
         var parts = new List<string> { $"{m.Items.Count} items" };
-        if (m.Wallet is not null) parts.Add("your gold and silver");
-        if (m.Skills is not null) parts.Add("your skills");
-        if (m.Stats is not null) parts.Add("your statistics");
+        if (m.Wallet is not null) parts.Add("gold and silver");
+        if (m.Skills is not null) parts.Add("skills");
+        if (m.Stats is not null) parts.Add("statistics");
         parts.Add($"{m.Achievements.Count} achievements");
         parts.Add($"{m.Trophies.Count} trophies");
-        var text = $"Your backup was restored: {string.Join(", ", parts)}. Start the game from the launcher to see them.";
-        if (handleChanged) text += " Your name is now the one in the backup.";
-        else if (handleKept) text += " Your name was not changed, because the one in the backup is not allowed or belongs to another player.";
+        var text = $"The backup was restored: {string.Join(", ", parts)}.";
+        if (handleChanged) text += " The name is now the one in the backup.";
+        else if (handleKept) text += " The name was not changed, because the one in the backup is not allowed or belongs to another player.";
         return text;
     }
 

@@ -57,17 +57,59 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         return (long)con.Scalar($"SELECT COUNT(*) FROM {table} WHERE account_id = $a")!;
     }
 
+    Uploads Operator => new(state, tmp);
+
+    /// <summary>The id the operator sees for the account's newest kept zip.</summary>
+    long Waiting(long account)
+    {
+        using var con = state.Store.Open(account);
+        return (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+    }
+
+    /// <summary>Upload the zip as the account's player and expect it to be kept; returns its id.</summary>
+    async Task<long> Keep(TestZip zip, string name, long account, string session)
+    {
+        var (reply, body) = await Upload(File.ReadAllBytes(Zip(zip, name)), session);
+        Assert.Equal((200, "review"), (reply.Status, Status(body)));
+        return Waiting(account);
+    }
+
     [Fact]
-    public async Task TestAMatchingMyAccountZipRestoresOnceAndTheAccountAdoptsItsUserIdAndHandle()
+    public async Task TestAZipWhoseSteamIdMatchesIsKeptAndNeverRestored()
+    {
+        var before = Count(player, "items");
+        var (reply, body) = await Upload(TestZip.Own(), "mine.zip");
+        Assert.Equal((200, "review"), (reply.Status, Status(body)));
+        Assert.Contains("An operator will check it", (string)body["message"]!);
+        Assert.Null(body["report"]);
+        Assert.True(state.Store.AccountExists(player));
+        Assert.False(state.Store.AccountExists(1001));
+        Assert.Equal(before, Count(player, "items"));
+        Eq("""{"em": 182.0, "gm": 33.0}""", state.Wallet(player));
+        Assert.Equal(0L, Count(player, "restore_audit"));
+        Assert.Null(state.Store.RestoredBy(1001));
+        Assert.Equal(1L, Count(player, "uploads"));
+        Assert.True(File.Exists(Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "mine.zip")) + ".zip")));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        var listed = Assert.Single(Operator.List());
+        Assert.Equal((player, 1001L, "sample", true), (listed.Account, listed.UserId, listed.Handle, listed.SteamMatch));
+        var status = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + cookie)])).Body)!;
+        Assert.Null(status["restoredUserId"]);
+        Assert.Single(status["review"]!.AsArray());
+    }
+
+    [Fact]
+    public async Task TestApproveRestoresOnceAndTheAccountAdoptsItsUserIdAndHandle()
     {
         var token = state.Store.CreateToken(player, TimeSpan.FromHours(1));
         using (var con = state.Store.Open(player))
             con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, '{}')");  // a starting row: it moves with the account
-        var (reply, body) = await Upload(TestZip.Own(), "mine.zip");
-        Assert.Equal((200, "restored"), (reply.Status, Status(body)));
-        Assert.Contains("stored: items 2, wallet 2", (string)body["report"]!);
-        Assert.Contains("Your backup was restored: 2 items", (string)body["message"]!);
-        Assert.Contains("Your name is now the one in the backup", (string)body["message"]!);
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        var done = Operator.Approve(id);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("stored: items 2, wallet 2", done.Report);
+        Assert.Contains("The backup was restored: 2 items", done.Message);
+        Assert.Contains("The name is now the one in the backup", done.Message);
         // the account is 1001 now, called sample; the Steam id, the token and the cookie stayed
         Assert.False(state.Store.AccountExists(player));
         Assert.Equal(1001L, state.Store.AccountBySteam(Steam));
@@ -79,28 +121,49 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, Count(1001, "pending"));
         Assert.Equal(0L, Count(player, "pending"));
         Assert.Equal(1L, Count(1001, "restore_audit"));
+        Assert.Equal(0L, Count(1001, "uploads"));  // it no longer waits
         Assert.Equal(1001L, state.Store.RestoredBy(1001));
         Assert.True(File.Exists(Path.Combine(tmp, "restores", "1001", Restorer.Sha256(Path.Combine(tmp, "mine.zip")) + ".zip")));
         Assert.Empty(Directory.GetFiles(tmp, "state.db.bak-*"));  // a community server keeps the zip, not a copy of the whole database
-        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         var status = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + cookie)])).Body)!;
         Eq("1001", status["restoredUserId"]);
+        Assert.Equal("unknown", Operator.Approve(id).Kind);  // the row is gone: nothing to approve twice
     }
 
     [Fact]
-    public async Task TestASecondRestoreOfTheSameUserIdIsRefused()
+    public async Task TestAUserIdIsRestoredOnceWhateverTheZipOrAccount()
     {
-        Assert.Equal("restored", Status((await Upload(TestZip.Own(), "first.zip")).Body));
-        var again = await Upload(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":2.0"), "second.zip");  // the same player's newer backup
-        Assert.Equal((409, "already"), (again.Reply.Status, Status(again.Body)));
-        Assert.Contains("can be restored once", (string)again.Body["message"]!);
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));  // nothing changed
-        // another signed-in player with that Steam id on the zip cannot take it either
         var (other, otherCookie) = SignedIn("other", "76561190000000002");
-        var stolen = await Upload(File.ReadAllBytes(Zip(TestZip.Own(steam: "76561190000000002"), "third.zip")), otherCookie);
-        Assert.Equal((409, "already"), (stolen.Reply.Status, Status(stolen.Body)));
+        var first = await Keep(TestZip.Own(), "first.zip", player, cookie);
+        var second = await Keep(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":2.0"), "second.zip", player, cookie);  // the same player's newer backup
+        var stolen = await Keep(TestZip.Own(steam: "76561190000000002"), "third.zip", other, otherCookie);
+        Assert.Equal("restored", Operator.Approve(first).Kind);
+        foreach (var id in new[] { second, stolen })
+        {
+            var refused = Operator.Approve(id);
+            Assert.Equal((409, "already"), (refused.Status, refused.Kind));
+            Assert.Contains("can be restored once", refused.Message);
+        }
+        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));  // nothing changed
         Assert.True(state.Store.AccountExists(other));
         Assert.Equal(0L, Count(other, "restore_audit"));
+        // and now an upload of that user id is refused at once
+        var again = await Upload(TestZip.Own(), "fourth.zip", cookie);
+        Assert.Equal((409, "already"), (again.Reply.Status, Status(again.Body)));
+    }
+
+    [Fact]
+    public async Task TestRejectDeletesTheKeptZipAndTheRow()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        var kept = Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "mine.zip")) + ".zip");
+        Assert.True(File.Exists(kept));
+        Assert.True(Operator.Reject(id));
+        Assert.False(File.Exists(kept));
+        Assert.Equal(0L, Count(player, "uploads"));
+        Assert.False(Operator.Reject(id));
+        Assert.Empty(Operator.List());
+        Assert.Null(state.Store.RestoredBy(1001));
     }
 
     [Fact]
@@ -108,21 +171,17 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     {
         var before = Count(player, "items");
         Eq("""{"em": 182.0, "gm": 33.0}""", state.Wallet(player));
-        var mismatch = await Upload(TestZip.Own(steam: "76561190000000002"), "mismatch.zip");
-        Assert.Equal((200, "review"), (mismatch.Reply.Status, Status(mismatch.Body)));
-        Assert.Contains("different Steam account", (string)mismatch.Body["message"]!);
-        var missing = await Upload(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":1.0", steam: null), "missing.zip");
-        Assert.Equal("review", Status(missing.Body));
-        Assert.Contains("does not say which Steam account", (string)missing.Body["message"]!);
-        var @public = await Upload(TestZip.Public(), "public.zip");
-        Assert.Equal("review", Status(@public.Body));
-        // nothing restored: the account, its rows and the user id are as they were; the zips are kept and listed
+        await Keep(TestZip.Own(steam: "76561190000000002"), "mismatch.zip", player, cookie);
+        await Keep(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":1.0", steam: null), "missing.zip", player, cookie);
+        Assert.Equal("review", Status((await Upload(TestZip.Public(), "public.zip")).Body));
+        // nothing restored: the account, its rows and the user id are as they were; the zips are kept and listed, the match is information
         Assert.True(state.Store.AccountExists(player));
         Assert.Equal(before, Count(player, "items"));
         Eq("""{"em": 182.0, "gm": 33.0}""", state.Wallet(player));
         Assert.Null(state.Store.RestoredBy(1001));
         Assert.Equal(3L, Count(player, "uploads"));
         Assert.Equal(3, Directory.GetFiles(Path.Combine(tmp, "restores", player.ToString())).Length);
+        Assert.Equal([false, false, false], Operator.List().Select(p => p.SteamMatch));
         var status = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + cookie)])).Body)!;
         Assert.Null(status["restoredUserId"]);
         Assert.Equal(3, status["review"]!.AsArray().Count);
@@ -137,20 +196,23 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestTheUserIdChangesOnlyBeforeTheAccountHasPlayed()
     {
+        var id = await Keep(TestZip.Own(), "played.zip", player, cookie);
         state.ConnectReply(player);  // a hunt was opened: the account has played
         Assert.True(state.Store.Played(player));
-        var (reply, body) = await Upload(TestZip.Own(), "played.zip");
-        Assert.Equal((200, "review"), (reply.Status, Status(body)));
-        Assert.Contains("already played", (string)body["message"]!);
+        var refused = Operator.Approve(id);
+        Assert.Equal((409, "refused"), (refused.Status, refused.Kind));
+        Assert.Contains("already played", refused.Message);
         Assert.True(state.Store.AccountExists(player));
         Assert.False(state.Store.AccountExists(1001));
         Assert.Null(state.Store.RestoredBy(1001));
-        // an account that has not played adopts it (the other tests); one id from the server's range is refused as not a backup's
+        Assert.Equal(1L, Count(player, "uploads"));  // still kept: the operator rejects it
+        // one id from the server's range is not a backup's
         var (fresh, freshCookie) = SignedIn("fresh", "76561190000000009");
         Assert.False(state.Store.Played(fresh));
-        var high = await Upload(File.ReadAllBytes(Zip(TestZip.Own(uid: "2000000500", steam: "76561190000000009"), "high.zip")), freshCookie);
-        Assert.Equal("review", Status(high.Body));
-        Assert.Contains("user id this server does not accept", (string)high.Body["message"]!);
+        var high = await Keep(TestZip.Own(uid: "2000000500", steam: "76561190000000009"), "high.zip", fresh, freshCookie);
+        var notAccepted = Operator.Approve(high);
+        Assert.Equal("refused", notAccepted.Kind);
+        Assert.Contains("user id this server does not accept", notAccepted.Message);
     }
 
     [Fact]
@@ -158,20 +220,26 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     {
         state.CreateAccount(1001, "holder");
         var (reply, body) = await Upload(TestZip.Own(), "held.zip");
-        Assert.Equal((409, "taken"), (reply.Status, Status(body)));
+        Assert.Equal((409, "taken"), (reply.Status, Status(body)));  // refused at once
+        Assert.Equal(0L, Count(player, "uploads"));
+        // an id taken after the upload is refused on approve
+        state.Store.DeleteAccount(1001);
+        var id = await Keep(TestZip.Own(), "held2.zip", player, cookie);
+        state.CreateAccount(1001, "holder");
+        var refused = Operator.Approve(id);
+        Assert.Equal((409, "taken"), (refused.Status, refused.Kind));
         Assert.True(state.Store.AccountExists(player));
         Assert.Null(state.Store.RestoredBy(1001));
         Assert.Equal("holder", state.Store.HandleOf(1001));
-        Assert.False(Directory.Exists(Path.Combine(tmp, "restores", "1001")));
     }
 
     [Fact]
     public async Task TestAHandleAnotherPlayerHasIsNotTaken()
     {
         state.CreateAccount(5, "Sample");  // handles do not differ by case
-        var (reply, body) = await Upload(TestZip.Own(), "handle.zip");
-        Assert.Equal((200, "restored"), (reply.Status, Status(body)));
-        Assert.Contains("Your name was not changed", (string)body["message"]!);
+        var done = Operator.Approve(await Keep(TestZip.Own(), "handle.zip", player, cookie));
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("The name was not changed", done.Message);
         Assert.Equal("player", state.Store.HandleOf(1001));
         Assert.Equal("Sample", state.Store.HandleOf(5));
     }
@@ -269,7 +337,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestDeletingRemovesTheAccountAndEverythingOfIt()
     {
-        Assert.Equal("restored", Status((await Upload(TestZip.Own(), "mine.zip")).Body));
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(), "mine.zip", player, cookie)).Kind);
         var (other, otherCookie) = SignedIn("other", "76561190000000002");
         var token = state.Store.CreateToken(1001, TimeSpan.FromHours(1));
         Directory.CreateDirectory(Path.Combine(tmp, "photos", "1001"));
@@ -303,11 +371,11 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestACommunityRestoreOfADeletedAccountsUserIdIsPossibleAgain()
     {
-        Assert.Equal("restored", Status((await Upload(TestZip.Own(), "mine.zip")).Body));
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(), "mine.zip", player, cookie)).Kind);
         state.Store.DeleteAccount(1001);
-        var (_, again) = SignedIn("again", Steam);  // the same Steam id signs in anew and uploads the same zip
-        var (reply, body) = await Upload(File.ReadAllBytes(Path.Combine(tmp, "mine.zip")), again);
-        Assert.Equal((200, "restored"), (reply.Status, Status(body)));
+        var (again, againCookie) = SignedIn("again", Steam);  // the same Steam id signs in anew and uploads the same zip
+        var id = await Keep(TestZip.Own(), "mine2.zip", again, againCookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
     }
 
     [Fact]
