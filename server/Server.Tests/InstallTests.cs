@@ -116,6 +116,14 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void TheShippedStartKitOwnsTheDefaultsOfTheClothingSlots()
+    {
+        // the inventory page fills an empty legs or feet slot with a default item it must find among the owned ones
+        Assert.Contains(39L, Facts.Default.Start().Items);
+        Assert.Contains(59L, Facts.Default.Start().Items);
+    }
+
+    [Fact]
     public void NoSampleInTheInstallIsNoTemplate()
     {
         File.Delete(Path.Combine(install, "game", Install.ConnectSample));
