@@ -1234,4 +1234,46 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Als de voorgestelde oplossingen niet helpen, download dan het gegenereerde logbestand en stuur het naar ons {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>supportteam</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Programma downloaden</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made to get your inventory, wallet, skills, statistics, achievements and trophies back on this server.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode, while signed in to the same Steam account you use here.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Any other zip (a public backup, an older one, or one made for another Steam account) is kept for the operator to look at, and nothing is restored.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Upload and restore</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Kept for review</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload that is restored or kept for review, unchanged, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
 </root>

@@ -1,0 +1,23 @@
+@page "/your-data"
+
+<PageTitle>@L["Data.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@L["Data.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
+    <section class="panel box">
+        <p>@L["Data.Intro"]</p>
+        <h3>@L["Data.Stored.Title"]</h3>
+        <ul>
+            <li>@L["Data.Stored.Steam"]</li>
+            <li>@L["Data.Stored.Handle"]</li>
+            <li>@L["Data.Stored.Game"]</li>
+            <li>@L["Data.Stored.Zip"]</li>
+            <li>@L["Data.Stored.Sessions"]</li>
+        </ul>
+        <h3>@L["Data.Never.Title"]</h3>
+        <p>@L["Data.Never.Text"]</p>
+        <h3>@L["Data.Delete.Title"]</h3>
+        <p>@L["Data.Delete.Text"]</p>
+        <p>@L["Data.Operator"]</p>
+    </section>
+</div>
