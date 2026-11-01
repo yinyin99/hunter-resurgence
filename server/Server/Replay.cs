@@ -255,8 +255,12 @@ public static class Replay
         var facts = Facts.Default;
         var item = Install.ItemDefinitions(S(cfg, "install_dir"));  // the item definitions the game keeps in its archives: the `parent` chain groups weapon variants into the family that shares one weapon skill
         var recorded = e.TryGetValue(new("POST", gsHost, CONNECT, null), out var gsConnect);
-        var connect = recorded ? gsConnect!.Body : Install.Connect(cfg, facts, item);
+        var neutral = Install.Connect(cfg, facts, item);  // what every new account starts from, recordings or not
+        var offline = (bool?)cfg["offline_mode"] ?? true;
+        var connect = recorded ? gsConnect!.Body : neutral;
         if (connect is null) return null;
+        if (recorded && neutral is null && !offline)
+            throw new InvalidOperationException("a community server needs the install's connect sample: new accounts never start from a recorded connect");
         e.TryGetValue(new("POST", apiHost, APPLICATION, null), out var app);
         // the launcher's locale script: one call that wraps a JSON object
         byte[] Script(Func<string, bool> pick) =>
@@ -291,7 +295,8 @@ public static class Replay
             reserves,
             skillList != null ? JsonNode.Parse(skillList.Body) : null,
             item,
-            offline: (bool?)cfg["offline_mode"] ?? true);  // a request no token resolves is the local account's; false on a community server
+            offline: offline,  // a request no token resolves is the local account's; false on a community server
+            startBody: recorded ? neutral : null);
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)

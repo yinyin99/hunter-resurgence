@@ -16,14 +16,14 @@ public class InstallTests : IDisposable
          "account_info": {"email": "sample@example.test", "steam_id": "steam-sample", "uuid": "u-1", "user_id": 998},
          "network": {"handle": "sample_person", "ip": "203.0.113.9", "host": 998, "user_id": 998},
          "config": {"domains": {"main": "sample.example"}},
-         "boost": {"boost": [{"item": {"id": 92}, "own": true}]},
+         "boost": {"boost": [{"item": {"id": 8}, "own": true}]},
          "user_stats": {"achievement_stats": [{"category_id": 1, "group_id": 2, "id": 3, "triggers": {"a": 41}, "value": 77}],
-                        "bust_through_score": 38, "user_stats": {"animal": {"0": {"kills": 5}}, "distance": 424199}},
+                        "bust_through_score": 9, "user_stats": {"animal": {"0": {"kills": 5}}, "distance": 12345}},
          "expedition": {"expedition_id": 123, "lodge": 900, "x": -1.0, "y": 2.0, "z": 3.0},
          "inventory": {"items": [{"item_id": 1, "slot": 3, "guid": "55", "metadata": {}, "units": null}],
                        "infos": [{"item_id": 1, "units": -2}], "active_services": {"UNLIMITED_AMMO": 0}},
-         "wallet": {"em": 80271, "gm": 1113},
-         "skills": {"spotting": [15, 11], "tracking": [4, 2], "weapon": {"1000": 11}},
+         "wallet": {"em": 4321, "gm": 25},
+         "skills": {"spotting": [6, 3], "tracking": [2, 1], "weapon": {"1000": 4}},
          "spawn": [{"population_id": 1}], "competitions": [{"id": 1}],
          "ethical": [[14, 15], [15]], "species": [{"scale_factor": 1.0}, {"scale_factor": 0.8}]}
         """;
@@ -97,7 +97,7 @@ public class InstallTests : IDisposable
         Assert.Equal("https://avatar.test/256/1.png", (string)c["account"]!["avatar_url"]!);
         Eq("""{"domains": {"main": "web.test", "subdomains": {"avatar": "https://avatar.test/", "static": "https://static.test/"}}, "enable_logging": false, "nat": {"pt_server": {"ip": "127.0.0.1", "port": 9090}}}""", c["config"]);
         Eq("""{"achievement_stats": [{"category_id": 1, "group_id": 2, "id": 3, "triggers": {"a": 0}, "value": 0}], "bust_through_score": 0, "user_stats": {"animal": {}, "collectables": {}, "daily_missions": {}, "distance": 0, "duration": 0, "weapon": {}}}""", c["user_stats"]);
-        Eq("""[{"item": {"id": 92}, "own": false}]""", c["boost"]!["boost"]);
+        Eq("""[{"item": {"id": 8}, "own": false}]""", c["boost"]!["boost"]);
         Eq("[]", c["spawn"]);
         Eq("[]", c["competitions"]);
         Eq("""{"UNLIMITED_AMMO": 0}""", c["inventory"]!["active_services"]);
