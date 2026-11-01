@@ -185,8 +185,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var status = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + cookie)])).Body)!;
         Assert.Null(status["restoredUserId"]);
         Assert.Equal(3, status["review"]!.AsArray().Count);
-        // the same zip again is not kept twice, and a fourth different one is more than may wait
-        Assert.Equal("review", Status((await Upload(TestZip.Own(steam: "76561190000000002"), "mismatch2.zip")).Body));
+        // the same bytes again are not kept twice (a rebuilt zip would carry a new timestamp, so another hash), and a fourth different one is more than may wait
+        Assert.Equal("review", Status((await Upload(File.ReadAllBytes(Path.Combine(tmp, "mismatch.zip")))).Body));
         Assert.Equal(3L, Count(player, "uploads"));
         var fourth = await Upload(TestZip.Own(wallet: "\"ems\":9.0,\"gms\":9.0", steam: "76561190000000003"), "fourth.zip");
         Assert.Equal((429, "busy"), (fourth.Reply.Status, Status(fourth.Body)));
