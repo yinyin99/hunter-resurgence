@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) apply to every file and commit message: the game is named only in README.md, and no real hosts, ids, handles or tokens appear anywhere.
+This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) apply to every file and commit message: the game is named only in README.md and in `server/Server/ProtocolLiterals.cs` (the names the client requires), and no real hosts, ids, handles or tokens appear anywhere.
 
 ## Where things are
 
