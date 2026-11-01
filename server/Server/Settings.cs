@@ -48,6 +48,13 @@ public sealed class Settings
         foreach (var key in Replay.HostKeys)
             cfg[key] = Text(root, key) ?? throw new InvalidDataException($"{key}: missing");
         cfg["install_dir"] = Path_("install_dir");
+        // true: a request that no token resolves is the local account's (a player's own PC); false: a community server refuses it
+        cfg["offline_mode"] = root["offline_mode"] switch
+        {
+            null => true,
+            JsonValue flag when flag.TryGetValue<bool>(out var offline) => offline,
+            _ => throw new InvalidDataException("offline_mode: true or false"),
+        };
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");

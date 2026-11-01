@@ -35,6 +35,7 @@ public class SettingsTests : IDisposable
         Assert.Equal(Path.Combine(tmp, "game-copy"), (string)s.Cfg["install_dir"]!);
         Assert.Equal("gameserver.test", (string)s.Cfg["gameserver_host"]!);
         Assert.Null(s.VariantsFile);
+        Assert.True((bool)s.Cfg["offline_mode"]!);  // a local server unless the file says otherwise
         Assert.Equal((IPAddress.Loopback, 80, null), (s.Listeners[0].Address, s.Listeners[0].Port, s.Listeners[0].Cert));
         Assert.Empty(s.TrustedProxies);
         Assert.Equal(("X-Game-Host", Settings.DefaultMaxBodyBytes), (s.HostHeader, s.MaxBodyBytes));
@@ -51,6 +52,7 @@ public class SettingsTests : IDisposable
         o["trusted_proxies"] = new JsonArray("10.0.0.0/8", "192.0.2.7", "fd00::/8");
         o["host_header"] = "X-Orig";
         o["max_body_bytes"] = 1000;
+        o["offline_mode"] = false;
         var s = Load(o);
         Assert.Equal(abs, s.DataDir);
         Assert.Equal(Path.Combine(tmp, "v.json"), s.VariantsFile);
@@ -60,6 +62,7 @@ public class SettingsTests : IDisposable
         Assert.True(s.TrustedProxies[1].Contains(IPAddress.Parse("192.0.2.7")));
         Assert.False(s.TrustedProxies[1].Contains(IPAddress.Parse("192.0.2.8")));
         Assert.Equal(("X-Orig", 1000L), (s.HostHeader, s.MaxBodyBytes));
+        Assert.False((bool)s.Cfg["offline_mode"]!);
     }
 
     [Theory]
@@ -68,6 +71,7 @@ public class SettingsTests : IDisposable
     [InlineData("listeners", null, "listeners: needs at least one")]
     [InlineData("trusted_proxies", "not an address", "trusted_proxies")]
     [InlineData("max_body_bytes", "-1", "max_body_bytes")]
+    [InlineData("offline_mode", "\"maybe\"", "offline_mode")]
     public void BadFilesSayWhatIsWrong(string key, string? value, string message)
     {
         var o = Minimal();
