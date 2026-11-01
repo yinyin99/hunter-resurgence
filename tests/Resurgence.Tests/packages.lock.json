@@ -455,11 +455,8 @@
           "WPF-UI": "[4.3.0, )"
         }
       },
-      "restore": {
-        "type": "Project",
-        "dependencies": {
-          "Resurgence.Restore": "[1.0.0, )"
-        }
+      "play": {
+        "type": "Project"
       },
       "resurgence-launcher": {
         "type": "Project",
