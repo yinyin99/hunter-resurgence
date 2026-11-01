@@ -11,8 +11,9 @@ using Resurgence.Server;
 const string AdminUsage = """
     Server-side admin: give the player items or currency (state.db in the data folder).
 
-    Usage (repo root): dotnet run --project server/Server -- admin item <item_id> [count] | admin em|gm <amount>
+    Usage (repo root): dotnet run --project server/Server -- admin item <item_id> [count] | admin em|gm <amount> [--account <id or handle>]
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
+    --account names another account (user id or handle); without it the local account gets it.
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
@@ -119,6 +120,8 @@ void Admin(string[] a)
         Console.WriteLine($"spawn entry {spawner.Add(req).Id} added: the next hunt has it");
         return;
     }
+    string? who = null;
+    if (a.Length >= 2 && a[^2] == "--account") { who = a[^1]; a = a[..^2]; }
     if (a.Length is not (2 or 3) || a[0] is not ("item" or "em" or "gm") || (a[0] != "item" && a.Length == 3)) Die(AdminUsage);
     long itemId = 0, count = 1;
     double amount = 0;
@@ -129,16 +132,18 @@ void Admin(string[] a)
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect and no connect sample in the install: nothing to seed the player state from"); return; }
+    var account = AdminApi.ResolveAccount(state, who);
+    if (account is null) Die($"no account {who}");
     if (a[0] == "item")
     {
-        if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(state.LocalAccount, itemId, count))
+        if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(account!.Value, itemId, count))
             Die($"item {itemId}: unknown or bad count (1 to {AdminApi.MaxStacks})");
         Console.WriteLine($"granted {count} x {Py.Str(state.ItemInfo(itemId)!["name"])} ({itemId})");
     }
     else
     {
         if (!AdminApi.ValidAmount(amount)) Die($"{a[1]}: not a number from -2^53 to 2^53");
-        var balance = state.Give(state.LocalAccount, a[0], amount);
+        var balance = state.Give(account!.Value, a[0], amount);
         if (balance == null) Die($"{a[0]} unchanged: balance would drop below 0");
         Console.WriteLine($"{a[0]} balance: {Py.Str(balance)}");
     }

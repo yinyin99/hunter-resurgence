@@ -21,14 +21,14 @@ public static class AdminApi
                 log.Misses().Length)))
              .WithName("GetStatus").WithSummary("What the server serves from");
 
-        admin.MapGet("/wallet", Results<Ok<Dictionary<string, double>>, ProblemHttpResult> () => state is null
-                ? NoState()
-                : TypedResults.Ok(state.Wallet(state.LocalAccount).ToDictionary(kv => kv.Key, kv => Py.D(kv.Value))))
+        admin.MapGet("/wallet", Results<Ok<Dictionary<string, double>>, ProblemHttpResult> ([Description(AccountDoc)] string? account) =>
+                state is null ? NoState() : ResolveAccount(state, account) is not { } id ? NoAccount(account!)
+                : TypedResults.Ok(state.Wallet(id).ToDictionary(kv => kv.Key, kv => Py.D(kv.Value))))
              .WithName("GetWallet").WithSummary("Balance per currency (em, gm)").ProducesProblem(503);
 
-        admin.MapGet("/inventory", Results<Ok<JsonArray>, ProblemHttpResult> () => state is null
-                ? NoState()
-                : TypedResults.Ok(state.Inventory(state.LocalAccount)))
+        admin.MapGet("/inventory", Results<Ok<JsonArray>, ProblemHttpResult> ([Description(AccountDoc)] string? account) =>
+                state is null ? NoState() : ResolveAccount(state, account) is not { } id ? NoAccount(account!)
+                : TypedResults.Ok(state.Inventory(id)))
              .WithName("GetInventory").WithSummary("Owned items: item_id, slot (0 = stash), guid, metadata, units").ProducesProblem(503);
 
         admin.MapGet("/items/{itemId:long}", Results<Ok<JsonObject>, ProblemHttpResult> (long itemId) =>
@@ -37,7 +37,7 @@ public static class AdminApi
                 : TypedResults.Problem($"item {itemId} has no definition", statusCode: 404, title: "Unknown item"))
              .WithName("GetItem").WithSummary("Item definition as heartbeat update 10 sends it").ProducesProblem(404).ProducesProblem(503);
 
-        admin.MapPost("/grants/items", Results<Ok<ItemGrantResult>, ValidationProblem, ProblemHttpResult> (ItemGrant grant) =>
+        admin.MapPost("/grants/items", Results<Ok<ItemGrantResult>, ValidationProblem, ProblemHttpResult> (ItemGrant grant, [Description(AccountDoc)] string? account) =>
             {
                 var errors = new Dictionary<string, string[]>();
                 if (grant.ItemId is null) errors["itemId"] = ["required"];
@@ -46,8 +46,10 @@ public static class AdminApi
                     return TypedResults.ValidationProblem(errors);
                 if (state is null)
                     return NoState();
+                if (ResolveAccount(state, account) is not { } id)
+                    return NoAccount(account!);
                 var itemId = grant.ItemId!.Value;
-                if (!state.GrantItems(state.LocalAccount, itemId, grant.Count))
+                if (!state.GrantItems(id, itemId, grant.Count))
                     return TypedResults.Problem($"item {itemId} has no definition", statusCode: 404, title: "Unknown item");
                 return TypedResults.Ok(new ItemGrantResult(itemId, grant.Count, Py.Str(state.ItemInfo(itemId)!["name"])));
             })
@@ -56,7 +58,7 @@ public static class AdminApi
                               + "next connect. Not idempotent: every call grants again.")
              .ProducesProblem(404).ProducesProblem(503);
 
-        admin.MapPost("/grants/currency", Results<Ok<Balance>, ValidationProblem, ProblemHttpResult> (CurrencyGrant grant) =>
+        admin.MapPost("/grants/currency", Results<Ok<Balance>, ValidationProblem, ProblemHttpResult> (CurrencyGrant grant, [Description(AccountDoc)] string? account) =>
             {
                 var errors = new Dictionary<string, string[]>();
                 if (grant.Currency is not ("em" or "gm")) errors["currency"] = ["em or gm"];
@@ -66,7 +68,9 @@ public static class AdminApi
                     return TypedResults.ValidationProblem(errors);
                 if (state is null)
                     return NoState();
-                return state.Give(state.LocalAccount, grant.Currency!, grant.Amount!.Value) is { } balance
+                if (ResolveAccount(state, account) is not { } id)
+                    return NoAccount(account!);
+                return state.Give(id, grant.Currency!, grant.Amount!.Value) is { } balance
                     ? TypedResults.Ok(new Balance(grant.Currency!, Py.D(balance)))
                     : TypedResults.Problem($"{grant.Currency} unchanged: the balance would drop below 0", statusCode: 409, title: "Insufficient balance");
             })
@@ -98,7 +102,7 @@ public static class AdminApi
                 state is null ? NoState() : TypedResults.Ok(new SpawnRemoved(state.Spawns.Remove(id))))
              .WithName("DeleteSpawns").WithSummary("Remove one spawn entry or all").ProducesProblem(503);
 
-        admin.MapPost("/spawn/wake", Results<Ok, ValidationProblem, ProblemHttpResult> (SpawnWake wake) =>
+        admin.MapPost("/spawn/wake", Results<Ok, ValidationProblem, ProblemHttpResult> (SpawnWake wake, [Description(AccountDoc)] string? account) =>
             {
                 var errors = new Dictionary<string, string[]>();
                 if (wake.PopulationId is null or < 0) errors["populationId"] = ["required, from GET /admin/spawn"];
@@ -107,7 +111,9 @@ public static class AdminApi
                     return TypedResults.ValidationProblem(errors);
                 if (state is null)
                     return NoState();
-                state.WakeGroup(state.LocalAccount, wake.PopulationId!.Value, wake.Group!.Value);
+                if (ResolveAccount(state, account) is not { } id)
+                    return NoAccount(account!);
+                state.WakeGroup(id, wake.PopulationId!.Value, wake.Group!.Value);
                 return TypedResults.Ok();
             })
              .WithName("WakeSpawn").WithSummary("Wake a dormant group in the running hunt")
@@ -125,6 +131,17 @@ public static class AdminApi
     const long MaxAmount = 1L << 53;  // larger doubles skip whole numbers; NaN or Infinity would reach the client's JSON
 
     public static bool ValidAmount(double amount) => Math.Abs(amount) <= MaxAmount;
+
+    const string AccountDoc = "User id or handle of the account; omitted: the local account";
+
+    /// <summary>The account an operator names (user id or handle); no name: the local account; null: no such account.</summary>
+    public static long? ResolveAccount(State state, string? who) =>
+        string.IsNullOrWhiteSpace(who) ? state.LocalAccount
+        : long.TryParse(who, out var id) && state.Store.AccountExists(id) ? id
+        : state.Store.AccountByHandle(who);
+
+    static ProblemHttpResult NoAccount(string who) =>
+        TypedResults.Problem($"no account {who}", statusCode: 404, title: "Unknown account");
 
     static ProblemHttpResult NoState() =>
         TypedResults.Problem("no recorded connect to seed the player state from", statusCode: 503, title: "Player state off");
