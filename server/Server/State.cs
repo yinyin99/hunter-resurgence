@@ -30,17 +30,17 @@ public sealed class State
     static readonly string[] RESERVE_KEYS = ["populations", "species_ammo"];
     const long COLOUR = 4294967040;
 
-    /// <summary>The server's starting data for a new account: items and wallet from the recorded connect, skills from its
-    /// levels and the recorded Skill/list. The one source an importer's rows replace (call inside the account's transaction).</summary>
-    void SeedFromConnect(Db con)
+    /// <summary>The starting data of an account: items and wallet from src (a connect reply), skills from its levels and
+    /// list (the player's Skill/list reply). The one source an importer's rows replace (call inside the account's transaction).</summary>
+    static void Seed(Db con, JsonObject src, JsonNode? list)
     {
-        foreach (var i in connect["inventory"]!["items"]!.AsArray())
+        foreach (var i in src["inventory"]!["items"]!.AsArray())
             con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                      long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
-        foreach (var (currency, amount) in connect["wallet"] as JsonObject ?? new JsonObject())
+        foreach (var (currency, amount) in src["wallet"] as JsonObject ?? new JsonObject())
             con.Exec("INSERT INTO wallet (account_id, currency, amount) VALUES ($a, ?, ?)", currency, amount);
-        foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(connect["skills"]) ? connect["skills"]!.AsObject() : new JsonObject(),
-                                                   Py.Truthy(skillList) ? skillList!.AsObject() : new JsonObject()))
+        foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(src["skills"]) ? src["skills"]!.AsObject() : new JsonObject(),
+                                                   Py.Truthy(list) ? list!.AsObject() : new JsonObject()))
             con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", kind, key, xp);
     }
 
@@ -393,7 +393,7 @@ public sealed class State
     readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new();
     readonly Dictionary<long, string?> reserves = new();
     readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
-    readonly JsonObject locale, connect;
+    readonly JsonObject locale, connect, start;
     readonly Dictionary<long, string> textures;
     readonly Dictionary<int, JsonObject> reserveData = new();
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
@@ -410,10 +410,12 @@ public sealed class State
     /// that reserve}, the source of that reserve's RESERVE_KEYS; skillList: the player's recorded Skill/list reply, seeds
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
     /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
-    /// false: it is refused (a community server).</summary>
+    /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
+    /// starts from; null: connectBody is that start (no recorded connect).</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
-                 Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true)
+                 Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
+                 byte[]? startBody = null)
     {
         this.skillList = skillList;
         this.offline = offline;
@@ -432,6 +434,7 @@ public sealed class State
         this.locale = locale;
         this.textures = textures;
         connect = JsonNode.Parse(connectBody)!.AsObject();
+        start = startBody is null ? connect : JsonNode.Parse(startBody)!.AsObject();
         foreach (var (r, body) in reserveConnects ?? [])
         {
             var data = new JsonObject();
@@ -464,19 +467,19 @@ public sealed class State
             family[Py.L(d!["id"])] = Root(d.AsObject());
         Store = new Store(dbPath);
         Store.PurgeExpired();
-        var local = AccountTemplate();
+        var local = connect["account"] as JsonObject ?? new JsonObject();
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
-            Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: SeedFromConnect);
+            Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
     }
 
-    /// <summary>The recorded connect's `account`: the template of every new account, and the local account's.</summary>
-    JsonObject AccountTemplate() => G(connect, "account", null) as JsonObject ?? new JsonObject();
+    /// <summary>The start's `account`: the template of every new account. Never the recorded one when there is a start.</summary>
+    JsonObject AccountTemplate() => G(start, "account", null) as JsonObject ?? new JsonObject();
 
     /// <summary>The connect reply's `account` object of this account.</summary>
     JsonObject Account(long account) => Store.AccountJson(account);
 
-    /// <summary>The connect `account` object of a new account: the recorded one with this user id and handle.</summary>
+    /// <summary>The connect `account` object of a new account: the start's (never the recorded one) with this user id and handle.</summary>
     public JsonObject NewAccount(long id, string handle)
     {
         var account = (JsonObject)AccountTemplate().DeepClone();
@@ -485,10 +488,10 @@ public sealed class State
         return account;
     }
 
-    /// <summary>A new account with the server's starting data (SeedFromConnect). id is the game's user id; throws when the
+    /// <summary>A new account with the server's starting data (the neutral start, never the recorded connect). id is the game's user id; throws when the
     /// id, the handle or the Steam id is taken.</summary>
     public void CreateAccount(long id, string handle, string? steamId64 = null) =>
-        Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, SeedFromConnect);
+        Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, con => Seed(con, start, ReferenceEquals(start, connect) ? skillList : null));
 
     /// <summary>The item catalogue a restore reads units by (the Application/application reply); null without one.</summary>
     public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items);

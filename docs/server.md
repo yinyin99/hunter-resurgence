@@ -2,7 +2,7 @@
 
 `server/Server` is the game server: the local server a player runs on their own PC, and the code of the community server. Tests: `server/Server.Tests`. One SQLite database per server ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
-At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: recorded replies, the game's install archives and a mirror folder. Importers that need no recordings and the new launcher are later steps ([README](../README.md#roadmap)).
+At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, score, purchases, expeditions, chat notices, photo upload) from a player state, and answers everything else from what the operator supplies: the game's install archives, recorded replies and a mirror folder. It needs no recordings to start: the player state is built from the operator's own install and the facts file ([Starting data](#starting-data)). The new launcher is a later step ([README](../README.md#roadmap)).
 
 ## Run it
 
@@ -15,9 +15,9 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | Key | Meaning |
 |---|---|
 | `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `web_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host`, `crash_host` | The 13 host names the game asks for. All are required. The server routes by the `Host` of a request |
-| `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and its sample files seed the item definitions. Read only |
+| `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and hold the item and species definitions, and its sample files (`game/json_connect_results.json`, `game/json_inventory.json`) seed the connect reply and the item definitions ([Starting data](#starting-data)). Read only |
 | `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
-| `recordings_dir` | Default `recordings`: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
+| `recordings_dir` | Default `recordings`: Optional: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets |
 | `offline_mode` | Default `true`: a request that no token resolves is the local account's (a player's own PC). `false` on a community server: it gets the reply of an expired token, see [Accounts](#accounts) |
@@ -28,7 +28,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 `serve` needs no change to the PC: it does not read or require the Windows hosts file. How the client is pointed at the server is not part of the server.
 
-`admin item <item_id> [count]`, `admin em|gm <amount>` and `admin spawn <reserve> <animal> <males> [females] [x z radius]` change the player in `data_dir` from the command line; `coverage` replays every request of the recordings through the server and lists what it cannot answer, naming hosts by their settings key.
+`admin item <item_id> [count]`, `admin em|gm <amount>` and `admin spawn <reserve> <animal> <males> [females] [x z radius]` change the player in `data_dir` from the command line; `coverage` replays every request of the recordings through the server and lists what it cannot answer, naming hosts by their settings key and masking ids and tokens in paths. `coverage --no-recordings` replays them against the server as it starts without recordings and without the mirror (player state from the install and the facts file, on a temporary database): what it lists as unanswered still needs a recording.
 
 ## How a request is answered
 
@@ -38,9 +38,47 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 The state answer wins; a handler that has nothing to say returns control to step 3, so a reply is never made up where a recorded one exists.
 
+## Starting data
+
+`serve` builds the player state from three sources and needs none of the recordings. For each input the first source that has it wins (a recording never loses to the install, and the install never loses to the facts file), except where noted:
+
+| Input | 1. Recording | 2. Install (`install_dir`) | 3. Facts file |
+|---|---|---|---|
+| Connect reply (the game data, and the local account's start) | the newest recorded `connect` | `game/json_connect_results.json`, with the sample account replaced (below) | - |
+| Application catalogue (`species`, `items`, `reserves`, `locations`) | the recorded `Application/application` | `species.json` and `item.json` of the archives | reserves, lodge positions and the enum tables (`types`, `groups`, `categories`, `client_types`) |
+| `populations` and `species_ammo` of a reserve | the newest connect after a `Launch/start` of that reserve | - | `reserves[].populations` and `species`; the ammo of a species is its entry of the connect's `ethical` |
+| Kill page labels and texture names | the recorded locale and web scripts | - | `labels`, `textures` |
+| Item definitions of update 10 | the recorded connect's | `game/json_inventory.json`, then the catalogue above | - |
+| Discounts, the player's skill list | recorded only (without them: no discounts, fresh skills) | - | - |
+| Animal ids, score families | - | - | `animals`, `families` (always) |
+
+With recordings that cover every input, the replies are the ones the recordings gave. Without a recorded connect, `connect` is the install's sample made neutral: the account, `account_info`, `network`, `user_stats` and `boost` of the sample's test player are replaced (handle `hunter`, user id 1, no e-mail, Steam id, address or counters; `config.domains` names the settings' hosts), `spawn` and `competitions` are empty and everything that is game data (species, items text, locations, store, ethical ammo, achievements, ...) stays. `serve` says `player state: off` only when there is neither a recorded connect nor a connect sample in the install.
+
+**The starting profile of a new account** is neutral and the same for everyone, recordings or not: the items of `start.items` of the facts file, one each in the backpack (slot 0, a full stack for items with a stack size), the wallet of `start.wallet` and every skill at level 1 (no weapon skill rows until a first hit), and an `account` object made from the install's sample (no avatar, name or other field of the operator's recorded account). Today that is a single-shot shotgun with a stack of shells, binoculars, a T-shirt, 1000 `em` and 0 `gm`. Change the facts file to change it; a restored backup replaces it. Only the local account of a local server starts from a recorded connect. A community server (`offline_mode` false) with a recorded connect and no connect sample in the install does not start.
+
+Still answered only from recordings (without them: a miss, `null` under `/v1/`): the launcher and website pages and their assets, the sign-up host, the avatar and photo hosts, news, `Launch/start` (its tokens), `User/jwt`, the lists that wrap a recorded base reply (`Me/poll`, `Me/me`, `Expedition/list`, `Public_user/expedition`, `Splash/list_active`) and the profile, statistics, wallet-history, mission, challenge, leaderboard and friend pages. `coverage --no-recordings` prints the exact list.
+
+## The facts file
+
+`server/facts/facts.json` holds what the install does not carry, in this project's own format; it is copied next to the server (`facts/facts.json`). One JSON object, `"format": 1`:
+
+| Key | Content |
+|---|---|
+| `animals` | The animal ids in catalogue order; the index is the animal's id and the index of `spawn_licenses` (the admin spawner's names) |
+| `families` | `{family: [species id]}`: which score formula a species uses (`Scoring`) |
+| `reserves` | `[{id, name, species: [species id], populations: [...]}]` for all 12 reserves. `species` is the species of the reserve (the keys of its `species_ammo`). A population is `{index, animal, density?, reserve?, endangered, license, groups: [{x, z, radius, males, females, enabled?}], random?: {males, females, min_size, max_size, avg_size, max_males, max_females, radius, single_gender}}`; `density` (default the animal), `reserve` (default the reserve; `-1` for the rows every reserve carries, the dogs) and `enabled` are left out when they have their default. The loader writes the client's rows from them (`Facts.ReserveConnect`) |
+| `locations` | `[{id, reserve, type, x, y, z}]`: the start places and where they are |
+| `types` | `{item type: {id, slots, capacity}}`: the numeric type of an item type and the slots and capacity of its items |
+| `groups`, `categories`, `client_types` | `{name: number}` tables for the item definitions of the archives; an item without a client type has its type's number |
+| `labels` | `{locale key: English text}`: the words of the kill page (poses, animal states, body parts, organs, textures) |
+| `textures` | `{texture id: name}` |
+| `start` | `{items: [item id], wallet: {currency: amount}}`: the starting profile |
+
+The file holds names, numbers and positions of the game's world only: no id or handle of a person, no saved reply of a server and no host name. The install is the source of everything it already carries; add to the facts file only what no install file has.
+
 ## Accounts
 
-Every player is in `state.db`. `accounts` holds the game's user id, the Steam id (optional, unique), the handle (unique, case does not matter), the time of the one-shot claim, a banned flag and the connect reply's `account` object; `tokens` maps a token to an account and keeps only its SHA-256 hash. No e-mail, real name or address is stored. Every per-player table has an `account_id`. The ids a restored backup brings (item guids, kill ids) are unique per account, so two accounts can both own item 100 or kill 1; the ids the server hands out (expeditions, photos) are unique in the whole database and always looked up together with the account. A new account starts with the recorded connect's inventory, wallet and skills (`State.CreateAccount`). A database from before accounts is refused: delete it.
+Every player is in `state.db`. `accounts` holds the game's user id, the Steam id (optional, unique), the handle (unique, case does not matter), the time of the one-shot claim, a banned flag and the connect reply's `account` object; `tokens` maps a token to an account and keeps only its SHA-256 hash. No e-mail, real name or address is stored. Every per-player table has an `account_id`. The ids a restored backup brings (item guids, kill ids) are unique per account, so two accounts can both own item 100 or kill 1; the ids the server hands out (expeditions, photos) are unique in the whole database and always looked up together with the account. A new account starts with the connect template's inventory, wallet and skills (`State.CreateAccount`; [Starting data](#starting-data)). A database from before accounts is refused: delete it.
 
 A request's account comes from its token. The tokens it carries are tried in this order, the first that resolves wins: the `X-Hun-Session` header (game host), `Authorization: Bearer` (API v2 host), `oauth_access_token` in the form or the query (API host). A token that is unknown, expired or of a banned account does not resolve. When none does, the request is the local account's if `offline_mode` is true, else it is refused: `{"errorCode": 5, "message": "token expired"}` with status 200 on the API host, status 401 on the game host (`{"err": 1}`) and on the API v2 host. A CORS preflight carries no token and is answered by the replay. Photo links name the account (`/photos/<account id>/<file>`) and need no token; the kill details page finds the account by the handle in its URL (on a local server any handle is the local account). The `admin` commands and the admin API act on the local account.
 

@@ -12,39 +12,10 @@ public static class Scoring
     public static Dictionary<int, (double Lo, double Hi, double Mult)> Variants = new();  // per-variant min/max score and css multiplier
     const double LB = 1 / 0.45359237;
 
-    public static readonly Dictionary<int, string> FAMILY = BuildFamily();
+    public static readonly Dictionary<int, string> FAMILY = Facts.Default.Families;  // species id → score family
     public static readonly HashSet<int> NON_TYPICAL = [100, 101, 106];  // pages carry these as killData.variant (species = the typical id)
     public static readonly HashSet<int> BIRDS_AG = [7, 15, 16, 27, 28, 29, 33, 34, 35, 47, 51];
     public static readonly HashSet<int> FLYING = [6, 11];  // animal_state flying, flying (not spooked)
-
-    static Dictionary<int, string> BuildFamily()
-    {
-        var d = new Dictionary<int, string>();
-        void Add(string fam, params int[] ids)
-        {
-            foreach (var i in ids) d[i] = fam;
-        }
-        Add("weight_lb", 4, 14, 23, 50, 58);
-        Add("weight_mg", 15, 16, 17, 20, 25, 27, 28, 29, 33, 34, 35, 47, 51);
-        Add("weight_kg", 21);
-        Add("weight_g", 53, 57);
-        Add("skull", 9, 13, 30, 36, 37, 43, 49, 52);
-        Add("turkey", 2);
-        Add("pheasant", 7);
-        Add("tusks", 5, 10);
-        Add("bc_deer", 0, 1, 6, 26, 100, 101, 106);
-        Add("elk", 3, 38);
-        Add("moose", 8);
-        Add("caribou", 18);
-        Add("bovid", 24, 42, 46);
-        Add("sheep", 39, 41);
-        Add("cic_roe", 11);
-        Add("cic_red", 12);
-        Add("cic_fallow", 55);
-        Add("cic_horn", 19, 40);
-        Add("tines", 44, 45, 54);
-        return d;
-    }
 
     /// <summary>Config-dependent globals: static_host and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
     public static void Load(JsonObject cfg, string? variantsFile)

@@ -306,7 +306,7 @@ public class ReplayTests : IAsyncLifetime
         }
         await Launch("start=200&reserve=3");  // the reply is replayed; the launch is noted
         await Check("r3");
-        await Launch("start=400&reserve=5");  // not recorded: the latest connect's
+        await Launch("start=400&reserve=99");  // neither recorded nor in the facts file: the latest connect's
         await Check("tutorial");
     }
 }

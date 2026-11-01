@@ -7,18 +7,8 @@ namespace Resurgence.Server;
 
 public sealed class Spawner(string path)
 {
-    /// <summary>The game's animal ids in id order; the index is the catalogue id (emote_id) and the index of spawn_licenses.</summary>
-    public static readonly string[] Animals =
-    [
-        "deer", "mule_deer", "turkey", "roosevelt_elk", "coyote", "feral_hog", "blacktail_deer", "pheasant", "moose",
-        "black_bear", "wild_boar", "roe_deer", "red_deer", "brown_bear", "red_fox", "mallard", "canada_goose", "rabbit",
-        "reindeer", "alpine_ibex", "european_rabbit", "red_kangaroo", "dog_labrador_retriever", "arctic_fox", "bison",
-        "snowshoe_hare", "sitka_deer", "pintail", "american_black_duck", "gadwall", "polar_bear", "sasquatch",
-        "dog_bluetick_coonhound", "ptarmigan_willow", "ptarmigan_rock", "ptarmigan_white_tailed", "wolf", "grizzly_bear",
-        "rocky_mountain_elk", "bighorn_sheep", "feral_goat", "dall_sheep", "water_buffalo", "bobcat", "rusa_deer",
-        "sambar_deer", "banteng", "magpie_goose", "dog_german_pointer", "lynx_eurasian", "werewolf", "snow_goose", "puma",
-        "roebit", "axis_deer", "fallow_deer", "t_rex", "wood_grouse", "wendigo",
-    ];
+    /// <summary>The game's animal ids in id order (the facts file); the index is the catalogue id (emote_id) and the index of spawn_licenses.</summary>
+    public static string[] Animals => Facts.Default.Animals;
 
     public const int MaxAnimals = 200, MaxRadius = 200, Limit = 16384;
 
