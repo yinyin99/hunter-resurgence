@@ -13,6 +13,7 @@ updates:
     directories:
       - /tools/backup
       - /src/*
+      - /server/*
       - /tests/*
     schedule:
       interval: weekly
