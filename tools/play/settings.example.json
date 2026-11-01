@@ -1,0 +1,16 @@
+{
+  "server_url": "https://<community-server>",
+  "gameserver_host": "<gameserver-host>",
+  "api_host": "<api-host>",
+  "apiv2_host": "<apiv2-host>",
+  "signup_host": "<signup-host>",
+  "web_host": "<web-host>",
+  "static_host": "<static-host>",
+  "static_legacy_host": "<static-legacy-host>",
+  "map_host": "<map-host>",
+  "photo_host": "<photo-host>",
+  "avatar_host": "<avatar-host>",
+  "news_host": "<news-host>",
+  "telemetry_host": "<telemetry-host>",
+  "crash_host": "<crash-host>"
+}

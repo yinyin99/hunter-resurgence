@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>play</AssemblyName>
+    <RootNamespace>Play</RootNamespace>
+    <Version>0.0.0-dev</Version>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- the console texts pick their language from a culture: invariant globalization would refuse every culture but the invariant one -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- also set by the publish profile; here too so a build and a publish restore the same packages (the single-file setting adds the ILLink tasks) -->
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- placeholders only; build output only; publish.cmd copies the builder's real settings.json next to the published exe -->
+    <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Resurgence.Tests" />
+  </ItemGroup>
+
+</Project>

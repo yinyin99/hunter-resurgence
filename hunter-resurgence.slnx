@@ -8,4 +8,5 @@
   <Project Path="src/Web/Resurgence.Web.csproj" />
   <Project Path="tests/Resurgence.Tests/Resurgence.Tests.csproj" />
   <Project Path="tools/backup/backup.csproj" />
+  <Project Path="tools/play/play.csproj" />
 </Solution>
