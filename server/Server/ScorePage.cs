@@ -83,7 +83,7 @@ public static class ScorePage
             ? tn : "common";
 
         string Label(string[] table, long i) => i >= 0 && i < table.Length ? Loc(locale, table[i], "") : "";
-        string Text(string s) => Escape(s, false);  // text nodes keep quotes as-is ("Logger's Point")
+        string Text(string s) => Escape(s, false);  // text nodes keep quotes as-is ("Fox's Hollow")
         JsonObject? Item(JsonNode? id) => Py.IsNum(id) && Py.D(id) is var d && d == Math.Floor(d) ? items.GetValueOrDefault((long)d) : null;
         string Name(JsonNode? id) => Item(id)?["name"] is { } n && Py.Truthy(n) ? n.GetValue<string>() : "";
 

@@ -10,7 +10,7 @@ public static class Skills
     public const int MAX_LEVEL = 20;
     public const double SPOT_XP = 2.0;  // event 11: spotting of the animal's species
     public const double HIT_XP = 2.0;  // event 1 with permitted ammo: the weapon's family; kills and misses earn nothing
-    public const double GROUND_BIRD = 0.5;  // py_data animal\species.json experience.WEAPON {"": 0.5, "FLYING": 1}, set on the BIRDS_AG species
+    public const double GROUND_BIRD = 0.5;  // weapon XP of a ground bird is 0.5, of a flying one 1
     public static readonly double[] TRACK_XP = [0.8, 1.2, 1.6, 0.4];  // event 12: the n-th clue on one animal in a hunt; 0.2 from the 5th on
 
     /// <summary>XP at which `level` starts: level L spans 15 * L XP.</summary>
@@ -45,7 +45,7 @@ public static class Skills
         return TRACK_XP[n - 1 < 0 ? n - 1 + TRACK_XP.Length : n - 1];  // negative index counts from the end, like the list
     }
 
-    /// <summary>Level-up toast text, e.g. "Mule Deer Tracking is now level 2".</summary>
+    /// <summary>Level-up toast text, e.g. "Mule Deer Tracking: level 2 reached".</summary>
     public static string LevelUpText(string kind, string? name, long level)
     {
         var skill = kind == "weapon" ? name ?? "None" : $"{name ?? "None"} {(kind.Length == 0 ? kind : char.ToUpperInvariant(kind[0]) + kind[1..].ToLowerInvariant())}";

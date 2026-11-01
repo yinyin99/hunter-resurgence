@@ -1,5 +1,6 @@
-// Trophy score: server `features` -> score per family, as the public score pages print it. Evaluation order and r4
-// placement follow the original Python implementation to the operation.
+// Trophy score: server `features` -> score per family, as the public score pages print it. Replies must stay byte for byte identical to the format the client expects:
+// Python json.dumps default separators and key order, round half to even, repr(float) shortest round-trip text, and
+// the evaluation order and r4 placement of every operation kept as is.
 using System.Text;
 using System.Text.Json.Nodes;
 
@@ -294,7 +295,7 @@ public static class Scoring
 
     static readonly int[] RED_SPAN = [60, 70, 80];  // inside span, % of the average main beam: one CIC point per threshold reached
     static readonly int[] ROE_SPAN = [30, 35, 40, 45];
-    // ponytail: a roe span above this % scores 0; the real limit lies between 63.64 (4 points) and 85.71 (0)
+    // ponytail: a roe span above this % scores 0; the exact limit is unknown: 63.64 scores 4 points, 85.71 scores 0
     const int ROE_SPAN_MAX = 75;
 
     static double SpanPoints(double span, double beam, int[] thresholds, int? limit = null)
@@ -329,7 +330,7 @@ public static class Scoring
             };
         }
         // skull: event 7 `feature` = width << 16 | length, both in 1/100 mm, times scale_factor, not floored
-        // (e.g. 921789401 → 140.65 / 255.61 at scale 1)
+        // (e.g. 100 << 16 | 200 → 1.00 / 2.00 at scale 1)
         if (fam == "skull")
         {
             if (!e7.ContainsKey("feature")) return null;
@@ -373,7 +374,7 @@ public static class Scoring
                         ["circ"] = new JsonObject { ["left"] = L(MmGet(sides[1].A, "circumference_h1")), ["right"] = L(MmGet(sides[0].A, "circumference_h1")) },
                     },
                 };
-            case "moose":  // `c` is h1 unscaled; palm length / width round (707 x 0.6 = 424.2 → 424, 678 x 0.6 = 406.8 → 407)
+            case "moose":  // `c` is h1 unscaled; palm length / width round (100 x 0.6 = 60.0 → 60; 101 x 0.6 = 60.6 → 61)
                 return Both(new JsonObject { ["span"] = L(MmGet(e22, "greatest_spread")) }, a => new JsonObject
                 {
                     ["p"] = Count(a, "points"), ["a"] = Count(a, "abnormals"), ["c"] = Of(a, "circumference_h1"),

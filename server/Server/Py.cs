@@ -1,5 +1,5 @@
-// Python-compatible JSON, rounding and form helpers: replies keep the byte format of the Python reference
-// implementation the reply format comes from.
+// Python-compatible JSON, rounding and form helpers: replies keep the byte format the client expects:
+// json.dumps default separators and key order, round half to even, repr(float) shortest round-trip text.
 //
 // Porting rules:
 // - dict/list/scalar → JsonObject/JsonArray/JsonValue (or null). A number is a float when its raw text has . e E or
