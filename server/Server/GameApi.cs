@@ -51,7 +51,7 @@ public static class GameApi
               .WithName("Connect").WithSummary("Start a hunt session")
               .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
-                               + "reserve. Queues the server notice toast.")
+                               + "reserve (always from the `ethical` list), and `ingame_event` null. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
             gs.MapExactPost(game, State.UPLOAD_PATH, r => Own(game, r, a =>
                 {

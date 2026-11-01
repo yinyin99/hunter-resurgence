@@ -804,6 +804,12 @@ public sealed partial class State
                     network["ip"] = null;  // single player sends none
             }
         }
+        // no seasonal event on this server, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
+        reply["ingame_event"] = null;
+        if (reply["species_ammo"] is JsonArray ammo)
+            foreach (var row in ammo.OfType<JsonObject>())
+                if (long.TryParse(Py.Str(row["species_id"]), out var sid) && sid >= 0 && sid < ethicalAmmo.Count)
+                    row["ammo"] = C(ethicalAmmo[(int)sid]);
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
