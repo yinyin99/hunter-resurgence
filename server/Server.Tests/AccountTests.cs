@@ -493,10 +493,10 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, "state"), (mine.Status, mine.Source));
         Assert.Contains(("Access-Control-Allow-Origin", "https://web.test"), mine.Headers);
         Eq("72270", JsonNode.Parse(mine.Body)!["weight"]);
-        // A has no kill 1: not B's page, the replay answers (nothing recorded)
+        // A has no kill 1: not B's page, and never a recorded one: the endpoint's empty reply
         var other = await Send("GET", "apiv2.test", "/game/user/harvest/1", null, null, Bearer(tokenA));
-        Assert.Equal((404, "miss"), (other.Status, other.Source));
-        Assert.Equal("miss", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenA))).Source);
+        Assert.Equal((404, "empty"), (other.Status, other.Source));
+        Assert.Equal("empty", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenA))).Source);
         Assert.Equal("state", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenB))).Source);
         Assert.Equal("state", (await Send("OPTIONS", "apiv2.test", "/game/user/harvest/1", null, null, [.. Bearer(tokenB), ("Origin", "https://web.test")])).Source);
     }
