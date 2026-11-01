@@ -26,7 +26,7 @@ sealed class FakeSteam : HttpMessageHandler
     }
 
     /// <summary>What Steam sends the browser back with: a query string for this return_to.</summary>
-    public static string Assertion(string returnTo, string steamId = "76561198000000001", string? nonce = null, string? claimed = null,
+    public static string Assertion(string returnTo, string steamId = "99999999999999991", string? nonce = null, string? claimed = null,
         string signed = "signed,op_endpoint,claimed_id,identity,return_to,response_nonce,assoc_handle", string? endpoint = null)
     {
         claimed ??= $"https://steamcommunity.com/openid/id/{steamId}";
@@ -58,7 +58,7 @@ public class SteamOpenIdTests
     [Fact]
     public async Task TestAGoodAssertionGivesTheSteamIdAfterSteamConfirmedIt()
     {
-        Assert.Equal("76561198000000001", await steam.VerifyAsync(Query(), ReturnTo));
+        Assert.Equal("99999999999999991", await steam.VerifyAsync(Query(), ReturnTo));
         var asked = Assert.Single(fake.Asked);
         Assert.Equal("check_authentication", asked["openid.mode"]);  // what was signed goes back unchanged, only the mode differs
         Assert.Equal("c2ln+/=", asked["openid.sig"]);
@@ -70,13 +70,13 @@ public class SteamOpenIdTests
     {
         foreach (var claimed in new[]
         {
-            "https://steamcommunity.com/openid/id/7656119800000000",       // 16 digits
-            "https://steamcommunity.com/openid/id/765611980000000012",     // 18
-            "https://steamcommunity.com/openid/id/76561198000000001/x",
-            "http://steamcommunity.com/openid/id/76561198000000001",
-            "https://steamcommunity.com.evil.test/openid/id/76561198000000001",
-            "https://evil.test/https://steamcommunity.com/openid/id/76561198000000001",
-            "https://steamcommunity.com/openid/id/7656119800000000a",
+            "https://steamcommunity.com/openid/id/9999999999999999",       // 16 digits
+            "https://steamcommunity.com/openid/id/999999999999999912",     // 18
+            "https://steamcommunity.com/openid/id/99999999999999991/x",
+            "http://steamcommunity.com/openid/id/99999999999999991",
+            "https://steamcommunity.com.evil.test/openid/id/99999999999999991",
+            "https://evil.test/https://steamcommunity.com/openid/id/99999999999999991",
+            "https://steamcommunity.com/openid/id/9999999999999999a",
         })
             Assert.Null(await steam.VerifyAsync(Query(claimed: claimed), ReturnTo));
         Assert.Empty(fake.Asked);  // refused before Steam is asked
@@ -102,7 +102,7 @@ public class SteamOpenIdTests
     [Fact]
     public async Task TestARepeatedFieldIsRefused()
     {
-        Assert.Null(await steam.VerifyAsync(Query() + "&openid.claimed_id=" + Uri.EscapeDataString("https://steamcommunity.com/openid/id/76561198000000002"), ReturnTo));
+        Assert.Null(await steam.VerifyAsync(Query() + "&openid.claimed_id=" + Uri.EscapeDataString("https://steamcommunity.com/openid/id/99999999999999992"), ReturnTo));
     }
 
     [Fact]
@@ -212,11 +212,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     /// <summary>The second half: Steam confirms steamId and the browser comes back.</summary>
-    Task<Reply> Return(string host, (string Login, string ReturnPath) begun, string steamId = "76561198000000001", string? nonce = null) =>
+    Task<Reply> Return(string host, (string Login, string ReturnPath) begun, string steamId = "99999999999999991", string? nonce = null) =>
         Get(host, begun.ReturnPath + "&" + FakeSteam.Assertion("https://" + host + begun.ReturnPath, steamId, nonce), Ck("hr_login", begun.Login));
 
     /// <summary>A whole sign-in on the host: the session cookie of the browser (the handle is asked for at the first one).</summary>
-    async Task<string> SignIn(string steamId = "76561198000000001", string handle = "Hunter_One", string host = "web.test", string query = "")
+    async Task<string> SignIn(string steamId = "99999999999999991", string handle = "Hunter_One", string host = "web.test", string query = "")
     {
         var begun = await Begin(host, query);
         var back = await Return(host, begun, steamId);
@@ -243,7 +243,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var first = await SignIn();
         var me = await Me(first);
         Assert.Equal((Store.FirstServerId, "Hunter_One"), ((long)me!["userId"]!, (string)me["handle"]!));
-        Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("76561198000000001"));
+        Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("99999999999999991"));
         Assert.Equal(Store.FirstServerId, state.Store.AccountByHandle("hunter_one"));
         // a new account starts with the server's starting data
         Eq("182.0", state.Wallet(Store.FirstServerId)["em"]);
@@ -252,7 +252,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var again = await Return("web.test", begun);
         Assert.Equal(("/feed", 302), (Location(again), again.Status));  // no name is asked for again
         Assert.Equal(Store.FirstServerId, await Me(Cookie(again, "hr_session")!) is { } m ? (long)m["userId"]! : -1);
-        Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("76561198000000001"));
+        Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("99999999999999991"));
         using var con = state.Store.Open();
         Assert.Equal(2L, con.Scalar("SELECT COUNT(*) FROM accounts"));  // the local account and this one
     }
@@ -260,9 +260,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestEveryNewAccountGetsTheNextIdOfTheServersRange()
     {
-        await SignIn("76561198000000001", "one");
-        await SignIn("76561198000000002", "two");
-        Assert.Equal(Store.FirstServerId + 1, state.Store.AccountBySteam("76561198000000002"));
+        await SignIn("99999999999999991", "one");
+        await SignIn("99999999999999992", "two");
+        Assert.Equal(Store.FirstServerId + 1, state.Store.AccountBySteam("99999999999999992"));
         Assert.Equal(Store.FirstServerId + 2, state.Store.NextServerId());
         Assert.True(Store.FirstServerId + 1 < int.MaxValue && Fixtures.ME < Store.FirstServerId);  // the local account and a restored id sit below the range
         state.CreateAccount(1234567, "restored");  // an id from a backup does not move the allocator
@@ -272,19 +272,19 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestAHandleIsCheckedAndUniqueWhateverTheCase()
     {
-        await SignIn("76561198000000001", "Hunter_One");
+        await SignIn("99999999999999991", "Hunter_One");
         var begun = await Begin("web.test");
-        await Return("web.test", begun, "76561198000000002");
+        await Return("web.test", begun, "99999999999999992");
         foreach (var (handle, text) in new[] { ("hunter_one", "taken"), ("HUNTER_ONE", "taken"), ("x", "3 to 20"), ("two words", "3 to 20") })
         {
             var page = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode(handle)}", Ck("hr_login", begun.Login));
             Assert.Equal(200, page.Status);
             Assert.Contains(text, Body(page));
         }
-        Assert.Null(state.Store.AccountBySteam("76561198000000002"));
+        Assert.Null(state.Store.AccountBySteam("99999999999999992"));
         var ok = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle=Second", Ck("hr_login", begun.Login));
         Assert.Equal(302, ok.Status);
-        Assert.NotNull(state.Store.AccountBySteam("76561198000000002"));
+        Assert.NotNull(state.Store.AccountBySteam("99999999999999992"));
     }
 
     [Fact]
@@ -310,16 +310,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var back = await Return("web.test", await Begin("web.test"));
         Assert.Equal(400, back.Status);
         Assert.Null(Cookie(back, "hr_session"));
-        Assert.Null(state.Store.AccountBySteam("76561198000000001"));
+        Assert.Null(state.Store.AccountBySteam("99999999999999991"));
     }
 
     [Fact]
     public async Task TestTheNextAddressStaysOnThisSite()
     {
-        await SignIn("76561198000000009", "nine");
+        await SignIn("99999999999999999", "nine");
         foreach (var next in new[] { "https://evil.test/", "//evil.test/x", "/\\evil.test", "feed", "/a\nb" })
-            Assert.Equal("/", Location(await Return("web.test", await Begin("web.test", "?next=" + HttpUtility.UrlEncode(next)), "76561198000000009")));
-        Assert.Equal("/store", Location(await Return("web.test", await Begin("web.test", "?next=%2Fstore"), "76561198000000009")));
+            Assert.Equal("/", Location(await Return("web.test", await Begin("web.test", "?next=" + HttpUtility.UrlEncode(next)), "99999999999999999")));
+        Assert.Equal("/store", Location(await Return("web.test", await Begin("web.test", "?next=%2Fstore"), "99999999999999999")));
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Contains("Path=/;", set);
         var cookie = Cookie(named, "hr_session")!;
         // a game token is no session, and a session no game token
-        Assert.Null(await Me(state.Store.CreateToken(state.Store.AccountBySteam("76561198000000001")!.Value)));
+        Assert.Null(await Me(state.Store.CreateToken(state.Store.AccountBySteam("99999999999999991")!.Value)));
         Assert.Null(state.Store.ResolveToken(cookie));
         Assert.Equal("/auth/handle", Location(back));
     }
@@ -361,7 +361,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         await SignIn();
         using (var con = state.Store.Open())
-            con.Exec("UPDATE accounts SET banned = 1 WHERE steam_id64 = ?", "76561198000000001");
+            con.Exec("UPDATE accounts SET banned = 1 WHERE steam_id64 = ?", "99999999999999991");
         var back = await Return("web.test", await Begin("web.test"));
         Assert.Equal(403, back.Status);
         Assert.Null(Cookie(back, "hr_session"));
@@ -376,7 +376,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, page.Status);
         Assert.Contains("Sign in with Steam", Body(page));
         Assert.DoesNotContain("id=\"play\"", Body(page));
-        var cookie = await SignIn("76561198000000001", "Hunter_One", "signup.test");
+        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
         page = await Get("signup.test", "/", Ck("hr_session", cookie));
         Assert.Contains("Hello, Hunter_One", Body(page));
         Assert.Contains("id=\"play\"", Body(page));
@@ -388,14 +388,14 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestTheStartPageGivesALaunchUrlWhoseTokensAreThePlayers()
     {
-        var cookie = await SignIn("76561198000000001", "Hunter_One", "signup.test");
+        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
         Assert.Equal(401, (await Xhr("POST", "signup.test", "/auth/launch")).Status);
         Assert.Equal(400, (await server.SendAsync("POST", "signup.test", "/auth/launch", [Ck("hr_session", cookie)], [])).Status);
         var reply = await Xhr("POST", "signup.test", "/auth/launch", Ck("hr_session", cookie));
         Assert.Equal(200, reply.Status);
         var url = (string)JsonNode.Parse(reply.Body)!["url"]!;
         var m = System.Text.RegularExpressions.Regex.Match(url,
-            $@"\A{ProtocolLiterals.LaunchScheme}://gameserver\.test/([0-9a-f]{{40}})/lang/en_US/access_token/([0-9a-f]{{40}})/refresh_token/([0-9a-f]{{40}})\z");
+            $@"\A{ProtocolLiterals.LaunchScheme}://gameserver\.test/([0-9a-f]{{40}})/lang/en_US/access_token/([0-9a-f]{{40}})/refresh_token/(r[0-9a-f]{{40}})\z");
         Assert.True(m.Success, url);
         foreach (var token in new[] { m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value })
             Assert.Equal(Store.FirstServerId, state.Store.ResolveToken(token));
@@ -450,8 +450,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestLaunchStartIssuesTheTokensOfTheRequestsAccount()
     {
-        var cookie = await SignIn("76561198000000001", "Hunter_One", "signup.test");
-        var player = state.Store.AccountBySteam("76561198000000001")!.Value;
+        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var player = state.Store.AccountBySteam("99999999999999991")!.Value;
         var token = state.Store.CreateToken(player, TimeSpan.FromHours(1));
         var reply = await server.SendAsync("POST", "api.test", LAUNCH_START, Form, Encoding.ASCII.GetBytes($"start=100&reserve=2&loctype=LODGE&oauth_access_token={token}"));
         Assert.Equal((200, "state"), (reply.Status, reply.Source));
@@ -497,13 +497,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     public async Task TestARefreshTokenRenewsTheAccessToken()
     {
         state.CreateAccount(Store.FirstServerId, "renewer");
-        var refresh = state.Store.CreateToken(Store.FirstServerId, Lifetimes.Refresh);
+        var refresh = state.Store.CreateToken(Store.FirstServerId, Lifetimes.Refresh, Lifetimes.RefreshPrefix);
         var reply = await server.SendAsync("POST", "api.test", OAUTH_TOKEN, Form, Encoding.ASCII.GetBytes($"oauth_consumer_key=k&oauth_refresh_token={refresh}"));
         var renewed = JsonNode.Parse(reply.Body)!;
         Assert.Equal(Store.FirstServerId, state.Store.ResolveToken((string)renewed["access_token"]!));
         Assert.Equal((refresh, Store.FirstServerId), ((string)renewed["refresh_token"]!, (long)renewed["user_id"]!));
         var bad = await server.SendAsync("POST", "api.test", OAUTH_TOKEN, Form, "oauth_refresh_token=nope"u8.ToArray());
         Assert.Equal("denied", bad.Source);
+        // an access token or a JWT is not a refresh token
+        foreach (var other in new[] { state.Store.CreateToken(Store.FirstServerId, Lifetimes.Access), state.Store.CreateToken(Store.FirstServerId, Lifetimes.Jwt, "eyJ.x.") })
+            Assert.Equal("denied", (await server.SendAsync("POST", "api.test", OAUTH_TOKEN, Form, Encoding.ASCII.GetBytes("oauth_refresh_token=" + other))).Source);
     }
 
     [Fact]
@@ -544,14 +547,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal("""{"access_token": "recorded"}""", Body(await server.SendAsync("POST", "gameserver.test", ProtocolLiterals.LauncherBase + "/token/", [], [])));
         Assert.Equal("<html>recorded</html>", Body(await Get("signup.test", "/")));  // no start page: the local player needs no sign-in
         Assert.Equal("state", (await server.SendAsync("POST", "gameserver.test", HEARTBEAT, [], "{}"u8.ToArray())).Source);  // the local account
+        Assert.Equal("miss", (await Get("web.test", "/auth/me")).Source);  // no sign-in on a local server
+        Assert.Equal("miss", (await server.SendAsync("POST", "signup.test", "/auth/link", [("X-Requested-With", "x")], [])).Source);
     }
 
     [Fact]
     public async Task TestAnAccountIdIsReplaceableUntilItPlays()
     {
-        // the rule the restore follows (docs/server.md#sign-in): the account of a first sign-in has only the starting rows, no hunt
+        // the rule the restore follows (docs/server.md#sign-in-and-tokens-and-tokens): the account of a first sign-in has only the starting rows, no hunt
         await SignIn();
-        var id = state.Store.AccountBySteam("76561198000000001")!.Value;
+        var id = state.Store.AccountBySteam("99999999999999991")!.Value;
         using var con = state.Store.Open(id);
         Assert.Equal(0L, con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a"));
         Assert.Equal(0L, con.Scalar("SELECT COUNT(*) FROM events WHERE account_id = $a"));

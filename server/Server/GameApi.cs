@@ -104,7 +104,7 @@ public static class GameApi
                      .WithDescription("`{token}`: a three-part token that expires in 30 minutes and resolves to the account of `oauth_access_token`.")
                      .Body<TokenForm>("application/json").Produces(200, contentType: "application/json");
             api.MapExactPost(game, OAUTH_TOKEN, r => !s.Online ? null : FormValue(r, "oauth_refresh_token") is { } refresh
-                    && s.Store.ResolveToken(refresh) is { } owner
+                    && refresh.StartsWith(Lifetimes.RefreshPrefix, StringComparison.Ordinal) && s.Store.ResolveToken(refresh) is { } owner
                     ? new(200, JsonAnyOrigin(), Py.DumpBytes(game.Tokens!.Renew(refresh, owner)), "state") : Denied(game, r))
                .WithName("RenewToken").WithSummary("A new access token for a refresh token")
                .WithDescription("`{access_token, refresh_token, expires, user_id, account_id}`; the refresh token is not rotated.")
@@ -262,6 +262,7 @@ public static class GameApi
     /// read but their success. The Steam ticket of `token` is not checked (checking it needs a Steam Web API key, which the server does not have).</summary>
     static Reply? LauncherCall(Req r)
     {
+        if (r.Path.Length <= ProtocolLiterals.LauncherBase.Length + 1) return null;
         var name = r.Path[(ProtocolLiterals.LauncherBase.Length + 1)..].Split('/')[0];
         var body = name switch
         {

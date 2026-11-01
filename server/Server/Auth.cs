@@ -1,5 +1,5 @@
 // Sign-in with Steam on the website's host and on the signup host (the launcher's start page), the cookie session that
-// follows it, and the tokens the game is given (session, access, refresh, the JWT of User/jwt). docs/server.md#sign-in.
+// follows it, and the tokens the game is given (session, access, refresh, the JWT of User/jwt). docs/server.md#sign-in-and-tokens.
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,6 +16,8 @@ public static class Lifetimes
 {
     public static readonly TimeSpan Session = TimeSpan.FromDays(7);
     public static readonly TimeSpan Access = TimeSpan.FromDays(1);
+    /// <summary>Refresh tokens start with this letter (the other tokens are hex or a JWT, which starts with e): only they renew.</summary>
+    public const string RefreshPrefix = "r";
     public static readonly TimeSpan Refresh = TimeSpan.FromDays(30);
     public static readonly TimeSpan Jwt = TimeSpan.FromMinutes(30);
     public static readonly TimeSpan Cookie = TimeSpan.FromDays(30);
@@ -41,12 +43,12 @@ public sealed class GameTokens(Store store, string gameserverHost)
     /// environment check looks for it anywhere in the URL); the host must not contain dev or beta.</summary>
     public string LaunchUrl(long account) =>
         $"{ProtocolLiterals.LaunchScheme}://{gameserverHost}/{store.CreateToken(account, Lifetimes.Session)}/lang/en_US"
-        + $"/access_token/{store.CreateToken(account, Lifetimes.Access)}/refresh_token/{store.CreateToken(account, Lifetimes.Refresh)}";
+        + $"/access_token/{store.CreateToken(account, Lifetimes.Access)}/refresh_token/{store.CreateToken(account, Lifetimes.Refresh, Lifetimes.RefreshPrefix)}";
 
     public JsonObject Launch(long account) => new()
     {
         ["access_token"] = store.CreateToken(account, Lifetimes.Access),
-        ["refresh_token"] = store.CreateToken(account, Lifetimes.Refresh),
+        ["refresh_token"] = store.CreateToken(account, Lifetimes.Refresh, Lifetimes.RefreshPrefix),
         ["session"] = store.CreateToken(account, Lifetimes.Session),
         ["status"] = "ok",
     };
@@ -131,7 +133,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     static readonly (string, string)[] PageHeaders =
         [("Content-Type", "text/html; charset=utf-8"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff"),
-         ("Referrer-Policy", "no-referrer"), ("X-Frame-Options", "DENY")];
+         ("Referrer-Policy", "same-origin"), ("X-Frame-Options", "DENY")];
 
     static Reply Html(int status, string html, params string[] cookies) =>
         new(status, [.. PageHeaders, .. cookies.Select(c => ("Set-Cookie", c))], Encoding.UTF8.GetBytes(html), "auth");
@@ -176,7 +178,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (link is not null && !(links.TryGetValue(link, out var entry) && entry.Expires > now()))
             return Problem(400, "This sign-in link ran out of time. Start again from the launcher.");
         Purge();
-        if (logins.Count >= MaxPending) return Problem(503, "Too many sign-ins at the moment. Try again in a minute.");
+        if (logins.Count >= MaxPending) // full: the one that expires first goes, so a flood cannot lock the players out
+            logins.TryRemove(logins.MinBy(kv => kv.Value.Expires).Key, out _);
         var login = new Login(Rand(), SafeNext(q.TryGetValue("next", out var n) ? n[0] : null), link, now() + Lifetimes.Login);
         logins[login.Id] = login;
         return Redirect(SteamOpenId.LoginUrl(ReturnTo(r, login.Id), Origin(r) + "/"), Set(LoginCookie, login.Id, "/auth", Lifetimes.Login));
@@ -272,7 +275,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
         Purge();
-        if (links.Count >= MaxPending) return Json(503, new JsonObject { ["error"] = "busy" });
+        if (links.Count >= MaxPending)
+            links.TryRemove(links.MinBy(kv => kv.Value.Expires).Key, out _);
         var code = Rand();
         links[code] = new LinkEntry(now() + Lifetimes.Link);
         return Json(200, new JsonObject
