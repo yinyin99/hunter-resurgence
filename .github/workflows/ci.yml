@@ -29,6 +29,15 @@ jobs:
           $names = ($zip.Entries.FullName | Sort-Object) -join ","
           $zip.Dispose()
           if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
+  # the server's tests on Linux too: operators run the community server on a VPS (the build job above runs them on Windows with the rest of the solution)
+  server-ubuntu:
+    runs-on: ubuntu-latest
+    env:
+      RestoreLockedMode: "true"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-sdk
+      - run: dotnet test --project server/Server.Tests -c Release
   # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, serves robots.txt, and sends the security headers
   docker:
     runs-on: ubuntu-latest
