@@ -1,7 +1,7 @@
 // The game hosts' API: one endpoint per path the player state answers, documented in the "game" OpenAPI document.
 // Each handler checks the raw method and path itself (an exact path, or the pattern the routing contract had), like
-// the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback), so every reply
-// stays the recorded one.
+// the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback): a local server's
+// recorded reply, a community server's empty one (ReplayScope).
 using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
@@ -15,6 +15,7 @@ public static class GameApi
 {
     static readonly Regex Harvest = new(@"\A/game/user/harvest/(\d+)(/taxidermize)?\z", RegexOptions.ECMAScript);
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
+    static readonly Regex Lodges = new(@"\A/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript);
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
     static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
 
@@ -126,21 +127,22 @@ public static class GameApi
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("SkillList").WithSummary("Skill numbers of a player")
-               .WithDescription("The player's own skills from the state (level plus the fraction of its span); other players' "
-                                + "replies are replayed.")
+               .WithDescription("The player's own skills from the state (level plus the fraction of its span); for other players a local "
+                                + "server replays the recording and a community server sends empty skills.")
                .Body<UserForm>(Form).Produces<SkillNumbers>();
             api.MapExactPost(game, STATISTICS_TOTAL, r => Own(game, r, a => s.StatisticsReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("StatisticsTotal").WithSummary("Statistics of a player")
-               .WithDescription("The player's own restored statistics (`data`, `distance`, `duration`); other players' and unrestored "
-                                + "accounts' replies are replayed.")
+               .WithDescription("The player's own restored statistics (`data`, `distance`, `duration`); for other players and unrestored "
+                                + "accounts a local server replays the recording and a community server sends empty statistics.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, ACHIEVEMENT_STATS, r => Own(game, r, a => s.AchievementReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("AchievementStats").WithSummary("Achievements of a player with their earn times")
-               .WithDescription("The player's own restored achievements; other players' and unrestored accounts' replies are replayed.")
+               .WithDescription("The player's own restored achievements; for other players and unrestored accounts a local server replays "
+                                + "the recording and a community server sends `[]`.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
@@ -150,24 +152,30 @@ public static class GameApi
            .WithDescription("The recorded list with a server notice first.").Produces(200, contentType: "application/json");
         if (s != null)
         {
-            api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Recorded(r) is { Tier: >= 1 } hit
-                    ? Own(game, r, a => new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body), "state"))
+            // Base: the recorded reply on a local server, the endpoint's empty shape on a community server (ReplayScope).
+            // Another player's user_id is the empty reply there. ponytail: no other player's data is served yet.
+            api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Base(r) is { } hit
+                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body), "state") : null)
                     : null)
                .WithName("LastHunt").WithSummary("The latest expedition with its kills and stats")
-               .WithDescription("`stats` stays null while the hunt is open; the recorded reply until the first server hunt.")
+               .WithDescription("`stats` stays null while the hunt is open; before the first server hunt the recorded reply (a community "
+                                + "server: `null`).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, EXPEDITION_LIST, r => game.Recorded(r) is { Tier: >= 1 } hit
-                    ? Own(game, r, a => new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state"))
+            api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
+                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
-               .WithDescription("Server expeditions ahead of the recorded ones on the first page; later pages are replayed.")
+               .WithDescription("Server expeditions ahead of the recorded ones on the first page; later pages are replayed (a community "
+                                + "server: empty).")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
-                api.MapExactPost(game, path, r => game.Recorded(r) is not { Tier: >= 1 } hit ? null : Own(game, r, a =>
+                api.MapExactPost(game, path, r => game.Base(r) is not { } hit ? null : Own(game, r, a =>
                     {
                         var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
                         if (path == ME)
                             reply = s.MeReply(a, reply) ?? reply;
+                        else if (s.Online)
+                            reply["avatar"] = s.Avatar(a);
                         var wallet = s.Wallet(a);
                         reply["gms"] = wallet["gm"]!.DeepClone();
                         reply["ems"] = wallet["em"]!.DeepClone();
@@ -176,8 +184,16 @@ public static class GameApi
                     }))
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
-                                    + "`unread_messages` from the state.")
+                                    + "`unread_messages` from the state. A community server builds them from the account alone.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
+            api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
+               .WithName("InventoryList").WithSummary("Owned items with their definitions")
+               .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is null. Another player's `user_id`: `[]`.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
+               .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
             var harvest = Handle(game, r =>
@@ -211,6 +227,26 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
+            // the account's restored trophies and lodges (community server only); the lodges of another user id are the empty reply
+            var restored = Handle(game, r =>
+            {
+                var lodges = Lodges.Match(r.Path);
+                if (!s.Online || r.Method != "GET" || (r.Path != "/game/user/trophies" && !lodges.Success))
+                    return null;
+                if (s.Authenticate(r.Tokens()) is not { } a)
+                    return Denied(game, r);
+                var (body, type) = r.Path == "/game/user/trophies" ? (s.RowsReply(a, "trophies", "/game/user/trophies"), "application/json")  // ponytail: the trophy list's own media type is not known
+                    : !s.IsUser(a, lodges.Groups[1].Value) ? (null, "")
+                    : lodges.Groups[2].Success ? (s.RowReply(a, "lodges", "/game/user/lodge", lodges.Groups[2].Value), "application/vnd.game.user.trophy_lodge.lodge+json")
+                    : (s.RowsReply(a, "lodges", "/game/user/lodges"), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
+                return Has(body) ? new(200, [("Content-Type", type), .. Cors(r.Header)], body!, "state") : null;
+            });
+            apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's restored trophies")
+                 .Produces(200, contentType: "application/json");
+            apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The account's restored lodges")
+                 .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
+            apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One restored lodge")
+                 .PathParams(("id", "user id"), ("lodge", "lodge id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json");
 
             var web = Group(app, game.Web, "Website (web_host)");
             web.MapGet("/user/{handle}/score/", Handle(game, r =>

@@ -9,7 +9,7 @@ using System.Text.Json.Nodes;
 namespace Resurgence.Server;
 
 /// <summary>State-backed replies; one pooled sqlite connection per call (handlers run on many threads).</summary>
-public sealed class State
+public sealed partial class State
 {
     public const string UPLOAD_PATH = "/upload/storage/v1/b/photos/o";  // object-storage upload shape the client uses
     public const string PHOTO_PREFIX = "/photos/";
@@ -20,6 +20,7 @@ public sealed class State
     public const int HEARTBEAT_TIMEOUT = 120;
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
+    public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
     /// <summary>Metadata keys of a restored item's placement: the items table has no columns for them (see <see cref="Items"/>).</summary>
     public const string POSITION = "__position", DIRECTION = "__direction";
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
@@ -479,12 +480,21 @@ public sealed class State
     /// <summary>The connect reply's `account` object of this account.</summary>
     JsonObject Account(long account) => Store.AccountJson(account);
 
-    /// <summary>The connect `account` object of a new account: the start's (never the recorded one) with this user id and handle.</summary>
+    /// <summary>The connect `account` object of a new account: the start's shape (never the recorded one) with this user id and
+    /// handle, and no other value of any real player (name of their page, pictures, score, ids).</summary>
     public JsonObject NewAccount(long id, string handle)
     {
         var account = (JsonObject)AccountTemplate().DeepClone();
         account["user_id"] = id;
         account["handle"] = handle;
+        foreach (var (key, value) in new (string, JsonNode)[]
+                 {
+                     ("account_id", id), ("hostname", handle.ToLowerInvariant()), ("avatar_url", $"{avatarBase}/256/{DefaultAvatar}.png"),
+                     ("avatar", DefaultAvatar), ("avatar_id", DefaultAvatar), ("face", DefaultAvatar), ("fullbody_avatar", 0),
+                     ("gender", 0), ("membership", 0), ("hunterscore", 0),
+                 })
+            if (account.ContainsKey(key))
+                account[key] = value;
         return account;
     }
 
@@ -608,7 +618,8 @@ public sealed class State
         return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
     }
 
-    /// <summary>Skill/list for the player's user_id; null for anyone else (their recorded reply is replayed).</summary>
+    /// <summary>Skill/list for the player's user_id; null for anyone else (a local server replays their recorded reply, a
+    /// community server sends the empty one).</summary>
     public byte[]? SkillListReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
@@ -618,7 +629,7 @@ public sealed class State
     }
 
     /// <summary>Statistics/total for the player's user_id from the restored rows; null for anyone else and for an account
-    /// without a restored profile (their recorded reply is replayed).</summary>
+    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
     public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
 
     /// <summary>Achievement/stats, as <see cref="StatisticsReply"/>.</summary>
@@ -634,11 +645,13 @@ public sealed class State
     }
 
     /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
-    /// profile lacks empty (a zip without its own Me/me); null for any other account.</summary>
+    /// profile lacks empty (a zip without its own Me/me); null for any other account. On a community server every account
+    /// has one (a new account's is <see cref="MeOf"/>), and `recorded` is the endpoint's empty shape.</summary>
     public JsonObject? MeReply(long account, JsonObject recorded)
     {
         using var con = Con(account);
-        return RestoredReads.Me(con) is { } me ? RestoredReads.FillMissing(me, recorded) : null;
+        var me = Online ? MeOf(con, account) : RestoredReads.Me(con);
+        return me is null ? null : RestoredReads.FillMissing(me, recorded);
     }
 
     JsonObject Sender() => new() { ["handle"] = "Server", ["user_id"] = SYSTEM_SENDER, ["avatar"] = $"{avatarBase}/256/10000000.png" };
@@ -776,8 +789,17 @@ public sealed class State
         reply["wallet"] = Wallet(account);
         reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
         using (var con = Con(account))
-            if (RestoredReads.Me(con) is { } me)  // a restored account: its own stats and login data, not the recorded player's
+        {
+            // a restored account has its own stats and login data, not the recorded player's; on a community server so has every
+            // other account (a new one has empty statistics), and none shows the recorded player's address
+            var me = Online ? MeOf(con, account) : RestoredReads.Me(con);
+            if (me is not null)
+            {
                 RestoredReads.Connect(con, reply, me, Store.SteamId64(account));
+                if (Online && reply["network"] is JsonObject network)
+                    network["ip"] = "0.0.0.0";
+            }
+        }
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
@@ -995,12 +1017,12 @@ public sealed class State
         ["weight"] = C(spawn["weight_grams"]),
     };
 
-    /// <summary>GET /game/user/harvest/&lt;kill_id&gt; body, or null for an unknown kill.</summary>
+    /// <summary>GET /game/user/harvest/&lt;kill_id&gt; body: this server's kill, else the harvest record a restore brought; null for an unknown kill.</summary>
     public byte[]? HarvestReply(long account, long killId)
     {
         using var con = Con(account);
         var row = con.Rows("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", killId).FirstOrDefault();
-        return row is null ? null : Encoding.UTF8.GetBytes((string)row[0]);
+        return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
     /// <summary>Public_user/expedition: the latest server expedition and its kills; the recorded reply if none yet.</summary>

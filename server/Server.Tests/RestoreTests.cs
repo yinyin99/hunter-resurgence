@@ -178,9 +178,9 @@ public class RestoreTests : StateTestBase
         Eq("""{"locale": "en_US", "facebook_id": null, "has_password": 0, "share_on_facebook": 0, "timezone": "UTC", "id": 1001, "user_id": 1001, "uuid": "00000000-0000-0000-0000-000000000001", "country": "XX", "account_state": 0, "steam_id": "", "user_group": 7, "email_verified": 0, "email": null}""",
            reply["account_info"]);
         Assert.DoesNotContain("example.invalid", reply.ToJsonString());
-        // an account that restored nothing still gets the recorded reply: the template's account and no restored keys
+        // an account that restored nothing has its own account and empty statistics, not the recorded player's
         Assert.Equal("hunter", Connect(ME)["account"]!["handle"]!.ToString());
-        Assert.Null(Connect(ME)["user_stats"]);
+        Eq("""{"collectables": {}, "weapon": {}, "animal": {}, "daily_missions": {}, "distance": 0, "duration": 0}""", Connect(ME)["user_stats"]!["user_stats"]);
     }
 
     [Fact]
@@ -233,10 +233,10 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         Eq("[]", me["worlditems"]);
         Assert.DoesNotContain("example.invalid", Encoding.UTF8.GetString(reply.Body));
         Assert.DoesNotContain("Person", Encoding.UTF8.GetString(reply.Body));
-        // the account that restored nothing still gets the recorded reply
+        // the account that restored nothing gets a new account's profile, not the recorded player's
         var other = JsonNode.Parse((await Post(Replay.ME, token7)).Body)!;
-        Eq("""{"recorded": 1}""", other["records"]);
-        Eq("99", other["rank"]);
+        Eq("""{}""", other["records"]);
+        Eq("0", other["rank"]);
     }
 
     [Fact]
@@ -247,9 +247,9 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         var achievements = await Post(Replay.ACHIEVEMENT_STATS, token1001, "&user_id=1001");
         Assert.Equal("state", achievements.Source);
         Assert.Equal(2, JsonNode.Parse(achievements.Body)!.AsArray().Count);
-        // another player's user id, and an account without a restore, are the replay's
-        Assert.Equal("har", (await Post(Replay.STATISTICS_TOTAL, token1001, "&user_id=555")).Source);
-        Assert.Equal("har", (await Post(Replay.STATISTICS_TOTAL, token7, "&user_id=7")).Source);
-        Assert.Equal("har", (await Post(Replay.ACHIEVEMENT_STATS, token7, "&user_id=7")).Source);
+        // another player's user id, and an account without a restore, get the empty reply, never the recorded one
+        Assert.Equal("empty", (await Post(Replay.STATISTICS_TOTAL, token1001, "&user_id=555")).Source);
+        Assert.Equal("empty", (await Post(Replay.STATISTICS_TOTAL, token7, "&user_id=7")).Source);
+        Assert.Equal("empty", (await Post(Replay.ACHIEVEMENT_STATS, token7, "&user_id=7")).Source);
     }
 }

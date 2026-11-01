@@ -36,6 +36,8 @@ public static class Replay
     public const string SKILL_LIST = "/v1/Skill/list";
     public const string STATISTICS_TOTAL = "/v1/Statistics/total";
     public const string ACHIEVEMENT_STATS = "/v1/Achievement/stats";
+    public const string INVENTORY_LIST = "/v1/Inventory/list";
+    public const string TROPHY_LIST = "/v1/Trophy/list";
     public const string LOCALE_PREFIX = "/static/built/js/locale/";
     public const string WEB_SCRIPT_SUFFIX = "_compiled_web.min.js";
 
@@ -349,15 +351,26 @@ public static class Replay
             return hit;
         }
 
+        /// <summary>The reply a state handler builds on: the recorded one on a local server; on a community server the empty
+        /// reply of the endpoint's shape (<see cref="ReplayScope"/>), never a recording. Null: nothing usable.</summary>
+        public Hit? Base(Req r)
+        {
+            if (State is not { Online: true })
+                return Recorded(r) is { Tier: >= 1 } hit ? hit : null;
+            return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
+        }
+
         /// <summary>Everything the player state does not answer, in order: archive file pinned to the URL's directory,
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
-        /// only recorded as 304/0 ("weak"), else a miss.</summary>
+        /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
+        /// (<see cref="ReplayScope"/>); a per-player one gets its empty reply, an unlisted one the miss.</summary>
         public Reply Fallback(Req r)
         {
             var get = r.Method is "GET" or "HEAD";
             var data = get ? ArchiveFile(Cfg, r.Host, r.Path, exact: true) : null;
             if (data != null) return new(200, [("Content-Type", ContentType(r.Path))], data, "archive");
-            var hit = Recorded(r);
+            var denied = ReplayScope.Denied(this, r);
+            var hit = denied ? null : Recorded(r);
             if (hit is { Tier: >= 1 })
             {
                 var bodyOut = hit.Body;
@@ -374,6 +387,11 @@ public static class Replay
                 if (data != null) return new(200, [("Content-Type", ContentType(r.Path))], data, "archive");
             }
             if (hit != null) return new(200, hit.Headers, [], "weak");
+            if (denied && ReplayScope.Find(this, r) is { Global: false } rule)
+            {
+                List<(string, string)> headers = [("Content-Type", rule.ContentType), .. rule.Host == "apiv2" ? Cors(r.Header) : rule.Host == "api" ? [("Access-Control-Allow-Origin", "*")] : []];
+                return new(rule.Status, headers, Encoding.UTF8.GetBytes(rule.Empty!), "empty");
+            }
             if (r.Method == "OPTIONS") return new(204, Cors(r.Header), [], "miss");
             if (r.Path.StartsWith("/v1/", StringComparison.Ordinal)) return new(200, Json(), "null"u8.ToArray(), "miss");
             if (r.Host == Gs) return new(200, Json(), "{\"err\": 0}"u8.ToArray(), "miss");
