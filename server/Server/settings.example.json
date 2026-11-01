@@ -1,0 +1,27 @@
+{
+  "gameserver_host": "<gameserver-host>",
+  "api_host": "<api-host>",
+  "apiv2_host": "<apiv2-host>",
+  "signup_host": "<signup-host>",
+  "web_host": "<web-host>",
+  "static_host": "<static-host>",
+  "static_legacy_host": "<static-legacy-host>",
+  "map_host": "<map-host>",
+  "photo_host": "<photo-host>",
+  "avatar_host": "<avatar-host>",
+  "news_host": "<news-host>",
+  "telemetry_host": "<telemetry-host>",
+  "crash_host": "<crash-host>",
+  "install_dir": "<install-dir>",
+  "data_dir": "data",
+  "recordings_dir": "recordings",
+  "mirror_dir": "mirror",
+  "variants_file": "variants.json",
+  "listeners": [
+    { "address": "127.0.0.1", "port": 443, "cert": "data/leaf.pem", "key": "data/leaf.key", "admin": true },
+    { "address": "127.0.0.1", "port": 80, "admin": true }
+  ],
+  "trusted_proxies": [],
+  "host_header": "X-Game-Host",
+  "max_body_bytes": 16777216
+}

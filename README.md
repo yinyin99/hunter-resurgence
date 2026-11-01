@@ -82,5 +82,6 @@ Native speakers can check the backup tool's texts in its 5 non-English languages
 - [docs/launcher.md](docs/launcher.md): the launcher.
 - [docs/website.md](docs/website.md): the website and the shared UI library.
 - [docs/restore.md](docs/restore.md): the restore library.
+- [docs/server.md](docs/server.md): the server (local and community).
 - [docs/deploy.md](docs/deploy.md): the website's container image and deploy.
-- [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md): the third-party fonts, icons, flags and libraries bundled in the website, launcher and backup tool, and their licences.
+- [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md): the third-party fonts, icons, flags and libraries bundled in the website, launcher, backup tool and server, and their licences.

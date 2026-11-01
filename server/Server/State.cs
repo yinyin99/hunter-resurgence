@@ -1,0 +1,1317 @@
+// Player state in SQLite, seeded from the recorded connect reply.
+// Deleting the database file resets to the recording.
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Data.Sqlite;
+
+namespace Resurgence.Server;
+
+/// <summary>One sqlite connection plus the transaction of a Python `with con:` block (Begin … Commit; Dispose rolls
+/// back). Plain `?` placeholders bind in order like sqlite3's; `?N` ones by number.</summary>
+public sealed class Db : IDisposable
+{
+    readonly SqliteConnection con;
+    SqliteTransaction? tx;
+
+    public Db(string path)
+    {
+        con = new SqliteConnection($"Data Source={path};Pooling=False");
+        con.Open();
+    }
+
+    public void Begin() => tx = con.BeginTransaction();
+
+    public void Commit()
+    {
+        tx!.Commit();
+        tx.Dispose();
+        tx = null;
+    }
+
+    SqliteCommand Cmd(string sql, object?[] args)
+    {
+        var cmd = con.CreateCommand();
+        cmd.Transaction = tx;
+        var sb = new StringBuilder(sql.Length + 8);
+        var n = 0;
+        for (var i = 0; i < sql.Length; i++)
+        {
+            sb.Append(sql[i]);
+            if (sql[i] == '?' && (i + 1 == sql.Length || !char.IsAsciiDigit(sql[i + 1]))) sb.Append(++n);
+        }
+        cmd.CommandText = sb.ToString();
+        for (var i = 0; i < args.Length; i++)
+            cmd.Parameters.AddWithValue($"?{i + 1}", args[i] switch
+            {
+                null => DBNull.Value,
+                JsonNode j => Py.Sql(j),
+                bool b => b ? 1L : 0L,
+                var v => v,
+            });
+        return cmd;
+    }
+
+    public int Exec(string sql, params object?[] args)
+    {
+        using var c = Cmd(sql, args);
+        return c.ExecuteNonQuery();
+    }
+
+    public List<object[]> Rows(string sql, params object?[] args)
+    {
+        using var c = Cmd(sql, args);
+        using var r = c.ExecuteReader();
+        var rows = new List<object[]>();
+        while (r.Read())
+        {
+            var row = new object[r.FieldCount];
+            r.GetValues(row);
+            rows.Add(row);
+        }
+        return rows;
+    }
+
+    public object? Scalar(string sql, params object?[] args)
+    {
+        using var c = Cmd(sql, args);
+        return c.ExecuteScalar();
+    }
+
+    public long Insert(string sql, params object?[] args)
+    {
+        Exec(sql, args);
+        return (long)Scalar("SELECT last_insert_rowid()")!;
+    }
+
+    public void Dispose()
+    {
+        tx?.Dispose();
+        con.Dispose();
+    }
+}
+
+/// <summary>State-backed replies; one sqlite connection per call (handlers run on many threads).</summary>
+public sealed class State
+{
+    public const string UPLOAD_PATH = "/upload/storage/v1/b/photos/o";  // object-storage upload shape the client uses
+    public const string PHOTO_PREFIX = "/photos/";
+    public const string TOAST_TEXT = "Local test server\nProgress is not saved to the official servers";
+    public const long SHOT_EVIDENCE = 14;  // photo_type of the automatic shot screenshot
+    // the client often exits without disconnect: an open expedition with no heartbeat for this long has ended
+    // (the client sends heartbeats about every 20 s)
+    public const int HEARTBEAT_TIMEOUT = 120;
+    public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
+    static readonly (string Column, string Kind)[] EXPEDITION_COLUMNS =
+        [("first_event", "INTEGER"), ("distance", "INTEGER"), ("last_seen", "REAL")];  // added after v1
+    public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
+    // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
+    static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
+    public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
+    // connect keys that differ by launched reserve (locations and locations_descr are the
+    // same for every reserve); taken from that reserve's recorded connect
+    static readonly string[] RESERVE_KEYS = ["populations", "species_ammo"];
+    const long COLOUR = 4294967040;
+
+    /// <summary>Open the state db; seed items and wallet from connect_reply['inventory'] / ['wallet'] on first use.</summary>
+    public static Db ConnectDb(string path, JsonObject connectReply)
+    {
+        var con = new Db(path);
+        try
+        {
+            con.Exec("CREATE TABLE IF NOT EXISTS items (guid INTEGER PRIMARY KEY, item_id INTEGER NOT NULL,"
+                     + " slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER)");
+            con.Exec("CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, event INTEGER, body TEXT NOT NULL)");
+            con.Exec("CREATE TABLE IF NOT EXISTS kills (kill_id INTEGER PRIMARY KEY, individual INTEGER,"
+                     + " species INTEGER, harvest TEXT NOT NULL)");
+            con.Exec("CREATE TABLE IF NOT EXISTS pending (id INTEGER PRIMARY KEY, body TEXT NOT NULL)");
+            con.Exec("CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY, hash INTEGER, photo_type INTEGER,"
+                     + " shot_id INTEGER, individual INTEGER, file TEXT)");
+            con.Exec("CREATE TABLE IF NOT EXISTS harvests (kill_id INTEGER PRIMARY KEY, body TEXT NOT NULL)");
+            con.Exec("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, sender INTEGER NOT NULL,"
+                     + " content TEXT NOT NULL, ts INTEGER NOT NULL, read INTEGER NOT NULL DEFAULT 0)");
+            con.Exec("CREATE TABLE IF NOT EXISTS wallet (currency TEXT PRIMARY KEY, amount REAL NOT NULL)");
+            con.Exec("CREATE TABLE IF NOT EXISTS skills (kind TEXT, key INTEGER, xp REAL NOT NULL, PRIMARY KEY (kind, key))");
+            con.Exec("CREATE TABLE IF NOT EXISTS expeditions (id INTEGER PRIMARY KEY, reserve INTEGER, location_id INTEGER,"
+                     + " start_ts REAL NOT NULL, end_ts REAL)");
+            var have = con.Rows("PRAGMA table_info(expeditions)").Select(r => (string)r[1]).ToHashSet();
+            foreach (var (column, kind) in EXPEDITION_COLUMNS)
+                if (!have.Contains(column))
+                    con.Exec($"ALTER TABLE expeditions ADD COLUMN {column} {kind}");
+            con.Begin();
+            if ((long)con.Scalar("SELECT COUNT(*) FROM items")! == 0)
+                foreach (var i in connectReply["inventory"]!["items"]!.AsArray())
+                    con.Exec("INSERT INTO items VALUES (?, ?, ?, ?, ?)",
+                             long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
+            if ((long)con.Scalar("SELECT COUNT(*) FROM wallet")! == 0)
+                foreach (var (currency, amount) in connectReply["wallet"] as JsonObject ?? new JsonObject())
+                    con.Exec("INSERT INTO wallet VALUES (?, ?)", currency, amount);
+            con.Commit();
+            return con;
+        }
+        catch
+        {
+            con.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string).</summary>
+    public static JsonArray Items(Db con) => new(con.Rows("SELECT * FROM items ORDER BY guid").Select(r => (JsonNode?)new JsonObject
+    {
+        ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])),
+        ["metadata"] = JsonNode.Parse((string)r[3]), ["units"] = Py.FromSql(r[4]),
+    }).ToArray());
+
+    /// <summary>Add amount (negative: spend) to a wallet currency (call inside a transaction); return the new balance, or
+    /// null when the currency is missing or the balance would drop below 0.</summary>
+    public static JsonNode? AddCurrency(Db con, string currency, object amount)
+    {
+        if (con.Exec("UPDATE wallet SET amount = amount + ?1 WHERE currency = ?2 AND amount + ?1 >= 0", amount, currency) == 0)
+            return null;
+        return Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE currency = ?", currency)[0][0]);
+    }
+
+    /// <summary>Add a slot-0 row with a full stack per item id and queue their update 10 (call inside a transaction).
+    /// info(item_id) is the definition sent along; units as in every recorded row: null unless the definition has a
+    /// stack size.</summary>
+    public static void Deliver(Db con, IEnumerable<long> itemIds, Func<long, JsonObject?> info)
+    {
+        var rows = new JsonArray();
+        var infos = new OrderedDictionary<long, JsonObject?>();
+        foreach (var itemId in itemIds)
+        {
+            infos[itemId] = info(itemId);
+            var units = infos[itemId]!["units"];
+            units = units is null || Is(units, -2) ? null : units;
+            var guid = con.Insert("INSERT INTO items VALUES (NULL, ?, 0, '{}', ?)", itemId, units);
+            rows.Add(new JsonObject
+            {
+                ["item_id"] = itemId, ["slot"] = 0, ["guid"] = guid.ToString(), ["metadata"] = new JsonObject(), ["units"] = C(units),
+            });
+        }
+        con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject
+        {
+            ["items"] = new JsonObject { ["items"] = rows, ["infos"] = new JsonArray(infos.Values.Select(C).ToArray()) },
+            ["update"] = 10,
+        }));
+    }
+
+    /// <summary>skills rows from the connect's integer `skills` levels and a recorded Skill/list reply (numbers): the
+    /// Skill/list XP, raised to the start of the connect's level when that connect is newer.</summary>
+    public static List<(string Kind, long Key, double Xp)> SeedSkills(JsonObject levels, JsonObject numbers)
+    {
+        static (string, long, double) Row(string kind, long key, JsonNode? level, JsonNode? number)
+        {
+            var a = Py.Truthy(number) ? Skills.Xp(Py.D(number)) : Skills.FRESH_XP;
+            var b = Skills.Threshold(Py.L(level));
+            return (kind, key, b > a ? b : a);
+        }
+        var rows = new List<(string, long, double)>();
+        foreach (var kind in new[] { "spotting", "tracking" })
+        {
+            var seen = Py.Truthy(numbers[kind]) ? numbers[kind]!.AsArray() : new JsonArray();
+            var lv = G(levels, kind, new JsonArray())!.AsArray();
+            for (var i = 0; i < lv.Count; i++)
+                rows.Add(Row(kind, i, lv[i], i < seen.Count ? seen[i] : null));
+        }
+        var seenW = Py.Truthy(numbers["weapon"]) ? numbers["weapon"]!.AsObject() : new JsonObject();
+        if (Py.Truthy(levels["weapon"]))
+            foreach (var (w, level) in levels["weapon"]!.AsObject())
+                rows.Add(Row("weapon", long.Parse(w), level, seenW[w]));
+        return rows;
+    }
+
+    /// <summary>Store heartbeat events in one transaction; return this heartbeat's updates.
+    ///
+    /// Updates queued by earlier heartbeats come first. A harvest (event 3) gets its trophy score (update 6) in the
+    /// *next* heartbeat and its gold (update 15, new balance) in this one; a photo request (event 4) gets its upload URL
+    /// (update 11) right away. An item consumed (event 6) loses `quantity` units (a negative quantity
+    /// refills); at 0 it moves to slot 0 like the client's record.
+    /// uploadUrl(photo_id, part) builds the local upload URL. harvestPage(event3, spawn_event7, expedition_id,
+    /// reserve_id, score, score_type) builds the /game/user/harvest/&lt;kill_id&gt; reply stored for the kill, in the
+    /// latest expedition. trophy(event3, spawn_event7, event22, last_hit) returns (score, score_type, css).
+    /// ammoCheck(hit, species) returns (toast update, notice message) for a non-permitted hit, else null: the toast comes
+    /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
+    /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
+    /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
+    /// stamina).</summary>
+    public static JsonArray Heartbeat(Db con, JsonArray events, Func<long, string, string> uploadUrl,
+                                      Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
+                                      Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
+                                      Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
+                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates)
+    {
+        con.Begin();
+        con.Exec("UPDATE expeditions SET last_seen = ? WHERE end_ts IS NULL", Py.Now());
+        var updates = new JsonArray(con.Rows("SELECT id, body FROM pending ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
+        con.Exec("DELETE FROM pending");
+        foreach (var node in events)
+        {
+            var e = node!.AsObject();
+            JsonNode? species = null;
+            con.Exec("INSERT INTO events (event, body) VALUES (?, ?)", e["event"], Py.Dumps(e));
+            if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
+            {
+                var row = con.Rows("SELECT body FROM events WHERE event = 7 AND json_extract(body, '$.individual') = ?"
+                                   + " ORDER BY id DESC LIMIT 1", e["individual"]).FirstOrDefault();
+                species = row is null ? null : Parse(row[0])["species"];
+                foreach (var toast in skillUpdates(con, e, species))
+                    con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(toast));
+            }
+            if (Is(e["event"], 1))
+            {
+                if (ammoCheck(e, species) is { } warning)
+                {
+                    con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(warning.Toast));
+                    con.Exec("INSERT INTO messages (sender, content, ts) VALUES (?, ?, ?)", SYSTEM_SENDER, warning.Message, (long)Py.Now());
+                }
+            }
+            else if (Is(e["event"], 6) && Py.IsDigit(Py.Str(G(e, "item", ""))))
+                con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
+                         + " WHERE guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
+            else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
+                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE guid = ?",
+                         Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
+            else if (Is(e["event"], 3))
+            {
+                var harvest = Py.Dumps(e);
+                var killId = con.Insert("INSERT INTO kills (individual, species, harvest) VALUES (?, ?, ?)",
+                                        e["individual"], e["extended_species"], harvest);
+                var (e7, e22) = KillEvents(con, e["individual"], harvest);
+                var hits = KillHits(con, e["individual"], harvest);
+                var disqualified = hits.Any(h => ammoCheck(h, e7["species"]) is not null);
+                var (score, scoreType, css) = disqualified ? (null, null, 0.0) : trophy(e, e7, e22, hits.Count > 0 ? hits[^1] : null);
+                var expedition = con.Rows("SELECT id, reserve FROM expeditions ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                con.Exec("INSERT INTO harvests (kill_id, body) VALUES (?, ?)", killId, Py.Dumps(harvestPage(
+                    e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
+                var update = new JsonObject
+                {
+                    ["individual"] = C(e["individual"]),
+                    ["trophy_shot"] = disqualified ? 0 : 1,
+                    ["score_text"] = disqualified ? "Disqualified " : Py.Truthy(score) ? $"Score: {Py.Fixed(Py.D(score), 4)}" : "No score",
+                    ["update"] = 6,
+                    ["score_type"] = scoreType,
+                    ["score"] = disqualified ? (JsonNode)(-1) : Py.Truthy(score) ? C(score) : 0,
+                    ["kill_id"] = killId,
+                    ["css"] = css,
+                };
+                con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(update));
+                if (Py.RoundInt(css) > 0)
+                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css)), ["type"] = "gm", ["update"] = 15 });
+            }
+            else if (Is(e["event"], 4))
+            {
+                var photoId = con.Insert("INSERT INTO photos (hash, photo_type, shot_id, individual) VALUES (?, ?, ?, ?)",
+                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"]);
+                var update = new JsonObject
+                {
+                    ["url"] = uploadUrl(photoId, ""), ["photo_type"] = C(e["photo_type"]), ["hash"] = C(e["hash"]), ["update"] = 11,
+                };
+                if (!Is(e["photo_type"], SHOT_EVIDENCE))
+                    // ponytail: trophy-photo update 11 shape is a guess; thumb_url is a guess too
+                    update["thumb_url"] = uploadUrl(photoId, "thumb");
+                updates.Add(update);
+            }
+        }
+        con.Commit();
+        return updates;
+    }
+
+    /// <summary>Hit events (event 1) on the animal of a kill since its latest spawn (individual ids are reused across
+    /// sessions). harvest is the kill's stored event 3 JSON, identical to its events row.</summary>
+    public static List<JsonObject> KillHits(Db con, JsonNode? individual, string harvest) => con.Rows(
+        "WITH k AS (SELECT MAX(id) AS id FROM events WHERE event = 3 AND body = ?2)"
+        + " SELECT body FROM events, k WHERE event = 1 AND json_extract(body, '$.individual') = ?1 AND events.id < k.id"
+        + " AND events.id > COALESCE((SELECT MAX(id) FROM events WHERE event = 7"
+        + " AND json_extract(body, '$.individual') = ?1 AND id < k.id), 0) ORDER BY events.id", individual, harvest)
+        .Select(r => Parse(r[0])).ToList();
+
+    /// <summary>(event 7, event 22) of a kill: the latest of each for its individual before its event 3; {} when missing.</summary>
+    public static (JsonObject E7, JsonObject E22) KillEvents(Db con, JsonNode? individual, string harvest)
+    {
+        JsonObject Latest(long ev)
+        {
+            var row = con.Rows(
+                "WITH k AS (SELECT MAX(id) AS id FROM events WHERE event = 3 AND body = ?2)"
+                + " SELECT body FROM events, k WHERE event = ?3 AND json_extract(body, '$.individual') = ?1"
+                + " AND events.id < k.id ORDER BY events.id DESC LIMIT 1", individual, harvest, ev).FirstOrDefault();
+            return row is null ? new JsonObject() : Parse(row[0]);
+        }
+        return (Latest(7), Latest(22));
+    }
+
+    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT (call inside a transaction).</summary>
+    public static void CloseStale(Db con) =>
+        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT);
+
+    public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events")!;
+
+    /// <summary>Public_user/expedition `stats` (the Statistics/total shape the site's formatStats/formatAnimals read), as
+    /// the site sends for a finished hunt: `data` holds `achievements` first, then `weapon` and
+    /// `animal` only when not empty, and each counter only when not 0, in Statistics/total's key order.
+    ///
+    /// kills: [(species, hits, ethical)] of the expedition. Events after first_event: 1 = hit, 21 = miss (matches the
+    /// client's disconnect totals); 11 = spot and 12 = track clue, counted as distinct animals per species
+    /// (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
+    public static JsonObject HuntStats(Db con, JsonNode? firstEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
+                                       long duration, JsonNode? distance)
+    {
+        var weapon = new JsonObject();
+        var animal = new JsonObject();
+        var seen = new HashSet<string>();
+
+        JsonObject Ammo(JsonObject e) => SetDefault(SetDefault(weapon, Py.Str(e["weapon_id"]), () => new JsonObject()),
+            Py.Str(e["ammunition_id"]), () => new JsonObject { ["hits"] = 0, ["misses"] = 0, ["kills"] = 0, ["ethical_kills"] = 0, ["distance"] = 0 });
+
+        JsonObject Species(JsonNode? sp) =>
+            SetDefault(animal, Py.Str(sp), () => new JsonObject { ["spots"] = 0, ["tracks"] = 0, ["kills"] = 0, ["ethical_kills"] = 0 });
+
+        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE id > ? AND event IN (1, 11, 12, 21)"
+                                   + " ORDER BY id", firstEvent))
+        {
+            var (eventId, ev, e) = ((long)r[0], Py.FromSql(r[1]), Parse(r[2]));
+            if (Is(ev, 1))
+            {
+                var s = Ammo(e);
+                Inc(s, "hits");
+                var d = Times10(G(e, "distance_cms", 0));
+                if (Py.D(d) > Py.D(s["distance"])) s["distance"] = d;
+            }
+            else if (Is(ev, 21))
+                Inc(Ammo(e), "misses");
+            else if (seen.Add(Py.Str(ev) + "\n" + Py.Dumps(e["individual"])))
+            {
+                var row = con.Rows("SELECT json_extract(body, '$.species') FROM events WHERE event = 7"
+                                   + " AND json_extract(body, '$.individual') = ? AND id < ? ORDER BY id DESC LIMIT 1",
+                                   e["individual"], eventId).FirstOrDefault();
+                if (row is not null)
+                    Inc(Species(Py.FromSql(row[0])), Is(ev, 11) ? "spots" : "tracks");
+            }
+        }
+        foreach (var (sp, hits, ethical) in kills)
+            foreach (var s in hits.Count > 0 ? new[] { Species(sp), Ammo(hits[^1]) } : [Species(sp)])
+            {
+                Inc(s, "kills");
+                s["ethical_kills"] = Py.L(s["ethical_kills"]) + (ethical ? 1 : 0);
+            }
+        static JsonObject NonZero(JsonObject counters, params string[] order)
+        {
+            var o = new JsonObject();
+            foreach (var k in order)
+                if (Py.D(counters[k]) != 0)
+                    o[k] = counters[k]!.DeepClone();
+            return o;
+        }
+        var data = new JsonObject { ["achievements"] = new JsonArray() };
+        var weaponOut = new JsonObject();
+        foreach (var (w, ammo) in weapon)
+        {
+            var byAmmo = new JsonObject();
+            foreach (var (a, c) in ammo!.AsObject())
+                byAmmo[a] = NonZero(c!.AsObject(), "ethical_kills", "hits", "misses", "kills", "distance");
+            weaponOut[w] = byAmmo;
+        }
+        if (weaponOut.Count > 0) data["weapon"] = weaponOut;
+        var animalOut = new JsonObject();
+        foreach (var (sp, c) in animal)
+            animalOut[sp] = NonZero(c!.AsObject(), "ethical_kills", "tracks", "spots", "kills");
+        if (animalOut.Count > 0) data["animal"] = animalOut;
+        return new JsonObject { ["duration"] = duration, ["distance"] = distance, ["data"] = data };
+    }
+
+    /// <summary>Store an upload as &lt;photos_dir&gt;/&lt;id&gt;-&lt;photo_type&gt;[-&lt;part&gt;].jpg; return the file name,
+    /// null if unknown id.</summary>
+    public static string? SavePhoto(Db con, string photosDir, long photoId, byte[] data, string part = "")
+    {
+        con.Begin();
+        var row = con.Rows("SELECT photo_type FROM photos WHERE id = ?", photoId).FirstOrDefault();
+        if (row is null || row[0] is string)  // photo_type comes from the heartbeat: a string could carry a path
+            return null;
+        var name = $"{photoId}-{Py.Str(Py.FromSql(row[0]))}{(part != "" ? "-" + part : "")}.jpg";
+        Directory.CreateDirectory(photosDir);
+        File.WriteAllBytes(Path.Combine(photosDir, name), data);
+        if (part == "")
+            con.Exec("UPDATE photos SET file = ? WHERE id = ?", name, photoId);
+        con.Commit();
+        return name;
+    }
+
+    /// <summary>Apply an Inventory/move_multiple2 call in one transaction.
+    ///
+    /// cloned: [{"item_guid": "new_item_&lt;ts&gt;", "item_id": N}] creates items; the reply maps each placeholder to its
+    /// new guid, or is null when nothing was cloned (the reply is `null`).
+    /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.</summary>
+    public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Dictionary<long, JsonNode?> defaultUnits)
+    {
+        var @new = new List<(JsonNode? Key, long Guid)>();  // Python dict: keys compared with ==
+        con.Begin();
+        var nextGuid = (con.Scalar("SELECT MAX(guid) FROM items") is long max ? max : 0) + 1;
+        foreach (var node in cloned)
+        {
+            var c = node!.AsObject();
+            con.Exec("INSERT INTO items VALUES (?, ?, 0, '{}', ?)",
+                     nextGuid, c["item_id"], TryKey(c["item_id"], out var id) ? defaultUnits.GetValueOrDefault(id) : null);
+            var i = @new.FindIndex(x => Py.Eq(x.Key, c["item_guid"]));
+            if (i >= 0) @new[i] = (@new[i].Key, nextGuid);
+            else @new.Add((c["item_guid"], nextGuid));
+            nextGuid++;
+        }
+        foreach (var node in mapping)
+        {
+            var m = node!.AsObject();
+            var i = @new.FindIndex(x => Py.Eq(x.Key, m["item_guid"]));
+            var guid = i >= 0 ? @new[i].Guid.ToString() : Py.Str(m["item_guid"]);
+            if (Py.IsDigit(guid))
+                con.Exec("UPDATE items SET slot = ? WHERE guid = ?", m["slot_id"], long.Parse(guid));
+        }
+        con.Commit();
+        if (@new.Count == 0)
+            return null;
+        var reply = new JsonObject();
+        foreach (var (key, guid) in @new)
+            reply[Py.IsStr(key) ? Py.Str(key) : Py.Dumps(key)] = guid;  // json.dumps turns non-str keys into their JSON text
+        return reply;
+    }
+
+    readonly string dbPath, photosDir, baseUrl, iconUrl, avatarBase;
+    readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new();
+    readonly Dictionary<long, string?> reserves = new();
+    readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
+    readonly JsonObject locale, connect;
+    readonly Dictionary<long, string> textures;
+    readonly Dictionary<int, JsonObject> reserveData = new();
+    /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
+    public readonly Spawner Spawns;
+    readonly JsonArray discounts, ethicalAmmo;
+    readonly OrderedDictionary<long, long> family = new();
+
+    /// <summary>baseUrl: scheme+host this server answers on; upload and photo URLs point there.
+    /// iconUrl: image shown in the toast queued on connect and in skill level-up toasts.
+    /// application: the recorded Application/application reply (species, items, reserves, locations);
+    /// locale: the recorded English locale strings ({key: text}); textures: {texture id: name} (ScorePage);
+    /// discounts: the recorded Application/discounts reply; sampleInfos: item definitions of the
+    /// json_inventory.json sample (`infos`); reserveConnects: {reserve id: connect body recorded after a Launch/start of
+    /// that reserve}, the source of that reserve's RESERVE_KEYS; skillList: the player's recorded Skill/list reply, seeds
+    /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
+    /// that shares one weapon skill.</summary>
+    public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
+                 Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
+                 Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null)
+    {
+        this.dbPath = dbPath;
+        Spawns = new Spawner(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "spawn.json"));
+        photosDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "photos");
+        this.baseUrl = baseUrl;
+        this.iconUrl = iconUrl;
+        foreach (var s in Arr(G(application, "species", null)))
+            species[Py.L(s!["id"])] = s.AsObject();
+        foreach (var i in Arr(G(application, "items", null)))
+            items[Py.L(i!["id"])] = i.AsObject();
+        foreach (var r in Arr(G(application, "reserves", null)))
+            reserves[Py.L(r!["id"])] = (string?)r["name"];
+        foreach (var loc in Arr(G(application, "locations", null)))
+            locations[Py.L(loc!["id"])] = loc["pos"];
+        this.locale = locale;
+        this.textures = textures;
+        connect = JsonNode.Parse(connectBody)!.AsObject();
+        foreach (var (r, body) in reserveConnects ?? [])
+        {
+            var data = new JsonObject();
+            foreach (var (k, v) in JsonNode.Parse(body)!.AsObject())
+                if (RESERVE_KEYS.Contains(k))
+                    data[k] = C(v);
+            reserveData[r] = data;
+        }
+        this.discounts = discounts ?? new JsonArray();
+        var connectInfos = connect["inventory"]!["infos"]!.AsArray();
+        foreach (var i in Arr(sampleInfos).Concat(connectInfos))
+            infos[Py.L(i!["item_id"])] = i.AsObject();
+        foreach (var i in connectInfos)
+            defaultUnits[Py.L(i!["item_id"])] = i["units"];
+        // permitted ammo per species id, all species (species_ammo is the reserve's subset)
+        ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
+        var (scheme, netloc) = SchemeNetloc(Py.Str(G(Account(), "avatar_url", "")));
+        avatarBase = $"{scheme}://{netloc}";  // the notice sender's icons live on the avatar host
+        var byDefine = new Dictionary<string, JsonObject>();
+        foreach (var d in Arr(itemDefs))
+            byDefine[(string)d!["define"]!] = d.AsObject();
+
+        long Root(JsonObject d)
+        {
+            while (d["parent"] is JsonNode p && Py.IsStr(p) && byDefine.TryGetValue((string)p!, out var parent))
+                d = parent;
+            return Py.L(d["id"]);
+        }
+        foreach (var d in Arr(itemDefs))
+            family[Py.L(d!["id"])] = Root(d.AsObject());
+        using var con = ConnectDb(dbPath, connect);
+        con.Begin();
+        if (con.Rows("SELECT 1 FROM skills LIMIT 1").Count == 0)
+            foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(connect["skills"]) ? connect["skills"]!.AsObject() : new JsonObject(),
+                                                       Py.Truthy(skillList) ? skillList!.AsObject() : new JsonObject()))
+                con.Exec("INSERT OR IGNORE INTO skills VALUES (?, ?, ?)", kind, key, xp);
+        con.Commit();
+    }
+
+    JsonObject Account() => G(connect, "account", null) as JsonObject ?? new JsonObject();
+
+    string? SpeciesName(JsonNode? sp)
+    {
+        // ponytail: the antler-type suffix is dropped ("Mule Deer (Typical)" → "Mule Deer"); only checked for mule deer
+        var name = Lookup(species, sp)?["name"];
+        var s = (Py.Truthy(name) ? (string)name! : "").Split(" (")[0];
+        return s == "" ? null : s;
+    }
+
+    /// <summary>(toast update, notice message) for a hit with ammo outside the species' connect `ethical` list; null if
+    /// permitted or the species has no list.</summary>
+    public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp)
+    {
+        var allowed = sp is not null && Mod100(sp) < ethicalAmmo.Count ? ethicalAmmo[(int)Mod100(sp)] : null;
+        if (!Py.Truthy(allowed))  // empty list (dogs, event creatures): no rule
+            return null;
+        if (allowed!.AsArray().Any(a => Py.Eq(a, hit["ammunition_id"])))
+            return null;
+        var name = SpeciesName(sp) ?? "None";
+        var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
+        var toast = new JsonObject
+        {
+            ["text"] = $"Not permitted: {ammo} may not be used on {name}. See your inbox.",
+            ["colour"] = COLOUR, ["destination"] = $"{avatarBase}/doc_64.jpg", ["update"] = 3, ["timer"] = -1, ["type"] = 100,
+        };
+        // ponytail: one message template for every species
+        var names = string.Join(", ", allowed.AsArray().Select(i => Lookup(items, i) is { } item ? Py.Str(G(item, "name", "")) : ""));
+        var message = $"Wrong ammunition for {name}. Permitted: {names}.";
+        return (toast, message);
+    }
+
+    public bool Ethical(JsonNode? sp, List<JsonObject> hits) => !hits.Any(h => AmmoCheck(h, sp) is not null);
+
+    /// <summary>Skill XP of a spot (event 11), a track clue (event 12) or a permitted hit (event 1), applied inside the
+    /// heartbeat's transaction; the level-up toast if the species or the fired weapon gained a level (sent with the next
+    /// heartbeat).</summary>
+    public List<JsonObject> SkillUpdates(Db con, JsonObject e, JsonNode? sp)
+    {
+        string kind;
+        List<object?> keys;
+        double gain;
+        string? name;
+        if (Is(e["event"], 11) && sp is not null)
+            (kind, keys, gain, name) = ("spotting", [sp], Skills.SPOT_XP, SpeciesName(sp));
+        else if (Is(e["event"], 12) && sp is not null)
+        {
+            // the n-th clue on this animal since the latest hunt's first event (this one is already stored)
+            var n = (long)con.Scalar("SELECT COUNT(*) FROM events WHERE event = 12 AND json_extract(body, '$.individual') = ?"
+                                     + " AND id > COALESCE((SELECT first_event FROM expeditions ORDER BY id DESC LIMIT 1), 0)",
+                                     e["individual"])!;
+            (kind, keys, gain, name) = ("tracking", [sp], Skills.TrackXp(n), SpeciesName(sp));
+        }
+        else if (Is(e["event"], 1) && AmmoCheck(e, sp) is null)
+        {
+            var weapon = e["weapon_id"];
+            var fam = TryKey(weapon, out var w) && family.TryGetValue(w, out var root) ? JsonValue.Create(root) : weapon;
+            kind = "weapon";
+            gain = Skills.HitXp(sp is null ? -1 : Py.L(sp), e["animal_state"]);
+            name = Lookup(items, weapon)?["name"] is { } n ? Py.Str(n) : null;
+            keys = [weapon, .. family.Where(kv => Py.Eq(JsonValue.Create(kv.Value), fam) && !Py.Eq(JsonValue.Create(kv.Key), weapon))
+                                     .Select(kv => (object?)kv.Key)];
+            con.Exec("INSERT OR IGNORE INTO skills VALUES ('weapon', ?, ?)", weapon, Skills.FRESH_XP);
+        }
+        else
+            return [];
+        var row = con.Rows("SELECT xp FROM skills WHERE kind = ? AND key = ?", kind, keys[0]).FirstOrDefault();
+        if (row is null)  // a species outside the 59 skill slots
+            return [];
+        foreach (var k in keys)
+            con.Exec("UPDATE skills SET xp = ROUND(xp + ?, 1) WHERE kind = ? AND key = ?", gain, kind, k);
+        var xp = Convert.ToDouble(row[0]);
+        var level = Py.L(Skills.Value(xp + gain));
+        if (level <= Py.L(Skills.Value(xp)))
+            return [];
+        return [new JsonObject
+        {
+            ["text"] = Skills.LevelUpText(kind, name, level), ["colour"] = COLOUR, ["destination"] = iconUrl,
+            ["update"] = 3, ["timer"] = 1000, ["type"] = 100,
+        }];
+    }
+
+    /// <summary>{weapon: {id: n}, tracking: [n], spotting: [n]} with n = number(xp): the shape of Skill/list
+    /// (Skills.Value) and of the connect's `skills` (levels).</summary>
+    JsonObject SkillNumbers(Func<double, JsonNode> number)
+    {
+        List<object[]> rows;
+        using (var con = Con())
+            rows = con.Rows("SELECT kind, key, xp FROM skills ORDER BY kind, key");
+        var weapon = new JsonObject();
+        foreach (var r in rows.Where(r => (string)r[0] == "weapon"))
+            weapon[Py.Str(Py.FromSql(r[1]))] = number(Convert.ToDouble(r[2]));
+        JsonArray Of(string kind) => new(rows.Where(r => (string)r[0] == kind).Select(r => (JsonNode?)number(Convert.ToDouble(r[2]))).ToArray());
+        return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
+    }
+
+    /// <summary>Skill/list for the player's user_id; null for anyone else (their recorded reply is replayed).</summary>
+    public byte[]? SkillListReply(byte[] formBody)
+    {
+        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
+        if (userId != Py.Str(Account()["user_id"]))
+            return null;
+        return Py.DumpBytes(SkillNumbers(Skills.Value));
+    }
+
+    JsonObject Sender() => new() { ["handle"] = "Server", ["user_id"] = SYSTEM_SENDER, ["avatar"] = $"{avatarBase}/256/10000000.png" };
+
+    public long Unread()
+    {
+        using var con = Con();
+        return (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE read = 0")!;
+    }
+
+    /// <summary>Chat/conversations: the notice sender's thread (the only sender this server has), newest message as preview.</summary>
+    public byte[] ConversationsReply()
+    {
+        object[]? newest;
+        long unread;
+        using (var con = Con())
+        {
+            newest = con.Rows("SELECT content, ts FROM messages ORDER BY id DESC LIMIT 1").FirstOrDefault();
+            unread = (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE read = 0")!;
+        }
+        // ponytail: empty inbox reply assumed to be []
+        if (newest is null)
+            return Py.DumpBytes(new JsonArray());
+        var thread = Sender();
+        thread["read"] = unread == 0 ? 1 : 0;
+        thread["ts"] = Py.FromSql(newest[1]);
+        thread["preview"] = Py.FromSql(newest[0]);
+        return Py.DumpBytes(new JsonArray(thread));
+    }
+
+    /// <summary>Chat/conversation user_id=&lt;id&gt;: the thread, newest first; reading it marks it read.</summary>
+    public byte[] ConversationReply(byte[] formBody)
+    {
+        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
+        var sender = Py.IsDigit(userId) ? long.Parse(userId) : -1;
+        List<object[]> rows;
+        using (var con = Con())
+        {
+            con.Begin();
+            rows = con.Rows("SELECT content, ts FROM messages WHERE sender = ? ORDER BY id DESC", sender);
+            con.Exec("UPDATE messages SET read = 1 WHERE sender = ?", sender);
+            con.Commit();
+        }
+        return Py.DumpBytes(new JsonObject
+        {
+            ["total"] = rows.Count,
+            ["messages"] = new JsonArray(rows.Select(r =>
+            {
+                var m = Sender();
+                m["content"] = Py.FromSql(r[0]);
+                m["ts"] = Py.FromSql(r[1]);
+                return (JsonNode?)m;
+            }).ToArray()),
+        });
+    }
+
+    Db Con() => ConnectDb(dbPath, connect);
+
+    /// <summary>(x, y, z) of a start location: its Application/application `pos`, else the recorded connect's.</summary>
+    (JsonNode? X, JsonNode? Y, JsonNode? Z) StartPosition(JsonNode? locationId)
+    {
+        var pos = Lookup(locations, locationId);
+        var spawn = connect["expedition"]!.AsObject();
+        return Py.Truthy(pos)
+            ? (Py.D(pos!["x"]), Py.D(pos["y"]), Py.D(pos["z"]))
+            : (C(G(spawn, "x", 0)), C(G(spawn, "y", 0)), C(G(spawn, "z", 0)));
+    }
+
+    /// <summary>Connect: the recorded reply with the current inventory and the open expedition (opened here if no
+    /// Launch/start came first, e.g. a direct launch), starting at its location.</summary>
+    public byte[] ConnectReply()
+    {
+        var inventory = connect["inventory"]!.AsObject();
+        var connectInfos = inventory["infos"]!.AsArray();
+        JsonArray rows;
+        JsonNode? expeditionId, locationId, reserve;
+        using (var con = Con())
+        {
+            con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
+            rows = Items(con);
+            var added = rows.Select(r => Py.L(r!["item_id"])).Distinct()
+                .Where(id => !connectInfos.Any(i => Py.Eq(i!["item_id"], JsonValue.Create(id)))).Order()
+                .Select(ItemInfo).ToList();
+            var infosOut = (JsonArray)connectInfos.DeepClone();
+            foreach (var i in added)
+                if (Py.Truthy(i))
+                    infosOut.Add(C(i));
+            var inv = (JsonObject)inventory.DeepClone();
+            inv["items"] = rows;
+            inv["infos"] = infosOut;
+            rows = new JsonArray();  // moved into inv
+            inventory = inv;
+            var toast = Py.Dumps(new JsonObject
+            {
+                ["text"] = TOAST_TEXT, ["colour"] = COLOUR, ["destination"] = iconUrl, ["update"] = 3, ["timer"] = -1, ["type"] = 100,
+            });
+            // delete first: a login that connects twice still shows one toast
+            con.Exec("DELETE FROM pending WHERE body = ?", toast);
+            con.Exec("INSERT INTO pending (body) VALUES (?)", toast);
+            CloseStale(con);
+            // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
+            // with the first heartbeat
+            con.Exec("DELETE FROM pending WHERE json_extract(body, '$.update') = 10");
+            var row = con.Rows("SELECT id, location_id, reserve FROM expeditions WHERE end_ts IS NULL"
+                               + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
+            if (row is not null)
+                (expeditionId, locationId, reserve) = (Py.FromSql(row[0]), Py.FromSql(row[1]), Py.FromSql(row[2]));
+            else
+            {
+                var lodge = connect["expedition"]!["lodge"];
+                expeditionId = con.Insert("INSERT INTO expeditions (location_id, start_ts, first_event) VALUES (?, ?, ?)",
+                                          lodge, Py.Now(), LastEvent(con));
+                (locationId, reserve) = (C(lodge), null);
+            }
+            con.Commit();
+        }
+        var (x, y, z) = StartPosition(locationId);
+        var lodgeOut = TryKey(locationId, out var lid) && locations.ContainsKey(lid) ? C(locationId) : C(connect["expedition"]!["lodge"]);
+        // ponytail: dir_x/dir_z stay the recorded lodge's; not in `locations`.
+        // Non-lodge starts (Launch/start loctype other than LODGE) are untested: their id goes into `lodge` too
+        var expedition = (JsonObject)connect["expedition"]!.DeepClone();
+        expedition["expedition_id"] = expeditionId;
+        expedition["x"] = x;
+        expedition["y"] = y;
+        expedition["z"] = z;
+        expedition["lodge"] = lodgeOut;
+        // direct launch (no Launch/start, so no reserve): the newest recorded connect's reserve data
+        var reply = (JsonObject)connect.DeepClone();
+        if (TryKey(reserve, out var r) && reserveData.TryGetValue((int)r, out var data))
+            foreach (var (k, v) in data)
+                reply[k] = C(v);
+        reply["inventory"] = inventory;
+        reply["expedition"] = expedition;
+        reply["wallet"] = Wallet();
+        reply["skills"] = SkillNumbers(xp => Py.L(Skills.Value(xp)));
+        Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
+        return Py.DumpBytes(reply);
+    }
+
+    /// <summary>update 10 definition: the recorded connect's, else the install sample's, else built from the
+    /// Application/application record; null for an unknown item.</summary>
+    public JsonObject? ItemInfo(long itemId)
+    {
+        if (infos.TryGetValue(itemId, out var info))
+            return info;
+        if (!items.TryGetValue(itemId, out var a) || a.Count == 0)
+            return null;
+        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots, arm_type and ammo ballistics
+        // (the sample has every ammo); the other fields match the known definitions except a few fitItems lists
+        var inv = a["inventory"]!;
+        var fit = new List<JsonNode?>();
+        foreach (var (_, f) in a["fit"]!.AsObject())
+            foreach (var x in f!.AsArray())
+                fit.Add(x!["id"]);
+        return new JsonObject
+        {
+            ["item_id"] = itemId, ["name"] = C(a["name"]), ["description"] = C(a["description"]), ["define"] = C(a["define"]),
+            ["type"] = C(a["type"]), ["group"] = C(a["group"]), ["cat"] = C(a["cat"]), ["client_type"] = C(a["client_type"]),
+            ["weight"] = C(inv["weight"]), ["capacity"] = C(inv["capacity"]),
+            ["allowedSlots"] = C(inv["slots"]), ["allowedCombinationSlots"] = new JsonArray(),
+            ["fitItems"] = new JsonArray(fit.OrderBy(Py.D).Select(C).ToArray()), ["image"] = C(a["image"]),
+            ["variationName"] = C(a["variationname"]), ["units"] = C(G(a["units"] as JsonObject ?? new JsonObject(), "count", -2)),
+        };
+    }
+
+    /// <summary>The store script's getPrice: the item's first row in the Application/discounts reply, if active, taken off
+    /// and rounded half up (350 at 95 % off costs 18). A later active
+    /// row (100 % ones listed after the 95 % ones) is never used.</summary>
+    long Price(JsonObject item, string key)
+    {
+        var now = Py.Now();
+        var d = discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"]));
+        var price = Py.D(item[key]);
+        if (d is not null && Py.Truthy(d["percentage"]) && Py.D(d["start_ts"]) < now && now < Py.D(d["end_ts"]))
+            price -= price * (Py.D(d["percentage"]) / 100);
+        return (long)Math.Floor(price + 0.5);  // JS Math.round
+    }
+
+    /// <summary>Inventory/buy item_id, amount, wallet: charge now; the items (update 10) and the new balance (update 15)
+    /// come with the next heartbeat, also mid-hunt.</summary>
+    public byte[] BuyReply(byte[] formBody)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        var (itemId, amount, wallet) = (Form1(form, "item_id"), Form1(form, "amount"), Form1(form, "wallet"));
+        var item = Py.IsDigit(itemId) ? items.GetValueOrDefault(long.Parse(itemId)) : null;
+        var (currency, key) = WALLETS.TryGetValue(wallet, out var w) ? w : (null!, null!);
+        // ponytail: services (connect active_services with an expiry) are not sold
+        if (!(Py.Truthy(item) && currency is not null && item![key] is not null && !Py.Truthy(item["notbuyable"])
+              && !Is(item["type"], SERVICE) && Py.IsDigit(amount) && long.Parse(amount) > 0))
+            return BUY_FAILED;
+        var price = Price(item, key) * long.Parse(amount);  // ponytail: amount > 1 untested
+        using var con = Con();
+        con.Begin();
+        var balance = AddCurrency(con, currency, -price);
+        if (balance is null)
+            return BUY_FAILED;
+        Deliver(con, Enumerable.Repeat(Py.L(item["id"]), (int)long.Parse(amount)), ItemInfo);
+        con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject { ["amount"] = balance, ["type"] = currency, ["update"] = 15 }));
+        con.Commit();
+        return Py.DumpBytes(new JsonObject { ["price"] = (double)price, ["success"] = true });
+    }
+
+    /// <summary>Admin: add count items; a running hunt gets them with its next heartbeat (update 10), else the next
+    /// connect carries them. False for an item without a definition.</summary>
+    public bool GrantItems(long itemId, long count = 1)
+    {
+        if (!Py.Truthy(ItemInfo(itemId)))
+            return false;
+        using var con = Con();
+        con.Begin();
+        Deliver(con, Enumerable.Repeat(itemId, (int)count), ItemInfo);
+        con.Commit();
+        return true;
+    }
+
+    /// <summary>Admin: add amount (negative: take) to a wallet currency, sent as update 15; the new balance, or null
+    /// (unchanged) when the currency is missing or would drop below 0.</summary>
+    public JsonNode? Give(string currency, double amount)
+    {
+        using var con = Con();
+        con.Begin();
+        var balance = AddCurrency(con, currency, amount);
+        if (balance is not null)
+            con.Exec("INSERT INTO pending (body) VALUES (?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
+        con.Commit();
+        return balance;
+    }
+
+    /// <summary>Heartbeat update 5: the running client activates a dormant population group (`group` = its 1-based
+    /// record index).</summary>
+    public void WakeGroup(long populationId, int group)
+    {
+        using var con = Con();
+        con.Begin();
+        con.Exec("INSERT INTO pending (body) VALUES (?)",
+                 Py.Dumps(new JsonObject { ["update"] = 5, ["population_id"] = populationId, ["group"] = group }));
+        con.Commit();
+    }
+
+    /// <summary>Inventory rows in the connect reply's `inventory.items` shape.</summary>
+    public JsonArray Inventory()
+    {
+        using var con = Con();
+        return Items(con);
+    }
+
+    public JsonObject Wallet()
+    {
+        using var con = Con();
+        var wallet = new JsonObject();
+        foreach (var r in con.Rows("SELECT currency, amount FROM wallet"))
+            wallet[(string)r[0]] = Py.FromSql(r[1]);
+        return wallet;
+    }
+
+    /// <summary>Server `features` of a harvest (Scoring.Features); null when they can't be built.</summary>
+    JsonNode? Features(JsonObject e3, JsonObject e7, JsonObject e22)
+    {
+        var sp = G(e3, "extended_species", -1);
+        var list = Py.Truthy(connect["species"]) ? connect["species"]!.AsArray() : new JsonArray();
+        var m = Mod100(sp);
+        if (!(0 <= m && m < list.Count))
+            return null;
+        return Scoring.Features((int)Py.L(sp), e7, e22, list[(int)m]!["scale_factor"]);
+    }
+
+    /// <summary>(score, score_type, css) of a harvest; (null, null, 0.0) when its features can't be built.</summary>
+    (JsonNode? Score, string? Type, double Css) Trophy(JsonObject e3, JsonObject e7, JsonObject e22, JsonObject? lastHit)
+    {
+        var f = Features(e3, e7, e22);
+        if (f is null)
+            return (null, null, 0.0);
+        var sp = (int)Py.L(e3["extended_species"]);
+        var (s, ty) = Scoring.Score(sp, f, G(e7, "weight_grams", 0), lastHit?["animal_state"]);
+        return (s, ty, Scoring.Css(sp, s));
+    }
+
+    /// <summary>The client's disconnect call: close the open expedition; its body carries distance_travelled.</summary>
+    public void Disconnect(byte[] body)
+    {
+        JsonNode? distance;
+        try
+        {
+            distance = (JsonNode.Parse(body) as JsonObject)?["distance_travelled"];
+        }
+        catch (JsonException)
+        {
+            distance = null;
+        }
+        using var con = Con();
+        con.Begin();
+        con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE end_ts IS NULL", Py.Now(), distance);
+        con.Commit();
+    }
+
+    public byte[] MoveMultiple2Reply(byte[] formBody)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
+        var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
+        using var con = Con();
+        return Py.DumpBytes(MoveMultiple2(con, mapping, cloned, defaultUnits));
+    }
+
+    public byte[] HeartbeatReply(byte[] body)
+    {
+        JsonArray events;
+        try
+        {
+            var events_ = (JsonNode.Parse(body) as JsonObject ?? throw new JsonException("not a dict"))["events"];
+            events = Py.Truthy(events_) ? events_!.AsArray() : new JsonArray();
+        }
+        catch (JsonException)
+        {
+            events = new JsonArray();
+        }
+        using var con = Con();
+        return Py.DumpBytes(new JsonObject
+        {
+            ["updates"] = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates), ["err"] = 0,
+        });
+    }
+
+    /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`.</summary>
+    public void NoteLaunch(byte[] formBody)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start"));
+        using var con = Con();
+        con.Begin();
+        var now = Py.Now();
+        con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE end_ts IS NULL", now);
+        con.Exec("INSERT INTO expeditions (reserve, location_id, start_ts, first_event) VALUES (?, ?, ?, ?)",
+                 Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
+        con.Commit();
+    }
+
+    JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()
+    {
+        // ponytail: source of `holed` unknown
+        ["antlers_score_percentage"] = C(e3["antlers_score_percentage"]), ["antlers_seed"] = C(e3["antlers_seed"]),
+        ["base_texture"] = C(e3["base_texture"]), ["expedition_id"] = C(expeditionId),
+        ["expedition_is_closed"] = false, ["fur_texture"] = C(e3["fur_texture"]), ["gender"] = C(spawn["gender"]),
+        ["holed"] = 0, ["is_skull"] = false, ["reserve_id"] = C(reserveId), ["scale"] = C(e3["scale"]),
+        ["score"] = Py.Truthy(score) ? C(score) : 0, ["score_type"] = string.IsNullOrEmpty(scoreType) ? "" : scoreType,
+        ["species"] = C(e3["extended_species"]),
+        ["species_define"] = C(Lookup(species, e3["extended_species"])?["define"]), ["taxidermized"] = false,
+        ["texture_id"] = C(spawn["texture"]),
+        ["timestamp"] = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+        ["weight"] = C(spawn["weight_grams"]),
+    };
+
+    /// <summary>GET /game/user/harvest/&lt;kill_id&gt; body, or null for an unknown kill.</summary>
+    public byte[]? HarvestReply(long killId)
+    {
+        using var con = Con();
+        var row = con.Rows("SELECT body FROM harvests WHERE kill_id = ?", killId).FirstOrDefault();
+        return row is null ? null : Encoding.UTF8.GetBytes((string)row[0]);
+    }
+
+    /// <summary>Public_user/expedition: the latest server expedition and its kills; the recorded reply if none yet.</summary>
+    public byte[] ExpeditionReply(byte[] recorded)
+    {
+        object[] row;
+        JsonArray kills;
+        JsonNode? stats = null;
+        using (var con = Con())
+        {
+            con.Begin();
+            CloseStale(con);
+            con.Commit();
+            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance FROM expeditions"
+                                 + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
+            if (found is null)
+                return recorded;
+            row = found;
+            var expeditionId = Py.FromSql(row[0]);
+            var rows = con.Rows(
+                "SELECT k.kill_id, k.individual, k.harvest, h.body FROM kills k JOIN harvests h USING (kill_id)"
+                + " WHERE json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", expeditionId);
+            var hits = new Dictionary<long, List<JsonObject>>();
+            foreach (var r in rows)
+                hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry((long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
+            // stats are null mid-hunt; expeditions from before first_event have no scope
+            if (row[4] is not DBNull && row[5] is not DBNull)
+            {
+                var ks = new List<(JsonNode?, List<JsonObject>, bool)>();
+                foreach (var r in rows)
+                {
+                    var sp = Parse(r[2])["extended_species"];
+                    ks.Add((sp, hits[(long)r[0]], Ethical(sp, hits[(long)r[0]])));
+                }
+                var distance = Py.FromSql(row[6]);
+                stats = HuntStats(con, Py.FromSql(row[5]), ks, (long)(Convert.ToDouble(row[4]) - Convert.ToDouble(row[3])),
+                                  Py.Truthy(distance) ? distance : 0);
+            }
+        }
+        var (x, y, z) = StartPosition(Py.FromSql(row[2]));
+        // an open expedition's start_ts is fractional; a closed one's start_ts and end_ts are whole seconds
+        var closed = row[4] is not DBNull;
+        var expedition = new JsonObject
+        {
+            ["map"] = 0, ["z"] = Py.L(z), ["x"] = Py.L(x), ["y"] = Py.L(y),
+            ["location_id"] = Py.FromSql(row[2]),
+            ["end_ts"] = closed ? (long)Convert.ToDouble(row[4]) : null,
+            ["start_ts"] = closed ? JsonValue.Create((long)Convert.ToDouble(row[3])) : Py.FromSql(row[3]),
+            ["id"] = Py.FromSql(row[0]), ["reserve"] = Py.FromSql(row[1]),
+        };
+        return Py.DumpBytes(new JsonObject { ["stats"] = stats, ["antler_collectables"] = new JsonArray(), ["kills"] = kills, ["expedition"] = expedition });
+    }
+
+    /// <summary>GET &lt;web-host&gt;/user/&lt;handle&gt;/score/?id=&lt;kill_id&gt;: kill details HTML, or null for an unknown kill.</summary>
+    public byte[]? ScorePageReply(long killId)
+    {
+        object[] row;
+        List<JsonObject> hits;
+        JsonObject page, e7, e22;
+        object[]? expedition;
+        using (var con = Con())
+        {
+            var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h USING (kill_id)"
+                                 + " WHERE k.kill_id = ?", killId).FirstOrDefault();
+            if (found is null)
+                return null;
+            row = found;
+            var individual = Py.FromSql(row[0]);
+            var harvest = (string)row[1];
+            (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
+            (e7, e22) = KillEvents(con, individual, harvest);
+            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE id = ?",
+                                  page["expedition_id"]).FirstOrDefault();
+        }
+        var e3 = Parse(row[1]);
+        var sp = G(e3, "extended_species", -1);
+        var f = Features(e3, e7, e22);
+        var entry = KillEntry(killId, e3, page, hits, page["expedition_id"]);
+        var handle = Py.Str(G(Account(), "handle", ""));
+        var last = hits.Count > 0 ? hits[^1] : e3;
+        var (x, y, z) = StartPosition(expedition is null ? null : Py.FromSql(expedition[2]));
+        var killInfo = (JsonObject)entry["kill"]!.DeepClone();
+        // ponytail: ts (shot time) = confirmTs; events carry no time
+        killInfo["ts"] = C(killInfo["confirmTs"]);
+        killInfo["pos"] = new JsonObject { ["y"] = C(last["player_y"]), ["x"] = C(last["player_x"]), ["z"] = C(last["player_z"]) };
+        var expeditions = new JsonArray();
+        if (expedition is not null)
+            expeditions.Add(new JsonObject
+            {
+                ["map"] = 0, ["user_id"] = C(entry["userId"]), ["singleplayer"] = 1,
+                ["end_ts"] = expedition[4] is DBNull ? 0 : (long)Convert.ToDouble(expedition[4]),
+                ["start_ts"] = (long)Convert.ToDouble(expedition[3]), ["y"] = Py.L(y), ["x"] = Py.L(x),
+                ["z"] = Py.L(z), ["location_id"] = Py.FromSql(expedition[2]), ["id"] = Py.FromSql(expedition[0]),
+                ["reserve"] = Py.FromSql(expedition[1]),
+            });
+        var kill = new JsonObject
+        {
+            ["hits"] = new JsonArray(hits.Select(h => (JsonNode?)new JsonObject
+            {
+                ["distance"] = Times10(G(h, "distance_cms", 0)), ["pose"] = C(h["pose"]), ["handle"] = handle,
+                ["weapon_id"] = C(h["weapon_id"]), ["organ"] = C(G(h, "organ2", 0)),
+                ["animal_effects"] = C(G(h, "animal_effects", new JsonArray())), ["player_z"] = C(h["player_z"]),
+                ["hostname"] = handle, ["ammo_id"] = C(h["ammunition_id"]), ["bodypart"] = C(G(h, "organ1", 0)), ["platform"] = 0,
+                ["player_y"] = C(h["player_y"]), ["scope_id"] = C(h["scope_id"]), ["animal_state"] = C(G(h, "animal_state", 0)),
+                ["shot_id"] = C(h["shot_id"]), ["animal_y"] = C(h["y"]), ["animal_x"] = C(h["x"]),
+                ["player_x"] = C(h["player_x"]), ["animal_z"] = C(h["z"]),
+            }).ToArray()),
+            ["kill"] = killInfo,
+            ["features"] = f is not null ? C(f) : new JsonObject(),
+            ["weight"] = C(entry["weight"]),
+            ["expedition"] = expeditions,
+            ["gender"] = C(entry["gender"]), ["variant"] = Mod100(sp), ["id"] = killId, ["texture"] = C(entry["texture"]),
+            ["species"] = C(entry["species"]),
+        };
+        var define = Lookup(species, entry["species"]) is { } s ? Py.Str(G(s, "define", "")) : "";
+        var speciesName = (string?)entry["speciesName"] ?? "";
+        var sheet = f is not null
+            ? Scoring.SheetHtml((int)Py.L(sp), define, speciesName, f, G(e7, "weight_grams", 0), entry["gender"])
+            : null;
+        var reserveName = expedition is not null && TryKey(Py.FromSql(expedition[1]), out var rid)
+                          && reserves.TryGetValue(rid, out var rn) ? rn ?? "" : "";
+        return Encoding.UTF8.GetBytes(ScorePage.Render(kill, handle, speciesName, define.ToLowerInvariant(), reserveName, items,
+                                                       locale, textures, sheet));
+    }
+
+    /// <summary>Expedition/list: server expeditions (newest first) ahead of the recorded ones.
+    ///
+    /// Only the first page is merged; later pages replay the recording.</summary>
+    public byte[] ExpeditionListReply(byte[] recorded, byte[] formBody)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
+        if (offset is not ("" or "0"))
+            return recorded;
+        List<object[]> rows;
+        using (var con = Con())
+        {
+            con.Begin();
+            CloseStale(con);
+            con.Commit();
+            rows = con.Rows(
+                "SELECT e.id, e.reserve, e.location_id, e.start_ts, e.end_ts, (SELECT COUNT(*) FROM harvests"
+                + " WHERE json_extract(body, '$.expedition_id') = e.id) FROM expeditions e ORDER BY e.id DESC");
+        }
+        var reply = JsonNode.Parse(recorded)!.AsObject();
+        var ours = rows.Select(r => (JsonNode?)new JsonObject
+        {
+            ["map"] = 0, ["kills"] = Py.FromSql(r[5]), ["singleplayer"] = 1,
+            ["end_ts"] = r[4] is DBNull || Convert.ToDouble(r[4]) == 0 ? null : JsonValue.Create((long)Convert.ToDouble(r[4])),
+            ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = 0, ["location_id"] = Py.FromSql(r[2]),
+            ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
+        }).ToList();
+        var expeditions = new List<JsonNode?>(ours);
+        if (Py.Truthy(reply["expeditions"]))
+            expeditions.AddRange(reply["expeditions"]!.AsArray().Select(C));
+        reply["expeditions"] = new JsonArray((Py.IsDigit(limit) ? expeditions.Take((int)Math.Min(long.Parse(limit), int.MaxValue)) : expeditions).ToArray());
+        var total = G(reply, "total", 0);
+        reply["total"] = Py.IsInt(total) ? JsonValue.Create(Py.L(total) + ours.Count) : JsonValue.Create(Py.D(total) + ours.Count);
+        return Py.DumpBytes(reply);
+    }
+
+    /// <summary>One Public_user/expedition kill.</summary>
+    JsonObject KillEntry(long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId)
+    {
+        var confirm = DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
+                                          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+        return new JsonObject
+        {
+            ["hits"] = new JsonArray(hits.Select(h => (JsonNode?)new JsonObject
+            {
+                ["distance"] = Times10(G(h, "distance_cms", 0)), ["weapon_id"] = C(h["weapon_id"]),
+                ["organ"] = C(h["organ2"]), ["ammo_id"] = C(h["ammunition_id"]),
+            }).ToArray()),
+            ["expeditionId"] = C(expeditionId),
+            ["speciesName"] = SpeciesName(page["species"]),
+            ["weight"] = C(page["weight"]), ["gender"] = C(page["gender"]),
+            ["kill"] = new JsonObject
+            {
+                ["ethical"] = Ethical(page["species"], hits),
+                ["trophy_integrity"] = Py.D(G(e3, "trophy_integrity", 0)) / 1000,
+                ["score"] = Py.Truthy(page["score"]) ? C(page["score"]) : null,
+                ["wound_time"] = Py.D(G(e3, "wound_time", 0)) / 1000,
+                ["confirmTs"] = new DateTimeOffset(confirm).ToUnixTimeSeconds(),
+                ["photo"] = null, ["harvest_value"] = Py.D(G(e3, "harvest_value", 0)) / 1000,
+                ["scoreType"] = Py.Truthy(page["score_type"]) ? C(page["score_type"]) : null,
+            },
+            ["userId"] = C(Account()["user_id"]), ["species"] = C(page["species"]),
+            ["texture"] = C(page["texture_id"]), ["id"] = killId,
+        };
+    }
+
+    /// <summary>Mark a stored harvest taxidermized; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
+    public bool Taxidermize(long killId)
+    {
+        using var con = Con();
+        con.Begin();
+        var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE kill_id = ?", killId);
+        con.Commit();
+        return n == 1;
+    }
+
+    string UploadUrl(long photoId, string part) =>
+        $"{baseUrl}{UPLOAD_PATH}?uploadType=resumable&upload_id={photoId}" + (part != "" ? $"&part={part}" : "");
+
+    /// <summary>POST of a photo to UploadUrl(): store it, reply like GCS (storage#object), 404 if the id is unknown.</summary>
+    public (int Status, byte[] Body) UploadReply(string query, byte[] data)
+    {
+        var q = Py.ParseQs(query);
+        var photoId = Form1(q, "upload_id");
+        var part = q.TryGetValue("part", out var p) && p is ["thumb"] ? "thumb" : "";
+        string? name;
+        using (var con = Con())
+            name = Py.IsDigit(photoId) ? SavePhoto(con, photosDir, long.Parse(photoId), data, part) : null;
+        if (string.IsNullOrEmpty(name))
+            return (404, "{\"error\": {\"code\": 404, \"message\": \"No such upload\"}}"u8.ToArray());
+        var md5 = Convert.ToBase64String(MD5.HashData(data));
+        var now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+        return (200, Py.DumpBytes(new JsonObject
+        {
+            ["kind"] = "storage#object", ["id"] = $"{PHOTO_PREFIX}{name}", ["name"] = name, ["bucket"] = "photos",
+            ["selfLink"] = $"{baseUrl}{PHOTO_PREFIX}{name}", ["mediaLink"] = $"{baseUrl}{PHOTO_PREFIX}{name}",
+            ["generation"] = "1", ["metageneration"] = "1", ["contentType"] = "image/jpeg", ["storageClass"] = "STANDARD",
+            ["size"] = data.Length.ToString(), ["md5Hash"] = md5, ["timeCreated"] = now, ["updated"] = now,
+        }));
+    }
+
+    /// <summary>GET &lt;PHOTO_PREFIX&gt;&lt;name&gt; → stored file path or null.</summary>
+    public string? PhotoFile(string path)
+    {
+        var name = path.StartsWith(PHOTO_PREFIX, StringComparison.Ordinal) ? path[PHOTO_PREFIX.Length..] : path;
+        var f = Path.Combine(photosDir, name);
+        return name.IndexOfAny(['/', '\\', ':']) < 0 && File.Exists(f) ? f : null;  // ':' would make it drive-relative
+    }
+
+    // ---- Python dict/str semantics on JSON values
+
+    /// <summary>dict.get(k, default): the default only for a missing key, not for a JSON null.</summary>
+    static JsonNode? G(JsonObject o, string k, JsonNode? d) => o.TryGetPropertyValue(k, out var v) ? v : d;
+
+    static JsonNode? C(JsonNode? n) => n?.DeepClone();
+
+    static JsonArray Arr(JsonNode? n) => n as JsonArray ?? new JsonArray();
+
+    static JsonObject Parse(object text) => JsonNode.Parse((string)text)!.AsObject();
+
+    /// <summary>n == v for a JSON number (or bool, as in Python).</summary>
+    static bool Is(JsonNode? n, double v) => n is JsonValue && !Py.IsStr(n) && Py.D(n) == v;
+
+    /// <summary>n * 10, int stays int.</summary>
+    static JsonNode Times10(JsonNode? n) => Py.IsInt(n) ? JsonValue.Create(Py.L(n) * 10) : JsonValue.Create(Py.D(n) * 10);
+
+    /// <summary>Python n % 100 (floor modulo).</summary>
+    static long Mod100(JsonNode? n) => ((Py.L(n) % 100) + 100) % 100;
+
+    static void Inc(JsonObject o, string k) => o[k] = Py.L(o[k]) + 1;
+
+    static JsonObject SetDefault(JsonObject o, string k, Func<JsonObject> make)
+    {
+        if (o[k] is JsonObject v)
+            return v;
+        var made = make();
+        o[k] = made;
+        return made;
+    }
+
+    /// <summary>An int-valued JSON number as a dict key (Python finds key 1 for 1 and 1.0).</summary>
+    static bool TryKey(JsonNode? n, out long k)
+    {
+        k = 0;
+        if (!Py.IsNum(n) || Py.D(n) != Math.Floor(Py.D(n)))
+            return false;
+        k = Py.L(n);
+        return true;
+    }
+
+    static T? Lookup<T>(Dictionary<long, T> d, JsonNode? k) where T : class? => TryKey(k, out var l) && d.TryGetValue(l, out var v) ? v : null;
+
+    /// <summary>(form.get(k) or [""])[0]</summary>
+    static string Form1(OrderedDictionary<string, List<string>> form, string k) =>
+        form.TryGetValue(k, out var v) && v.Count > 0 ? v[0] : "";
+
+    /// <summary>urlsplit(url).scheme, .netloc</summary>
+    static (string Scheme, string Netloc) SchemeNetloc(string url)
+    {
+        var scheme = "";
+        var i = url.IndexOf(':');
+        if (i > 0 && char.IsAsciiLetter(url[0]) && url[..i].All(c => char.IsAsciiLetterOrDigit(c) || c is '+' or '-' or '.'))
+        {
+            scheme = url[..i].ToLowerInvariant();
+            url = url[(i + 1)..];
+        }
+        if (!url.StartsWith("//", StringComparison.Ordinal))
+            return (scheme, "");
+        var end = url.IndexOfAny(['/', '?', '#'], 2);
+        return (scheme, end < 0 ? url[2..] : url[2..end]);
+    }
+}

@@ -1,4 +1,4 @@
-- Public repository (full rules: CONTRIBUTING.md#rules): only README.md names the game; no real hosts, domains, ids, handles, tokens or emails in any file, commit, issue or PR.
+- Public repository (full rules: CONTRIBUTING.md#rules): only README.md and `server/Server/ProtocolLiterals.cs` (the names the client requires) name the game; no real hosts, domains, ids, handles, tokens or emails in any file, commit, issue or PR.
 - No game files or data, and nothing about how knowledge of the game or its servers was obtained.
 - Before your first edit, read AGENTS.md and the docs it links: their rules bind you too.
 - Work only in this worktree and its branch. Never commit to `main`.

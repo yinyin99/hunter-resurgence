@@ -1,0 +1,273 @@
+// The game hosts' API: one endpoint per path the player state answers, documented in the "game" OpenAPI document.
+// Each handler checks the raw method and path itself (an exact path, or the pattern the routing contract had), like
+// the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback), so every reply
+// stays the recorded one.
+using System.ComponentModel;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using static Resurgence.Server.Replay;
+
+namespace Resurgence.Server;
+
+public static class GameApi
+{
+    static readonly Regex Harvest = new(@"\A/game/user/harvest/(\d+)(/taxidermize)?\z", RegexOptions.ECMAScript);
+    static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
+    static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
+    static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
+
+    public static void MapGame(this WebApplication app, Game game)
+    {
+        var s = game.State;
+        app.Map("/{**path}", Handle(game, _ => new Reply(204, [], [], "sink")))
+           .RequireHost([.. game.Sinks]).ExcludeFromDescription();  // telemetry and crash reports
+
+        var gs = Group(app, game.Gs, "Game server (gameserver_host)");
+        gs.MapExactPost(game, HEARTBEAT, r => s != null
+                ? new(200, Json(), s.HeartbeatReply(r.Body), "state")
+                : new(200, Json(), IdleHeartbeat, "stub"))
+          .WithName("Heartbeat").WithSummary("Store hunt events, return the queued updates")
+          .WithDescription("Every 20–60 s during a hunt. Updates queued by earlier heartbeats come first (trophy score, items, "
+                           + "balances, toasts); photo requests get their upload URL at once. Without player state: always "
+                           + "`{\"updates\": [], \"err\": 0}`.")
+          .Body<HeartbeatRequest>("application/json").Produces<HeartbeatReply>();
+        gs.MapExactPost(game, DISCONNECT, r =>
+            {
+                s?.Disconnect(r.Body);
+                return new(200, Json(), NoError, s != null ? "state" : "stub");
+            })
+          .WithName("Disconnect").WithSummary("End the hunt")
+          .WithDescription("Closes the open expedition with the session's `distance_travelled`.")
+          .Body<DisconnectRequest>("application/json").Produces<ErrReply>();
+        if (s != null)
+        {
+            gs.MapExactPost(game, CONNECT, _ =>
+                    new(200, game.Table.Entries[new("POST", game.Gs, CONNECT, null)].Headers, s.ConnectReply(), "state"))
+              .WithName("Connect").WithSummary("Start a hunt session")
+              .WithDescription("The recorded connect reply with the saved inventory, wallet, skills and the open expedition "
+                               + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
+                               + "reserve. Queues the server notice toast.")
+              .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
+            gs.MapExactPost(game, State.UPLOAD_PATH, r =>
+                {
+                    var (status, body) = s.UploadReply(r.Query, r.Body);
+                    return new(status, [("Content-Type", "application/json; charset=UTF-8")], body, "state");
+                })
+              .WithName("UploadPhoto").WithSummary("Upload a requested photo (GCS resumable-upload shape)")
+              .WithDescription("Target of the `update: 11` URL a heartbeat photo request (event 4) gets. Stores the JPEG in "
+                               + "the photos folder; replies like GCS `storage#object`, 404 for an unknown upload id.")
+              .QueryParams(("uploadType", "`resumable`"), ("upload_id", "photo id from the update 11 URL"), ("part", "`thumb` for the thumbnail"))
+              .Body<byte[]>("image/jpeg").Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+            var photo = Handle(game, r =>
+                r.Method is "GET" or "HEAD" && r.Path.StartsWith(State.PHOTO_PREFIX, StringComparison.Ordinal)
+                && s.PhotoFile(r.Path) is { Length: > 0 } f
+                    ? new(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(f), "state")
+                    : null);
+            gs.MapGet(State.PHOTO_PREFIX + "{**name}", photo)
+              .WithName("Photo").WithSummary("A stored photo").WithDescription("Photos uploaded through UploadPhoto, by file name.")
+              .PathParams(("name", "`<photo id>-<photo_type>[-thumb].jpg`")).Produces(200, contentType: "image/jpeg");
+            gs.MapMethods(State.PHOTO_PREFIX + "{**name}", ["HEAD"], photo).ExcludeFromDescription();
+        }
+
+        var api = Group(app, game.Api, "Web API (api_host, /v1)");
+        if (s != null)
+        {
+            api.MapExactPost(game, MOVE_MULTIPLE2, r => new(200, JsonAnyOrigin(), s.MoveMultiple2Reply(r.Body), "state"))
+               .WithName("MoveItems").WithSummary("Move inventory items between slots, clone stacks")
+               .WithDescription("Reply `null`, or `{placeholder: new guid}` when stacks were cloned. Plain HTTP in the client.")
+               .Body<MoveMultiple2Form>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, BUY, r => new(200, JsonAnyOrigin(), s.BuyReply(r.Body), "state"))
+               .WithName("Buy").WithSummary("Buy a catalogue item")
+               .WithDescription("Charges now (the item's first Application/discounts row if active, rounded half up, as the "
+                                + "store shows it); the items (`update: 10`) and the new balance (`update: 15`) come with the "
+                                + "next heartbeat. Between hunts the next connect carries the items and the first heartbeat "
+                                + "still the balance. `{\"success\": false}` for an unknown item, a missing price, a service or "
+                                + "too little currency.")
+               .Body<BuyForm>(Form).Produces<BuyReply>();
+            api.MapExactPost(game, LAUNCH_START, r =>
+                {
+                    s.NoteLaunch(r.Body);
+                    return null;  // the reply itself is replayed
+                })
+               .WithName("LaunchStart").WithSummary("Launch a hunt in a reserve")
+               .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one); the reply is the recorded one.")
+               .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, CHAT_CONVERSATIONS, _ => new(200, JsonAnyOrigin(), s.ConversationsReply(), "state"))
+               .WithName("ChatConversations").WithSummary("Inbox threads")
+               .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, CHAT_CONVERSATION, r => new(200, JsonAnyOrigin(), s.ConversationReply(r.Body), "state"))
+               .WithName("ChatConversation").WithSummary("One thread, newest first; marks it read")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, SKILL_LIST, r => s.SkillListReply(r.Body) is { Length: > 0 } reply
+                    ? new(200, JsonAnyOrigin(), reply, "state")
+                    : null)
+               .WithName("SkillList").WithSummary("Skill numbers of a player")
+               .WithDescription("The player's own skills from the state (level plus the fraction of its span); other players' "
+                                + "replies are replayed.")
+               .Body<UserForm>(Form).Produces<SkillNumbers>();
+        }
+        api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
+                ? new(hit.Status, hit.Headers, SplashWithNotice(hit.Body), "patch")
+                : null)
+           .WithName("Splashes").WithSummary("Launcher news splashes")
+           .WithDescription("The recorded list with a server notice first.").Produces(200, contentType: "application/json");
+        if (s != null)
+        {
+            api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Recorded(r) is { Tier: >= 1 } hit
+                    ? new(hit.Status, hit.Headers, s.ExpeditionReply(hit.Body), "state")
+                    : null)
+               .WithName("LastHunt").WithSummary("The latest expedition with its kills and stats")
+               .WithDescription("`stats` stays null while the hunt is open; the recorded reply until the first server hunt.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, EXPEDITION_LIST, r => game.Recorded(r) is { Tier: >= 1 } hit
+                    ? new(hit.Status, hit.Headers, s.ExpeditionListReply(hit.Body, r.Body), "state")
+                    : null)
+               .WithName("Expeditions").WithSummary("Expedition history, newest first")
+               .WithDescription("Server expeditions ahead of the recorded ones on the first page; later pages are replayed.")
+               .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
+            foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
+                api.MapExactPost(game, path, r =>
+                    {
+                        if (game.Recorded(r) is not { Tier: >= 1 } hit)
+                            return null;
+                        var reply = (JsonObject)JsonNode.Parse(hit.Body)!;
+                        var wallet = s.Wallet();
+                        reply["gms"] = wallet["gm"]!.DeepClone();
+                        reply["ems"] = wallet["em"]!.DeepClone();
+                        reply["unread_messages"] = s.Unread();
+                        return new(hit.Status, hit.Headers, Py.DumpBytes(reply), "state");
+                    })
+                   .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
+                   .WithDescription("The recorded reply with `gms`, `ems` and `unread_messages` from the state.")
+                   .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+
+            var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
+            var harvest = Handle(game, r =>
+            {
+                var m = Harvest.Match(r.Path);
+                if (!m.Success)
+                    return null;
+                var id = long.Parse(m.Groups[1].Value);
+                var taxidermize = m.Groups[2].Success;
+                if (r.Method == "OPTIONS")
+                    return Has(s.HarvestReply(id)) ? new(204, Cors(r.Header), [], "state") : null;
+                if (r.Method == "GET" && !taxidermize && s.HarvestReply(id) is { Length: > 0 } page)
+                    return new(200, [("Content-Type", "application/vnd.game.user.trophy_lodge.harvest+json"), .. Cors(r.Header)], page, "state");
+                if (r.Method == "POST" && taxidermize && s.Taxidermize(id))
+                    return new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state");
+                return null;
+            });
+            apiv2.MapGet("/game/user/harvest/{id}", harvest)
+                 .WithName("Harvest").WithSummary("A harvested trophy (launcher trophy page)")
+                 .WithDescription("Stored with the kill's event 3; CORS for the web host.")
+                 .PathParams(("id", "harvest id (= kill id)"))
+                 .Produces(200, contentType: "application/vnd.game.user.trophy_lodge.harvest+json");
+            apiv2.MapPost("/game/user/harvest/{id}/taxidermize", harvest)
+                 .WithName("Taxidermize").WithSummary("Taxidermize a harvested trophy")
+                 .WithDescription("Marks it taxidermized; no gold charged (taxidermy price not modelled).")
+                 .PathParams(("id", "harvest id (= kill id)"))
+                 .Produces(200, contentType: "text/plain");
+            // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
+            foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
+                apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
+
+            var web = Group(app, game.Web, "Website (web_host)");
+            web.MapGet("/user/{handle}/score/", Handle(game, r =>
+                {
+                    if (r.Method != "GET" || !ScorePath.IsMatch(r.Path))
+                        return null;
+                    var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
+                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) ? s.ScorePageReply(kid) : null;
+                    return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
+                }))
+               .WithName("ScorePage").WithSummary("Kill details page of a server kill")
+               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page.")
+               .PathParams(("handle", "player handle (any)")).QueryParams(("id", "kill id"))
+               .Produces(200, contentType: "text/html");
+        }
+
+        app.MapFallback("/{**path}", Handle(game, _ => null)).ExcludeFromDescription();  // replay, archives, mirror, misses
+    }
+
+    const string Form = "application/x-www-form-urlencoded";
+
+    static RouteGroupBuilder Group(WebApplication app, string host, string tag) =>
+        app.MapGroup("/").RequireHost(host).WithGroupName("game").WithTags(tag);
+
+    /// <summary>Answer with the handler, or fall back to the replay when it returns null.</summary>
+    static Func<HttpContext, Task<Reply>> Handle(Game game, Func<Req, Reply?> handle) => async ctx =>
+    {
+        var r = await Req.ReadAsync(ctx);
+        return handle(r) ?? game.Fallback(r);
+    };
+
+    /// <summary>A POST endpoint that answers only exactly this raw path: routing alone also matches other cases, a
+    /// trailing slash, percent-encodings and dot segments.</summary>
+    static RouteHandlerBuilder MapExactPost(this RouteGroupBuilder group, Game game, string path, Func<Req, Reply?> handle) =>
+        group.MapPost(path, Handle(game, r => r.Method == "POST" && r.Path == path ? handle(r) : null));
+
+    // ---- OpenAPI documentation (metadata only: requests are parsed by the handlers, never bound or content-type matched)
+
+    /// <summary>Request body schema of an endpoint, for the OpenAPI document only.</summary>
+    public sealed record BodyDoc(Type Type, string ContentType);
+
+    /// <summary>A query or path parameter of an endpoint, for the OpenAPI document only.</summary>
+    public sealed record ParamDoc(string Name, bool InPath, string Description);
+
+    static RouteHandlerBuilder Body<T>(this RouteHandlerBuilder b, string contentType) => b.WithMetadata(new BodyDoc(typeof(T), contentType));
+
+    static RouteHandlerBuilder QueryParams(this RouteHandlerBuilder b, params (string Name, string Description)[] parameters) =>
+        b.WithMetadata([.. parameters.Select(p => new ParamDoc(p.Name, false, p.Description))]);
+
+    static RouteHandlerBuilder PathParams(this RouteHandlerBuilder b, params (string Name, string Description)[] parameters) =>
+        b.WithMetadata([.. parameters.Select(p => new ParamDoc(p.Name, true, p.Description))]);
+
+    public sealed record HeartbeatRequest(
+        [property: Description("Hunt events since the last heartbeat")] JsonElement[] events,
+        [property: Description("Player position")] double xpos, double ypos, double zpos,
+        [property: Description("0 stand, 1 crouch, 2 prone")] int pose,
+        [property: Description("Game time of day")] double time_of_day, JsonElement weather, JsonElement ping_to_host, JsonElement player_positions);
+
+    public sealed record HeartbeatReply(
+        [property: Description("Queued updates: 3 toast, 6 trophy score, 10 items, 11 photo upload URL, 15 balance")] JsonElement[] updates,
+        int err);
+
+    public sealed record DisconnectRequest(int animals_killed, int animals_spotted, int animals_tracked,
+        [property: Description("Metres walked this hunt")] int distance_travelled, int shots_fired, int shots_hit);
+
+    public sealed record ConnectRequest(string client_version,
+        [property: Description("Hardware: cpu, gpu, ram, resolution, driver…")] JsonElement g_data,
+        [property: Description("1 when the client reports a suspicious DLL")] int suspicious_dll);
+
+    public sealed record ErrReply(int err);
+
+    public sealed record MoveMultiple2Form(
+        [property: Description("JSON list `[{item_guid, slot_id}]`; item_guid is a guid or a clonedItems placeholder")] string mapping,
+        [property: Description("JSON list `[{item_guid: \"new_item_<ts>\", item_id}]`: stacks to create")] string clonedItems,
+        string? oauth_access_token);
+
+    public sealed record BuyForm(long item_id,
+        [property: Description("Count (usually 1)")] long amount,
+        [property: Description("`GOLD` (em, catalogue price); `SILVER` not modelled")] string wallet,
+        string? oauth_access_token);
+
+    public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);
+
+    public sealed record LaunchStartForm(
+        [property: Description("Start location id (a lodge)")] long start,
+        [property: Description("`LODGE`")] string loctype, long reserve,
+        [property: Description("Start time of day, minutes")] long time, long loadout_id, string? oauth_access_token);
+
+    public sealed record UserForm(long user_id, string? oauth_access_token);
+
+    public sealed record ExpeditionListForm(long user_id, long limit, long offset);
+
+    public sealed record TokenForm(string? oauth_access_token);
+
+    public sealed record SkillNumbers(
+        [property: Description("Weapon id → level plus fraction")] Dictionary<string, double> weapon,
+        [property: Description("By species id")] double[] tracking,
+        [property: Description("By species id")] double[] spotting);
+}

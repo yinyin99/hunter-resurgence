@@ -18,3 +18,13 @@ docs/compare/
 docs/PARITY_REPORT.md
 docs/DEVIATIONS.md
 docs/MIGRATION_PLAN.md
+
+# the server's working files (docs/server.md): the database and TLS key, recordings, the mirror, score variants
+/data/
+/recordings/
+/mirror/
+/variants.json
+server/*/data/
+server/*/recordings/
+server/*/mirror/
+server/*/variants.json

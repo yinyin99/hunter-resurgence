@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="server/Server/Server.csproj" />
+  <Project Path="server/Server.Tests/Server.Tests.csproj" />
   <Project Path="src/Launcher/Resurgence.Launcher.csproj" />
   <Project Path="src/Restore/Resurgence.Restore.csproj" />
   <Project Path="src/Restore/Cli/Resurgence.Restore.Cli.csproj" />
