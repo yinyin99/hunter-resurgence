@@ -60,8 +60,9 @@ public static class AuthApi
 
     /// <summary>POST /auth/jwt/refresh: the game and the launcher page ask for a new access JWT before the old one runs out.
     /// The credential is a refresh JWT this server signed (body or cookie), or the game's session (a token that is not a
-    /// JWT); Bearer and body tokens and any JWT in the session header do not count, so a leaked access JWT cannot make a
-    /// long-lived one. ponytail: a refresh token is not rotated (the game may keep presenting the one of its launch URL); it ends
+    /// JWT); Bearer and body tokens and a JWT in the session header do not count. ponytail: the token model is flat (every token
+    /// resolves everywhere, docs/server.md), so an access token can still start a session (start_single_player) that refreshes;
+    /// separate kinds of token would need a kind column in `tokens`. A refresh token is not rotated (the game may keep presenting the one of its launch URL); it ends
     /// with its 30 days, a ban or a delete.</summary>
     internal static Reply Refresh(Game game, Req r)
     {

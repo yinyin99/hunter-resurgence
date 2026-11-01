@@ -34,7 +34,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 ## Gotchas
 
 - Changing UI text means changing every translation. The backup tool has six in `tools/backup/Strings*.resx`; the launcher and website have 19 in `src/Ui/Strings*.resx`. `TranslationsTests` checks that every file has the same keys and `{0}` placeholders.
-- The player kit has six translations in `tools/play/Strings*.resx` (console texts); `PlayKit/TranslationsTests` checks them like the backup tool's. Its `settings.example.json` lists the same 13 `*_host` keys as `server/Server/settings.example.json`, plus `server_url`: change them together.
+- The player kit has six translations in `tools/play/Strings*.resx` (console texts); `PlayKit/TranslationsTests` checks them like the backup tool's. Its `settings.example.json` lists `server_url` and the `*_host` keys the game asks for (`game_web_host`, `crash_host`); they are the server's keys of the same names (`server/Server/settings.example.json`): change them together.
 - The backup tool's "What isn't saved?" dialog (resx keys `NotCovered_<n>`) mirrors the "What is not saved" section of `docs/backup.md`. Change both together.
 - The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`) mirrors README's "For players: the backup tool" and quotes the backup tool's `Public_Radio` and `Start` labels. Change them together.
 

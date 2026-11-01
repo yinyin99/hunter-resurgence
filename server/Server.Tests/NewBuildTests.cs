@@ -302,7 +302,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var hit = new Hit(2, "", 200, [], "{}"u8.ToArray());
         table.Entries[new("POST", "game_web.test", "/v1/me/poll", "x")] = hit;
         table.Entries[new("POST", "game_web.test", "/v1/wallet/bank_transactions", null)] = hit;
-        table.Entries[new("POST", "game_web.test", "/v1/json/hunter_gameclient/connect", null)] = hit;
+        table.Entries[new("POST", "game_web.test", ProtocolLiterals.WebRpcBase + "/connect", null)] = hit;
         table.Entries[new("GET", "game_web.test", "/client", null)] = hit;
         NewBuild.Alias(table, Cfg);
         Assert.Same(hit, table.Entries[new("POST", "api.test", POLL, "x")]);  // the handler's case

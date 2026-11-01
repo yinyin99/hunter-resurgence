@@ -115,7 +115,7 @@ public static class GameApi
                .Body<StartSinglePlayerForm>("application/json").Produces(200, contentType: "application/json");
             api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(), "state"))
                .WithName("ClientApplication").WithSummary("The catalogue the in-game pages read")
-               .WithDescription("The recorded reply when the operator has one, else the species, items, reserves and locations of the player state (no missions).")
+               .WithDescription("The recorded reply when the operator has one, else the species, items, reserves and locations of the player state (missions only in a recording).")
                .Body<LangForm>("application/json").Produces(200, contentType: "application/json");
             // the game's JWT, asked for by the game on its own host and by the pages on the API host; a local server replays the recorded one
             Func<Req, Reply?> jwt = r => !s.Online ? null : Own(game, r,
