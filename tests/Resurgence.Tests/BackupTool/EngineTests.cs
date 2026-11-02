@@ -230,6 +230,7 @@ public class EngineTests
         ed.BackoffMs = 20;
         await ed.Run(tmp, "hh", null, new HashSet<string> { "profile", "trophies" }, false, false, TestContext.Current.CancellationToken);
         Assert.True(ed.Failed > 2 && fd.Starts["apiv2.test"].Count == 5 + (ed.Failed - 1), $"dead host: one back-off cycle, then one attempt per request ({fd.Starts["apiv2.test"].Count} attempts for {ed.Failed} requests)");
+        Assert.True(ed.FailureSummary == Loc.F("Fail_Server", Loc.S("Group_profile")) + " " + Loc.F("Fail_Server", Loc.S("Group_trophies")), "the result bar names the two groups that did not answer, as a server error");
     }
 
     [Fact]
@@ -270,11 +271,11 @@ public class EngineTests
     {
         Prepare(out var t, out var tmp, out var key, out var dir);
         using var _ = t;
-        var log = new List<string>();
+        var log = new System.Collections.Concurrent.ConcurrentQueue<string>(); // the groups log side by side
         var f = new Fake(Tok);
         f.Down.Add("/v1/Wallet/spent"); // a failing request logs an error line too
         var groups = Engine.Groups.Select(g => g.Key).ToHashSet();
-        await Hosts.Make(f, key, log.Add).Run(tmp, "", () => Tok, groups, false, true, TestContext.Current.CancellationToken);
+        await Hosts.Make(f, key, log.Enqueue).Run(tmp, "", () => Tok, groups, false, true, TestContext.Current.CancellationToken);
         string[] secrets = [Tok, "ckey-secret-9"]; // the session token and the website's public key
         Assert.True(log.Count > 20 && !log.Any(l => secrets.Any(l.Contains)), "no log line holds a secret");
         var files = Directory.EnumerateFiles(tmp, "*", SearchOption.AllDirectories).ToList();
