@@ -99,10 +99,20 @@ public class HunterscoreTests : StateTestBase
             O("""{"event": 7, "individual": 81, "species": 1, "gender": 0, "weight_grams": 1000, "texture": 0}"""),
             O("""{"event": 1, "individual": 81, "weapon_id": "x", "ammunition_id": 10}"""),
             O("""{"event": 3, "individual": 81, "extended_species": 1}"""),
-            O("""{"event": 3, "individual": 82}""")));  // no species: skipped
+            O("""{"event": 3, "individual": 82}"""),  // no species: skipped
+            O("""{"event": 7, "individual": 83, "species": 1, "gender": 0, "weight_grams": 1000, "texture": 0}"""),
+            O("""{"event": 1, "individual": 83, "weapon_id": 5, "ammunition_id": 99999999999999999999}"""),
+            O("""{"event": 3, "individual": 83, "extended_species": 17}""")));  // an ammo id beyond 64 bits is not permitted on 17
         state.Disconnect(B, "{}"u8.ToArray());
         Assert.Equal(1, Stored(B));  // the species row only: "x" is no weapon
-        state = Online();  // the recompute at start
+        // a number the database cannot read back: the score keeps its stored value, and the close, the next launch and the
+        // start still work
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, """{"events": [{"event": 3, "individual": 84, "extended_species": 1, "trophy_integrity": 1e999}]}"""u8.ToArray());
+        state.Disconnect(B, "{}"u8.ToArray());
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        state = Online();
         Assert.Equal(1, Stored(B));
     }
 }

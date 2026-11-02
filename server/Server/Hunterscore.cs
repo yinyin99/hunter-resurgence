@@ -1,5 +1,6 @@
 // The hunterscore of a community server's account (docs/server.md#the-hunterscore): the rank rows of the facts file over the
 // restored statistics plus this server's ethical kills, credited when an expedition closes.
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Resurgence.Server;
@@ -61,12 +62,22 @@ public sealed partial class State
 
     /// <summary>Recompute the account's hunterscore and store it in its connect `account` and, for a restored account, its Me/me
     /// profile. Community server only; the recorded account (LocalAccount) keeps the recorded player's value. Call it outside a transaction.
+    /// A stored row it cannot read keeps the stored value (logged): a close, a restore or the start never fails on it.
     /// ponytail: recounts every kill of the account (one KillHits query each) at every close; keep a running total if that gets slow.</summary>
     public void UpdateHunterscore(Db con, long account)
     {
         if (!Online || account == LocalAccount)
             return;
-        var score = Score(facts, (JsonObject)RestoredReads.StatisticsTotal(con)["data"]!, ClosedKills(con).ToList());
+        long score;
+        try
+        {
+            score = Score(facts, (JsonObject)RestoredReads.StatisticsTotal(con)["data"]!, ClosedKills(con).ToList());
+        }
+        catch (Exception e) when (e is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
+        {
+            Console.WriteLine($"hunterscore of account {account} kept: {e.Message}");
+            return;
+        }
         con.Begin();
         con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
         con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);

@@ -1344,11 +1344,11 @@ public sealed partial class State
         return made;
     }
 
-    /// <summary>An int-valued JSON number as a dict key (Python finds key 1 for 1 and 1.0).</summary>
+    /// <summary>An int-valued JSON number as a dict key (Python finds key 1 for 1 and 1.0); false outside the 64-bit range.</summary>
     static bool TryKey(JsonNode? n, out long k)
     {
         k = 0;
-        if (!Py.IsNum(n) || Py.D(n) != Math.Floor(Py.D(n)))
+        if (!Py.IsNum(n) || Py.D(n) is var d && (d != Math.Floor(d) || d < -9.223372036854775808E18 || d >= 9.223372036854775808E18))
             return false;
         k = Py.L(n);
         return true;
