@@ -3,6 +3,8 @@
 @font-face { font-family: Roboto; font-weight: 300; font-display: swap; src: url(fonts/roboto-300.woff2) format("woff2"); }
 @font-face { font-family: Roboto; font-weight: 400; font-display: swap; src: url(fonts/roboto-400.woff2) format("woff2"); }
 @font-face { font-family: Roboto; font-weight: 500; font-display: swap; src: url(fonts/roboto-500.woff2) format("woff2"); }
+/* ∞ only (the latin subset above has no U+221E); the browser fetches it only on pages that show one */
+@font-face { font-family: Roboto; font-weight: 400; font-display: swap; src: url(fonts/roboto-math-400.woff2) format("woff2"); unicode-range: U+221E; }
 @font-face { font-family: "Open Sans"; font-weight: 400; font-display: swap; src: url(fonts/open-sans-400.woff2) format("woff2"); }
 @font-face { font-family: "Open Sans"; font-weight: 700; font-display: swap; src: url(fonts/open-sans-700.woff2) format("woff2"); }
 
