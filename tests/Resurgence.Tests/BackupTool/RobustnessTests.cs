@@ -280,20 +280,20 @@ public class RobustnessTests
         Assert.True(e2.Failed == 0 && f2.Seen.Count(p => p == "/v1/Skill/list") == 2, "an hour asked for, 200 ms waited (the cap)");
     }
 
-    /// <summary>F7a: a JWT that was refused (401) is replaced and the request is made once more.</summary>
+    /// <summary>F7a: the session calls carry the game's token as Bearer on the web host; a 401 on one marks the session refused (start a hunt), no second try with the same token.</summary>
     [Fact]
-    public async Task RefusedJwtIsReplacedAndTheRequestRepeatedOnce()
+    public async Task SessionCallsUseTheTokenAndA401MarksItRefused()
     {
         using var t = new TempDir("backup-test-v03-");
-        var f = new Fake(Tok) { Throttle = ("/game/user/loadout", 1, 401, 0) };
+        var f = new Fake(Tok);
         var e = await Run(f, t, ["inventory"]);
-        Assert.True(e.Failed == 0 && f.Seen.Count(p => p == "/game/user/loadout") == 2 && f.Seen.Count(p => p == "/v1/User/jwt") == 2, $"loadout asked twice, a second JWT fetched ({f.Seen.Count(p => p == "/v1/User/jwt")}), 0 failed");
-        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "game_user_loadout.json")), "the repeated request was saved");
+        Assert.True(e.Failed == 0 && f.Seen.Count(p => p == "/v1/game/user/loadout") == 1 && File.Exists(Path.Combine(t.Path, "backup-7", "game_user_loadout.json")), "loadout asked once on the web path");
+        Assert.True(f.Auths.Single(a => a.Path == "/v1/game/user/loadout").Bearer == Tok, "the session token is the Bearer");
 
         using var t2 = new TempDir("backup-test-v03-");
-        var f2 = new Fake(Tok) { Throttle = ("/game/user/loadout", 5, 401, 0) };
+        var f2 = new Fake(Tok) { Throttle = ("/v1/game/user/loadout", 5, 401, 0) };
         var e2 = await Run(f2, t2, ["inventory"]);
-        Assert.True(e2.Failed == 1 && f2.Seen.Count(p => p == "/game/user/loadout") == 2, "a JWT that is refused again is not tried forever: one retry, then failed");
+        Assert.True(e2.Failed == 1 && e2.TokenStale && f2.Seen.Count(p => p == "/v1/game/user/loadout") == 1, "a refused token is marked stale and not tried again");
     }
 
     /// <summary>F7b: the engine asks for the current token before each request that needs it. A new token replaces the refused one and clears the stale mark.</summary>

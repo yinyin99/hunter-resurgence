@@ -30,6 +30,8 @@ public sealed class Fake : HttpMessageHandler
     public int WithToken;
     /// <summary>The form of every request, in the order they started.</summary>
     public readonly List<string> Forms = [];
+    /// <summary>Path and Bearer token of every request.</summary>
+    public readonly List<(string Path, string? Bearer)> Auths = [];
     /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
     public string? Revoked;
     /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
@@ -72,6 +74,7 @@ public sealed class Fake : HttpMessageHandler
             Urls.Add(req.RequestUri.PathAndQuery);
             if (form.Contains(Token)) WithToken++;
             Forms.Add(form);
+            Auths.Add((path, req.Headers.Authorization?.Parameter));
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
@@ -81,7 +84,7 @@ public sealed class Fake : HttpMessageHandler
         }
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }
         finally { lock (gate) Active[host]--; }
-        if (path.Contains("/personal/") || path == "/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
+        if (path.Contains("/personal/") || path == "/v1/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
         if (Throttle is { } th && path == th.Path && Interlocked.Increment(ref throttled) <= th.Times)
         {
             var r = new HttpResponseMessage((HttpStatusCode)th.Status) { Content = new StringContent("slow down") };
@@ -103,11 +106,10 @@ public sealed class Fake : HttpMessageHandler
             "/v1/Inventory/list" when InventoryList != null => InventoryList,
             "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
             "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
-            "/game/user/trophies" => """[{"id":101},{"id":102}]""",
+            "/v1/game/user/trophies" => """[{"id":101},{"id":102}]""",
             "/v1/Public_user/expedition" when System.Text.RegularExpressions.Regex.Match(form, @"expedition_id=(\d+)") is { Success: true } m && HuntReplies.TryGetValue(m.Groups[1].Value, out var hunt) => hunt,
             "/v1/Public_user/expedition" => """{"kills":[{"id":900,"kill":{"score":1.5,"photo":"https://photo.test/k.jpg"}},{"id":901,"kill":{"score":null}}]}""",
             "/v1/Public_user/getByHostname" => """{"id":7,"handle":"hh"}""",
-            "/v1/User/jwt" => """{"token":"fake.jwt.value"}""",
             "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
             "/game/user/7/lodges" => """[{"id":3}]""",
             "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",

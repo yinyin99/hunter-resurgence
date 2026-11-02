@@ -186,9 +186,9 @@ public class SetupsTests
         var f = FakeWorld();
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
         await e.Run(t.Path, "hh", null, Everything, false, false, TestContext.Current.CancellationToken);
-        string[] gameOnly = ["/v1/Me/me", "/v1/Me/friends", "/v1/User/jwt", "/game/user/loadout", "/game/user/trophies", "/v1/Chat/conversations", "/v1/Wallet/spent",
+        string[] gameOnly = ["/v1/Me/me", "/v1/Me/friends", "/v1/game/user/loadout", "/v1/game/user/trophies", "/v1/Chat/conversations", "/v1/Wallet/spent",
             "/v1/Page_content/competition_states", "/v1/Page_content/competition_community_league_states", "/v1/Chat/get_message_settings", "/v1/Recruit/get_recruits", "/v1/Mission/missions",
-            "/v1/Daily_Mission/get_daily_missions_calendar", "/v1/Wallet/bank_transactions", "/v1/Wallet/transactions", "/v1/Wallet/silver_transactions", "/game/user/backgrounds"];
+            "/v1/Daily_Mission/get_daily_missions_calendar", "/v1/Wallet/bank_transactions", "/v1/Wallet/transactions", "/v1/Wallet/silver_transactions", "/v1/game/user/backgrounds"];
         var s = Read(Path.Combine(t.Path, "backup-7"));
         Assert.True(s["sources"]!["me_worlditems"]!.ToString() == "skipped: public profile" && s["sources"]!["dict"]!["rows"]!.GetValue<int>() == 7 && s["sources"]!["list"]!["rows"]!.GetValue<int>() == 7, "me skipped, dict and list read");
         Assert.True(f.WithToken == 0 && !f.Seen.Intersect(gameOnly).Any() && e.Failed == 0 && e.SetupItems == 6 && !e.SetupChecks, "no token, no game-only request, 0 failed, 6 placed items");
