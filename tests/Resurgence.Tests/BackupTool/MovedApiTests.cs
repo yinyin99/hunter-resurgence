@@ -1,0 +1,58 @@
+using System.Net;
+using System.Text.Json.Nodes;
+using Backup;
+
+namespace Resurgence.Tests.BackupTool;
+
+/// <summary>The API now lives on the web host: JSON bodies with real numbers, two reads with GET, errors inside "detail", avatars on the avatar host.</summary>
+public class MovedApiTests
+{
+    static readonly string Tok = new('a', 40);
+
+    static HttpResponseMessage Reply(HttpStatusCode status, string body) => new(status) { Content = new StringContent(body) };
+
+    [Fact]
+    public async Task PublicReadsGoToTheWebHostAsJson()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok);
+        await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "profile", "trophies", "friends" }, false, false, TestContext.Current.CancellationToken);
+        Assert.True(f.Starts.Keys.All(h => h is "web.test" or "apiv2.test"), $"only the web and apiv2 hosts are asked ({string.Join(",", f.Starts.Keys)})");
+        Assert.True(f.Bodies.Count > 5 && f.Bodies.All(b => JsonNode.Parse(b) is JsonObject), "every POST body is a JSON object");
+        Assert.Contains(f.Bodies, b => b.Contains("\"limit\":100000") && b.Contains("\"user_id\":7"));
+        Assert.DoesNotContain(f.Bodies, b => b.Contains("\"limit\":\"") || b.Contains("\"offset\":\""));
+        Assert.Contains("/v1/Application/application?lang=en", f.Urls);
+        Assert.Contains("/v1/Challenge/get_user_challenges?user_id=7", f.Urls);
+        Assert.DoesNotContain(f.Urls, u => u.Contains("ckey-secret-9"));
+    }
+
+    [Fact]
+    public async Task AnErrorInDetailIsNotSaved()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Trophy/list" ? Reply(HttpStatusCode.OK, """{"detail":{"errorCode":20,"message":"User not found"}}""") : null };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
+        Assert.True(e.Failed == 1 && !File.Exists(Path.Combine(t.Path, "backup-7", "Trophy_list__user_id=7__offset=0__limit=100000.json")), "the error reply is a failed request, not a file");
+    }
+
+    [Fact]
+    public async Task A401OnTheSessionMarksItStale()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Me/me" ? Reply(HttpStatusCode.Unauthorized, """{"detail":{"message":"OAUTH_ACCESS_TOKEN_INVALID"}}""") : null };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => e.Run(t.Path, "", () => Tok, new HashSet<string> { "account" }, false, false, TestContext.Current.CancellationToken));
+        Assert.True(e.TokenStale, "the session is refused: the UI says to start a hunt");
+    }
+
+    [Fact]
+    public async Task TheAvatarIsFetchedFromTheAvatarHost()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Public_user/getByHostname" ? Reply(HttpStatusCode.OK, """{"id":7,"handle":"hh","avatar":"https://web.test/media/avatar/uploads/a.jpg"}""") : null };
+        await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "profile" }, false, false, TestContext.Current.CancellationToken);
+        Assert.True(f.Starts.ContainsKey("avatar.test") && f.Seen.Contains("/uploads/a.jpg") && !f.Seen.Contains("/media/avatar/uploads/a.jpg"), "the picture is asked on the avatar host");
+        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "images", "avatar.test_uploads_a.jpg")), "saved under the avatar host's name");
+    }
+}

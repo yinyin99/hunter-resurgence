@@ -151,8 +151,8 @@ public class EngineTests
         var groups = Hosts.AllGroups;
         var f = new Fake(tok) { DelayMs = 15 };
         await Hosts.Make(f, key).Run(tmp, "", () => tok, groups, false, false, TestContext.Current.CancellationToken);
-        Assert.True(f.MaxActive["api.test"] == 1, $"api host: never two requests at once ({f.Starts["api.test"].Count} requests)");
-        Assert.True(f.MaxActive["apiv2.test"] == 1 && f.Overlap, $"apiv2 lane runs beside the api lane ({f.Starts["apiv2.test"].Count} requests)");
+        Assert.True(f.MaxActive["web.test"] == 1, $"web host: never two requests at once ({f.Starts["web.test"].Count} requests)");
+        Assert.True(f.MaxActive["apiv2.test"] == 1 && f.Overlap, $"apiv2 lane runs beside the web lane ({f.Starts["apiv2.test"].Count} requests)");
     }
 
     [Fact]
