@@ -230,7 +230,7 @@ public class EngineTests
         ed.BackoffMs = 20;
         await ed.Run(tmp, "hh", null, new HashSet<string> { "profile", "trophies" }, false, false, TestContext.Current.CancellationToken);
         Assert.True(ed.Failed > 2 && fd.Starts["apiv2.test"].Count == 5 + (ed.Failed - 1), $"dead host: one back-off cycle, then one attempt per request ({fd.Starts["apiv2.test"].Count} attempts for {ed.Failed} requests)");
-        Assert.True(ed.FailureSummary == "Profile: some pages did not answer (server error). Trophies and lodges: some pages did not answer (server error).", "result bar names the groups that did not answer");
+        Assert.True(ed.FailureSummary == Loc.F("Fail_Server", Loc.S("Group_profile")) + " " + Loc.F("Fail_Server", Loc.S("Group_trophies")), "the result bar names the two groups that did not answer, as a server error");
     }
 
     [Fact]
@@ -264,5 +264,39 @@ public class EngineTests
         var mq = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
         var skipped = mq.Where(e => e!["error"]?.ToString() == "not an https URL on a configured host").ToList();
         Assert.True(eq.Failed == 1 && skipped.Count == 1 && fq.Seen.Count(p => p == "/g1.jpg") == 1 && !fq.Seen.Contains("/g2.jpg"), "gallery photo on an unconfigured host: one failed, one manifest entry with the reason, not fetched");
+    }
+
+    [Fact]
+    public async Task SessionTokenIsInNoLogLineAndNoFile()
+    {
+        Prepare(out var t, out var tmp, out var key, out var dir);
+        using var _ = t;
+        var log = new System.Collections.Concurrent.ConcurrentQueue<string>(); // the groups log side by side
+        var f = new Fake(Tok);
+        f.Down.Add("/v1/Wallet/spent"); // a failing request logs an error line too
+        var groups = Engine.Groups.Select(g => g.Key).ToHashSet();
+        await Hosts.Make(f, key, log.Enqueue).Run(tmp, "", () => Tok, groups, false, true, TestContext.Current.CancellationToken);
+        string[] secrets = [Tok, "ckey-secret-9"]; // the session token and the website's public key
+        Assert.True(log.Count > 20 && !log.Any(l => secrets.Any(l.Contains)), "no log line holds a secret");
+        var files = Directory.EnumerateFiles(tmp, "*", SearchOption.AllDirectories).ToList();
+        Assert.True(files.Count > 20 && !files.Any(p => secrets.Any(s => File.ReadAllText(p, System.Text.Encoding.Latin1).Contains(s))), "no file under the output folder holds a secret");
+    }
+
+    [Fact]
+    public async Task ClaimKeyIsTheSameForEveryBackupAndReplacedWhenDamaged()
+    {
+        Prepare(out var t, out var tmp, out var key, out var dir);
+        using var _ = t;
+        async Task<(string Hash, byte[] Key)> Backup()
+        {
+            var d = await Hosts.Make(new Fake(Tok), key).Run(tmp, "", () => Tok, new HashSet<string> { "friends" }, false, false, TestContext.Current.CancellationToken);
+            return (JsonNode.Parse(File.ReadAllText(Path.Combine(d, "manifest.json")))!["claim_hash"]!.ToString(), File.ReadAllBytes(Path.Combine(d, "claim.key")));
+        }
+        var first = await Backup();
+        var second = await Backup(); // the first one is finished: this is a new snapshot folder
+        Assert.True(Directory.GetDirectories(tmp).Length == 2 && first.Hash == second.Hash && first.Key.SequenceEqual(second.Key), "two backups of one PC carry one claim key");
+        File.WriteAllBytes(key, [1, 2, 3]);
+        var third = await Backup();
+        Assert.True(third.Key.Length == 32 && !third.Key.SequenceEqual(first.Key) && third.Hash == Convert.ToHexStringLower(SHA256.HashData(third.Key)) && File.ReadAllBytes(key).SequenceEqual(third.Key), "a damaged key is replaced by a new 32-byte key, kept for the next backups");
     }
 }
