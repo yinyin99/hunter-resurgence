@@ -29,7 +29,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
         return await GetAsync<ServerAccount>(ServerSessionApi.Me) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore) : null;
     }
 
-    /// <summary>The JSON of a 200; null for any other answer or none.</summary>
+    /// <summary>The JSON of a 200; null for any other answer or none (a 401, an expired cookie, is not worth a warning).</summary>
     async Task<T?> GetAsync<T>(string path) where T : class
     {
         try
@@ -37,7 +37,8 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
-            log.LogWarning("The server answered {Path} with {Status}: no hunterscore board", path, (int)response.StatusCode);
+            if (response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+                log.LogWarning("The server answered {Path} with {Status}: no hunterscore board", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

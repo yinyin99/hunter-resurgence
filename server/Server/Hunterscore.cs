@@ -11,8 +11,10 @@ public sealed partial class State
     /// kills are this server's ethical kills of closed hunts: (species, weapon item of the last hit, null without a hit).</summary>
     public static long Score(Facts facts, JsonObject userStats, IEnumerable<(long Species, long? Weapon)> kills)
     {
-        // a backup's user_stats is stored verbatim: a key that is no id or a counter that is no number counts 0
-        static long Count(JsonNode? n) => Py.IsNum(n) ? Py.L(n) : 0;
+        // a backup's user_stats is stored verbatim: a key that is no id or a counter that is no number counts 0, and a counter
+        // counts at most the cap (a row never adds more), so no sum below can overflow
+        var cap = facts.RankCap;
+        long Count(JsonNode? n) => Py.IsNum(n) ? (long)Math.Clamp(Py.D(n), 0, cap) : 0;
         static IEnumerable<(long Id, JsonObject Entry)> Entries(JsonObject stats, string kind) =>
             (stats[kind] as JsonObject ?? []).Where(kv => kv.Value is JsonObject && long.TryParse(kv.Key, out _))
                 .Select(kv => (long.Parse(kv.Key), (JsonObject)kv.Value!));
@@ -48,10 +50,12 @@ public sealed partial class State
             + " WHERE k.account_id = $a AND NOT EXISTS (SELECT 1 FROM expeditions e WHERE e.account_id = $a AND e.end_ts IS NULL"
             + " AND e.id = json_extract(h.body, '$.expedition_id'))"))
         {
-            var sp = Parse(row[1])["extended_species"];
+            // the heartbeat stores events as sent: a species or weapon that is no whole number is skipped, never thrown on
+            if (!TryKey(Parse(row[1])["extended_species"], out var sp))
+                continue;
             var hits = KillHits(con, Py.FromSql(row[0]), (string)row[1]);
             if (Ethical(sp, hits))
-                yield return (Mod100(sp), hits.Count > 0 && hits[^1]["weapon_id"] is JsonValue w ? Py.L(w) : null);
+                yield return (((sp % 100) + 100) % 100, hits.Count > 0 && TryKey(hits[^1]["weapon_id"], out var w) ? w : null);
         }
     }
 

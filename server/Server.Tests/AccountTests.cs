@@ -108,7 +108,7 @@ public class StoreTests : IDisposable
         }
         using (var con = store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", 6L);
-        // equal scores are numbered by account id, no hunterscore is 0 (after the 0 of the older account), and the banned 1000 is not counted
+        // equal scores are numbered by account id, no hunterscore is 0 (after the 0 of the lower id), and the banned 1000 is not counted
         Assert.Equal(new long[] { 1, 2, 3, 4, 5, 6 }, new long[] { 1, 2, 3, 4, 5, 7 }.Select(id => store.Rank(id)));
     }
 

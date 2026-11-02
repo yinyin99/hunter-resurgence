@@ -84,4 +84,25 @@ public class HunterscoreTests : StateTestBase
         state = Online();
         Assert.Equal((0L, 777L), (Stored(B), Stored(ME)));
     }
+
+    [Fact]
+    public void TestValuesAPlayerSentNeverStopTheScore()
+    {
+        // a restored counter too large for a number of 64 bits counts the cap
+        var stats = O("""{"animal": {"1": {"ethical_kills": 99999999999999999999}}, "weapon": {"5": {"10": {"ethical_kills": 9223372036854775807}, "11": {"ethical_kills": 9223372036854775807}}}}""");
+        Assert.Equal(2000, State.Score(Ranks, stats, []));
+
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 7, "individual": 81, "species": 1, "gender": 0, "weight_grams": 1000, "texture": 0}"""),
+            O("""{"event": 1, "individual": 81, "weapon_id": "x", "ammunition_id": 10}"""),
+            O("""{"event": 3, "individual": 81, "extended_species": 1}"""),
+            O("""{"event": 3, "individual": 82}""")));  // no species: skipped
+        state.Disconnect(B, "{}"u8.ToArray());
+        Assert.Equal(1, Stored(B));  // the species row only: "x" is no weapon
+        state = Online();  // the recompute at start
+        Assert.Equal(1, Stored(B));
+    }
 }
