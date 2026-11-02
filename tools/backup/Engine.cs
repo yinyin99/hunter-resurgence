@@ -295,6 +295,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         byte[]? firstBody = null;
         DateTimeOffset? date = null;
         var rows = new JsonArray();
+        var seen = new HashSet<string>();
         for (int off = 0; ; off += 300)
         {
             var page = Q("Trophy/list", false, ("user_id", uid), ("offset", off.ToString()), ("limit", "300")) with { Part = true };
@@ -302,6 +303,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (off > 0) Need(1);
             var body = await Get(page);
             if (Json(body) is not JsonObject o || o["trophies"] is not JsonArray t) { Fail(whole, name, null, "a page of the list gave no trophies"); return; }
+            if (Repeats(seen, body!, whole)) return; // not saved: a list of repeated pages is not the player's list
             if (first == null) (first, firstBody, date) = (o, body, partDate);
             foreach (var x in t) rows.Add(x?.DeepClone());
             if (t.Count < 300 || (Num(first["total"]) is { } n && rows.Count >= n)) break;
@@ -321,11 +323,13 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         (HuntsListed, HuntsSaved, HuntsListFailed) = (null, null, false); // a resumed run counts again
         var listed = new List<(string Id, long Start)>();
+        var seen = new HashSet<string>();
         for (int off = 0; ; off += 50) // every page first, so the total is known before the per-hunt requests
         {
             Need(1);
-            var body = await Get(Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString())));
-            if (body == null) { HuntsListFailed = true; break; } // no file: the pages after it are unknown
+            var asked = Q("Expedition/list", false, ("user_id", uid), ("limit", "50"), ("offset", off.ToString()));
+            var body = await Get(asked);
+            if (body == null || Repeats(seen, body, asked)) { HuntsListFailed = true; break; } // no file: the pages after it are unknown; a repeated page: the server ignores the offset
             var ex = Json(body)?["expeditions"] as JsonArray;
             if (ex is not { Count: > 0 }) break;
             listed.AddRange(ex.Where(e => e?["id"] != null).Select(e => (e!["id"]!.ToString(), Num(e["start_ts"]) ?? 0)));
@@ -384,11 +388,16 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 await Picture(u, "images/");
             }
         foreach (var ep in new[] { "Wallet/transactions", "Wallet/silver_transactions" })
+        {
+            var seen = new HashSet<string>();
             for (int off = 0; ; off += 50)
             {
                 Need(1);
-                if (Json(await Get(Q(ep, true, ("lang", "en"), ("offset", off.ToString())))) is not JsonArray { Count: 50 }) break;
+                var asked = Q(ep, true, ("lang", "en"), ("offset", off.ToString()));
+                var body = await Get(asked);
+                if (Json(body) is not JsonArray { Count: 50 } || Repeats(seen, body!, asked)) break;
             }
+        }
     }
 
     async Task Friends()
@@ -396,6 +405,14 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         Need(2);
         await Get(Q("User/friendslist", false, ("user_id", uid), ("offset", "0"), ("limit", "0"))); // limit 0 = all
         await Get(Q("Me/friends", true));
+    }
+
+    /// <summary>A server that ignores the offset answers the first page again. True when this page's body was already in <paramref name="seen"/>: the page is failed (the list may be cut, so the run is not whole) and the caller stops paging.</summary>
+    bool Repeats(HashSet<string> seen, byte[] body, R page)
+    {
+        if (seen.Add(Hex(SHA256.HashData(body)))) return false;
+        Fail(page, FileName(page), null, "a page repeated an earlier one: the server ignores the offset, the list may be cut", ServerError);
+        return true;
     }
 
     /// <summary>A reply number: a JSON number or a numeric string (this API sends both), "250.0" included; a value that is not a whole number, or not a number, is null.</summary>
@@ -446,11 +463,14 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task Photos()
     {
         var urls = new List<string?>();
+        var seen = new HashSet<string>();
         for (int off = 0; ; off += 24)
         {
             Need(1);
-            var ph = Json(await Get(Q("Gallery/list", false, ("user_id", uid), ("offset", off.ToString()), ("limit", "24"))))?["photos"] as JsonArray;
-            if (ph is not { Count: > 0 }) break;
+            var asked = Q("Gallery/list", false, ("user_id", uid), ("offset", off.ToString()), ("limit", "24"));
+            var body = await Get(asked);
+            var ph = Json(body)?["photos"] as JsonArray;
+            if (ph is not { Count: > 0 } || Repeats(seen, body!, asked)) break;
             urls.AddRange(ph.Select(p => p?["url"]?.ToString()));
             if (ph.Count < 24) break;
         }
