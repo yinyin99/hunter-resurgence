@@ -116,13 +116,18 @@ if (app.Environment.IsDevelopment())
     });
 // the operator's pictures at /images/ (docs/images.md); any other file type falls through to the 404 page
 if (builder.Configuration["IMAGES_DIR"] is { Length: > 0 } imagesDir && Directory.Exists(imagesDir))
+{
+    var pictureTypes = new FileExtensionContentTypeProvider();
+    foreach (var ext in pictureTypes.Mappings.Keys.Except(AssetImages.Extensions, StringComparer.OrdinalIgnoreCase).ToList())
+        pictureTypes.Mappings.Remove(ext);
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(Path.GetFullPath(imagesDir)),
         RequestPath = "/images",
-        ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { [".png"] = "image/png", [".jpg"] = "image/jpeg", [".jpeg"] = "image/jpeg", [".gif"] = "image/gif", [".webp"] = "image/webp" }),
+        ContentTypeProvider = pictureTypes,
         OnPrepareResponse = c => c.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable", // the ?v= of AssetImages changes with the file
     });
+}
 app.UseAntiforgery();
 app.MapStaticAssets();
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one

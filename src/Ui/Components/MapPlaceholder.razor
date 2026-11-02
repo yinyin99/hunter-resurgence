@@ -22,7 +22,7 @@
             <span class="popup" style="left:@(at.X)%;top:@(at.Y)%">@at.Name</span>
         }
     </div>
-    @if (Bg is null) { <span class="slot">map-bg</span> }
+    @if (Bg is null) { <span class="slot">@BgKey</span> }
     @if (Zoom)
     {
     <div class="zoom">
@@ -59,7 +59,8 @@
     [Parameter] public int? Reserve { get; set; }
 
     string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({50 - m.X}%, {50 - m.Y}%)" : "";
-    string? Bg => Images.Url(Reserve is { } r ? $"map-{r:00}" : "map-bg");
+    string BgKey => Reserve is { } r ? $"map-{r:00}" : "map-bg";
+    string? Bg => Images.Url(BgKey);
 
     protected override void OnParametersSet()
     {

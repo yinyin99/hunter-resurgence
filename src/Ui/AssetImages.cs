@@ -37,9 +37,10 @@ public sealed class AssetImages(string? dir)
             return urls;
         foreach (var f in Directory.EnumerateFiles(dir).Order(StringComparer.Ordinal))
         {
-            if (!Extensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
-                continue;
             var file = Path.GetFileName(f);
+            // a dot file is never served (PhysicalFileProvider hides it)
+            if (file.StartsWith('.') || !Extensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
+                continue;
             // first in ordinal order wins on a duplicate key; ?v= changes with the file, so it can be cached for good
             urls.TryAdd(Key(Path.GetFileNameWithoutExtension(f)), "/images/" + Uri.EscapeDataString(file) + "?v=" + File.GetLastWriteTimeUtc(f).Ticks.ToString("x"));
         }

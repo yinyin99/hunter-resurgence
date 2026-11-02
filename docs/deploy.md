@@ -112,7 +112,7 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 
 ## First start
 
-1. Copy `deploy/compose.yml` and `deploy/Caddyfile` to `~/web/`, create `.env`, `certs/` and `sites/` (above), and the server's folder ([The community server](#the-community-server)).
+1. Copy `deploy/compose.yml` and `deploy/Caddyfile` to `~/web/`, create `.env`, `certs/` and `sites/` (above), and the server's folder with its `images/` subfolder, as `deploy` ([The community server](#the-community-server)); a folder that compose has to create belongs to root and `deploy` cannot copy pictures into it.
 2. Make the images public once they exist (after the first deploy run): GitHub, the packages `<repo>-web` and `<repo>-server` of `<owner>`, Package settings, Change visibility, Public. The repository is public and the images hold no secrets, so the VPS pulls without a login. (If they must stay private: `docker login ghcr.io` on the VPS with a token that has `read:packages` only.)
 3. `cd ~/web && docker compose up -d`, then `docker compose ps`: `web` and `server` healthy, `caddy` and `server-backup` running.
 4. Open `https://<domain>/` through Cloudflare.
@@ -169,7 +169,7 @@ variants.json     optional
 images/           the slot pictures (images.md), mounted read-only in `web`
 ```
 
-The pictures are copied from the operator's PC; `web` reads the folder at start, so restart it after a change:
+`images/` may be empty: every picture is then its labelled box. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC; `web` reads the folder at start, so restart it after a change:
 
 ```
 ssh deploy@<vps> "mkdir -p '<server dir>/images' && rm -f '<server dir>/images'/*"

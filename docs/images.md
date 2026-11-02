@@ -47,7 +47,8 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `profile-banner` | 940×200 | HunterProfile | no: player content (the player's latest kill) |
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
-| `video-<id>`, `video` | 900×506 | VideoModal (Help, Feed) | 0 of 19, `video` no: not in the operator's files / no original picture |
+| `video-<id>` | 900×506 | VideoModal (Help) | 0 of 19: not in the operator's files |
+| `video` | 900×506 | VideoModal (Feed) | no: no original picture |
 | `news-<target>` | 805×380, 175×95 | FeedCarousel | 6 of 6 |
 | `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |

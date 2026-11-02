@@ -72,7 +72,7 @@ jobs:
             grep -qi '^referrer-policy: strict-origin-when-cross-origin' headers.txt
             grep -qi "^content-security-policy: frame-ancestors 'none'" headers.txt
           done
-          ! grep -q 'asset-slot has-image' feed.html # without pictures, only the labelled boxes (docs/images.md)
+          if grep -q 'asset-slot has-image' feed.html; then exit 1; fi # without pictures, only the labelled boxes (docs/images.md); a leading ! would not fail the step
           # with pictures: an <img> for a slot that has its file, served as an image; no SVG
           mkdir img
           for f in logo-rating-1 logo-bar; do echo iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= | base64 -d > "img/$f.png"; done
