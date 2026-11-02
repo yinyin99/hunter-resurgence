@@ -9,9 +9,12 @@ sealed record Settings(string Apiv2Host, string WebHost, string ClientExe, HashS
     static string FilePath => Path.Combine(Environment.ProcessPath is { } p && !Path.GetFileNameWithoutExtension(p).Equals("dotnet", StringComparison.OrdinalIgnoreCase)
         ? Path.GetDirectoryName(p)! : AppContext.BaseDirectory, "settings.json");
 
-    public static Settings Load()
+    public static Settings Load() => Parse(File.ReadAllText(FilePath));
+
+    /// <summary>The settings in <paramref name="json"/>; throws InvalidOperationException for a required key that is missing or still a placeholder.</summary>
+    public static Settings Parse(string json)
     {
-        var d = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(FilePath)) ?? [];
+        var d = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
         string Get(string k) => d.TryGetValue(k, out var v) && v.Length > 0 && !v.Contains('<')
             ? v : throw new InvalidOperationException($"set \"{k}\" (missing or still a placeholder)"); // for the log in the Details box (which adds "settings.json:" and stays English); the window says what to do in the chosen language
         return new(Get("apiv2_host"), Get("web_host"), Get("client_exe"),
