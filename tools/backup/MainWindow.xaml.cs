@@ -75,6 +75,7 @@ public partial class MainWindow : FluentWindow
         Start.PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Enter && e.IsRepeat) e.Handled = true; }; // a held Enter that started a run from a field moves on to Start, which is Cancel by then: only a fresh press may use it
         OpenBtn.Click += (_, _) => OpenResult();
         SendBtn.Click += OnSend;
+        CheckBtn.Click += OnCheck;
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
         HowLink.Click += async (_, _) => await ShowHow();
         SelectAll.Click += (_, _) => SelectGroups(true);
@@ -189,6 +190,7 @@ public partial class MainWindow : FluentWindow
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
         OpenBtn.Content = Loc.S("Open_Folder");
+        CheckBtn.Content = Loc.S("Check");
         SendBtn.Content = Loc.S(sendCts == null ? "Send" : "Cancel");
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
@@ -605,6 +607,19 @@ public partial class MainWindow : FluentWindow
         Result.IsOpen = true;
         Say($"{Result.Title}. {Result.Message}", "BackupResult", System.Windows.Automation.AutomationNotificationKind.ActionCompleted);
         FitHeight();
+    }
+
+    /// <summary>"Check connection": one anonymous request per server, shown in the result bar; a backup result already shown keeps its folder and Send button.</summary>
+    async void OnCheck(object sender, RoutedEventArgs e)
+    {
+        if (cfg == null || cts != null || !CheckBtn.IsEnabled) return;
+        CheckBtn.IsEnabled = false;
+        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        var r = await Connection.Run(cfg, http);
+        Log($"check: official {r.Official}, community {r.Community}");
+        CheckBtn.IsEnabled = true;
+        Show(r is { Official: "ok", Community: "ok" or "unset" } ? InfoBarSeverity.Success : InfoBarSeverity.Warning,
+            () => (Loc.S("Check"), Loc.F("Check_Official", Loc.S("Check_" + r.Official)) + "\n" + Loc.F("Check_Community", Loc.S("Check_" + r.Community))), resultPath);
     }
 
     CancellationTokenSource? sendCts;
