@@ -1,7 +1,15 @@
-<span class="asset-slot @Class" style="width:@(Width)px;height:@(Height)px" role="img" aria-label="@Name">@(Width < 80 ? "" : Name)</span>
+@inject AssetImages Images
+@if (Images.Url(Name) is { } src)
+{
+    <img class="asset-slot has-image @Class" src="@src" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="@Name" />
+}
+else
+{
+    <span class="asset-slot @Class" style="width:@(Width)px;height:@(Height)px" role="img" aria-label="@Name">@(Width < 80 ? "" : Name)</span>
+}
 
 @code {
-    /// <summary>Neutral stand-in for a picture of the old interface; the slot ids are listed in the migration plan.</summary>
+    /// <summary>A picture of the old interface, or its neutral labelled stand-in when the operator has no file for it; the slot names and the picture files are listed in docs/images.md.</summary>
     [Parameter, EditorRequired] public string Name { get; set; } = "";
     [Parameter] public int Width { get; set; } = 100;
     [Parameter] public int Height { get; set; } = 100;

@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-sdk
       - run: dotnet test --project server/Server.Tests -c Release
-  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, serves robots.txt, and sends the security headers
+  # the website's container image (deploy/): builds, starts, serves the banner and the import map of shell.js, lists Linux time zones, serves robots.txt, sends the security headers, and shows the operator's pictures from IMAGES_DIR
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -72,8 +72,19 @@ jobs:
             grep -qi '^referrer-policy: strict-origin-when-cross-origin' headers.txt
             grep -qi "^content-security-policy: frame-ancestors 'none'" headers.txt
           done
+          if grep -q 'asset-slot has-image' feed.html; then exit 1; fi # without pictures, only the labelled boxes (docs/images.md); a leading ! would not fail the step
+          # with pictures: an <img> for a slot that has its file, served as an image; no SVG
+          mkdir img
+          for f in logo-rating-1 logo-bar; do echo iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= | base64 -d > "img/$f.png"; done
+          echo '<svg/>' > img/x.svg
+          docker run -d --name web-img -p 8081:8080 -e IMAGES_DIR=/images -v "$PWD/img:/images:ro" web:ci
+          for _ in $(seq 1 30); do curl -sf http://localhost:8081/feed > feed-img.html && break; sleep 1; done
+          grep -q 'asset-slot has-image' feed-img.html
+          curl -s -D h.txt -o /dev/null http://localhost:8081/images/logo-rating-1.png
+          grep -qi '^content-type: image/png' h.txt
+          [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/images/x.svg)" = 404 ]
       - if: failure()
-        run: docker logs web
+        run: docker logs web; docker logs web-img
   # the community server's container image (deploy/): builds, starts on plain HTTP with an empty install, answers, may write /data, and the backup command runs
   docker-server:
     runs-on: ubuntu-latest

@@ -8,7 +8,7 @@
         <div class="logo"><AssetSlot Name="sheet-logo" Width="460" Height="64" />@if (typical) { <AssetSlot Name="sheet-medal" Width="84" Height="84" Class="medal" /> }</div>
         <div class="guide @(typical ? "" : "big")">
             <span class="species">@sheet.Species</span>
-            <AssetSlot Name="@(typical ? "antler-diagram" : "antler-guide")" Width="@(typical ? 380 : 560)" Height="@(typical ? 220 : 460)" />
+            <AssetSlot Name="@($"{(typical ? "antler-diagram" : "antler-guide")}-{sheet.Species}")" Width="@(typical ? 380 : 560)" Height="@(typical ? 220 : 460)" />
             @if (typical)
             {
                 <table class="abn">

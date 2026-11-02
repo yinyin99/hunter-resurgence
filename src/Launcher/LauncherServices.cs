@@ -15,6 +15,7 @@ static class LauncherServices
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
         services.AddUiLocalization(Branding.Load(Settings.FilePath));
+        services.AddSingleton(new AssetImages(null)); // the launcher keeps the labelled boxes (issue #175)
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         services.AddSingleton(new HostMode { Launcher = true, Mock = mock });

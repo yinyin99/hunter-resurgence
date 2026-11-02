@@ -49,7 +49,7 @@
                         {
                             <li>
                                 @if (Mode.Launcher) { <ExternalLink Key="@("video_" + v.Id)" Class="vt">@v.Title</ExternalLink> }
-                                else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title })' @onclick:preventDefault>@v.Title</a> }
+                                else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title, ["Slot"] = $"video-{v.Id}" })' @onclick:preventDefault>@v.Title</a> }
                                 <span>@L.Frag("Help.Tut.By", Author(v.Author))</span>
                             </li>
                         }

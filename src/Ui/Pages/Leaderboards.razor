@@ -36,7 +36,7 @@
                 {
                     <section class="tile panel hof">
                         <h4>@L.Term(h.Species)</h4>
-                        <AssetSlot Name="species" Width="135" Height="135" />
+                        <AssetSlot Name="@($"species-{h.Species}")" Width="135" Height="135" />
                         <h6>@L["Board.Score"]</h6>
                         @if (h.Score.Handle.Length > 0)
                         {
@@ -86,7 +86,7 @@
             else
             {
                 <section class="panel head species">
-                    <AssetSlot Name="species" Width="118" Height="118" />
+                    <AssetSlot Name="@($"species-{boards.FirstOrDefault(b => b.Id == id)?.Name}")" Width="118" Height="118" />
                     <h3>@L.Term(boards.FirstOrDefault(b => b.Id == id)?.Name ?? "")</h3>
                 </section>
                 <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>

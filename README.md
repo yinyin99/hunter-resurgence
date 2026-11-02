@@ -61,7 +61,7 @@ Today only the backup tool is released: you cannot play on the community server 
 
 ### Website preview
 
-[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. Two parts are real: sign-in with Steam, and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Every other page shows fixed, fictional data, and pictures are labelled boxes. Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
+[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. Two parts are real: sign-in with Steam, and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Every other page shows fixed, fictional data, and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
 
 ### Launcher preview
 

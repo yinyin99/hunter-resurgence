@@ -7,7 +7,7 @@
         @foreach (var d in dogs)
         {
             <li>
-                <AssetSlot Name="dog" Width="120" Height="120" />
+                <AssetSlot Name="@($"dog-{d.Type}")" Width="120" Height="120" />
                 <div class="dial" style="--p:@(d.Percent)%" data-tip="@d.Percent%"><div><small>@L["Prof.DogLvl"]</small><b>@d.Level</b></div></div>
                 <div>
                     <b>@(d.Name.Length > 0 ? d.Name : L["Prof.DogUnnamed"])</b>

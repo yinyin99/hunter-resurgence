@@ -4,7 +4,7 @@
 
 ## State
 
-The screens follow the original website screen for screen (same theme, places, navigation and English texts; French uses the original French). Everything behind them is a **mock** until the community server exists: the services in `src/Services/Mocks/` return fixed, fictional data and the actions do nothing real. The pictures of the original are not included: each one is a neutral labelled box. See [launcher.md](launcher.md) for the service layer in `src/Services/Contracts/`.
+The screens follow the original website screen for screen (same theme, places, navigation and English texts; French uses the original French). Everything behind them is a **mock** until the community server exists: the services in `src/Services/Mocks/` return fixed, fictional data and the actions do nothing real. The pictures are not in the repo: each one is a labelled box unless the operator supplies its file ([images.md](images.md)). See [launcher.md](launcher.md) for the service layer in `src/Services/Contracts/`.
 
 The mock session starts signed in as a fictional hunter (`Hunter01`); sign out in the top bar to see the public site. Sign-in is the email, then a six-digit code (there is no password); the mock accepts any address with an `@` and any six digits.
 
@@ -51,6 +51,8 @@ The development profile listens on `http://localhost:5080`.
 Deploy: the container image and the VPS setup are in [deploy.md](deploy.md).
 
 `settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). Without it the texts say "the game" and the links are left out. The real file is git-ignored.
+
+`IMAGES_DIR` names the folder of the operator's pictures, one file per slot, served at `/images/` ([images.md](images.md)). Unset, every picture is its labelled box.
 
 The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, menus, modals): use a current Chrome or Edge (the launcher's WebView2 runtime is one). Other browsers are not tested.
 

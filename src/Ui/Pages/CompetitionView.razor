@@ -19,7 +19,7 @@
 {
     var c = d.Competition;
     <header class="hero">
-        <AssetSlot Name="competition-hero" Width="980" Height="340" Class="art" />
+        <AssetSlot Name="@($"competition-hero-{c.Id}")" Width="980" Height="340" Class="art" />
         <div class="chips"><span>@L["Comp.ChipStatus", state]</span><span>@d.Species</span></div>
         <h1>@c.Name</h1>
         <p>@d.Tagline</p>

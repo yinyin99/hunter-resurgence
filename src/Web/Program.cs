@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
@@ -53,6 +55,8 @@ builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetR
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
+// IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes
+builder.Services.AddSingleton(new AssetImages(builder.Configuration["IMAGES_DIR"]));
 
 // behind the reverse proxy (deploy/): the client address and https come from FORWARDED_TRUSTED only; unset, nothing is forwarded
 builder.Services.Configure<ForwardedHeadersOptions>(o => ForwardedProxy.Configure(o, builder.Configuration["FORWARDED_TRUSTED"]));
@@ -110,6 +114,20 @@ if (app.Environment.IsDevelopment())
         host.Mock = mock == "none" ? null : mock;
         return next();
     });
+// the operator's pictures at /images/ (docs/images.md); any other file type falls through to the 404 page
+if (builder.Configuration["IMAGES_DIR"] is { Length: > 0 } imagesDir && Directory.Exists(imagesDir))
+{
+    var pictureTypes = new FileExtensionContentTypeProvider();
+    foreach (var ext in pictureTypes.Mappings.Keys.Except(AssetImages.Extensions, StringComparer.OrdinalIgnoreCase).ToList())
+        pictureTypes.Mappings.Remove(ext);
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Path.GetFullPath(imagesDir)),
+        RequestPath = "/images",
+        ContentTypeProvider = pictureTypes,
+        OnPrepareResponse = c => c.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable", // the ?v= of AssetImages changes with the file
+    });
+}
 app.UseAntiforgery();
 app.MapStaticAssets();
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
