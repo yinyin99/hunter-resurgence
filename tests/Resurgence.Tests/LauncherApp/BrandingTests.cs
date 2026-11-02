@@ -25,12 +25,12 @@ public class BrandingTests
     }
 
     [Fact]
-    public void LinkFromTheVariableWinsOnlyWhenSet()
+    public void VariableWinsOnlyWhenSet()
     {
         var b = new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo", ["link_backup"] = "https://example.test/old" });
-        var set = b.WithLink("backup", "https://example.test/new");
-        Assert.True(set.Link("backup") == "https://example.test/new" && set.GameName == "Foo", "the variable wins, other keys kept");
-        Assert.True(b.WithLink("backup", "").Link("backup") == "https://example.test/old" && b.WithLink("backup", null).Link("backup") == "https://example.test/old", "unset keeps settings.json");
-        Assert.True(new Resurgence.Ui.Branding().WithLink("backup", "https://example.test/new").Link("backup") == "https://example.test/new", "without settings.json");
+        var set = b.With("link_backup", "https://example.test/new").With("game_full", "Foo Bar");
+        Assert.True(set.Link("backup") == "https://example.test/new" && set.GameName == "Foo" && set.GameFull == "Foo Bar", "the variables win, other keys kept");
+        Assert.True(b.With("link_backup", "").Link("backup") == "https://example.test/old" && b.With("game_name", null).GameName == "Foo", "unset keeps settings.json");
+        Assert.True(new Resurgence.Ui.Branding().With("game_name", "Baz").Expand("{game_full}") == "Baz", "without settings.json");
     }
 }
