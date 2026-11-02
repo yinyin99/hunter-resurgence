@@ -280,6 +280,17 @@ public class RobustnessTests
         Assert.True(e2.Failed == 0 && f2.Seen.Count(p => p == "/v1/Skill/list") == 2, "an hour asked for, 200 ms waited (the cap)");
     }
 
+    /// <summary>A plain 500 (no Retry-After) is retried after the back-off: the file is saved, nothing is reported, the backup is whole.</summary>
+    [Fact]
+    public async Task ServerErrorThatRecoversIsSavedAndTheRunIsWhole()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { Throttle = ("/v1/Skill/list", 1, 500, 0) };
+        var e = await Run(f, t, ["profile"], tune: e => e.BackoffMs = 5);
+        Assert.True(f.Seen.Count(p => p == "/v1/Skill/list") == 2 && File.Exists(Path.Combine(t.Path, "backup-7", "Skill_list__user_id=7.json")), "asked again after the 500, and the file is there");
+        Assert.True(e.Failed == 0 && e.Whole && Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] != null, "nothing failed and the backup is finished");
+    }
+
     /// <summary>F7a: the session calls carry the game's token as Bearer on the web host; a 401 on one marks the session refused (start a hunt), no second try with the same token.</summary>
     [Fact]
     public async Task SessionCallsUseTheTokenAndA401MarksItRefused()
