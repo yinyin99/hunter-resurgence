@@ -2,12 +2,12 @@
 
 `tools/play/` is a small Windows tool that lets the game reach the community server from your own PC, with your own copy of the game. It has two steps: a one-time `setup` that points the game's server names at your PC, and `run`, a helper that answers the game on your PC and passes every request on, unchanged, to the community server over the internet. The game's files are never changed.
 
-There is no release yet. Do not run `setup` before the official servers close on 2026-11-11 if you still want them: `setup` refuses to run before that day unless you add `--force`.
+There is no release yet. While the kit is installed, the game talks only to the community server; `3-remove.cmd` gives the official servers back. Make your backup with the [backup tool](backup.md) **before** `setup`: it needs the official servers.
 
 ## For players
 
 1. Download `play-win-x64.zip` from the latest release and unpack it. Keep every file in the same folder: `play.exe`, `settings.json` and the three `.cmd` files. Windows may warn that it does not know the publisher (the files are not code-signed, see [checking the download](../README.md#windows-smartscreen-and-checking-the-download)): choose More info, then Run anyway.
-2. On or after 2026-11-11, double-click `1-setup.cmd`. It lists what it will change, then Windows asks you twice:
+2. Double-click `1-setup.cmd`. It lists what it will change, then Windows asks you twice:
    - "Do you want to install this certificate?": choose **Yes**. This is the certificate authority that only your PC knows ([what it is](#what-setup-changes)).
    - A permission window for `play.exe` (administrator): choose **Yes**. Only the edit of the hosts file runs as administrator.
 
@@ -22,7 +22,7 @@ If something does not work, see [Problems](#problems).
 ## Commands
 
 ```
-play setup [--force]   one-time setup (needs the date, see above)
+play setup            one-time setup
 play setup --remove    undoes everything setup changed
 play run               answers the game and forwards to the community server
 ```
@@ -64,7 +64,6 @@ The host list is data: a new name needs a new `settings.json`, not a new build.
 - **The game still reaches the official servers**: `run` says so when the hosts block is missing. Run `setup`. Some antivirus programs block edits of the hosts file; allow it or turn the protection off for the edit.
 - **The game cannot connect**: check that the `2-run.cmd` window is open and that you clicked Allow in the firewall prompt (Windows Defender Firewall, "Allow an app through the firewall", the game's exe).
 - **The administrator window does not appear or you said No**: `setup` stops with a message; run it again. The certificate may already be installed: `3-remove.cmd` undoes whatever was done.
-- **The date**: before 2026-11-11 `setup` says the official servers are still online and does nothing. `--force` overrides that.
 
 ## Languages
 
@@ -80,4 +79,4 @@ tools\play\publish.cmd <path\to\your\settings.json> [version]
 
 `publish.cmd` publishes a self-contained single-file `play.exe` (the project uses the web server library, so the exe is large), copies your `settings.json` and the three `.cmd` files from `tools/play/cmd/` beside it and writes `tools\play\bin\Release\net10.0-windows\win-x64\play-win-x64.zip`. CI does this with the example settings and checks the zip's content; the release workflow builds, attests and uploads it with the backup tool ([CONTRIBUTING.md](../CONTRIBUTING.md#releases)).
 
-The tests (`tests/Resurgence.Tests/PlayKit`) use temporary files and servers on `127.0.0.1` only: the hosts block round trip on a temporary file (byte for byte), the name constraints of the authority (the extension, and that Windows refuses another name signed by the same authority), the leaf's key being non-exportable, the relay (method, raw target, query, body, headers, `X-Game-Host` set, `Host` dropped, the reply unchanged except for its length and `Alt-Svc`, a chunked body, `HEAD`, a dead server) against a local test server, the HTTPS answer with a leaf whose key is in the key store (the test makes that key and deletes it again), the settings rules, the date gate and the translations. Nothing edits the real hosts file or trust list; `setup`, the administrator window and the game itself need a real PC.
+The tests (`tests/Resurgence.Tests/PlayKit`) use temporary files and servers on `127.0.0.1` only: the hosts block round trip on a temporary file (byte for byte), the name constraints of the authority (the extension, and that Windows refuses another name signed by the same authority), the leaf's key being non-exportable, the relay (method, raw target, query, body, headers, `X-Game-Host` set, `Host` dropped, the reply unchanged except for its length and `Alt-Svc`, a chunked body, `HEAD`, a dead server) against a local test server, the HTTPS answer with a leaf whose key is in the key store (the test makes that key and deletes it again), the settings rules and the translations. Nothing edits the real hosts file or trust list; `setup`, the administrator window and the game itself need a real PC.
