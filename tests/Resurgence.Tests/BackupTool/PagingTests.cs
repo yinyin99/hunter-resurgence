@@ -16,14 +16,16 @@ public class PagingTests
     static int Offset(string form) => int.Parse(System.Text.RegularExpressions.Regex.Match(form, @"offset=(\d+)").Groups[1].Value);
 
     /// <summary>Runs the groups and fails the test when more than 200 requests are asked: a loop that never ends is cut by the cancel, not by a timeout.</summary>
-    static async Task<(Engine E, string Dir)> Run(Fake f, TempDir t, bool own, params string[] groups)
+    static Task<(Engine E, string Dir)> Run(Fake f, TempDir t, bool own, params string[] groups) => Run(f, t, own, false, groups);
+
+    static async Task<(Engine E, string Dir)> Run(Fake f, TempDir t, bool own, bool resume, params string[] groups)
     {
         using var cts = new CancellationTokenSource();
         var asked = 0;
         Func<string, string, HttpResponseMessage?> custom = f.Custom ?? ((_, _) => null);
         f.Custom = (p, form) => { if (Interlocked.Increment(ref asked) > 200) cts.Cancel(); return custom(p, form); };
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
-        try { await e.Run(t.Path, own ? "" : "7", own ? () => Tok : null, new HashSet<string>(groups), false, false, cts.Token); }
+        try { await e.Run(t.Path, own ? "" : "7", own ? () => Tok : null, new HashSet<string>(groups), resume, false, cts.Token); }
         catch (OperationCanceledException) { Assert.Fail("the paging never ended"); }
         return (e, Path.Combine(t.Path, "backup-7"));
     }
@@ -31,16 +33,17 @@ public class PagingTests
     const string TrophyFile = "Trophy_list__user_id=7__offset=0__limit=100000.json";
 
     [Theory]
-    [InlineData(600, true)] // an exact multiple of the page size: two pages, no third
-    [InlineData(600, false)] // no total: the empty third page ends the list
-    [InlineData(300, true)]
-    public async Task TrophyListOfAnExactMultipleIsSavedWhole(int count, bool withTotal)
+    [InlineData(600, true, 2)] // an exact multiple of the page size: two pages, no third
+    [InlineData(600, false, 3)] // no total: the empty third page ends the list
+    [InlineData(300, true, 1)]
+    public async Task TrophyListOfAnExactMultipleIsSavedWhole(int count, bool withTotal, int pages)
     {
         using var t = new TempDir("backup-test-paging-");
         var f = new Fake(Tok) { Custom = (p, form) => p != "/v1/Trophy/list" ? null : Reply($$"""{"trophies":[{{Rows(Offset(form), Math.Max(0, Math.Min(300, count - Offset(form))))}}]{{(withTotal ? $",\"total\":{count}" : "")}}}""") };
         var (e, dir) = await Run(f, t, false, "trophies");
         var rows = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, TrophyFile)))!["trophies"]!.AsArray().Select(x => x!["id"]!.GetValue<int>());
         Assert.True(e.Failed == 0 && rows.SequenceEqual(Enumerable.Range(0, count)), $"{count} rows once each, in order, nothing failed ({e.Failed})");
+        Assert.Equal(pages, f.Forms.Count(x => x.Contains("limit=300")));
     }
 
     [Theory]
@@ -62,6 +65,14 @@ public class PagingTests
         var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Gallery/list" ? Reply($$"""{"photos":[{{photos}}]}""") : null };
         var (e, dir) = await Run(f, t, false, "photos");
         Assert.True(Enumerable.Range(0, 24).All(i => f.Seen.Count(p => p == $"/p{i}.jpg") == 1) && e.Failed == 1 && !e.Whole, $"24 photos, each asked once, and the repeated page is reported ({e.Failed} failed)");
+
+        // the repeated page is a failed request in the manifest, not a file: a later run (here with a server that pages properly) asks for it again and finishes
+        const string repeated = "Gallery_list__user_id=7__offset=24__limit=24.json";
+        var entry = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray().Single(x => x!["path"]!.ToString() == repeated)!;
+        Assert.True(entry["error"] != null && entry["sha256"] == null && !File.Exists(Path.Combine(dir, repeated)), "listed as failed, no file");
+        var fixedServer = new Fake(Tok) { Custom = (p, form) => p == "/v1/Gallery/list" ? Reply(Offset(form) == 0 ? $$"""{"photos":[{{photos}}]}""" : """{"photos":[{"url":"https://photo.test/p24.jpg"}]}""") : null };
+        var (again, _) = await Run(fixedServer, t, false, true, "photos");
+        Assert.True(fixedServer.Forms.Any(x => x.Contains("offset=24")) && File.Exists(Path.Combine(dir, "photos", "photo.test_p24.jpg")) && again.Failed == 0 && again.Whole, "the page is asked again, the backup finishes");
     }
 
     [Fact]
