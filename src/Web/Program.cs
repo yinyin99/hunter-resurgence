@@ -14,8 +14,10 @@ using Resurgence.Web.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-// LINK_BACKUP: set by the deploy from the repository variable of the same name (docs/deploy.md); it wins over link_backup of settings.json
-builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json")).WithLink("backup", builder.Configuration["LINK_BACKUP"]));
+// LINK_BACKUP, GAME_NAME, GAME_FULL: set by the deploy from the repository variables of the same names (docs/deploy.md); each wins over its key in settings.json
+var config = builder.Configuration;
+builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
+    .With("link_backup", config["LINK_BACKUP"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
 builder.Services.AddMockServices();
 builder.Services.AddScoped<HostMode>();
 builder.Services.AddScoped<ServerCookie>();
