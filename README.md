@@ -1,4 +1,4 @@
-# Hunter Resurgence
+# Hunter Resurgence: community server for theHunter Classic
 
 **Website preview: [hunter-resurgence.com](https://hunter-resurgence.com)** (mostly fictional data, not the game server: [what you can try](#website-preview))
 

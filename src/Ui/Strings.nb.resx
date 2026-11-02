@@ -6,6 +6,8 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Uoffisiell fellesskapsserver for {game_full}: spill videre etter at de offisielle serverne stenger, med profilen din gjenopprettet fra en sikkerhetskopi.</value></data>
+  <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: fellesskapsserver for {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Siden ble ikke funnet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne siden finnes ikke.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAKT NÅ</value></data>

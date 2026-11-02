@@ -6,6 +6,8 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Nem hivatalos közösségi szerver ({game_full}): játssz tovább a hivatalos szerverek bezárása után, a profilodat egy biztonsági mentésből visszaállítva.</value></data>
+  <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: közösségi szerver ({game_full})</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VADÁSSZ!</value></data>

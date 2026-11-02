@@ -5,7 +5,10 @@
 @inject ModalService Modal
 @inject Branding Brand
 
-<PageTitle>@L["App.Name"]</PageTitle>
+<PageTitle>@L["Landing.Heading"]</PageTitle>
+
+@* for search engines and screen readers; the hero's logo is the visible title *@
+<h1 class="visually-hidden">@L["Landing.Heading"]</h1>
 
 @if (signedIn == false)
 {

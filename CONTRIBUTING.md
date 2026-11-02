@@ -6,7 +6,7 @@ This project is licensed under the GNU AGPL-3.0. By contributing you agree that 
 
 These apply to every file and every commit message:
 
-- Only README.md and the protocol literals the client requires name the game. README.md does it in plain text (tagline and disclaimer); the literals (the names the client itself sends or loads that carry the game's name) are all in `server/Server/ProtocolLiterals.cs` and nowhere else. Everywhere else, say "the game".
+- Only README.md and the protocol literals the client requires name the game. README.md does it in plain text (heading, tagline and disclaimer); the literals (the names the client itself sends or loads that carry the game's name) are all in `server/Server/ProtocolLiterals.cs` and nowhere else. Everywhere else, say "the game".
 - No real hostnames or domains of the publisher, no user ids, handles, tokens or email addresses of real people. Use placeholders (`<api-host>`, `<client-exe>`, ...).
 - No game files and no game data (assets, captures, dumps, saved replies of real accounts). Never patch, ship or download game files: the client is redirected with the hosts file and a local certificate (for now; the method may change).
 - Nothing about how knowledge of the game or its servers was obtained: no reverse-engineering notes, addresses, tool names, capture or live-session logs, nothing about a person's account or runs.

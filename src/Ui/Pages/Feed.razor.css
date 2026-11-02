@@ -1,3 +1,4 @@
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .hero { position: relative; height: 550px; margin: -20px -20px 0; }
 .hero ::deep .asset-slot { display: flex; }
 .hero ::deep .hero-logo { position: absolute; left: 248px; top: 115px; }

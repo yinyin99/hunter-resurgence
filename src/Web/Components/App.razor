@@ -6,6 +6,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    @* search engines and link previews (docs/website.md#search-engines): {game_full} comes from settings.json *@
+    <meta name="description" content="@L["App.Description"]" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@L["Landing.Heading"]" />
+    <meta property="og:description" content="@L["App.Description"]" />
+    @if (Http is not null) { <meta property="og:image" content="@($"{Http.Request.Scheme}://{Http.Request.Host}/{Assets["apple-touch-icon.png"]}")" /> }
     <base href="/" />
     <link rel="stylesheet" href="@Assets["Resurgence.Web.styles.css"]" />
     <link rel="stylesheet" href="@Assets["_content/Resurgence.Ui/theme.css"]" />
