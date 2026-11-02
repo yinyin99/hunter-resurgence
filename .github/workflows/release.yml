@@ -30,7 +30,7 @@ jobs:
       - name: Write settings.json
         shell: pwsh
         env:
-          API_HOST: ${{ secrets.API_HOST }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
           APIV2_HOST: ${{ secrets.APIV2_HOST }}
           WEB_HOST: ${{ secrets.WEB_HOST }}
           PHOTO_HOST: ${{ secrets.PHOTO_HOST }}
@@ -44,7 +44,6 @@ jobs:
           $s = [ordered]@{
             client_exe         = $env:CLIENT_EXE
             oauth_consumer_key = $env:OAUTH_CONSUMER_KEY
-            api_host           = $env:API_HOST
             apiv2_host         = $env:APIV2_HOST
             web_host           = $env:WEB_HOST
             photo_host         = $env:PHOTO_HOST
@@ -54,6 +53,8 @@ jobs:
           foreach ($k in $s.Keys) {
             if (-not $s[$k]) { throw "repository secret for $k is missing" }
           }
+          # optional: the community server for "Send to the community server"; without it the button is hidden
+          if ($env:SERVER_URL) { $s["server_url"] = $env:SERVER_URL }
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
           # the player kit's settings.json: the community server, the web host the game sends everything to (the backup tool's web_host) and the crash report host. Only when PLAY_SERVER_URL is set: without it the release has the backup tool alone.
           if (-not $env:PLAY_SERVER_URL) { Write-Host "PLAY_SERVER_URL is not set: no player kit in this release" }
