@@ -90,4 +90,26 @@ public class MovedApiTests
         await e.Run(t.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
         Assert.True(e.Failed > 0 && !File.Exists(Path.Combine(t.Path, "backup-7", "Trophy_list__user_id=7__offset=0__limit=100000.json")), "no half list is saved as if whole");
     }
+
+    [Fact]
+    public async Task MyAccountAsksForTheSessionBeforeThePublicGroups()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok);
+        await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "", () => Tok, new HashSet<string> { "profile", "hunts", "account", "trophies", "friends" }, false, false, TestContext.Current.CancellationToken);
+        var session = f.Seen.Select((p, i) => (p, i)).Where(x => x.p is "/v1/Mission/missions" or "/v1/Me/friends" or "/v1/Wallet/bank_transactions" or "/v1/game/user/trophies").Select(x => x.i).ToList();
+        var pub = f.Seen.Select((p, i) => (p, i)).Where(x => x.p is "/v1/Statistics/total" or "/v1/Expedition/list" or "/v1/Skill/list").Select(x => x.i).ToList();
+        Assert.True(session.Count == 4 && pub.Count >= 3 && session.Max() < pub.Min(), $"session calls end at {session.Max()}, public groups start at {pub.Min()}");
+    }
+
+    [Fact]
+    public async Task ABoardThatStaysQueuedIsAskedThreeTimesAndTheGroupGoesOn()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Leaderboard/personal" ? Reply(HttpStatusCode.OK, """{"status":"queued"}""") : null };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "7", null, new HashSet<string> { "profile" }, false, false, TestContext.Current.CancellationToken);
+        Assert.True(f.Seen.Count(p => p == "/v1/Leaderboard/personal") == 12 && e.Failed == 4, $"4 boards (all time and 3 seasons) x 3 asks ({f.Seen.Count(p => p == "/v1/Leaderboard/personal")}), each failed once ({e.Failed})");
+        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "Statistics_total__user_id=7.json")) && File.Exists(Path.Combine(t.Path, "backup-7", "Membership_Bundle_get_active.json")), "the rest of the group was saved");
+    }
 }

@@ -165,9 +165,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 if (Leaks(idr, idRes!.Value.Body)) Fail(idr, FileName(idr), idRes.Value.Status, "reply contains a token, not saved"); // restore reads mode and wallet from this file: say why it is missing
                 else Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
             }
-            // groups run side by side; each host's lane keeps its own requests one at a time
-            try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
-            catch when (fault != null) { }
+            // groups run side by side; each host's lane keeps its own requests one at a time. My account: the groups that use the session go first, so its 15 minutes are not spent behind the long public ones
+            foreach (var wave in own ? chosen.GroupBy(g => g.Needs == Session.None).OrderBy(w => w.Key) : chosen.GroupBy(_ => true))
+            {
+                try { await Task.WhenAll(wave.Select(g => RunGroup(g.Key, stop))); }
+                catch when (fault != null) { break; }
+            }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
             if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
             lock (files) if (failed == 0 && !files.Values.Any(e => e.Error != null && e.Error != DeadError)) completed = DateTime.UtcNow; // whole = nothing failed in this run and no entry left to retry, including failed ones an earlier run left that this one did not repeat: the next run is a new snapshot
@@ -565,7 +568,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
             if (ready != null && !ready(x.Body))
             {
-                if (poll == 19) return Fail(r, name, x.Status, "still building", ServerError);
+                if (poll == 2) return Fail(r, name, x.Status, "still building", ServerError); // 3 asks: a board that is not built after 6 s is not worth a group's time, the next run asks again
                 await Task.Delay(PaceMs == 0 ? 0 : 3000, ct);
                 continue;
             }

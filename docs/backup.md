@@ -80,7 +80,7 @@ The group is off by default and uses public reads, so it works in public-profile
 
 ### Two modes
 
-- **My account**: reads the signed-in player's data using the session of the running game. The backup tool asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). The session token is valid for 15 minutes: a run that lasts longer ends with "start a hunt to refresh" for the requests still to do; start a hunt and run again with "Skip files already saved".
+- **My account**: reads the signed-in player's data using the session of the running game. The backup tool asks the watcher for the current session before every request that needs it, so a game restarted during a long run brings its new session into the run (a "session refused" mark is cleared by it). The session token is valid for 15 minutes, so the groups that use it (everything except Profile, Hunt history, Kill pages and photos, Photos and Competition history) run first, and the long public groups after them. If the 15 minutes end before they are done, the requests still to do end with "start a hunt to refresh": start a hunt and run again with "Skip files already saved". The public groups do not need the session and go on. A personal leaderboard the server still reports as being built is asked 3 times (about 6 seconds), then listed as failed ("still building") and left for the next run, so it never holds up the others.
 - **Public profile**: type a handle or id. Only public data is saved; requests that need the game session are logged as "skipped, needs the game" and are not counted as failed.
 
 "Select all" and "Select none" beside "What to save" tick or untick the groups that can be used in the chosen mode; in Public profile mode the groups that need the game stay off. The two source choices move with all four arrow keys (one Tab stop). Enter in the handle field or the output folder field starts a backup; Start is not the window's default button, so on a tick, a switch, a link or any other button Enter does only what that control does and never starts a backup. It never cancels a running one. While `settings.json` is missing, Enter in a field does nothing but is announced to a screen reader with the status sentence. Alt+Space, or a right click on the title bar, opens the window menu (Restore, Move, Size, Minimize, Maximize, Close), so the window can be moved and sized from the keyboard.
@@ -132,7 +132,7 @@ The launcher starts the game with a connect argument on its command line that ca
 
 The session token is never written to a file, the log, the manifest or the backup zip. It is sent only to the web host: in the JSON body, and as the Bearer header of the few requests that read the game's own lists (loadout, own trophies, backgrounds, harvest records). A reply that contains an access token, a JWT, the website's public key (`oauth_consumer_key`) or the string `refresh_token` is dropped and logged, not saved.
 
-If the API refuses the token, the backup tool says "start a hunt to refresh" and skips the requests that need it. Start a hunt and run again.
+If the API refuses the token (it is valid for 15 minutes), the backup tool says "start a hunt to refresh" and skips the requests that need it. Start a hunt and run again with "Skip files already saved": the requests already saved are not asked again.
 
 ## Claim key
 
