@@ -249,6 +249,14 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheRecordedAccountsHunterscoreDoesNotCountInTheRank()
+    {
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', 5000) WHERE id = ?", state.LocalAccount);
+        Eq("1", JsonNode.Parse((await Post(Replay.ME, token1001)).Body)!["rank"]);
+    }
+
+    [Fact]
     public async Task TestStatisticsAndAchievementsOfTheOwnUserIdAreRestoredAndOthersReplayed()
     {
         var stats = JsonNode.Parse((await Post(Replay.STATISTICS_TOTAL, token1001, "&user_id=1001")).Body)!;

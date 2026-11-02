@@ -109,7 +109,7 @@ public class StoreTests : IDisposable
         using (var con = store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", 6L);
         // ties share a rank without gaps, no hunterscore is 0 (sharing the last place with 0), and the banned 1000 is not counted
-        Assert.Equal(new long[] { 1, 2, 2, 3, 4, 4 }, new long[] { 1, 2, 3, 4, 5, 7 }.Select(store.Rank));
+        Assert.Equal(new long[] { 1, 2, 2, 3, 4, 4 }, new long[] { 1, 2, 3, 4, 5, 7 }.Select(id => store.Rank(id)));
     }
 
     [Fact]

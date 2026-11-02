@@ -241,13 +241,14 @@ public sealed class Store
         return JsonNode.Parse((string)con.Scalar("SELECT account FROM accounts WHERE id = ?", id)!)!.AsObject();
     }
 
-    /// <summary>The account's rank by hunterscore among the accounts not banned: 1 for the highest; equal hunterscores share a
-    /// rank and the next lower one takes the next number (a missing hunterscore is 0).</summary>
-    public long Rank(long id)
+    /// <summary>The account's rank by hunterscore among the accounts not banned, except `excluded`: 1 for the highest; equal
+    /// hunterscores share a rank and the next lower one takes the next number (a missing hunterscore is 0).</summary>
+    public long Rank(long id, long? excluded = null)
     {
         using var con = Open();
         return (long)con.Scalar("SELECT 1 + COUNT(DISTINCT json_extract(o.account, '$.hunterscore')) FROM accounts o JOIN accounts a ON a.id = ?"
-                                + " WHERE o.banned = 0 AND json_extract(o.account, '$.hunterscore') > COALESCE(json_extract(a.account, '$.hunterscore'), 0)", id)!;
+                                + " WHERE o.banned = 0 AND o.id IS NOT ? AND json_extract(o.account, '$.hunterscore') > COALESCE(json_extract(a.account, '$.hunterscore'), 0)",
+                                id, excluded)!;
     }
 
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an

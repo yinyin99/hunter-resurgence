@@ -655,7 +655,8 @@ public sealed partial class State
     /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
     /// profile lacks empty (a zip without its own Me/me); null for any other account. On a community server every account
     /// has one (a new account's is <see cref="MeOf"/>), and `recorded` is the endpoint's empty shape. On a community server
-    /// `rank` is the account's rank by hunterscore (<see cref="Store.Rank"/>); a local server keeps the restored one.</summary>
+    /// `rank` is the account's rank by hunterscore (<see cref="Store.Rank"/>) among the players, not counting the recorded
+    /// account (<see cref="LocalAccount"/>, which keeps the recorded player's hunterscore); a local server keeps the restored one.</summary>
     public JsonObject? MeReply(long account, JsonObject recorded)
     {
         using var con = Con(account);
@@ -663,7 +664,7 @@ public sealed partial class State
         if (me is null)
             return null;
         if (Online)
-            me["rank"] = Store.Rank(account);  // the rank among this server's accounts, never a backup's
+            me["rank"] = Store.Rank(account, LocalAccount);  // the rank among this server's players, never a backup's
         return RestoredReads.FillMissing(me, recorded);
     }
 
