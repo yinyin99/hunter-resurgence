@@ -120,4 +120,31 @@ public class HunterscoreTests : StateTestBase
         state = Online();
         Assert.Equal(3, Stored(B));
     }
+
+    [Fact]
+    public void TestRestoredStatisticsCountAndUnreadableOnesCountNone()
+    {
+        state = Online();
+        Restorer.Import(state, TestZip.Own().Write(tmp), null, tmp);  // account 1001; its Me/me says 1234
+        long Profile()
+        {
+            using var con = state.Store.Open(1001);
+            return (long)con.Scalar("SELECT json_extract(body, '$.hunterscore') FROM profile WHERE account_id = $a")!;
+        }
+        void Stats(string userStats)
+        {
+            using var con = state.Store.Open(1001);
+            con.Exec("UPDATE statistics SET user_stats = ? WHERE account_id = $a", userStats);
+            state.UpdateHunterscore(con, 1001);
+        }
+        Assert.Equal((0L, 0L), (Stored(1001), Profile()));  // the zip's statistics hold no ethical kills
+        // as a restore stores them: 4 of species 1 (2 of its variant 101) and 3 with item 5 over two ammo
+        Stats("""{"animal": {"1": {"ethical_kills": 2}, "101": {"ethical_kills": 2}}, "weapon": {"5": {"10": {"ethical_kills": 2}, "11": {"ethical_kills": 1}}}}""");
+        Assert.Equal((7L, 7L), (Stored(1001), Profile()));
+        // statistics the database cannot read back count none: the value is 0, not the last one nor the zip's
+        Stats("""{"animal": {"1": {"ethical_kills": Infinity}}}""");
+        Assert.Equal((0L, 0L), (Stored(1001), Profile()));
+        state = Online();
+        Assert.Equal(0L, Stored(1001));
+    }
 }
