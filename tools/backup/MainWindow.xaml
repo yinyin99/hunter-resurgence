@@ -157,6 +157,7 @@
                 </Grid.ColumnDefinitions>
                 <local:ResultBar x:Name="Result" IsOpen="False" IsClosable="False" Margin="0,0,0,8" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button x:Name="CheckBtn" Margin="8,0,0,8" />
                     <ui:Button x:Name="SendBtn" Margin="8,0,0,8" Visibility="Collapsed" />
                     <ui:Button x:Name="OpenBtn" Margin="8,0,0,8" Visibility="Collapsed" />
                 </StackPanel>

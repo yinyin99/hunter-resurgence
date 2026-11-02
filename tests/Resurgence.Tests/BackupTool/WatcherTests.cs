@@ -7,6 +7,7 @@ namespace Resurgence.Tests.BackupTool;
 public class WatcherTests
 {
     [Theory]
+    [InlineData("hunter")]
     [InlineData("hunt")]
     [InlineData("huntbeta")]
     [InlineData("huntdev")]
@@ -14,6 +15,14 @@ public class WatcherTests
     {
         string h = new('1', 40), a = new('a', 40), r = new('b', 40);
         Assert.True(Watcher.ParseToken($"C:\\g\\client.exe /connect:{scheme}://gs.test/{h}/lang/en_US/access_token/{a}/refresh_token/{r} /param:169 /steam") == a, "parse " + scheme);
+    }
+
+    [Fact]
+    public void ParsesJwtTokens()
+    {
+        string h = new('1', 40), a = "aaa.bbb_-.ccc-_", r = "ddd.eee.fff";
+        Assert.True(Watcher.ParseToken($"C:\\g\\client.exe  /connect:hunter://web.test/{h}/lang/en_US/access_token/{a}/refresh_token/{r} /param:41 /steam") == a, "the access JWT is parsed, the refresh JWT dropped");
+        Assert.True(Watcher.ParseToken($"x /connect:hunter://web.test/{h}/lang/en_US/access_token/aaa.bbb/refresh_token/{r}") == null, "two parts are no JWT");
     }
 
     [Fact]

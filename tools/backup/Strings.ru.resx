@@ -529,4 +529,25 @@
   <data name="Send_error_Text" xml:space="preserve">
     <value>Ничего не отправлено. {0}</value>
   </data>
+  <data name="Check" xml:space="preserve">
+    <value>Проверить соединение</value>
+  </data>
+  <data name="Check_Official" xml:space="preserve">
+    <value>Официальные серверы: {0}</value>
+  </data>
+  <data name="Check_Community" xml:space="preserve">
+    <value>Сервер сообщества: {0}</value>
+  </data>
+  <data name="Check_ok" xml:space="preserve">
+    <value>доступен</value>
+  </data>
+  <data name="Check_down" xml:space="preserve">
+    <value>недоступен (не работает или нет сети)</value>
+  </data>
+  <data name="Check_redirected" xml:space="preserve">
+    <value>перенаправлен: набор игрока или другая запись файла hosts направляет имена игры на этот ПК. Удалите набор игрока (3-remove.cmd) перед резервной копией.</value>
+  </data>
+  <data name="Check_unset" xml:space="preserve">
+    <value>не задан</value>
+  </data>
 </root>

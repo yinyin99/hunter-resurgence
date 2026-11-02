@@ -529,4 +529,25 @@
   <data name="Send_error_Text" xml:space="preserve">
     <value>Nichts wurde gesendet. {0}</value>
   </data>
+  <data name="Check" xml:space="preserve">
+    <value>Verbindung prüfen</value>
+  </data>
+  <data name="Check_Official" xml:space="preserve">
+    <value>Offizielle Server: {0}</value>
+  </data>
+  <data name="Check_Community" xml:space="preserve">
+    <value>Community-Server: {0}</value>
+  </data>
+  <data name="Check_ok" xml:space="preserve">
+    <value>erreichbar</value>
+  </data>
+  <data name="Check_down" xml:space="preserve">
+    <value>nicht erreichbar (ausgefallen, oder kein Netzwerk)</value>
+  </data>
+  <data name="Check_redirected" xml:space="preserve">
+    <value>umgeleitet: das Spieler-Kit oder ein anderer Eintrag der hosts-Datei leitet die Namen des Spiels auf diesen PC. Entferne das Spieler-Kit (3-remove.cmd) vor einem Backup.</value>
+  </data>
+  <data name="Check_unset" xml:space="preserve">
+    <value>nicht gesetzt</value>
+  </data>
 </root>

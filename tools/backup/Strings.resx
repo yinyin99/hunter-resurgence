@@ -529,4 +529,25 @@
   <data name="Send_error_Text" xml:space="preserve">
     <value>Nothing was sent. {0}</value>
   </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check connection</value>
+  </data>
+  <data name="Check_Official" xml:space="preserve">
+    <value>Official servers: {0}</value>
+  </data>
+  <data name="Check_Community" xml:space="preserve">
+    <value>Community server: {0}</value>
+  </data>
+  <data name="Check_ok" xml:space="preserve">
+    <value>reachable</value>
+  </data>
+  <data name="Check_down" xml:space="preserve">
+    <value>not reachable (down, or no network)</value>
+  </data>
+  <data name="Check_redirected" xml:space="preserve">
+    <value>redirected: the player kit, or another hosts-file entry, sends the game's names to this PC. Remove the player kit (3-remove.cmd) before a backup.</value>
+  </data>
+  <data name="Check_unset" xml:space="preserve">
+    <value>not set</value>
+  </data>
 </root>

@@ -21,8 +21,8 @@ sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, stri
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file,
-/// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off.</summary>
-sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false);
+/// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off, Part = one page of a bigger reply: returned, not saved.</summary>
+sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false, bool Part = false);
 
 /// <summary>Read-only backup: raw replies to files, manifest.json, optional zip. One instance per run.</summary>
 sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Action<int, int> progress, string keyPath)
@@ -94,13 +94,13 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     /// <summary>Dead = a request gave up after its retries: the rest of the run gets one attempt per request, no back-off, until one answers. Spent = GiveUpLimit give-ups in a row: nothing more is sent to this host in this run.</summary>
     sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead, Spent; public int GiveUps; }
 
-    string? token, jwt, handle, claimHash;
+    string? token, handle, claimHash;
     Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
     readonly object renewing = new();
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
     string uid = "", dir = "", identity = ""; // identity: how the account was named, me (own), handle or id (public)
     bool own, resume;
-    DateTime jwtAt, started = DateTime.UtcNow;
+    DateTime started = DateTime.UtcNow;
     DateTime? completed;
     int done, total, sinceWrite, saved, skipped, failed, sent, dead;
     const string ServerError = "server error", NotData = "not data", DeadError = "dead on the server (404)";
@@ -108,7 +108,6 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     CancellationToken ct;
     Exception? fault;
     readonly object manifestLock = new();
-    readonly SemaphoreSlim jwtGate = new(1, 1);
     readonly ConcurrentDictionary<string, Lane> lanes = [];
     readonly AsyncLocal<string> group = new();
     string? steamId64; // own account only; a public profile never has one
@@ -166,9 +165,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 if (Leaks(idr, idRes!.Value.Body)) Fail(idr, FileName(idr), idRes.Value.Status, "reply contains a token, not saved"); // restore reads mode and wallet from this file: say why it is missing
                 else Save(idr, FileName(idr), idRes.Value.Status, idRes.Value.Body, idRes.Value.Date);
             }
-            // groups run side by side; each host's lane keeps its own requests one at a time
-            try { await Task.WhenAll(chosen.Select(g => RunGroup(g.Key, stop))); }
-            catch when (fault != null) { }
+            // groups run side by side; each host's lane keeps its own requests one at a time. My account: the groups that use the session go first, so its 15 minutes are not spent behind the long public ones
+            foreach (var wave in own ? chosen.GroupBy(g => g.Needs == Session.None).OrderBy(w => w.Key) : chosen.GroupBy(_ => true))
+            {
+                try { await Task.WhenAll(wave.Select(g => RunGroup(g.Key, stop))); }
+                catch when (fault != null) { break; }
+            }
             if (fault != null) ExceptionDispatchInfo.Capture(fault).Throw();
             if (groups.Contains("setups")) await RunGroup("setups", stop); // the tail: it reads the setup last, whatever resume skipped before
             lock (files) if (failed == 0 && !files.Values.Any(e => e.Error != null && e.Error != DeadError)) completed = DateTime.UtcNow; // whole = nothing failed in this run and no entry left to retry, including failed ones an earlier run left that this one did not repeat: the next run is a new snapshot
@@ -270,7 +272,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task Trophies()
     {
         Need(4);
-        await Get(Q("Trophy/list", false, ("user_id", uid), ("offset", "0"), ("limit", "100000")));
+        await TrophyList();
         var lodges = Json(await Get(new R($"/game/user/{uid}/lodges", V2: true))) as JsonArray;
         var mine = Json(await Get(new R("/game/user/trophies", V2: true, Jwt: true))) as JsonArray; // own trophies; each has a harvest record
         Need((lodges?.Count ?? 0) + (mine?.Count ?? 0));
@@ -279,6 +281,33 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (l?["id"] is { } id) await Get(new R($"/game/user/{uid}/lodges/{id}", V2: true));
         foreach (var m in mine ?? [])
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
+    }
+
+    DateTimeOffset? partDate;
+
+    /// <summary>The trophy list in pages of 300 (one reply with a big limit fails above about 1,700 trophies), saved as ONE file with the shape of a single reply: all rows in "trophies", "total" as the first page gave it.</summary>
+    async Task TrophyList()
+    {
+        var whole = Q("Trophy/list", false, ("user_id", uid), ("offset", "0"), ("limit", "100000")); // the file keeps the name and params of this one request
+        var name = FileName(whole);
+        if (resume && File.Exists(Path.Combine(dir, name))) { await Get(whole); return; } // a saved file is whole: it is only written when every page came
+        JsonObject? first = null;
+        byte[]? firstBody = null;
+        DateTimeOffset? date = null;
+        var rows = new JsonArray();
+        for (int off = 0; ; off += 300)
+        {
+            var page = Q("Trophy/list", false, ("user_id", uid), ("offset", off.ToString()), ("limit", "300")) with { Part = true };
+            lock (files) files.Remove(FileName(page)); // the failure of an earlier run's page
+            if (off > 0) Need(1);
+            var body = await Get(page);
+            if (Json(body) is not JsonObject o || o["trophies"] is not JsonArray t) { Fail(whole, name, null, "a page of the list gave no trophies"); return; }
+            if (first == null) (first, firstBody, date) = (o, body, partDate);
+            foreach (var x in t) rows.Add(x?.DeepClone());
+            if (t.Count < 300 || (Num(first["total"]) is { } n && rows.Count >= n)) break;
+        }
+        if (rows.Count > 300) { first["trophies"] = rows; firstBody = Encoding.UTF8.GetBytes(first.ToJsonString()); }
+        Save(whole, name, 200, firstBody!, date);
     }
 
     /// <summary>Set when a hunt in the list has no saved Public_user/expedition reply (HuntsSaved &lt; HuntsListed) or a list page gave no file (HuntsListFailed: the list is cut short,
@@ -434,6 +463,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task Picture(string? url, string dirName, bool strict = false)
     {
         if (url != null && url.StartsWith("//")) url = "https:" + url;
+        var site = $"https://{s.WebHost}/media/avatar/"; // avatar URLs now name the website, which answers its home page for them; the file is on the avatar host
+        if (s.AvatarHost != null && url?.StartsWith(site) == true) url = $"https://{s.AvatarHost}/" + url[site.Length..];
         if (!Uri.TryCreate(url, UriKind.Absolute, out var u) || u.Scheme != "https" || !s.Hosts.Contains(u.Host))
         {
             const string why = "not an https URL on a configured host";
@@ -519,19 +550,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         }
         if ((r.Auth || r.Jwt) && own) Renew();
         if ((r.Auth || r.Jwt) && (token == null || TokenStale)) return Fail(r, name, null, "needs the game session (missing or refused)");
-        if (r.Jwt && !await EnsureJwt()) return Fail(r, name, null, "no JWT", ServerError);
         log($"{(r.V2 || r.Abs != null ? "GET" : "POST")} {r.Path} {string.Join('&', Pub(r).Select(p => $"{p.K}={p.V}"))}".TrimEnd());
-        var jwtRetried = false;
         for (int poll = 0; ; poll++)
         {
             string? why = null;
             if (await Send(r, e => why = e) is not { } x) return Fail(r, name, null, why ?? "network failure", ServerError);
-            if (r.Jwt && x.Status == 401 && !jwtRetried)
-            {
-                // expired (or made for another address): one new JWT, and this request once more
-                (jwtRetried, jwt) = (true, null);
-                if (await EnsureJwt()) { poll--; continue; }
-            }
             if (r.Abs != null && x.Status == 404) // a picture or sheet that is gone for good: say so, it is not a failure to run again
             {
                 log($"gone from the server: {r.Path}");
@@ -545,23 +568,24 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (!IsData(r, x.Body)) return Fail(r, name, x.Status, "reply is not data, not saved", NotData);
             if (ready != null && !ready(x.Body))
             {
-                if (poll == 19) return Fail(r, name, x.Status, "still building", ServerError);
+                if (poll == 2) return Fail(r, name, x.Status, "still building", ServerError); // 3 asks: a board that is not built after 6 s is not worth a group's time, the next run asks again
                 await Task.Delay(PaceMs == 0 ? 0 : 3000, ct);
                 continue;
             }
-            Save(r, name, x.Status, x.Body, x.Date);
+            if (r.Part) partDate = x.Date; // a page of a bigger reply: the caller saves the whole
+            else Save(r, name, x.Status, x.Body, x.Date);
             return x.Body;
         }
     }
 
-    /// <summary>A newer token from the game replaces the old one, clears "refused" and drops the JWT, which belongs to the token it was made with.</summary>
+    /// <summary>A newer token from the game replaces the old one and clears "refused".</summary>
     void Renew()
     {
         if (tokenOf?.Invoke() is not { } now) return;
         lock (renewing)
         {
             if (now == token) return;
-            (token, jwt, jwtAt, TokenStale) = (now, null, default, false);
+            (token, TokenStale) = (now, false);
             log("new game session found");
         }
     }
@@ -591,35 +615,19 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         if (Interlocked.Increment(ref sinceWrite) % 25 == 0) WriteManifest();
     }
 
-    /// <summary>False = do not save: not 2xx, or a /v1 error reply (HTTP 200 with errorCode or handlerError). Errors 5 and 11 on a token call mark the token stale.</summary>
+    /// <summary>False = do not save: not 2xx, or a /v1 error reply (HTTP 200 with errorCode or handlerError, at the top or in the website's "detail"). A 401 on a token call, or errors 5 and 11, mark the token stale.</summary>
     bool Ok(R r, int status, byte[] body)
     {
-        if (r.Jwt && status == 401) jwt = null; // expired: fetched again on the next call
-        if (status is < 200 or >= 300) return false;
-        if (r.V2 || r.Abs != null || body.Length >= 512 || Json(body) is not JsonObject o) return true; // error replies are small
-        if (r.Auth && o["errorCode"]?.ToString() is "5" or "11")
+        var o = r.V2 || r.Abs != null || body.Length >= 512 ? null : Json(body) as JsonObject; // error replies are small
+        var d = o?["detail"] as JsonObject;
+        if ((r.Auth || r.Jwt) && (status == 401 || (d ?? o)?["errorCode"]?.ToString() is "5" or "11"))
         {
             TokenStale = true;
             log("token expired or refused: start a hunt to refresh");
         }
-        return !(o.ContainsKey("errorCode") || (o.ContainsKey("error") && o.ContainsKey("code")));
-    }
-
-    async Task<bool> EnsureJwt()
-    {
-        await jwtGate.WaitAsync(ct); // one User/jwt call however many groups wait for it
-        try
-        {
-            if (jwt != null && DateTime.UtcNow - jwtAt < TimeSpan.FromMinutes(20)) return true; // lifetime 30 min
-            var r = Q("User/jwt", true);
-            if (await Send(r) is { } x && Ok(r, x.Status, x.Body) && Json(x.Body)?["token"] is JsonValue v && v.TryGetValue<string>(out var t))
-            {
-                (jwt, jwtAt) = (t, DateTime.UtcNow); // never saved
-                return true;
-            }
-            return false;
-        }
-        finally { jwtGate.Release(); }
+        if (status is < 200 or >= 300) return false;
+        static bool Error(JsonObject? x) => x != null && (x.ContainsKey("errorCode") || (x.ContainsKey("error") && x.ContainsKey("code")));
+        return !(Error(o) || Error(d));
     }
 
     /// <summary>What a reply must be before it is saved: JSON for the API (null is allowed, an empty or cut-off body is not), an image for a picture, a page with a table for a score sheet. A proxy's or login page is none of them.</summary>
@@ -643,11 +651,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         var sp = b.AsSpan();
         return sp.IndexOf("refresh_token"u8) >= 0
             || (token != null && sp.IndexOf(Encoding.ASCII.GetBytes(token)) >= 0)
-            || (s.ConsumerKey != null && sp.IndexOf(Encoding.ASCII.GetBytes(s.ConsumerKey)) >= 0)
-            || (jwt != null && sp.IndexOf(Encoding.ASCII.GetBytes(jwt)) >= 0);
+            || (s.ConsumerKey != null && sp.IndexOf(Encoding.ASCII.GetBytes(s.ConsumerKey)) >= 0);
     }
 
-    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 ? s.Apiv2Host : s.ApiHost;
+    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost; // the session calls (Jwt) moved to the web host
 
     async Task<(int Status, byte[] Body, DateTimeOffset? Date)?> Send(R r, Action<string>? gaveUp = null)
     {
@@ -713,18 +720,25 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (r.Xhr) a.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return a;
         }
-        var uri = $"https://{(r.V2 ? s.Apiv2Host : s.ApiHost)}{r.Path}";
+        var uri = $"https://{(r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost)}{(r.Jwt ? "/v1" : "")}{r.Path}"; // /game/user/loadout -> /v1/game/user/loadout
         if (r.V2)
         {
             var g = new HttpRequestMessage(HttpMethod.Get, uri);
             g.Headers.Accept.ParseAdd("application/json");
-            if (r.Jwt) g.Headers.Authorization = new("Bearer", jwt);
+            if (r.Jwt) g.Headers.Authorization = new("Bearer", token); // the game's own access token: the server takes it as it is
             return g;
         }
-        var form = new List<KeyValuePair<string, string>>();
-        if (r.Auth) form.Add(new("oauth_access_token", token!));
-        foreach (var (k, v) in r.P ?? []) form.Add(new(k, v));
-        var m = new HttpRequestMessage(HttpMethod.Post, uri) { Content = new FormUrlEncodedContent(form) };
+        HttpRequestMessage m;
+        if (r.Path is "/v1/Challenge/get_user_challenges" or "/v1/Application/application") // the two reads the website now makes with GET and a query
+            m = new(HttpMethod.Get, uri + "?" + string.Join('&', Pub(r).Select(p => $"{p.K}={Uri.EscapeDataString(p.V)}")));
+        else
+        {
+            // a JSON body; numbers must be numbers (a text offset or limit is a server error)
+            var body = new JsonObject();
+            if (r.Auth) body["oauth_access_token"] = token;
+            foreach (var (k, v) in r.P ?? []) body[k] = v.Length is > 0 and < 16 && v.All(char.IsAsciiDigit) ? long.Parse(v) : v;
+            m = new(HttpMethod.Post, uri) { Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json") };
+        }
         m.Headers.Add("Origin", $"https://{s.WebHost}");
         m.Headers.Referrer = new($"https://{s.WebHost}/");
         return m;

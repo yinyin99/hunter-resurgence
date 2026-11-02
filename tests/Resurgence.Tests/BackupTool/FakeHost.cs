@@ -30,6 +30,8 @@ public sealed class Fake : HttpMessageHandler
     public int WithToken;
     /// <summary>The form of every request, in the order they started.</summary>
     public readonly List<string> Forms = [];
+    /// <summary>Path and Bearer token of every request.</summary>
+    public readonly List<(string Path, string? Bearer)> Auths = [];
     /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
     public string? Revoked;
     /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
@@ -42,9 +44,11 @@ public sealed class Fake : HttpMessageHandler
     public (string Path, int Times, int Status, int After)? Throttle;
     /// <summary>The HTTP Date header of every response; null = none.</summary>
     public DateTimeOffset? DateHeader;
+    /// <summary>The JSON body of every POST, as sent.</summary>
+    public readonly List<string> Bodies = [];
     int throttled;
     readonly object gate = new();
-    public Fake(string token) => Token = token;
+    public Fake(string token) { Token = token; System.Text.Json.Nodes.JsonNode.Parse("""{"a":1}""")!.AsObject().Select(p => $"{p.Key}={p.Value}").ToList(); } // the first parse is slow: warm it up so it cannot skew the pacing tests
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
     {
@@ -57,7 +61,12 @@ public sealed class Fake : HttpMessageHandler
     {
         var path = req.RequestUri!.AbsolutePath;
         var host = req.RequestUri.Host;
-        var form = req.Content == null ? "" : await req.Content.ReadAsStringAsync(ct);
+        var form = req.Content == null ? req.RequestUri.Query.TrimStart('?') : await req.Content.ReadAsStringAsync(ct);
+        if (req.Content != null) // the API takes JSON now; the tests read the fields as k=v&k=v
+        {
+            Bodies.Add(form);
+            form = string.Join('&', System.Text.Json.Nodes.JsonNode.Parse(form)!.AsObject().Select(p => $"{p.Key}={p.Value}"));
+        }
         lock (gate)
         {
             ct.ThrowIfCancellationRequested(); // a real handler refuses a cancelled request too
@@ -65,6 +74,7 @@ public sealed class Fake : HttpMessageHandler
             Urls.Add(req.RequestUri.PathAndQuery);
             if (form.Contains(Token)) WithToken++;
             Forms.Add(form);
+            Auths.Add((path, req.Headers.Authorization?.Parameter));
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
@@ -74,7 +84,7 @@ public sealed class Fake : HttpMessageHandler
         }
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }
         finally { lock (gate) Active[host]--; }
-        if (path.Contains("/personal/") || path == "/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
+        if (path.Contains("/personal/") || path == "/v1/game/user/harvest/102") return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("null") };
         if (Throttle is { } th && path == th.Path && Interlocked.Increment(ref throttled) <= th.Times)
         {
             var r = new HttpResponseMessage((HttpStatusCode)th.Status) { Content = new StringContent("slow down") };
@@ -96,16 +106,16 @@ public sealed class Fake : HttpMessageHandler
             "/v1/Inventory/list" when InventoryList != null => InventoryList,
             "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
             "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
-            "/game/user/trophies" => """[{"id":101},{"id":102}]""",
+            "/v1/game/user/trophies" => """[{"id":101},{"id":102}]""",
             "/v1/Public_user/expedition" when System.Text.RegularExpressions.Regex.Match(form, @"expedition_id=(\d+)") is { Success: true } m && HuntReplies.TryGetValue(m.Groups[1].Value, out var hunt) => hunt,
             "/v1/Public_user/expedition" => """{"kills":[{"id":900,"kill":{"score":1.5,"photo":"https://photo.test/k.jpg"}},{"id":901,"kill":{"score":null}}]}""",
             "/v1/Public_user/getByHostname" => """{"id":7,"handle":"hh"}""",
-            "/v1/User/jwt" => """{"token":"fake.jwt.value"}""",
             "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
             "/game/user/7/lodges" => """[{"id":3}]""",
             "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
+            "/v1/Trophy/list" => """{"trophies":[],"total":0}""",
             "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
             _ => """{"ok":1}""",
         };
@@ -127,5 +137,5 @@ static class Hosts
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
     public static Engine Make(Fake f, string keyPath, Action<string>? log = null) => new(
-        new("api.test", "apiv2.test", "web.test", "fakeclient.exe", ["photo.test"], "ckey-secret-9"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
+        new("apiv2.test", "web.test", "fakeclient.exe", ["photo.test", "avatar.test"], "ckey-secret-9", null, "avatar.test"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
 }
