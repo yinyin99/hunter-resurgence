@@ -23,7 +23,9 @@ The backup tool is a small Windows app that saves your profile (statistics, inve
 
 **Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
 
-Why a hunt: for your own account, the backup tool borrows the sign-in of the running game, so the game must be running. A handle is a player's name in the game. The source is public, and you can check in a minute that your download is the real one: compare its checksum, as in [checking the download](docs/backup.md#checking-the-download).
+The source is public, and you can check in a minute that your download is the real one: compare its checksum, as in [checking the download](docs/backup.md#checking-the-download).
+
+Why a hunt: for your own account, the backup tool borrows the game's sign-in, and the game has one only once a hunt has started. A handle is a player's name in the game.
 
 What it saves and what it does not: [docs/backup.md](docs/backup.md). What it keeps and sends: [privacy](docs/backup.md#privacy).
 
@@ -31,7 +33,7 @@ What it saves and what it does not: [docs/backup.md](docs/backup.md). What it ke
 
 The player kit will connect your game to the community server over the internet. It is not released yet.
 
-- A one-time setup edits the Windows hosts file so that the game's server names lead to a small helper on your PC, and trusts a local certificate that is good only for those names. The helper stays open while you play and passes everything on to the community server.
+- A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder on your PC, and trusts a local certificate that is good only for those names. The forwarder stays open while you play and passes everything on to the community server.
 - It never changes the game's files. One script in the kit, `3-remove.cmd`, undoes everything and gives the official servers back.
 - While it is installed, the game talks only to the community server. **Make your backup first**: the backup tool needs the official servers.
 
@@ -50,10 +52,10 @@ Today only the backup tool is released: you cannot play on the community server 
    - Sign in with a Steam account (email sign-in may follow).
    - Restore: upload your backup zip on the website. Once the operator (the person who runs the server) approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically.
    - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions, leaderboards and the trophy-lodge pages may be missing at first, and there is no seasonal event by default.
-   - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). How a backup is shown to be yours: [claim key](docs/backup.md#claim-key).
+   - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). What hints that a backup is yours (a hint, not proof): [claim key](docs/backup.md#claim-key).
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (in progress, no release yet): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
-5. **New launcher** (in development, sample data, no download yet; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
+5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
 6. **New website** (preview online, sample data): profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only, nothing sold for real money), missions and friends.
 7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
 
