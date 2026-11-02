@@ -1348,7 +1348,7 @@ public sealed partial class State
     static bool TryKey(JsonNode? n, out long k)
     {
         k = 0;
-        if (!Py.IsNum(n) || Py.D(n) is var d && (d != Math.Floor(d) || d < -9.223372036854775808E18 || d >= 9.223372036854775808E18))
+        if (!Py.IsNum(n) || Py.D(n) is var d && (d != Math.Floor(d) || d <= -9.223372036854775808E18 || d >= 9.223372036854775808E18))
             return false;
         k = Py.L(n);
         return true;

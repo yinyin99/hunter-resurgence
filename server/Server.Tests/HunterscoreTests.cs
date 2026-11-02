@@ -105,14 +105,19 @@ public class HunterscoreTests : StateTestBase
             O("""{"event": 3, "individual": 83, "extended_species": 17}""")));  // an ammo id beyond 64 bits is not permitted on 17
         state.Disconnect(B, "{}"u8.ToArray());
         Assert.Equal(1, Stored(B));  // the species row only: "x" is no weapon
-        // a number the database cannot read back: the score keeps its stored value, and the close, the next launch and the
-        // start still work
+        // a kill the database cannot read back (a number that is not finite) is skipped, the others still count, and the
+        // close, the next launch, a restore and the start still work
         state.ConnectReply(B);
         state.HeartbeatReply(B, """{"events": [{"event": 3, "individual": 84, "extended_species": 1, "trophy_integrity": 1e999}]}"""u8.ToArray());
+        Kill(B, 85, 1, 10);
         state.Disconnect(B, "{}"u8.ToArray());
+        Assert.Equal(3, Stored(B));  // 81: the species row; 85: the species and the weapon row
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        // the zip's own hunterscore (1234) never stays: the value is always the computed one
+        Restorer.Import(state, TestZip.Own().Write(tmp), B, tmp);
+        Assert.Equal(3, Stored(B));
         state = Online();
-        Assert.Equal(1, Stored(B));
+        Assert.Equal(3, Stored(B));
     }
 }

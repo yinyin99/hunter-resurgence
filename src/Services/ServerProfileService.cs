@@ -25,11 +25,11 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                 var p = await mock.ProfileAsync(h.Handle);
                 return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false };
             }
-            log.LogWarning("The server answered {Path} with {Status}: no profile", path, (int)response.StatusCode);
+            log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
-            log.LogWarning("The server did not answer {Path} ({Reason}): no profile", path, e.Message);
+            log.LogWarning("The server did not answer {Path} ({Reason}): no profile", ServerSessionApi.Hunters, e.Message);
         }
         return null;
     }
