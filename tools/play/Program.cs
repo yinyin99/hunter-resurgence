@@ -10,11 +10,6 @@ namespace Play
 {
     static class Cli
     {
-        /// <summary>The day the official servers close: <c>setup</c> refuses before it, so players keep them until then.</summary>
-        public static readonly DateTimeOffset Shutdown = new(2026, 11, 11, 0, 0, 0, TimeSpan.Zero);
-
-        public static bool Refuses(DateTimeOffset now, bool force) => now < Shutdown && !force;
-
         public static async Task<int> Run(string[] args)
         {
             try
@@ -22,8 +17,8 @@ namespace Play
                 var flags = args.Skip(1).ToArray();
                 switch (args.FirstOrDefault())
                 {
-                    case "setup" when flags.All(f => f is "--remove" or "--force"):
-                        return Setup(flags.Contains("--remove"), flags.Contains("--force"));
+                    case "setup" when flags is [] or ["--remove"]:
+                        return Setup(flags.Contains("--remove"));
                     case "run" when flags.Length == 0:
                         return await RunForwarder();
                     case "hosts" when flags is ["on"] or ["off"]: // what setup starts elevated: only this edits the hosts file as administrator
@@ -41,7 +36,7 @@ namespace Play
             }
         }
 
-        static int Setup(bool remove, bool force)
+        static int Setup(bool remove)
         {
             if (remove)
             {
@@ -50,13 +45,11 @@ namespace Play
                 Console.WriteLine(Loc.S("Removed"));
                 return 0;
             }
-            var now = DateTimeOffset.UtcNow;
-            if (Refuses(now, force)) { Console.WriteLine(Loc.F("TooEarly", Shutdown.ToString("yyyy-MM-dd"))); return 1; }
             var s = Settings.Load();
             Console.WriteLine(Loc.F("SetupPlan", s.Hosts.Length, Pki.CaSubject[3..], Pki.Dir, Hosts.DefaultPath));
             foreach (var h in s.Hosts) Console.WriteLine("  " + h);
             Console.WriteLine(Loc.S("SetupTrust"));
-            Pki.Install(s.Hosts, now);
+            Pki.Install(s.Hosts, DateTimeOffset.UtcNow);
             SetHosts(true, s.Hosts);
             Console.WriteLine(Loc.S("SetupDone"));
             return 0;

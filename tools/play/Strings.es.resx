@@ -13,7 +13,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Usage" xml:space="preserve">
-    <value>play setup [--force]   Configuración única: dirige los nombres de servidor del juego a este PC y confía en un certificado local para ellos.
+    <value>play setup            Configuración única: dirige los nombres de servidor del juego a este PC y confía en un certificado local para ellos.
 play setup --remove    Deshace todo lo que setup cambió.
 play run               Envía el juego al servidor de la comunidad. Déjalo abierto mientras juegas.</value>
   </data>
@@ -31,9 +31,6 @@ play run               Envía el juego al servidor de la comunidad. Déjalo abie
   </data>
   <data name="SettingsHost" xml:space="preserve">
     <value>settings.json: "{0}" no es un nombre de host.</value>
-  </data>
-  <data name="TooEarly" xml:space="preserve">
-    <value>Los servidores oficiales siguen en línea hasta el {0}. Configurar ahora enviaría el juego al servidor de la comunidad en su lugar. Vuelve a ejecutar setup ese día o después (--force cambia igualmente ahora).</value>
   </data>
   <data name="SetupPlan" xml:space="preserve">
     <value>setup cambia tres cosas en este PC y nada más (los archivos del juego nunca se tocan):
