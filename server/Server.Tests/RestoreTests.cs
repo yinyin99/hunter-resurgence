@@ -227,16 +227,16 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         var reply = await Post(Replay.ME, token1001);
         Assert.Equal((200, "state"), (reply.Status, reply.Source));
         var me = JsonNode.Parse(reply.Body)!;
-        Eq("""[1001, "sample", 1234, 3, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
+        Eq("""[1001, "sample", 1234, 1, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
             me["unread_messages"], me["membershipType"]));
         Eq("""{"best": 9}""", me["records"]);
         Eq("[]", me["worlditems"]);
         Assert.DoesNotContain("example.invalid", Encoding.UTF8.GetString(reply.Body));
         Assert.DoesNotContain("Person", Encoding.UTF8.GetString(reply.Body));
-        // the account that restored nothing gets a new account's profile, not the recorded player's
+        // the account that restored nothing gets a new account's profile, not the recorded player's, and ranks below 1001
         var other = JsonNode.Parse((await Post(Replay.ME, token7)).Body)!;
         Eq("""{}""", other["records"]);
-        Eq("0", other["rank"]);
+        Eq("2", other["rank"]);
     }
 
     [Fact]

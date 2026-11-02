@@ -97,6 +97,22 @@ public class StoreTests : IDisposable
     }
 
     [Fact]
+    public void TestRankIsThePlaceByHunterscoreAmongAccountsNotBanned()
+    {
+        foreach (var (id, score) in new (long, long?)[] { (1, 900), (2, 500), (3, 500), (4, 100), (5, null), (6, 1000), (7, 0) })
+        {
+            var account = Account(id, $"h{id}");
+            if (score is { } s)
+                account["hunterscore"] = s;
+            store.CreateAccount(id, $"h{id}", account);
+        }
+        using (var con = store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", 6L);
+        // ties share a rank without gaps, no hunterscore is 0 (sharing the last place with 0), and the banned 1000 is not counted
+        Assert.Equal(new long[] { 1, 2, 2, 3, 4, 4 }, new long[] { 1, 2, 3, 4, 5, 7 }.Select(store.Rank));
+    }
+
+    [Fact]
     public void TestSqlThatMissesTheAccountFilterThrows()
     {
         store.CreateAccount(1, "one", Account(1, "one"));

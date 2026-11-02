@@ -241,6 +241,15 @@ public sealed class Store
         return JsonNode.Parse((string)con.Scalar("SELECT account FROM accounts WHERE id = ?", id)!)!.AsObject();
     }
 
+    /// <summary>The account's rank by hunterscore among the accounts not banned: 1 for the highest; equal hunterscores share a
+    /// rank and the next lower one takes the next number (a missing hunterscore is 0).</summary>
+    public long Rank(long id)
+    {
+        using var con = Open();
+        return (long)con.Scalar("SELECT 1 + COUNT(DISTINCT json_extract(o.account, '$.hunterscore')) FROM accounts o JOIN accounts a ON a.id = ?"
+                                + " WHERE o.banned = 0 AND json_extract(o.account, '$.hunterscore') > COALESCE(json_extract(a.account, '$.hunterscore'), 0)", id)!;
+    }
+
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an
     /// importer's). id is the game's user id; account is the connect reply's `account` object. Throws when the id,
     /// the handle or the Steam id is taken.</summary>
