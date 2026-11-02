@@ -8,10 +8,10 @@ namespace Backup;
 /// NtQueryInformationProcess(ProcessCommandLineInformation) with PROCESS_QUERY_LIMITED_INFORMATION. The token stays in memory.</summary>
 sealed partial class Watcher(string exe)
 {
-    [GeneratedRegex(@"/connect:hunt(?:beta|dev)?://[^/\s""]+/[^/\s""]+/lang/[^/\s""]+/access_token/(?<a>[0-9a-fA-F]{40})/refresh_token/[0-9a-fA-F]{40}(?![0-9a-fA-F])")]
+    [GeneratedRegex(@"/connect:hunt(?:er|beta|dev)?://[^/\s""]+/[^/\s""]+/lang/[^/\s""]+/access_token/(?<a>[0-9a-fA-F]{40}|[\w-]+\.[\w-]+\.[\w-]+)/refresh_token/(?:[0-9a-fA-F]{40}|[\w-]+\.[\w-]+\.[\w-]+)(?![\w.-])")]
     private static partial Regex Connect();
 
-    /// <summary>The access token of a `/connect:hunt://…` argument (scheme hunt, huntbeta or huntdev), else null. The refresh token is never kept.</summary>
+    /// <summary>The access token of a `/connect:hunter://…` argument (scheme hunter, hunt, huntbeta or huntdev; a JWT, or 40 hex in the old build), else null. The refresh token is never kept.</summary>
     public static string? ParseToken(string cmd) => Connect().Match(cmd) is { Success: true } m ? m.Groups["a"].Value : null;
 
     public string? Token;

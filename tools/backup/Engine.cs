@@ -94,13 +94,13 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     /// <summary>Dead = a request gave up after its retries: the rest of the run gets one attempt per request, no back-off, until one answers. Spent = GiveUpLimit give-ups in a row: nothing more is sent to this host in this run.</summary>
     sealed class Lane { public readonly SemaphoreSlim Gate = new(1, 1); public DateTime Last; public bool Dead, Spent; public int GiveUps; }
 
-    string? token, jwt, handle, claimHash;
+    string? token, handle, claimHash;
     Func<string?>? tokenOf; // asked before every request that needs the session: a hunt started during a long run brings a new token
     readonly object renewing = new();
     JsonNode? me; // the identity reply (Me/me or Public_user/getByHostname): avatar
     string uid = "", dir = "", identity = ""; // identity: how the account was named, me (own), handle or id (public)
     bool own, resume;
-    DateTime jwtAt, started = DateTime.UtcNow;
+    DateTime started = DateTime.UtcNow;
     DateTime? completed;
     int done, total, sinceWrite, saved, skipped, failed, sent, dead;
     const string ServerError = "server error", NotData = "not data", DeadError = "dead on the server (404)";
@@ -108,7 +108,6 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     CancellationToken ct;
     Exception? fault;
     readonly object manifestLock = new();
-    readonly SemaphoreSlim jwtGate = new(1, 1);
     readonly ConcurrentDictionary<string, Lane> lanes = [];
     readonly AsyncLocal<string> group = new();
     string? steamId64; // own account only; a public profile never has one
@@ -548,19 +547,11 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         }
         if ((r.Auth || r.Jwt) && own) Renew();
         if ((r.Auth || r.Jwt) && (token == null || TokenStale)) return Fail(r, name, null, "needs the game session (missing or refused)");
-        if (r.Jwt && !await EnsureJwt()) return Fail(r, name, null, "no JWT", ServerError);
         log($"{(r.V2 || r.Abs != null ? "GET" : "POST")} {r.Path} {string.Join('&', Pub(r).Select(p => $"{p.K}={p.V}"))}".TrimEnd());
-        var jwtRetried = false;
         for (int poll = 0; ; poll++)
         {
             string? why = null;
             if (await Send(r, e => why = e) is not { } x) return Fail(r, name, null, why ?? "network failure", ServerError);
-            if (r.Jwt && x.Status == 401 && !jwtRetried)
-            {
-                // expired (or made for another address): one new JWT, and this request once more
-                (jwtRetried, jwt) = (true, null);
-                if (await EnsureJwt()) { poll--; continue; }
-            }
             if (r.Abs != null && x.Status == 404) // a picture or sheet that is gone for good: say so, it is not a failure to run again
             {
                 log($"gone from the server: {r.Path}");
@@ -584,14 +575,14 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         }
     }
 
-    /// <summary>A newer token from the game replaces the old one, clears "refused" and drops the JWT, which belongs to the token it was made with.</summary>
+    /// <summary>A newer token from the game replaces the old one and clears "refused".</summary>
     void Renew()
     {
         if (tokenOf?.Invoke() is not { } now) return;
         lock (renewing)
         {
             if (now == token) return;
-            (token, jwt, jwtAt, TokenStale) = (now, null, default, false);
+            (token, TokenStale) = (now, false);
             log("new game session found");
         }
     }
@@ -624,10 +615,9 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     /// <summary>False = do not save: not 2xx, or a /v1 error reply (HTTP 200 with errorCode or handlerError, at the top or in the website's "detail"). A 401 on a token call, or errors 5 and 11, mark the token stale.</summary>
     bool Ok(R r, int status, byte[] body)
     {
-        if (r.Jwt && status == 401) jwt = null; // expired: fetched again on the next call
         var o = r.V2 || r.Abs != null || body.Length >= 512 ? null : Json(body) as JsonObject; // error replies are small
         var d = o?["detail"] as JsonObject;
-        if (r.Auth && (status == 401 || (d ?? o)?["errorCode"]?.ToString() is "5" or "11"))
+        if ((r.Auth || r.Jwt) && (status == 401 || (d ?? o)?["errorCode"]?.ToString() is "5" or "11"))
         {
             TokenStale = true;
             log("token expired or refused: start a hunt to refresh");
@@ -635,23 +625,6 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         if (status is < 200 or >= 300) return false;
         static bool Error(JsonObject? x) => x != null && (x.ContainsKey("errorCode") || (x.ContainsKey("error") && x.ContainsKey("code")));
         return !(Error(o) || Error(d));
-    }
-
-    async Task<bool> EnsureJwt()
-    {
-        await jwtGate.WaitAsync(ct); // one User/jwt call however many groups wait for it
-        try
-        {
-            if (jwt != null && DateTime.UtcNow - jwtAt < TimeSpan.FromMinutes(20)) return true; // lifetime 30 min
-            var r = Q("User/jwt", true);
-            if (await Send(r) is { } x && Ok(r, x.Status, x.Body) && Json(x.Body)?["token"] is JsonValue v && v.TryGetValue<string>(out var t))
-            {
-                (jwt, jwtAt) = (t, DateTime.UtcNow); // never saved
-                return true;
-            }
-            return false;
-        }
-        finally { jwtGate.Release(); }
     }
 
     /// <summary>What a reply must be before it is saved: JSON for the API (null is allowed, an empty or cut-off body is not), an image for a picture, a page with a table for a score sheet. A proxy's or login page is none of them.</summary>
@@ -675,11 +648,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         var sp = b.AsSpan();
         return sp.IndexOf("refresh_token"u8) >= 0
             || (token != null && sp.IndexOf(Encoding.ASCII.GetBytes(token)) >= 0)
-            || (s.ConsumerKey != null && sp.IndexOf(Encoding.ASCII.GetBytes(s.ConsumerKey)) >= 0)
-            || (jwt != null && sp.IndexOf(Encoding.ASCII.GetBytes(jwt)) >= 0);
+            || (s.ConsumerKey != null && sp.IndexOf(Encoding.ASCII.GetBytes(s.ConsumerKey)) >= 0);
     }
 
-    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 ? s.Apiv2Host : s.WebHost;
+    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost; // the session calls (Jwt) moved to the web host
 
     async Task<(int Status, byte[] Body, DateTimeOffset? Date)?> Send(R r, Action<string>? gaveUp = null)
     {
@@ -745,12 +717,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (r.Xhr) a.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return a;
         }
-        var uri = $"https://{(r.V2 ? s.Apiv2Host : s.WebHost)}{r.Path}";
+        var uri = $"https://{(r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost)}{(r.Jwt ? "/v1" : "")}{r.Path}"; // /game/user/loadout -> /v1/game/user/loadout
         if (r.V2)
         {
             var g = new HttpRequestMessage(HttpMethod.Get, uri);
             g.Headers.Accept.ParseAdd("application/json");
-            if (r.Jwt) g.Headers.Authorization = new("Bearer", jwt);
+            if (r.Jwt) g.Headers.Authorization = new("Bearer", token); // the game's own access token: the server takes it as it is
             return g;
         }
         HttpRequestMessage m;
