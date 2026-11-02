@@ -46,6 +46,15 @@ public class RestoreTests : StateTestBase
     static JsonNode? At(JsonNode? n, string key) => n![key]?.DeepClone();
 
     [Fact]
+    public void TestALocalServerKeepsTheRankOfTheRestoredProfile()
+    {
+        var local = new State(Path.Combine(tmp, "local.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: true);
+        Restorer.Import(local, Zip(TestZip.Own()), local.LocalAccount, tmp);
+        // the backup's rank, not the place by hunterscore (the only account would be 1)
+        Eq("3", local.MeReply(local.LocalAccount, new JsonObject())!["rank"]);
+    }
+
+    [Fact]
     public void TestAZipBecomesTheRowsOfANewAccount()
     {
         var result = Restorer.Import(state, Zip(TestZip.Own()), null, tmp);
