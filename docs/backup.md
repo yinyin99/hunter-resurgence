@@ -41,7 +41,7 @@ The default output folder is `Documents\game-backup`. The backup folder is `back
 | Profile | statistics, skills, achievements, challenges, personal leaderboards (every season), minigame positions, membership bundles, the item catalogue, avatar picture, antler boards, campaign scores (public; `null` while no campaign runs) | no |
 | Inventory and dogs | owned items and dogs, placed-item positions, loadout | partly |
 | Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
-| Trophies and lodges | trophy list, lodges, harvest record of each own trophy | partly |
+| Trophies and lodges | trophy list (asked in pages of 300 and saved as one file, as if one reply held it all), lodges, harvest record of each own trophy | partly |
 | Hunt history | every hunt with its kills, shots and scores; if a hunt in the hunt list could not be saved, or a page of the hunt list did not answer, the result bar says so and the manifest has `checks.hunts` | no |
 | Kill pages and photos (off by default) | score sheet page of every scored kill and the picture of every kill that has one, newest hunts first; many requests | no |
 | Account | missions, wallet history, bank transactions, competition states, message settings, recruits, backgrounds | yes |

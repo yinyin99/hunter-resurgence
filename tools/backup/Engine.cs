@@ -21,8 +21,8 @@ sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, stri
 
 /// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file,
-/// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off.</summary>
-sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false);
+/// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off, Part = one page of a bigger reply: returned, not saved.</summary>
+sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false, bool Part = false);
 
 /// <summary>Read-only backup: raw replies to files, manifest.json, optional zip. One instance per run.</summary>
 sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Action<int, int> progress, string keyPath)
@@ -270,7 +270,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     async Task Trophies()
     {
         Need(4);
-        await Get(Q("Trophy/list", false, ("user_id", uid), ("offset", "0"), ("limit", "100000")));
+        await TrophyList();
         var lodges = Json(await Get(new R($"/game/user/{uid}/lodges", V2: true))) as JsonArray;
         var mine = Json(await Get(new R("/game/user/trophies", V2: true, Jwt: true))) as JsonArray; // own trophies; each has a harvest record
         Need((lodges?.Count ?? 0) + (mine?.Count ?? 0));
@@ -279,6 +279,33 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (l?["id"] is { } id) await Get(new R($"/game/user/{uid}/lodges/{id}", V2: true));
         foreach (var m in mine ?? [])
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
+    }
+
+    DateTimeOffset? partDate;
+
+    /// <summary>The trophy list in pages of 300 (one reply with a big limit fails above about 1,700 trophies), saved as ONE file with the shape of a single reply: all rows in "trophies", "total" as the first page gave it.</summary>
+    async Task TrophyList()
+    {
+        var whole = Q("Trophy/list", false, ("user_id", uid), ("offset", "0"), ("limit", "100000")); // the file keeps the name and params of this one request
+        var name = FileName(whole);
+        if (resume && File.Exists(Path.Combine(dir, name))) { await Get(whole); return; } // a saved file is whole: it is only written when every page came
+        JsonObject? first = null;
+        byte[]? firstBody = null;
+        DateTimeOffset? date = null;
+        var rows = new JsonArray();
+        for (int off = 0; ; off += 300)
+        {
+            var page = Q("Trophy/list", false, ("user_id", uid), ("offset", off.ToString()), ("limit", "300")) with { Part = true };
+            lock (files) files.Remove(FileName(page)); // the failure of an earlier run's page
+            if (off > 0) Need(1);
+            var body = await Get(page);
+            if (Json(body) is not JsonObject o || o["trophies"] is not JsonArray t) { Fail(whole, name, null, "a page of the list gave no trophies"); return; }
+            if (first == null) (first, firstBody, date) = (o, body, partDate);
+            foreach (var x in t) rows.Add(x?.DeepClone());
+            if (t.Count < 300 || (Num(first["total"]) is { } n && rows.Count >= n)) break;
+        }
+        if (rows.Count > 300) { first["trophies"] = rows; firstBody = Encoding.UTF8.GetBytes(first.ToJsonString()); }
+        Save(whole, name, 200, firstBody!, date);
     }
 
     /// <summary>Set when a hunt in the list has no saved Public_user/expedition reply (HuntsSaved &lt; HuntsListed) or a list page gave no file (HuntsListFailed: the list is cut short,
@@ -551,7 +578,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
                 await Task.Delay(PaceMs == 0 ? 0 : 3000, ct);
                 continue;
             }
-            Save(r, name, x.Status, x.Body, x.Date);
+            if (r.Part) partDate = x.Date; // a page of a bigger reply: the caller saves the whole
+            else Save(r, name, x.Status, x.Body, x.Date);
             return x.Body;
         }
     }

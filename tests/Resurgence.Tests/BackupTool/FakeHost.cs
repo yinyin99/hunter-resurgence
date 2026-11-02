@@ -113,6 +113,7 @@ public sealed class Fake : HttpMessageHandler
             "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
+            "/v1/Trophy/list" => """{"trophies":[],"total":0}""",
             "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
             _ => """{"ok":1}""",
         };

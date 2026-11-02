@@ -19,7 +19,7 @@ public class MovedApiTests
         await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "profile", "trophies", "friends" }, false, false, TestContext.Current.CancellationToken);
         Assert.True(f.Starts.Keys.All(h => h is "web.test" or "apiv2.test"), $"only the web and apiv2 hosts are asked ({string.Join(",", f.Starts.Keys)})");
         Assert.True(f.Bodies.Count > 5 && f.Bodies.All(b => JsonNode.Parse(b) is JsonObject), "every POST body is a JSON object");
-        Assert.Contains(f.Bodies, b => b.Contains("\"limit\":100000") && b.Contains("\"user_id\":7"));
+        Assert.Contains(f.Bodies, b => b.Contains("\"limit\":300") && b.Contains("\"user_id\":7"));
         Assert.DoesNotContain(f.Bodies, b => b.Contains("\"limit\":\"") || b.Contains("\"offset\":\""));
         Assert.Contains("/v1/Application/application?lang=en", f.Urls);
         Assert.Contains("/v1/Challenge/get_user_challenges?user_id=7", f.Urls);
@@ -33,7 +33,7 @@ public class MovedApiTests
         var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Trophy/list" ? Reply(HttpStatusCode.OK, """{"detail":{"errorCode":20,"message":"User not found"}}""") : null };
         var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
         await e.Run(t.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
-        Assert.True(e.Failed == 1 && !File.Exists(Path.Combine(t.Path, "backup-7", "Trophy_list__user_id=7__offset=0__limit=100000.json")), "the error reply is a failed request, not a file");
+        Assert.True(e.Failed > 0 && !File.Exists(Path.Combine(t.Path, "backup-7", "Trophy_list__user_id=7__offset=0__limit=100000.json")), "the error reply is a failed request, not a file");
     }
 
     [Fact]
@@ -54,5 +54,40 @@ public class MovedApiTests
         await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "profile" }, false, false, TestContext.Current.CancellationToken);
         Assert.True(f.Starts.ContainsKey("avatar.test") && f.Seen.Contains("/uploads/a.jpg") && !f.Seen.Contains("/media/avatar/uploads/a.jpg"), "the picture is asked on the avatar host");
         Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "images", "avatar.test_uploads_a.jpg")), "saved under the avatar host's name");
+    }
+
+    static HttpResponseMessage? Pages(string p, string form, int total, int failFrom = -1)
+    {
+        if (p != "/v1/Trophy/list") return null;
+        var off = int.Parse(System.Text.RegularExpressions.Regex.Match(form, @"offset=(\d+)").Groups[1].Value);
+        if (failFrom >= 0 && off >= failFrom) return Reply(HttpStatusCode.OK, """{"detail":{"errorCode":20}}""");
+        var rows = string.Join(',', Enumerable.Range(off, Math.Max(0, Math.Min(300, total - off))).Select(i => $$"""{"id":{{i}}}"""));
+        return Reply(HttpStatusCode.OK, $$"""{"trophies":[{{rows}}],"total":{{total}}}""");
+    }
+
+    [Fact]
+    public async Task TrophyPagesMergeIntoOneFile()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, form) => Pages(p, form, 650) };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
+        var dir = Path.Combine(t.Path, "backup-7");
+        var file = "Trophy_list__user_id=7__offset=0__limit=100000.json";
+        var j = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, file)))!;
+        Assert.True(j["total"]!.GetValue<int>() == 650 && j["trophies"]!.AsArray().Select(x => x!["id"]!.GetValue<int>()).SequenceEqual(Enumerable.Range(0, 650)), "3 pages = one reply of 650 rows in order");
+        Assert.True(f.Forms.Count(x => x.Contains("limit=300")) == 3 && Directory.GetFiles(dir, "Trophy_list*").Length == 1, "three page requests, one file");
+        var m = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"]!.AsArray();
+        Assert.True(e.Failed == 0 && m.Single(x => x!["path"]!.ToString() == file)!["params"]!["limit"]!.ToString() == "100000", "manifest keeps the old params");
+    }
+
+    [Fact]
+    public async Task ATrophyPageThatFailsLeavesNoFile()
+    {
+        using var t = new TempDir("backup-test-");
+        var f = new Fake(Tok) { Custom = (p, form) => Pages(p, form, 650, 300) };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        await e.Run(t.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
+        Assert.True(e.Failed > 0 && !File.Exists(Path.Combine(t.Path, "backup-7", "Trophy_list__user_id=7__offset=0__limit=100000.json")), "no half list is saved as if whole");
     }
 }
