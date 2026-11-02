@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Bereits gesicherte Dateien überspringen (fortsetzen)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Auf den Server hochladen: bald verfügbar</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Starten</value>
   </data>
@@ -419,7 +416,7 @@
     <value>Es verbindet sich nur mit den offiziellen Servern, die in der settings.json neben der backup.exe stehen. Sie können diese Datei in einem Texteditor öffnen.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Ihre Sicherung bleibt auf diesem PC. Das Hochladen auf einen Server ist noch nicht verfügbar.</value>
+    <value>Deine Sicherung bleibt auf diesem PC, außer du drückst nach einer Sicherung auf "An den Community-Server senden": dann geht die ZIP an den Server aus der settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Ihre Anmeldung</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Sicherung abgeschlossen am {0:g}. Was Sie danach im Spiel spielen, verdienen, kaufen oder ändern, ist nicht enthalten: Führen Sie eine neue Sicherung aus.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>An den Community-Server senden</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>An den Community-Server senden</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>Dies sendet {0} an {1}: deine gesamte Profilsicherung, einschließlich deiner Steam-Konto-ID und claim.key. Nichts wird gesendet, bevor du auf Senden drückst. Zuerst meldest du dich auf der Website des Servers mit Steam an. Der Server bewahrt die Datei für seinen Betreiber zur Prüfung auf; sie wird nur auf ein Konto wiederhergestellt, das noch nicht gespielt hat, und nur einmal.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Senden</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Auf der Website des Servers anmelden</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Dein Browser öffnet die Anmeldeseite. Prüfe, dass sie den Code {0} zeigt, melde dich mit Steam an und bestätige. Mit Abbrechen hörst du auf zu warten.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Sicherung wird gesendet</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Angemeldet. {0} wird gesendet...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Empfangen: wartet auf Prüfung</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>Der Server hat deine Sicherung. Ein Betreiber prüft sie vor der Wiederherstellung, das kann dauern. Eine Sicherung wird nur auf ein Konto wiederhergestellt, das noch nicht gespielt hat.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Abgelehnt: schon wiederhergestellt</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>Dieses Profil wurde schon einmal wiederhergestellt, und eine Sicherung kann nur einmal wiederhergestellt werden. Nichts wurde gespeichert.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Abgelehnt: Profil in Benutzung</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Ein anderes Konto hat diese Benutzer-ID bereits. Nichts wurde gespeichert.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Abgelehnt: keine brauchbare Sicherung</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>Der Server kann diese Datei nicht als Sicherung lesen. Nichts wurde gespeichert. Grund: {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>Der Server kann sie jetzt nicht annehmen</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>Ein Upload von dir wird noch verarbeitet, du hast schon 3 zur Prüfung wartend, oder der Server ist ausgelastet. Versuche es später erneut.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Abgelehnt: zu groß</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>Eine Sicherungs-ZIP ist höchstens 64 MiB groß. Nichts wurde gesendet.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Abgemeldet</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>Der Server hat die Anmeldung nicht akzeptiert. Drücke Senden und melde dich erneut an.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Zeitüberschreitung bei der Anmeldung</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Nichts wurde gesendet. Drücke Senden, um es erneut zu versuchen.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>Senden nicht möglich</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>Nichts wurde gesendet. {0}</value>
   </data>
 </root>

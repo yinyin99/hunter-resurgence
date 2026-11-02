@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Omitir archivos ya guardados (reanudar)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Subir al servidor: próximamente</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Iniciar</value>
   </data>
@@ -419,7 +416,7 @@
     <value>Solo se conecta a los servidores oficiales que figuran en settings.json, junto a backup.exe. Puedes abrir ese archivo en un editor de texto.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Tu copia de seguridad se queda en este PC. Subirla a un servidor aún no está disponible.</value>
+    <value>Tu copia se queda en este PC salvo que, tras una copia, pulses "Enviar al servidor de la comunidad": entonces el zip va al servidor indicado en settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Tu inicio de sesión</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Copia de seguridad terminada el {0:g}. Lo que juegues, ganes, compres o cambies en el juego después no está incluido: haz una nueva copia de seguridad.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Enviar al servidor de la comunidad</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>Enviar al servidor de la comunidad</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>Esto envía {0} a {1}: toda la copia de tu perfil, incluido el id de tu cuenta de Steam y claim.key. No se envía nada hasta que pulses Enviar. Primero inicias sesión con Steam en el sitio web del servidor. El servidor guarda el archivo para que su operador lo revise; solo se restaura en una cuenta que aún no ha jugado, y una sola vez.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Inicia sesión en el sitio web del servidor</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Tu navegador abre la página de inicio de sesión. Comprueba que muestra el código {0}, inicia sesión con Steam y confirma. Pulsa Cancelar para dejar de esperar.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Enviando la copia</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Sesión iniciada. Enviando {0}...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Recibida: pendiente de revisión</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>El servidor tiene tu copia. Un operador la revisa antes de restaurarla, lo que puede tardar. Una copia solo se restaura en una cuenta que aún no ha jugado.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Rechazada: ya restaurada</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>Este perfil ya se restauró antes y una copia solo puede restaurarse una vez. No se guardó nada.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Rechazada: perfil en uso</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Otra cuenta ya tiene el id de usuario de este perfil. No se guardó nada.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Rechazada: copia no válida</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>El servidor no puede leer este archivo como copia. No se guardó nada. Motivo: {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>El servidor no puede aceptarla ahora</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>Una subida tuya aún se está procesando, ya tienes 3 pendientes de revisión, o el servidor está ocupado. Inténtalo más tarde.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Rechazada: demasiado grande</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>Un zip de copia pesa como máximo 64 MiB. No se envió nada.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Sesión cerrada</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>El servidor no aceptó el inicio de sesión. Pulsa Enviar e inicia sesión de nuevo.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Tiempo de espera agotado</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>El inicio de sesión no se confirmó a tiempo. No se envió nada. Pulsa Enviar para volver a intentarlo.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>No se pudo enviar</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>No se envió nada. {0}</value>
   </data>
 </root>

@@ -127,7 +127,6 @@
                         </Grid>
                         <ui:ToggleSwitch x:Name="Zip" Grid.Row="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
                         <ui:ToggleSwitch x:Name="Skip" Grid.Row="1" Grid.Column="1" IsChecked="True" MinHeight="28" Padding="0,4,4,4" />
-                        <ui:ToggleSwitch x:Name="Upload" Grid.Row="2" IsEnabled="False" MinHeight="28" Padding="0,4,4,4" />
                     </Grid>
                 </Border>
             </Grid>
@@ -157,7 +156,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <local:ResultBar x:Name="Result" IsOpen="False" IsClosable="False" Margin="0,0,0,8" />
-                <ui:Button x:Name="OpenBtn" Grid.Column="1" Margin="8,0,0,8" VerticalAlignment="Center" Visibility="Collapsed" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button x:Name="SendBtn" Margin="8,0,0,8" Visibility="Collapsed" />
+                    <ui:Button x:Name="OpenBtn" Margin="8,0,0,8" Visibility="Collapsed" />
+                </StackPanel>
             </Grid>
 
             <Grid Grid.Row="3">

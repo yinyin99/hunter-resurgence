@@ -6,5 +6,6 @@
   "web_host": "<web-host>",
   "photo_host": "<photo-host>",
   "static_host": "<static-host>",
-  "avatar_host": "<avatar-host>"
+  "avatar_host": "<avatar-host>",
+  "server_url": "<server-url>"
 }
