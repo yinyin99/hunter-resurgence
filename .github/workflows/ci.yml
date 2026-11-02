@@ -83,6 +83,9 @@ jobs:
           curl -s -D h.txt -o /dev/null http://localhost:8081/images/logo-rating-1.png
           grep -qi '^content-type: image/png' h.txt
           [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/images/x.svg)" = 404 ]
+          curl -sf http://localhost:8081/images.json | grep -q '"logo-bar.png":"[0-9a-f]*"' # the launcher's list (docs/images.md)
+          if curl -sf http://localhost:8081/images.json | grep -q 'x.svg'; then exit 1; fi
+          [ "$(curl -sf http://localhost:8080/images.json)" = '{}' ]
       - if: failure()
         run: docker logs web; docker logs web-img
   # the community server's container image (deploy/): builds, starts on plain HTTP with an empty install, answers, may write /data, and the backup command runs

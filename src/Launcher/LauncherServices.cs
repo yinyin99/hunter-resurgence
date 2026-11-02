@@ -1,3 +1,6 @@
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Resurgence.Services;
@@ -15,7 +18,9 @@ static class LauncherServices
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
         services.AddUiLocalization(Branding.Load(Settings.FilePath));
-        services.AddSingleton(new AssetImages(null)); // the launcher keeps the labelled boxes (issue #175)
+        // the operator's pictures from the website at server_url (docs/images.md): the list is fetched while the window starts; the first slot waits for it
+        var images = Task.Run(() => LoadImages(Settings.Load().ServerUrl));
+        services.AddSingleton(_ => images.Result);
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
         services.AddSingleton(new HostMode { Launcher = true, Mock = mock });
@@ -35,5 +40,23 @@ static class LauncherServices
         services.AddScoped<ModalService>();
         services.AddScoped<ILanguageSwitcher, LauncherLanguageSwitcher>();
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
+    }
+
+    /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after 5 s.</summary>
+    internal static async Task<AssetImages> LoadImages(Uri? server)
+    {
+        if (server is null)
+            return new AssetImages(new Dictionary<string, string>());
+        try
+        {
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            var index = await http.GetFromJsonAsync<Dictionary<string, string>>(new Uri(server, "/images.json"));
+            return new AssetImages(index ?? new Dictionary<string, string>(), server.GetLeftPart(UriPartial.Authority));
+        }
+        // IOException: the connection broke after the headers; InvalidOperationException: an unknown charset
+        catch (Exception e) when (e is HttpRequestException or IOException or TaskCanceledException or JsonException or NotSupportedException or InvalidOperationException)
+        {
+            return new AssetImages(new Dictionary<string, string>());
+        }
     }
 }

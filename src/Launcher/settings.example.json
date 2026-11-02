@@ -4,6 +4,7 @@
   "graphics_file": "<graphics-file>",
   "options_file": "<options-file>",
   "options_key_prefix": "<key-prefix>",
+  "server_url": "<url>",
   "game_name": "<game-name>",
   "game_full": "<game-name-with-edition>",
   "link_news": "<url>",

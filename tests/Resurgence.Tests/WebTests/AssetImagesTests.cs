@@ -10,7 +10,7 @@ public class AssetImagesTests
         using var t = new TempDir("asset-images-");
         foreach (var f in new[] { "Logo Large.PNG", "logo-large.jpg", "x.svg", "notes.txt" })
             File.WriteAllText(Path.Combine(t.Path, f), "");
-        var images = new AssetImages(t.Path);
+        var images = new AssetImages(AssetImages.Index(t.Path));
         Assert.StartsWith("/images/Logo%20Large.PNG?v=", images.Url("logo-large")); // first in ordinal order wins
         Assert.Null(images.Url("x"));     // no SVG: it can run script
         Assert.Null(images.Url("notes")); // not a picture
@@ -24,7 +24,17 @@ public class AssetImagesTests
     [Fact]
     public void NoFolderMeansNoPictures()
     {
-        Assert.Null(new AssetImages(null).Url("logo-large"));
-        Assert.Null(new AssetImages(Path.Combine(Path.GetTempPath(), "asset-images-missing-" + Guid.NewGuid().ToString("N"))).Url("logo-large"));
+        Assert.Empty(AssetImages.Index(null));
+        Assert.Empty(AssetImages.Index(Path.Combine(Path.GetTempPath(), "asset-images-missing-" + Guid.NewGuid().ToString("N"))));
+    }
+
+    [Fact]
+    public void AnIndexFromTheNetworkGivesOnlyEscapedPictures()
+    {
+        var images = new AssetImages(new Dictionary<string, string> { ["Logo Large.PNG"] = "1f", ["it's.png"] = "a')", ["x.svg"] = "1", [".hidden.png"] = "1" }, "https://example.test");
+        Assert.Equal("https://example.test/images/Logo%20Large.PNG?v=1f", images.Url("logo-large"));
+        Assert.Equal("https://example.test/images/it%27s.png?v=a%27%29", images.Url("it-s")); // a quote cannot leave MapPlaceholder's url('...')
+        Assert.Null(images.Url("x"));      // no SVG
+        Assert.Null(images.Url("hidden")); // no dot file
     }
 }

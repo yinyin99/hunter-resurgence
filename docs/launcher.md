@@ -8,7 +8,7 @@ It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 contr
 
 The screens follow the old launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
 
-Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures are not included; each one is a neutral labelled box (the website can show the operator's pictures, [images.md](images.md); the launcher's case is issue #175). The launcher is not usable for playing yet.
+Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. The launcher is not usable for playing yet.
 
 Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
 
@@ -26,7 +26,7 @@ dotnet test tests/Resurgence.Tests -c Release
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
-The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files and temporary backup zips. They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
 
 ### Development switches
 
@@ -54,6 +54,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |
 | `options_key_prefix` | The text that precedes each key name in the options file. |
+| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
 | `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
@@ -67,6 +68,7 @@ Real today:
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
 - **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so is whether game settings were saved once (the next game start no longer asks). The game folder chosen by hand is saved there too and used from the next start.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
+- **Pictures**: from the website at `server_url`, see [images.md](images.md).
 
 Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 

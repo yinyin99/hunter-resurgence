@@ -7,10 +7,11 @@ The website and the launcher draw every picture of the original screens in a *sl
 - The website reads the folder named by `IMAGES_DIR`. On the VPS that is `SERVER_DIR/images`, mounted read-only at `/images` in `web` (`deploy/compose.yml`, [deploy.md](deploy.md#the-community-server)).
 - One file per slot, named `<key>.<png|jpg|jpeg|gif|webp>`. The key is the slot's name in lower case, with every run of characters outside `a-z` and `0-9` made one `-` and none at either end (`AssetImages.Key`): the slot `species-Alpine Ibex` is the file `species-alpine-ibex.png`. SVG is not served: opened directly from the site, an SVG can run script.
 - The files are served at `/images/<file>`, cached `immutable`; the page asks for `/images/<file>?v=<time of the file>`, so a changed file gets a new URL.
+- `/images.json` lists the pictures for the launcher: `{"<file>": "<version>"}`, where the version is the file's `?v=`. It is read with the folder, once at start; `{}` without `IMAGES_DIR`.
 - The website reads the folder once at start: restart `web` after changing files (`docker compose restart web`).
-- A slot without a file shows its labelled box, and so does every slot without `IMAGES_DIR`: the public repository, `dotnet run`, CI. The CI smoke test checks both cases.
+- A slot without a file shows its labelled box, and so does every slot without `IMAGES_DIR`: the public repository, `dotnet run`, CI. The CI smoke test checks both cases and `/images.json`.
 - The map is drawn from `map-<NN>` (the reserve, two digits) on the launch and join maps, and `map-bg` on the score sheet's map; it zooms and pans with the markers.
-- The launcher keeps the boxes: it renders `src/Ui` itself with no server address (issue #175).
+- The launcher renders `src/Ui` itself, so it asks the website. At each start it reads `/images.json` from `server_url` of its `settings.json` ([launcher.md](launcher.md#settingsjson)) and waits 5 s at most; its slots then load `/images/<file>?v=…` from there, and WebView2 caches them until the version changes. Without `server_url`, or on no answer or an error, the launcher shows the labelled boxes.
 
 ## Inventory
 
