@@ -1,9 +1,10 @@
 name: dependabot-locks
-# A Dependabot SDK update (global.json, src/Web/Dockerfile, server/Server/Dockerfile) needs every packages.lock.json made with the new SDK, or the locked restore fails (NU1004).
+# A Dependabot update needs every packages.lock.json it affects, or the locked restore fails (NU1004): an SDK update (global.json, src/Web/Dockerfile, server/Server/Dockerfile) changes all of them,
+# a NuGet update (a .csproj) those of the projects that reference the bumped one too, which Dependabot leaves alone (server/Server.Tests references server/Server).
 # This regenerates them on the pull request's branch and commits them; workflow_dispatch does the same for a branch by hand (docs/deploy.md).
 on:
   pull_request:
-    paths: [global.json, src/Web/Dockerfile, server/Server/Dockerfile]
+    paths: [global.json, src/Web/Dockerfile, server/Server/Dockerfile, '**/*.csproj', '**/packages.lock.json']
   workflow_dispatch:
 permissions: {}
 jobs:
@@ -30,7 +31,7 @@ jobs:
           git add -- ':(glob)**/packages.lock.json'
           if git diff --cached --quiet; then echo "::notice::lock files already match this SDK"; exit 0; fi
           git diff --cached --stat
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "build: regenerate lock files for the new SDK"
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "build: regenerate lock files"
           echo "committed=true" >> "$GITHUB_OUTPUT"
       - name: Push the lock files
         id: push
