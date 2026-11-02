@@ -6,7 +6,7 @@ There is no release yet. While the kit is installed, the game talks only to the 
 
 ## For players
 
-1. Download `play-win-x64.zip` from the latest release and unpack it. Keep every file in the same folder: `play.exe`, `settings.json` and the three `.cmd` files. Windows may warn that it does not know the publisher (the files are not code-signed, see [checking the download](../README.md#windows-smartscreen-and-checking-the-download)): choose More info, then Run anyway.
+1. Download `play-win-x64.zip` from the latest release and unpack it. Keep every file in the same folder: `play.exe`, `settings.json` and the three `.cmd` files. Windows may warn that it does not know the publisher (the files are not code-signed, see [checking the download](backup.md#checking-the-download)): choose More info, then Run anyway.
 2. Double-click `1-setup.cmd`. It lists what it will change, then Windows asks you twice:
    - "Do you want to install this certificate?": choose **Yes**. This is the certificate authority that only your PC knows ([what it is](#what-setup-changes)).
    - A permission window for `play.exe` (administrator): choose **Yes**. Only the edit of the hosts file runs as administrator.
