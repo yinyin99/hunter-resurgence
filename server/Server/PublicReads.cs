@@ -53,7 +53,7 @@ public sealed partial class State
         {
             ["id"] = C(a["user_id"]), ["uuid"] = "", ["handle"] = C(a["handle"]), ["hostname"] = C(a["hostname"]) ?? Py.Str(a["handle"]).ToLowerInvariant(),
             ["avatar"] = C(G(a, "avatar_url", "")), ["gender"] = C(G(a, "gender", 0)), ["locale"] = "", ["timezone"] = "",
-            ["continent"] = "", ["country"] = "", ["rank"] = 0, ["hunterscore"] = C(G(a, "hunterscore", 0)),
+            ["continent"] = "", ["country"] = "", ["hunterscore"] = C(G(a, "hunterscore", 0)),
             ["membershipType"] = "freeplay", ["membershipTitle"] = "Hunter", ["memberSince"] = 0,  // ponytail: no join date shown
             ["membershipExpires"] = 0, ["licenseAccepted"] = 1, ["user_group"] = 1, ["user_services"] = new JsonObject(),
             ["items"] = new JsonObject(), ["worlditems"] = new JsonArray(), ["records"] = new JsonObject(), ["friend_requests"] = 0,

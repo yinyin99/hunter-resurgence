@@ -216,7 +216,8 @@ public static class GameApi
                 api.MapExactPost(game, path, profile)
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
-                                    + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone.")
+                                    + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone, "
+                                    + "except Me's `rank`: the account's place by hunterscore among the accounts not banned, the recorded player's account left out.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
                 if (path == ME)  // the in-game page reads it with GET and its JWT
                     api.MapGet(path, Handle(game, r => r.Method == "GET" && r.Path == path ? profile(r) : null)).WithName("MeGet")

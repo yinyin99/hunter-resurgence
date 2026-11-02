@@ -46,6 +46,15 @@ public class RestoreTests : StateTestBase
     static JsonNode? At(JsonNode? n, string key) => n![key]?.DeepClone();
 
     [Fact]
+    public void TestALocalServerKeepsTheRankOfTheRestoredProfile()
+    {
+        var local = new State(Path.Combine(tmp, "local.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: true);
+        Restorer.Import(local, Zip(TestZip.Own()), local.LocalAccount, tmp);
+        // the backup's rank, not the place by hunterscore (the only account would be 1)
+        Eq("3", local.MeReply(local.LocalAccount, new JsonObject())!["rank"]);
+    }
+
+    [Fact]
     public void TestAZipBecomesTheRowsOfANewAccount()
     {
         var result = Restorer.Import(state, Zip(TestZip.Own()), null, tmp);
@@ -227,16 +236,24 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         var reply = await Post(Replay.ME, token1001);
         Assert.Equal((200, "state"), (reply.Status, reply.Source));
         var me = JsonNode.Parse(reply.Body)!;
-        Eq("""[1001, "sample", 1234, 3, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
+        Eq("""[1001, "sample", 1234, 1, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
             me["unread_messages"], me["membershipType"]));
         Eq("""{"best": 9}""", me["records"]);
         Eq("[]", me["worlditems"]);
         Assert.DoesNotContain("example.invalid", Encoding.UTF8.GetString(reply.Body));
         Assert.DoesNotContain("Person", Encoding.UTF8.GetString(reply.Body));
-        // the account that restored nothing gets a new account's profile, not the recorded player's
+        // the account that restored nothing gets a new account's profile, not the recorded player's, and ranks below 1001
         var other = JsonNode.Parse((await Post(Replay.ME, token7)).Body)!;
         Eq("""{}""", other["records"]);
-        Eq("0", other["rank"]);
+        Eq("2", other["rank"]);
+    }
+
+    [Fact]
+    public async Task TestTheRecordedAccountsHunterscoreDoesNotCountInTheRank()
+    {
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', 5000) WHERE id = ?", state.LocalAccount);
+        Eq("1", JsonNode.Parse((await Post(Replay.ME, token1001)).Body)!["rank"]);
     }
 
     [Fact]
