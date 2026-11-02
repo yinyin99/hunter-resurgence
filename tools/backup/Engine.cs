@@ -303,7 +303,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (off > 0) Need(1);
             var body = await Get(page);
             if (Json(body) is not JsonObject o || o["trophies"] is not JsonArray t) { Fail(whole, name, null, "a page of the list gave no trophies"); return; }
-            if (Repeats(seen, body!, whole)) return; // not saved: a list of repeated pages is not the player's list
+            if (Repeats(seen, body!, whole, written: false)) return; // not saved: a list of repeated pages is not the player's list
             if (first == null) (first, firstBody, date) = (o, body, partDate);
             foreach (var x in t) rows.Add(x?.DeepClone());
             if (t.Count < 300 || (Num(first["total"]) is { } n && rows.Count >= n)) break;
@@ -407,11 +407,18 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         await Get(Q("Me/friends", true));
     }
 
-    /// <summary>A server that ignores the offset answers the first page again. True when this page's body was already in <paramref name="seen"/>: the page is failed (the list may be cut, so the run is not whole) and the caller stops paging.</summary>
-    bool Repeats(HashSet<string> seen, byte[] body, R page)
+    /// <summary>A server that ignores the offset answers the first page again. True when this page's body was already in <paramref name="seen"/>: the page is failed (the list may be cut, so the run is not whole) and the caller stops paging.
+    /// A page that Get wrote to disk (<paramref name="written"/>) is taken back: its file and manifest entry go, so the manifest lists it as failed and a resumed run asks for it again.</summary>
+    bool Repeats(HashSet<string> seen, byte[] body, R page, bool written = true)
     {
         if (seen.Add(Hex(SHA256.HashData(body)))) return false;
-        Fail(page, FileName(page), null, "a page repeated an earlier one: the server ignores the offset, the list may be cut", ServerError);
+        var name = FileName(page);
+        if (written)
+        {
+            lock (files) files.Remove(name);
+            File.Delete(Path.Combine(dir, name));
+        }
+        Fail(page, name, null, "a page repeated an earlier one: the server ignores the offset, the list may be cut", ServerError);
         return true;
     }
 
