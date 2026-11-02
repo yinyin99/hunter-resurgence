@@ -529,4 +529,25 @@
   <data name="Send_error_Text" xml:space="preserve">
     <value>Rien n'a été envoyé. {0}</value>
   </data>
+  <data name="Check" xml:space="preserve">
+    <value>Vérifier la connexion</value>
+  </data>
+  <data name="Check_Official" xml:space="preserve">
+    <value>Serveurs officiels : {0}</value>
+  </data>
+  <data name="Check_Community" xml:space="preserve">
+    <value>Serveur communautaire : {0}</value>
+  </data>
+  <data name="Check_ok" xml:space="preserve">
+    <value>joignable</value>
+  </data>
+  <data name="Check_down" xml:space="preserve">
+    <value>injoignable (hors service, ou pas de réseau)</value>
+  </data>
+  <data name="Check_redirected" xml:space="preserve">
+    <value>redirigé : le kit joueur, ou une autre entrée du fichier hosts, envoie les noms du jeu vers ce PC. Retirez le kit joueur (3-remove.cmd) avant une sauvegarde.</value>
+  </data>
+  <data name="Check_unset" xml:space="preserve">
+    <value>non défini</value>
+  </data>
 </root>

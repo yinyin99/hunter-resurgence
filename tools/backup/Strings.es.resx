@@ -529,4 +529,25 @@
   <data name="Send_error_Text" xml:space="preserve">
     <value>No se envió nada. {0}</value>
   </data>
+  <data name="Check" xml:space="preserve">
+    <value>Comprobar conexión</value>
+  </data>
+  <data name="Check_Official" xml:space="preserve">
+    <value>Servidores oficiales: {0}</value>
+  </data>
+  <data name="Check_Community" xml:space="preserve">
+    <value>Servidor de la comunidad: {0}</value>
+  </data>
+  <data name="Check_ok" xml:space="preserve">
+    <value>accesible</value>
+  </data>
+  <data name="Check_down" xml:space="preserve">
+    <value>no accesible (caído, o sin red)</value>
+  </data>
+  <data name="Check_redirected" xml:space="preserve">
+    <value>redirigido: el kit de jugador, u otra entrada del archivo hosts, envía los nombres del juego a este PC. Quita el kit de jugador (3-remove.cmd) antes de una copia de seguridad.</value>
+  </data>
+  <data name="Check_unset" xml:space="preserve">
+    <value>no definido</value>
+  </data>
 </root>
