@@ -60,6 +60,10 @@ The JavaScript modules of `src/Ui/wwwroot` (`shell.js`) are imported by their pl
 
 The paw favicon (`favicon.ico`, `favicon.svg`, which turns light in a dark theme, `favicon-32.png` and `apple-touch-icon.png`) lives in `src/Web/wwwroot/`, and `App.razor` links it through `@Assets[...]`, so its URLs are fingerprinted and served `immutable`, while the plain paths such as `/favicon.ico` answer too.
 
+## Search engines
+
+Every page's `<head>` (`src/Web/Components/App.razor`) has a meta description (`App.Description`) and the link preview tags `og:type`, `og:title` (`Landing.Heading`), `og:description` and `og:image` (the paw's `apple-touch-icon.png`, as an absolute URL built from the request's scheme and host). They are in the page's language and say `{game_full}`, so the game's name comes from `settings.json` and the repository never holds it; without it they say "the game". The landing page (`/`, `src/Ui/Pages/Feed.razor`) has `Landing.Heading` as its `<title>` and in a visually hidden `<h1>`: the hero's logo is the visible title. There is no canonical link: the website has one host, and the language comes from the browser, not the URL. The CI docker smoke test checks the `og:image` URL and the `<h1>`.
+
 `src/Web/wwwroot/robots.txt` (served at `/robots.txt`) turns away two SEO backlink crawlers, `MJ12bot` and `serpstatbot`: they sent most of the website's requests and brought no visitors, and every page they fetch is rendered on the server. It also keeps the Blazor hub (`/_blazor/`) and the pages that give a crawler only an empty shell or a redirect out of search engines: sign-in, sign-up, payment, per-session and launcher-only pages. The news, profiles, competitions, leaderboards, store, help and download stay open. It is a request, not access control: the CDN's bot rules handle crawlers that ignore it. The CI docker smoke test checks that it is served.
 
 ## Security headers

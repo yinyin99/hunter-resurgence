@@ -6,6 +6,8 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Neoficiální komunitní server pro {game_full}: hrajte i po uzavření oficiálních serverů, s profilem obnoveným ze zálohy.</value></data>
+  <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: komunitní server pro {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Stránka nenalezena</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tato stránka neexistuje.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JÍT LOVIT</value></data>
