@@ -135,6 +135,7 @@ public static class GameApi
               .WithDescription("Answered without recordings on a community server; a local server replays them.");
             app.MapAuth(game);
             if (dataDir is not null) app.MapAccount(game, dataDir);
+            app.MapHunters(game);
             api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
                .WithName("ChatConversations").WithSummary("Inbox threads")
                .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")

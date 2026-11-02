@@ -241,14 +241,36 @@ public sealed class Store
         return JsonNode.Parse((string)con.Scalar("SELECT account FROM accounts WHERE id = ?", id)!)!.AsObject();
     }
 
-    /// <summary>The account's rank by hunterscore among the accounts not banned, except `excluded`: 1 for the highest; equal
-    /// hunterscores share a rank and the next lower one takes the next number (a missing hunterscore is 0).</summary>
+    /// <summary>The account's place on the hunterscore board among the accounts not banned, except `excluded`: 1 for the highest;
+    /// equal hunterscores are numbered in account id order (a missing hunterscore is 0).</summary>
     public long Rank(long id, long? excluded = null)
     {
         using var con = Open();
-        return (long)con.Scalar("SELECT 1 + COUNT(DISTINCT json_extract(o.account, '$.hunterscore')) FROM accounts o JOIN accounts a ON a.id = ?"
-                                + " WHERE o.banned = 0 AND o.id IS NOT ? AND json_extract(o.account, '$.hunterscore') > COALESCE(json_extract(a.account, '$.hunterscore'), 0)",
+        return (long)con.Scalar("SELECT 1 + COUNT(*) FROM accounts o JOIN accounts a ON a.id = ?1"
+                                + " WHERE o.banned = 0 AND o.id IS NOT ?2 AND o.id <> a.id"
+                                + " AND (COALESCE(json_extract(o.account, '$.hunterscore'), 0) > COALESCE(json_extract(a.account, '$.hunterscore'), 0)"
+                                + " OR (COALESCE(json_extract(o.account, '$.hunterscore'), 0) = COALESCE(json_extract(a.account, '$.hunterscore'), 0) AND o.id < a.id))",
                                 id, excluded)!;
+    }
+
+    /// <summary>One page of the hunterscore board (the order of Rank) and how many accounts are on it.</summary>
+    public (List<(long Rank, string Handle, long Hunterscore)> Rows, long Total) Board(long? excluded, int offset, int limit)
+    {
+        using var con = Open();
+        var rows = con.Rows("SELECT handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
+                            + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
+            .Select((r, i) => (offset + i + 1L, (string)r[0], Convert.ToInt64(r[1]))).ToList();
+        return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
+    }
+
+    /// <summary>A hunter on the board by handle (case does not matter); null when unknown, banned or `excluded`.</summary>
+    public (string Handle, long Hunterscore, long Rank)? Hunter(string handle, long? excluded)
+    {
+        object[]? row;
+        using (var con = Open())
+            row = con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) FROM accounts"
+                           + " WHERE handle = ? AND banned = 0 AND id IS NOT ?", handle, excluded).FirstOrDefault();
+        return row is null ? null : ((string)row[1], Convert.ToInt64(row[2]), Rank((long)row[0], excluded));
     }
 
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an

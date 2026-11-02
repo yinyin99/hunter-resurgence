@@ -8,6 +8,15 @@ public sealed class ServerCookie
 {
     public string? Value { get; set; }
     public string? Host { get; set; }
+
+    /// <summary>A request to the server as this browser: its session cookie when it has one, and the host it used.</summary>
+    public HttpRequestMessage Request(HttpMethod method, string path)
+    {
+        var request = new HttpRequestMessage(method, path);
+        if (Value is not null) request.Headers.TryAddWithoutValidation("Cookie", $"{ServerSessionApi.Cookie}={Value}");
+        if (Host is not null) request.Headers.Host = Host;
+        return request;
+    }
 }
 
 /// <summary>The session of the community server behind the same domain: the player is whoever the browser's cookie names at <see cref="ServerSessionApi.Me"/>.
@@ -24,11 +33,11 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
         if (cookie.Value is null) return null;
         try
         {
-            using var request = Request(HttpMethod.Get, ServerSessionApi.Me);
+            using var request = cookie.Request(HttpMethod.Get, ServerSessionApi.Me);
             using var response = await http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
             var me = await response.Content.ReadFromJsonAsync<ServerAccount>();
-            return me is { Handle.Length: > 0 } ? new Session(me.Handle, 0) : null;
+            return me is { Handle.Length: > 0 } ? new Session(me.Handle, me.Hunterscore) : null;
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
@@ -43,7 +52,7 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
         {
             try
             {
-                using var request = Request(HttpMethod.Post, ServerSessionApi.SignOut);
+                using var request = cookie.Request(HttpMethod.Post, ServerSessionApi.SignOut);
                 request.Headers.Add("X-Requested-With", "XMLHttpRequest");
                 (await http.SendAsync(request)).Dispose();
             }
@@ -54,14 +63,6 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
         }
         cookie.Value = null;
         Changed?.Invoke();
-    }
-
-    HttpRequestMessage Request(HttpMethod method, string path)
-    {
-        var request = new HttpRequestMessage(method, path);
-        request.Headers.TryAddWithoutValidation("Cookie", $"{ServerSessionApi.Cookie}={cookie.Value}");
-        if (cookie.Host is not null) request.Headers.Host = cookie.Host;
-        return request;
     }
 
     public Task<Result> RequestCodeAsync(string email) => Task.FromResult(Result.Fail("Validation.Email.Invalid"));

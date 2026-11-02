@@ -96,6 +96,8 @@ public static class Restorer
             if (copied) File.Delete(kept);
             throw;
         }
+        using (var con = store.Open(finalId))  // a community server's value is computed from the restored statistics
+            state.UpdateHunterscore(con, finalId);
         var before = Path.Combine(dataDir, "restores", current.ToString());
         if (finalId != current && Directory.Exists(before))  // zips kept for review under the old id follow the account
         {
