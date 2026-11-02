@@ -42,9 +42,11 @@ public sealed class Fake : HttpMessageHandler
     public (string Path, int Times, int Status, int After)? Throttle;
     /// <summary>The HTTP Date header of every response; null = none.</summary>
     public DateTimeOffset? DateHeader;
+    /// <summary>The JSON body of every POST, as sent.</summary>
+    public readonly List<string> Bodies = [];
     int throttled;
     readonly object gate = new();
-    public Fake(string token) => Token = token;
+    public Fake(string token) { Token = token; System.Text.Json.Nodes.JsonNode.Parse("""{"a":1}""")!.AsObject().Select(p => $"{p.Key}={p.Value}").ToList(); } // the first parse is slow: warm it up so it cannot skew the pacing tests
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
     {
@@ -57,7 +59,12 @@ public sealed class Fake : HttpMessageHandler
     {
         var path = req.RequestUri!.AbsolutePath;
         var host = req.RequestUri.Host;
-        var form = req.Content == null ? "" : await req.Content.ReadAsStringAsync(ct);
+        var form = req.Content == null ? req.RequestUri.Query.TrimStart('?') : await req.Content.ReadAsStringAsync(ct);
+        if (req.Content != null) // the API takes JSON now; the tests read the fields as k=v&k=v
+        {
+            Bodies.Add(form);
+            form = string.Join('&', System.Text.Json.Nodes.JsonNode.Parse(form)!.AsObject().Select(p => $"{p.Key}={p.Value}"));
+        }
         lock (gate)
         {
             ct.ThrowIfCancellationRequested(); // a real handler refuses a cancelled request too
@@ -106,6 +113,7 @@ public sealed class Fake : HttpMessageHandler
             "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
+            "/v1/Trophy/list" => """{"trophies":[],"total":0}""",
             "/v1/Wallet/transactions" or "/v1/Wallet/silver_transactions" => "[]",
             _ => """{"ok":1}""",
         };
@@ -127,5 +135,5 @@ static class Hosts
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
     public static Engine Make(Fake f, string keyPath, Action<string>? log = null) => new(
-        new("api.test", "apiv2.test", "web.test", "fakeclient.exe", ["photo.test"], "ckey-secret-9"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
+        new("apiv2.test", "web.test", "fakeclient.exe", ["photo.test", "avatar.test"], "ckey-secret-9", null, "avatar.test"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
 }
