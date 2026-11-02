@@ -43,7 +43,7 @@ static class LauncherServices
     }
 
     /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after 5 s.</summary>
-    static async Task<AssetImages> LoadImages(Uri? server)
+    internal static async Task<AssetImages> LoadImages(Uri? server)
     {
         if (server is null)
             return new AssetImages(new Dictionary<string, string>());
@@ -53,7 +53,8 @@ static class LauncherServices
             var index = await http.GetFromJsonAsync<Dictionary<string, string>>(new Uri(server, "/images.json"));
             return new AssetImages(index ?? new Dictionary<string, string>(), server.GetLeftPart(UriPartial.Authority));
         }
-        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or NotSupportedException)
+        // IOException: the connection broke after the headers; InvalidOperationException: an unknown charset
+        catch (Exception e) when (e is HttpRequestException or IOException or TaskCanceledException or JsonException or NotSupportedException or InvalidOperationException)
         {
             return new AssetImages(new Dictionary<string, string>());
         }

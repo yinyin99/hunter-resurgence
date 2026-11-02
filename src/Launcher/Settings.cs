@@ -24,7 +24,8 @@ public sealed record Settings(string? SteamAppId, string? ClientExe, string? Gra
         string? Get(string k) => d.TryGetValue(k, out var v) && v.Length > 0 && !v.Contains('<') ? v : null;
         // all of these end up in file paths: no ids with letters, no absolute or parent-relative paths
         string? Relative(string k) => Get(k) is { } v && !Path.IsPathRooted(v) && !v.Split('\\', '/').Contains("..") ? v : null;
-        Uri? Server() => Get("server_url") is { } v && Uri.TryCreate(v, UriKind.Absolute, out var u) && u.Scheme is "https" or "http" ? u : null;
+        // http only on this PC: the launcher's page is https, a remote http picture would be blocked as mixed content
+        Uri? Server() => Get("server_url") is { } v && Uri.TryCreate(v, UriKind.Absolute, out var u) && (u.Scheme == "https" || u.Scheme == "http" && u.IsLoopback) ? u : null;
         var id = Get("steam_app_id");
         return new(id is not null && id.All(char.IsAsciiDigit) ? id : null, Relative("client_exe"), Relative("graphics_file"), Relative("options_file"), Get("options_key_prefix"), Server());
     }

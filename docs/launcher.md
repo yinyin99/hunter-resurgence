@@ -26,7 +26,7 @@ dotnet test tests/Resurgence.Tests -c Release
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
-The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files and temporary backup zips. They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
 
 ### Development switches
 
@@ -54,7 +54,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |
 | `options_key_prefix` | The text that precedes each key name in the options file. |
-| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` works for a website on this PC (`dotnet run`). |
+| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
 | `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `news`, `news_archive`, `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |

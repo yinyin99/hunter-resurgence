@@ -16,6 +16,10 @@ public class GameFilesTests
         var s = Settings.Load(Path.Combine(root, "gs.json").Also(p => File.WriteAllText(p, """{"graphics_file":"g.cfg","options_file":"sub\\o.bin","options_key_prefix":"fake_"}""")));
         Assert.True(s is { GraphicsFile: "g.cfg", OptionsFile: @"sub\o.bin", OptionsKeyPrefix: "fake_" }, "settings.json: graphics file, options file and key prefix");
         Assert.True(Settings.Load(Path.Combine(root, "bad.json")) is { GraphicsFile: null, OptionsFile: null, OptionsKeyPrefix: null }, "placeholders: those parts are not configured");
+        Assert.True(Settings.Load(Path.Combine(root, "su.json").Also(p => File.WriteAllText(p, """{"server_url":"https://community.example.test"}"""))).ServerUrl == new Uri("https://community.example.test"), "server_url: an https address");
+        foreach (var url in new[] { "http://community.example.test", "ftp://community.example.test", "not a url" })
+            Assert.True(Settings.Load(Path.Combine(root, "su.json").Also(p => File.WriteAllText(p, $$"""{"server_url":"{{url}}"}"""))).ServerUrl is null, $"server_url {url}: not configured");
+        Assert.NotNull(Settings.Load(Path.Combine(root, "su.json").Also(p => File.WriteAllText(p, """{"server_url":"http://localhost:5080"}"""))).ServerUrl); // http on this PC
         Assert.True(!GameFiles.ClientRunning(null) && !GameFiles.ClientRunning("no-such-client.exe"), "client not running: false");
         Assert.True(GameFiles.ClientRunning(Path.GetFileName(Environment.ProcessPath)), "a running process of that name: true");
 
