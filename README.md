@@ -43,7 +43,7 @@ gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
 
 ## For players: the player kit
 
-The player kit is a small Windows tool that lets the game reach the community server: a one-time setup (it edits the Windows hosts file and trusts a local certificate that is only good for the game's server names) and a helper you keep open while you play. It never changes the game's files, and one command undoes everything. It is not released yet. Setup refuses to run before 2026-11-11, so you keep the official servers until they close. Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md).
+The player kit is a small Windows tool that lets the game reach the community server: a one-time setup (it edits the Windows hosts file and trusts a local certificate that is only good for the game's server names) and a helper you keep open while you play. It never changes the game's files, and one command undoes everything. It is not released yet. While it is installed the game talks only to the community server; `3-remove.cmd` gives the official servers back. Make your backup with the backup tool before setup, because the backup tool needs the official servers. Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md).
 
 ## Roadmap
 
@@ -53,7 +53,7 @@ Solo means a single-player hunt on a server; multiplayer means hunting with othe
 
 | Step | What it brings | State |
 |---|---|---|
-| Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and do not run any setup tool before the shutdown if you still want the official servers | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
+| Now | **Profile backup**: saves your profile while the official servers are still up. Keep the game installed (a server needs your copy), keep your backup zips private, and run it before the player kit's setup: the kit sends the game to the community server | Available ([above](#for-players-the-backup-tool)). Run it before 2026-11-11 |
 | 1 | **Community server, accounts and restore**: a community server (the same code you can run yourself) with accounts, sign in with your Steam account (email sign-in may follow), and restore: upload your backup zip on the website and, after the operator approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically; every upload waits for that approval. Hunting, kills, harvest, score, gold and XP work; missions, competitions, leaderboards and the trophy-lodge pages may be missing at first. There is no seasonal event by default | In progress: the server is built ([docs/server.md](docs/server.md)) |
 | 2 | **Offline play**: run the same server on your own PC or local network, with your own copy of the game ([docs/server.md](docs/server.md)) | Planned |
 | 3 | **Remote play**: the player kit (`play setup`, `play run`) is how the game reaches the community server over the internet, through a small helper on your PC | In progress: [docs/play.md](docs/play.md); no release yet |

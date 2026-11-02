@@ -13,7 +13,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Usage" xml:space="preserve">
-    <value>play setup [--force]   Einmalige Einrichtung: leitet die Servernamen des Spiels auf diesen PC um und vertraut dafür einem lokalen Zertifikat.
+    <value>play setup            Einmalige Einrichtung: leitet die Servernamen des Spiels auf diesen PC um und vertraut dafür einem lokalen Zertifikat.
 play setup --remove    Macht alles rückgängig, was setup geändert hat.
 play run               Schickt das Spiel zum Community-Server. Lassen Sie es beim Spielen laufen.</value>
   </data>
@@ -31,9 +31,6 @@ play run               Schickt das Spiel zum Community-Server. Lassen Sie es bei
   </data>
   <data name="SettingsHost" xml:space="preserve">
     <value>settings.json: "{0}" ist kein Hostname.</value>
-  </data>
-  <data name="TooEarly" xml:space="preserve">
-    <value>Die offiziellen Server bleiben bis zum {0} online. Eine Einrichtung jetzt würde das Spiel stattdessen zum Community-Server schicken. Führen Sie setup an diesem Tag oder später erneut aus (--force schaltet trotzdem jetzt um).</value>
   </data>
   <data name="SetupPlan" xml:space="preserve">
     <value>setup ändert drei Dinge auf diesem PC und sonst nichts (Spieldateien werden nie angefasst):

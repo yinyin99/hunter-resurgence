@@ -13,7 +13,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Usage" xml:space="preserve">
-    <value>play setup [--force]   One-time setup: points the game's server names at this PC and trusts a local certificate for them.
+    <value>play setup            One-time setup: points the game's server names at this PC and trusts a local certificate for them.
 play setup --remove    Undoes everything setup changed.
 play run               Sends the game to the community server. Leave it running while you play.</value>
   </data>
@@ -31,9 +31,6 @@ play run               Sends the game to the community server. Leave it running 
   </data>
   <data name="SettingsHost" xml:space="preserve">
     <value>settings.json: "{0}" is not a host name.</value>
-  </data>
-  <data name="TooEarly" xml:space="preserve">
-    <value>The official servers stay online until {0}. Setting up now would send the game to the community server instead. Run setup again on or after that day (--force switches now anyway).</value>
   </data>
   <data name="SetupPlan" xml:space="preserve">
     <value>setup changes three things on this PC and nothing else (game files are never touched):
