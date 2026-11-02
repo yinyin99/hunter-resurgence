@@ -55,8 +55,9 @@ builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetR
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
-// IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes
-builder.Services.AddSingleton(new AssetImages(builder.Configuration["IMAGES_DIR"]));
+// IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes. /images.json lists them for the launcher
+var imageIndex = AssetImages.Index(builder.Configuration["IMAGES_DIR"]);
+builder.Services.AddSingleton(new AssetImages(imageIndex));
 
 // behind the reverse proxy (deploy/): the client address and https come from FORWARDED_TRUSTED only; unset, nothing is forwarded
 builder.Services.Configure<ForwardedHeadersOptions>(o => ForwardedProxy.Configure(o, builder.Configuration["FORWARDED_TRUSTED"]));
@@ -130,6 +131,8 @@ if (builder.Configuration["IMAGES_DIR"] is { Length: > 0 } imagesDir && Director
 }
 app.UseAntiforgery();
 app.MapStaticAssets();
+// the launcher's list of the pictures (docs/images.md): {"<file>":"<version>"}; {} without IMAGES_DIR
+app.MapGet("/images.json", () => imageIndex);
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = null).AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
 
