@@ -44,8 +44,8 @@ public sealed partial class State
 
     /// <summary>This server's ethical kills of the account's closed expeditions: (species, weapon item of the last hit). A
     /// kill counts once harvested (event 3); kills of the open expedition wait for its close. The heartbeat stores events as
-    /// sent: a kill whose species is no whole number, or whose rows cannot be read back (a number that is not finite), is
-    /// skipped and logged; a weapon that is no whole number counts for the species only.</summary>
+    /// sent: a kill whose species is no whole number is skipped, one whose rows cannot be read back (a number that is not
+    /// finite) is skipped and logged, and a weapon that is no whole number counts for the species only.</summary>
     List<(long, long?)> ClosedKills(Db con, long account)
     {
         var kills = new List<(long, long?)>();
