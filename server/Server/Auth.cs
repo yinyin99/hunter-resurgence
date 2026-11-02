@@ -350,10 +350,15 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     // ---- the session
 
-    /// <summary>GET /auth/me: who the cookie is.</summary>
+    /// <summary>GET /auth/me: who the cookie is, with the hunterscore and the place on the board.</summary>
     public Reply Me(Req r) =>
         Account(r) is { } account
-            ? Json(200, new JsonObject { ["userId"] = account, ["handle"] = Store.HandleOf(account) })
+            ? Json(200, new JsonObject
+            {
+                ["userId"] = account, ["handle"] = Store.HandleOf(account),
+                ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
+                ["rank"] = Store.Rank(account, state.LocalAccount),
+            })
             : Json(401, new JsonObject { ["error"] = "signed out" });
 
     /// <summary>POST /auth/signout.</summary>

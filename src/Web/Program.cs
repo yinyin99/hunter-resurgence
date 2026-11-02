@@ -53,6 +53,13 @@ builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetR
 builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
+if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
+{
+    // the hunterscore board and the profile header are the community server's; registered after the mocks they wrap
+    builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
+    builder.Services.AddScoped<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
+        new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>()));
+}
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
 // IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes. /images.json lists them for the launcher

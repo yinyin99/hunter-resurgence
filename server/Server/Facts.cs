@@ -19,6 +19,15 @@ public sealed class Facts
         foreach (var (family, ids) in Obj("families"))
             foreach (var id in ids!.AsArray())
                 Families[(int)Py.L(id)] = family;
+        var ranks = Obj("ranks");
+        RankCap = ranks["cap"] is { } cap ? Py.L(cap) : 0;
+        Ranks = [.. (ranks["rows"] as JsonArray ?? []).Select(r => (string?)r!["category"] switch
+        {
+            "animal" => new Rank("animal", [Py.L(r["species"])]),
+            "weapon" => new Rank("weapon", [.. r["items"]!.AsArray().Select(Py.L)]),
+            "collectable" => new Rank("collectable", [.. r["types"]!.AsArray().Select(Py.L)]),
+            var c => throw new InvalidDataException($"facts: unknown rank category {c}"),
+        })];
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));
@@ -37,6 +46,14 @@ public sealed class Facts
 
     /// <summary>Species id → score family (Scoring).</summary>
     public readonly Dictionary<int, string> Families = [];
+
+    /// <summary>A row of the hunterscore: `animal` (Ids = the species id), `weapon` (the weapon item ids, all ammo summed) or
+    /// `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>
+    public sealed record Rank(string Category, long[] Ids);
+    /// <summary>The rank rows of the hunterscore (`ranks.rows`); empty when the file has none.</summary>
+    public readonly Rank[] Ranks;
+    /// <summary>The most a rank row adds to the hunterscore (`ranks.cap`); 0 when the file has no table.</summary>
+    public readonly long RankCap;
 
     /// <summary>{texture id: name} of the kill page.</summary>
     public Dictionary<long, string> Textures => Obj("textures").ToDictionary(kv => long.Parse(kv.Key), kv => (string)kv.Value!);

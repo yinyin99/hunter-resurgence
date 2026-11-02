@@ -30,9 +30,9 @@ public class ServerSessionServiceTests
     [Fact]
     public async Task MeBecomesTheSessionAndCarriesTheCookieAndHost()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"userId": 2000000001, "handle": "Fox"}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"userId": 2000000001, "handle": "Fox", "hunterscore": 1234, "rank": 2}"""));
         var session = await Make(fake).CurrentAsync();
-        Assert.Equal(new Session("Fox", 0), session);
+        Assert.Equal(new Session("Fox", 1234), session);
         var request = Assert.Single(fake.Seen);
         Assert.Equal("/auth/me", request.RequestUri!.AbsolutePath);
         Assert.Equal("hr_session=abc", Assert.Single(request.Headers.GetValues("Cookie")));

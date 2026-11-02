@@ -1,6 +1,6 @@
 namespace Resurgence.Services;
 
-/// <summary>What the community server serves on the website's own host (docs/website.md#sign-in): the cookie and the three paths. Sign-in is a browser navigation to <see cref="SteamLogin"/>.</summary>
+/// <summary>What the community server serves on the website's own host (docs/website.md#sign-in): the cookie and its paths. Sign-in is a browser navigation to <see cref="SteamLogin"/>.</summary>
 public static class ServerSessionApi
 {
     public const string Cookie = "hr_session";
@@ -10,7 +10,15 @@ public static class ServerSessionApi
     public const string SignOut = "/auth/signout";
     /// <summary>Takes <c>?next=</c>, a local path to come back to.</summary>
     public const string SteamLogin = "/auth/steam/login";
+    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerHunter"/> or 404. Public: no cookie needed.</summary>
+    public const string Hunters = "/hunters";
 }
 
 /// <summary>The JSON of <see cref="ServerSessionApi.Me"/>.</summary>
-public sealed record ServerAccount(long UserId, string Handle);
+public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0);
+
+/// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
+public sealed record ServerHunter(int Rank, string Handle, int Hunterscore);
+
+/// <summary>One page of the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
+public sealed record ServerBoard(int Page, int Pages, int Total, ServerHunter[] Rows);

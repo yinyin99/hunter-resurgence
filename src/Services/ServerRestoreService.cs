@@ -16,10 +16,8 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
 
     HttpRequestMessage Request(HttpMethod method, string path)
     {
-        var request = new HttpRequestMessage(method, path);
-        request.Headers.TryAddWithoutValidation("Cookie", $"{ServerSessionApi.Cookie}={cookie.Value}");
+        var request = cookie.Request(method, path);
         request.Headers.Add("X-Requested-With", "XMLHttpRequest");
-        if (cookie.Host is not null) request.Headers.Host = cookie.Host;
         return request;
     }
 

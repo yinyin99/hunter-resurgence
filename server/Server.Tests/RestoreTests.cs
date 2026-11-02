@@ -178,7 +178,8 @@ public class RestoreTests : StateTestBase
         Eq("[59, 59, 1, 2]", T(skills["tracking"]!.AsArray().Count, skills["spotting"]!.AsArray().Count, skills["tracking"]![0], skills["spotting"]![0]));
         Eq("""["9001", "9101"]""", new JsonArray(reply["inventory"]!["items"]!.AsArray().Select(i => At(i, "guid")).ToArray()));
         Eq("""{"x": 3144645, "y": -999, "z": 10001}""", reply["inventory"]!["items"]![1]!["position"]);
-        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 1234, "membership": 0, "avatar_url": "https://avatars.example/a.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
+        // hunterscore: the computed value, the zip's statistics hold no ethical kills
+        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://avatars.example/a.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
            reply["account"]);
         var stats = reply["user_stats"]!;
         Eq("""{"collectables": {}, "weapon": {}, "animal": {"5": {"kills": 2}}, "daily_missions": {}, "distance": 12.5, "duration": 3600}""", stats["user_stats"]);
@@ -236,16 +237,18 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         var reply = await Post(Replay.ME, token1001);
         Assert.Equal((200, "state"), (reply.Status, reply.Source));
         var me = JsonNode.Parse(reply.Body)!;
-        Eq("""[1001, "sample", 1234, 1, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
+        // hunterscore: the computed value, the zip's statistics hold no ethical kills
+        Eq("""[1001, "sample", 0, 1, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
             me["unread_messages"], me["membershipType"]));
         Eq("""{"best": 9}""", me["records"]);
         Eq("[]", me["worlditems"]);
         Assert.DoesNotContain("example.invalid", Encoding.UTF8.GetString(reply.Body));
         Assert.DoesNotContain("Person", Encoding.UTF8.GetString(reply.Body));
-        // the account that restored nothing gets a new account's profile, not the recorded player's, and ranks below 1001
+        // the account that restored nothing gets a new account's profile, not the recorded player's; 1001's computed 0 does not rank
+        // above it (equal hunterscores: the lower id first)
         var other = JsonNode.Parse((await Post(Replay.ME, token7)).Body)!;
         Eq("""{}""", other["records"]);
-        Eq("2", other["rank"]);
+        Eq("1", other["rank"]);
     }
 
     [Fact]

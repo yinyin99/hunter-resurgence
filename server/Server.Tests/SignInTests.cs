@@ -243,6 +243,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var first = await SignIn();
         var me = await Me(first);
         Assert.Equal((Store.FirstServerId, "Hunter_One"), ((long)me!["userId"]!, (string)me["handle"]!));
+        Assert.Equal((0L, 1L), ((long)me["hunterscore"]!, (long)me["rank"]!));  // the board leaves out the local account
         Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("99999999999999991"));
         Assert.Equal(Store.FirstServerId, state.Store.AccountByHandle("hunter_one"));
         // a new account starts with the server's starting data
@@ -255,6 +256,28 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(Store.FirstServerId, state.Store.AccountBySteam("99999999999999991"));
         using var con = state.Store.Open();
         Assert.Equal(2L, con.Scalar("SELECT COUNT(*) FROM accounts"));  // the local account and this one
+    }
+
+    [Fact]
+    public async Task TestTheBoardListsHuntersByHunterscore()
+    {
+        await SignIn("99999999999999991", "one");
+        await SignIn("99999999999999992", "two");
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open())
+        {
+            foreach (var (handle, score) in new[] { ("one", 50), ("two", 50), ("third", 70), ("banned", 900) })
+                con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE handle = ?", score, handle);
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        }
+        var board = JsonNode.Parse((await Get("web.test", "/hunters")).Body)!;
+        // equal hunterscores: the older account (the lower id) first
+        Eq("""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70}, {"rank": 2, "handle": "one", "hunterscore": 50}, {"rank": 3, "handle": "two", "hunterscore": 50}]}""", board);
+        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
+        Eq("""{"handle": "two", "hunterscore": 50, "rank": 3}""", JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body));
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned")).Status);
     }
 
     [Fact]
@@ -548,6 +571,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal("<html>recorded</html>", Body(await Get("signup.test", "/")));  // no start page: the local player needs no sign-in
         Assert.Equal("state", (await server.SendAsync("POST", "gameserver.test", HEARTBEAT, [], "{}"u8.ToArray())).Source);  // the local account
         Assert.Equal("miss", (await Get("web.test", "/auth/me")).Source);  // no sign-in on a local server
+        Assert.Equal("miss", (await Get("web.test", "/hunters")).Source);
         Assert.Equal("miss", (await server.SendAsync("POST", "signup.test", "/auth/link", [("X-Requested-With", "x")], [])).Source);
     }
 

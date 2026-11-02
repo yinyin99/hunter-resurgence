@@ -248,9 +248,10 @@ public sealed partial class State
         return (Latest(7), Latest(22));
     }
 
-    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT (call inside a transaction).</summary>
-    public static void CloseStale(Db con) =>
-        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT);
+    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT (call inside a transaction);
+    /// true when it closed one (credit the hunterscore after the commit).</summary>
+    public static bool CloseStale(Db con) =>
+        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT) > 0;
 
     public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a")!;
 
@@ -402,6 +403,7 @@ public sealed partial class State
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
     readonly OrderedDictionary<long, long> family = new();
+    readonly Facts facts;
 
     /// <summary>baseUrl: scheme+host this server answers on; upload and photo URLs point there.
     /// iconUrl: image shown in the toast queued on connect and in skill level-up toasts.
@@ -413,12 +415,13 @@ public sealed partial class State
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
     /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
     /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
-    /// starts from; null: connectBody is that start (no recorded connect).</summary>
+    /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null)
+                 byte[]? startBody = null, Facts? facts = null)
     {
+        this.facts = facts ?? Facts.Default;
         this.skillList = skillList;
         this.offline = offline;
         Spawns = new Spawner(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "spawn.json"));
@@ -480,6 +483,15 @@ public sealed partial class State
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
             Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
+        if (Online)  // the stored values follow the rank table and the counts of today, also after a server update
+        {
+            List<long> ids;
+            using (var all = Store.Open())
+                ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+            foreach (var id in ids)
+                using (var con = Store.Open(id))
+                    UpdateHunterscore(con, id);
+        }
     }
 
     /// <summary>The start's `account`: the template of every new account. Never the recorded one when there is a start.</summary>
@@ -761,7 +773,7 @@ public sealed partial class State
             // delete first: a login that connects twice still shows one toast
             con.Exec("DELETE FROM pending WHERE account_id = $a AND body = ?", toast);
             con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", toast);
-            CloseStale(con);
+            var closed = CloseStale(con);
             // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
             // with the first heartbeat
             con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
@@ -777,6 +789,8 @@ public sealed partial class State
                 (locationId, reserve) = (C(lodge), null);
             }
             con.Commit();
+            if (closed)
+                UpdateHunterscore(con, account);
         }
         var (x, y, z) = StartPosition(locationId);
         var lodgeOut = TryKey(locationId, out var lid) && locations.ContainsKey(lid) ? C(locationId) : C(connect["expedition"]!["lodge"]);
@@ -977,8 +991,10 @@ public sealed partial class State
         }
         using var con = Con(account);
         con.Begin();
-        con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now(), distance);
+        var closed = con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now(), distance) > 0;
         con.Commit();
+        if (closed)
+            UpdateHunterscore(con, account);
     }
 
     public byte[] MoveMultiple2Reply(long account, byte[] formBody)
@@ -1017,10 +1033,12 @@ public sealed partial class State
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();
-        con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now);
+        var closed = con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
         con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?, ?)",
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
         con.Commit();
+        if (closed)
+            UpdateHunterscore(con, account);
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()
@@ -1055,8 +1073,10 @@ public sealed partial class State
         using (var con = Con(account))
         {
             con.Begin();
-            CloseStale(con);
+            var stale = CloseStale(con);
             con.Commit();
+            if (stale)
+                UpdateHunterscore(con, account);
             var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance FROM expeditions"
                                  + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (found is null)
@@ -1185,8 +1205,10 @@ public sealed partial class State
         using (var con = Con(account))
         {
             con.Begin();
-            CloseStale(con);
+            var stale = CloseStale(con);
             con.Commit();
+            if (stale)
+                UpdateHunterscore(con, account);
             rows = con.Rows(
                 "SELECT e.id, e.reserve, e.location_id, e.start_ts, e.end_ts, (SELECT COUNT(*) FROM harvests"
                 + " WHERE account_id = $a AND json_extract(body, '$.expedition_id') = e.id)"
