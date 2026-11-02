@@ -6,7 +6,7 @@
 
 The tool asks the official servers for your profile and saves what they answer, unchanged, in a folder on your PC. The one exception to its reading only is the optional Messages group: opening an unread conversation can mark it as read, and nothing can undo that.
 
-It connects only to the official servers listed in `settings.json`, next to `backup.exe`. Your backup stays on your PC; upload to a server is not available yet. To read your own account it uses the session of the running game ([how](#how-the-token-is-found)). It runs on your PC and needs no installation and no administrator rights. The backup folder, its backup zip and `claim.key` stay on your PC ([Privacy](#privacy)).
+It connects only to the official servers listed in `settings.json`, next to `backup.exe`, and, only when you press "Send to the community server" after a backup, to the community server named there ([Send](#send-to-the-community-server)). Your backup stays on your PC unless you press that button. To read your own account it uses the session of the running game ([how](#how-the-token-is-found)). It runs on your PC and needs no installation and no administrator rights. The backup folder, its backup zip and `claim.key` stay on your PC ([Privacy](#privacy)).
 
 A backup is a copy of your profile at one moment: as it was while the backup ran. Anything you play, earn, buy or change in the game afterwards is not in it: run another backup, which goes into a new folder with the date and time in its name. "Skip files already saved" only continues a run that did not finish.
 
@@ -24,7 +24,7 @@ The window is WPF with the WPF UI library, restyled with the same dark theme and
 
 ### settings.json
 
-`settings.json` sits next to the exe. It holds `client_exe` (the game's exe name, used to find the running game; the [launcher](launcher.md#settingsjson) uses the same key for a path relative to the game folder), `oauth_consumer_key` (the website's public key) and the host names the backup tool talks to: `api_host`, `apiv2_host`, `web_host`, plus `photo_host`, `static_host`, `avatar_host` (pictures are fetched only from https URLs on a host listed here, so every picture host needs a key) and any other `*_host` that pictures may come from. The repository only contains `tools/backup/settings.example.json` with placeholders; while the file is missing or a required key is missing or still a placeholder, the window says once, in its language, that `settings.json` must sit next to `backup.exe` and Start stays off; the file and key are in the Details log. The real values are not in this repository: whoever builds a release supplies them (the release workflow reads them from repository secrets, see `CONTRIBUTING.md`). The release zip therefore carries them in plain text: anyone who downloads it can read the host names, the exe name and the consumer key in its `settings.json`. That is intended: the backup tool cannot reach the official servers without them, and the consumer key is the website's public key, not a secret.
+`settings.json` sits next to the exe. It holds `client_exe` (the game's exe name, used to find the running game; the [launcher](launcher.md#settingsjson) uses the same key for a path relative to the game folder), `oauth_consumer_key` (the website's public key) and the host names the backup tool talks to: `api_host`, `apiv2_host`, `web_host`, plus `photo_host`, `static_host`, `avatar_host` (pictures are fetched only from https URLs on a host listed here, so every picture host needs a key) and any other `*_host` that pictures may come from. `server_url` (optional) is the community server's address, for "Send to the community server"; without it the button is not shown. The repository only contains `tools/backup/settings.example.json` with placeholders; while the file is missing or a required key is missing or still a placeholder, the window says once, in its language, that `settings.json` must sit next to `backup.exe` and Start stays off; the file and key are in the Details log. The real values are not in this repository: whoever builds a release supplies them (the release workflow reads them from repository secrets, see `CONTRIBUTING.md`). The release zip therefore carries them in plain text: anyone who downloads it can read the host names, the exe name and the consumer key in its `settings.json`. That is intended: the backup tool cannot reach the official servers without them, and the consumer key is the website's public key, not a secret.
 
 ## Languages
 
@@ -93,6 +93,17 @@ Kill pages and photos, Photos and Competition history carry a `slow` tag and, li
 
 When a run ends whole with nothing failed (also none left by the earlier runs it continued), the result bar ends with a line of its own: "Backup finished <date time>. Anything you play, earn, buy or change in the game after that is not in it: run a new backup." The time is when the run ended, in the window's language. A run with gaps (a silent host included) and a cancelled one do not get it: they are continued with resume, not redone.
 
+## Send to the community server
+
+After a run that made a backup zip, the result bar has a "Send to the community server" button (only when `settings.json` has `server_url`). It sends that one zip to the server's restore upload ([server.md](server.md#upload-a-backup-zip)), the same as choosing it on the website's restore page. Nothing is sent until you press the button and then "Send" in the dialog that says what goes where.
+
+1. The dialog names the file and the server. "Send" starts the sign-in: the tool asks the server for a code (`POST /auth/link`), shows it in the result bar and opens the server's sign-in page in your browser.
+2. In the browser you sign in with Steam and confirm that the code is the one the tool shows. The tool polls (`GET /auth/link/<code>`) every 2 seconds until you confirm, the code runs out (about 5 minutes: "Sign-in timed out", nothing sent) or you press Cancel.
+3. The tool uploads the zip (`POST /account/restore`, at most 64 MiB; a larger zip is not sent at all) with the session the sign-in gave it. The session lives in memory only and is not saved.
+4. The result bar says what the server answered: received and waiting for the operator's review; refused because the profile was restored before, another account holds it, the file is not a usable backup (the server's reason follows), or it is too large; the server is busy (try later); or the server could not be reached. A failed or timed-out send changes nothing: press the button again.
+
+A received backup is not restored by itself. An operator approves it, and it restores only onto an account that has not played yet, once per profile: do not play on the community server before then. The result bar says so.
+
 ## What is not saved
 
 - A picture of the placed equipment (the positions themselves are saved, see "Map setups").
@@ -111,7 +122,8 @@ The backup tool shows a short, plain-language version of this list in a dialog, 
 ## Privacy
 
 - The session token: see [How the token is found](#how-the-token-is-found).
-- In My account mode the manifest has `steam_id64`: the Steam account signed in on this PC. The backup tool reads the value `ActiveUser` under `HKCU\Software\Valve\Steam\ActiveProcess` from the registry, read-only; nothing else from Steam, no Steam API, no network. It is stored only in the player's own backup folder and backup zip and is never sent anywhere by the backup tool. If nobody is signed in the field is omitted. Public profile mode never writes it. A community server can use it as a hint that the Steam account signing in owns the backup, not as proof.
+- In My account mode the manifest has `steam_id64`: the Steam account signed in on this PC. The backup tool reads the value `ActiveUser` under `HKCU\Software\Valve\Steam\ActiveProcess` from the registry, read-only; nothing else from Steam, no Steam API, no network. It is stored only in the player's own backup folder and backup zip, and the backup tool never sends it by itself: it leaves the PC only inside the zip, if you press "Send to the community server". If nobody is signed in the field is omitted. Public profile mode never writes it. A community server can use it as a hint that the Steam account signing in owns the backup, not as proof.
+- "Send to the community server" is the only time anything leaves your PC for a server other than the official ones: the whole backup zip (the profile, the Steam id in `manifest.json` and `claim.key`), to the server named by `server_url` in `settings.json` and nowhere else, once per press. Before that the tool talks to the same server to sign you in: the sign-in code and the session it gives back, which stays in memory. The server keeps the zip for its operator's review ([server.md](server.md#upload-a-backup-zip)) until it is restored or rejected, and you can delete it with "Delete my data" on the website. Nothing is sent without your two presses (button, then "Send").
 - Keep the backup zip private: it holds the profile, the Steam id and `claim.key`.
 
 ## How the token is found
@@ -130,4 +142,4 @@ The first restore will be local: a server on your own PC reads your own backup z
 
 ## Tests
 
-`dotnet test tests/Resurgence.Tests -c Release` runs the xUnit tests of the backup tool (folder `BackupTool`) against a fake HTTP handler and a harmless fake process; no real server is contacted. The same project holds the launcher's tests. It exits 0 when every test passes.
+`dotnet test tests/Resurgence.Tests -c Release` runs the xUnit tests of the backup tool (folder `BackupTool`) against a fake HTTP handler and a harmless fake process; no real server is contacted. The send tests (`SendTests`) run against a small HTTP server on the loopback address that speaks the sign-in code link and the restore upload: a good upload, a refused one, a sign-in nobody confirms, an oversized zip, an unreachable server. The same project holds the launcher's tests. It exits 0 when every test passes.

@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Skip files already saved (resume)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Upload to server: coming later</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Start</value>
   </data>
@@ -419,7 +416,7 @@
     <value>It connects only to the official servers listed in settings.json, next to backup.exe. You can open that file in a text editor.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Your backup stays on this PC. Upload to a server is not available yet.</value>
+    <value>Your backup stays on this PC unless you press "Send to the community server" after a backup: then the zip goes to the server named in settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Your sign-in</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Backup finished {0:g}. Anything you play, earn, buy or change in the game after that is not in it: run a new backup.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send to the community server</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>Send to the community server</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>This sends {0} to {1}: your whole profile backup, including your Steam account id and claim.key. Nothing is sent until you press Send. First you sign in with Steam on the server's website. The server keeps the file for its operator to check; it restores only onto an account that has not played yet, and only once.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Sign in on the server's website</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Your browser opens the sign-in page. Check that it shows the code {0}, sign in with Steam and confirm. Press Cancel to stop waiting.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Sending the backup</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Signed in. Sending {0}...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Received: waiting for review</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>The server has your backup. An operator checks it before it is restored, which can take a while. A backup restores only onto an account that has not played yet.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Refused: restored before</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>This profile was restored before, and a backup can be restored only once. Nothing was kept.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Refused: profile in use</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Another account already holds this profile's user id. Nothing was kept.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Refused: not a usable backup</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>The server cannot read this file as a backup. Nothing was kept. Reason: {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>The server cannot take it now</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>One of your uploads is still being processed, you already have 3 waiting for review, or the server is busy. Try again later.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Refused: too large</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>A backup zip is at most 64 MiB. Nothing was sent.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Signed out</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>The server did not accept the sign-in. Press Send and sign in again.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Sign-in timed out</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>The sign-in was not confirmed in time. Nothing was sent. Press Send to try again.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>Could not send</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>Nothing was sent. {0}</value>
   </data>
 </root>
