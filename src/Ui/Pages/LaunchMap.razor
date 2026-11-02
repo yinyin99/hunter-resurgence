@@ -86,7 +86,7 @@ else
         @if (markers.Any(m => m.Kind == MarkerKind.Tent)) { @Starts(MarkerKind.Tent) }
         else { <p class="no-tents">@L.Html("Launch.NoTents", "<a href=\"/store?category=8&amp;type=30\">", "</a>")</p> }
     </div>
-    <MapPlaceholder Markers="markers" Height="750" Selected="marker" Hover="hover" Centre="centre" OnPick="m => marker = m.Id">
+    <MapPlaceholder Markers="markers" Reserve="reserve" Height="750" Selected="marker" Hover="hover" Centre="centre" OnPick="m => marker = m.Id">
         @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
         {
             <span class="start-label" style="left:@(at.X)%;top:@(at.Y)%">@L["Launch.StartingAt", at.Name]</span>

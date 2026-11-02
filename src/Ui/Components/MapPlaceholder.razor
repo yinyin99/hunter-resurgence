@@ -1,5 +1,7 @@
+@inject AssetImages Images
 <div class="map" style="height:@(Height)px">
-    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan">
+    @* the picture sits on the plane, so it zooms and pans with the markers *@
+    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
         @foreach (var m in Markers)
         {
             var pickable = m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
@@ -20,7 +22,7 @@
             <span class="popup" style="left:@(at.X)%;top:@(at.Y)%">@at.Name</span>
         }
     </div>
-    <span class="slot">map-bg</span>
+    @if (Bg is null) { <span class="slot">map-bg</span> }
     @if (Zoom)
     {
     <div class="zoom">
@@ -53,8 +55,11 @@
     [Parameter] public EventCallback<MapMarker> OnPick { get; set; }
     /// <summary>Extra layer over the map (the start label, the join hint).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>The reserve whose map picture is drawn (<c>map-&lt;NN&gt;</c>); none: <c>map-bg</c>.</summary>
+    [Parameter] public int? Reserve { get; set; }
 
     string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({50 - m.X}%, {50 - m.Y}%)" : "";
+    string? Bg => Images.Url(Reserve is { } r ? $"map-{r:00}" : "map-bg");
 
     protected override void OnParametersSet()
     {

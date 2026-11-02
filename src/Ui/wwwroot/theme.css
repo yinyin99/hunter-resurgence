@@ -304,6 +304,9 @@ a { transition: color var(--t-fast) var(--ease); }
     font-size: 11px;
 }
 
+/* the operator's picture in its slot (docs/images.md): contain never crops a picture of another shape */
+.asset-slot.has-image { border: 0; background: none; object-fit: contain; }
+
 /* scroll lock while a modal is open (old: html.openModal) */
 html:has(dialog.modal[open]) { overflow: hidden; }
 

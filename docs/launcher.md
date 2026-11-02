@@ -8,7 +8,7 @@ It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 contr
 
 The screens follow the old launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
 
-Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures of the original are not included; each one is a neutral labelled box. The launcher is not usable for playing yet.
+Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures are not included; each one is a neutral labelled box (the website can show the operator's pictures, [images.md](images.md); the launcher's case is issue #175). The launcher is not usable for playing yet.
 
 Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
 

@@ -69,7 +69,7 @@ else
     }
 
     RenderFragment Item(string title, string text, DateOnly? date) => @<div class="item">
-        <AssetSlot Name="ach-badge" Width="90" Height="90" Class="badge" />
+        <AssetSlot Name="@($"ach-badge-{title}")" Width="90" Height="90" Class="badge" />
         <div class="text"><b>@title</b><span>@text</span></div>
         @if (date is { } d) { <time>@d.ToString("yyyy-MM-dd")</time> }
     </div>;

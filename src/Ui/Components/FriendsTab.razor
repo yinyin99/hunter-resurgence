@@ -9,7 +9,7 @@
         @foreach (var f in rows)
         {
             <li>
-                <AssetSlot Name="avatar" Width="48" Height="48" />
+                <AssetSlot Name="avatar-default" Width="48" Height="48" />
                 <a href="/profile/@f.Handle" class="handle">@f.Handle</a> <Icon Name="paw" /> @f.HunterScore
                 <span class="buttons">
                     <a class="btn btn-primary" href="/messages/@f.Handle">@L["Friends.SendMessage"]</a>

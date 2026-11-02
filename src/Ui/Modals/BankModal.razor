@@ -63,7 +63,7 @@
                     @foreach (var (p, i) in catalog.EmPacks.Select((p, i) => (p, i)))
                     {
                         <div class="pack">
-                            <AssetSlot Name="em-pack" Width="100" Height="80" />
+                            <AssetSlot Name="@($"em-pack-{p.Ems}")" Width="100" Height="80" />
                             <h3>@p.Ems Em$</h3>
                             <p class="price">@Cost(p.Price)</p>
                             <p class="save">@if (p.Save > 0) { @L["Bank.Save", p.Save] }</p>
@@ -117,7 +117,7 @@
     RenderFragment Cost(decimal p) => @<text>@if (discount is { Percent: > 0 }) { <s>@p.ToString("0.00")</s> <b>@Math.Round(p * (100 - discount.Percent) / 100, 2).ToString("0.00")</b> } else { @p.ToString("0.00") } @catalog!.Currency</text>;
 
     RenderFragment Card(Membership m, string kind, int i) => @<div class="card">
-        <AssetSlot Name="membership-card" Width="100" Height="70" />
+        <AssetSlot Name="@($"membership-{kind}")" Width="100" Height="70" />
         <p class="price">@Cost(m.Price)</p>
         <div class="what">
             <p>@(m.Name.Length == 0 ? L["Bank.MonthsOnly", m.Months] : L["Bank.Months", m.Months])</p>

@@ -5,7 +5,7 @@
 @* the old container closes on a click beside the map and the details; the backdrop is a layer of its own as the dialog element belongs to the shell *@
 <div class="backdrop" @onclick="Modal.Close"></div>
 <div class="join" role="dialog" aria-modal="true">
-    <MapPlaceholder Markers="markers" Height="608" Zoom="false" OnPick="Pick" Players="Server.Roster" HoverPlayer="@hoverPlayer">
+    <MapPlaceholder Markers="markers" Reserve="Server.Reserve" Height="608" Zoom="false" OnPick="Pick" Players="Server.Roster" HoverPlayer="@hoverPlayer">
         <p class="hint"><Icon Name="caret-down" /> @L["Join.Hint"]</p>
     </MapPlaceholder>
     <aside>

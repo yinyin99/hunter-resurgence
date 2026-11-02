@@ -15,7 +15,7 @@
     <header class="head">
         @* the header picture the player chose in the settings: none, the most recent kill or a picture *@
         @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
-        <div class="polaroid"><AssetSlot Name="@(profile.Own ? avatar : "avatar-profile")" Width="170" Height="185" /><Icon Name="paw" /></div>
+        <div class="polaroid"><AssetSlot Name="@(profile.Own ? avatar : "avatar-default")" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend)
         {
@@ -63,7 +63,7 @@
 
     Profile? profile;
     bool signedIn;
-    string header = "recent", avatar = "avatar-profile";
+    string header = "recent", avatar = "avatar-default";
 
     [Parameter] public string Handle { get; set; } = "";
     [Parameter] public string? Tab { get; set; }
@@ -80,7 +80,7 @@
         signedIn = await Session.CurrentAsync() is not null;
         // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here)
         if (profile?.Own == true) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
-        else (header, avatar) = ("recent", "avatar-profile");
+        else (header, avatar) = ("recent", "avatar-default");
     }
 
     // the request goes to the friends service; the profile then says it is pending, also when the page is opened again

@@ -2,7 +2,7 @@
 
 <div class="video" role="dialog" aria-modal="true" tabindex="0" @onkeydown="Key" @ref="box">
     <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
-    <div class="frame"><AssetSlot Name="@Slot" Width="900" Height="506" /></div>
+    <div class="frame"><AssetSlot Name="@(Index < Slots.Count ? Slots[Index] : Slot)" Width="900" Height="506" /></div>
     @if (Titles.Count > 1)
     {
         <button type="button" class="nav prev" aria-label="@L["Pager.Prev"]" @onclick="Prev"><Icon Name="chevron-left" /></button>
@@ -15,10 +15,12 @@
     ElementReference box;
 
     [Parameter, EditorRequired] public string Title { get; set; } = "";
-    /// <summary>The picture slot: a video, or a gallery photo in the same lightbox.</summary>
+    /// <summary>The picture slot of a single picture (a video); a row of pictures (a gallery page) uses <see cref="Slots"/>.</summary>
     [Parameter] public string Slot { get; set; } = "video";
     /// <summary>The captions of a row of pictures: the arrows and the arrow keys go through them in a circle (a gallery page).</summary>
     [Parameter] public IReadOnlyList<string> Titles { get; set; } = [];
+    /// <summary>The picture slot of each of <see cref="Titles"/>.</summary>
+    [Parameter] public IReadOnlyList<string> Slots { get; set; } = [];
     [Parameter] public int Index { get; set; }
 
     void Prev() => Index = (Index + Titles.Count - 1) % Titles.Count;

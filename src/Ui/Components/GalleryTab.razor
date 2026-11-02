@@ -19,7 +19,7 @@ else if (photos is not null)
         @foreach (var (ph, at) in photos.Rows.Select((x, i) => (x, i)))
         {
             <li>
-                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(at)" @onclick:preventDefault><AssetSlot Name="photo" Width="210" Height="118" /></a>
+                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(at)" @onclick:preventDefault><AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /></a>
                 <span>@ph.Animal @Fmt.Score(ph.Score)</span>
                 <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Url })">@L["Prof.Share"]</button>
                 @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
@@ -54,7 +54,7 @@ else if (photos is not null)
     // the lightbox goes through the pictures of the page
     void Open(int at) => Modal.Show<VideoModal>(new Dictionary<string, object?>
     {
-        ["Title"] = "", ["Slot"] = "photo", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => $"{L.Term(p.Animal)}: {Fmt.Score(p.Score)}").ToList()
+        ["Title"] = "", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => $"{L.Term(p.Animal)}: {Fmt.Score(p.Score)}").ToList(), ["Slots"] = photos!.Rows.Select(p => $"photo-{p.Id}").ToList()
     });
 
     // the page goes on from the list the service has left; a page that is now empty gives way to the one before

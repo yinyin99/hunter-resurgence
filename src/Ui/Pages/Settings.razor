@@ -29,7 +29,7 @@
                     case "avatar":
                         <p class="info">@L["Set.AvatarInfo"]</p>
                         <h5>@L["Set.AvatarCurrent"]</h5>
-                        <div class="cur"><AssetSlot Name="@(account?.Avatar ?? "avatar-current")" Width="150" Height="150" /></div>
+                        <div class="cur"><AssetSlot Name="@(account?.Avatar ?? "avatar-default")" Width="150" Height="150" /></div>
                         <h5>@L["Set.AvatarSelect"]</h5>
                         <div class="avatars">
                             @foreach (var a in avatars.Where(a => !a.Locked))

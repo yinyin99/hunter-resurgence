@@ -8,7 +8,8 @@ services:
       FORWARDED_TRUSTED: 172.30.10.2 # Caddy's fixed address on the internal network below, nothing else
       SERVER_URL: http://server:8080 # the website's server-side calls to the community server
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
-    volumes: ["dataprotection:/home/app/.aspnet/DataProtection-Keys"] # cookie-signing keys, kept across deploys
+      IMAGES_DIR: /images # the operator's pictures, never committed (docs/images.md); an empty folder: the labelled boxes
+    volumes: ["dataprotection:/home/app/.aspnet/DataProtection-Keys", "${SERVER_DIR}/images:/images:ro"] # cookie-signing keys, kept across deploys; SERVER_DIR/images: the slot pictures
     networks:
       internal: { ipv4_address: 172.30.10.3 } # fixed too: a container that starts before Caddy would otherwise take Caddy's .2 and Caddy could not start
     cap_drop: [ALL]
