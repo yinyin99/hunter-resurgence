@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Ignorer les fichiers déjà sauvegardés (reprise)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Envoi vers le serveur : bientôt disponible</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Démarrer</value>
   </data>
@@ -419,7 +416,7 @@
     <value>Il se connecte uniquement aux serveurs officiels listés dans settings.json, à côté de backup.exe. Vous pouvez ouvrir ce fichier dans un éditeur de texte.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Votre sauvegarde reste sur ce PC. L’envoi vers un serveur n’est pas encore disponible.</value>
+    <value>Ta sauvegarde reste sur ce PC, sauf si tu appuies, après une sauvegarde, sur « Envoyer au serveur de la communauté » : le zip part alors vers le serveur indiqué dans settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Votre connexion</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Sauvegarde terminée le {0:g}. Ce que vous jouez, gagnez, achetez ou modifiez dans le jeu ensuite n’y figure pas : lancez une nouvelle sauvegarde.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Envoyer au serveur de la communauté</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>Envoyer au serveur de la communauté</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>Ceci envoie {0} à {1} : toute la sauvegarde de ton profil, y compris l'identifiant de ton compte Steam et claim.key. Rien n'est envoyé tant que tu n'appuies pas sur Envoyer. Tu te connectes d'abord avec Steam sur le site du serveur. Le serveur garde le fichier pour que son opérateur le vérifie ; il ne se restaure que sur un compte qui n'a pas encore joué, et une seule fois.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Envoyer</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Connecte-toi sur le site du serveur</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Ton navigateur ouvre la page de connexion. Vérifie qu'elle affiche le code {0}, connecte-toi avec Steam et confirme. Appuie sur Annuler pour ne plus attendre.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Envoi de la sauvegarde</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Connecté. Envoi de {0}...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Reçue : en attente de vérification</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>Le serveur a ta sauvegarde. Un opérateur la vérifie avant de la restaurer, ce qui peut prendre du temps. Une sauvegarde ne se restaure que sur un compte qui n'a pas encore joué.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Refusée : déjà restaurée</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>Ce profil a déjà été restauré, et une sauvegarde ne peut l'être qu'une fois. Rien n'a été gardé.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Refusée : profil déjà pris</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Un autre compte détient déjà l'identifiant utilisateur de ce profil. Rien n'a été gardé.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Refusée : sauvegarde inutilisable</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>Le serveur ne peut pas lire ce fichier comme une sauvegarde. Rien n'a été gardé. Raison : {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>Le serveur ne peut pas la prendre maintenant</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>Un de tes envois est encore en cours de traitement, tu en as déjà 3 en attente de vérification, ou le serveur est occupé. Réessaie plus tard.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Refusée : trop volumineuse</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>Un zip de sauvegarde fait au plus 64 Mio. Rien n'a été envoyé.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Déconnecté</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>Le serveur n'a pas accepté la connexion. Appuie sur Envoyer et reconnecte-toi.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Connexion expirée</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>La connexion n'a pas été confirmée à temps. Rien n'a été envoyé. Appuie sur Envoyer pour réessayer.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>Envoi impossible</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>Rien n'a été envoyé. {0}</value>
   </data>
 </root>

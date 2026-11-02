@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Ignorar arquivos já salvos (retomar)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Enviar ao servidor: em breve</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Iniciar</value>
   </data>
@@ -419,7 +416,7 @@
     <value>Ele se conecta apenas aos servidores oficiais listados no settings.json, ao lado do backup.exe. Você pode abrir esse arquivo em um editor de texto.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Seu backup fica neste PC. O envio para um servidor ainda não está disponível.</value>
+    <value>Seu backup fica neste PC, a menos que, depois de um backup, você aperte "Enviar ao servidor da comunidade": então o zip vai para o servidor indicado no settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Seu login</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Backup concluído em {0:g}. O que você jogar, ganhar, comprar ou mudar no jogo depois não está nele: faça um novo backup.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Enviar ao servidor da comunidade</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>Enviar ao servidor da comunidade</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>Isto envia {0} para {1}: todo o backup do seu perfil, incluindo o id da sua conta Steam e o claim.key. Nada é enviado até você apertar Enviar. Primeiro você entra com a Steam no site do servidor. O servidor guarda o arquivo para o operador conferir; ele só é restaurado em uma conta que ainda não jogou, e uma única vez.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Entre no site do servidor</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Seu navegador abre a página de login. Confira se ela mostra o código {0}, entre com a Steam e confirme. Aperte Cancelar para parar de esperar.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Enviando o backup</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Login feito. Enviando {0}...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Recebido: aguardando revisão</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>O servidor tem o seu backup. Um operador o confere antes de restaurar, o que pode demorar. Um backup só é restaurado em uma conta que ainda não jogou.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Recusado: já restaurado</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>Este perfil já foi restaurado antes, e um backup só pode ser restaurado uma vez. Nada foi guardado.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Recusado: perfil em uso</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Outra conta já tem o id de usuário deste perfil. Nada foi guardado.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Recusado: backup inutilizável</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>O servidor não consegue ler este arquivo como backup. Nada foi guardado. Motivo: {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>O servidor não pode aceitar agora</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>Um envio seu ainda está sendo processado, você já tem 3 aguardando revisão, ou o servidor está ocupado. Tente mais tarde.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Recusado: grande demais</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>Um zip de backup tem no máximo 64 MiB. Nada foi enviado.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Sessão encerrada</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>O servidor não aceitou o login. Aperte Enviar e entre de novo.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Tempo do login esgotado</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>O login não foi confirmado a tempo. Nada foi enviado. Aperte Enviar para tentar de novo.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>Não foi possível enviar</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>Nada foi enviado. {0}</value>
   </data>
 </root>

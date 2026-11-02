@@ -74,6 +74,7 @@ public partial class MainWindow : FluentWindow
         foreach (var f in new[] { Who, OutDir }) f.KeyDown += (_, e) => { if (e.Key != System.Windows.Input.Key.Enter) return; e.Handled = true; if (!e.IsRepeat) OnStart(this, e); }; // Enter starts a backup only from the two fields (Start is not the window's default button, so Enter on a switch or a tick does nothing)
         Start.PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Enter && e.IsRepeat) e.Handled = true; }; // a held Enter that started a run from a field moves on to Start, which is Cancel by then: only a fresh press may use it
         OpenBtn.Click += (_, _) => OpenResult();
+        SendBtn.Click += OnSend;
         NotCoveredLink.Click += async (_, _) => await ShowNotCovered();
         HowLink.Click += async (_, _) => await ShowHow();
         SelectAll.Click += (_, _) => SelectGroups(true);
@@ -184,11 +185,11 @@ public partial class MainWindow : FluentWindow
         Browse.Content = Loc.S("Browse");
         Zip.Content = Wrapped(Loc.S("Zip"));
         Skip.Content = Wrapped(Loc.S("Skip"));
-        Upload.Content = Wrapped(Loc.S("Upload"));
         BuildOlder();
         if (cts == null) Start.Content = Loc.S("Start");
         Named(Bar, "Bar_Name");
         OpenBtn.Content = Loc.S("Open_Folder");
+        SendBtn.Content = Loc.S(sendCts == null ? "Send" : "Cancel");
         Details.Header = Loc.S("Details");
         Named(LogBox, "Log_Name");
         NotCoveredLink.Content = Loc.S("NotCovered_Link");
@@ -420,7 +421,7 @@ public partial class MainWindow : FluentWindow
         SetBusy(true);
         Result.IsOpen = false;
         validation = null;
-        OpenBtn.Visibility = Visibility.Collapsed;
+        OpenBtn.Visibility = SendBtn.Visibility = Visibility.Collapsed;
         Start.Focus(); // Enter in a field started this run: the cards are about to be locked, keep the keyboard on Start (now Cancel)
         LockInputs(true);
         Start.Content = Loc.S("Cancel");
@@ -517,13 +518,13 @@ public partial class MainWindow : FluentWindow
     ];
 
     /// <summary>The controls cannot be used while a backup runs. Disabled, so a screen reader cannot toggle or invoke them either; the scroll region around them stays enabled for the wheel, and the status line and the heading are not locked, so they keep reading as enabled.
-    /// A control that is off for its own reason (Public mode's token groups, the older-editions switch without its group, Upload) keeps its idle disabled look; only the ones this method locks get the readable one.</summary>
+    /// A control that is off for its own reason (Public mode's token groups, the older-editions switch without its group) keeps its idle disabled look; only the ones this method locks get the readable one.</summary>
     void LockInputs(bool locked)
     {
         foreach (var c in new FrameworkElement[] { LangBox, SourceRow, SelectAll, SelectNone, Groups, Options }) c.IsEnabled = !locked;
         var look = Inputs.Resources.MergedDictionaries;
         look.Clear();
-        foreach (var c in (Control[])[Older, Upload, .. boxes ?? []])
+        foreach (var c in (Control[])[Older, .. boxes ?? []])
         {
             c.Resources.Clear();
             if (!locked) continue;
@@ -588,7 +589,7 @@ public partial class MainWindow : FluentWindow
         if (validation is not { } stillApplies || stillApplies()) return;
         (validation, resultText) = (null, null);
         Result.IsOpen = false;
-        OpenBtn.Visibility = Visibility.Collapsed;
+        OpenBtn.Visibility = SendBtn.Visibility = Visibility.Collapsed;
         if (IsLoaded) FitHeight();
     }
 
@@ -600,9 +601,49 @@ public partial class MainWindow : FluentWindow
         Result.Severity = sev;
         (Result.Title, Result.Message) = text();
         OpenBtn.Visibility = resultPath.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        SendBtn.Visibility = cfg?.ServerUrl != null && resultPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && File.Exists(resultPath) ? Visibility.Visible : Visibility.Collapsed; // only a saved zip can be sent
         Result.IsOpen = true;
         Say($"{Result.Title}. {Result.Message}", "BackupResult", System.Windows.Automation.AutomationNotificationKind.ActionCompleted);
         FitHeight();
+    }
+
+    CancellationTokenSource? sendCts;
+
+    /// <summary>"Send to the community server": the one place the backup leaves this PC, and only after the player confirms the dialog. The result bar walks through the steps (sign-in code, sending, outcome).</summary>
+    async void OnSend(object sender, RoutedEventArgs e)
+    {
+        if (sendCts != null) { sendCts.Cancel(); return; }
+        if (cfg?.ServerUrl is not { } server || !resultPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || !File.Exists(resultPath)) return;
+        var (zip, name) = (resultPath, Path.GetFileName(resultPath));
+        var body = new TextBlock { Text = Loc.F("Send_Ask", name, new Uri(server).Host), TextWrapping = TextWrapping.Wrap, MaxWidth = 520 };
+        var box = new Wpf.Ui.Controls.MessageBox { Title = Loc.S("Send_Title"), Owner = this, PrimaryButtonText = Loc.S("Send_Go"), CloseButtonText = Loc.S("Slow_Back"), Content = Scrolled(body) };
+        if (await Ask(box, body.Text) != Wpf.Ui.Controls.MessageBoxResult.Primary) return;
+
+        sendCts = new();
+        SendBtn.Content = Loc.S("Cancel");
+        Start.IsEnabled = false; // a new run would replace the zip being sent
+        using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+        var sev = InfoBarSeverity.Informational;
+        Func<(string, string)> text;
+        try
+        {
+            var res = await Backup.Send.Run(http, server, zip, (code, url) =>
+            {
+                Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Code_Title"), Loc.F("Send_Code_Text", code)), zip);
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }, sendCts.Token);
+            Log($"send: {res.Kind} {res.Message}");
+            sev = res.Kind == "review" ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
+            text = () => (Loc.S($"Send_{res.Kind}_Title"), Loc.F($"Send_{res.Kind}_Text", res.Message));
+        }
+        catch (OperationCanceledException)
+        {
+            text = () => (Loc.S("Send_error_Title"), Loc.F("Send_error_Text", ""));
+        }
+        sendCts = null;
+        Start.IsEnabled = true;
+        SendBtn.Content = Loc.S("Send");
+        Show(sev, text, zip);
     }
 
     void OpenResult()

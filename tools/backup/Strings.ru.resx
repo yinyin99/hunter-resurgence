@@ -88,9 +88,6 @@
   <data name="Skip" xml:space="preserve">
     <value>Пропускать уже сохранённые файлы (возобновление)</value>
   </data>
-  <data name="Upload" xml:space="preserve">
-    <value>Загрузка на сервер: скоро появится</value>
-  </data>
   <data name="Start" xml:space="preserve">
     <value>Начать</value>
   </data>
@@ -419,7 +416,7 @@
     <value>Она соединяется только с официальными серверами из файла settings.json рядом с backup.exe. Этот файл можно открыть в текстовом редакторе.</value>
   </data>
   <data name="How_2b" xml:space="preserve">
-    <value>Ваша копия остаётся на этом компьютере. Загрузка на сервер пока недоступна.</value>
+    <value>Копия остаётся на этом ПК, если после копирования вы не нажмёте «Отправить на сервер сообщества»: тогда zip уходит на сервер, указанный в settings.json.</value>
   </data>
   <data name="How_3H" xml:space="preserve">
     <value>Ваш вход</value>
@@ -453,5 +450,83 @@
   </data>
   <data name="Msg_Finished" xml:space="preserve">
     <value>Копирование завершено {0:g}. Всё, что вы сыграете, получите, купите или измените в игре потом, в копию не попадёт: сделайте новую копию.</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Отправить на сервер сообщества</value>
+  </data>
+  <data name="Send_Title" xml:space="preserve">
+    <value>Отправить на сервер сообщества</value>
+  </data>
+  <data name="Send_Ask" xml:space="preserve">
+    <value>Будет отправлен файл {0} на {1}: вся резервная копия профиля, включая id аккаунта Steam и claim.key. Ничего не отправляется, пока вы не нажмёте «Отправить». Сначала вы входите через Steam на сайте сервера. Сервер хранит файл для проверки оператором; восстановить его можно только в аккаунт, который ещё не играл, и только один раз.</value>
+  </data>
+  <data name="Send_Go" xml:space="preserve">
+    <value>Отправить</value>
+  </data>
+  <data name="Send_Code_Title" xml:space="preserve">
+    <value>Войдите на сайте сервера</value>
+  </data>
+  <data name="Send_Code_Text" xml:space="preserve">
+    <value>Браузер откроет страницу входа. Убедитесь, что на ней показан код {0}, войдите через Steam и подтвердите. Нажмите «Отмена», чтобы перестать ждать.</value>
+  </data>
+  <data name="Send_Sending_Title" xml:space="preserve">
+    <value>Отправка копии</value>
+  </data>
+  <data name="Send_Sending_Text" xml:space="preserve">
+    <value>Вход выполнен. Отправляется {0}...</value>
+  </data>
+  <data name="Send_review_Title" xml:space="preserve">
+    <value>Получено: ждёт проверки</value>
+  </data>
+  <data name="Send_review_Text" xml:space="preserve">
+    <value>Сервер получил вашу копию. Оператор проверит её перед восстановлением, это может занять время. Копия восстанавливается только в аккаунт, который ещё не играл.</value>
+  </data>
+  <data name="Send_already_Title" xml:space="preserve">
+    <value>Отклонено: уже восстановлена</value>
+  </data>
+  <data name="Send_already_Text" xml:space="preserve">
+    <value>Этот профиль уже восстанавливали, а копию можно восстановить только один раз. Ничего не сохранено.</value>
+  </data>
+  <data name="Send_taken_Title" xml:space="preserve">
+    <value>Отклонено: профиль занят</value>
+  </data>
+  <data name="Send_taken_Text" xml:space="preserve">
+    <value>Другой аккаунт уже владеет id пользователя этого профиля. Ничего не сохранено.</value>
+  </data>
+  <data name="Send_invalid_Title" xml:space="preserve">
+    <value>Отклонено: копия непригодна</value>
+  </data>
+  <data name="Send_invalid_Text" xml:space="preserve">
+    <value>Сервер не может прочитать этот файл как копию. Ничего не сохранено. Причина: {0}</value>
+  </data>
+  <data name="Send_busy_Title" xml:space="preserve">
+    <value>Сервер сейчас не может принять</value>
+  </data>
+  <data name="Send_busy_Text" xml:space="preserve">
+    <value>Ваша прошлая отправка ещё обрабатывается, у вас уже 3 копии ждут проверки, или сервер занят. Попробуйте позже.</value>
+  </data>
+  <data name="Send_too_large_Title" xml:space="preserve">
+    <value>Отклонено: слишком большой файл</value>
+  </data>
+  <data name="Send_too_large_Text" xml:space="preserve">
+    <value>Zip с копией — не более 64 МиБ. Ничего не отправлено.</value>
+  </data>
+  <data name="Send_signed_out_Title" xml:space="preserve">
+    <value>Выход из аккаунта</value>
+  </data>
+  <data name="Send_signed_out_Text" xml:space="preserve">
+    <value>Сервер не принял вход. Нажмите «Отправить» и войдите снова.</value>
+  </data>
+  <data name="Send_timeout_Title" xml:space="preserve">
+    <value>Время входа истекло</value>
+  </data>
+  <data name="Send_timeout_Text" xml:space="preserve">
+    <value>Вход не подтверждён вовремя. Ничего не отправлено. Нажмите «Отправить», чтобы повторить.</value>
+  </data>
+  <data name="Send_error_Title" xml:space="preserve">
+    <value>Не удалось отправить</value>
+  </data>
+  <data name="Send_error_Text" xml:space="preserve">
+    <value>Ничего не отправлено. {0}</value>
   </data>
 </root>
