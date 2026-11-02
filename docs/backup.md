@@ -10,6 +10,24 @@ It connects only to the official servers listed in `settings.json`, next to `bac
 
 A backup is a copy of your profile at one moment: as it was while the backup ran. Anything you play, earn, buy or change in the game afterwards is not in it: run another backup, which goes into a new folder with the date and time in its name. "Skip files already saved" only continues a run that did not finish.
 
+## Checking the download
+
+The release notes list the SHA-256 of each release zip. Compare it with yours, in PowerShell:
+
+```
+Get-FileHash backup-win-x64.zip -Algorithm SHA256
+```
+
+If the two differ, do not run it.
+
+To check that the release zip was built by this repository's release workflow from its public source, use the [GitHub CLI](https://cli.github.com/):
+
+```
+gh attestation verify backup-win-x64.zip -R yinyin99/hunter-resurgence
+```
+
+The player kit's `play-win-x64.zip` is checked the same way.
+
 ## Build and run
 
 ```
