@@ -26,6 +26,8 @@ dotnet test tests/Resurgence.Tests -c Release
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
+
 ### Icon
 
 The icon is `src/Launcher/wwwroot/favicon.ico`: the website's paw (`src/Web/wwwroot/favicon.svg`) in #1f1a17 on a #f2ebe3 rounded tile, at 16, 20, 24, 32, 40, 48, 64, 128 and 256 px. It has a light tile because the website's transparent dark paw would barely show on a dark taskbar.
@@ -59,8 +61,6 @@ sizes.forEach((s, i) => {
 });
 writeFileSync(`${repo}/src/Launcher/wwwroot/favicon.ico`, Buffer.concat([head, ...pngs]));
 ```
-
-The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
 
 ### Development switches
 
