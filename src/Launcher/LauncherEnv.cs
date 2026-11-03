@@ -9,7 +9,8 @@ namespace Resurgence.Launcher;
 public sealed class LauncherEnv
 {
     public Settings Settings { get; } = Settings.Load();
-    public Prefs Prefs { get; } = Prefs.Load(Prefs.DefaultPath);
+    public string PrefsPath { get; }
+    public Prefs Prefs { get; }
     public GameInstall? Install { get; private set; }
     public string? SteamPath { get; private set; }
     /// <summary>SteamID64 of the Steam user signed in on this PC, null when Steam is not running or nobody is signed in.</summary>
@@ -20,7 +21,12 @@ public sealed class LauncherEnv
 
     uint account;
 
-    public LauncherEnv() => Detect();
+    public LauncherEnv(string? prefsPath = null)
+    {
+        PrefsPath = prefsPath ?? Prefs.DefaultPath;
+        Prefs = Prefs.Load(PrefsPath);
+        Detect();
+    }
 
     /// <summary>The hand-chosen folder is in use (it still contains the client).</summary>
     public bool ChosenFolderInUse => GameFinder.Check(Settings, Prefs.GameFolder) is not null;
@@ -42,7 +48,7 @@ public sealed class LauncherEnv
 
     public void Save()
     {
-        try { Prefs.Save(Prefs.DefaultPath); SaveFailed = false; }
+        try { Prefs.Save(PrefsPath); SaveFailed = false; }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { SaveFailed = true; }
     }
 

@@ -12,7 +12,7 @@ public sealed class LauncherLanguageSwitcher(LauncherEnv env, NavigationManager 
     public void Set(string code)
     {
         env.Prefs.Language = code;
-        env.Prefs.Save(Prefs.DefaultPath);
+        env.Prefs.Save(env.PrefsPath);
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(code);
         nav.NavigateTo(nav.Uri, forceLoad: true);
     }
