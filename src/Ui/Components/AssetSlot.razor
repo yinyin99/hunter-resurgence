@@ -1,5 +1,6 @@
 @inject AssetImages Images
-@if (Images.Url(Name) is { } src)
+@inject NavigationManager Nav
+@if (src is not null)
 {
     <img class="asset-slot has-image @Class" src="@src" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="@Name" />
 }
@@ -14,4 +15,12 @@ else
     [Parameter] public int Width { get; set; } = 100;
     [Parameter] public int Height { get; set; } = 100;
     [Parameter] public string? Class { get; set; }
+
+    string? src;
+
+    protected override void OnParametersSet()
+    {
+        src = Images.Url(Name);
+        if (src is null) Images.NoteMissing(Name, new Uri(Nav.Uri).AbsolutePath);
+    }
 }

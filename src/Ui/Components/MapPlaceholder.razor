@@ -1,4 +1,5 @@
 @inject AssetImages Images
+@inject NavigationManager Nav
 <div class="map" style="height:@(Height)px">
     @* the picture sits on the plane, so it zooms and pans with the markers *@
     <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
@@ -64,6 +65,7 @@
 
     protected override void OnParametersSet()
     {
+        if (Bg is null) Images.NoteMissing(BgKey, new Uri(Nav.Uri).AbsolutePath);
         if (Centre is null || Centre == centred) return;
         centred = Centre;
         if (Zoom && zoomLevel == 0) zoomLevel = 1;

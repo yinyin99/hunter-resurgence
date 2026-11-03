@@ -87,6 +87,8 @@ jobs:
           [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/images/x.svg)" = 404 ]
           curl -sf http://localhost:8081/images.json | grep -q '"logo-bar.png":"[0-9a-f]*"' # the launcher's list (docs/images.md)
           if curl -sf http://localhost:8081/images.json | grep -q 'x.svg'; then exit 1; fi
+          curl -sf http://localhost:8081/images-missing.json | grep -q '"logo-rating-2":"/feed"' # a box /feed drew (docs/images.md)
+          if curl -sf http://localhost:8081/images-missing.json | grep -q '"logo-rating-1"'; then exit 1; fi
           [ "$(curl -sf http://localhost:8080/images.json)" = '{}' ]
       - if: failure()
         run: docker logs web; docker logs web-img

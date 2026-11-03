@@ -37,4 +37,21 @@ public class AssetImagesTests
         Assert.Null(images.Url("x"));      // no SVG
         Assert.Null(images.Url("hidden")); // no dot file
     }
+
+    [Fact]
+    public void MissingSlotsKeepTheirFirstPagePrivately()
+    {
+        var images = new AssetImages(new Dictionary<string, string>());
+        images.NoteMissing("Item 12", "/store");
+        images.NoteMissing("item-12", "/store/item/12");
+        images.NoteMissing("avatar-default", "/messages/SomeHunter");
+        Assert.Equal("/store", images.Missing["item-12"]);           // one key, the first page
+        Assert.Equal("/messages", images.Missing["avatar-default"]); // a signed-in page loses its handle: the list is public
+
+        for (var i = 0; i < 10_005; i++) images.NoteMissing("k" + i, "/feed");
+        var missing = images.Missing;
+        Assert.Equal(10_000, missing.Count);
+        Assert.Contains("item-12", missing.Keys);
+        Assert.Equal(missing.Keys.Order(StringComparer.Ordinal), missing.Keys);
+    }
 }

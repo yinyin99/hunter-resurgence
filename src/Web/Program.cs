@@ -64,9 +64,11 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
-// IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes. /images.json lists them for the launcher
+// IMAGES_DIR: the operator's pictures, never committed (docs/images.md); unset or missing: the labelled boxes. /images.json lists them for the launcher;
+// /images-missing.json lists the slots drawn without one
 var imageIndex = AssetImages.Index(builder.Configuration["IMAGES_DIR"]);
-builder.Services.AddSingleton(new AssetImages(imageIndex));
+var images = new AssetImages(imageIndex);
+builder.Services.AddSingleton(images);
 
 // behind the reverse proxy (deploy/): the client address and https come from FORWARDED_TRUSTED only; unset, nothing is forwarded
 builder.Services.Configure<ForwardedHeadersOptions>(o => ForwardedProxy.Configure(o, builder.Configuration["FORWARDED_TRUSTED"]));
@@ -142,6 +144,8 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 // the launcher's list of the pictures (docs/images.md): {"<file>":"<version>"}; {} without IMAGES_DIR
 app.MapGet("/images.json", () => imageIndex);
+// the slots drawn without a picture since the start (docs/images.md): {"<key>":"<first page>"}
+app.MapGet("/images-missing.json", () => images.Missing);
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = null).AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
 
