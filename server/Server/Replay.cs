@@ -126,7 +126,7 @@ public static class Replay
         {
             string? reserve = null;  // reserve of the last Launch/* in this HAR (tutorial and join carry none)
             JsonArray entries;
-            try { entries = (JsonArray)JsonNode.Parse(File.ReadAllText(p, new UTF8Encoding(false, true)))!["log"]!["entries"]!; }
+            try { entries = (JsonArray)JsonNode.Parse(File.ReadAllText(p, new UTF8Encoding(false, true)))!["log"]!["entries"]! ?? throw new InvalidCastException("no log entries"); }
             catch (Exception e) when (e is IOException or JsonException or NullReferenceException or InvalidCastException or DecoderFallbackException or UnauthorizedAccessException)
             {
                 Console.WriteLine($"skip {System.IO.Path.GetFileName(p)}: {e.Message}");
@@ -134,36 +134,43 @@ public static class Replay
             }
             foreach (var e in entries)
             {
-                var req = e!["request"]!;
-                var resp = e["response"]!;
-                var (host, path, query) = SplitUrl((string)req["url"]!);
-                var status = (int)Py.L(resp["status"]);
-                var tier = status == 200 ? 2 : status is 0 or 304 ? 0 : 1;
-                var method = ((string)req["method"]!).ToUpperInvariant();
-                var started = (string?)e["startedDateTime"] ?? "";
-                var post = req["postData"] as JsonObject;
-                var mime = (string?)post?["mimeType"];
-                var prms = RequestParams(query, (mime ?? "").Contains("x-www-form-urlencoded") ? (string?)post?["text"] ?? "" : "", mime);  // other bodies may hold lone surrogates
-                if (path.StartsWith("/v1/Launch/", StringComparison.Ordinal))
-                    reserve = prms.FirstOrDefault(t => t.Name == "reserve").Values?[0];
-                else if (path == CONNECT && status == 200 && !string.IsNullOrEmpty(reserve))
+                try
                 {
-                    if (!table.Connects.TryGetValue(reserve, out var old) || string.CompareOrdinal(old.Started, started) < 0)
-                        table.Connects[reserve] = (started, ResponseBody(resp["content"]));
+                    var req = e!["request"]!;
+                    var resp = e["response"]!;
+                    var (host, path, query) = SplitUrl((string)req["url"]!);
+                    var status = (int)Py.L(resp["status"]);
+                    var tier = status == 200 ? 2 : status is 0 or 304 ? 0 : 1;
+                    var method = ((string)req["method"]!).ToUpperInvariant();
+                    var started = (string?)e["startedDateTime"] ?? "";
+                    var post = req["postData"] as JsonObject;
+                    var mime = (string?)post?["mimeType"];
+                    var prms = RequestParams(query, (mime ?? "").Contains("x-www-form-urlencoded") ? (string?)post?["text"] ?? "" : "", mime);  // other bodies may hold lone surrogates
+                    if (path.StartsWith("/v1/Launch/", StringComparison.Ordinal))
+                        reserve = prms.FirstOrDefault(t => t.Name == "reserve").Values?[0];
+                    else if (path == CONNECT && status == 200 && !string.IsNullOrEmpty(reserve))
+                    {
+                        if (!table.Connects.TryGetValue(reserve, out var old) || string.CompareOrdinal(old.Started, started) < 0)
+                            table.Connects[reserve] = (started, ResponseBody(resp["content"]));
+                    }
+                    Hit? value = null;
+                    var keys = new List<Key> { new(method, host, path, null) };
+                    if (prms.Count > 0) keys.Add(new(method, host, path, ParamsKey(prms)));
+                    foreach (var k in keys)
+                    {
+                        if (table.Entries.TryGetValue(k, out var old)
+                            && (old.Tier != tier ? old.Tier > tier : string.CompareOrdinal(old.Started, started) >= 0))
+                            continue;
+                        value ??= new Hit(tier, started, status,
+                            (resp["headers"] as JsonArray ?? []).Select(h => (HeaderText(h!["name"]), HeaderText(h["value"])))
+                                .Where(h => !DropHeaders.Contains(h.Item1.ToLowerInvariant())).ToList(),
+                            ResponseBody(resp["content"]));
+                        table.Entries[k] = value;
+                    }
                 }
-                Hit? value = null;
-                var keys = new List<Key> { new(method, host, path, null) };
-                if (prms.Count > 0) keys.Add(new(method, host, path, ParamsKey(prms)));
-                foreach (var k in keys)
+                catch (Exception x) when (x is NullReferenceException or InvalidCastException or InvalidOperationException or FormatException)
                 {
-                    if (table.Entries.TryGetValue(k, out var old)
-                        && (old.Tier != tier ? old.Tier > tier : string.CompareOrdinal(old.Started, started) >= 0))
-                        continue;
-                    value ??= new Hit(tier, started, status,
-                        (resp["headers"] as JsonArray ?? []).Select(h => (HeaderText(h!["name"]), HeaderText(h["value"])))
-                            .Where(h => !DropHeaders.Contains(h.Item1.ToLowerInvariant())).ToList(),
-                        ResponseBody(resp["content"]));
-                    table.Entries[k] = value;
+                    Console.WriteLine($"skip an entry of {System.IO.Path.GetFileName(p)}: {x.Message}");
                 }
             }
         }
