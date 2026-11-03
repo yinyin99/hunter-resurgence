@@ -21,6 +21,8 @@ The backup tool is a small Windows app that saves your profile (statistics, inve
 2. Start `backup.exe`. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.
 3. Tick what to save, press Start. The result is a backup folder and a backup zip in `Documents\game-backup` ([names](docs/backup.md#what-is-saved)). Keep that backup zip private.
 
+"Check connection" says whether the official servers answer. If it says "redirected", the [player kit](#for-players-the-player-kit) is installed: remove it (`3-remove.cmd`) before a backup, because the backup tool needs the official servers.
+
 **Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
 
 The source is public, and you can check in a minute that your download is the real one: compare its checksum, as in [checking the download](docs/backup.md#checking-the-download).
@@ -62,6 +64,10 @@ Released today: the backup tool, and the player kit, which lets you play on the 
 ### Website preview
 
 [hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. Two parts are real: sign-in with Steam, and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Every other page shows fixed, fictional data, and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
+
+![The website preview, signed out](docs/img/website.png)
+
+*The website: sample data, placeholder images.*
 
 ### Launcher preview
 
