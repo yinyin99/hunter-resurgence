@@ -782,7 +782,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             : null;
         if (last == null) return Path.Combine(root, name);
         var manifest = Path.Combine(root, last, "manifest.json");
-        if (!File.Exists(manifest) || Json(File.ReadAllBytes(manifest))?["completed_utc"] == null) return Path.Combine(root, last);
+        if (!File.Exists(manifest) || Json(File.ReadAllBytes(manifest)) is not JsonObject m || m["completed_utc"] == null) return Path.Combine(root, last);
         var at = DateTime.Now;
         while (Directory.Exists(Path.Combine(root, $"{name}-{at:yyyyMMdd-HHmmss}"))) at = at.AddSeconds(1);
         return Path.Combine(root, $"{name}-{at:yyyyMMdd-HHmmss}");
