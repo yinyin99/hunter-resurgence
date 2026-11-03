@@ -1236,9 +1236,9 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Önerilen çözümler işe yaramazsa oluşturulan günlük dosyasını indirin ve şuraya gönderin: {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>destek ekibi</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Aracı İndir</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Yedeğini geri yükle</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Yedeği geri yükle</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Verileriniz</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Yedeğini geri yükle</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Yedeği geri yükle</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Yedekleme aracının oluşturduğu zip dosyasını yükleyin. Bir operatör dosyayı elle kontrol eder ve her şey yolundaysa envanterinizi, cüzdanınızı, becerilerinizi, istatistiklerinizi, başarılarınızı ve ödüllerinizi bu sunucuda geri yükler.</value></data>
   <data name="Restore.Hint" xml:space="preserve"><value>Yedeğinizi burada ilk avınızdan önce yükleyin: yedek yalnızca henüz oynamamış bir hesaba geri yüklenebilir.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>“My account” modunda alınmış bir yedek kullanın. Operatöre, yedeğin oturum açtığınız Steam hesabı için alınıp alınmadığı gösterilir; bu bir ipucudur, kanıt değildir.</value></data>
@@ -1277,6 +1277,6 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Hesapların içermedikleri</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-posta adresiniz, gerçek adınız, posta adresiniz veya telefon numaranız: bunlar istenmez ve hesabınızda saklanmaz. Bir yedek böyle bir alan içeriyorsa geri yüklenmez.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeğini geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
 </root>
