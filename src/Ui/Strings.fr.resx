@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Tout activer</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>ACHETER</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirmer l’activation</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Activer automatiquement les nouvelles missions disponibles</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activer automatiquement uniquement les missions favorites</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Vous pouvez réinitialiser vos missions en échange d’une certaine somme dans la boutique.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Toutes</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Sélection : {0}</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Tout sélectionner</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Masquer les accomplies</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Rechercher</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrer</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>L’email de confirmation a bien été renvoyé.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Renvoyer l’email de confirmation. Vous devez cliquer sur le lien qui se trouve dans l’email.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Renvoyer un email de confirmation</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Email renvoyé avec succès</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Le renvoi de l’email a échoué. Veuillez réessayer ou contacter le support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Le renvoi de l’email a échoué. Veuillez réessayer ou contacter le support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Pays</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Avertissement</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>La déconnexion de votre compte Steam vous déconnectera de {game} et fermera le lanceur. Vous ne pourrez plus jouer à {game} sur Steam tant que vous ne vous serez pas connecté à un autre compte.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Je comprends et souhaite déconnecter mon compte Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Une erreur est survenue et votre compte Steam n’a pas été déconnecté. Veuillez réessayer !</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannière</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Les images de bannière se débloquent lorsque vous atteignez de nouveaux niveaux dans trois catégories de succès : Maître des animaux, Maître des armes et Maître de l’exploration. Une fois débloquées, les images de bannière restent disponibles à vie.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>En savoir plus sur les niveaux de maître des succès.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Distance</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Date du prélèvement </value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Actualiser</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>En cours</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Les statistiques seront mises à jour lorsque l'expédition sera terminée.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Précédent</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Suivant</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Aucune image à afficher.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Si les solutions proposées ne suffisent pas, téléchargez le fichier journal généré et envoyez-le à notre {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>service client</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Télécharger l’utilitaire</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Vos données</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Envoyez le zip créé par l’outil de sauvegarde. Un opérateur le vérifie à la main et, si tout est en ordre, restaure votre inventaire, votre porte-monnaie, vos compétences, vos statistiques, vos succès et vos trophées sur ce serveur.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Envoyez votre sauvegarde avant votre première chasse ici : une sauvegarde ne peut être restaurée que sur un compte qui n’a pas encore joué.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Utilisez une sauvegarde faite en mode « Mon compte ». L’opérateur voit si elle a été faite pour le compte Steam avec lequel vous êtes connecté ; c’est un indice, pas une preuve.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Une sauvegarde ne peut être restaurée qu’une seule fois. Si vous n’avez pas encore joué sur ce serveur, votre compte reprend alors l’id utilisateur et le nom de la sauvegarde.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Chaque zip est conservé pour qu’un opérateur le vérifie à la main. Rien n’est restauré automatiquement, cela peut donc prendre un moment.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Un zip fait 64 Mio au maximum.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Zip de sauvegarde</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Envoyer</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Envoi en cours…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Votre sauvegarde de l’id utilisateur {0} est restaurée sur ce compte.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Sauvegardes conservées en attente de vérification par l’opérateur : {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Détails</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Ce que ce serveur conserve à votre sujet</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurée</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Reçue : un opérateur la vérifiera</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Déjà restaurée</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>Id utilisateur déjà utilisé</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Sauvegarde inutilisable</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Réessayez plus tard</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Fichier trop volumineux</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Déconnecté</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Indisponible ici</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Supprimer mes données</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Cela supprime votre compte sur ce serveur et tout ce qui y est conservé : votre id Steam, votre nom, vos données de jeu, les zips de sauvegarde conservés et vos photos. Vous êtes déconnecté et la connexion du lanceur cesse de fonctionner. Cette action est irréversible.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Je comprends, tout supprimer</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Supprimer mes données</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>Les données n’ont pas pu être supprimées. Réessayez.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Vos données</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Ce que ce serveur conserve à votre sujet, et comment s’en débarrasser.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Ce qui est conservé</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Votre id Steam, le numéro que Steam fournit lors de la connexion. Rien d’autre de votre profil Steam n’est conservé.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Votre pseudo, le nom que les autres chasseurs voient.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>Les données de jeu de votre compte : inventaire, porte-monnaie, compétences, statistiques, succès, trophées, chasses, prélèvements et les photos que vous prenez dans le jeu.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Chaque zip de sauvegarde que vous envoyez, tel quel : conservé pour qu’un opérateur le vérifie, et après sa restauration, pour que l’opérateur puisse réinitialiser votre compte et le restaurer à nouveau. Un zip contient ce que l’outil de sauvegarde a enregistré de votre compte.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de connexion et jetons de jeu, sous forme de hachages impossibles à relire.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Ce que les comptes ne contiennent pas</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Votre adresse email, votre vrai nom, votre adresse postale ou votre numéro de téléphone : ils ne sont ni demandés ni conservés dans votre compte. Si une sauvegarde contient un tel champ, il n’est pas restauré.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Supprimer vos données</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Connectez-vous, ouvrez Restaurer votre sauvegarde et utilisez Supprimer mes données. Cela supprime le compte, ses données de jeu, les zips conservés et les photos, et vous déconnecte. Votre id Steam est ensuite oublié ; vous reconnecter crée un nouveau compte.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>L’opérateur de ce serveur peut voir tout ce qui précède.</value></data>
 </root>

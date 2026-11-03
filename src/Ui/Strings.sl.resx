@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktiviraj vse</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>KUPI</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Potrdi aktivacijo</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Samodejno aktiviraj nove razpoložljive misije</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Samodejno aktiviraj samo priljubljene misije</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Misije lahko proti plačilu ponastaviš v trgovini.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Orožje</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Vse izbrano</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Izbrano: {0}</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Izberi vse</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrij dokončane</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Iskanje</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>Potrditveno e-sporočilo je ponovno poslano.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>E-sporočilo je bilo ponovno poslano</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Ponovno pošiljanje e-sporočila ni uspelo. Poskusite znova ali se obrnite na podporo</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Ponovno pošiljanje ni uspelo. Poskusi znova ali se obrni na podporo.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Država</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Opozorilo</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Prekinitev povezave z računom Steam te bo odjavila iz igre {game} in zaprla zaganjalnik. Igranje igre {game} v Steamu ne bo mogoče, dokler se ne povežeš z drugim računom.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Razumem in želim prekiniti povezavo s svojim računom Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Nekaj je šlo narobe in povezava z vašim računom Steam ni bila prekinjena. Poskusite znova!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Naslovna slika</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Naslovne slike se odklenejo, ko dosežeš nove ravni v treh različnih kategorijah dosežkov: Mojster živali, Mojster orožja in Mojster raziskovanja. Ko so odklenjene, ostanejo na voljo za vedno.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Več podrobnosti o ravneh mojstrov dosežkov.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Razdalja</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas odstrela</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Osveži</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>V teku</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bo posodobljena, ko končaš z lovom.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taksidermija</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Nazaj</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Naprej</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ni slik za prikaz.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Če predlagane rešitve ne pomagajo, prenesi ustvarjeno dnevniško datoteko in jo pošlji prek povezave: {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>skupina za podporo</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Prenesi pripomoček</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Vaši podatki</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Naložite zip, ki ga je ustvarilo orodje za varnostno kopiranje. Operater ga preveri ročno in, če je vse v redu, na tem strežniku obnovi vaš inventar, denarnico, spretnosti, statistiko, dosežke in trofeje.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Varnostno kopijo naložite pred prvim lovom tukaj: varnostno kopijo je mogoče obnoviti samo na račun, ki še ni igral.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Uporabite varnostno kopijo, narejeno v načinu Moj račun. Operater vidi, ali je bila narejena za račun Steam, s katerim ste se prijavili; to je namig, ne dokaz.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Varnostno kopijo je mogoče obnoviti enkrat. Če na tem strežniku še niste igrali, vaš račun nato prevzame uporabniški id in ime iz varnostne kopije.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Vsak zip se shrani, da ga operater preveri ročno. Nič se ne obnovi samodejno, zato lahko traja nekaj časa.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip je lahko velik največ 64 MiB.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Zip varnostne kopije</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Naloži</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Nalaganje …</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Vaša varnostna kopija uporabnika z id {0} je obnovljena na tem računu.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Varnostne kopije, ki čakajo na pregled operaterja: {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Podrobnosti</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Kaj ta strežnik shranjuje o vas</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Obnovljeno</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Prejeto: operater jo bo preveril</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Že obnovljeno</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>Uporabniški id je že v uporabi</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Neuporabna varnostna kopija</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Poskusite znova pozneje</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Datoteka je prevelika</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odjavljeni ste</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Tukaj ni na voljo</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Izbriši moje podatke</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>S tem izbrišete svoj račun na tem strežniku in vse, kar je z njim shranjeno: svoj Steam id, svoje ime, svoje podatke o igri, shranjene zip datoteke varnostnih kopij in svoje fotografije. Odjavljeni boste, prijava iz zaganjalnika pa preneha delovati. Tega ni mogoče razveljaviti.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Razumem, izbriši vse</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Izbriši moje podatke</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>Podatkov ni bilo mogoče izbrisati. Poskusite znova.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Vaši podatki</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Kaj ta strežnik hrani o vas in kako se tega znebite.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Kaj je shranjeno</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Vaš Steam id, številka, ki jo Steam dodeli ob prijavi. Nič drugega iz vašega profila Steam ni shranjeno.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Vaš vzdevek, ime, ki ga vidijo drugi lovci.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>Podatki o igri vašega računa: inventar, denarnica, spretnosti, statistika, dosežki, trofeje, lovi, odstreli in fotografije, ki jih posnamete v igri.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Vsak zip varnostne kopije, ki ga naložite, nespremenjen: shranjen, da ga operater preveri, in po obnovitvi, da lahko operater ponastavi vaš račun in ga znova obnovi. Zip vsebuje, kar je orodje za varnostno kopiranje shranilo o vašem računu.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Piškotki za prijavo in žetoni igre, kot zgoščene vrednosti, ki jih ni mogoče prebrati nazaj.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Česa računi ne hranijo</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Vašega e-naslova, pravega imena, poštnega naslova ali telefonske številke: ti podatki se ne zahtevajo in se ne hranijo v vašem računu. Če varnostna kopija vsebuje tako polje, se ne obnovi.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Brisanje vaših podatkov</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi; ob novi prijavi se ustvari nov račun.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>Operater tega strežnika vidi vse zgoraj navedeno.</value></data>
 </root>

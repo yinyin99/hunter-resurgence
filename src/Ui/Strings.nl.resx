@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Alles activeren</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>KOPEN</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>GEBRUIK</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Activering bevestigen</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Nieuwe beschikbare missies automatisch activeren</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Alleen favoriete missies automatisch activeren</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Je kunt je missies in de winkel tegen betaling resetten.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Wapens</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Alles geselecteerd</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>{0} geselecteerd</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Alles selecteren</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Voltooide missies verbergen</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Zoeken</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filter</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>Bevestigingsmail opnieuw verstuurd.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail opnieuw verstuurd</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>E-mail opnieuw versturen mislukt. Probeer het opnieuw of neem contact op met support</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Opnieuw versturen van de e-mail mislukt. Probeer het opnieuw of neem contact op met de support.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Taal</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Waarschuwing</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Als je je Steam-account loskoppelt, word je uitgelogd bij {game} en wordt de launcher gesloten. Je kunt {game} pas weer op Steam spelen nadat je een ander account hebt gekoppeld.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ik begrijp het en wil mijn Steam-account loskoppelen</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Er is iets misgegaan en je Steam-account is niet ontkoppeld. Probeer het opnieuw!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Headerafbeelding</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Headerafbeeldingen worden ontgrendeld wanneer je nieuwe niveaus bereikt in drie verschillende prestatiecategorieën: Dierenmeester, Wapenmeester en Verkenningsmeester. Eenmaal ontgrendeld blijven headerafbeeldingen voor altijd beschikbaar.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Lees meer over de meesterniveaus van de prestaties.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Afstand</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tijd van de oogst</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Bezig</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistieken zullen worden bijgewerkt wanneer de expeditie is beëindigd.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Vorige</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Volgende</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Geen afbeeldingen om weer te geven.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Als de voorgestelde oplossingen niet helpen, download dan het gegenereerde logbestand en stuur het naar ons {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>supportteam</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Programma downloaden</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Je back-up herstellen</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Jouw gegevens</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Je back-up herstellen</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Upload de zip die de back-uptool heeft gemaakt. Een operator controleert hem met de hand en herstelt, als alles klopt, je inventaris, portemonnee, vaardigheden, statistieken, prestaties en trofeeën op deze server.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Upload je back-up vóór je eerste jacht hier: een back-up kan alleen worden hersteld op een account dat nog niet heeft gespeeld.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Gebruik een back-up die is gemaakt in de modus Mijn account. De operator ziet of hij is gemaakt voor het Steam-account waarmee je bent ingelogd; dat is een aanwijzing, geen bewijs.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Een back-up kan één keer worden hersteld. Als je nog niet op deze server hebt gespeeld, krijgt je account dan het gebruikers-id en de naam uit de back-up.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Elke zip wordt bewaard zodat een operator hem met de hand kan controleren. Er wordt niets automatisch hersteld, dus het kan even duren.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Een zip is maximaal 64 MiB.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Back-upzip</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Uploaden</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Uploaden…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Je back-up van gebruikers-id {0} is hersteld op dit account.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Back-ups die de operator nog moet controleren: {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Wat deze server over jou opslaat</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Hersteld</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Ontvangen: een operator controleert hem</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Al hersteld</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>Gebruikers-id in gebruik</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Geen bruikbare back-up</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Probeer het later opnieuw</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Bestand te groot</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Uitgelogd</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Hier niet beschikbaar</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Dit verwijdert je account op deze server en alles wat daarbij is opgeslagen: je Steam-id, je naam, je spelgegevens, de bewaarde back-upzips en je foto's. Je wordt uitgelogd en inloggen via de launcher werkt niet meer. Dit kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ik begrijp het, verwijder alles</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>De gegevens konden niet worden verwijderd. Probeer het opnieuw.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Jouw gegevens</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Wat deze server over jou bewaart en hoe je het kunt laten verwijderen.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Wat er wordt opgeslagen</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Je Steam-id, het nummer dat Steam geeft wanneer je inlogt. Verder wordt niets van je Steam-profiel bewaard.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Je gebruikersnaam, de naam die andere jagers zien.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>De spelgegevens van je account: inventaris, portemonnee, vaardigheden, statistieken, prestaties, trofeeën, jachten, afschot en de foto's die je in het spel maakt.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Elke back-upzip die je uploadt, ongewijzigd: bewaard zodat een operator hem kan controleren, en ook nadat hij is hersteld, zodat de operator je account kan resetten en opnieuw kan herstellen. Een zip bevat wat de back-uptool van je account heeft opgeslagen.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inlogcookies en spelsleutels, als hashes die niet kunnen worden teruggelezen.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Wat accounts niet bevatten</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Je e-mailadres, echte naam, postadres of telefoonnummer: daar wordt niet om gevraagd en ze worden niet in je account bewaard. Als een back-up zo'n veld bevat, wordt het niet hersteld.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Log in, open Je back-up herstellen en gebruik Mijn gegevens verwijderen. Dat verwijdert het account, de spelgegevens, de bewaarde zips en de foto's, en logt je uit. Je Steam-id wordt dan vergeten; opnieuw inloggen maakt een nieuw account aan.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>De operator van deze server kan alles hierboven zien.</value></data>
 </root>

@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Активировать все</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>КУПИТЬ</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>ИСПОЛЬЗОВАТЬ</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Подтвердить активацию</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Автоматически активировать новые доступные миссии</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Автоматически активировать только избранные миссии</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Вы можете сбросить миссии за плату в магазине.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Оружие</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Выбрано всё</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Выбрано: {0}</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Выбрать все</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Скрыть выполненные</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Поиск</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Фильтр</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>Письмо отправлено повторно.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Повторная отправка письма с подтверждением. Вам нужно кликнуть по ссылке в письме.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Повторная отправка подтверждения</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Письмо отправлено повторно</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Не удалось отправить письмо повторно. Попробуйте ещё раз или обратитесь в поддержку</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Не удалось отправить письмо повторно. Попробуйте ещё раз или обратитесь в поддержку.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Язык</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Страна</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Предупреждение</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Если отвязать аккаунт Steam, вы выйдете из {game} и лаунчер закроется. Вы не сможете снова играть в {game} через Steam, пока не привяжете другой аккаунт.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Я понимаю и хочу отвязать свой аккаунт Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Что-то пошло не так, и ваш аккаунт Steam не был отвязан. Попробуйте ещё раз!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Фон профиля</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Фоны профиля открываются, когда вы достигаете новых уровней в трёх категориях достижений: «Повелитель зверей», «Стрелок-мастер» и «Исследователь». Открытые фоны остаются доступными навсегда.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Подробнее об уровнях достижений.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Дистанция</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Время добычи</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Обновить</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Идёт</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Статистика будет обновлена после завершения сессии.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Таксидермия</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Назад</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Дальше</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Нет изображений для показа.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Если предложенные решения не помогли, скачайте созданный файл журнала и отправьте его в нашу {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>службу поддержки</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Скачать утилиту</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Восстановить резервную копию</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Ваши данные</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Восстановить резервную копию</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Загрузите zip-архив, созданный инструментом резервного копирования. Оператор проверит его вручную и, если всё в порядке, восстановит на этом сервере ваш инвентарь, кошелёк, навыки, статистику, достижения и трофеи.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Загрузите резервную копию до первой охоты здесь: резервную копию можно восстановить только в аккаунт, в котором ещё не играли.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Используйте резервную копию, созданную в режиме «Мой аккаунт». Оператор видит, создана ли она для аккаунта Steam, с которым вы вошли; это подсказка, а не доказательство.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Резервную копию можно восстановить один раз. Если вы ещё не играли на этом сервере, ваш аккаунт получит ID пользователя и имя из резервной копии.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Каждый zip-архив сохраняется, чтобы оператор проверил его вручную. Ничего не восстанавливается автоматически, поэтому это может занять некоторое время.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Размер zip-архива — не более 64 МиБ.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Zip-архив резервной копии</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Загрузить</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Загрузка…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Ваша резервная копия с ID пользователя {0} восстановлена в этом аккаунте.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Резервных копий, ожидающих проверки оператором: {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Подробности</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Что этот сервер хранит о вас</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Восстановлено</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Получено: оператор проверит</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Уже восстановлено</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>ID пользователя занят</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Непригодная резервная копия</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Повторите попытку позже</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Файл слишком большой</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Вы вышли</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Здесь недоступно</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Удалить мои данные</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Это удалит ваш аккаунт на этом сервере и всё, что с ним хранится: ваш Steam ID, ваше имя, игровые данные, сохранённые zip-архивы резервных копий и ваши фотографии. Вы выйдете из аккаунта, а вход через лаунчер перестанет работать. Это нельзя отменить.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Я понимаю, удалить всё</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Удалить мои данные</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>Не удалось удалить данные. Попробуйте ещё раз.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Ваши данные</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Что этот сервер хранит о вас и как это удалить.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Что хранится</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Ваш Steam ID — число, которое Steam выдаёт при входе. Больше ничего из вашего профиля Steam не хранится.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Ваш ник — имя, которое видят другие охотники.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>Игровые данные вашего аккаунта: инвентарь, кошелёк, навыки, статистика, достижения, трофеи, охоты, добыча и фотографии, которые вы делаете в игре.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Каждый загруженный вами zip-архив резервной копии в неизменном виде: хранится, чтобы оператор проверил его, и после восстановления — чтобы оператор мог сбросить ваш аккаунт и восстановить его снова. В zip-архиве то, что инструмент резервного копирования сохранил из вашего аккаунта.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Файлы cookie для входа и игровые токены в виде хэшей, которые невозможно прочитать обратно.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Чего нет в аккаунтах</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Ваш адрес электронной почты, настоящее имя, почтовый адрес или номер телефона: их не запрашивают и не хранят в вашем аккаунте. Если резервная копия содержит такое поле, оно не восстанавливается.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Удаление ваших данных</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Войдите, откройте «Восстановить резервную копию» и нажмите «Удалить мои данные». Это удалит аккаунт, его игровые данные, сохранённые zip-архивы и фотографии, а вы выйдете из аккаунта. После этого ваш Steam ID забывается; повторный вход создаст новый аккаунт.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>Оператор этого сервера видит всё перечисленное выше.</value></data>
 </root>
