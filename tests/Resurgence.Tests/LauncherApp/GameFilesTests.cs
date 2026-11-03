@@ -68,6 +68,76 @@ public class GameFilesTests
         Assert.True(GameFiles.ReadOptions(o, "zz_").Problem == FileProblem.BadFormat && GameFiles.ReadOptions(Path.Combine(root, "opt", "absent.bin"), "fake_").Problem == FileProblem.Missing, "options: wrong prefix is a bad format, absent file is missing");
     }
 
+    // PL3: these values end up in file paths
+    [Theory]
+    [InlineData("""{"steam_app_id":"12ab","client_exe":"C:\\x.exe","graphics_file":"/abs","options_file":"a/../b"}""")]
+    [InlineData("not json")]
+    [InlineData("[]")]
+    public void SettingsWithUnsafeValuesOrNoObjectAreNotConfigured(string json)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "s.json").Also(p => File.WriteAllText(p, json));
+        Assert.Equal(new Settings(null, null), Settings.Load(path));
+    }
+
+    [Fact]
+    public void ADigitsOnlyAppIdIsKept()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        Assert.Equal("4711", Settings.Load(Path.Combine(temp.Path, "s.json").Also(p => File.WriteAllText(p, """{"steam_app_id":"4711"}"""))).SteamAppId);
+    }
+
+    const string Good = "129\n0\n1920 1080 60\n2\n0\n0\n0\n0\n0\n";
+
+    // PL4: the format check guards writes to the game's own files
+    [Theory]
+    [InlineData("129\n0\n1920 1080 60\n4\n0\n0\n0\n0\n0\n")]   // scene 4
+    [InlineData("129\n0\n1920 1080 60\n2\n3\n0\n0\n0\n0\n")]   // texture 3
+    [InlineData("129\n0\n1920 1080 60\n2\n0\n0\n0\n6\n0\n")]   // aniso 6
+    [InlineData("129\n2\n1920 1080 60\n2\n0\n0\n0\n0\n0\n")]   // fullscreen 2
+    [InlineData("129\n0\n0 1080 60\n2\n0\n0\n0\n0\n0\n")]      // width 0
+    [InlineData("129\n0\n1920 1080 60\n2\n0\n0\n0\n0\n")]       // 8 lines
+    [InlineData("129\n0\n1920 1080 60\nx\n0\n0\n0\n0\n0\n")]   // not a number
+    public void AGraphicsFileOutsideTheKnownRangesIsRefusedAndLeftAlone(string text)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "g.cfg");
+        Write(path, text);
+        Assert.Equal(FileProblem.BadFormat, GameFiles.ReadGraphics(path).Problem);
+        Assert.Throws<InvalidDataException>(() => GameFiles.WriteGraphics(path, new GraphicsSettings { Width = 1, Height = 1, Hz = 1 }));
+        Assert.Equal(text, Bytes(path));
+        Assert.False(File.Exists(path + GameFiles.BackupSuffix));
+    }
+
+    [Fact]
+    public void AnLfOnlyGraphicsFileRoundTripsByteForByte()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "g.cfg");
+        Write(path, Good);
+        GameFiles.WriteGraphics(path, GameFiles.ReadGraphics(path).Value!);
+        Assert.Equal(Good, Bytes(path));
+        Assert.False(File.Exists(path + GameFiles.BackupSuffix));
+    }
+
+    // PL5
+    [Fact]
+    public void OptionsWriteChangesOnlyTheFirstLineOfAKeyAndReadSkipsWhatIsNotAnInt()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "o.bin");
+        const string text = "<value name=\"p_Gamma\" type=\"int\">abc</value>\n<value name=\"p_MasterVolume\" type=\"int\">1</value>\n<value name=\"p_MasterVolume\" type=\"int\">1</value>\n" +
+            "<value name=\"p_LookSpeed\" type=\"int\">99999999999</value>\n<value name=\"p_ShowChat\" type=\"int\">1</value>\n";
+        Write(path, text);
+        var o = GameFiles.ReadOptions(path, "p_").Value!;
+        Assert.Equal(["MasterVolume", "ShowChat"], o.Values.Keys); // the non-numeric Gamma and the over-int LookSpeed are skipped
+        o.Set("MasterVolume", 7);
+        GameFiles.WriteOptions(path, "p_", o);
+        var lines = text.Split('\n');
+        lines[1] = lines[1].Replace(">1<", ">7<");
+        Assert.Equal(string.Join('\n', lines), Bytes(path));
+    }
+
     // the dialog's service on the files written above (root is its %APPDATA%)
     static async Task GameSettingsDialog(string root, Settings s)
     {
