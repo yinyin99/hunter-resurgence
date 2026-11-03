@@ -6,17 +6,17 @@ Every pull request, a task's or Dependabot's, is merged with `gh pr merge <n> --
 
 ## Considered options
 
-- **Merge commits (the method until now).** Keeps every one-purpose commit, and `git blame` inside a big PR shows the exact commit: #110 had 21 commits and #105 had 16. Rejected: the subjects on `main` are GitHub's merge subjects, and review-fix and back-merge commits stay in the history. The commit subjects stay readable in the squash commit's body.
+- **Merge commits (the method until now).** Keeps every one-purpose commit, and `git blame` inside a big PR shows the exact commit: #110 had 21 commits and #105 had 16. Rejected: the subjects on `main` are GitHub's merge subjects, and review-fix and back-merge commits stay in the history. The single commits stay readable in the PR.
 - **Rebase merge.** A linear history, but every branch commit, review fixes included, lands on `main` one by one, untested. Rejected.
-- **Squash with the PR body as the commit message.** Rejected: the body is Markdown written for review (checklists, `Closes #n`). The commit list is shorter, and `git log --grep` finds the commit subjects in it.
+- **Squash with the PR body or the commit list as the commit message.** Rejected: the body is Markdown written for review (checklists, `Closes #n`), and the commit list repeats what the PR already shows. The squash commit is its title only; ` (#NNN)` links to both.
 - **Squash by convention, all three methods still allowed.** Rejected: one `--merge` by mistake brings the old history back. The setting and the ruleset make it impossible.
 
 ## Consequences
 
 - The PR title is a Conventional Commits subject of at most 65 characters, so the subject is at most 72 with ` (#NNN)`. The PR has one purpose ([CONTRIBUTING.md](../../CONTRIBUTING.md), "Commits"). Dependabot writes its own titles (`build: Bump …`), and they are kept as they are, even when one is a few characters longer.
-- Repository setting: merge commits and rebase merges are off; the squash title is `PR_TITLE` and the squash message is `COMMIT_MESSAGES`. The ruleset `main: reviewed changes` has `allowed_merge_methods: ["squash"]`.
+- Repository setting: merge commits and rebase merges are off; the squash title is `PR_TITLE` and the squash message is `BLANK`. The ruleset `main: reviewed changes` has `allowed_merge_methods: ["squash"]`.
 - Dependabot pull requests squash too: the bump and the "build: regenerate lock files" commit become one `build: …` commit ([deploy.md](../deploy.md)).
 - Release notes do not change: they come from the annotated tag's message (`release.yml`). `git log --oneline <last tag>..origin/main` now gives one line per PR to write it from.
 - A branch built on another branch that has not been merged yet needs a rebase onto `main` after its base is squashed, because the base's commits are not on `main`.
-- `git blame` and `git log` on `main` show the PR, not the single commit inside it. The single commits are in the PR on GitHub, and their messages are in the squash commit's body.
+- `git blame` and `git log` on `main` show the PR, not the single commit inside it. The single commits and their messages are in the PR on GitHub.
 - Revisit with a new ADR if a PR needs its separate commits on `main` (for example, a large import that is bisected commit by commit).
