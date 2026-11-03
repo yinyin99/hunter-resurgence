@@ -50,11 +50,12 @@ jobs:
             static_host        = $env:STATIC_HOST
             avatar_host        = $env:AVATAR_HOST
           }
-          foreach ($k in $s.Keys) {
-            if (-not $s[$k]) { throw "repository secret for $k is missing" }
+          foreach ($k in @($s.Keys)) {
+            $s[$k] = "$($s[$k])".Trim()
+            if (-not $s[$k]) { throw "repository secret for $k is missing or blank" }
           }
           # optional: the community server for "Send to the community server"; without it the button is hidden
-          if ($env:SERVER_URL) { $s["server_url"] = $env:SERVER_URL }
+          if ("$env:SERVER_URL".Trim()) { $s["server_url"] = $env:SERVER_URL.Trim() }
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
           # the player kit's settings.json: the community server, the web host the game sends everything to (the backup tool's web_host) and the crash report host. Only when PLAY_SERVER_URL is set: without it the release has the backup tool alone.
           if (-not $env:PLAY_SERVER_URL) { Write-Host "PLAY_SERVER_URL is not set: no player kit in this release" }
@@ -64,8 +65,9 @@ jobs:
               game_web_host      = $env:WEB_HOST
               crash_host         = $env:CRASH_HOST
             }
-            foreach ($k in $p.Keys) {
-              if (-not $p[$k]) { throw "repository secret for $k is missing" }
+            foreach ($k in @($p.Keys)) {
+              $p[$k] = "$($p[$k])".Trim()
+              if (-not $p[$k]) { throw "repository secret for $k is missing or blank" }
             }
             $p | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\play-settings.json"
             "PLAY=1" >> $env:GITHUB_ENV
