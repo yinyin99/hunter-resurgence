@@ -33,6 +33,8 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 `admin item <item_id> [count]`, `admin em|gm <amount>` and `admin spawn <reserve> <animal> <males> [females] [x z radius]` change the player in `data_dir` from the command line (add `--account <user id or handle>` to `admin item|em|gm` for another account, e.g. `docker compose exec server dotnet server.dll admin item <item_id> <count> --account <handle>`; the admin API's account routes take the same as the `account` query parameter; without it the local account); `coverage` replays every request of the recordings through the server and lists what it cannot answer, naming hosts by their settings key and masking ids and tokens in paths. `coverage --no-recordings` replays them against the server as it starts without recordings and without the mirror (player state from the install and the facts file, on a temporary database): what it lists as unanswered still needs a recording.
 
+A reserve takes at most 20 new animal kinds from `admin spawn`; further entries of that reserve are not applied.
+
 `backup <folder> [keep]` copies every `*.db` of `data_dir` to `<folder>/<name>-<yyyymmdd>.db` with SQLite's `VACUUM INTO` (consistent while the server runs) and keeps the newest `keep` (default 7) copies of each; the community server's daily backup is this command ([deploy.md](deploy.md#backups)).
 
 ## How a request is answered
