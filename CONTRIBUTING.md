@@ -74,4 +74,4 @@ git push origin v0.2.0
 
 ## Commits
 
-Conventional Commits (`feat:`, `fix:`, `docs:`, `ci:`, `chore:` ...), imperative subject under 72 characters, one purpose per commit.
+Every pull request is squash-merged into one commit on `main` ([ADR 0002](docs/adr/0002-squash-merge-pull-requests.md)), so the rule is on the pull request: one purpose per pull request, and its title is a Conventional Commits subject (`feat:`, `fix:`, `docs:`, `ci:`, `chore:` ...), imperative, at most 65 characters (GitHub adds ` (#<n>)`). Dependabot's titles are kept as Dependabot writes them. The branch's commits follow Conventional Commits too, because their messages become the squash commit's body; review fixes need no fixup or rebase.
