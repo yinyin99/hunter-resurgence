@@ -22,6 +22,8 @@ public sealed class Settings
     public required string MirrorDir { get; init; }
     public string? VariantsFile { get; init; }
     public required IReadOnlyList<Listener> Listeners { get; init; }
+    /// <summary>The address and port of every listener that serves the admin API.</summary>
+    public IReadOnlyList<(IPAddress Address, int Port)> AdminListeners => [.. Listeners.Where(l => l.Admin).Select(l => (l.Address, l.Port))];
     /// <summary>Peers whose HostHeader is believed: the proxies of this server.</summary>
     public IReadOnlyList<IPNetwork> TrustedProxies { get; init; } = [];
     public string HostHeader { get; init; } = DefaultHostHeader;
