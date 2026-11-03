@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivovat všechny</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>KOUPIT</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>USE</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Potvrdit aktivaci</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Automaticky aktivovat nově dostupné mise</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automaticky aktivovat pouze oblíbené mise</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Mise můžete za poplatek resetovat v obchodě.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Zbraně</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Vše vybráno</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Vybráno: {0}</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Vybrat vše</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Skrýt splněné</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Hledat</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Filtrovat</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>Potvrzovací e-mail byl odeslán znovu.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail byl odeslán znovu</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>E-mail se nepodařilo odeslat znovu. Zkuste to prosím znovu nebo kontaktujte podporu</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-mail se nepodařilo odeslat znovu. Zkuste to prosím znovu nebo kontaktujte podporu.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Jazyk</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Země</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Varování</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Zrušením propojení účtu Steam budete odhlášeni ze hry {game} a launcher se zavře. Hru {game} na Steamu nebudete moci znovu hrát, dokud se nepřipojíte k jinému účtu.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Rozumím a chci zrušit propojení svého účtu Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Něco se pokazilo a váš účet Steam nebyl odpojen. Zkuste to prosím znovu!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Obrázek v záhlaví</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Obrázky záhlaví se odemykají po dosažení nových úrovní ve třech kategoriích achievementů – Mistr zvířat, Mistr zbraní a Mistr průzkumu. Po odemknutí zůstanou obrázky záhlaví k dispozici navždy.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Zjistěte více o úrovních Mistra v achievementech.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Vzdálenost</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas dohledání</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Obnovit</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Probíhá</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bude aktualizována po skončení výpravy.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Předchozí</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Další</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Žádné obrázky k zobrazení.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Pokud navržená řešení nepomohou, stáhněte si vygenerovaný soubor protokolu a pošlete jej našemu {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>týmu podpory</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Stáhnout nástroj</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Obnovit zálohu</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Vaše údaje</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Obnovit zálohu</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Nahrajte zip, který vytvořil zálohovací nástroj. Operátor jej ručně zkontroluje a pokud je vše v pořádku, obnoví na tomto serveru váš inventář, peněženku, dovednosti, statistiky, achievementy a trofeje.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Nahrajte zálohu před svým prvním lovem zde: zálohu lze obnovit jen na účet, který ještě nehrál.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Použijte zálohu vytvořenou v režimu „My account“. Operátor uvidí, zda byla vytvořena pro účet na Steamu, kterým jste se přihlásili; je to jen nápověda, ne důkaz.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Zálohu lze obnovit jen jednou. Pokud jste na tomto serveru ještě nehráli, váš účet pak převezme id uživatele a jméno ze zálohy.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Každý zip se uchovává, aby ho operátor ručně zkontroloval. Nic se neobnovuje automaticky, takže to může chvíli trvat.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip může mít nejvýše 64 MiB.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Zip zálohy</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Nahrát</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Nahrávání…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Vaše záloha s id uživatele {0} je obnovena na tomto účtu.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Zálohy čekající na kontrolu operátorem: {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Podrobnosti</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Co o vás tento server ukládá</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Obnoveno</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Přijato: operátor ji zkontroluje</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Již obnoveno</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>Id uživatele se používá</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Nepoužitelná záloha</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Zkuste to později</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Soubor je příliš velký</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odhlášeno</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Zde není k dispozici</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Smazat mé údaje</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tím smažete svůj účet na tomto serveru i vše, co je s ním uloženo: své Steam ID, své jméno, herní data, uchované zipy záloh a své fotky. Budete odhlášeni a přihlášení v launcheru přestane fungovat. Nelze to vrátit zpět.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumím, smazat vše</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Smazat mé údaje</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>Údaje se nepodařilo smazat. Zkuste to znovu.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Vaše údaje</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Co o vás tento server uchovává a jak se toho zbavit.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Co se ukládá</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Vaše Steam ID, číslo, které Steam přidělí při přihlášení. Nic jiného z vašeho profilu na Steamu se neukládá.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Vaše přezdívka, jméno, které vidí ostatní lovci.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>Herní data vašeho účtu: inventář, peněženka, dovednosti, statistiky, achievementy, trofeje, lovy, úlovky a fotky, které ve hře pořídíte.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Každý zip zálohy, který nahrajete, beze změny: uchovává se, aby ho operátor zkontroloval, a i po obnovení, aby mohl operátor váš účet resetovat a obnovit znovu. Zip obsahuje to, co zálohovací nástroj uložil z vašeho účtu.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Přihlašovací cookies a herní tokeny, uložené jako hashe, které nelze přečíst zpět.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Co účty neobsahují</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Vaši e-mailovou adresu, skutečné jméno, poštovní adresu ani telefonní číslo: nevyžadují se a v účtu se neukládají. Pokud záloha takové pole obsahuje, neobnoví se.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Smazání vašich údajů</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene; novým přihlášením vznikne nový účet.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>Operátor tohoto serveru vidí vše výše uvedené.</value></data>
 </root>

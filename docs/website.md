@@ -28,7 +28,7 @@ With `SERVER_URL` set, two pages are real; the rest stay mock. They need the com
 - **`/restore`** (signed in; the settings menu has "Restore your backup"): choose the zip the backup tool made, "Upload". The page sends it with `ServerRestoreService` (`src/Services/`) to `POST /account/restore` of the server ([docs/server.md](server.md#upload-a-backup-zip)) with the player's cookie, and shows a headline for the result (`Restore.Result.<status>`: kept for review, already restored, user id in use, not a usable backup, try again later, file too large) with the server's own plain words under it and the technical report under "Details". The rules shown on the page are the server's: every zip is kept for an operator to check by hand and is never restored automatically; a backup is restored once. The upload goes browser to the website's server over its SignalR connection (`InputFile`, at most 64 MiB), then to the community server; the website's client for it has a 2 minute timeout where the sign-in's has 5 s. Below, "Delete my data" (a tick box first) calls `POST /account/delete` and loads the public site.
 - **`/your-data`** (public; "Your data" in the footer): what the server stores (Steam id, handle, the game data, each uploaded zip, kept and after it is restored, hashed tokens and cookies), what accounts do not hold (e-mail, real name, address, phone) and how to delete. The wording is the page's keys `Data.*` in `src/Ui/Strings*.resx`.
 
-The texts exist in every language file of `src/Ui`, in English in the languages not yet translated (`TranslationsTests` checks the keys). The server's messages under a result are English.
+The texts are translated in every language file of `src/Ui`. The server's messages under a result are English.
 
 ## Backup tool
 
@@ -109,7 +109,7 @@ States: all those of [launcher.md](launcher.md#development-switches) (patch pane
 
 The 19 languages and the resx files (`src/Ui/Strings.resx` and one `Strings.<code>.resx` each) are the launcher's: see [launcher.md](launcher.md#languages). The website picks the language from the browser's `Accept-Language` header, highest quality first, matching by `Languages.Match` (region ignored: `de-AT` is German, bare `pt` is Portuguese (Brazil), `no` and `nn` are Norwegian bokmål), else English. `?lang=<code>` overrides it and is remembered in a cookie.
 
-A test in `tests/Resurgence.Tests` checks that all 18 non-English files have the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check any of them.
+A test in `tests/Resurgence.Tests` checks that all 18 non-English files have the same keys and the same `{0}` placeholders as the English one, and that no key holds its English text in all 18 (a key copied, not translated; names such as `App.Name` are listed in the test). Native speakers are welcome to check any of them.
 
 ## Tests
 

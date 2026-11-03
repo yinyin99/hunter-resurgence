@@ -523,7 +523,7 @@
   <data name="Mis.ActivateAll" xml:space="preserve"><value>Aktivoi kaikki</value></data>
   <data name="Mis.Buy" xml:space="preserve"><value>Osta</value></data>
   <data name="Mis.Use" xml:space="preserve"><value>KÄYTÄ</value></data>
-  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Confirm Activation</value></data>
+  <data name="Mis.ConfirmActivation" xml:space="preserve"><value>Vahvista aktivointi</value></data>
   <data name="Mis.Auto" xml:space="preserve"><value>Aktivoi uudet saatavilla olevat tehtävät automaattisesti</value></data>
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
@@ -540,7 +540,7 @@
   <data name="Mis.Weapons" xml:space="preserve"><value>Aseet</value></data>
   <data name="Mis.AllSelected" xml:space="preserve"><value>Kaikki valittu</value></data>
   <data name="Mis.NSelected" xml:space="preserve"><value>Valittuja: {0}</value></data>
-  <data name="Mis.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Mis.SelectAll" xml:space="preserve"><value>Valitse kaikki</value></data>
   <data name="Mis.HideCompleted" xml:space="preserve"><value>Piilota suoritetut</value></data>
   <data name="Mis.Search" xml:space="preserve"><value>Haku</value></data>
   <data name="Mis.Filter" xml:space="preserve"><value>Suodatin</value></data>
@@ -735,8 +735,8 @@
   <data name="Set.EmailResent" xml:space="preserve"><value>Vahvistussähköposti lähetetty uudelleen.</value></data>
   <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti. Sinun täytyy painaa viestissä olevaa linkkiä.</value></data>
   <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
+  <data name="Set.ResendOk" xml:space="preserve"><value>Sähköpostin uudelleenlähetys onnistui</value></data>
+  <data name="Set.ResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen</value></data>
   <data name="Set.EmailResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
   <data name="Set.Language" xml:space="preserve"><value>Kieli</value></data>
   <data name="Set.Country" xml:space="preserve"><value>Maa</value></data>
@@ -759,7 +759,7 @@
   <data name="Set.Warning" xml:space="preserve"><value>Varoitus</value></data>
   <data name="Set.SteamWarning" xml:space="preserve"><value>Steam-tilin yhteyden katkaiseminen kirjaa sinut ulos {game}-pelistä ja sulkee käynnistäjän. Et voi pelata {game}-peliä Steamissä uudelleen, ennen kuin yhdistät sen toiseen tiliin.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ymmärrän ja haluan katkaista Steam-tilini yhteyden</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
+  <data name="Set.SteamFailed" xml:space="preserve"><value>Jokin meni pieleen, eikä Steam-tilisi yhteyttä katkaistu. Yritä uudelleen!</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Otsikkokuva</value></data>
   <data name="Set.HeaderText" xml:space="preserve"><value>Otsikkokuvat avautuvat, kun saavutat uusia tasoja kolmessa eri saavutuskategoriassa: Eläinmestari, Asemestari ja Tutkimusmestari. Avautuneet otsikkokuvat pysyvät käytettävissä ikuisesti.</value></data>
   <data name="Set.HeaderLink" xml:space="preserve"><value>Lue lisää saavutusmestarien tasoista.</value></data>
@@ -917,9 +917,9 @@
   <data name="Stat.Range" xml:space="preserve"><value>Etäisyys</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Kaadon aika</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Päivitä</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>Käynnissä</value></data>
   <data name="Stat.WhenEnded" xml:space="preserve"><value>Tilastot päivittyvät kun retki on loppunut.</value></data>
-  <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
+  <data name="Stat.Taxidermy" xml:space="preserve"><value>Täytetyt eläimet</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Edellinen</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Seuraava</value></data>
   <data name="Prof.GalleryEmpty" xml:space="preserve"><value>Ei näytettäviä kuvia.</value></data>
@@ -1236,47 +1236,47 @@
   <data name="Download.Trouble.Step5" xml:space="preserve"><value>Jos ehdotetut ratkaisut eivät auta, lataa luotu lokitiedosto ja lähetä se {0}.</value></data>
   <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>tukitiimillemme</value></data>
   <data name="Download.Trouble.Utility" xml:space="preserve"><value>Lataa apuohjelma</value></data>
-  <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
-  <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
-  <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
-  <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
-  <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
-  <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
-  <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
-  <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
-  <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
-  <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
-  <data name="Restore.DataLink" xml:space="preserve"><value>What this server stores about you</value></data>
-  <data name="Restore.Result.restored" xml:space="preserve"><value>Restored</value></data>
-  <data name="Restore.Result.review" xml:space="preserve"><value>Received: an operator will check it</value></data>
-  <data name="Restore.Result.already" xml:space="preserve"><value>Already restored</value></data>
-  <data name="Restore.Result.taken" xml:space="preserve"><value>User id in use</value></data>
-  <data name="Restore.Result.invalid" xml:space="preserve"><value>Not a usable backup</value></data>
-  <data name="Restore.Result.busy" xml:space="preserve"><value>Try again later</value></data>
-  <data name="Restore.Result.too_large" xml:space="preserve"><value>File too large</value></data>
-  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
-  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
-  <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
-  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
-  <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
-  <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
-  <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
-  <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>
-  <data name="Data.Stored.Steam" xml:space="preserve"><value>Your Steam id, the number Steam gives when you sign in. Nothing else of your Steam profile is kept.</value></data>
-  <data name="Data.Stored.Handle" xml:space="preserve"><value>Your handle, the name other hunters see.</value></data>
-  <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
-  <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
-  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
-  <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
-  <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
-  <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
-  <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Settings.Restore" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>
+  <data name="Footer.YourData" xml:space="preserve"><value>Tietosi</value></data>
+  <data name="Restore.Title" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>
+  <data name="Restore.Intro" xml:space="preserve"><value>Lähetä varmuuskopiotyökalun tekemä zip. Operaattori tarkistaa sen käsin ja, jos kaikki on kunnossa, palauttaa varusteesi, lompakkosi, taitosi, tilastosi, saavutuksesi ja palkintosi tälle palvelimelle.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Lähetä varmuuskopiosi ennen ensimmäistä metsästystäsi täällä: varmuuskopion voi palauttaa vain tilille, joka ei ole vielä pelannut.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Käytä varmuuskopiota, joka on tehty tilassa ”My account”. Operaattori näkee, onko se tehty Steam-tilille, jolla kirjauduit sisään; se on vihje, ei todiste.</value></data>
+  <data name="Restore.Rule2" xml:space="preserve"><value>Varmuuskopion voi palauttaa vain kerran. Jos et ole vielä pelannut tällä palvelimella, tilisi saa silloin varmuuskopion käyttäjätunnuksen ja nimen.</value></data>
+  <data name="Restore.Rule3" xml:space="preserve"><value>Jokainen zip säilytetään, jotta operaattori voi tarkistaa sen käsin. Mitään ei palauteta automaattisesti, joten se voi viedä hetken.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip saa olla enintään 64 MiB.</value></data>
+  <data name="Restore.Choose" xml:space="preserve"><value>Varmuuskopio-zip</value></data>
+  <data name="Restore.Upload" xml:space="preserve"><value>Lähetä</value></data>
+  <data name="Restore.Working" xml:space="preserve"><value>Lähetetään…</value></data>
+  <data name="Restore.Restored" xml:space="preserve"><value>Varmuuskopiosi käyttäjätunnukselle {0} on palautettu tälle tilille.</value></data>
+  <data name="Restore.Waiting" xml:space="preserve"><value>Operaattorin tarkistettavina olevat varmuuskopiot: {0}</value></data>
+  <data name="Restore.Details" xml:space="preserve"><value>Tiedot</value></data>
+  <data name="Restore.DataLink" xml:space="preserve"><value>Mitä tämä palvelin tallentaa sinusta</value></data>
+  <data name="Restore.Result.restored" xml:space="preserve"><value>Palautettu</value></data>
+  <data name="Restore.Result.review" xml:space="preserve"><value>Vastaanotettu: operaattori tarkistaa sen</value></data>
+  <data name="Restore.Result.already" xml:space="preserve"><value>Jo palautettu</value></data>
+  <data name="Restore.Result.taken" xml:space="preserve"><value>Käyttäjätunnus on käytössä</value></data>
+  <data name="Restore.Result.invalid" xml:space="preserve"><value>Ei kelvollinen varmuuskopio</value></data>
+  <data name="Restore.Result.busy" xml:space="preserve"><value>Yritä myöhemmin uudelleen</value></data>
+  <data name="Restore.Result.too_large" xml:space="preserve"><value>Tiedosto on liian suuri</value></data>
+  <data name="Restore.Result.signed_out" xml:space="preserve"><value>Kirjauduttu ulos</value></data>
+  <data name="Restore.Result.unavailable" xml:space="preserve"><value>Ei saatavilla täällä</value></data>
+  <data name="Restore.Delete.Title" xml:space="preserve"><value>Poista tietoni</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tämä poistaa tilisi tältä palvelimelta ja kaiken siihen tallennetun: Steam-tunnuksesi, nimesi, pelitietosi, säilytetyt varmuuskopio-zipit ja valokuvasi. Sinut kirjataan ulos, eikä käynnistäjän sisäänkirjautuminen enää toimi. Tätä ei voi perua.</value></data>
+  <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ymmärrän, poista kaikki</value></data>
+  <data name="Restore.Delete.Button" xml:space="preserve"><value>Poista tietoni</value></data>
+  <data name="Restore.Delete.Failed" xml:space="preserve"><value>Tietoja ei voitu poistaa. Yritä uudelleen.</value></data>
+  <data name="Data.Title" xml:space="preserve"><value>Tietosi</value></data>
+  <data name="Data.Intro" xml:space="preserve"><value>Mitä tämä palvelin säilyttää sinusta ja miten pääset niistä eroon.</value></data>
+  <data name="Data.Stored.Title" xml:space="preserve"><value>Mitä tallennetaan</value></data>
+  <data name="Data.Stored.Steam" xml:space="preserve"><value>Steam-tunnuksesi, numero jonka Steam antaa kirjautuessasi. Muuta Steam-profiilistasi ei tallenneta.</value></data>
+  <data name="Data.Stored.Handle" xml:space="preserve"><value>Käyttäjänimesi, nimi jonka muut metsästäjät näkevät.</value></data>
+  <data name="Data.Stored.Game" xml:space="preserve"><value>Tilisi pelitiedot: varusteet, lompakko, taidot, tilastot, saavutukset, palkinnot, metsästykset, kaadot ja pelissä ottamasi valokuvat.</value></data>
+  <data name="Data.Stored.Zip" xml:space="preserve"><value>Jokainen lähettämäsi varmuuskopio-zip muuttumattomana: säilytetään, jotta operaattori voi tarkistaa sen, ja palauttamisen jälkeen, jotta operaattori voi nollata tilisi ja palauttaa sen uudelleen. Zip sisältää sen, minkä varmuuskopiotyökalu tallensi tilistäsi.</value></data>
+  <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sisäänkirjautumisevästeet ja pelitunnisteet tiivisteinä, joita ei voi palauttaa luettavaan muotoon.</value></data>
+  <data name="Data.Never.Title" xml:space="preserve"><value>Mitä tilit eivät sisällä</value></data>
+  <data name="Data.Never.Text" xml:space="preserve"><value>Sähköpostiosoitteesi, oikea nimesi, postiosoitteesi tai puhelinnumerosi: niitä ei kysytä eikä tallenneta tilillesi. Jos varmuuskopio sisältää tällaisen kentän, sitä ei palauteta.</value></data>
+  <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
+  <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
 </root>
