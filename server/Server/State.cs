@@ -1013,10 +1013,10 @@ public sealed partial class State
         JsonArray events;
         try
         {
-            var events_ = (JsonNode.Parse(body) as JsonObject ?? throw new JsonException("not a dict"))["events"];
+            var events_ = (JsonNode.Parse(body, documentOptions: new() { AllowDuplicateProperties = false }) as JsonObject ?? throw new JsonException("not a dict"))["events"]; // a duplicate key (at any depth) is a JsonException here, not an ArgumentException at the first read
             events = events_ as JsonArray ?? new JsonArray();
         }
-        catch (Exception e) when (e is JsonException or ArgumentException) // ArgumentException: a duplicate key, which JsonNode reads lazily
+        catch (JsonException)
         {
             events = new JsonArray();
         }
