@@ -1016,7 +1016,7 @@ public sealed partial class State
             var events_ = (JsonNode.Parse(body) as JsonObject ?? throw new JsonException("not a dict"))["events"];
             events = events_ as JsonArray ?? new JsonArray();
         }
-        catch (JsonException)
+        catch (Exception e) when (e is JsonException or ArgumentException) // ArgumentException: a duplicate key, which JsonNode reads lazily
         {
             events = new JsonArray();
         }

@@ -556,13 +556,15 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
     public async Task TestAnOversizedHarvestIdIsNotAServerError()
     {
         const string big = "99999999999999999999";
+        var statuses = new List<int>();
         foreach (var (method, path, token) in new[] { ("GET", "/game/user/harvest/" + big, null), ("GET", "/game/user/harvest/" + big, tokenA), ("POST", "/game/user/harvest/" + big + "/taxidermize", tokenA) })
         {
             using var request = new HttpRequestMessage(new HttpMethod(method), new Uri("http://apiv2.test" + path, new UriCreationOptions { DangerousDisablePathAndQueryCanonicalization = true }));
             if (token is not null) request.Headers.TryAddWithoutValidation("Authorization", "Bearer " + token);
             using var response = await server.Http.SendAsync(request, TestContext.Current.CancellationToken);
-            Assert.NotEqual(500, (int)response.StatusCode);
+            statuses.Add((int)response.StatusCode);
         }
+        Assert.Equal("404,404,404", string.Join(",", statuses));
     }
 
     [Fact]

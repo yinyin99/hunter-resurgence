@@ -127,7 +127,7 @@ public static class Replay
             string? reserve = null;  // reserve of the last Launch/* in this HAR (tutorial and join carry none)
             JsonArray entries;
             try { entries = (JsonArray)JsonNode.Parse(File.ReadAllText(p, new UTF8Encoding(false, true)))!["log"]!["entries"]! ?? throw new InvalidCastException("no log entries"); }
-            catch (Exception e) when (e is IOException or JsonException or NullReferenceException or InvalidCastException or DecoderFallbackException or UnauthorizedAccessException)
+            catch (Exception e) when (e is IOException or JsonException or NullReferenceException or InvalidCastException or InvalidOperationException or ArgumentException or DecoderFallbackException or UnauthorizedAccessException)
             {
                 Console.WriteLine($"skip {System.IO.Path.GetFileName(p)}: {e.Message}");
                 continue;
@@ -168,7 +168,7 @@ public static class Replay
                         table.Entries[k] = value;
                     }
                 }
-                catch (Exception x) when (x is NullReferenceException or InvalidCastException or InvalidOperationException or FormatException)
+                catch (Exception x) when (x is NullReferenceException or InvalidCastException or InvalidOperationException or FormatException or ArgumentException)
                 {
                     Console.WriteLine($"skip an entry of {System.IO.Path.GetFileName(p)}: {x.Message}");
                 }

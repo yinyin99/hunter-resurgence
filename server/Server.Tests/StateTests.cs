@@ -495,6 +495,7 @@ public class InventoryTests : StateTestBase
     [InlineData("""{"events":[null]}""")]
     [InlineData("[1]")]
     [InlineData("not json")]
+    [InlineData("""{"events":[],"events":[]}""")]
     public void TestHeartbeatBodiesOfTheWrongShapeAreIgnored(string body)
     {
         var items = Items();

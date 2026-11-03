@@ -26,7 +26,7 @@ dotnet test tests/Resurgence.Tests -c Release
 
 The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
-The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
+The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` and `LanguageSwitcherTests` build the launcher's real services, so they read `launcher.json` (the second test points it at a temporary file), the Steam registry keys and the game search the way a start does (missing sources give the defaults); they write nothing but that temporary file. `dotnet test` exits 0 when every test passes.
 
 ### Icon
 

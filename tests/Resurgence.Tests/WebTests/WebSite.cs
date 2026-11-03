@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 
@@ -7,5 +9,6 @@ namespace Resurgence.Tests.WebTests;
 public sealed class WebSite : WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher>
 {
     protected override void ConfigureWebHost(IWebHostBuilder b) =>
-        b.UseEnvironment("Development").UseSetting("SERVER_URL", "").UseSetting("IMAGES_DIR", "");
+        b.UseEnvironment("Development").UseSetting("SERVER_URL", "").UseSetting("IMAGES_DIR", "")
+            .ConfigureServices(s => s.AddDataProtection().UseEphemeralDataProtectionProvider()); // no key file under the PC's profile
 }

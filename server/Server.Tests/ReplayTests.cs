@@ -322,6 +322,10 @@ public class ReplayTests : IAsyncLifetime
             Write("garbage", "not json"u8.ToArray()),
             Write("badutf8", [0xC3, 0x28]),
             Write("nolog", "{\"log\":{}}"u8.ToArray()),
+            Write("array", "[]"u8.ToArray()),
+            Write("logarray", "{\"log\":[]}"u8.ToArray()),
+            Write("dupkey", "{\"log\":{\"entries\":[]},\"log\":{\"entries\":[]}}"u8.ToArray()),
+            Write("dupentry", "{\"log\":{\"entries\":[{\"request\":{\"method\":\"GET\",\"url\":\"https://api.test/a\"},\"request\":{}}]}}"u8.ToArray()),
             Write("mixed", Encoding.UTF8.GetBytes(Py.Dumps(mixed))),
             Write("good", Encoding.UTF8.GetBytes(Har(good))),
         };
