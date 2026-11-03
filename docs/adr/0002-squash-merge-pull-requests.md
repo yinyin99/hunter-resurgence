@@ -2,7 +2,7 @@
 
 Status: accepted
 
-Every pull request, a task's or Dependabot's, is merged with `gh pr merge <n> --squash --delete-branch` (`--admin` added only where [deploy.md](../deploy.md) says so) and becomes one commit on `main`. That commit's subject is the PR title plus GitHub's ` (#<n>)`; its body lists the subjects of the branch's commits. Measured on 2026-11-03: the last 40 merge commits on `main` all have the subject "Merge pull request #N from <owner>/<branch>", so `git log --first-parent` shows no Conventional subject. Review fixes reach `main` as commits of their own: #183 has three "fix: review of #183" commits, and #176, #170 and #111 have similar ones; #162 brought in two merges of `origin/main`. Agents spend work keeping branch history clean (fixup and autosquash, "rebase and squash"), which squash makes unneeded. And every commit on `main` is then a state that CI built and tested, so `git bisect` and `git revert <sha>` work with no `--first-parent` and no `-m 1`.
+Every pull request, a task's or Dependabot's, is merged with `gh pr merge <n> --squash --delete-branch` (`--admin` added only where [deploy.md](../deploy.md) says so) and becomes one commit on `main`. That commit's subject is the PR title plus GitHub's ` (#<n>)`; its body lists the messages of the branch's commits. Measured on 2026-11-03: the last 40 merge commits on `main` all have the subject "Merge pull request #N from <owner>/<branch>", so `git log --first-parent` shows no Conventional subject. Review fixes reach `main` as commits of their own: #183 has three "fix: review of #183" commits, and #176, #170 and #111 have similar ones; #162 brought in two merges of `origin/main`. Agents spend work keeping branch history clean (fixup and autosquash, "rebase and squash"), which squash makes unneeded. And every commit on `main` is then a state that CI built and tested, so `git bisect` and `git revert <sha>` work with no `--first-parent` and no `-m 1`.
 
 ## Considered options
 
@@ -13,10 +13,10 @@ Every pull request, a task's or Dependabot's, is merged with `gh pr merge <n> --
 
 ## Consequences
 
-- The PR title is a Conventional Commits subject of at most 65 characters, so the subject stays under 72 with ` (#NNN)`. The PR has one purpose ([CONTRIBUTING.md](../../CONTRIBUTING.md), "Commits").
+- The PR title is a Conventional Commits subject of at most 65 characters, so the subject is at most 72 with ` (#NNN)`. The PR has one purpose ([CONTRIBUTING.md](../../CONTRIBUTING.md), "Commits"). Dependabot writes its own titles (`build: Bump …`), and they are kept as they are, even when one is a few characters longer.
 - Repository setting: merge commits and rebase merges are off; the squash title is `PR_TITLE` and the squash message is `COMMIT_MESSAGES`. The ruleset `main: reviewed changes` has `allowed_merge_methods: ["squash"]`.
 - Dependabot pull requests squash too: the bump and the "build: regenerate lock files" commit become one `build: …` commit ([deploy.md](../deploy.md)).
 - Release notes do not change: they come from the annotated tag's message (`release.yml`). `git log --oneline <last tag>..origin/main` now gives one line per PR to write it from.
 - A branch built on another branch that has not been merged yet needs a rebase onto `main` after its base is squashed, because the base's commits are not on `main`.
-- `git blame` and `git log` on `main` show the PR, not the single commit inside it. The single commits are in the PR on GitHub, and their subjects are in the squash commit's body.
+- `git blame` and `git log` on `main` show the PR, not the single commit inside it. The single commits are in the PR on GitHub, and their messages are in the squash commit's body.
 - Revisit with a new ADR if a PR needs its separate commits on `main` (for example, a large import that is bisected commit by commit).
