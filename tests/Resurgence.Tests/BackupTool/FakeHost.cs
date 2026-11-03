@@ -34,6 +34,8 @@ public sealed class Fake : HttpMessageHandler
     public readonly List<(string Path, string? Bearer)> Auths = [];
     /// <summary>A token that the service no longer accepts: requests that carry it get error 11.</summary>
     public string? Revoked;
+    /// <summary>Path, Origin, Referer and Accept of every request.</summary>
+    public readonly List<(string Path, string? Origin, string? Referer, string? Accept)> Heads = [];
     /// <summary>Exact body (any bytes) for a path, whatever it would answer otherwise.</summary>
     public readonly Dictionary<string, byte[]> Raw = [];
     /// <summary>Answer for (path, form) chosen by the test; null = the usual answer.</summary>
@@ -75,6 +77,7 @@ public sealed class Fake : HttpMessageHandler
             if (form.Contains(Token)) WithToken++;
             Forms.Add(form);
             Auths.Add((path, req.Headers.Authorization?.Parameter));
+            Heads.Add((path, req.Headers.TryGetValues("Origin", out var o) ? o.Single() : null, req.Headers.Referrer?.ToString(), req.Headers.Accept.ToString() is { Length: > 0 } a ? a : null));
             Starts.TryAdd(host, []);
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
