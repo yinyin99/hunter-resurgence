@@ -8,6 +8,7 @@ for v in 4 6; do
 	ipt=iptables; [ "$v" = 6 ] && ipt=ip6tables
 	if ! $ipt -n -L DOCKER-USER > /dev/null 2>&1; then echo "IPv$v: no DOCKER-USER chain (Docker does not publish over IPv$v), skipped"; continue; fi
 	ranges=$(curl -fsS "https://www.cloudflare.com/ips-v$v")
+	[ -n "$ranges" ] || { echo "IPv$v: no Cloudflare ranges received, nothing changed" >&2; exit 1; }
 	# rebuild the list of allowed ranges, then jump to it once from DOCKER-USER
 	$ipt -N CLOUDFLARE 2> /dev/null || $ipt -F CLOUDFLARE
 	for r in $ranges; do $ipt -A CLOUDFLARE -s "$r" -j RETURN; done

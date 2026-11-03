@@ -17,7 +17,7 @@ RUN ls /usr/share/zoneinfo/Europe/Paris /usr/lib/*/libicuuc.so.* > /dev/null
 WORKDIR /app
 COPY --from=build /out ./
 # the cookie-signing keys: a volume in deploy/compose.yml; a new named volume takes this folder's owner, so the app can write it
-RUN mkdir -p /home/app/.aspnet/DataProtection-Keys
+RUN mkdir -p /home/app/.aspnet/DataProtection-Keys && chown -R $APP_UID /home/app/.aspnet
 EXPOSE 8080
 USER $APP_UID
 ENTRYPOINT ["dotnet", "Resurgence.Web.dll"]
