@@ -31,7 +31,7 @@ What it saves and what it does not: [docs/backup.md](docs/backup.md). What it ke
 
 ## For players: the player kit
 
-The player kit will connect your game to the community server over the internet. It is not released yet.
+The player kit connects your game to the community server over the internet. Download `play-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest).
 
 - A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder on your PC, and trusts a local certificate that is good only for those names. The forwarder stays open while you play and passes everything on to the community server.
 - It never changes the game's files. One script in the kit, `3-remove.cmd`, undoes everything and gives the official servers back.
@@ -45,7 +45,7 @@ This project and the community server run by its maintainer take no donations (n
 
 ## Roadmap
 
-Today only the backup tool is released: you cannot play on the community server yet. There are no dates, and the order can change when a step turns out easier or harder than expected.
+Released today: the backup tool, and the player kit, which lets you play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
 
 1. **Profile backup** (available now; run it before 2026-11-11): the [backup tool](#for-players-the-backup-tool).
 2. **Community server, accounts and restore** (in progress; the server is built, see [docs/server.md](docs/server.md)).
@@ -54,7 +54,7 @@ Today only the backup tool is released: you cannot play on the community server 
    - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions, leaderboards and the trophy-lodge pages may be missing at first, and there is no seasonal event by default.
    - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The [claim key](docs/backup.md#claim-key) in a backup is a hint that it is yours, not proof.
 3. **Offline play** (planned): the same server on your own PC or local network.
-4. **Remote play** (in progress, no release yet): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
+4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
 5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
 6. **New website** (preview online, sample data): profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only, nothing sold for real money), missions and friends.
 7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
