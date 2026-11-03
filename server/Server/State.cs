@@ -26,6 +26,7 @@ public sealed partial class State
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
+    const int MaxBuyAmount = 1000;
     // connect keys that differ by launched reserve (locations and locations_descr are the
     // same for every reserve); taken from that reserve's recorded connect
     static readonly string[] RESERVE_KEYS = ["populations", "species_ammo"];
@@ -154,7 +155,7 @@ public sealed partial class State
         con.Exec("DELETE FROM pending WHERE account_id = $a");
         foreach (var node in events)
         {
-            var e = node!.AsObject();
+            if (node is not JsonObject e) continue;
             JsonNode? species = null;
             con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, ?, ?)", e["event"], Py.Dumps(e));
             if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
@@ -888,15 +889,16 @@ public sealed partial class State
         var (currency, key) = WALLETS.TryGetValue(wallet, out var w) ? w : (null!, null!);
         // ponytail: services (connect active_services with an expiry) are not sold
         if (!(Py.Truthy(item) && currency is not null && item![key] is not null && !Py.Truthy(item["notbuyable"])
-              && !Is(item["type"], SERVICE) && Py.IsDigit(amount) && long.Parse(amount) > 0))
+              && !Is(item["type"], SERVICE)
+              && int.TryParse(amount, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n is >= 1 and <= MaxBuyAmount))
             return BUY_FAILED;
-        var price = Price(item, key) * long.Parse(amount);  // ponytail: amount > 1 untested
+        var price = Price(item, key) * n;
         using var con = Con(account);
         con.Begin();
         var balance = AddCurrency(con, currency, -price);
         if (balance is null)
             return BUY_FAILED;
-        Deliver(con, Enumerable.Repeat(Py.L(item["id"]), (int)long.Parse(amount)), ItemInfo);
+        Deliver(con, Enumerable.Repeat(Py.L(item["id"]), n), ItemInfo);
         con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = balance, ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return Py.DumpBytes(new JsonObject { ["price"] = (double)price, ["success"] = true });
@@ -1012,7 +1014,7 @@ public sealed partial class State
         try
         {
             var events_ = (JsonNode.Parse(body) as JsonObject ?? throw new JsonException("not a dict"))["events"];
-            events = Py.Truthy(events_) ? events_!.AsArray() : new JsonArray();
+            events = events_ as JsonArray ?? new JsonArray();
         }
         catch (JsonException)
         {
