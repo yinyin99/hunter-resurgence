@@ -29,9 +29,7 @@ public class SettingsTests
     [Fact]
     public void ExampleFileIsOnlyPlaceholders()
     {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (!File.Exists(Path.Combine(dir.FullName, "tools", "play", "settings.example.json"))) dir = dir.Parent!;
-        var e = Assert.Throws<InvalidOperationException>(() => Settings.Parse(File.ReadAllText(Path.Combine(dir.FullName, "tools", "play", "settings.example.json"))));
+        var e = Assert.Throws<InvalidOperationException>(() => Settings.Parse(File.ReadAllText(Repo.Path("tools", "play", "settings.example.json"))));
         Assert.Contains("server_url", e.Message);
     }
 }
