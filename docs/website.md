@@ -110,3 +110,12 @@ States: all those of [launcher.md](launcher.md#development-switches) (patch pane
 The 19 languages and the resx files (`src/Ui/Strings.resx` and one `Strings.<code>.resx` each) are the launcher's: see [launcher.md](launcher.md#languages). The website picks the language from the browser's `Accept-Language` header, highest quality first, matching by `Languages.Match` (region ignored: `de-AT` is German, bare `pt` is Portuguese (Brazil), `no` and `nn` are Norwegian bokmål), else English. `?lang=<code>` overrides it and is remembered in a cookie.
 
 A test in `tests/Resurgence.Tests` checks that all 18 non-English files have the same keys and the same `{0}` placeholders as the English one. Native speakers are welcome to check any of them.
+
+## Tests
+
+The website and the pages of `src/Ui` are tested in `tests/Resurgence.Tests/WebTests`, without a browser:
+
+- Component tests (bUnit, `UiContext`): a page is rendered with the service mocks and asserted on its markup. Anything behind the mocks' delay is awaited with `WaitForAssertion`.
+- Website tests (`WebAppTests`, `WebApplicationFactory`): the real `src/Web` app runs in memory in the Development environment, with no `SERVER_URL` unless a test sets it. They check the security headers, the page language, the cookie policy, `/images.json` and the services chosen by `SERVER_URL`. They read `src/Web/settings.json` when it exists.
+
+Run one class with `dotnet test --project tests/Resurgence.Tests -c Release --filter-class Resurgence.Tests.WebTests.WebAppTests`.
