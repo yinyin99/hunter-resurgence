@@ -1241,7 +1241,7 @@
   <data name="Restore.Title" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Prześlij plik zip utworzony przez narzędzie do kopii zapasowej. Operator sprawdza go ręcznie i, jeśli wszystko jest w porządku, przywraca na tym serwerze Twój ekwipunek, portfel, umiejętności, statystyki, osiągnięcia i trofea.</value></data>
   <data name="Restore.Hint" xml:space="preserve"><value>Prześlij kopię przed pierwszym polowaniem tutaj: kopię można przywrócić tylko na konto, które jeszcze nie grało.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Użyj kopii utworzonej w trybie Moje konto. Operator widzi, czy powstała dla konta Steam, na które się zalogowano; to wskazówka, nie dowód.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Użyj kopii utworzonej w trybie „My account”. Operator widzi, czy powstała dla konta Steam, na które się zalogowano; to wskazówka, nie dowód.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Kopię można przywrócić raz. Jeśli nie grano jeszcze na tym serwerze, konto otrzyma wtedy id użytkownika i nazwę z kopii.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Każdy plik zip jest przechowywany do ręcznego sprawdzenia przez operatora. Nic nie jest przywracane automatycznie, więc może to chwilę potrwać.</value></data>
   <data name="Restore.Rule4" xml:space="preserve"><value>Plik zip może mieć najwyżej 64 MiB.</value></data>

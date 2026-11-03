@@ -1241,7 +1241,7 @@
   <data name="Restore.Title" xml:space="preserve"><value>Obnovit zálohu</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Nahrajte zip, který vytvořil zálohovací nástroj. Operátor jej ručně zkontroluje a pokud je vše v pořádku, obnoví na tomto serveru váš inventář, peněženku, dovednosti, statistiky, achievementy a trofeje.</value></data>
   <data name="Restore.Hint" xml:space="preserve"><value>Nahrajte zálohu před svým prvním lovem zde: zálohu lze obnovit jen na účet, který ještě nehrál.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Použijte zálohu vytvořenou v režimu „Můj účet“. Operátor uvidí, zda byla vytvořena pro účet na Steamu, kterým jste se přihlásili; je to jen nápověda, ne důkaz.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Použijte zálohu vytvořenou v režimu „My account“. Operátor uvidí, zda byla vytvořena pro účet na Steamu, kterým jste se přihlásili; je to jen nápověda, ne důkaz.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Zálohu lze obnovit jen jednou. Pokud jste na tomto serveru ještě nehráli, váš účet pak převezme id uživatele a jméno ze zálohy.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Každý zip se uchovává, aby ho operátor ručně zkontroloval. Nic se neobnovuje automaticky, takže to může chvíli trvat.</value></data>
   <data name="Restore.Rule4" xml:space="preserve"><value>Zip může mít nejvýše 64 MiB.</value></data>

@@ -1277,6 +1277,6 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce que les comptes ne contiennent pas</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Votre adresse email, votre vrai nom, votre adresse postale ou votre numéro de téléphone : ils ne sont ni demandés ni conservés dans votre compte. Si une sauvegarde contient un tel champ, il n’est pas restauré.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Supprimer vos données</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Connectez-vous, ouvrez Restaurer votre sauvegarde et utilisez Supprimer mes données. Cela supprime le compte, ses données de jeu, les zips conservés et les photos, et vous déconnecte. Votre id Steam est ensuite oublié ; vous reconnecter crée un nouveau compte.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Connectez-vous, ouvrez « Restaurer votre sauvegarde » et utilisez « Supprimer mes données ». Cela supprime le compte, ses données de jeu, les zips conservés et les photos, et vous déconnecte. Votre id Steam est ensuite oublié ; vous reconnecter crée un nouveau compte.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>L’opérateur de ce serveur peut voir tout ce qui précède.</value></data>
 </root>

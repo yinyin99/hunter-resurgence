@@ -1241,7 +1241,7 @@
   <data name="Restore.Title" xml:space="preserve"><value>Restaurați backup-ul</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Încărcați zip-ul creat de instrumentul de backup. Un operator îl verifică manual și, dacă totul este în regulă, vă restaurează pe acest server inventarul, portofelul, abilitățile, statisticile, realizările și trofeele.</value></data>
   <data name="Restore.Hint" xml:space="preserve"><value>Încărcați backup-ul înainte de prima vânătoare aici: un backup poate fi restaurat doar pe un cont care nu a jucat încă.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Folosiți un backup creat în modul Contul meu. Operatorului i se arată dacă a fost creat pentru contul Steam cu care v-ați conectat; este un indiciu, nu o dovadă.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Folosiți un backup creat în modul „My account”. Operatorului i se arată dacă a fost creat pentru contul Steam cu care v-ați conectat; este un indiciu, nu o dovadă.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Un backup poate fi restaurat o singură dată. Dacă nu ați jucat încă pe acest server, contul dvs. preia apoi ID-ul de utilizator și numele din backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Fiecare zip este păstrat pentru ca un operator să îl verifice manual. Nimic nu este restaurat automat, așa că poate dura ceva timp.</value></data>
   <data name="Restore.Rule4" xml:space="preserve"><value>Un zip poate avea cel mult 64 MiB.</value></data>
@@ -1277,6 +1277,6 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce nu conțin conturile</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Adresa dvs. de e-mail, numele real, adresa poștală sau numărul de telefon: nu sunt solicitate și nu sunt păstrate în contul dvs. Dacă un backup conține un astfel de câmp, acesta nu este restaurat.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți Restaurați backup-ul și folosiți Ștergeți datele mele. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatorul acestui server poate vedea tot ce este menționat mai sus.</value></data>
 </root>

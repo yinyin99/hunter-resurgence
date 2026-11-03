@@ -1241,7 +1241,7 @@
   <data name="Restore.Title" xml:space="preserve"><value>Ripristina il tuo backup</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Carica lo zip creato dallo strumento di backup. Un operatore lo controlla a mano e, se tutto è a posto, ripristina su questo server il tuo inventario, il portafoglio, le abilità, le statistiche, i risultati e i trofei.</value></data>
   <data name="Restore.Hint" xml:space="preserve"><value>Carica il tuo backup prima della tua prima caccia qui: un backup può essere ripristinato solo su un account che non ha ancora giocato.</value></data>
-  <data name="Restore.Rule1" xml:space="preserve"><value>Usa un backup creato in modalità «Il mio account». All’operatore viene mostrato se è stato creato per l’account Steam con cui hai effettuato l’accesso; è un indizio, non una prova.</value></data>
+  <data name="Restore.Rule1" xml:space="preserve"><value>Usa un backup creato in modalità «My account». All’operatore viene mostrato se è stato creato per l’account Steam con cui hai effettuato l’accesso; è un indizio, non una prova.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Un backup può essere ripristinato una sola volta. Se non hai ancora giocato su questo server, il tuo account assume poi l’id utente e il nome del backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Ogni zip viene conservato perché un operatore lo controlli a mano. Nulla viene ripristinato automaticamente, quindi può volerci un po’ di tempo.</value></data>
   <data name="Restore.Rule4" xml:space="preserve"><value>Uno zip può pesare al massimo 64 MiB.</value></data>
