@@ -35,7 +35,7 @@ public sealed class Facts
     public static Facts Parse(string json)
     {
         var root = JsonNode.Parse(json) as JsonObject ?? throw new InvalidDataException("facts: not a JSON object");
-        return Py.L(root["format"]) == 1 ? new Facts(root) : throw new InvalidDataException("facts: unknown format");
+        return root["format"] is JsonValue f && Py.Eq(f, JsonValue.Create(1)) ? new Facts(root) : throw new InvalidDataException("facts: unknown format");
     }
 
     JsonObject Obj(string key) => root[key] as JsonObject ?? [];
