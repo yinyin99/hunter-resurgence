@@ -40,6 +40,31 @@ public class HostsTests
         Assert.Equal("1.1.1.1 before\r\n# mine\r\n2.2.2.2 after\r\n", Hosts.Remove(text));
     }
 
+    // PL16: the block lost its end line; the user's later 127.0.0.1 lines are not ours
+    [Fact]
+    public void RemoveOfABlockWithoutEndStopsAtTheFirstLineThatIsNotOurs()
+    {
+        var text = "# user\r\n" + Hosts.Begin + "\r\n127.0.0.1 a.example.test\r\n# mine\r\n127.0.0.1 localhost\r\n";
+        Assert.Equal("# user\r\n# mine\r\n127.0.0.1 localhost\r\n", Hosts.Remove(text));
+    }
+
+    // PL15: the UAC elevation hinges on this exception
+    [Fact]
+    public void ApplyOnAReadOnlyFileThrowsUnauthorizedAndLeavesIt()
+    {
+        using var dir = new TempDir("play-hosts-");
+        var path = Path.Combine(dir.Path, "hosts");
+        File.WriteAllText(path, "127.0.0.1 localhost\r\n");
+        var before = File.ReadAllBytes(path);
+        File.SetAttributes(path, FileAttributes.ReadOnly);
+        try
+        {
+            Assert.Throws<UnauthorizedAccessException>(() => Hosts.Apply(path, Names));
+            Assert.Equal(before, File.ReadAllBytes(path));
+        }
+        finally { File.SetAttributes(path, FileAttributes.Normal); }
+    }
+
     [Fact]
     public void RemoveWithoutABlockChangesNothing() => Assert.Equal("127.0.0.1 localhost\r\n", Hosts.Remove("127.0.0.1 localhost\r\n"));
 

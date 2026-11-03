@@ -19,7 +19,10 @@ static class Hosts
     {
         var kept = new List<string>();
         var inside = false;
-        foreach (var l in Lines(text))
+        var lines = Lines(text);
+        var b = Array.FindIndex(lines, l => l.Trim() == Begin);
+        var closed = b >= 0 && lines.Skip(b + 1).Any(l => l.Trim() == End);
+        foreach (var l in lines)
         {
             var t = l.Trim();
             if (t == Begin) inside = true;
@@ -29,6 +32,7 @@ static class Hosts
                 // the block was appended after a last line without a newline (Add added one): take it away again
                 if (!l.EndsWith('\n') && kept.Count > 0) kept[^1] = kept[^1].TrimEnd('\r', '\n');
             }
+            else if (inside && !closed && !t.StartsWith("127.0.0.1 ")) { inside = false; kept.Add(l); } // no end line: the block stops at the first line that is not ours
             else if (!inside || !t.StartsWith("127.0.0.1 ")) kept.Add(l); // a line of the user's inside the block stays
         }
         return string.Concat(kept);
