@@ -28,6 +28,40 @@ The exe is `resurgence-launcher.exe`. There is no distributable build yet.
 
 The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` builds the launcher's real services, so it reads `launcher.json`, the Steam registry keys and the game search the way a start does (missing sources give the defaults); it writes nothing. `dotnet test` exits 0 when every test passes.
 
+### Icon
+
+The icon is `src/Launcher/wwwroot/favicon.ico`: the website's paw (`src/Web/wwwroot/favicon.svg`) in #1f1a17 on a #f2ebe3 rounded tile, at 16, 20, 24, 32, 40, 48, 64, 128 and 256 px. It has a light tile because the website's transparent dark paw would barely show on a dark taskbar.
+
+The csproj's `ApplicationIcon` puts it on the exe, and WPF uses the exe's icon for the window's title bar and the taskbar. `wwwroot/index.html` links the same file as its favicon.
+
+When `favicon.svg` changes, regenerate the icon. In an empty folder outside the repo run `npm init -y` and `npm i @resvg/resvg-js`, save this as `make-icon.mjs`, and run `node make-icon.mjs <repo folder>`:
+
+```js
+// node make-icon.mjs <repo>: writes src/Launcher/wwwroot/favicon.ico from src/Web/wwwroot/favicon.svg
+import { readFileSync, writeFileSync } from 'node:fs';
+import { Resvg } from '@resvg/resvg-js';
+const repo = process.argv[2];
+const paw = readFileSync(`${repo}/src/Web/wwwroot/favicon.svg`, 'utf8').match(/<g class="paw">[\s\S]*?<\/g>/)[0];
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#f2ebe3"/><g fill="#1f1a17" transform="translate(8 9) scale(.75)">${paw}</g></svg>`;
+const sizes = [16, 20, 24, 32, 40, 48, 64, 128, 256];
+const pngs = sizes.map(s => new Resvg(svg, { fitTo: { mode: 'width', value: s } }).render().asPng());
+const head = Buffer.alloc(6 + 16 * sizes.length);
+head.writeUInt16LE(1, 2);
+head.writeUInt16LE(sizes.length, 4);
+let offset = head.length;
+sizes.forEach((s, i) => {
+  const e = 6 + 16 * i;
+  head.writeUInt8(s % 256, e);
+  head.writeUInt8(s % 256, e + 1);
+  head.writeUInt16LE(1, e + 4);
+  head.writeUInt16LE(32, e + 6);
+  head.writeUInt32LE(pngs[i].length, e + 8);
+  head.writeUInt32LE(offset, e + 12);
+  offset += pngs[i].length;
+});
+writeFileSync(`${repo}/src/Launcher/wwwroot/favicon.ico`, Buffer.concat([head, ...pngs]));
+```
+
 ### Development switches
 
 | Switch | Effect |
