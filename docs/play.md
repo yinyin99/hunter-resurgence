@@ -2,7 +2,7 @@
 
 `tools/play/` is a small Windows tool that lets the game reach the community server from your own PC, with your own copy of the game. It has two steps: a one-time `setup` that points the game's server names at your PC, and `run`, a helper that answers the game on your PC and passes every request on, unchanged, to the community server over the internet. The game's files are never changed.
 
-There is no release yet. While the kit is installed, the game talks only to the community server; `3-remove.cmd` gives the official servers back. Make your backup with the [backup tool](backup.md) **before** `setup`: it needs the official servers.
+While the kit is installed, the game talks only to the community server; `3-remove.cmd` gives the official servers back. Make your backup with the [backup tool](backup.md) **before** `setup`: it needs the official servers.
 
 ## For players
 
