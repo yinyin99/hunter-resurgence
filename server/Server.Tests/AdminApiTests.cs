@@ -152,4 +152,22 @@ public class AdminApiTests : IAsyncLifetime
         var removed = await server.Http.DeleteAsync("http://localhost/admin/spawn");
         Assert.Equal(1, (int)JsonNode.Parse(await removed.Content.ReadAsStringAsync())!["removed"]!);
     }
+
+    [Fact]
+    public async Task MissesComeNewestFirstClampedAndItemsAndSingleSpawnsAreServed()
+    {
+        File.WriteAllLines(Path.Combine(tmp, "misses.jsonl"), ["""{"n": 1}""", """{"n": 2}""", """{"n": 3}"""]);
+        async Task<int[]> Misses(string query) =>
+            [.. JsonNode.Parse(await server.Http.GetStringAsync("http://localhost/admin/misses" + query))!.AsArray().Select(m => (int)m!["n"]!)];
+        Assert.Equal(new[] { 3, 2 }, await Misses("?limit=2"));
+        Assert.Equal(new[] { 3 }, await Misses("?limit=0"));
+        Assert.Equal(new[] { 3, 2, 1 }, await Misses(""));
+        var item = JsonNode.Parse(await server.Http.GetStringAsync("http://localhost/admin/items/13"))!;
+        Assert.Equal("Test Cartridge", (string)item["name"]!);
+        var first = JsonNode.Parse(await (await Post("/admin/spawn", new { reserve = 2, animal = "mule_deer", males = 1 })).Content.ReadAsStringAsync())!;
+        await Post("/admin/spawn", new { reserve = 2, animal = "mule_deer", males = 2 });
+        var removed = await server.Http.DeleteAsync($"http://localhost/admin/spawn?id={(int)first["id"]!}");
+        Assert.Equal(1, (int)JsonNode.Parse(await removed.Content.ReadAsStringAsync())!["removed"]!);
+        Assert.Equal(2, Assert.Single(state.Spawns.List()).Males);
+    }
 }

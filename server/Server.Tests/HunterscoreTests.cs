@@ -71,6 +71,36 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(local, Stored(ME));  // the recorded account keeps the recorded player's value
     }
 
+    /// <summary>A fresh state with account B holding one open hunt with a kill; the hunt closes only through <paramref name="close"/>.</summary>
+    void ClosedBy(Action<State> close, bool stale)
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        Assert.Equal(0, Stored(B));
+        if (stale)
+        {
+            using var con = state.Store.Open(B);
+            con.Exec("UPDATE expeditions SET last_seen = last_seen - 200 WHERE account_id = $a");
+        }
+        close(state);
+        Assert.Equal(2, Stored(B));
+    }
+
+    [Fact]
+    public void TestTheNextLaunchCreditsTheHunt() => ClosedBy(s => s.NoteLaunch(B, "start=101&reserve=2"u8.ToArray()), stale: false);
+
+    [Fact]
+    public void TestAConnectAfterAStaleHeartbeatCreditsTheHunt() => ClosedBy(s => s.ConnectReply(B), stale: true);
+
+    [Fact]
+    public void TestTheExpeditionPageAfterAStaleHeartbeatCreditsTheHunt() => ClosedBy(s => s.ExpeditionReply(B, "{}"u8.ToArray()), stale: true);
+
+    [Fact]
+    public void TestTheExpeditionListAfterAStaleHeartbeatCreditsTheHunt() =>
+        ClosedBy(s => s.ExpeditionListReply(B, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()), stale: true);
+
     [Fact]
     public void TestEveryAccountIsRecomputedAtStart()
     {

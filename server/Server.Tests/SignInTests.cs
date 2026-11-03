@@ -337,6 +337,97 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestThePagesCarryTheirSecurityHeaders()
+    {
+        var begun = await Begin("signup.test");
+        await Return("signup.test", begun);
+        foreach (var page in new[] { await Get("signup.test", "/auth/handle", Ck("hr_login", begun.Login)), await Get("signup.test", "/") })
+        {
+            Assert.Equal(200, page.Status);
+            foreach (var header in new[] { ("Referrer-Policy", "same-origin"), ("X-Frame-Options", "DENY"), ("Cache-Control", "no-store"),
+                                           ("X-Content-Type-Options", "nosniff"), ("Content-Type", "text/html; charset=utf-8") })
+                Assert.Contains(header, page.Headers);
+        }
+    }
+
+    [Fact]
+    public async Task TestATypedHandleIsEscapedWhenTheFormComesBack()
+    {
+        var begun = await Begin("web.test");
+        await Return("web.test", begun);
+        var page = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode("\"><script>alert(1)</script>")}", Ck("hr_login", begun.Login));
+        Assert.Equal(200, page.Status);
+        Assert.Contains("&quot;&gt;&lt;script&gt;", Body(page));
+        Assert.DoesNotContain("<script>alert", Body(page));
+    }
+
+    [Fact]
+    public async Task TestOnePlayersJourneyFromSignInToTheBoard()
+    {
+        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var launch = await Xhr("POST", "signup.test", "/auth/launch", Ck("hr_session", cookie));
+        var session = System.Text.RegularExpressions.Regex.Match((string)JsonNode.Parse(launch.Body)!["url"]!, @"game_web\.test/([0-9a-f]{40})/").Groups[1].Value;
+        Assert.NotEmpty(session);
+        Func<string, byte[], Task<Reply>> game = (path, body) => server.SendAsync("POST", "gameserver.test", path, [("X-Hun-Session", session)], body);
+
+        var connect = await game(Replay.CONNECT, "{}"u8.ToArray());
+        Assert.Equal((200, "state"), (connect.Status, connect.Source));
+        Assert.Equal("Hunter_One", (string)JsonNode.Parse(connect.Body)!["account"]!["handle"]!);
+        var start = await server.SendAsync("POST", "api.test", LAUNCH_START, Form, Encoding.ASCII.GetBytes($"start=100&reserve=2&oauth_access_token={session}"));
+        Assert.Equal("state", start.Source);
+        var beat = await game(HEARTBEAT, Events(AccountIsolationTests.Harvest(81, 72270)));
+        Assert.Equal("state", beat.Source);
+        Eq("""{"err": 0}""", JsonNode.Parse((await game(DISCONNECT, "{}"u8.ToArray())).Body));
+
+        var page = await Get("web.test", "/user/Hunter_One/score/?id=1");
+        Assert.Equal(200, page.Status);
+        Assert.Contains("text/html", page.Headers.Single(h => h.Name == "Content-Type").Value);
+        var hunter = JsonNode.Parse((await Get("web.test", "/hunters/Hunter_One")).Body)!;
+        var me = (await Me(cookie, "signup.test"))!;
+        var earned = (long)hunter["hunterscore"]!;
+        Assert.True(earned > 0);
+        Assert.Equal(earned, (long)me["hunterscore"]!);
+        Assert.Equal(earned, Py.L(state.Store.AccountJson(Store.FirstServerId)["hunterscore"]));
+    }
+
+    /// <summary>Sends a service's requests through the loopback server, whatever host they name.</summary>
+    sealed class Via(HttpClient server) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var copy = new HttpRequestMessage(request.Method, request.RequestUri);
+            foreach (var h in request.Headers) copy.Headers.TryAddWithoutValidation(h.Key, h.Value);
+            return server.SendAsync(copy, ct);
+        }
+    }
+
+    [Fact]
+    public async Task TestTheWebsitesServicesReadTheServersOwnReplies()
+    {
+        var cookie = await SignIn("99999999999999991", "Hunter_One", "web.test");
+        state.NoteLaunch(Store.FirstServerId, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(Store.FirstServerId, Events(AccountIsolationTests.Harvest(81, 72270)));
+        state.Disconnect(Store.FirstServerId, "{}"u8.ToArray());
+        var served = (long)JsonNode.Parse((await Get("web.test", "/hunters/Hunter_One")).Body)!["hunterscore"]!;
+        Assert.True(served > 0);
+
+        var http = new HttpClient(new Via(server.Http)) { BaseAddress = new Uri("http://web.test/") };
+        var browser = new Resurgence.Services.ServerCookie { Value = cookie, Host = "web.test" };
+        var sessions = new Resurgence.Services.ServerSessionService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerSessionService>.Instance);
+        Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served), await sessions.CurrentAsync());
+
+        var boards = new Resurgence.Services.ServerLeaderboardsService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerLeaderboardsService>.Instance);
+        var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1)).Rows);
+        Assert.Equal(new Resurgence.Services.Ranked(1, "Hunter_One", served), row);
+
+        var profiles = new Resurgence.Services.ServerProfileService(http, browser, sessions, new Resurgence.Services.Mocks.MockProfileService(),
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerProfileService>.Instance);
+        var profile = await profiles.ProfileAsync("Hunter_One");
+        Assert.True(profile!.Own);
+        Assert.Equal((int)served, profile.HunterScore);
+    }
+
+    [Fact]
     public async Task TestTheNextAddressStaysOnThisSite()
     {
         await SignIn("99999999999999999", "nine");
@@ -618,5 +709,85 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Null(state.Store.ResolveToken(dead));
         Assert.Null(state.Store.ResolveWebSession(cookie));
         Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM tokens WHERE account_id = 9"));  // only the live one is left
+    }
+}
+
+/// <summary>The lifetimes of a sign-in and of a launcher's code, and what a flood of them does, on SignIn with a clock the test sets.</summary>
+public class SignInClockTests : StateTestBase
+{
+    const string Host = "web.test";
+    readonly FakeSteam fake = new();
+    DateTimeOffset clock = DateTimeOffset.UtcNow;
+    readonly SignIn signIn;
+
+    public SignInClockTests()
+    {
+        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        signIn = new SignIn(state, new SteamOpenId(new HttpClient(fake), () => clock), () => clock);
+    }
+
+    static Req Rq(string method, string path, string query = "", string? cookie = null) => new(method, Host, path, query,
+        k => k == "Origin" ? "https://" + Host : k == "Cookie" ? cookie : null, [], true);
+
+    static string LoginOf(Reply start) => start.Headers.Single(h => h.Name == "Set-Cookie" && h.Value.StartsWith("hr_login=")).Value.Split(';')[0]["hr_login=".Length..];
+
+    Task<Reply> Return(string login)
+    {
+        var returnTo = $"https://{Host}/auth/steam/return?login={login}";
+        var nonce = clock.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'") + "x" + Guid.NewGuid().ToString("N");
+        return signIn.Return(Rq("GET", "/auth/steam/return", $"login={login}&" + FakeSteam.Assertion(returnTo, nonce: nonce), $"hr_login={login}"));
+    }
+
+    [Fact]
+    public async Task TestALoginLivesFifteenMinutes()
+    {
+        var early = LoginOf(signIn.Start(Rq("GET", "/auth/steam/login")));
+        var late = LoginOf(signIn.Start(Rq("GET", "/auth/steam/login")));
+        clock += TimeSpan.FromMinutes(14);
+        Assert.Equal(302, (await Return(early)).Status);
+        clock += TimeSpan.FromMinutes(2);
+        Assert.Equal(400, (await Return(late)).Status);
+    }
+
+    [Fact]
+    public void TestALinkCodeLivesTenMinutes()
+    {
+        var code = (string)JsonNode.Parse(signIn.NewLink(Rq("POST", "/auth/link")).Body)!["code"]!;
+        clock += TimeSpan.FromMinutes(9);
+        Assert.Equal(200, signIn.PollLink(Rq("GET", "/auth/link/" + code)).Status);
+        clock += TimeSpan.FromMinutes(2);
+        var expired = signIn.PollLink(Rq("GET", "/auth/link/" + code));
+        Assert.Equal(404, expired.Status);
+        Eq("""{"status": "expired"}""", JsonNode.Parse(expired.Body));
+    }
+
+    [Fact]
+    public async Task TestAFloodOfLoginsEvictsTheOldestNotTheNewcomer()
+    {
+        var ids = new List<string>();
+        for (var i = 0; i < 10_001; i++)
+        {
+            clock += TimeSpan.FromMilliseconds(1);
+            var start = signIn.Start(Rq("GET", "/auth/steam/login"));
+            Assert.Equal(302, start.Status);
+            ids.Add(LoginOf(start));
+        }
+        Assert.Equal(400, (await Return(ids[0])).Status);
+        Assert.Equal(302, (await Return(ids[^1])).Status);
+    }
+
+    [Fact]
+    public void TestAFloodOfLinkCodesEvictsTheOldestNotTheNewcomer()
+    {
+        var codes = new List<string>();
+        for (var i = 0; i < 10_001; i++)
+        {
+            clock += TimeSpan.FromMilliseconds(1);
+            var made = signIn.NewLink(Rq("POST", "/auth/link"));
+            Assert.Equal(200, made.Status);
+            codes.Add((string)JsonNode.Parse(made.Body)!["code"]!);
+        }
+        Assert.Equal(404, signIn.PollLink(Rq("GET", "/auth/link/" + codes[0])).Status);
+        Assert.Equal(200, signIn.PollLink(Rq("GET", "/auth/link/" + codes[^1])).Status);
     }
 }

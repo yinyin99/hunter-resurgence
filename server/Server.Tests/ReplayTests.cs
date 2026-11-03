@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using Resurgence.Server;
@@ -308,5 +309,56 @@ public class ReplayTests : IAsyncLifetime
         await Check("r3");
         await Launch("start=400&reserve=99");  // neither recorded nor in the facts file: the latest connect's
         await Check("tutorial");
+    }
+
+    [Fact]
+    public void TestAnUnreadableHarOrEntryIsSkippedNotFatal()
+    {
+        string Write(string name, byte[] bytes) { var p = Path.Combine(tmp, name + Recordings.Ext); File.WriteAllBytes(p, bytes); return p; }
+        var good = Entry("POST", "https://api.test/v1/Good/one", 200, "2030-10-01T00:00:00", "{\"g\": 1}");
+        var mixed = new JsonObject { ["log"] = new JsonObject { ["entries"] = new JsonArray(new JsonObject { ["response"] = new JsonObject() }, null, Entry("POST", "https://api.test/v1/Good/two", 200, "2030-10-01T00:00:00", "{}")) } };
+        var files = new[]
+        {
+            Write("garbage", "not json"u8.ToArray()),
+            Write("badutf8", [0xC3, 0x28]),
+            Write("nolog", "{\"log\":{}}"u8.ToArray()),
+            Write("mixed", Encoding.UTF8.GetBytes(Py.Dumps(mixed))),
+            Write("good", Encoding.UTF8.GetBytes(Har(good))),
+        };
+        var t = BuildTable(files);
+        Assert.Contains(new Key("POST", "api.test", "/v1/Good/one", null), t.Entries.Keys);
+        Assert.Contains(new Key("POST", "api.test", "/v1/Good/two", null), t.Entries.Keys);
+    }
+
+    [Fact]
+    public void TestALoneSurrogateInARecordedHeaderKeepsItsEscapedText()
+    {
+        var p = Path.Combine(tmp, "sur" + Recordings.Ext);
+        File.WriteAllText(p, """{"log":{"entries":[{"request":{"method":"GET","url":"https://web.test/s"},"response":{"status":200,"headers":[{"name":"X-A","value":"\udcff"}],"content":{"text":""}}}]}}""");
+        var hit = Assert.Single(BuildTable([p]).Entries).Value;
+        Assert.Contains(("X-A", "\\udcff"), hit.Headers);
+    }
+
+    [Theory]
+    [InlineData("https://U:p@API.test:8443/v1/x?a=1#f", "api.test", "/v1/x", "a=1")]
+    [InlineData("//h/p", "h", "/p", "")]
+    [InlineData("/v1/x?y", "", "/v1/x", "y")]
+    [InlineData("http://[::1]:80/p", "::1", "/p", "")]
+    public void TestSplitUrl(string url, string host, string path, string query) => Assert.Equal((host, path, query), SplitUrl(url));
+
+    [Fact]
+    public async Task TestLengthsHeadAndLatin1HeadersOnTheWire()
+    {
+        var f = Path.Combine(mirror, "static.test", "img", "h.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllBytes(f, "image bytes"u8.ToArray());
+        table.Entries[new("GET", "web.test", "/accent", null)] = new Hit(2, "", 200, [("X-Accent", "\u00e9")], "x"u8.ToArray());
+        using var head = await server.Http.SendAsync(new HttpRequestMessage(HttpMethod.Head, "http://static.test/img/h.png"), TestContext.Current.CancellationToken);
+        Assert.Equal((HttpStatusCode.OK, 11L, 0), (head.StatusCode, head.Content.Headers.ContentLength, (await head.Content.ReadAsByteArrayAsync(TestContext.Current.CancellationToken)).Length));
+        using var sink = await server.Http.PostAsync("http://telemetry.test/collect", new ByteArrayContent([]), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NoContent, sink.StatusCode);
+        Assert.False(sink.Content.Headers.Contains("Content-Length"));
+        using var accent = await server.Http.GetAsync("http://web.test/accent", TestContext.Current.CancellationToken);
+        Assert.Equal("\u00e9", Assert.Single(accent.Headers.GetValues("X-Accent")));
     }
 }

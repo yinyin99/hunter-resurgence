@@ -105,4 +105,47 @@ public class SpawnerTests : StateTestBase
         Assert.Contains("x", Spawner.Validate(Req() with { X = 20000 }).Keys);
         Assert.Contains("radius", Spawner.Validate(Req() with { Radius = 500 }).Keys);
     }
+
+    [Fact]
+    public void AnimalsBeyondAReservesTwentyFreeSlotsAreSkipped()
+    {
+        Assert.True(Spawner.Animals.Length >= 21);
+        var sp = new Spawner(Path.Combine(tmp, "s.json"));
+        foreach (var a in Spawner.Animals.Take(21)) sp.Add(Req(a));
+        var reply = O("""{"populations": [], "spawn_licenses": [], "expedition": {"x": 1, "z": 1}}""");
+        sp.Apply(reply, 2);
+        var pops = reply["populations"]!.AsArray();
+        Assert.Equal(Enumerable.Range(180, 20).Select(i => (long)i), pops.Select(p => Py.L(p!["index"])));
+        Assert.Equal(20, sp.LastApplied.Count);
+    }
+
+    [Fact]
+    public void IdsRestartAfterTheLastOneAndRemoveCountsWhatWent()
+    {
+        var sp = new Spawner(Path.Combine(tmp, "t.json"));
+        Assert.Empty(sp.List());
+        sp.Add(Req());
+        sp.Add(Req());
+        Assert.Equal(1, sp.Remove(1));
+        Assert.Equal(3, sp.Add(Req()).Id);
+        Assert.Equal(0, sp.Remove(99));
+    }
+
+    [Fact]
+    public void ADirectLaunchAppliesTheMostCommonReserveAndPadsLicenses()
+    {
+        var sp = new Spawner(Path.Combine(tmp, "u.json"));
+        var mine = sp.Add(Req(Spawner.Animals[1]));
+        sp.Add(Req(Spawner.Animals[1]) with { Reserve = 3 });
+        var reply = O($$"""
+            {"populations": [{"index": 101, "animal": "{{Spawner.Animals[1]}}", "reserve": 2, "groups": []},
+                             {"index": 102, "animal": "x", "reserve": 2, "groups": []},
+                             {"index": 201, "animal": "y", "reserve": 3, "groups": []},
+                             {"index": -1, "animal": "z", "reserve": -1, "groups": []}],
+             "spawn_licenses": []}
+            """);
+        sp.Apply(reply, null);
+        Assert.Equal([new Spawner.Applied(mine.Id, 101, 0)], sp.LastApplied);
+        Eq("[2, 1]", reply["spawn_licenses"]);
+    }
 }

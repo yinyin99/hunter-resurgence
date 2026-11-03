@@ -119,4 +119,34 @@ public class SettingsTests : IDisposable
         File.WriteAllText(Path.Combine(tmp, "bad.json"), "{");
         Assert.Throws<InvalidDataException>(() => Settings.Load(Path.Combine(tmp, "bad.json")));
     }
+
+    [Fact]
+    public void TheShippedExampleLoads()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (!File.Exists(Path.Combine(dir.FullName, "hunter-resurgence.slnx"))) dir = dir.Parent!;
+        var file = Path.Combine(dir.FullName, "server", "Server", "settings.example.json");
+        var s = Settings.Load(file);
+        Assert.Equal(2, s.Listeners.Count);
+        Assert.All(s.Listeners, l => Assert.True(l.Admin));
+        Assert.Equal((Settings.DefaultMaxBodyBytes, Settings.DefaultHostHeader), (s.MaxBodyBytes, s.HostHeader));
+        Assert.True((bool)s.Cfg["offline_mode"]!);
+        Assert.NotNull(s.Cfg["install_dir"]);
+        Assert.NotNull(s.VariantsFile);
+        Assert.NotNull(s.DataDir);
+        var keys = JsonNode.Parse(File.ReadAllText(file))!.AsObject();
+        foreach (var key in new[] { "install_dir", "variants_file", "data_dir", "listeners" })
+            Assert.True(keys.ContainsKey(key), key);
+    }
+
+    [Fact]
+    public void AdminListenersAreTheMarkedOnes()
+    {
+        var o = Minimal();
+        o["listeners"] = new JsonArray(
+            new JsonObject { ["address"] = "127.0.0.1", ["port"] = 80, ["admin"] = true },
+            new JsonObject { ["address"] = "127.0.0.1", ["port"] = 8080 });
+        Assert.Equal([(IPAddress.Loopback, 80)], Load(o).AdminListeners);
+        Assert.Empty(Load(Minimal()).AdminListeners);
+    }
 }

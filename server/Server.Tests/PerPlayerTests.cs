@@ -70,6 +70,17 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public void TestEveryEmptyReplyIsJson()
+    {
+        foreach (var rule in ReplayScope.Rules.Where(r => !r.Global))
+        {
+            Assert.True(rule.Status is 200 or 404, $"{rule.Host} {rule.Path}: {rule.Status}");
+            if (rule.ContentType == "application/json")
+                JsonNode.Parse(rule.Empty!);
+        }
+    }
+
+    [Fact]
     public async Task TestACommunityServerNeverReturnsARecordingForAPerPlayerEndpoint()
     {
         foreach (var rule in ReplayScope.Rules.Where(r => !r.Global))

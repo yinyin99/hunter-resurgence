@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
+    <ProjectReference Include="..\..\src\Services\Resurgence.Services.csproj" />
   </ItemGroup>
 
 </Project>
