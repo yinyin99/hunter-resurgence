@@ -30,7 +30,9 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         if (GameFiles.ClientRunning(settings.ClientExe)) return Task.FromResult(Result.Fail("GameSettings.ClientRunning"));
         try
         {
-            if (GraphicsPath is not { } gp || GameFiles.ReadGraphics(gp).Value is not { } g) return Task.FromResult(Result.Fail("GameSettings.Missing"));
+            if (GraphicsPath is not { } gp) return Task.FromResult(Result.Fail("GameSettings.Missing"));
+            var (g, problem) = GameFiles.ReadGraphics(gp);
+            if (g is null) return Task.FromResult(Result.Fail(problem == FileProblem.Missing ? "GameSettings.Missing" : "GameSettings.BadFormat"));
             GameFiles.WriteGraphics(gp, ToGraphics(g, options));
             if (OptionsPath is { } op && GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value is { } o && options.ContextualHelp is { } help && o.Has("ContextualHelp"))
             {
