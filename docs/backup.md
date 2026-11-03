@@ -157,9 +157,9 @@ If the API refuses the token (it is valid for 15 minutes), the backup tool says 
 
 ## Claim key
 
-On first run the backup tool writes 32 random bytes to `%APPDATA%\game-backup\claim.key`: the key is made once per PC and kept there. Every backup folder and backup zip contains that file as `claim.key`, so every backup made on one PC contains the same key, and two backup zips with the same `claim_hash` came from the same PC. `manifest.json` records only its SHA-256 as `claim_hash`. The key is a hint, not proof: anyone who has the backup zip has the key. Together with the Steam account it is what a future restore uses as a hint that the backup is yours (keep the backup zip private, see [Privacy](#privacy)).
+On first run the backup tool writes 32 random bytes to `%APPDATA%\game-backup\claim.key`: the key is made once per PC and kept there. Every backup folder and backup zip contains that file as `claim.key`, so every backup made on one PC contains the same key, and two backup zips with the same `claim_hash` came from the same PC. `manifest.json` records only its SHA-256 as `claim_hash`. The key is a hint, not proof: anyone who has the backup zip has the key. Together with the Steam account it is what a restore uses as a hint that the backup is yours (keep the backup zip private, see [Privacy](#privacy)).
 
-The first restore will be local: a server on your own PC reads your own backup zip. A community server is planned after that, with Steam sign-in first (email sign-in may follow). The Steam account recorded in the backup links it to your sign-in. These are hints, not proof: if two people claim the same profile, the claim may be reviewed.
+On the community server you sign in with Steam (email sign-in may follow) and send your backup zip with ["Send to the community server"](#send-to-the-community-server) or upload it on the website's restore page. An operator checks every zip by hand before anything is restored, and sees whether the Steam account recorded in the backup is the one you signed in with. These are hints, not proof: if two people claim the same profile, the operator decides. A server on your own PC restores a backup zip with `import backup` ([server.md](server.md#import-a-backup-zip)).
 
 ## Tests
 
