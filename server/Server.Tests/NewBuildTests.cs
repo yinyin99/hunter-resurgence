@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Text.Json.Nodes;
 using Resurgence.Server;
@@ -365,5 +366,37 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var unknown = new Req("POST", game.Api, "/v1/brand/new", "", _ => null, [], true);
         Assert.Null(ReplayScope.Find(game, unknown));
         Assert.True(ReplayScope.Denied(game, unknown));
+    }
+
+    static async Task<(DefaultHttpContext Ctx, byte[] Body)> Rewritten(Game g, string target, string body, string contentType)
+    {
+        var bytes = Encoding.UTF8.GetBytes(body);
+        var ctx = new DefaultHttpContext();
+        ctx.Features.Set<Microsoft.AspNetCore.Http.Features.IHttpRequestFeature>(new Microsoft.AspNetCore.Http.Features.HttpRequestFeature { RawTarget = target });
+        ctx.Request.Host = new HostString("game_web.test");
+        ctx.Request.Method = "POST";
+        ctx.Request.ContentType = contentType;
+        ctx.Request.ContentLength = bytes.Length;
+        ctx.Request.Body = new MemoryStream(bytes);
+        ctx.Request.Path = target[..target.IndexOf('?')];
+        await NewBuild.Rewrite(ctx, g);
+        using var read = new MemoryStream();
+        await ctx.Request.Body.CopyToAsync(read);
+        return (ctx, read.ToArray());
+    }
+
+    [Fact]
+    public async Task TestAJsonBodyBecomesAFormWhateverItsMembersHold()
+    {
+        var g = new Game(new HarTable(), Cfg, null, tmp);
+        var (ctx, body) = await Rewritten(g, "/v1/me/poll?x=1", """{"a b&c":"x&y=z","n":null,"arr":[1,2],"b":true}""", "application/json");
+        var form = Py.ParseQs(Encoding.UTF8.GetString(body));
+        Assert.True(form.ContainsKey("a b&c"), Encoding.UTF8.GetString(body));
+        Assert.Equal(["x&y=z"], form["a b&c"]);
+        Assert.Equal(["[1,2]"], form["arr"]);
+        Assert.Equal(["true"], form["b"]);
+        Assert.Equal(("api.test", "/v1/Me/poll", "x=1"), (ctx.Request.Host.Host, ctx.Request.Path.Value, ctx.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpRequestFeature>()!.RawTarget.Split('?')[1]));
+        foreach (var unchanged in new[] { "not json", "[1,2]" })
+            Assert.Equal(unchanged, Encoding.UTF8.GetString((await Rewritten(g, "/v1/me/poll?x=1", unchanged, "application/json")).Body));
     }
 }

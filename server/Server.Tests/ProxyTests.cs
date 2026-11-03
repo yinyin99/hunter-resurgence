@@ -114,4 +114,12 @@ public class ProxyTests
         using var response = await server.Http.SendAsync(chunked);
         Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [Fact]
+    public async Task AdminRoutesOfAServerWithoutStateAnswer503()
+    {
+        await using var server = await Loopback.StartAsync(Game());
+        using var response = await server.Http.GetAsync("http://localhost/admin/wallet");
+        Assert.Equal((HttpStatusCode.ServiceUnavailable, "application/problem+json"), (response.StatusCode, response.Content.Headers.ContentType?.MediaType));
+    }
 }

@@ -401,4 +401,102 @@ public class RobustnessTests
         var e2 = await Run(f, t, ["kills", "profile"]);
         Assert.True(!f.Seen.Contains("/gone.jpg") && !f.Seen.Contains("/user/x/score/") && e2.Dead == 2 && e2.Failed == 0, "the resumed run does not ask for them again, still reports 2 dead, and now has 0 failed");
     }
+
+    /// <summary>A reply that carries the website's consumer key is never saved.</summary>
+    [Fact]
+    public async Task ReplyWithTheConsumerKeyIsNotSaved()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.Raw["/v1/Skill/list"] = """{"k":"ckey-secret-9"}"""u8.ToArray();
+        var e = await Run(f, t, ["profile"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        var entry = Manifest(dir)["files"]!.AsArray().Single(x => x!["path"]!.ToString() == "Skill_list__user_id=7.json")!;
+        Assert.True(!File.Exists(Path.Combine(dir, "Skill_list__user_id=7.json")) && entry["sha256"] == null && entry["error"]!.ToString().Contains("token") && e.Failed == 1, "listed as failed, not saved");
+    }
+
+    /// <summary>A damaged manifest.json does not stop a resume: the folder is reused, saved files are skipped, a valid manifest is written again.</summary>
+    [Theory]
+    [InlineData("{not json")]
+    [InlineData("[]")]
+    public async Task DamagedManifestDoesNotStopAResume(string damaged)
+    {
+        using var t = new TempDir("backup-test-v03-");
+        await Run(new Fake(Tok), t, ["hunts"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        File.WriteAllText(Path.Combine(dir, "manifest.json"), damaged);
+        var e = await Run(new Fake(Tok), t, ["hunts"]);
+        Assert.True(Folders(t).Length == 1 && e.Skipped > 0, $"the same folder, files skipped ({Folders(t).Length} folders, {e.Skipped} skipped)");
+        Assert.True(Manifest(dir)["files"]!.AsArray().Count > 0, "a valid manifest again");
+    }
+
+    /// <summary>What a crash mid-write leaves (*.part, at any depth) is deleted by the next run.</summary>
+    [Fact]
+    public async Task PartFilesOfACrashAreRemoved()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        await Run(new Fake(Tok), t, ["hunts"]);
+        var dir = Path.Combine(t.Path, "backup-7");
+        Hosts.Unfinish(dir);
+        Directory.CreateDirectory(Path.Combine(dir, "kills"));
+        File.WriteAllText(Path.Combine(dir, "x.json.part"), "{");
+        File.WriteAllText(Path.Combine(dir, "kills", "y.json.part"), "{");
+        await Run(new Fake(Tok), t, ["hunts"]);
+        Assert.Empty(Directory.GetFiles(dir, "*.part", SearchOption.AllDirectories));
+    }
+
+    /// <summary>The API sends numbers as text too: start_ts orders the hunts and the catalogue's season counts the boards.</summary>
+    [Fact]
+    public async Task NumbersSentAsTextAreRead()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { ExpeditionList = """{"total":3,"expeditions":[{"id":41,"start_ts":"100"},{"id":43,"start_ts":"300"},{"id":42,"start_ts":"200"}]}""" };
+        foreach (var (hunt, kill) in new[] { ("41", 4101), ("42", 4201), ("43", 4301) }) f.HuntReplies[hunt] = Kills((kill, 1.5, null));
+        await Run(f, t, ["kills"]);
+        Assert.Equal(["4301", "4201", "4101"], f.Urls.Where(u => u.StartsWith("/user/x/score/")).Select(u => u.Split("id=")[1].Split('&')[0]));
+
+        using var t2 = new TempDir("backup-test-v03-");
+        var f2 = new Fake(Tok) { Catalogue = """{"season":"3"}""" };
+        await Run(f2, t2, ["profile"]);
+        Assert.Equal(4, f2.Seen.Count(p => p == "/v1/Leaderboard/personal"));
+    }
+
+    /// <summary>The first non-HTTP fault ends the run, but the manifest is still written, unfinished.</summary>
+    [Fact]
+    public async Task AFaultInAGroupStillWritesTheManifest()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { Custom = (p, _) => p == "/v1/Statistics/total" ? throw new InvalidOperationException("boom") : null };
+        var e = Hosts.Make(f, Path.Combine(t.Path, "claim.key"));
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => e.Run(t.Path, "", () => Tok, new HashSet<string> { "profile", "friends" }, true, false, TestContext.Current.CancellationToken));
+        Assert.Equal("boom", ex.Message);
+        Assert.True(Manifest(Path.Combine(t.Path, "backup-7"))["completed_utc"] == null && !e.Whole, "written, not finished");
+    }
+
+    /// <summary>Pictures come from URLs inside replies: only https, and a // URL is upgraded to https. In the gallery a refused one is a manifest failure.</summary>
+    [Fact]
+    public async Task PicturesNeedHttpsAndASchemeLessUrlIsUpgraded()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        f.HuntReplies["42"] = Kills((900, null, "http://photo.test/h.jpg"), (901, null, "//photo.test/s.jpg"));
+        var e = await Run(f, t, ["kills"]);
+        Assert.True(!f.Seen.Contains("/h.jpg") && f.Seen.Contains("/s.jpg") && e.Failed == 0, "http never fetched, // fetched, nothing failed");
+        Assert.True(File.Exists(Path.Combine(t.Path, "backup-7", "kills", "photo.test_s.jpg")), "saved under the host's name");
+
+        using var t2 = new TempDir("backup-test-v03-");
+        var g = new Fake(Tok) { Custom = (p, _) => p == "/v1/Gallery/list" ? new HttpResponseMessage { Content = new StringContent("""{"photos":[{"url":"http://photo.test/g.jpg"}]}""") } : null };
+        var e2 = await Run(g, t2, ["photos"]);
+        Assert.True(e2.Failed == 1 && !g.Seen.Contains("/g.jpg") && !e2.Whole, "a refused gallery picture is a failure");
+    }
+
+    /// <summary>Hunts and kills both ticked: the hunt list and every hunt are read once.</summary>
+    [Fact]
+    public async Task HuntsAndKillsTickedTogetherReadTheHuntsOnce()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok) { ExpeditionList = """{"total":3,"expeditions":[{"id":41},{"id":42},{"id":43}]}""" };
+        await Run(f, t, ["hunts", "kills"], resume: false);
+        Assert.True(f.Seen.Count(p => p == "/v1/Expedition/list") == 1 && f.Seen.Count(p => p == "/v1/Public_user/expedition") == 3);
+    }
 }

@@ -49,4 +49,33 @@ public class GameFinderTests
         File.WriteAllText(bad, """{"steam_app_id":"<steam-app-id>","client_exe":"..\\evil.exe"}""");
         Assert.True(Settings.Load(bad) == new Settings(null, null), "placeholder and parent-relative values are not configured");
     }
+
+    // PL1: a damaged appmanifest must not point the launcher at another folder
+    [Theory]
+    [InlineData("..\\Evil")]
+    [InlineData("<root>\\Evil")]
+    [InlineData("Fine")]
+    public void SteamInstallDirOutsideTheLibraryIsIgnored(string installdir)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var steam = Path.Combine(temp.Path, "Steam");
+        var s = new Settings("4711", "client.exe");
+        installdir = installdir.Replace("<root>", temp.Path);
+        Write(Path.Combine(steam, "steamapps", "appmanifest_4711.acf"), "\"AppState\"\n{\n\t\"installdir\"\t\t\"" + installdir.Replace(@"\", @"\\") + "\"\n}\n");
+        Touch(Path.Combine(steam, "steamapps", "Evil", "client.exe"));  // what ..\Evil reaches
+        Touch(Path.Combine(temp.Path, "Evil", "client.exe"));           // what the rooted path reaches
+        Touch(Path.Combine(steam, "steamapps", "common", "Fine", "client.exe"));
+        Assert.Equal(installdir == "Fine", GameFinder.Find(s, null, [], steam) is not null);
+    }
+
+    // PL2
+    [Fact]
+    public void LibrariesAreListedOnceIgnoringCaseWithTheVdfSpellingAndRelativePathsDropped()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var steam = Path.Combine(temp.Path, "Steam");
+        var upper = Path.Combine(temp.Path, "STEAM");
+        Write(Path.Combine(steam, "steamapps", "libraryfolders.vdf"), "\"libraryfolders\" { \"0\" { \"path\" \"" + upper.Replace(@"\", @"\\") + "\" } \"1\" { \"path\" \"rel\\\\lib\" } }");
+        Assert.Equal([upper], GameFinder.Libraries(steam));
+    }
 }

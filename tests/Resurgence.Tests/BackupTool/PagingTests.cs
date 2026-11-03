@@ -94,4 +94,25 @@ public class PagingTests
         var (e, dir) = await Run(f, t, true, "account");
         Assert.True(f.Seen.Count(p => p == "/v1/Wallet/transactions") == 2 && e.Failed == 1 && !e.Whole, "the first page and the repeat, then stop, reported");
     }
+
+    [Fact]
+    public async Task WalletPagesOf50And50And7AreAllAsked()
+    {
+        using var t = new TempDir("backup-test-paging-");
+        var f = new Fake(Tok) { Custom = (p, form) => p switch { "/v1/Wallet/transactions" => Reply($"[{Rows(Offset(form), Math.Max(0, Math.Min(50, 107 - Offset(form))))}]"), "/v1/Mission/missions" => Reply("[]"), _ => null } };
+        var (e, dir) = await Run(f, t, true, "account");
+        var offsets = f.Forms.Zip(f.Seen).Where(x => x.Second == "/v1/Wallet/transactions").Select(x => Offset(x.First));
+        Assert.Equal([0, 50, 100], offsets);
+        Assert.True(Directory.GetFiles(dir, "Wallet_transactions__*").Length == 3 && e.Failed == 0, $"three files, nothing failed ({e.Failed})");
+    }
+
+    [Fact]
+    public async Task GalleryPagesOf24And24And5AreAllSaved()
+    {
+        using var t = new TempDir("backup-test-paging-");
+        static string Page(int off) => $$"""{"photos":[{{string.Join(',', Enumerable.Range(off, Math.Max(0, Math.Min(24, 53 - off))).Select(i => $$"""{"url":"https://photo.test/p{{i}}.jpg"}"""))}}]}""";
+        var f = new Fake(Tok) { Custom = (p, form) => p == "/v1/Gallery/list" ? Reply(Page(Offset(form))) : null };
+        var (e, dir) = await Run(f, t, false, "photos");
+        Assert.True(Enumerable.Range(0, 53).All(i => f.Seen.Count(p => p == $"/p{i}.jpg") == 1) && Directory.GetFiles(Path.Combine(dir, "photos")).Length == 53 && e.Failed == 0 && e.Whole, "53 pictures, each once, the backup is whole");
+    }
 }

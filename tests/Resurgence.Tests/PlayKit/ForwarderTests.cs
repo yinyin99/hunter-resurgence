@@ -48,6 +48,20 @@ public class ForwarderTests
                         ctx.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase), ms.ToArray()));
                 ctx.Response.Headers["Alt-Svc"] = "h3=\":443\"";
                 if (ctx.Request.Path == "/nocontent") { ctx.Response.StatusCode = 204; return; }
+                if (ctx.Request.Path == "/notmodified") { ctx.Response.StatusCode = 304; return; }
+                if (ctx.Request.Path == "/redirect") { ctx.Response.StatusCode = 302; ctx.Response.Headers.Location = "/elsewhere?x=1"; return; }
+                if (ctx.Request.Path == "/cookies")
+                {
+                    ctx.Response.Headers.Append("Set-Cookie", "a=1; Path=/; HttpOnly");
+                    ctx.Response.Headers.Append("Set-Cookie", "b=2; Path=/");
+                    return;
+                }
+                if (ctx.Request.Path == "/gzip")
+                {
+                    ctx.Response.Headers.ContentEncoding = "gzip";
+                    await ctx.Response.Body.WriteAsync(Gzipped);
+                    return;
+                }
                 ctx.Response.StatusCode = 207;
                 ctx.Response.Headers["X-Reply"] = "r\u00E9ponse";
                 ctx.Response.ContentType = "application/octet-stream";
@@ -58,6 +72,15 @@ public class ForwarderTests
         }
 
         public ValueTask DisposeAsync() => app.DisposeAsync();
+    }
+
+    static readonly byte[] Gzipped = Zip(Enumerable.Repeat((byte)'x', 3000).ToArray());
+
+    static byte[] Zip(byte[] raw)
+    {
+        using var ms = new MemoryStream();
+        using (var z = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionLevel.Optimal, true)) z.Write(raw);
+        return ms.ToArray();
     }
 
     static readonly byte[] Reply = Enumerable.Range(0, 70_000).Select(i => (byte)(i * 7)).ToArray();
@@ -153,8 +176,10 @@ public class ForwarderTests
         Assert.False(resp.Headers.Contains("Alt-Svc"));
     }
 
-    [Fact]
-    public async Task A204KeepsTheConnectionUsable()
+    [Theory]
+    [InlineData("/nocontent", "204")]
+    [InlineData("/notmodified", "304")]
+    public async Task ABodylessAnswerKeepsTheConnectionUsable(string first, string status)
     {
         await using var origin = await Origin.Start();
         await using var fwd = await StartForwarder(origin.Url);
@@ -164,13 +189,14 @@ public class ForwarderTests
         await tcp.ConnectAsync(IPAddress.Loopback, port);
         using var stream = tcp.GetStream();
         stream.ReadTimeout = 10_000;
-        foreach (var path in new[] { "/nocontent", "/connect" })
+        foreach (var path in new[] { first, "/connect" })
             await stream.WriteAsync(Encoding.ASCII.GetBytes($"GET {path} HTTP/1.1\r\nHost: x.test\r\n\r\n"));
         var text = new StringBuilder();
         var buf = new byte[8192];
         while (!text.ToString().Contains("HTTP/1.1 207") && await stream.ReadAsync(buf) is var n and > 0)
             text.Append(Encoding.Latin1.GetString(buf, 0, n));
-        Assert.StartsWith("HTTP/1.1 204", text.ToString());
+        Assert.StartsWith("HTTP/1.1 " + status, text.ToString());
+        Assert.DoesNotContain("Content-Length", text.ToString()[..text.ToString().IndexOf("\r\n\r\n", StringComparison.Ordinal)], StringComparison.OrdinalIgnoreCase); // a 204/304 has no length of its own
         Assert.Contains("HTTP/1.1 207", text.ToString());
     }
 
@@ -188,7 +214,19 @@ public class ForwarderTests
     }
 
     [Fact]
-    public async Task AnswersOverTlsWithTheLeafOfTheLocalAuthority()
+    public async Task AnswersOverTlsWithTheLeafOfTheLocalAuthority() =>
+        await OverTls(HttpVersion.Version11, HttpVersionPolicy.RequestVersionExact, (resp, origin) =>
+        {
+            Assert.Equal(HttpStatusCode.MultiStatus, resp.StatusCode);
+            Assert.Equal("api.example.test", origin.Log.Single().Headers["X-Game-Host"]);
+        });
+
+    // PL12: ALPN would move the game's browser to HTTP/2
+    [Fact]
+    public async Task AClientThatOffersHttp2StillGetsHttp11() =>
+        await OverTls(HttpVersion.Version20, HttpVersionPolicy.RequestVersionOrLower, (resp, _) => Assert.Equal(HttpVersion.Version11, resp.Version));
+
+    static async Task OverTls(Version version, HttpVersionPolicy policy, Action<HttpResponseMessage, Origin> check)
     {
         var names = new[] { "api.example.test" };
         var keyName = "hunter-resurgence-play-test-" + Guid.NewGuid().ToString("N");
@@ -215,17 +253,74 @@ public class ForwarderTests
                 },
             });
             using var req = new HttpRequestMessage(HttpMethod.Get, https + "/tls");
-            req.Version = HttpVersion.Version11;
+            req.Version = version;
+            req.VersionPolicy = policy;
             req.Headers.Host = "api.example.test";
             using var resp = await http.SendAsync(req);
-            Assert.Equal(HttpStatusCode.MultiStatus, resp.StatusCode);
-            Assert.Equal("api.example.test", origin.Log.Single().Headers["X-Game-Host"]);
+            check(resp, origin);
         }
         finally
         {
             using var k = System.Security.Cryptography.CngKey.Open(keyName);
             k.Delete();
         }
+    }
+
+    // PL11
+    [Fact]
+    public async Task ARedirectIsPassedOnWithItsLocationAndNotFollowed()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/redirect");
+        Assert.Equal(HttpStatusCode.Found, resp.StatusCode);
+        Assert.Equal("/elsewhere?x=1", resp.Headers.Location!.OriginalString);
+        Assert.Equal("/redirect", Assert.Single(origin.Log).Raw);
+    }
+
+    [Fact]
+    public async Task EverySetCookieOfTheOriginReachesTheGame()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/cookies");
+        Assert.Equal(["a=1; Path=/; HttpOnly", "b=2; Path=/"], resp.Headers.GetValues("Set-Cookie"));
+    }
+
+    [Fact]
+    public async Task AGzipReplyIsNotUnpacked()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/gzip");
+        Assert.Equal(["gzip"], resp.Content.Headers.ContentEncoding);
+        Assert.Equal(Gzipped, await resp.Content.ReadAsByteArrayAsync());
+    }
+
+    // PL13
+    [Fact]
+    public async Task APathInTheServerUrlPrefixesEveryRequest()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(new Uri(origin.Url, "/base/"));
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/v1/x?q=1");
+        Assert.Equal("/base/v1/x?q=1", Assert.Single(origin.Log).Raw);
+    }
+
+    [Fact]
+    public async Task AGetWithAContentTypeAndNoBodyKeepsTheHeader()
+    {
+        await using var origin = await Origin.Start();
+        await using var fwd = await StartForwarder(origin.Url);
+        using var http = Client();
+        using var req = new HttpRequestMessage(HttpMethod.Get, Forwarder.Addresses(fwd)[0] + "/ct") { Content = new ByteArrayContent([]) };
+        req.Content.Headers.ContentType = new("text/x-test");
+        using var resp = await http.SendAsync(req);
+        Assert.Equal("text/x-test", Assert.Single(origin.Log).Headers["Content-Type"]);
     }
 
     /// <summary>A stream with no length: HttpClient sends it chunked.</summary>

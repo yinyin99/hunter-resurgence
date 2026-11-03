@@ -85,7 +85,9 @@ public sealed class Spawner(string path)
             var row = pops.OfType<JsonObject>().FirstOrDefault(p => (string?)p["animal"] == e.Animal && Py.L(p["index"]) / 100 == r0);
             if (row is null)
             {
-                var index = Enumerable.Range(r0 * 100 + 80, 20).First(i => !pops.OfType<JsonObject>().Any(p => Py.L(p["index"]) == i));
+                var free = Enumerable.Range(r0 * 100 + 80, 20).Where(i => !pops.OfType<JsonObject>().Any(p => Py.L(p["index"]) == i)).Select(i => (int?)i).FirstOrDefault();
+                if (free is not { } index)
+                    continue;  // the reserve's 20 free slots are taken
                 row = new JsonObject
                 {
                     ["key"] = $"spawner-{index}", ["index"] = index, ["animal"] = e.Animal, ["density_map"] = e.Animal,

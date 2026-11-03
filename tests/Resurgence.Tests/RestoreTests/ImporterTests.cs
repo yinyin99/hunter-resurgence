@@ -440,4 +440,98 @@ public class ImporterTests
         Assert.Equal(((int?)null, (int?)null), (r.Model.Stats!.BustThroughScore, r.Model.Stats.LaneBanditScore));
         Assert.Contains("trophies: 0 rows (0 without a harvest)", r.Report.Restored);
     }
+
+    // RD1: an untrusted manifest
+    [Fact]
+    public void ABadManifestFormatUidOrClaimHashIsRefused()
+    {
+        foreach (var (format, message) in new (JsonNode, string)[] { ("two", "manifest format is not a number"), (0, "unknown manifest format 0"), (-1, "unknown manifest format -1") })
+        {
+            var z = SyntheticZip.Own();
+            z.Manifest["format"] = format;
+            Assert.Equal(message, z.Refused());
+        }
+        var emptyUid = SyntheticZip.Own();
+        emptyUid.Manifest["uid"] = "";
+        Assert.Equal("manifest uid is not digits only", emptyUid.Refused());
+        var noHash = SyntheticZip.Own();
+        noHash.ManifestText = t => System.Text.RegularExpressions.Regex.Replace(t, "\"claim_hash\":\"[0-9a-f]+\",", ""); // Build fills the hash, so cut it from the text
+        Assert.Equal("manifest has no claim_hash", noHash.Refused());
+    }
+
+    static byte[] Without(byte[] zip, string entry)
+    {
+        using var ms = new MemoryStream();
+        ms.Write(zip);
+        using (var z = new ZipArchive(ms, ZipArchiveMode.Update, true)) z.GetEntry(entry)!.Delete();
+        return ms.ToArray();
+    }
+
+    // RD2
+    [Fact]
+    public void AMissingManifestOrClaimKeyIsRefused()
+    {
+        var zip = SyntheticZip.Own().Build();
+        Assert.Equal("no manifest.json", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(Without(zip, "manifest.json")))).Message);
+        Assert.Equal("no claim.key", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(Without(zip, "claim.key")))).Message);
+    }
+
+    [Fact]
+    public void AnEntryWithoutSha256IsFailedAndAListedFileThatIsGoneIsMissing()
+    {
+        var z = SyntheticZip.Own();
+        z.Entry("Skill_list__user_id=1001.json").Remove("sha256");
+        var zip = z.Build();
+        var r = Importer.Read(new MemoryStream(zip));
+        Assert.Contains("Skill_list__user_id=1001.json: no sha256", r.Report.Failed);
+        Assert.Null(r.Model.Skills);
+
+        var gone = Importer.Read(new MemoryStream(Without(SyntheticZip.Own().Build(), "Me_me.json")));
+        Assert.Contains("Me_me.json (listed in the manifest, not in the zip)", gone.Report.Missing);
+    }
+
+    // RD3: the server catches only RestoreException on upload
+    [Fact]
+    public void ACorruptDeflateStreamIsARestoreException()
+    {
+        var zip = new SyntheticZip { Level = CompressionLevel.Optimal }.Reply("/v1/Me/me", "{\"id\":1001,\"handle\":\"sample\"}").Build();
+        Assert.Equal(8, BitConverter.ToUInt16(zip, 8)); // the first local header's method is deflate (a stored entry would not inflate)
+        // the local header of manifest.json is the first in the zip: its data starts after the 30-byte header and the name
+        var start = 30 + "manifest.json".Length;
+        zip[start] = 0xFF;
+        var ex = Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(zip)));
+        Assert.StartsWith("damaged zip", ex.Message);
+    }
+
+    // RD4: the same zip always gives the same rows
+    [Fact]
+    public void TrophiesAreOrderedByIdLengthThenId()
+    {
+        var z = SyntheticZip.PublicZip(byHandle: false);
+        z.Reply("/v1/Trophy/list", """{"total":3,"trophies":[{"id":100},{"id":9},{"id":10}]}""", ("user_id", SyntheticZip.Uid), ("offset", "0"), ("limit", "100000"));
+        Assert.Equal(["9", "10", "100"], z.Read().Model.Trophies.Select(t => t.Id));
+    }
+
+    // RD5: these go into the audit row
+    [Fact]
+    public void ManifestDatesAreUtcAndGarbageIsNone()
+    {
+        var z = SyntheticZip.Own();
+        z.Manifest["completed_utc"] = "2026-01-02T06:00:00+02:00";
+        z.Manifest["started_utc"] = "garbage";
+        var id = z.Read().Model.Identity;
+        Assert.Equal(new DateTime(2026, 1, 2, 4, 0, 0, DateTimeKind.Utc), id.CompletedUtc);
+        Assert.Null(id.StartedUtc);
+    }
+
+    // RD6
+    [Fact]
+    public void SkillArraysOfTheWrongLengthWarn()
+    {
+        var z = SyntheticZip.Own();
+        z.Reply("/v1/Skill/list", """{"weapon":{},"tracking":[1,2],"spotting":[]}""", ("user_id", SyntheticZip.Uid));
+        var w = z.Read().Report.Warnings;
+        Assert.Contains("skills tracking: 2 values, 59 expected", w);
+        Assert.Contains("skills spotting: 0 values, 59 expected", w);
+    }
 }

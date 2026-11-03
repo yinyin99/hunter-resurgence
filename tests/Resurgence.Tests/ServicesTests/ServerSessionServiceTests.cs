@@ -83,4 +83,18 @@ public class ServerSessionServiceTests
     [Fact]
     public void SignInIsALinkBackToThePage() =>
         Assert.Equal("/auth/steam/login?next=%2Ffeed%3Fa%3D1", Make(new Down()).SignInUrl("/feed?a=1"));
+
+    // PL22
+    [Theory]
+    [InlineData(HttpStatusCode.OK, """{"userId":1,"handle":""}""")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    [InlineData(HttpStatusCode.InternalServerError, """{"userId":1,"handle":"Fox"}""")]
+    public async Task NoHandleGarbageOrAServerErrorIsNoSession(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).CurrentAsync());
+
+    [Fact]
+    public async Task StartIsLoggedInOnlyWithASession()
+    {
+        Assert.Equal(StartOutcome.LoggedIn, await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"userId":1,"handle":"Fox"}"""))).StartAsync());
+        Assert.Equal(StartOutcome.LoggedOut, await Make(new Down()).StartAsync());
+    }
 }

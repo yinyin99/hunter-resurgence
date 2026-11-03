@@ -51,6 +51,7 @@ public class ServerRestoreServiceTests
     [InlineData(HttpStatusCode.TooManyRequests, "<html>", "busy", "Try again in a minute.")]
     [InlineData(HttpStatusCode.Unauthorized, "", "signed_out", "Sign in first.")]
     [InlineData(HttpStatusCode.BadGateway, "<html>", "unavailable", "The server did not answer.")]
+    [InlineData(HttpStatusCode.OK, "<html>", "unavailable", "The server did not answer.")]
     public async Task UploadAnswersAreTheServersOrMappedFromTheStatus(HttpStatusCode code, string body, string status, string message)
     {
         var result = await Make(new Fake(_ => Json(code, body))).UploadAsync(new MemoryStream([1]), 1);
@@ -110,5 +111,30 @@ public class ServerRestoreServiceTests
     {
         Assert.True(LauncherGuard.NeedsSession("restore"));
         Assert.False(LauncherGuard.NeedsSession("your-data"));
+    }
+
+    // PL23
+    [Fact]
+    public async Task ATimeoutIsUnavailable()
+    {
+        var result = await Make(new Cancelled()).UploadAsync(new MemoryStream([1]), 1);
+        Assert.Equal("unavailable", result.Status);
+    }
+
+    sealed class Cancelled : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) => throw new TaskCanceledException("timeout");
+    }
+
+    [Fact]
+    public async Task AStatusThatIsNotANumberIsNoStatus() =>
+        Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"restoredUserId":"nope","review":[]}"""))).StatusAsync());
+
+    [Fact]
+    public async Task UploadSendsTheGivenContentLength()
+    {
+        long? length = null;
+        await Make(new Fake(r => { length = r.Content!.Headers.ContentLength; return Json(HttpStatusCode.OK, """{"status":"restored"}"""); })).UploadAsync(new MemoryStream("zipbytes"u8.ToArray()), 8);
+        Assert.Equal(8, length);
     }
 }

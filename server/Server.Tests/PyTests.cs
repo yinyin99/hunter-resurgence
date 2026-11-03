@@ -42,4 +42,48 @@ public class PyTests
         Assert.Equal(["a"], q.Keys);
         Assert.Equal(["1", "2 x!"], q["a"]);
     }
+
+    [Theory]
+    [InlineData(0.5, 0)]
+    [InlineData(1.5, 2)]
+    [InlineData(2.5, 2)]
+    [InlineData(-0.5, 0)]
+    public void RoundIntIsHalfToEven(double x, long expected) => Assert.Equal(expected, Py.RoundInt(x));
+
+    [Fact]
+    public void RoundKeepsTheBinaryValue()
+    {
+        Assert.Equal(2.67, Py.Round(2.675, 2));
+        Assert.Equal(0.12, Py.Round(0.125, 2));
+    }
+
+    [Fact]
+    public void DumpsEscapesLikePython()
+    {
+        Assert.Equal("\"\\ud83d\\ude00\\u007f\\u0001\"", Py.Dumps(JsonValue.Create("😀\u007f\u0001")));
+        var big = "123456789012345678901234567890";
+        Assert.Equal(big, Py.Dumps(JsonNode.Parse(big)));
+    }
+
+    [Fact]
+    public void EqTruthyStrAndSql()
+    {
+        Assert.True(Py.Eq(JsonValue.Create(1), JsonValue.Create(1.0)));
+        Assert.True(Py.Eq(JsonValue.Create(true), JsonValue.Create(1)));
+        Assert.False(Py.Eq(JsonValue.Create("1"), JsonValue.Create(1)));
+        foreach (var falsy in new[] { "0", "0.0", "\"\"", "[]", "{}", "null" })
+            Assert.False(Py.Truthy(JsonNode.Parse(falsy)), falsy);
+        Assert.Equal("True", Py.Str(JsonValue.Create(true)));
+        Assert.Equal("None", Py.Str(null));
+        Assert.Equal(1L, Py.Sql(JsonValue.Create(true)));
+        Assert.Throws<OverflowException>(() => Py.Sql(JsonNode.Parse("123456789012345678901234567890")));
+    }
+
+    [Fact]
+    public void ParseQsKeepsBlanksOnRequest()
+    {
+        var q = Py.ParseQs("a=&b", keepBlank: true);
+        Assert.Equal([""], q["a"]);
+        Assert.Equal([""], q["b"]);
+    }
 }

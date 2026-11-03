@@ -33,7 +33,7 @@ The `.cmd` files are `play setup`, `play run` and `play setup --remove` followed
 
 `setup` prints this before it starts. It changes three things on your PC and nothing else:
 
-1. **The Windows hosts file** (`C:\Windows\System32\drivers\etc\hosts`): the game's server names (listed in `settings.json`) point to your PC (`127.0.0.1`), between two marked lines (`# >>> hunter-resurgence play` and `# <<< hunter-resurgence play`). Your other lines are not touched. `--remove` takes the block out again and leaves the file byte for byte as it was.
+1. **The Windows hosts file** (`C:\Windows\System32\drivers\etc\hosts`): the game's server names (listed in `settings.json`) point to your PC (`127.0.0.1`), between two marked lines (`# >>> hunter-resurgence play` and `# <<< hunter-resurgence play`). Your other lines are not touched. `--remove` takes the block out again and leaves the file byte for byte as it was. If the end line is missing (a hand edit), the block ends at the first line that is not a `127.0.0.1 ` line: your lines after it stay.
 2. **Your Windows trust list** (the current user's only, not the whole PC): a local certificate authority named `Hunter Resurgence local CA`. It is made on your PC, valid for two years, and **name-constrained**: Windows accepts a certificate it signed only for the game's server names, never for any other site. Its private key is created in memory, used once to sign the next item and then thrown away: it is never saved, so nobody can export or reuse it.
 3. **A certificate for those names**, signed by that authority. Its public part is the file `%LOCALAPPDATA%\hunter-resurgence-play\leaf.cer`; its private key is a non-exportable key in your Windows key store. `run` uses it to answer the game over HTTPS.
 

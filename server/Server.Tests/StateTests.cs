@@ -308,8 +308,51 @@ public class InventoryTests : StateTestBase
     {
         // a sow has no tusks (`features: []`) but still scores her weight
         var (score, type) = Scoring.Score(5, new JsonArray(), JsonValue.Create(100000), null);
-        Assert.NotEqual("0.0", score!.ToString());
+        Eq("220.4623", score);
         Assert.Equal("W", type);
+    }
+
+    [Fact]
+    public void TestWeightSkullAndElkFamiliesScore()
+    {
+        Eq("220.4623", Scoring.Score(4, new JsonArray(), 100000, null).Score);  // weight_lb
+        Eq("50.0", Scoring.Score(21, new JsonArray(), 50000, null).Score);  // weight_kg
+        Eq("1234", Scoring.Score(53, new JsonArray(), 1234, null).Score);  // weight_g: as is
+        var skull = Scoring.Features(9, O("""{"feature": 9830650}"""), new JsonObject(), 1.0);
+        Eq("""{"width": 1.5, "length": 2.5}""", skull);
+        Eq("0.1575", Scoring.Score(9, skull, null, null).Score);
+        Assert.Null(Scoring.Features(9, new JsonObject(), new JsonObject(), 1.0));
+        var e22 = O("""{"event": 22, "individual": 1, "inside_spread_of_main_beams": 508}""");
+        e22["left_antler"] = Antler([127, 127, 127, 127], [(0, 635)]);
+        e22["right_antler"] = Antler([127, 127, 127, 127], [(0, 635)]);
+        Eq("110.0", Scoring.Score(3, Scoring.Features(3, new JsonObject(), e22, 1.0), null, null).Score);
+    }
+
+    [Fact]
+    public void TestBirdScoreTypeFollowsTheLastHitState()
+    {
+        string? Type(int hitState, bool hit)
+        {
+            var s = new State(Path.Combine(tmp, $"bird{hitState}{hit}.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+            JsonNode[] events = [O("""{"event": 7, "individual": 500, "species": 15, "gender": 0, "weight_grams": 1000, "feature": 1000000}""")];
+            if (hit) events = [.. events, O($$"""{"event": 1, "individual": 500, "weapon_id": 5, "ammunition_id": 10, "animal_state": {{hitState}}}""")];
+            HbOf2(s, [.. events, O("""{"event": 3, "individual": 500, "extended_species": 15}""")]);
+            var score = Assert.Single(HbOf2(s), u => Py.Eq(u!["update"], 6))!;
+            Eq("1000.0", score["score"]);
+            return (string?)score["score_type"];
+        }
+        Assert.Equal("A", Type(6, true));
+        Assert.Equal("G", Type(3, true));
+        Assert.Equal("G", Type(0, false));
+    }
+
+    static JsonArray HbOf2(State s, params JsonNode[] events) => Reply(s.HeartbeatReply(ME, Events(events)))["updates"]!.AsArray();
+
+    [Fact]
+    public void TestEscapeNeutralisesMarkup()
+    {
+        Assert.Equal("&lt;a href=&quot;x&quot;&gt;&#x27;&amp;", ScorePage.Escape("<a href=\"x\">'&"));
+        Assert.Equal("&lt;a href=\"x\"&gt;'&amp;", ScorePage.Escape("<a href=\"x\">'&", quote: false));
     }
 
     [Fact]
@@ -426,6 +469,42 @@ public class InventoryTests : StateTestBase
         Assert.Empty(HbOf(state));
         Eq("182.0", state.Wallet(ME)["em"]);
         Assert.Equal(2, Items().Count);
+    }
+
+    [Fact]
+    public void TestBuyAmountIsOneToAThousand()
+    {
+        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
+        using (var con = s.Store.Open(ME)) State.AddCurrency(con, "em", 100000);
+        var wallet = s.Wallet(ME)["em"]!.DeepClone();
+        var count = Items(s).Count;
+        foreach (var amount in new[] { "0", "-1", "1e3", "", "1001", "72057594037927937", "99999999999999999999" })
+            Eq("""{"success": false}""", Reply(s.BuyReply(ME, Encoding.ASCII.GetBytes($"item_id=19&amount={amount}&wallet=GOLD"))));
+        Eq(wallet, s.Wallet(ME)["em"]);
+        Assert.Equal(count, Items(s).Count);
+        Eq("""{"price": 27.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=3&wallet=GOLD"u8.ToArray())));
+        Assert.Equal(count + 3, Items(s).Count);
+        Eq("""{"price": 9000.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=1000&wallet=GOLD"u8.ToArray())));
+    }
+
+    [Theory]
+    [InlineData("""{"events":5}""")]
+    [InlineData("""{"events":"x"}""")]
+    [InlineData("""{"events":{}}""")]
+    [InlineData("""{"events":[1]}""")]
+    [InlineData("""{"events":[null]}""")]
+    [InlineData("[1]")]
+    [InlineData("not json")]
+    [InlineData("""{"events":[],"events":[]}""")]
+    [InlineData("""{"events":[{"event":1,"event":1}]}""")]
+    public void TestHeartbeatBodiesOfTheWrongShapeAreIgnored(string body)
+    {
+        var items = Items();
+        var wallet = state.Wallet(ME)["em"]!.DeepClone();
+        HbOf(state);  // the connect toast
+        Eq("""{"updates": [], "err": 0}""", Reply(state.HeartbeatReply(ME, Encoding.UTF8.GetBytes(body))));
+        Eq(items, Items());
+        Eq(wallet, state.Wallet(ME)["em"]);
     }
 
     [Fact]
@@ -660,6 +739,16 @@ public class SkillTests : StateTestBase
             ["destination"] = ICON, ["update"] = 3, ["timer"] = 1000, ["type"] = 100,
         }), Hb());
         Eq("2", Reply(state.ConnectReply(ME))["skills"]!["weapon"]!["706"]);  // same family
+    }
+
+    [Fact]
+    public void TestSpottingLevelUpAndToastText()
+    {
+        Hb([O("""{"event": 7, "individual": 9, "species": 1}"""), .. Repeat(O("""{"event": 11, "individual": 9}"""), 8)]);
+        var toasts = Hb();
+        Assert.True(toasts.Any(u => (string?)u!["text"] == "Test Deer Spotting: level 2 reached"), Py.Dumps(toasts));  // without the variant suffix
+        Assert.Equal("Mule Deer Tracking: level 2 reached", Skills.LevelUpText("tracking", "Mule Deer", 2));
+        Assert.Equal("None: level 3 reached", Skills.LevelUpText("weapon", null, 3));
     }
 
     [Fact]

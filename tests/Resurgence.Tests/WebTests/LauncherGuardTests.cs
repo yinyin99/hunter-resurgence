@@ -1,0 +1,26 @@
+using Resurgence.Ui;
+
+namespace Resurgence.Tests.WebTests;
+
+public class LauncherGuardTests
+{
+    [Theory]
+    [InlineData("dashboard", true)]
+    [InlineData("/launch-map/1?x=1", true)]
+    [InlineData("Servers/", true)]
+    [InlineData("tutorials#a", true)]
+    [InlineData("dashboardx", false)]
+    [InlineData("feed", false)]
+    [InlineData("", false)]
+    public void BlocksTheLauncherOnlyRoutes(string path, bool blocked) => Assert.Equal(blocked, LauncherGuard.Blocks(path));
+
+    [Theory]
+    [InlineData("wallet/ems", true)]
+    [InlineData("/Messages", true)]
+    [InlineData("new-message", true)]
+    [InlineData("bank/ems", true)]
+    [InlineData("walletx", false)]
+    [InlineData("store", false)]
+    [InlineData("profile/x", false)]
+    public void NeedsASessionForTheSignedInRoutes(string path, bool needs) => Assert.Equal(needs, LauncherGuard.NeedsSession(path));
+}

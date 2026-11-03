@@ -23,15 +23,20 @@ public class SettingsTests
     [InlineData("""{"server_url":"https://s.example.test/?x=1","api_host":"a.example.test"}""")]   // query
     [InlineData("""{"server_url":"https://s.example.test","api_host":"a.example.test\n127.0.0.1 evil.test"}""")] // would inject a hosts line
     [InlineData("""{"server_url":"https://s.example.test","api_host":"10.0.0.1"}""")]              // an address, not a name
+    [InlineData("""{"server_url":"https://s.example.test","api_host":"localhost"}""")]                  // no dot
+    [InlineData("""{"server_url":"https://s.example.test","api_host":"a.example.test 127.0.0.1"}""")]  // two names in one
+    [InlineData("""{"server_url":"https://s.example.test","api_host":"*.example.test"}""")]            // a wildcard
+    [InlineData("""{"server_url":"https://s.example.test/#x","api_host":"a.example.test"}""")]         // fragment
+    [InlineData("""{"server_url":5}""")]
+    [InlineData("[]")]
+    [InlineData("null")]
     [InlineData("not json")]
     public void BadSettingsAreRefused(string json) => Assert.Throws<InvalidOperationException>(() => Settings.Parse(json));
 
     [Fact]
     public void ExampleFileIsOnlyPlaceholders()
     {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (!File.Exists(Path.Combine(dir.FullName, "tools", "play", "settings.example.json"))) dir = dir.Parent!;
-        var e = Assert.Throws<InvalidOperationException>(() => Settings.Parse(File.ReadAllText(Path.Combine(dir.FullName, "tools", "play", "settings.example.json"))));
+        var e = Assert.Throws<InvalidOperationException>(() => Settings.Parse(File.ReadAllText(Repo.Path("tools", "play", "settings.example.json"))));
         Assert.Contains("server_url", e.Message);
     }
 }

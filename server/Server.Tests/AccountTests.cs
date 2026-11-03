@@ -97,6 +97,41 @@ public class StoreTests : IDisposable
     }
 
     [Fact]
+    public void TestTheJwtKeyIsKeptInAFileAndSurvivesARestart()
+    {
+        Assert.Equal(32, store.JwtKey.Length);
+        Assert.Equal(store.JwtKey, new Store(file).JwtKey);
+        Assert.True(File.Exists(file + ".jwtkey"));
+    }
+
+    [Fact]
+    public void TestAWebSessionStopsWorkingWhenBannedOrDeleted()
+    {
+        store.CreateAccount(1, "one", Account(1, "one"));
+        var cookie = store.CreateWebSession(1, TimeSpan.FromHours(1));
+        Assert.Equal(1L, store.ResolveWebSession(cookie));
+        using (var con = store.Open()) con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", 1L);
+        Assert.Null(store.ResolveWebSession(cookie));
+        using (var con = store.Open()) con.Exec("UPDATE accounts SET banned = 0 WHERE id = ?", 1L);
+        Assert.Equal(1L, store.ResolveWebSession(cookie));
+        store.DeleteWebSession(cookie);
+        Assert.Null(store.ResolveWebSession(cookie));
+    }
+
+    [Fact]
+    public void TestBackupCopiesTheDatabaseEvenInAFolderWithAQuote()
+    {
+        var dir = Path.Combine(tmp, "O'Brien");
+        Directory.CreateDirectory(dir);
+        var s = new Store(Path.Combine(dir, "state.db"));
+        s.CreateAccount(1, "one", Account(1, "one"));
+        var (a, b) = (s.Backup(), s.Backup());
+        Assert.NotEqual(a, b);
+        Assert.True(File.Exists(a) && File.Exists(b));
+        Assert.True(new Store(a).AccountExists(1));
+    }
+
+    [Fact]
     public void TestRankIsThePlaceOnTheBoardAmongAccountsNotBanned()
     {
         foreach (var (id, score) in new (long, long?)[] { (1, 900), (2, 500), (3, 500), (4, 100), (5, null), (6, 1000), (7, 0) })
@@ -515,6 +550,21 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         Assert.Equal("empty", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenA))).Source);
         Assert.Equal("state", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenB))).Source);
         Assert.Equal("state", (await Send("OPTIONS", "apiv2.test", "/game/user/harvest/1", null, null, [.. Bearer(tokenB), ("Origin", "https://web.test")])).Source);
+    }
+
+    [Fact]
+    public async Task TestAnOversizedHarvestIdIsNotAServerError()
+    {
+        const string big = "99999999999999999999";
+        var statuses = new List<int>();
+        foreach (var (method, path, token) in new[] { ("GET", "/game/user/harvest/" + big, null), ("GET", "/game/user/harvest/" + big, tokenA), ("POST", "/game/user/harvest/" + big + "/taxidermize", tokenA) })
+        {
+            using var request = new HttpRequestMessage(new HttpMethod(method), new Uri("http://apiv2.test" + path, new UriCreationOptions { DangerousDisablePathAndQueryCanonicalization = true }));
+            if (token is not null) request.Headers.TryAddWithoutValidation("Authorization", "Bearer " + token);
+            using var response = await server.Http.SendAsync(request, TestContext.Current.CancellationToken);
+            statuses.Add((int)response.StatusCode);
+        }
+        Assert.Equal("404,404,404", string.Join(",", statuses));
     }
 
     [Fact]

@@ -149,6 +149,22 @@ public class MessagesTests
         Assert.Empty(idx["checks"]!["possibly_capped"]!.AsArray());
     }
 
+    /// <summary>A partner id is kept as the server sent it (text stays text, a 17-digit number stays a number) and is sent as a number only when it is short.</summary>
+    [Fact]
+    public async Task PartnerIdsKeepTheirTypeInTheIndexAndTheRequests()
+    {
+        using var t = new TempDir("backup-test-msg-");
+        var f = new Fake(Tok);
+        f.Raw[ListPath] = Encoding.UTF8.GetBytes("""[{"user_id":"101","read":1},{"user_id":12345678901234567,"read":1}]""");
+        f.Custom = (p, _) => p == ThreadPath ? new HttpResponseMessage { Content = new StringContent(Thread(2, 2)) } : null;
+        await Run(f, t, ["messages"]);
+        var rows = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir(t), "messages-index.json")))!["threads"]!.AsArray();
+        Assert.Equal(["\"101\"", "12345678901234567"], rows.Select(x => x!["user_id"]!.ToJsonString()));
+        Assert.True(File.Exists(Path.Combine(Dir(t), "Chat_conversation__user_id=101.json")) && File.Exists(Path.Combine(Dir(t), "Chat_conversation__user_id=12345678901234567.json")));
+        Assert.Contains(f.Bodies, b => b.Contains("\"user_id\":101,") || b.EndsWith("\"user_id\":101}"));
+        Assert.Contains(f.Bodies, b => b.Contains("\"user_id\":\"12345678901234567\""));
+    }
+
     [Fact]
     public async Task EmptyListMakesNoThreadRequestAndNoNote()
     {

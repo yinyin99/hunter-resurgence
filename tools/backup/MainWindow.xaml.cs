@@ -130,9 +130,11 @@ public partial class MainWindow : FluentWindow
     }
 
     /// <summary>Only changes enabled rows: in Public mode the token-only groups stay off. The older-editions switch follows through SyncOlder.</summary>
-    void SelectGroups(bool on)
+    void SelectGroups(bool on) => SelectGroups(boxes!, on);
+
+    internal static void SelectGroups(IEnumerable<CheckBox> boxes, bool on)
     {
-        foreach (var b in boxes!) if (b.IsEnabled) b.IsChecked = on;
+        foreach (var b in boxes) if (b.IsEnabled) b.IsChecked = on;
     }
 
     [DllImport("user32.dll")] static extern int GetWindowLong(IntPtr h, int index);
@@ -364,38 +366,66 @@ public partial class MainWindow : FluentWindow
         bool own = OwnRadio.IsChecked == true;
         Who.IsEnabled = !own;
         Tick();
+        ApplyMode(own, boxes, remembered);
+        for (int i = 0; i < boxes.Length; i++)
+            if (Engine.Groups[i].Needs == Engine.Session.All) Describe(i);
+        Recheck();
+        if (IsLoaded) FitHeight(); // the notes of the disabled rows change their height
+    }
+
+    internal static void ApplyMode(bool own, CheckBox[] boxes, bool[] remembered)
+    {
         for (int i = 0; i < boxes.Length; i++)
         {
             if (Engine.Groups[i].Needs != Engine.Session.All) continue;
             if (!own && boxes[i].IsEnabled) remembered[i] = boxes[i].IsChecked == true;
             boxes[i].IsEnabled = own;
             boxes[i].IsChecked = own ? remembered[i] : false;
-            Describe(i);
         }
-        Recheck();
-        if (IsLoaded) FitHeight(); // the notes of the disabled rows change their height
     }
 
     // ---------- watcher ----------
 
+    /// <summary>The status line's text key, icon and colour; the key is a Loc string (Status_Found takes the time). Icon and words say the state, the colour only backs them up.</summary>
+    internal static (string Key, SymbolRegular Icon, string Tone) Status(bool hasWatcher, bool running, bool isPublic, bool hasToken, bool gameSeen, bool stale) =>
+        !hasWatcher ? ("Status_Settings", SymbolRegular.ErrorCircle24, "SystemFillColorCriticalBrush")
+        : running ? ("Status_Running", SymbolRegular.ArrowSync24, Neutral)
+        : isPublic ? ("Status_Public", SymbolRegular.Person24, Neutral)
+        : !hasToken ? (gameSeen ? "Status_NoHunt" : "Status_Waiting", SymbolRegular.Hourglass24, Neutral)
+        : stale ? ("Status_Stale", SymbolRegular.Warning24, "SystemFillColorCautionBrush")
+        : ("Status_Found", SymbolRegular.CheckmarkCircle24, "SystemFillColorSuccessBrush");
+
+    const string Neutral = "SystemFillColorSolidNeutralBrush";
+
     void Tick()
     {
-        string text, tone = "SystemFillColorSolidNeutralBrush"; SymbolRegular icon; // icon and words say the state; the colour only backs them up
-        if (watcher == null) (text, icon, tone) = (Loc.S("Status_Settings"), SymbolRegular.ErrorCircle24, "SystemFillColorCriticalBrush");
-        else
-        {
-            if (watcher.Scan()) Log($"game session found {watcher.At:HH:mm:ss}"); // also in public mode: it is ready when My account is chosen
-            if (cts != null) (text, icon) = (Loc.S("Status_Running"), SymbolRegular.ArrowSync24);
-            else if (PublicRadio.IsChecked == true) (text, icon) = (Loc.S("Status_Public"), SymbolRegular.Person24);
-            else if (watcher.Token == null) (text, icon) = (Loc.S(watcher.GameSeen ? "Status_NoHunt" : "Status_Waiting"), SymbolRegular.Hourglass24);
-            else if (watcher.Stale) (text, icon, tone) = (Loc.S("Status_Stale"), SymbolRegular.Warning24, "SystemFillColorCautionBrush");
-            else (text, icon, tone) = (Loc.F("Status_Found", watcher.At.ToString("HH:mm")), SymbolRegular.CheckmarkCircle24, "SystemFillColorSuccessBrush");
-        }
+        if (watcher != null && watcher.Scan()) Log($"game session found {watcher.At:HH:mm:ss}"); // also in public mode: it is ready when My account is chosen
+        var (key, icon, tone) = Status(watcher != null, cts != null, PublicRadio.IsChecked == true, watcher?.Token != null, watcher?.GameSeen == true, watcher?.Stale == true);
+        var text = key == "Status_Found" ? Loc.F(key, watcher!.At.ToString("HH:mm")) : Loc.S(key);
         if (text == lastStatus) return; // nothing changed: no layout work
         lastStatus = text;
         Announce(StatusText, text);
         StatusIcon.Symbol = icon;
         StatusIcon.SetResourceReference(Control.ForegroundProperty, tone);
+    }
+
+    /// <summary>One finished run as the result bar needs it.</summary>
+    internal readonly record struct RunSummary(bool Whole, bool Stale, int Saved, int Skipped, int Failed, int Gone, (string Host, int GiveUps)[] Silent, bool KillsOff, int Opened,
+        int? HuntsSaved, int? HuntsListed, bool HuntsListFailed, int? SetupItems, int SetupMaps, bool SetupCheck, Func<string> FailureSummary);
+
+    internal static InfoBarSeverity Severity(RunSummary s) => s.Whole && !s.SetupCheck && s.HuntsListed == null ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
+
+    internal static (string Title, string Msg) Words(RunSummary s, DateTime finished)
+    {
+        var huntsShort = s.HuntsListed != null;
+        return (Loc.S(s.Whole ? "Msg_Saved" : "Msg_SavedGaps"),
+            Loc.F("Msg_Counts", s.Saved, s.Skipped, s.Failed) + string.Concat(s.Silent.Select(x => " " + Loc.F("Msg_HostSilent", x.Host, x.GiveUps))) + (s.Stale ? " " + Loc.S("Msg_Stale") : !s.Whole ? $" {s.FailureSummary()} {Loc.S("Msg_Retry")}" : "")
+            + (s.Gone > 0 ? " " + Loc.F("Msg_Dead", s.Gone) : "")
+            + (s.KillsOff ? " " + Loc.S("Msg_KillsOff") : "")
+            + (s.Opened > 0 ? " " + Loc.F("Msg_MessagesOpened", s.Opened) : "")
+            + (s.HuntsListFailed ? " " + Loc.F("Msg_HuntsListFailed", s.HuntsSaved!) : huntsShort ? " " + Loc.F("Msg_HuntsShort", s.HuntsSaved!, s.HuntsListed!) : "")
+            + (s.SetupItems is { } n ? " " + (s.SetupCheck ? Loc.F("Msg_SetupsCheck", n, s.SetupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, s.SetupMaps)) : "")
+            + (s.Whole ? "\n" + Loc.F("Msg_Finished", finished) : ""));
     }
 
     // ---------- run ----------
@@ -452,18 +482,11 @@ public partial class MainWindow : FluentWindow
             var killsOff = !keys.Contains("kills") || !keys.Contains("photos");
             var opened = run.MessagesOpened;
             var (huntsSaved, huntsListed, huntsListFailed) = (run.HuntsSaved, run.HuntsListed, run.HuntsListFailed);
-            var huntsShort = huntsListed != null;
             var (setupItems, setupMaps, setupCheck) = (run.SetupItems, run.SetupReserves, run.SetupChecks);
-            sev = whole && !setupCheck && !huntsShort ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             var finished = DateTime.Now;
-            text = () => (Loc.S(whole ? "Msg_Saved" : "Msg_SavedGaps"),
-                Loc.F("Msg_Counts", saved, skipped, failed) + string.Concat(silent.Select(x => " " + Loc.F("Msg_HostSilent", x.Host, x.GiveUps))) + (stale ? " " + Loc.S("Msg_Stale") : !whole ? $" {run.FailureSummary} {Loc.S("Msg_Retry")}" : "")
-                + (gone > 0 ? " " + Loc.F("Msg_Dead", gone) : "")
-                + (killsOff ? " " + Loc.S("Msg_KillsOff") : "")
-                + (opened > 0 ? " " + Loc.F("Msg_MessagesOpened", opened) : "")
-                + (huntsListFailed ? " " + Loc.F("Msg_HuntsListFailed", huntsSaved!) : huntsShort ? " " + Loc.F("Msg_HuntsShort", huntsSaved!, huntsListed!) : "")
-                + (setupItems is { } n ? " " + (setupCheck ? Loc.F("Msg_SetupsCheck", n, setupMaps) : n == 0 ? Loc.S("Msg_SetupsNone") : Loc.F("Msg_Setups", n, setupMaps)) : "")
-                + (whole ? "\n" + Loc.F("Msg_Finished", finished) : ""));
+            var s = new RunSummary(whole, stale, saved, skipped, failed, gone, silent, killsOff, opened, huntsSaved, huntsListed, huntsListFailed, setupItems, setupMaps, setupCheck, () => run.FailureSummary);
+            sev = Severity(s);
+            text = () => Words(s, finished);
             done = true;
         }
         catch (OperationCanceledException)
@@ -569,8 +592,7 @@ public partial class MainWindow : FluentWindow
         var from = pace.Peek();
         if (r.TotalKnown && Engine.SecondsLeft(from.Secs, from.Done, secs, d, t) is { } left)
         {
-            int min = (int)Math.Ceiling(left / 60);
-            eta = " · " + (left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60));
+            eta = " · " + Eta(left);
         }
         var text = $"{d} / {t}{(r.TotalKnown ? "" : "+")} · {(r.Group.Length > 0 ? Loc.S("Group_" + r.Group) : Loc.S("Progress_Starting"))}{eta}";
         if (r.Group != announcedGroup) { announcedGroup = r.Group; Announce(ProgressText, text); }
@@ -578,11 +600,20 @@ public partial class MainWindow : FluentWindow
     }
 
     /// <summary>What stops a run now, the cheapest fix first: tick a group, type a handle, and only then a game session, which needs the game. The key is the end of the Msg_ names.</summary>
-    string? Problem()
+    string? Problem() => Problem(boxes!.Any(b => b.IsChecked == true), PublicRadio.IsChecked == true, Who.Text, watcher?.Token != null);
+
+    internal static string? Problem(bool anyTicked, bool isPublic, string handle, bool hasToken)
     {
-        if (boxes!.All(b => b.IsChecked != true)) return "Nothing";
-        if (PublicRadio.IsChecked == true) return Who.Text.Trim().Length == 0 ? "NoProfile" : null;
-        return watcher?.Token == null ? "NoSession" : null;
+        if (!anyTicked) return "Nothing";
+        if (isPublic) return handle.Trim().Length == 0 ? "NoProfile" : null;
+        return hasToken ? null : "NoSession";
+    }
+
+    /// <summary>The time left as words: under 45 s, minutes up to 89, then hours and minutes.</summary>
+    internal static string Eta(double left)
+    {
+        int min = (int)Math.Ceiling(left / 60);
+        return left < 45 ? Loc.S("Eta_Less") : min < 90 ? Loc.F("Eta_Min", min) : Loc.F("Eta_Hours", min / 60, min % 60);
     }
 
     /// <summary>A bar that asks the user to do something goes as soon as it is done. Run results stay until the next run.</summary>

@@ -237,9 +237,8 @@ public static class GameApi
             var harvest = Handle(game, r =>
             {
                 var m = Harvest.Match(r.Path);
-                if (!m.Success)
+                if (!m.Success || !long.TryParse(m.Groups[1].Value, out var id))
                     return null;
-                var id = long.Parse(m.Groups[1].Value);
                 var taxidermize = m.Groups[2].Success;
                 var account = s.Authenticate(r.Tokens());  // a CORS preflight carries no token: with none it is the replay's
                 if (r.Method == "OPTIONS")

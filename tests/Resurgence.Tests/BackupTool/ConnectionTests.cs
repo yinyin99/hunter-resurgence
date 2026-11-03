@@ -51,4 +51,31 @@ public sealed class ConnectionTests
         Assert.Equal("redirected", r.Official);
         Assert.Empty(seen);
     }
+
+    [Theory]
+    [InlineData("172.16.0.1")]
+    [InlineData("172.31.255.255")]
+    [InlineData("169.254.1.1")]
+    [InlineData("fd00::1")]
+    [InlineData("fe80::1")]
+    [InlineData("0.0.0.0")]
+    [InlineData("::ffff:127.0.0.1")]
+    public async Task RangeEdgesThatAreThisPcOrPrivate(string ip) =>
+        Assert.Equal("redirected", (await Connection.Run(Cfg(null), new(new Stub(_ => HttpStatusCode.OK)), h => Task.FromResult(new[] { IPAddress.Parse(h == "crash.example.test" ? ip : "203.0.113.7") }))).Official);
+
+    [Theory]
+    [InlineData("172.15.255.255")]
+    [InlineData("172.32.0.1")]
+    [InlineData("192.169.0.1")]
+    [InlineData("11.0.0.1")]
+    [InlineData("2001:db8::1")]
+    public async Task AddressesOutsideThoseRangesAreNotRedirected(string ip) =>
+        Assert.Equal("ok", (await Connection.Run(Cfg(null), new(new Stub(_ => HttpStatusCode.OK)), h => Task.FromResult(new[] { IPAddress.Parse(h == "crash.example.test" ? ip : "203.0.113.7") }))).Official);
+
+    [Fact]
+    public async Task AResolverThatFailsLeavesTheVerdictToTheRequests()
+    {
+        var r = await Connection.Run(Cfg(null), new(new Stub(_ => 0)), _ => throw new System.Net.Sockets.SocketException());
+        Assert.Equal("down", r.Official);
+    }
 }

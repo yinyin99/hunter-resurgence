@@ -18,6 +18,9 @@ public sealed class SendTests : IDisposable
     /// <summary>After this many pending polls the sign-in is confirmed; never when negative.</summary>
     int confirmAfter = 2;
     (int Status, string Json) uploadReply = (200, """{"status":"review","message":"kept","report":null}""");
+    /// <summary>The address the server gives for the browser (null = its own); the poll answers 404; the confirmed poll sets no cookie.</summary>
+    string? linkUrl;
+    bool pollGone, noCookie;
 
     public SendTests()
     {
@@ -47,12 +50,12 @@ public sealed class SendTests : IDisposable
             var xhr = req.Headers["X-Requested-With"] != null;
             (int, string) reply = (404, """{"status":"expired"}""");
             if (req.HttpMethod == "POST" && path == "/auth/link" && xhr)
-                reply = (200, $$"""{"code":"abcd1234abcd1234","userCode":"ABCD-1234","url":"{{root}}/auth/steam/login?link=abcd1234abcd1234","expires":300}""");
-            else if (req.HttpMethod == "GET" && path == "/auth/link/abcd1234abcd1234")
+                reply = (200, $$"""{"code":"abcd1234abcd1234","userCode":"ABCD-1234","url":"{{linkUrl ?? root + "/auth/steam/login?link=abcd1234abcd1234"}}","expires":300}""");
+            else if (req.HttpMethod == "GET" && path == "/auth/link/abcd1234abcd1234" && !pollGone)
             {
                 if (confirmAfter >= 0 && polls++ >= confirmAfter)
                 {
-                    res.Headers.Add("Set-Cookie", "hr_session=secret; Path=/; HttpOnly; Secure");
+                    if (!noCookie) res.Headers.Add("Set-Cookie", "hr_session=secret; Path=/; HttpOnly; Secure");
                     reply = (200, """{"status":"ok"}""");
                 }
                 else reply = (200, """{"status":"pending"}""");
@@ -120,5 +123,47 @@ public sealed class SendTests : IDisposable
     {
         listener.Close();
         Assert.Equal("error", (await Run([])).Kind);
+    }
+
+    [Fact]
+    public async Task ASignInAddressOnAnotherHostIsNotShown()
+    {
+        linkUrl = "http://evil.example.test/auth/steam/login?link=abcd1234abcd1234";
+        var shown = new List<(string, string)>();
+        var res = await Run(shown);
+        Assert.Equal(new Send.Result("error", "The server did not give a sign-in code."), res);
+        Assert.Empty(shown);
+    }
+
+    [Fact]
+    public async Task ACodeTheServerForgotEndsAsTimeout()
+    {
+        pollGone = true;
+        Assert.Equal("timeout", (await Run([])).Kind);
+    }
+
+    [Fact]
+    public async Task ConfirmedWithoutACookieIsAnErrorAndNothingIsUploaded()
+    {
+        noCookie = true;
+        Assert.Equal("error", (await Run([])).Kind);
+        Assert.DoesNotContain("POST /account/restore", seen);
+    }
+
+    [Theory]
+    [InlineData(200, """{"status":"weird"}""")]
+    [InlineData(502, "<html>")]
+    public async Task AnUploadReplyThatIsNotUnderstoodIsAnError(int status, string body)
+    {
+        uploadReply = (status, body);
+        Assert.Equal("error", (await Run([])).Kind);
+    }
+
+    [Fact]
+    public async Task ACancelledRunThrows()
+    {
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Send.Run(new HttpClient(), root + "/", zip, (_, _) => { }, cts.Token, TimeSpan.FromMilliseconds(20)));
     }
 }

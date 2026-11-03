@@ -34,7 +34,19 @@ public class SettingsTests
     [InlineData("client_exe", "<game exe>")]
     [InlineData("client_exe", null)]
     public void PlaceholderOrMissingRequiredValueIsRefused(string key, string? value) =>
-        Assert.Throws<InvalidOperationException>(() => Settings.Parse(With(key, value)));
+        Assert.Contains(key, Assert.Throws<InvalidOperationException>(() => Settings.Parse(With(key, value))).Message);
+
+    /// <summary>The template a player gets holds every key Parse reads: untouched it is refused for its first placeholder, filled in it parses.</summary>
+    [Fact]
+    public void TheShippedExampleHasEveryKeyParseReads()
+    {
+        var text = File.ReadAllText(Repo.Path("tools", "backup", "settings.example.json"));
+        Assert.Contains("apiv2_host", Assert.Throws<InvalidOperationException>(() => Settings.Parse(text)).Message);
+        var o = JsonNode.Parse(text)!.AsObject();
+        foreach (var (k, _) in o.ToList()) o[k] = k == "server_url" ? "https://c.test" : k == "client_exe" ? "game.exe" : k.Replace('_', '-') + ".test";
+        var s = Settings.Parse(o.ToJsonString());
+        Assert.True(s.AvatarHost == "avatar-host.test" && s.ConsumerKey == "oauth-consumer-key.test" && s.ServerUrl == "https://c.test" && s.Hosts.Count == 5, "every key of the template is read");
+    }
 
     [Fact]
     public void OptionalValuesThatAreNoValueAreAbsent()
