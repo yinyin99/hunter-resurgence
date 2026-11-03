@@ -53,7 +53,7 @@ Deploy: the container image and the VPS setup are in [deploy.md](deploy.md).
 
 `settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). The `GAME_NAME` and `GAME_FULL` environment variables win over its two names; the live site gets them from the repository variables of the same names at every deploy ([deploy.md](deploy.md#deploys)). Without the file and the variables the texts say "the game" and the links are left out. The real file is git-ignored.
 
-`IMAGES_DIR` names the folder of the operator's pictures, one file per slot, served at `/images/` ([images.md](images.md)). Unset, every picture is its labelled box. Their list is at `/images.json`, for the launcher.
+`IMAGES_DIR` names the folder of the operator's pictures, one file per slot, served at `/images/` ([images.md](images.md)). Unset, every picture is its labelled box. Their list is at `/images.json`, for the launcher, and the slots drawn without one at `/images-missing.json`.
 
 The pages use native dialogs, popovers and CSS anchor positioning (dropdowns, menus, modals): use a current Chrome or Edge (the launcher's WebView2 runtime is one). Other browsers are not tested.
 

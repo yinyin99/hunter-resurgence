@@ -1,14 +1,18 @@
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace Resurgence.Ui;
 
-/// <summary>The operator's pictures for the asset slots: one file per slot name, served at /images/ by the website (IMAGES_DIR, docs/images.md); the launcher gets the website's list from /images.json. None: every slot is its labelled box.</summary>
+/// <summary>The operator's pictures for the asset slots: one file per slot name, served at /images/ by the website (IMAGES_DIR, docs/images.md); the launcher gets the website's list from /images.json. None: every slot is its labelled box. The slots drawn without a picture are listed at /images-missing.json.</summary>
 public sealed class AssetImages
 {
     /// <summary>The picture types served; no SVG, because an SVG opened directly from our origin can run script.</summary>
     public static readonly string[] Extensions = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
 
+    const int MaxMissing = 10_000;
+
     readonly Dictionary<string, string> urls = [];
+    readonly ConcurrentDictionary<string, string> missing = new(StringComparer.Ordinal);
 
     /// <summary>The pictures of <paramref name="index"/> (file name → version, as <see cref="Index"/> gives it) at <paramref name="origin"/>/images/; "" is this site.</summary>
     public AssetImages(IReadOnlyDictionary<string, string> index, string origin = "")
@@ -23,6 +27,18 @@ public sealed class AssetImages
 
     /// <summary>The URL of the picture of slot <paramref name="name"/>, or null (the box).</summary>
     public string? Url(string name) => urls.GetValueOrDefault(Key(name));
+
+    /// <summary>Notes that slot <paramref name="name"/> was drawn as its box on the page at <paramref name="path"/> (the URL path, no query); the first page of each key is kept, 10 000 keys at most. A signed-in page keeps only its first segment (/messages/&lt;handle&gt; → /messages), because the list is public. Read by /images-missing.json (docs/images.md).</summary>
+    public void NoteMissing(string name, string path)
+    {
+        var key = Key(name);
+        // ContainsKey takes no lock, Count locks the whole dictionary: Count runs only for a new key
+        if (missing.ContainsKey(key) || missing.Count >= MaxMissing) return;
+        missing.TryAdd(key, LauncherGuard.NeedsSession(path) ? "/" + path.Trim('/').Split('/')[0] : path);
+    }
+
+    /// <summary>The keys noted by <see cref="NoteMissing"/>, sorted: key → first page.</summary>
+    public SortedDictionary<string, string> Missing => new(missing, StringComparer.Ordinal);
 
     /// <summary>Lower case; every run of characters outside a-z and 0-9 becomes one '-'; no '-' at either end. "species-Alpine Ibex" → "species-alpine-ibex".</summary>
     public static string Key(string name)

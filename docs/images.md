@@ -13,6 +13,20 @@ The website and the launcher draw every picture of the original screens in a *sl
 - The map is drawn from `map-<NN>` (the reserve, two digits) on the launch and join maps, and `map-bg` on the score sheet's map; it zooms and pans with the markers.
 - The launcher renders `src/Ui` itself, so it asks the website. At each start it reads `/images.json` from `server_url` of its `settings.json` ([launcher.md](launcher.md#settingsjson)) and waits 5 s at most; its slots then load `/images/<file>?v=…` from there, and WebView2 caches them until the version changes. Without `server_url`, or on no answer or an error, the launcher shows the labelled boxes.
 
+## Missing pictures
+
+`GET /images-missing.json` lists every slot the website drew as its labelled box since it started, as `{"<key>": "<page>"}` sorted by key. The file to add is `<key>.<png|jpg|jpeg|gif|webp>` in `IMAGES_DIR`.
+
+```
+curl -s https://<site>/images-missing.json
+```
+
+- A slot is listed only once a page has drawn it: open the pages, and their tabs and dialogs, whose pictures are to be checked. A dialog's slot gives the page under it. Each key keeps the first page it was seen on.
+- A key built from page data (`item-<id>` …) is listed as the concrete key (`item-12`).
+- On a signed-in page only the first segment of the path is kept (`/messages`, `/bank`), because the list is public.
+- The list is in memory: restarting `web`, which adding files needs too, clears it. It holds 10,000 keys at most.
+- The launcher draws the same slots from the same folder, so the website's list covers it.
+
 ## Inventory
 
 104 `<AssetSlot>` in 53 `.razor` files, and 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`). Recount:
@@ -23,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 657 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*.
+With the values the mock services give, the slots have 657 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
