@@ -9,7 +9,7 @@ The website and the launcher draw every picture of the original screens in a *sl
 - The files are served at `/images/<file>`, cached `immutable`; the page asks for `/images/<file>?v=<time of the file>`, so a changed file gets a new URL.
 - `/images.json` lists the pictures for the launcher: `{"<file>": "<version>"}`, where the version is the file's `?v=`. It is read with the folder, once at start; `{}` without `IMAGES_DIR`.
 - The website reads the folder once at start: restart `web` after changing files (`docker compose restart web`).
-- A slot without a file shows its labelled box, and so does every slot without `IMAGES_DIR`: the public repository, `dotnet run`, CI. The CI smoke test checks both cases and `/images.json`.
+- A slot without a file shows its labelled box, and so does every slot without `IMAGES_DIR`: the public repository, `dotnet run`, CI. The CI smoke test checks both cases, `/images.json` and `/images-missing.json`.
 - The map is drawn from `map-<NN>` (the reserve, two digits) on the launch and join maps, and `map-bg` on the score sheet's map; it zooms and pans with the markers.
 - The launcher renders `src/Ui` itself, so it asks the website. At each start it reads `/images.json` from `server_url` of its `settings.json` ([launcher.md](launcher.md#settingsjson)) and waits 5 s at most; its slots then load `/images/<file>?v=…` from there, and WebView2 caches them until the version changes. Without `server_url`, or on no answer or an error, the launcher shows the labelled boxes.
 
@@ -25,7 +25,7 @@ curl -s https://<site>/images-missing.json
 - A key built from page data (`item-<id>` …) is listed as the concrete key (`item-12`).
 - On a signed-in page only the first segment of the path is kept (`/messages`, `/bank`), because the list is public.
 - The list is in memory: restarting `web`, which adding files needs too, clears it. It holds 10,000 keys at most.
-- The launcher draws the same slots from the same folder, so the website's list covers it.
+- The launcher draws the same slots from the same folder, but its own pages (`/dashboard`, `/launch-map`, `/servers`, `/tutorials`: `reserve-<NN>`, `map-<NN>` …) are sent to `/feed` by the website, so their slots are not listed; the Inventory covers them. A Development run (`dotnet run --project src/Web`) on a copy of the folder lists them too after opening those pages with `?mode=launcher`.
 
 ## Inventory
 
