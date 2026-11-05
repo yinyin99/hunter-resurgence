@@ -68,7 +68,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |
-| `paw-badge` | 80×80 | DailyMissions | yes |
+| `paw-badge-<easy, medium, hard>` | 80×80 | DailyMissions | 2 of 3: the original's `mission_icon_easy_02` and `mission_icon_medium_02` for 1 and 2 stars; no hard icon was saved |
 | `mission-giver-<day>` | 150×150 | DailyMissions | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
 | `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: not in the operator's files |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
