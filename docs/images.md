@@ -48,7 +48,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `logo-splash` | 483×65 | Splash | yes |
 | `logo-dev` | 200×71 | Footer | yes |
 | `logo-rating-<1-4>` | 62×82 | Footer | 4 of 4 |
-| `bg-hero` | 980×550 | Feed | no: no original picture (a video) |
+| `bg-hero` | 980×550 | Feed | yes: one still frame (at 2 s) of the original landing page's background video; slots take no video |
 | `browser-bg` | 1280×760 | BrowserNotice | yes |
 | `frame-leather` | 1280×760 | SignupLayout | yes |
 | `signup-bg-<1-5>` | 1200×674 | SignupCard (signup pages) | 5 of 5 |
@@ -63,36 +63,36 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
 | `video-<id>` | 900×506 | VideoModal (Help) | 0 of 19: not in the operator's files |
-| `video` | 900×506 | VideoModal (Feed) | no: no original picture |
+| `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
 | `news-<target>` | 805×380, 175×95 | FeedCarousel | 6 of 6 |
 | `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |
-| `paw-badge` | 80×80 | DailyMissions | yes |
-| `mission-giver-<day>` | 150×150 | DailyMissions | 3 of 7: not in the operator's files |
+| `paw-badge-<easy, medium, hard>` | 80×80 | DailyMissions | 2 of 3: the original's `mission_icon_easy_02` and `mission_icon_medium_02` for 1 and 2 stars; no hard icon was saved |
+| `mission-giver-<day>` | 150×150 | DailyMissions | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
 | `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: not in the operator's files |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
-| `competition-hero-<id>` | 980×340 | CompetitionView | 171 of 171 (one picture per species) |
-| `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail | 47 of 47 |
+| `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
+| `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item |
 | `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail | 2 of 2 |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
-| `membership-<starter, special, basic>` | 100×70 | BankModal | 0 of 3: not in the operator's files (one sheet of all cards) |
+| `membership-<starter, special, basic>` | 100×70 | BankModal | 1 of 3: `starter` is the Wayfarer card (the original's one starter bundle, 3 months). `special`: the original had three bundle cards (Deer Hunter, Duck Hunter, Stealth Hunter) that the mock's two anonymous bundles cannot be matched to; `basic`: one card per length (3, 6, 12 months) under one key |
 | `recruit-hero` | 940×310 | InviteFriends | yes |
 | `bait-barrel` | 80×100 | GameManagement | yes |
-| `reserve-<NN>` | 70×70 | LaunchMap | 0 of 12: not in the operator's files |
-| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 0 of 12: not in the operator's files |
-| `map-bg` (MapPlaceholder) | the map | SheetTab | no: no original picture |
+| `reserve-<NN>` | 70×70 | LaunchMap | 12 of 12: the launch map's reserve badges (coloured row of the original's permit sprite, in reserve id order) |
+| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border, scaled to 1500 px at most. The boxes of the join map (704×608) stretch it |
+| `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
 | `rank-<animals, weapons, collectables>` | 110×110 | RanksTab | 3 of 3 |
-| `ach-<animals, weapons, exploration, day-mission>` | 100×100 | AchievementsTab | 3 of 4, `ach-day-mission`: no original picture |
-| `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: not in the operator's files |
-| `skill-<name>` | 80×90 | SkillsTab | 81 of 81 |
-| `trophy-<name>` | 150×150 | TrophiesTab | 26 of 26 |
+| `ach-<animals, weapons, exploration, day-mission>` | 100×100 | AchievementsTab | 3 of 4: the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
+| `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: animal badges by the game's achievement table, challenge badges by the challenge's description (`Quick Draw` is the original's Assassin); `1 Rifle A (Standard)` is a stand-in for a weapon badge; `Early Bird` is not in the original |
+| `skill-<name>` | 80×90 | SkillsTab | 78 of 81: weapon skills by the weapon category in the name; `i1` (semi-automatic rifles), `k1` and `l1` (air rifles) stay empty, the original's only icon of that kind is already used by another skill or is of another category |
+| `trophy-<name>` | 150×150 | TrophiesTab | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
 | `dog-<type>` | 120×120 | DogsTab | 2 of 2 |
-| `weapon-<name>`, `ammo-<name>` | 150×30, 36×36 | WeaponTable | 5 of 5, 5 of 5 |
+| `weapon-<name>`, `ammo-<name>` | 150×30, 36×36 | WeaponTable | 5 of 5, 5 of 5: the mock weapons are fictional (stand-in pictures of the same kind); each ammo is the one the game's item table lists as fitting that weapon's picture (.243, .30-06, .340 Weatherby, 7.62x54R, 12 GA birdshot) |
 | `collectable-<name>` | 24×24 | CollectableTable | 1 of 1 |
 | `sheet-logo` | 460×64 | SheetTab | yes |
-| `sheet-medal` | 84×84 | SheetTab | no: no original picture |
+| `sheet-medal` | 84×84 | SheetTab | no: none of the 1,241 saved score pages shows a medal |
 | `sheet-sponsor` | 116×82 | SheetTab | yes |
 | `antler-diagram-<species>`, `antler-guide-<species>` | 380×220, 560×460 | SheetTab | 1 of 1, 1 of 1 |
