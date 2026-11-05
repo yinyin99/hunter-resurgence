@@ -77,11 +77,11 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail | 2 of 2 |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
-| `membership-<starter, special, basic>` | 100×70 | BankModal | 0 of 3: not in the operator's files (one sheet of all cards) |
+| `membership-<starter, special, basic>` | 100×70 | BankModal | 1 of 3: `starter` is the Wayfarer card (the original's one starter bundle, 3 months). `special`: the original had three bundle cards (Deer Hunter, Duck Hunter, Stealth Hunter) that the mock's two anonymous bundles cannot be matched to; `basic`: one card per length (3, 6, 12 months) under one key |
 | `recruit-hero` | 940×310 | InviteFriends | yes |
 | `bait-barrel` | 80×100 | GameManagement | yes |
-| `reserve-<NN>` | 70×70 | LaunchMap | 0 of 12: not in the operator's files |
-| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 0 of 12: not in the operator's files |
+| `reserve-<NN>` | 70×70 | LaunchMap | 12 of 12: the launch map's reserve badges (coloured row of the original's permit sprite, in reserve id order) |
+| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border, scaled to 1500 px at most. The boxes of the join map (704×608) stretch it |
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: no original picture |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
 | `rank-<animals, weapons, collectables>` | 110×110 | RanksTab | 3 of 3 |
