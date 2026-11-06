@@ -33,7 +33,7 @@ public static class AuthApi
         group.MapMethods("/confirm", ["GET", "POST"], Do(game, auth.Confirm)).WithName("ConfirmLauncher").WithSummary("Let the launcher that shows the code sign in");
         group.MapPost("/link", Do(game, auth.NewLink)).WithName("NewLink").WithSummary("A launcher asks to be signed in by the player's browser");
         group.MapGet("/link/{code}", Do(game, auth.PollLink)).WithName("PollLink").WithSummary("The launcher waits: pending, or ok with the cookie");
-        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank}` or 401");
+        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms}` or 401");
         group.MapPost("/signout", Do(game, auth.SignOut)).WithName("AuthSignOut").WithSummary("End the session (needs `X-Requested-With` or a same-origin `Origin`)");
         group.MapPost("/launch", Do(game, r => auth.Launch(r, game.Tokens!))).WithName("AuthLaunch").WithSummary("A launch URL with fresh tokens, for the start page");
 

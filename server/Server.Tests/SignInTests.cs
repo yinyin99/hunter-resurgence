@@ -248,6 +248,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(Store.FirstServerId, state.Store.AccountByHandle("hunter_one"));
         // a new account starts with the server's starting data
         Eq("182.0", state.Wallet(Store.FirstServerId)["em"]);
+        Assert.Equal(182L, (long)me["ems"]!);  // /auth/me carries the wallet in whole numbers
 
         var begun = await Begin("web.test", "?next=%2Ffeed");
         var again = await Return("web.test", begun);

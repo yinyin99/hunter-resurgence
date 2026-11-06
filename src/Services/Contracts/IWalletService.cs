@@ -1,6 +1,7 @@
 namespace Resurgence.Services;
 
-public sealed record Balances(int Ems, int Gms, int AmmoDays, int FuelDays);
+/// <summary>The status bar's balances; a days count of null is unknown and its pill is not shown.</summary>
+public sealed record Balances(int Ems, int Gms, int? AmmoDays, int? FuelDays);
 
 /// <summary>The wallet header: balances and totals spent, shown with two decimals.</summary>
 public sealed record WalletSummary(decimal Ems, decimal Gms, decimal EmsSpent, decimal GmsSpent);
