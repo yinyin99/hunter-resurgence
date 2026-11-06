@@ -6,8 +6,8 @@ namespace Resurgence.Ui;
 /// <summary>The operator's pictures for the asset slots: one file per slot name, served at /images/ by the website (IMAGES_DIR, docs/images.md); the launcher gets the website's list from /images.json. None: every slot is its labelled box. The slots drawn without a picture are listed at /images-missing.json.</summary>
 public sealed class AssetImages
 {
-    /// <summary>The picture types served; no SVG, because an SVG opened directly from our origin can run script.</summary>
-    public static readonly string[] Extensions = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+    /// <summary>The file types served; no SVG, because an SVG opened directly from our origin can run script. A .webm plays as a muted looping video (the original landing page's background).</summary>
+    public static readonly string[] Extensions = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".webm"];
 
     const int MaxMissing = 10_000;
 
