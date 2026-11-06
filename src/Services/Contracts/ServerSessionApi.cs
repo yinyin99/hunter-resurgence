@@ -14,8 +14,8 @@ public static class ServerSessionApi
     public const string Hunters = "/hunters";
 }
 
-/// <summary>The JSON of <see cref="ServerSessionApi.Me"/>.</summary>
-public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0);
+/// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet.</summary>
+public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0);
 
 /// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
 public sealed record ServerHunter(int Rank, string Handle, int Hunterscore);

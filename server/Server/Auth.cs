@@ -350,16 +350,19 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     // ---- the session
 
-    /// <summary>GET /auth/me: who the cookie is, with the hunterscore and the place on the board.</summary>
-    public Reply Me(Req r) =>
-        Account(r) is { } account
-            ? Json(200, new JsonObject
-            {
-                ["userId"] = account, ["handle"] = Store.HandleOf(account),
-                ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
-                ["rank"] = Store.Rank(account, state.LocalAccount),
-            })
-            : Json(401, new JsonObject { ["error"] = "signed out" });
+    /// <summary>GET /auth/me: who the cookie is, with the hunterscore, the place on the board and the wallet (em, gm).</summary>
+    public Reply Me(Req r)
+    {
+        if (Account(r) is not { } account) return Json(401, new JsonObject { ["error"] = "signed out" });
+        var wallet = state.Wallet(account);
+        return Json(200, new JsonObject
+        {
+            ["userId"] = account, ["handle"] = Store.HandleOf(account),
+            ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
+            ["rank"] = Store.Rank(account, state.LocalAccount),
+            ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
+        });
+    }
 
     /// <summary>POST /auth/signout.</summary>
     public Reply SignOut(Req r)

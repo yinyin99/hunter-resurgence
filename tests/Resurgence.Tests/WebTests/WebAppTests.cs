@@ -85,6 +85,7 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.IsType<ServerSessionService>(Resolve(withServer, typeof(ISessionService)));
         Assert.IsType<ServerLeaderboardsService>(Resolve(withServer, typeof(ILeaderboardsService)));
         Assert.IsType<ServerProfileService>(Resolve(withServer, typeof(IProfileService)));
+        Assert.IsType<ServerWalletService>(Resolve(withServer, typeof(IWalletService)));
         Assert.IsType<ServerRestoreService>(Resolve(withServer, typeof(IRestoreService)));
     }
 
