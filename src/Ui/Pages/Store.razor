@@ -28,7 +28,7 @@
                 else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
                 @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
-                else if (Mode.Purchases) { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
+                else if (!Mode.Live) { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
             </div>
         }
         @foreach (var b in bundles)

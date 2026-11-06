@@ -26,7 +26,7 @@ else
         {
             <ExternalLink Key="steam_store" Class="hunt">@L["Menu.HuntNow"] <Icon Name="chevron-right" /></ExternalLink>
         }
-        @if (Mode.Purchases) { <a class="ems" href="/bank/ems" data-tip="@L["Menu.GetEmsTip"]"><AssetSlot Name="coin-ems" Width="46" Height="46" Class="coin" /><span>@L["Menu.GetEms"]</span></a> }
+        @if (!Mode.Live) { <a class="ems" href="/bank/ems" data-tip="@L["Menu.GetEmsTip"]"><AssetSlot Name="coin-ems" Width="46" Height="46" Class="coin" /><span>@L["Menu.GetEms"]</span></a> }
         <a class="store" href="/store"><AssetSlot Name="icon-store" Width="46" Height="46" Class="coin" /><span>@L["Menu.Store"]</span></a>
         <ul class="items">
             @if (Mode.Launcher)
@@ -35,7 +35,7 @@ else
             }
             <li><a href="/competitions" class="@Active("competitions")">@L["Menu.Competitions"]</a></li>
             <li><a href="/leaderboards" class="@Active("leaderboards")">@L["Menu.Leaderboards"]</a></li>
-            <li><a href="/missions/daily" class="@Active("missions")">@L["Menu.Missions"]</a></li>
+            @if (!Mode.Live) { <li><a href="/missions/daily" class="@Active("missions")">@L["Menu.Missions"]</a></li> }
             @if (!Mode.Launcher)
             {
                 <li><a href="/download" class="@Active("download")">@L["Menu.Downloads"]</a></li>

@@ -23,7 +23,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             {
                 var own = (await sessions.CurrentAsync())?.Handle is { } me && string.Equals(me, h.Handle, StringComparison.OrdinalIgnoreCase);
                 var p = await mock.ProfileAsync(h.Handle);
-                return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false };
+                return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false, Membership = "", Friend = false, RequestPending = false, Real = true };
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }

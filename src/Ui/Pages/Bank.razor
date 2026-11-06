@@ -20,7 +20,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!Mode.Purchases) return;  // the news page alone: no bank while buying is not the account's
+        if (Mode.Live) return;  // the news page alone: no bank while buying is not the account's
         if (Ref is not null) { shown = typeof(PurchaseDoneModal); Modal.Show<PurchaseDoneModal>(); }
         else if (Tab == "offerwall") { shown = typeof(OfferwallModal); Modal.Show<OfferwallModal>(); }
         else { shown = typeof(BankModal); Modal.Show<BankModal>(new Dictionary<string, object?> { ["Tab"] = ShowHelp == 1 ? "help" : Tab is "ems" or "help" ? Tab : "memberships" }); }

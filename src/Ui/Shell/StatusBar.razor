@@ -18,11 +18,20 @@
         @if (!Minimal)
         {
             <div class="left">
-                <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
-                <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
-                <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
-                <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
-                <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
+                @if (!Mode.Live)
+                {
+                    <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
+                    <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
+                    <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
+                    <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
+                    <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
+                }
+                else
+                {
+                    @* the wallet page is the mock's: the balances are the account's but not links *@
+                    <span class="section">em$ <span class="pill ems">@balances.Ems</span></span>
+                    <span class="section">gm$ <span class="pill">@balances.Gms</span></span>
+                }
                 @if (balances.AmmoDays is { } ammo) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", ammo]</span></span> }
                 @if (balances.FuelDays is { } fuel) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", fuel]</span></span> }
             </div>
@@ -41,7 +50,7 @@
             {
                 @* the menu opens when the pointer enters the section and closes on a click on it or 0.3 s after the pointer left *@
                 <div class="section settings @(shut ? "shut" : "")" @onmouseenter="() => shut = false">
-                    <a href="/settings">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
+                    <a href="@(Mode.Live ? "/restore" : "/settings")">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
                     <div class="menu" @onclick="() => shut = true"><SettingsMenu /></div>
                 </div>
                 <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
@@ -52,7 +61,7 @@
             }
         </div>
     </div>
-    @if (!Minimal)
+    @if (!Minimal && !Mode.Live)
     {
         @* the list is built the first time the button is pressed and again at every press (so it is current); the browser opens, closes and light-dismisses it *@
         <div id="friends" class="friends-pos" popover>@if (friendsKey > 0) { <FriendsDropdown @key="friendsKey" Changed="Refresh" /> }</div>
@@ -91,6 +100,7 @@
     async Task Refresh()
     {
         balances = await Wallet.BalancesAsync();
+        if (Mode.Live) return;  // the friend requests and messages are the mock's
         unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
         requests = (await Friends.RequestsAsync()).Count;
     }
@@ -102,7 +112,7 @@
     {
         if (Minimal) return;
         Account.Changed += Picked;
-        avatar = (await Account.AccountAsync()).Avatar;
+        if (!Mode.Live) avatar = (await Account.AccountAsync()).Avatar;  // the account's avatar is the mock's
         await Refresh();
         _ = Poll();
     }
