@@ -82,10 +82,8 @@ public class LiveTests
     /// <summary>What the engine writes when a server stopped answering: the last try's HTTP 5xx or 429, the exception, or a host already given up on.</summary>
     static bool NoAnswer(string err) => err == "host not answering, not tried" || NoAnswerRe.IsMatch(err);
     static readonly System.Text.RegularExpressions.Regex NoAnswerRe = new(@"^(HTTP (5\d\d|429)|(HttpRequest|TaskCanceled|IO)Exception: )");
-    /// <summary>A give-up line of the engine's log ("! giving up on path: err", "! host not answering, try again later: path (err)") whose err is no answer.</summary>
-    static bool GaveUpForNoAnswer(string line) =>
-        line.StartsWith("! giving up on ") ? NoAnswer(line[(line.IndexOf(": ", 15) + 2)..])
-        : line.StartsWith("! host not answering, try again later: ") && line.LastIndexOf(" (") is var i and > 0 && NoAnswer(line[(i + 2)..]);
+    /// <summary>The lookup's give-up line in the engine's log ("! giving up on path: err", the only kind the lookup, the first request, can write) whose err is no answer.</summary>
+    static bool GaveUpForNoAnswer(string line) => line.StartsWith("! giving up on ") && NoAnswer(line[(line.IndexOf(": ", 15) + 2)..]);
 
     /// <summary>Errors the engine writes after a read that got no answer; alone they mean the reply's shape changed.</summary>
     static readonly string[] FollowOn = ["a page of the list gave no trophies", "no inventory reply to build it from"];
