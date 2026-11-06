@@ -38,4 +38,14 @@ public sealed class MenuBarTests : UiContext
         var items = ActiveItems("/", true);
         Assert.Equal([Services.GetRequiredService<IStringLocalizer<Strings>>()["Menu.News"].Value], items);
     }
+
+    [Theory]
+    [InlineData(true, 1)]
+    [InlineData(false, 0)]
+    public void TheBankLinkShowsOnlyWhenPurchasesAreOn(bool purchases, int links)
+    {
+        Services.GetRequiredService<HostMode>().Purchases = purchases;
+        var cut = Render<MenuBar>();
+        Assert.Equal(links, cut.FindAll("a[href='/bank/ems']").Count);
+    }
 }

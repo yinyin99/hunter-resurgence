@@ -89,6 +89,14 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.IsType<ServerRestoreService>(Resolve(withServer, typeof(IRestoreService)));
     }
 
+    [Fact]
+    public void BuyingIsOffOnlyWithServerUrl()
+    {
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://127.0.0.1:9"));
+        Assert.False(((Resurgence.Ui.HostMode)Resolve(withServer, typeof(Resurgence.Ui.HostMode))).Purchases);
+        Assert.True(((Resurgence.Ui.HostMode)Resolve(site, typeof(Resurgence.Ui.HostMode))).Purchases);
+    }
+
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)
     {
         using var scope = f.Services.CreateScope();
