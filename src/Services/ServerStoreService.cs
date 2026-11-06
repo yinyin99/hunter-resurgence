@@ -29,9 +29,11 @@ public sealed class StoreCache
 }
 
 /// <summary>The store of the community server (<see cref="ServerCatalogApi.Store"/>): the original's items, prices, sales and bundles. A server that does not answer is an empty store,
-/// never the mock's. What the player owns is not known (<c>Owned</c> 0, the live site does not show it), nor the limits of owning, nor a capacity cost; buying is not served yet.</summary>
+/// never the mock's. What the player owns is not known (<c>Owned</c> 0, the live site does not show it), nor the limits of owning, nor a capacity cost. Buying is the server's
+/// (<see cref="ServerAccountApi.Buy"/>), with em$ only.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
-/// <param name="cookie">Only its <see cref="ServerCookie.Host"/> is used: the server picks its site by <c>Host</c>, so the request carries the host the browser used (never the session cookie: the store is the same for everyone).</param>
+/// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is the same for everyone and is asked without the
+/// session cookie; a purchase carries it.</param>
 public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, StoreCache cache, ILogger<ServerStoreService> log) : IStoreService
 {
     public const int PageSize = 12;
@@ -78,7 +80,24 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Sto
         return s.Bundles.Where(b => b.Id == id).Select(b => Bundle(b, s)).FirstOrDefault();
     }
 
-    public Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1) => Task.FromResult(Result.Fail("Store.Oops"));
+    public async Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1)
+    {
+        if (gms || cookie.Value is null) return Result.Fail("Store.Oops");  // the server sells for em$ only
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Post, ServerAccountApi.Buy);
+            request.Headers.Add("X-Requested-With", "XMLHttpRequest");
+            request.Content = new FormUrlEncodedContent([KeyValuePair.Create("id", $"{id}"), KeyValuePair.Create("count", $"{count}"), KeyValuePair.Create("bundle", bundle ? "1" : "0")]);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode) return Result.Success;
+            log.LogWarning("The server refused {Path} for {Id} ({Status})", ServerAccountApi.Buy, id, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.Buy, e.Message);
+        }
+        return Result.Fail("Store.Oops");
+    }
 
     static StoreItem Item(ServerItem i) => new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, Owned: 0, i.Buyable, Capacity: 0, i.Description);
 

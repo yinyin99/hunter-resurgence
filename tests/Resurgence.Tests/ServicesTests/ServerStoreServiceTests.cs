@@ -163,6 +163,36 @@ public class ServerStoreServiceTests
         Assert.False(cache.Paused(start));
     }
 
+    // a purchase is the player's: it carries the session cookie, the header a cross-site form cannot set, and the form the server reads
     [Fact]
-    public async Task BuyingIsNotServedYet() => Assert.False((await Ok().BuyAsync(1, false, false)).Ok);
+    public async Task BuyingPostsTheFormWithTheSessionCookie()
+    {
+        string? form = null;
+        var fake = new Fake(r => { form = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"status": "bought", "ems": 10}"""); });
+
+        Assert.True((await Make(fake).BuyAsync(9, true, false)).Ok);
+
+        var request = Assert.Single(fake.Seen);
+        Assert.Equal((HttpMethod.Post, "/account/buy", "site.test"), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Host));
+        Assert.Contains("secret", string.Join(";", request.Headers.GetValues("Cookie")));
+        Assert.True(request.Headers.Contains("X-Requested-With"));
+        Assert.Equal("id=9&count=1&bundle=1", form);
+    }
+
+    [Fact]
+    public async Task ARefusalIsAFailedPurchase() =>
+        Assert.Equal("Store.Oops", (await Make(new Fake(_ => Json(HttpStatusCode.Conflict, """{"status": "refused"}"""))).BuyAsync(1, false, false, 3)).Error);
+
+    // the server sells for em$ only, and a signed-out visitor buys nothing: neither asks the server
+    [Theory]
+    [InlineData(true, "secret")]
+    [InlineData(false, null)]
+    public async Task GmsOrSignedOutIsNotSent(bool gms, string? session)
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
+        var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" },
+            new StoreCache(), NullLogger<ServerStoreService>.Instance);
+        Assert.False((await service.BuyAsync(1, false, gms)).Ok);
+        Assert.Empty(fake.Seen);
+    }
 }

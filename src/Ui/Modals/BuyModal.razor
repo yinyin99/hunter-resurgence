@@ -1,5 +1,6 @@
 @implements IDisposable
 @inject ModalService Modal
+@inject HostMode Mode
 @inject IStoreService Store
 @inject IWalletService Wallet
 
@@ -16,7 +17,7 @@
             <ul class="lines">
                 @foreach (var g in Lines.GroupBy(l => l.ItemId))
                 {
-                    <li>@g.Sum(l => l.Count) x <span class="own">@L["Store.Own"] @g.First().Owned</span> @g.First().Name</li>
+                    <li>@g.Sum(l => l.Count) x @if (!Mode.Live) { <span class="own">@L["Store.Own"] @g.First().Owned</span> } @g.First().Name</li>
                 }
             </ul>
         }
@@ -26,8 +27,10 @@
         {
             <div class="buttons">
                 @if (balances.Ems >= Ems * count) { <button class="btn btn-primary" disabled="@pending" @onclick="() => Pay(false)">@L["Store.BuyEms"]</button> }
+                else if (Mode.Live) { @* no bank on the live site *@<button class="btn btn-primary" disabled>@L["Store.BuyEms"]</button> }
                 else { <a class="btn btn-primary" href="/bank/ems" @onclick="Modal.Close">@L["Store.GetMoreEms"]</a> }
-                @if (Gms > 0)
+                @* the community server sells for em$ only *@
+                @if (Gms > 0 && !Mode.Live)
                 {
                     <button class="btn btn-primary" disabled="@(pending || balances.Gms < Gms * count)" @onclick="() => Pay(true)">@(balances.Gms >= Gms * count ? L["Store.BuyGms"] + " (" + Gms * count + " gm$)" : L["Store.NotEnoughGms"])</button>
                 }
