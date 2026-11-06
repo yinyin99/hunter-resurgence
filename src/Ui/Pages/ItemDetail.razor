@@ -21,16 +21,22 @@
                     @if (item.WasEms is { } was) { <s>@was em$</s> }
                 }
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
-                else if (Mode.Purchases) { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                else if (!Mode.Live)
+                {
+                    @if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
+                    else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                }
             </div>
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
-            @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-            else if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
-            @if (!item.Buyable || item.DisabledByServices) { <p class="own">@L["Store.CantBuy"]</p> }
-            else if (item.LimitReached) { <p class="own">@L["Store.AlreadyOwn"]</p> }
+            @if (!Mode.Live)
+            {
+                @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+                else if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
+                @if (!item.Buyable || item.DisabledByServices) { <p class="own">@L["Store.CantBuy"]</p> }
+                else if (item.LimitReached) { <p class="own">@L["Store.AlreadyOwn"]</p> }
+            }
             <p class="text">@item.Description</p>
             @if (item.Fits is { Count: > 0 } fits)
             {

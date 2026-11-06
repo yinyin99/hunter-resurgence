@@ -5,7 +5,7 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Services;
 
 /// <summary>The balances of the signed-in player (the status bar) from the community server (<see cref="ServerSessionApi.Me"/>); the server knows no
-/// premium service days, so those pills are not shown. The wallet page's rows are still the mock's, and so are the purchases, which the website hides (<c>HostMode.Purchases</c>).</summary>
+/// premium service days, so those pills are not shown. The wallet page and the purchases are still the mock's; the website hides them (<c>HostMode.Live</c>).</summary>
 public sealed class ServerWalletService(HttpClient http, ServerCookie cookie, MockWalletService mock, ILogger<ServerWalletService> log) : IWalletService
 {
     public async Task<Balances> BalancesAsync()

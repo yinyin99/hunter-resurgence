@@ -18,12 +18,12 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         {
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.NotFound) return await mock.ProfileAsync(handle);
+            if (response.StatusCode == HttpStatusCode.NotFound) return await mock.ProfileAsync(handle) is { } fictional ? fictional with { Own = false } : null;  // a handle typed by hand is never the signed-in player's
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerHunter>() is { } h)
             {
                 var own = (await sessions.CurrentAsync())?.Handle is { } me && string.Equals(me, h.Handle, StringComparison.OrdinalIgnoreCase);
                 var p = await mock.ProfileAsync(h.Handle);
-                return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false };
+                return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false, Membership = "", Friend = false, RequestPending = false, Real = true };
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }

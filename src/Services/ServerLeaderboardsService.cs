@@ -4,7 +4,7 @@ using Resurgence.Services.Mocks;
 
 namespace Resurgence.Services;
 
-/// <summary>The hunterscore board of the community server; every other board is still the mock's.</summary>
+/// <summary>The hunterscore board of the community server; every other board is still the mock's, and the player has no place on it.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off; a failure of the network is an empty board.</param>
 public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cookie, ILogger<ServerLeaderboardsService> log) : ILeaderboardsService
 {
@@ -24,7 +24,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
 
     public async Task<Ranked?> MyRankAsync(string kind, int id)
     {
-        if (kind != Hunterscore) return await mock.MyRankAsync(kind, id);
+        if (kind != Hunterscore) return null;  // the mock's "Your rank" is a fictional hunter's, not the signed-in player's
         if (cookie.Value is null) return null;
         return await GetAsync<ServerAccount>(ServerSessionApi.Me) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore) : null;
     }

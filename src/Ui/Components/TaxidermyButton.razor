@@ -3,7 +3,7 @@
 @inject HostMode Mode
 
 @* own kill of the last 24 hours: the taxidermy through the buy window until the offer ends (the old page counted down every second) *@
-@if (left > TimeSpan.Zero && Mode.Purchases)
+@if (left > TimeSpan.Zero && !Mode.Live)
 {
     <button type="button" class="btn btn-primary" @onclick="Buy">@L["Stat.Taxidermy"] <small>@Fmt.Elapsed(L, (int)left.TotalSeconds)</small></button>
 }

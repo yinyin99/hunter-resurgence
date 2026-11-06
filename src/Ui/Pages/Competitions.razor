@@ -4,15 +4,19 @@
 @inject ICompetitionsService Service
 @inject ModalService Modal
 @inject NavigationManager Nav
+@inject HostMode Mode
 
 <PageTitle>@L["Comp.Tab.Competitions"]</PageTitle>
 
 <div class="page-min">
-<Tabs Items="main" Active="/competitions" />
+@if (main.Count > 1) { <Tabs Items="main" Active="/competitions" /> }
 <h2 class="page-title">@L["Comp.Title"]</h2>
 
-<h4 class="enrolled">@L["Comp.Enrolled"] (@enrolled.Count)</h4>
-<CompetitionTable Enrolled="enrolled" OnLeave="Leave" />
+@if (!Mode.Live)
+{
+    <h4 class="enrolled">@L["Comp.Enrolled"] (@enrolled.Count)</h4>
+    <CompetitionTable Enrolled="enrolled" OnLeave="Leave" />
+}
 
 <Tabs Kind="sub" Items="sub" Active="@(previous ? "/competitions/previous" : "/competitions/upcoming")" />
 @if (!previous)
@@ -51,7 +55,7 @@ else { <CompetitionTable Rows="rows" OnJoin="Join" /> }
 
     protected override void OnInitialized()
     {
-        main = [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
+        main = Mode.Live ? [(L["Comp.Tab.Competitions"], "/competitions")] : [(L["Comp.Tab.Competitions"], "/competitions"), (L["Comp.Tab.League"], "/community-league")];
         sub = [(L["Comp.Upcoming"], "/competitions/upcoming"), (L["Comp.Previous"], "/competitions/previous")];
     }
 

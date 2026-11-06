@@ -96,7 +96,7 @@ public class ServerLeaderboardsServiceTests
     public async Task OtherBoardsAskNothingForTheRankEither()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
-        await Make(fake).MyRankAsync("score", 1);
+        Assert.Null(await Make(fake).MyRankAsync("score", 1));  // the mock's "Your rank" is a fictional hunter's
         Assert.Empty(fake.Seen);
     }
 }

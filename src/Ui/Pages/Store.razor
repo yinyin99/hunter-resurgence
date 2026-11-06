@@ -24,11 +24,17 @@
                     @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
                     @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                 </p>
-                @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-                else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
+                @if (!Mode.Live)
+                {
+                    @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+                    else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
+                }
                 @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
-                else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
-                else if (Mode.Purchases) { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
+                else if (!Mode.Live)
+                {
+                    @if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
+                    else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
+                }
             </div>
         }
         @foreach (var b in bundles)

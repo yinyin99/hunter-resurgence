@@ -44,13 +44,23 @@ public class ServerProfileServiceTests
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 1234, "rank": 2}"""));
         var p = await Make(fake).ProfileAsync("fox");
-        Assert.Equal(("Fox", 1234, 2, true), (p!.Handle, p.HunterScore, p.Rank, p.Own));
+        Assert.Equal(("Fox", 1234, 2, true, true, ""), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Real, p.Membership));
         Assert.Equal("/hunters/fox", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
     }
 
     [Fact]
-    public async Task AnUnknownHandleIsTheMocksHunter() =>
-        Assert.Equal(115000, (await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter05"))!.HunterScore);
+    public async Task AnUnknownHandleIsTheMocksHunterAndNotReal()
+    {
+        var p = await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter05");
+        Assert.Equal((115000, false), (p!.HunterScore, p.Real));
+    }
+
+    [Fact]
+    public async Task AHandleTheServerDoesNotKnowIsNeverTheSignedInPlayers()
+    {
+        var p = await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter01");
+        Assert.False(p!.Own);
+    }
 
     // PL20: a visitor-typed handle goes into the request path
     [Fact]

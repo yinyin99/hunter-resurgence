@@ -32,9 +32,9 @@ public sealed class ItemDetailTests : UiContext
     }
 
     [Fact]
-    public void WithoutPurchasesThePriceShowsAndThereIsNoBuyButton()
+    public void OnTheLiveSiteThePriceShowsAndThereIsNoBuyButton()
     {
-        Services.GetRequiredService<HostMode>().Purchases = false;
+        Services.GetRequiredService<HostMode>().Live = true;
 
         var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1227));
 

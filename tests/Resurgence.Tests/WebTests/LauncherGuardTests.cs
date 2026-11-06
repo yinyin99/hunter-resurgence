@@ -23,4 +23,16 @@ public class LauncherGuardTests
     [InlineData("store", false)]
     [InlineData("profile/x", false)]
     public void NeedsASessionForTheSignedInRoutes(string path, bool needs) => Assert.Equal(needs, LauncherGuard.NeedsSession(path));
+
+    [Theory]
+    [InlineData("community_league", true)]
+    [InlineData("community_league/details/3", true)]
+    [InlineData("steam_callback/abc", true)]
+    [InlineData("wallet/ems", true)]
+    [InlineData("/Messages", true)]
+    [InlineData("bank/ems", true)]
+    [InlineData("restore", false)]
+    [InlineData("store", false)]
+    [InlineData("profile/x", false)]
+    public void TheMockOnlyRoutesAreTheSignedInOnesExceptRestore(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
 }

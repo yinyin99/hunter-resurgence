@@ -40,12 +40,22 @@ public sealed class MenuBarTests : UiContext
     }
 
     [Theory]
-    [InlineData(true, 1)]
-    [InlineData(false, 0)]
-    public void TheBankLinkShowsOnlyWhenPurchasesAreOn(bool purchases, int links)
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheBankLinkShowsOnlyOffTheLiveSite(bool live, int links)
     {
-        Services.GetRequiredService<HostMode>().Purchases = purchases;
+        Services.GetRequiredService<HostMode>().Live = live;
         var cut = Render<MenuBar>();
         Assert.Equal(links, cut.FindAll("a[href='/bank/ems']").Count);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheMissionsItemShowsOnlyOffTheLiveSite(bool live, int items)
+    {
+        Services.GetRequiredService<HostMode>().Live = live;
+        var cut = Render<MenuBar>();
+        Assert.Equal(items, cut.FindAll("ul.items a[href='/missions/daily']").Count);
     }
 }

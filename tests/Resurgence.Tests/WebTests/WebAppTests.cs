@@ -90,11 +90,11 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
     }
 
     [Fact]
-    public void BuyingIsOffOnlyWithServerUrl()
+    public void TheLiveSiteIsOnlyWithServerUrl()
     {
         using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://127.0.0.1:9"));
-        Assert.False(((Resurgence.Ui.HostMode)Resolve(withServer, typeof(Resurgence.Ui.HostMode))).Purchases);
-        Assert.True(((Resurgence.Ui.HostMode)Resolve(site, typeof(Resurgence.Ui.HostMode))).Purchases);
+        Assert.True(((Resurgence.Ui.HostMode)Resolve(withServer, typeof(Resurgence.Ui.HostMode))).Live);
+        Assert.False(((Resurgence.Ui.HostMode)Resolve(site, typeof(Resurgence.Ui.HostMode))).Live);
     }
 
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)

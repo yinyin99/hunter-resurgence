@@ -9,11 +9,11 @@ namespace Resurgence.Tests.WebTests;
 public sealed class BankPageTests : UiContext
 {
     [Theory]
-    [InlineData(true, typeof(BankModal))]
-    [InlineData(false, null)]
-    public void TheBankDialogOpensOnlyWhenPurchasesAreOn(bool purchases, Type? opened)
+    [InlineData(false, typeof(BankModal))]
+    [InlineData(true, null)]
+    public void TheBankDialogOpensOnlyOffTheLiveSite(bool live, Type? opened)
     {
-        Services.GetRequiredService<HostMode>().Purchases = purchases;
+        Services.GetRequiredService<HostMode>().Live = live;
 
         Render<Bank>(p => p.Add(b => b.Tab, "ems"));
 
