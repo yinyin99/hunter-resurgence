@@ -71,7 +71,7 @@ public sealed class LiveSiteTests : UiContext
         var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, """{"handle":"Fox","hunterscore":5,"rank":3}""")) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
-
+        Live(true);
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox"));
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Empty(cut.FindAll("ul.tabs"));
@@ -83,5 +83,42 @@ public sealed class LiveSiteTests : UiContext
     {
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05"));
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
+    }
+
+    [Theory]
+    [InlineData(false, 5)]
+    [InlineData(true, 3)]
+    public void ACompetitionShowsNoPositionAttemptsOrJoinLive(bool live, int stats)
+    {
+        Live(live);
+        var cut = Render<CompetitionView>(p => p.Add(c => c.Id, 180100));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("dl.stats")));
+        Assert.Equal(stats, cut.FindAll("dl.stats > div").Count);
+        Assert.Equal(live ? 0 : 1, cut.FindAll("button.leave").Count);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void ABoardWithoutARankSaysNothingAboutItLive(bool live, int blocks)
+    {
+        Services.AddSingleton<ILeaderboardsService>(new ServerLeaderboardsService(
+            new HttpClient(new Answer(HttpStatusCode.OK, "{}")) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, NullLogger<ServerLeaderboardsService>.Instance));
+        Live(live);
+        var cut = Render<Leaderboards>(p => p.Add(l => l.Path, "lanebandit"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("table.board")));
+        Assert.Equal(blocks, cut.FindAll("div.mine").Count);
+        Assert.Equal(blocks, cut.FindAll("p.norank").Count);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void AFictionalHunterOffersNoFriendRequestLive(bool live, int buttons)
+    {
+        Live(live);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05"));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
+        Assert.Equal(buttons, cut.FindAll("button.request").Count);
     }
 }

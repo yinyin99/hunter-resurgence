@@ -18,7 +18,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         {
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.NotFound) return await mock.ProfileAsync(handle);
+            if (response.StatusCode == HttpStatusCode.NotFound) return await mock.ProfileAsync(handle) is { } fictional ? fictional with { Own = false } : null;  // a handle typed by hand is never the signed-in player's
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerHunter>() is { } h)
             {
                 var own = (await sessions.CurrentAsync())?.Handle is { } me && string.Equals(me, h.Handle, StringComparison.OrdinalIgnoreCase);

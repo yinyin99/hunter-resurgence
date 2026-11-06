@@ -3,6 +3,7 @@
 @inject ILeaderboardsService Service
 @inject ISessionService Sessions
 @inject NavigationManager Nav
+@inject HostMode Mode
 
 <PageTitle>@L["Board.Title"]</PageTitle>
 
@@ -62,9 +63,12 @@
                 <h4>@L[kind == "lanebandit" ? "Board.TopLane" : "Board.TopBust"]</h4>
                 <p>@L[kind == "lanebandit" ? "Board.LaneInfo" : "Board.BustInfo"] @if (kind == "lanebandit") { <a href="/store/item/66">@L["Board.GetLane"] <Icon Name="chevron-right" /></a> }</p>
             </section>
-            <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
-            @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
-            else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
+            @if (mine is not null || !Mode.Live)
+            {
+                <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
+                @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
+                else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
+            }
             <table class="board"><tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody></table>
             <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind + "/" + n)" />
             break;
@@ -89,9 +93,12 @@
                     <AssetSlot Name="@($"species-{boards.FirstOrDefault(b => b.Id == id)?.Name}")" Width="118" Height="118" />
                     <h3>@L.Term(boards.FirstOrDefault(b => b.Id == id)?.Name ?? "")</h3>
                 </section>
-                <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
-                @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
-                else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
+                @if (mine is not null || !Mode.Live)
+                {
+                    <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
+                    @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
+                    else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
+                }
                 <table class="board"><tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody></table>
                 <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind.Replace("-", "/") + "/" + id + "/" + n)" />
             }

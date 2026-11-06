@@ -55,6 +55,13 @@ public class ServerProfileServiceTests
         Assert.Equal((115000, false), (p!.HunterScore, p.Real));
     }
 
+    [Fact]
+    public async Task AHandleTheServerDoesNotKnowIsNeverTheSignedInPlayers()
+    {
+        var p = await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter01");
+        Assert.False(p!.Own);
+    }
+
     // PL20: a visitor-typed handle goes into the request path
     [Fact]
     public async Task TheHandleIsEscapedIntoOnePathSegment()

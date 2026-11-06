@@ -6,6 +6,7 @@
 @inject ISessionService Session
 @inject IAccountService Account
 @inject IFriendsService Friends
+@inject HostMode Mode
 
 <PageTitle>@L["Prof.Title", Handle]</PageTitle>
 
@@ -17,7 +18,7 @@
         @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
         <div class="polaroid"><AssetSlot Name="@(profile.Own ? avatar : "avatar-default")" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
-        @if (signedIn && !profile.Own && !profile.Friend && !profile.Real)
+        @if (signedIn && !profile.Own && !profile.Friend && !Mode.Live)
         {
             <button type="button" class="btn btn-primary request" disabled="@profile.RequestPending" @onclick="Request">
                 @if (profile.RequestPending) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
