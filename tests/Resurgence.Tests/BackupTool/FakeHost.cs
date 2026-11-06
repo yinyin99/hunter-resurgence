@@ -11,6 +11,8 @@ public sealed class Fake : HttpMessageHandler
     public int DelayMs;
     /// <summary>This host always answers 502.</summary>
     public string? DeadHost;
+    /// <summary>Paths that start with this answer 502 (a host that answers some things and not the v2 API).</summary>
+    public string? DeadPrefix;
     /// <summary>Called under the lock when request number n (1-based) starts; true = cancel the run right there.</summary>
     public Func<int, bool>? CancelAt;
     public CancellationTokenSource? Cts;
@@ -96,7 +98,7 @@ public sealed class Fake : HttpMessageHandler
         }
         if (Custom?.Invoke(path, form) is { } custom) return custom;
         if (Revoked != null && form.Contains(Revoked) && path.StartsWith("/v1/")) return new HttpResponseMessage { Content = new StringContent("""{"errorCode":11,"message":"access denied"}""") };
-        if (host == DeadHost || Down.Contains(path)) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
+        if (host == DeadHost || Down.Contains(path) || (DeadPrefix != null && path.StartsWith(DeadPrefix))) return new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("bad gateway") };
         if (NotFound.Contains(path)) return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("not found") };
         if (Raw.TryGetValue(path, out var raw)) return new HttpResponseMessage { Content = new ByteArrayContent(raw) };
         if (path.EndsWith(".jpg")) return new HttpResponseMessage { Content = new ByteArrayContent([255, 216, 255, 224]) }; // the start of a JPEG
@@ -107,14 +109,14 @@ public sealed class Fake : HttpMessageHandler
             "/v1/Application/application" => Catalogue ?? """{"season":3}""",
             "/v1/Inventory/dict" when InventoryDict != null => InventoryDict,
             "/v1/Inventory/list" when InventoryList != null => InventoryList,
-            "/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
-            "/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
+            "/v1/game/user/leaderboards/antlers/single/all" => """[{"id":5},{"id":6}]""",
+            "/v1/game/user/leaderboards/antlers/double/all" => """[{"id":9}]""",
             "/v1/game/user/trophies" => """[{"id":101},{"id":102}]""",
             "/v1/Public_user/expedition" when System.Text.RegularExpressions.Regex.Match(form, @"expedition_id=(\d+)") is { Success: true } m && HuntReplies.TryGetValue(m.Groups[1].Value, out var hunt) => hunt,
             "/v1/Public_user/expedition" => """{"kills":[{"id":900,"kill":{"score":1.5,"photo":"https://photo.test/k.jpg"}},{"id":901,"kill":{"score":null}}]}""",
             "/v1/Public_user/getByHostname" => """{"id":7,"handle":"hh"}""",
             "/v1/Leaderboard/personal" => """{"status":"done","data":[]}""",
-            "/game/user/7/lodges" => """[{"id":3}]""",
+            "/v1/game/user/7/lodges" => """[{"id":3}]""",
             "/v1/Expedition/list" => ExpeditionList ?? """{"total":1,"expeditions":[{"id":42}]}""",
             "/v1/Gallery/list" => """{"photos":[{"url":"https://photo.test/g1.jpg"},{"url":"https://other.test/g2.jpg"}]}""",
             "/v1/Mission/missions" => $$"""{"leak":"{{Token}}"}""", // a reply carrying the token must never be saved
@@ -140,5 +142,5 @@ static class Hosts
     public static readonly HashSet<string> AllGroups = ["profile", "inventory", "trophies", "hunts", "account", "friends", "messages"];
 
     public static Engine Make(Fake f, string keyPath, Action<string>? log = null) => new(
-        new("apiv2.test", "web.test", "fakeclient.exe", ["photo.test", "avatar.test"], "ckey-secret-9", null, "avatar.test"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
+        new("web.test", "fakeclient.exe", ["photo.test", "avatar.test"], "ckey-secret-9", null, "avatar.test"), new HttpClient(f), log ?? (_ => { }), (_, _) => { }, keyPath) { PaceMs = 0, BackoffMs = 0, SteamAccount = () => 100 };
 }

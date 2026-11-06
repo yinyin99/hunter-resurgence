@@ -19,7 +19,7 @@ sealed record Entry(string Path, string Endpoint, Dictionary<string, string> Par
 sealed record Manifest(string ToolVersion, List<string> Groups, string Uid, string? Handle, string ClaimHash, DateTime StartedUtc, List<Entry> Files, [property: JsonPropertyName("steam_id64")] string? SteamId64, DateTime? CompletedUtc = null,
     int? Format = null, string? Mode = null, string? Identity = null, JsonObject? Checks = null);
 
-/// <summary>One request. P = form fields (no token: Auth adds it), V2 = apiv2 GET, Jwt = apiv2 Bearer, Abs = absolute GET (pictures, pages),
+/// <summary>One request. P = form fields (no token: Auth adds it), V2 = v2 API GET (on the web host, under /v1), Jwt = with the session as Bearer, Abs = absolute GET (pictures, pages),
 /// Opt = a 404 is an answer ("no entry"), saved as an empty result, Xhr = the website's ajax header, Fresh = ask the server even when resume finds the file,
 /// Keep = the first saved answer stays: a saved file is never asked again, even when resume is off, Part = one page of a bigger reply: returned, not saved.</summary>
 sealed record R(string Path, (string K, string V)[]? P = null, bool V2 = false, bool Auth = false, bool Jwt = false, string? Abs = null, bool Opt = false, bool Xhr = false, bool Fresh = false, bool Keep = false, bool Part = false);
@@ -273,12 +273,12 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
     {
         Need(4);
         await TrophyList();
-        var lodges = Json(await Get(new R($"/game/user/{uid}/lodges", V2: true))) as JsonArray;
+        var lodges = Json(await Get(new R($"/game/user/{uid}/lodges", V2: true, Jwt: true))) as JsonArray; // the web host asks for the session (401 without)
         var mine = Json(await Get(new R("/game/user/trophies", V2: true, Jwt: true))) as JsonArray; // own trophies; each has a harvest record
         Need((lodges?.Count ?? 0) + (mine?.Count ?? 0));
         Sized("trophies");
         foreach (var l in lodges ?? [])
-            if (l?["id"] is { } id) await Get(new R($"/game/user/{uid}/lodges/{id}", V2: true));
+            if (l?["id"] is { } id) await Get(new R($"/game/user/{uid}/lodges/{id}", V2: true, Jwt: true));
         foreach (var m in mine ?? [])
             if (m?["id"] is { } id) await Get(new R($"/game/user/harvest/{id}", V2: true, Jwt: true, Opt: true));
     }
@@ -681,7 +681,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             || (s.ConsumerKey != null && sp.IndexOf(Encoding.ASCII.GetBytes(s.ConsumerKey)) >= 0);
     }
 
-    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost; // the session calls (Jwt) moved to the web host
+    string Host(R r) => r.Abs != null ? new Uri(r.Abs).Host : s.WebHost; // the v2 API moved to the web host too: its own host is gone
 
     async Task<(int Status, byte[] Body, DateTimeOffset? Date)?> Send(R r, Action<string>? gaveUp = null)
     {
@@ -747,7 +747,7 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             if (r.Xhr) a.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return a;
         }
-        var uri = $"https://{(r.V2 && !r.Jwt ? s.Apiv2Host : s.WebHost)}{(r.Jwt ? "/v1" : "")}{r.Path}"; // /game/user/loadout -> /v1/game/user/loadout
+        var uri = $"https://{s.WebHost}{(r.V2 ? "/v1" : "")}{r.Path}"; // /game/user/loadout -> /v1/game/user/loadout
         if (r.V2)
         {
             var g = new HttpRequestMessage(HttpMethod.Get, uri);

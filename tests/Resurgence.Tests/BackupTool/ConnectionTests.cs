@@ -16,7 +16,7 @@ public sealed class ConnectionTests
         }
     }
 
-    static Settings Cfg(string? server) => new("api.example.test", "www.example.test", "game.exe", ["api.example.test", "www.example.test", "crash.example.test"], ServerUrl: server);
+    static Settings Cfg(string? server) => new("www.example.test", "game.exe", ["www.example.test", "crash.example.test"], ServerUrl: server);
     static Task<IPAddress[]> Public(string _) => Task.FromResult(new[] { IPAddress.Parse("203.0.113.7") });
 
     [Fact]
@@ -25,7 +25,7 @@ public sealed class ConnectionTests
         var seen = new List<string>();
         var r = await Connection.Run(Cfg(null), new(new Stub(_ => HttpStatusCode.OK, seen)), Public);
         Assert.Equal(new("ok", "unset"), r);
-        Assert.Equal(2, seen.Count);
+        Assert.Single(seen);
         Assert.All(seen, s => Assert.EndsWith("auth=False", s));
     }
 

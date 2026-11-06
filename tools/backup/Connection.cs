@@ -19,14 +19,13 @@ static class Connection
 
     static async Task<string> Official(Settings s, HttpClient http, Func<string, Task<IPAddress[]>> resolve, CancellationToken ct)
     {
-        var names = s.Hosts.Append(s.Apiv2Host).Append(s.WebHost).Distinct().ToList();
+        var names = s.Hosts.Append(s.WebHost).Distinct().ToList();
         foreach (var n in names)
         {
             try { if ((await resolve(n)).Any(Local)) return "redirected"; }
             catch (Exception e) when (e is SocketException or ArgumentException) { } // no such name: the request below says "down"
         }
-        var ok = await Task.WhenAll(new[] { s.Apiv2Host, s.WebHost }.Distinct().Select(h => Reach(http, $"https://{h}/", ct)));
-        return ok.All(r => r == "ok") ? "ok" : "down";
+        return await Reach(http, $"https://{s.WebHost}/", ct) == "ok" ? "ok" : "down";
     }
 
     static async Task<string> Reach(HttpClient http, string url, CancellationToken ct)

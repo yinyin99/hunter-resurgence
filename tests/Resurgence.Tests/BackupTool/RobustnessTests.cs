@@ -214,13 +214,14 @@ public class RobustnessTests
     public async Task HostThatKeepsFailingIsNotAskedAfterTheBudget()
     {
         using var t = new TempDir("backup-test-v03-");
-        var f = new Fake(Tok) { DeadHost = "apiv2.test" };
+        var f = new Fake(Tok) { DeadPrefix = "/v1/game/" };
         var e = await Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 5));
-        Assert.True(e.SilentHosts.SequenceEqual([("apiv2.test", 3)]), "the host and the count are reported");
-        Assert.True(f.Starts["apiv2.test"].Count == 5 + 2, $"one back-off cycle (5 attempts), then one attempt each until the 3rd give-up, then nothing ({f.Starts["apiv2.test"].Count} attempts)");
+        Assert.True(e.SilentHosts.SequenceEqual([("web.test", 3)]), "the host and the count are reported");
+        var asked = f.Urls.Count(u => u.StartsWith("/v1/game/"));
+        Assert.True(asked == 5 + 2, $"one back-off cycle (5 attempts), then one attempt each until the 3rd give-up, then nothing ({asked} attempts)");
         var dir = Path.Combine(t.Path, "backup-7");
         Assert.True(Manifest(dir)["completed_utc"] == null && e.Failed > 3, $"the unsent requests are failed, the run is not finished ({e.Failed} failed)");
-        Assert.True(File.Exists(Path.Combine(dir, "Statistics_total__user_id=7.json")), "the other host's requests of the same group were saved");
+        Assert.True(File.Exists(Path.Combine(dir, "Statistics_total__user_id=7.json")), "the requests answered before the host went silent were saved");
     }
 
     /// <summary>F6: a dead picture host does not stop the groups on healthy hosts: the map setups group, which runs last, still saves map-setups.json.</summary>
@@ -255,8 +256,8 @@ public class RobustnessTests
     {
         using var t = new TempDir("backup-test-v03-");
         var f = new Fake(Tok);
-        f.Down.Add("/game/user/7/profile");
-        f.Down.Add("/game/user/7/ranks");
+        f.Down.Add("/v1/game/user/7/profile");
+        f.Down.Add("/v1/game/user/7/ranks");
         var e = await Run(f, t, ["profile"], tune: e => (e.GiveUpLimit, e.BackoffMs) = (3, 0));
         Assert.True(e.Failed == 2, "two requests failed in a row, below the budget of 3, and the run went on");
     }

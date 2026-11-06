@@ -17,7 +17,7 @@ public class MovedApiTests
         using var t = new TempDir("backup-test-");
         var f = new Fake(Tok);
         await Hosts.Make(f, Path.Combine(t.Path, "claim.key")).Run(t.Path, "hh", null, new HashSet<string> { "profile", "trophies", "friends" }, false, false, TestContext.Current.CancellationToken);
-        Assert.True(f.Starts.Keys.All(h => h is "web.test" or "apiv2.test"), $"only the web and apiv2 hosts are asked ({string.Join(",", f.Starts.Keys)})");
+        Assert.True(f.Starts.Keys.SequenceEqual(["web.test"]), $"only the web host is asked, the v2 API included ({string.Join(",", f.Starts.Keys)})");
         Assert.True(f.Bodies.Count > 5 && f.Bodies.All(b => JsonNode.Parse(b) is JsonObject), "every POST body is a JSON object");
         Assert.Contains(f.Bodies, b => b.Contains("\"limit\":300") && b.Contains("\"user_id\":7"));
         Assert.DoesNotContain(f.Bodies, b => b.Contains("\"limit\":\"") || b.Contains("\"offset\":\""));
@@ -150,7 +150,7 @@ public class MovedApiTests
         var posts = f.Heads.Where(h => h.Origin != null).ToList();
         Assert.True(posts.Count > 5 && posts.All(h => h.Origin == "https://web.test" && h.Referer == "https://web.test/"), "every POST has Origin and Referer");
         Assert.Contains(posts, h => h.Path == "/v1/Statistics/total");
-        Assert.Equal("application/json", f.Heads.Single(h => h.Path == "/game/user/7/profile").Accept);
+        Assert.Equal("application/json", f.Heads.Single(h => h.Path == "/v1/game/user/7/profile").Accept);
         Assert.Contains("/v1/Application/application?lang=en", f.Urls);
 
         foreach (var (id, expected) in new[] { ("123456789012345", "\"user_id\":123456789012345"), ("1234567890123456", "\"user_id\":\"1234567890123456\"") })
