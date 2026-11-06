@@ -152,7 +152,6 @@ public class EngineTests
         var f = new Fake(tok) { DelayMs = 15 };
         await Hosts.Make(f, key).Run(tmp, "", () => tok, groups, false, false, TestContext.Current.CancellationToken);
         Assert.True(f.MaxActive["web.test"] == 1, $"web host: never two requests at once ({f.Starts["web.test"].Count} requests)");
-        Assert.True(f.MaxActive["apiv2.test"] == 1 && f.Overlap, $"apiv2 lane runs beside the web lane ({f.Starts["apiv2.test"].Count} requests)");
     }
 
     [Fact]
@@ -167,7 +166,7 @@ public class EngineTests
         ep.PaceMs = 120;
         await ep.Run(tmp, "", () => tok, new HashSet<string> { "profile", "friends" }, false, false, TestContext.Current.CancellationToken);
         var gaps = fp.Starts.Where(h => h.Value.Count > 1).Select(h => h.Value.Zip(h.Value.Skip(1), (a, b) => (b - a).TotalMilliseconds).Min()).ToList();
-        Assert.True(gaps.Count == 2 && gaps.All(g => g >= 100), $"each host is paced (smallest gaps {string.Join(" and ", gaps.Select(g => (int)g + " ms"))} for 120 ms)");
+        Assert.True(gaps.Count == 1 && gaps[0] >= 100, $"the web host is paced (smallest gap {string.Join(" and ", gaps.Select(g => (int)g + " ms"))} for 120 ms)");
     }
 
     [Fact]
@@ -225,11 +224,12 @@ public class EngineTests
         using var _ = t;
         string tok = Tok;
         var groups = Hosts.AllGroups;
-        var fd = new Fake(tok) { DeadHost = "apiv2.test" };
+        var fd = new Fake(tok) { DeadHost = "web.test" };
         var ed = Hosts.Make(fd, key);
         ed.BackoffMs = 20;
-        await ed.Run(tmp, "hh", null, new HashSet<string> { "profile", "trophies" }, false, false, TestContext.Current.CancellationToken);
-        Assert.True(ed.Failed > 2 && fd.Starts["apiv2.test"].Count == 5 + (ed.Failed - 1), $"dead host: one back-off cycle, then one attempt per request ({fd.Starts["apiv2.test"].Count} attempts for {ed.Failed} requests)");
+        await ed.Run(tmp, "7", null, new HashSet<string> { "profile", "trophies" }, false, false, TestContext.Current.CancellationToken);
+        var attempts = fd.Seen.GroupBy(p => p).Select(g => g.Count()).Order().ToList();
+        Assert.True(ed.Failed > 2 && attempts.Count(n => n == 5) == 1 && attempts.Count(n => n > 2) == 1, $"dead host: one request is retried (5 attempts), the others are not (a path asked twice by two reads is fine) ({string.Join(",", attempts)})");
         Assert.True(ed.FailureSummary == Loc.F("Fail_Server", Loc.S("Group_profile")) + " " + Loc.F("Fail_Server", Loc.S("Group_trophies")), "the result bar names the two groups that did not answer, as a server error");
     }
 

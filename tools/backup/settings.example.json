@@ -1,7 +1,6 @@
 {
   "client_exe": "<client-exe>",
   "oauth_consumer_key": "<consumer-key>",
-  "apiv2_host": "<apiv2-host>",
   "web_host": "<web-host>",
   "photo_host": "<photo-host>",
   "static_host": "<static-host>",

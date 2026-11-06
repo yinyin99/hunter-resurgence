@@ -31,7 +31,6 @@ jobs:
         shell: pwsh
         env:
           SERVER_URL: ${{ secrets.SERVER_URL }}
-          APIV2_HOST: ${{ secrets.APIV2_HOST }}
           WEB_HOST: ${{ secrets.WEB_HOST }}
           PHOTO_HOST: ${{ secrets.PHOTO_HOST }}
           STATIC_HOST: ${{ secrets.STATIC_HOST }}
@@ -44,7 +43,6 @@ jobs:
           $s = [ordered]@{
             client_exe         = $env:CLIENT_EXE
             oauth_consumer_key = $env:OAUTH_CONSUMER_KEY
-            apiv2_host         = $env:APIV2_HOST
             web_host           = $env:WEB_HOST
             photo_host         = $env:PHOTO_HOST
             static_host        = $env:STATIC_HOST
