@@ -19,7 +19,6 @@ public sealed class Fake : HttpMessageHandler
     public int StartedAtCancel = -1;
     public readonly Dictionary<string, int> Active = [], MaxActive = [];
     public readonly Dictionary<string, List<DateTime>> Starts = [];
-    public bool Overlap; // two different hosts had a request in flight at the same time
     /// <summary>Replies of the map-setup reads; null keeps the plain default. WorldItems is the placed-item list of Me/me.</summary>
     public string? InventoryDict, InventoryList, WorldItems, Catalogue, ExpeditionList;
     /// <summary>Replies of Public_user/expedition by expedition id; the others get the plain default.</summary>
@@ -84,7 +83,6 @@ public sealed class Fake : HttpMessageHandler
             Starts[host].Add(DateTime.UtcNow);
             Active[host] = Active.GetValueOrDefault(host) + 1;
             MaxActive[host] = Math.Max(MaxActive.GetValueOrDefault(host), Active[host]);
-            if (Active.Count(a => a.Value > 0) > 1) Overlap = true;
             if (CancelAt?.Invoke(Seen.Count) == true) { Cts!.Cancel(); StartedAtCancel = Seen.Count; }
         }
         try { if (DelayMs > 0) await Task.Delay(DelayMs, CancellationToken.None); }

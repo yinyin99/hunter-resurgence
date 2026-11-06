@@ -308,6 +308,21 @@ public class RobustnessTests
         Assert.True(e2.Failed == 1 && e2.TokenStale && f2.Seen.Count(p => p == "/v1/game/user/loadout") == 1, "a refused token is marked stale and not tried again");
     }
 
+    /// <summary>The web host answers lodges only with the session: own run sends the token as Bearer, a public run never asks.</summary>
+    [Fact]
+    public async Task LodgesAreAskedWithTheSessionAndNotInAPublicRun()
+    {
+        using var t = new TempDir("backup-test-v03-");
+        var f = new Fake(Tok);
+        await Run(f, t, ["trophies"]);
+        Assert.True(new[] { "/v1/game/user/7/lodges", "/v1/game/user/7/lodges/3" }.All(p => f.Auths.Single(a => a.Path == p).Bearer == Tok), "both lodge reads carry the token as Bearer");
+
+        using var t2 = new TempDir("backup-test-v03-");
+        var f2 = new Fake(Tok);
+        await Hosts.Make(f2, Path.Combine(t2.Path, "claim.key")).Run(t2.Path, "7", null, new HashSet<string> { "trophies" }, false, false, TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(f2.Seen, p => p.Contains("/lodges"));
+    }
+
     /// <summary>F7b: the engine asks for the current token before each request that needs it. A new token replaces the refused one and clears the stale mark.</summary>
     [Fact]
     public async Task NewTokenFromTheGameIsUsedFromThenOn()
