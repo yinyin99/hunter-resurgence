@@ -52,7 +52,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh label create backup-live --color B60205 --description "the backup tool failed against the live servers" 2>/dev/null || true
+          gh label create backup-live --color B60205 --description "the backup tool failed against the official servers" 2>/dev/null || true
           n=$(gh issue list --label backup-live --state open --json number --jq '.[0].number // empty')
           if [ -n "$n" ]; then gh issue comment "$n" --body "Still failing: $RUN"
-          else gh issue create --label backup-live --title "Backup tool: the live check fails" --body "The backup tool needs attention: it failed against the live servers. The run lists the requests: $RUN"; fi
+          else gh issue create --label backup-live --title "Backup tool: the check against the official servers fails" --body "The check of the backup tool against the official servers failed: the tool, or the workflow's setup, needs attention. The run lists the requests: $RUN"; fi
