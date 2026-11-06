@@ -79,6 +79,10 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.IsType<Resurgence.Services.Mocks.MockSessionService>(Resolve(site, typeof(ISessionService)));
 
     [Fact]
+    public void WithoutServerUrlTheStoreIsAMock() =>
+        Assert.IsType<Resurgence.Services.Mocks.MockStoreService>(Resolve(site, typeof(IStoreService)));
+
+    [Fact]
     public void WithServerUrlTheServicesAreTheServers()
     {
         using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://127.0.0.1:9"));
@@ -86,6 +90,7 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.IsType<ServerLeaderboardsService>(Resolve(withServer, typeof(ILeaderboardsService)));
         Assert.IsType<ServerProfileService>(Resolve(withServer, typeof(IProfileService)));
         Assert.IsType<ServerWalletService>(Resolve(withServer, typeof(IWalletService)));
+        Assert.IsType<ServerStoreService>(Resolve(withServer, typeof(IStoreService)));
         Assert.IsType<ServerRestoreService>(Resolve(withServer, typeof(IRestoreService)));
     }
 
