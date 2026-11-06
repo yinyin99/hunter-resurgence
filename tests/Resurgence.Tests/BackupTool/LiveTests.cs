@@ -55,20 +55,22 @@ public class LiveTests
         var log = new List<string>();
         var e = new Engine(s, new HttpClient(), l => { lock (log) log.Add(l); }, (_, _) => { }, Path.Combine(t.Path, "claim.key")) { GiveUpLimit = 5 };
         try { await e.Run(t.Path, handle, null, new HashSet<string> { "profile", "inventory", "trophies", "friends", "setups" }, false, false, ct); }
-        catch (InvalidOperationException) when (log.Any(l => l.StartsWith("! giving up on") || l.StartsWith("! host not answering")))
+        catch (InvalidOperationException) when (Directory.GetDirectories(t.Path, "backup-*").Length == 0 && log.Any(GaveUpForNoAnswer))
         {
-            Assert.Skip("the account lookup got no answer after its retries: a server outage, not a tool problem"); // any other lookup failure is the tool's and propagates
+            // the folder is made right after the lookup, so none means the lookup failed; a refusal (403, 407) or any other lookup failure is the tool's and propagates
+            Assert.Skip("the account lookup got no answer after its retries: a server outage, not a tool problem");
         }
 
         var dir = Directory.GetDirectories(t.Path, "backup-*").Single();
         var uid = Path.GetFileName(dir)["backup-".Length..];
         var files = (JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"] as JsonArray)!;
         var errors = files.Where(f => f?["error"] is { } err && !Normal.Contains(err.ToString())).Select(f => f!).ToList();
-        // what the engine writes when a server stopped answering: the last try's HTTP 5xx or 429, or the exception, or a host already given up on. A 403 or 407 (a refusal),
-        // a reply of another shape and a repeated page are the tool's to look at, so they fail
-        static bool Outage(JsonNode f) => f["error"]!.ToString() is var m && (m is "host not answering, not tried" || System.Text.RegularExpressions.Regex.IsMatch(m, @"^(HTTP (5\d\d|429)|(HttpRequest|TaskCanceled|IO)Exception: )"));
+        // a reply of another shape, a repeated page, a refusal (403, 407): the tool's to look at, so they fail. Two errors also follow an outage
+        // (a trophy page or an inventory read that got no answer): they count as an outage only when the run had another one, else they mean the reply changed
+        var outage = errors.Any(f => NoAnswer(f["error"]!.ToString()));
+        bool Excused(JsonNode f) => f["error"]!.ToString() is var m && (NoAnswer(m) || outage && FollowOn.Contains(m));
         // paths and errors only: no host, no id in the output
-        var failed = errors.Where(f => !Outage(f)).Select(f => $"{Local(f["endpoint"]!.ToString()).Replace(uid, "<uid>")}: {f["error"]} ({f["status"]})").ToList();
+        var failed = errors.Where(f => !Excused(f)).Select(f => $"{Local(f["endpoint"]!.ToString()).Replace(uid, "<uid>")}: {f["error"]} ({f["status"]})").ToList();
         Assert.True(failed.Count == 0, $"{failed.Count} request(s) failed while the server answered:\n{string.Join("\n", failed.Take(30))}");
         if (errors.Count > 0 || e.SilentHosts.Length > 0) Assert.Skip($"{errors.Count} request(s) got no usable answer and {e.SilentHosts.Length} host(s) went silent: a server outage, not a tool problem");
         foreach (var name in new[] { $"game_user_{uid}_profile.json", $"game_user_{uid}_ranks.json", $"Inventory_dict__user_id={uid}.json", $"Inventory_list__user_id={uid}.json", "map-setups.json" })
@@ -76,4 +78,15 @@ public class LiveTests
     }
 
     static string Local(string endpoint) => Uri.TryCreate(endpoint, UriKind.Absolute, out var u) ? u.PathAndQuery : endpoint;
+
+    /// <summary>What the engine writes when a server stopped answering: the last try's HTTP 5xx or 429, the exception, or a host already given up on.</summary>
+    static bool NoAnswer(string err) => err == "host not answering, not tried" || NoAnswerRe.IsMatch(err);
+    static readonly System.Text.RegularExpressions.Regex NoAnswerRe = new(@"^(HTTP (5\d\d|429)|(HttpRequest|TaskCanceled|IO)Exception: )");
+    /// <summary>A give-up line of the engine's log ("! giving up on path: err", "! host not answering, try again later: path (err)") whose err is no answer.</summary>
+    static bool GaveUpForNoAnswer(string line) =>
+        line.StartsWith("! giving up on ") ? NoAnswer(line[(line.IndexOf(": ", 15) + 2)..])
+        : line.StartsWith("! host not answering, try again later: ") && line.LastIndexOf(" (") is var i and > 0 && NoAnswer(line[(i + 2)..]);
+
+    /// <summary>Errors the engine writes after a read that got no answer; alone they mean the reply's shape changed.</summary>
+    static readonly string[] FollowOn = ["a page of the list gave no trophies", "no inventory reply to build it from"];
 }
