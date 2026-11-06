@@ -11,6 +11,7 @@
 @inject ICompetitionsService Service
 @inject ModalService Modal
 @inject NavigationManager Nav
+@inject HostMode Mode
 
 <PageTitle>@L["Comp.Tab.Competitions"]</PageTitle>
 
@@ -23,16 +24,19 @@
         <div class="chips"><span>@L["Comp.ChipStatus", state]</span><span>@d.Species</span></div>
         <h1>@c.Name</h1>
         <p>@d.Tagline</p>
-        @if (d.Active) { <button type="button" class="btn leave" @onclick="Leave">@L["Comp.Leave"]</button> }
-        else if (c.Joinable) { <button type="button" class="btn leave" @onclick="Join">@L["Comp.Join"]</button> }
-        else { <button type="button" class="btn leave" disabled>@L["Comp.CantJoin"]</button> }
+        @if (!Mode.Live)
+        {
+            @if (d.Active) { <button type="button" class="btn leave" @onclick="Leave">@L["Comp.Leave"]</button> }
+            else if (c.Joinable) { <button type="button" class="btn leave" @onclick="Join">@L["Comp.Join"]</button> }
+            else { <button type="button" class="btn leave" disabled>@L["Comp.CantJoin"]</button> }
+        }
     </header>
     <dl class="stats">
         <div><dt>@L["Comp.Players"]</dt><dd>@c.Players</dd></div>
         <div class="wide"><dt>@L[c.Start > DateTime.UtcNow ? "Comp.StartsIn" : "Comp.EndsIn"]</dt><dd>@Remaining</dd></div>
-        <div><dt>@L["Comp.YourPosition"]</dt><dd>@(d.Position?.ToString() ?? L["Comp.NA"])</dd></div>
+        @if (!Mode.Live) { <div><dt>@L["Comp.YourPosition"]</dt><dd>@(d.Position?.ToString() ?? L["Comp.NA"])</dd></div> }
         <div><dt>@L["Comp.ScoreToBeat"]</dt><dd>@d.ScoreToBeat</dd></div>
-        <div><dt>@L["Comp.Attempts"]</dt><dd>@d.Used/@d.Max</dd></div>
+        @if (!Mode.Live) { <div><dt>@L["Comp.Attempts"]</dt><dd>@d.Used/@d.Max</dd></div> }
     </dl>
     <Tabs Kind="pills" Items="pills" Active="@active" />
 
@@ -79,8 +83,11 @@
             <div class="when">
                 <p>@L["Comp.Starts"]: @(c.Start is { } s ? Fmt.UtcLong(s) : "")</p>
                 <p>@L["Comp.Ends"]: @(c.End is { } e ? Fmt.UtcLong(e) : "")</p>
-                <p>@L["Comp.Attempts"]: *@d.Used / @d.Max</p>
-                <p>* @L["Comp.Disclaimer"]</p>
+                @if (!Mode.Live)
+                {
+                    <p>@L["Comp.Attempts"]: *@d.Used / @d.Max</p>
+                    <p>* @L["Comp.Disclaimer"]</p>
+                }
             </div>
             break;
     }

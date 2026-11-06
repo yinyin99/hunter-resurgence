@@ -1,0 +1,87 @@
+using System.Net;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Resurgence.Services;
+using Resurgence.Services.Mocks;
+using Resurgence.Ui;
+using Resurgence.Ui.Pages;
+using Resurgence.Ui.Shell;
+
+namespace Resurgence.Tests.WebTests;
+
+/// <summary>HostMode.Live (the website with a community server): what the signed-in player owns or has joined, and the account's own pages, are not shown.</summary>
+public sealed class LiveSiteTests : UiContext
+{
+    sealed class Answer(HttpStatusCode code, string body) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
+            Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+    }
+
+    void Live(bool live) => Services.GetRequiredService<HostMode>().Live = live;
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheEnrolledListAndTheActionsAreTheMocksPlayersNotLiveData(bool live, int shown)
+    {
+        Live(live);
+        var cut = Render<Competitions>();
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("table.comps.all tbody tr")));
+        Assert.Equal(shown, cut.FindAll("h4.enrolled").Count);
+        Assert.Equal(shown > 0, cut.FindAll("td.action").Count > 0);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheBundlesOwnColumnIsNotShownLive(bool live, int columns)
+    {
+        Live(live);
+        var cut = Render<BundleDetail>(p => p.Add(b => b.Id, 1));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("article.item")));
+        Assert.Equal(columns, cut.FindAll("th.own").Count);
+    }
+
+    [Theory]
+    [InlineData(false, 2)]
+    [InlineData(true, 0)]
+    public void TheSettingsMenuKeepsRestoreAndLanguageOnly(bool live, int accountLinks)
+    {
+        Live(live);
+        var cut = Render<SettingsMenu>();
+        Assert.Equal(accountLinks, cut.FindAll("a[href='/settings'], a[href='/game-management']").Count);
+        Assert.Single(cut.FindAll("a[href='/restore']"));
+    }
+
+    [Theory]
+    [InlineData(false, "/settings")]
+    [InlineData(true, "/restore")]
+    public void TheSettingsHeadingOpensRestoreLive(bool live, string href)
+    {
+        Live(live);
+        var cut = Render<StatusBar>(p => p.Add(b => b.Session, new Session("Fox", 5)));
+        Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
+    }
+
+    [Fact]
+    public void ARealPlayersProfileIsTheHeaderOnly()
+    {
+        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, """{"handle":"Fox","hunterscore":5,"rank":3}""")) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
+        Services.AddSingleton<IProfileService>(real);
+
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
+        Assert.Empty(cut.FindAll("ul.tabs"));
+        Assert.Empty(cut.FindAll("button.request"));
+    }
+
+    [Fact]
+    public void AFictionalHuntersProfileKeepsItsTabs()
+    {
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05"));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
+    }
+}
