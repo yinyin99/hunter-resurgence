@@ -30,4 +30,15 @@ public sealed class ItemDetailTests : UiContext
         Assert.Contains("em$", cut.Find(".buy b").TextContent);
         Assert.Single(cut.FindAll("#buy-item"));
     }
+
+    [Fact]
+    public void WithoutPurchasesThePriceShowsAndThereIsNoBuyButton()
+    {
+        Services.GetRequiredService<HostMode>().Purchases = false;
+
+        var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1227));
+
+        Assert.Contains("em$", cut.Find(".buy b").TextContent);
+        Assert.Empty(cut.FindAll("#buy-item"));
+    }
 }

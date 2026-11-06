@@ -19,7 +19,9 @@ var config = builder.Configuration;
 builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
     .With("link_backup", config["LINK_BACKUP"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
 builder.Services.AddMockServices();
-builder.Services.AddScoped<HostMode>();
+// with SERVER_URL buying is still the mock's and would spend a wallet that is not the account's: no buy buttons, no bank (docs/website.md#sign-in)
+var purchases = builder.Configuration["SERVER_URL"] is not { Length: > 0 };
+builder.Services.AddScoped(_ => new HostMode { Purchases = purchases });
 builder.Services.AddScoped<ServerCookie>();
 if (builder.Configuration["SERVER_URL"] is { Length: > 0 } serverUrl)
 {
@@ -61,7 +63,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
     builder.Services.AddScoped<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
         new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>()));
-    // the balances (status bar, store and bank dialogs) are the account's (docs/website.md#sign-in); the wallet page and the purchases are still the mock's
+    // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page is still the mock's, and buying is hidden (HostMode.Purchases)
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
 }

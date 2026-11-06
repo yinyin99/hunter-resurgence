@@ -3,6 +3,7 @@
 @page "/bank/success/{Ref}"
 @implements IDisposable
 @inject ModalService Modal
+@inject HostMode Mode
 
 @* the bank is a modal over the news page, as in the old app *@
 <Feed />
@@ -19,6 +20,7 @@
 
     protected override void OnParametersSet()
     {
+        if (!Mode.Purchases) return;  // the news page alone: no bank while buying is not the account's
         if (Ref is not null) { shown = typeof(PurchaseDoneModal); Modal.Show<PurchaseDoneModal>(); }
         else if (Tab == "offerwall") { shown = typeof(OfferwallModal); Modal.Show<OfferwallModal>(); }
         else { shown = typeof(BankModal); Modal.Show<BankModal>(new Dictionary<string, object?> { ["Tab"] = ShowHelp == 1 ? "help" : Tab is "ems" or "help" ? Tab : "memberships" }); }

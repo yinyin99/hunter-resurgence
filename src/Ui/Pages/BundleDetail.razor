@@ -2,6 +2,7 @@
 @inject IStoreService Service
 @inject ISessionService Sessions
 @inject ModalService Modal
+@inject HostMode Mode
 
 <PageTitle>@L["Menu.Store"]</PageTitle>
 
@@ -14,7 +15,7 @@
             <div class="buy">
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@L["Store.MaxOwn"]">@L["Store.Buy"]</button> }
-                else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
+                else if (Mode.Purchases) { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
                 <b>@bundle.Price em$</b>
             </div>
             <h1>@bundle.Name</h1>
