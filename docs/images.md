@@ -5,7 +5,7 @@ The website and the launcher draw every picture of the original screens in a *sl
 ## How it works
 
 - The website reads the folder named by `IMAGES_DIR`. On the VPS that is `SERVER_DIR/images`, mounted read-only at `/images` in `web` (`deploy/compose.yml`, [deploy.md](deploy.md#the-community-server)).
-- One file per slot, named `<key>.<png|jpg|jpeg|gif|webp>`. The key is the slot's name in lower case, with every run of characters outside `a-z` and `0-9` made one `-` and none at either end (`AssetImages.Key`): the slot `species-Alpine Ibex` is the file `species-alpine-ibex.png`. SVG is not served: opened directly from the site, an SVG can run script.
+- One file per slot, named `<key>.<png|jpg|jpeg|gif|webp|webm>`. The key is the slot's name in lower case, with every run of characters outside `a-z` and `0-9` made one `-` and none at either end (`AssetImages.Key`): the slot `species-Alpine Ibex` is the file `species-alpine-ibex.png`. A `.webm` plays in the slot as a muted looping video, as the original landing page's background did. SVG is not served: opened directly from the site, an SVG can run script.
 - The files are served at `/images/<file>`, cached `immutable`; the page asks for `/images/<file>?v=<time of the file>`, so a changed file gets a new URL.
 - `/images.json` lists the pictures for the launcher: `{"<file>": "<version>"}`, where the version is the file's `?v=`. It is read with the folder, once at start; `{}` without `IMAGES_DIR`.
 - The website reads the folder once at start: restart `web` after changing files (`docker compose restart web`).
@@ -15,7 +15,7 @@ The website and the launcher draw every picture of the original screens in a *sl
 
 ## Missing pictures
 
-`GET /images-missing.json` lists every slot the website drew as its labelled box since it started, as `{"<key>": "<page>"}` sorted by key. The file to add is `<key>.<png|jpg|jpeg|gif|webp>` in `IMAGES_DIR`.
+`GET /images-missing.json` lists every slot the website drew as its labelled box since it started, as `{"<key>": "<page>"}` sorted by key. The file to add is `<key>.<png|jpg|jpeg|gif|webp|webm>` in `IMAGES_DIR`.
 
 ```
 curl -s https://<site>/images-missing.json
@@ -48,7 +48,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `logo-splash` | 483×65 | Splash | yes |
 | `logo-dev` | 200×71 | Footer | yes |
 | `logo-rating-<1-4>` | 62×82 | Footer | 4 of 4 |
-| `bg-hero` | 980×550 | Feed | yes: one still frame (at 2 s) of the original landing page's background video; slots take no video |
+| `bg-hero` | 980×550 | Feed | yes: `bg-hero.webm`, the original landing page's background video (`landing_page_video.webm`, played muted and looping as there) |
 | `browser-bg` | 1280×760 | BrowserNotice | yes |
 | `frame-leather` | 1280×760 | SignupLayout | yes |
 | `signup-bg-<1-5>` | 1200×674 | SignupCard (signup pages) | 5 of 5 |

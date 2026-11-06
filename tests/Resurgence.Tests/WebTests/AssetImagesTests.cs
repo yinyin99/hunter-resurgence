@@ -8,10 +8,11 @@ public class AssetImagesTests
     public void PicturesAreFoundByNormalisedSlotName()
     {
         using var t = new TempDir("asset-images-");
-        foreach (var f in new[] { "Logo Large.PNG", "logo-large.jpg", "x.svg", "notes.txt" })
+        foreach (var f in new[] { "Logo Large.PNG", "logo-large.jpg", "bg-hero.webm", "x.svg", "notes.txt" })
             File.WriteAllText(Path.Combine(t.Path, f), "");
         var images = new AssetImages(AssetImages.Index(t.Path));
         Assert.StartsWith("/images/Logo%20Large.PNG?v=", images.Url("logo-large")); // first in ordinal order wins
+        Assert.StartsWith("/images/bg-hero.webm?v=", images.Url("bg-hero"));        // the landing page's video
         Assert.Null(images.Url("x"));     // no SVG: it can run script
         Assert.Null(images.Url("notes")); // not a picture
     }

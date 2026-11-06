@@ -1,6 +1,12 @@
 @inject AssetImages Images
 @inject NavigationManager Nav
-@if (src is not null)
+@if (src?.Contains(".webm?", StringComparison.OrdinalIgnoreCase) == true)
+{
+    @* as the original landing page's background video: muted, so the browser lets it start on its own. Markup, not a Blazor element:
+       the muted attribute mutes only an element the HTML parser creates, and the browser plays nothing unmuted on its own *@
+    @((MarkupString)$"<video class=\"asset-slot has-image {Enc(Class)}\" src=\"{Enc(src)}\" style=\"width:{Width}px;height:{Height}px\" width=\"{Width}\" height=\"{Height}\" aria-label=\"{Enc(Name)}\" autoplay muted loop playsinline></video>")
+}
+else if (src is not null)
 {
     <img class="asset-slot has-image @Class" src="@src" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="@Name" />
 }
@@ -23,4 +29,6 @@ else
         src = Images.Url(Name);
         if (src is null) Images.NoteMissing(Name, new Uri(Nav.Uri).AbsolutePath);
     }
+
+    static string Enc(string? s) => System.Net.WebUtility.HtmlEncode(s ?? "");
 }
