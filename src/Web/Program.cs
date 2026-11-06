@@ -19,7 +19,7 @@ var config = builder.Configuration;
 builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
     .With("link_backup", config["LINK_BACKUP"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
 builder.Services.AddMockServices();
-// with SERVER_URL the pages of mock data and buying are hidden (HostMode.Live, docs/website.md#sign-in)
+// with SERVER_URL the pages of mock data and the bank are hidden, and the store buys from the server (HostMode.Live, docs/website.md#sign-in)
 var live = builder.Configuration["SERVER_URL"] is { Length: > 0 };
 builder.Services.AddScoped(_ => new HostMode { Live = live });
 builder.Services.AddScoped<ServerCookie>();
@@ -63,10 +63,10 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
     builder.Services.AddScoped<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
         new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>()));
-    // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and buying are hidden (HostMode.Live)
+    // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and the bank are hidden (HostMode.Live)
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
-    // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is still hidden (HostMode.Live)
+    // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
     builder.Services.AddSingleton<StoreCache>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<StoreCache>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
 }

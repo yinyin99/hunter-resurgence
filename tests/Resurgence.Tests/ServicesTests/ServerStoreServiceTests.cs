@@ -27,7 +27,8 @@ public class ServerStoreServiceTests
            {"id": 1, "name": "Test Rifle", "variant": "Blue", "description": "A rifle.", "category": "0", "ems": 50, "was": 100, "gms": 2000, "buyable": true},
            {"id": 2, "name": "Test Pistol", "variant": "", "description": "", "category": "1", "ems": 80, "was": null, "gms": 0, "buyable": true},
            {"id": 3, "name": "Test Scope", "variant": "Silver", "description": "", "category": "5", "ems": 200, "was": null, "gms": 0, "buyable": false}],
-         "bundles": [{"id": 9, "name": "Test Pack", "description": "Two.", "price": 90, "items": [{"id": 1, "name": "Test Rifle"}, {"id": 1, "name": "Test Rifle"}, {"id": 77, "name": "Gone"}]}]}
+         "bundles": [{"id": 9, "name": "Test Pack", "description": "Two.", "price": 90, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}, {"id": 1, "name": "Test Rifle"}, {"id": 77, "name": "Gone"}]},
+                     {"id": 10, "name": "Test Gone Pack", "description": "", "price": 0, "buyable": false, "items": [{"id": 77, "name": "Gone"}]}]}
         """;
 
     static ServerStoreService Make(HttpMessageHandler handler, StoreCache? cache = null, string? host = "site.test") =>
@@ -104,6 +105,8 @@ public class ServerStoreServiceTests
         Assert.Equal([(1, 100), (1, 100), (77, 0)], bundle.Lines.Select(l => (l.ItemId, l.Value)));  // the sale price is not the value
         Assert.Equal("Gone", bundle.Lines[2].Name);
         Assert.Null(await Ok().BundleAsync(404));
+        Assert.False((await Ok().BundleAsync(10))!.Buyable);  // the server does not sell it: the page's button is disabled
+        Assert.True(bundle.Buyable);
     }
 
     [Theory]

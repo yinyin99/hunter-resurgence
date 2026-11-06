@@ -102,7 +102,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Sto
     static StoreItem Item(ServerItem i) => new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, Owned: 0, i.Buyable, Capacity: 0, i.Description);
 
     // a line is one unit of an item at its full price; the page adds up the lines of one item
-    static StoreBundle Bundle(ServerBundle b, ServerStore s) => new(b.Id, b.Name, b.Description, b.Price, Buyable: true,
+    static StoreBundle Bundle(ServerBundle b, ServerStore s) => new(b.Id, b.Name, b.Description, b.Price, b.Buyable,
         [.. b.Items.Select(x => s.Items.FirstOrDefault(i => i.Id == x.Id) is { } i
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))]);

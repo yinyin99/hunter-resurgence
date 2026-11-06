@@ -238,6 +238,7 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | `GET /account/restore` | `{restoredUserId, review: [{ts, note}]}`: the backup user id this account restored (once), or null, and the zips kept for the operator. 401 when signed out |
 | `POST /account/restore` | The zip is the request body, at most 64 MiB. Answers `{status, message}` (below). Needs the cookie and `X-Requested-With` or a same-origin `Origin` (a form of another site cannot set either) |
 | `POST /account/delete` | Form `confirm=delete`, same checks: deletes the account and all its data (below), clears the cookie |
+| `POST /account/buy` | Form `id`, `count`, `bundle=1`, same checks: buys with em$ ([Buying from the website](#buying-from-the-website)) |
 
 **Limits.** One upload at a time per account and four on the whole server (`429`, status `busy`); a body over 64 MiB is `413` (`too_large`) and is not read; the reader's caps apply (`Limits`, with 256 MiB of content instead of 1 GiB, 100:1 compression, 20,000 entries, JSON depth 64), so a zip bomb is `400` (`invalid`) before anything is parsed. An account may have 3 zips waiting for an operator; a fourth is `429` and not kept. The zip is held in memory and in a temporary file of `data_dir/uploads-tmp`, deleted when the upload ends.
 
