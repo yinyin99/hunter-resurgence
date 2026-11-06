@@ -1,0 +1,58 @@
+name: backup-live
+# Not a required check and never run for pull requests: the official servers are not ours, and a fork gets no secrets.
+# A red run, and the issue it opens, say the backup tool needs attention; a server that does not answer skips the test instead.
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  live:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      RestoreLockedMode: "true"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-sdk
+      - run: dotnet build tests/Resurgence.Tests -c Release
+      # Same secrets as release.yml; the file lives in the runner's temp folder only. Values are never printed.
+      - name: Write settings.json
+        shell: pwsh
+        env:
+          WEB_HOST: ${{ secrets.WEB_HOST }}
+          PHOTO_HOST: ${{ secrets.PHOTO_HOST }}
+          STATIC_HOST: ${{ secrets.STATIC_HOST }}
+          AVATAR_HOST: ${{ secrets.AVATAR_HOST }}
+          OAUTH_CONSUMER_KEY: ${{ secrets.OAUTH_CONSUMER_KEY }}
+          CLIENT_EXE: ${{ secrets.CLIENT_EXE }}
+        run: |
+          $s = [ordered]@{
+            client_exe         = $env:CLIENT_EXE
+            oauth_consumer_key = $env:OAUTH_CONSUMER_KEY
+            web_host           = $env:WEB_HOST
+            photo_host         = $env:PHOTO_HOST
+            static_host        = $env:STATIC_HOST
+            avatar_host        = $env:AVATAR_HOST
+          }
+          foreach ($k in @($s.Keys)) {
+            $s[$k] = "$($s[$k])".Trim()
+            if (-not $s[$k]) { throw "repository secret for $k is missing or blank" }
+          }
+          $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
+          "BACKUP_LIVE_SETTINGS=$env:RUNNER_TEMP\settings.json" >> $env:GITHUB_ENV
+      - name: Live check
+        run: dotnet test tests/Resurgence.Tests -c Release --no-build --filter-class "*LiveTests"
+      - name: Open or update the issue
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create backup-live --color B60205 --description "the backup tool failed against the official servers" 2>/dev/null || true
+          n=$(gh issue list --label backup-live --state open --json number --jq '.[0].number // empty')
+          if [ -n "$n" ]; then gh issue comment "$n" --body "Still failing: $RUN"
+          else gh issue create --label backup-live --title "Backup tool: the check against the official servers fails" --body "The check of the backup tool against the official servers failed: the tool, or the workflow's setup, needs attention. The run lists the requests: $RUN"; fi
