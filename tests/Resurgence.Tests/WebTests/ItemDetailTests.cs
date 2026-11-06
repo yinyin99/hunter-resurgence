@@ -41,4 +41,18 @@ public sealed class ItemDetailTests : UiContext
         Assert.Contains("em$", cut.Find(".buy b").TextContent);
         Assert.Empty(cut.FindAll("#buy-item"));
     }
+
+    // the stand-in pictures are named after the mock's fictional ids: a real item of the same id must not get one
+    [Theory]
+    [InlineData(false, "item-1227", "store-item-1227")]
+    [InlineData(true, "store-item-1227", "\"item-1227\"")]
+    public void TheLiveSiteLooksForTheRealItemsOwnPictureNotTheMocksStandIn(bool live, string present, string absent)
+    {
+        Services.GetRequiredService<HostMode>().Live = live;
+
+        var markup = Render<ItemDetail>(p => p.Add(i => i.Id, 1227)).Markup;
+
+        Assert.Contains(present, markup);
+        Assert.DoesNotContain(absent, markup);
+    }
 }

@@ -11,7 +11,7 @@
     {
         <article class="item panel">
             @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L["Store.SaleTag"] : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
-            <AssetSlot Name="@($"item-{item.Id}")" Width="270" Height="197" Class="pic" />
+            <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="270" Height="197" Class="pic" />
             <div class="buy">
                 @* signed out the old page shows only the button *@
                 @if (signedIn)

@@ -12,7 +12,7 @@
                 {
                     @foreach (var (x, n) in c.Children.Select((x, n) => (x, n)))
                     {
-                        <a href="/store/@x.Key" class="sub @(x.Key == Active || (c.Key == Active && n == 0 && c.Key != x.Key) ? "active" : "")">@Name(x)</a>
+                        <a href="/store/@x.Key" class="sub @(x.Key == Active || (c.Key == Active && n == 0 && c.Key != x.Key) ? "active" : "")">@(x.Key == c.Key && x.Name != c.Name ? x.Name : Name(x))</a>
                     }
                 }
             }

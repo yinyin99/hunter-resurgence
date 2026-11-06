@@ -74,8 +74,10 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: not in the operator's files |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
-| `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item |
-| `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail | 2 of 2 |
+| `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |
+| `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the mock) | 2 of 2 |
+| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the live site: the server's items, with the original's ids) | 0 of 1,003: *not mapped yet*. A picture goes in only with evidence that it is that item's, as in the rules of the mirror task (#201) |
+| `store-bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the live site) | 0 of 129: *not mapped yet* |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
 | `membership-<starter, special, basic>` | 100×70 | BankModal | 1 of 3: `starter` is the Wayfarer card (the original's one starter bundle, 3 months). `special`: the original had three bundle cards (Deer Hunter, Duck Hunter, Stealth Hunter) that the mock's two anonymous bundles cannot be matched to; `basic`: one card per length (3, 6, 12 months) under one key |

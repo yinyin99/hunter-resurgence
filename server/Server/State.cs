@@ -879,6 +879,53 @@ public sealed partial class State
         return (long)Math.Floor(price + 0.5);  // JS Math.round
     }
 
+    /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
+    /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
+    /// today's price (<see cref="Price"/>, em$ and silver alike; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
+    /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's, and no field the
+    /// catalogue gives without a unit (the inventory weight) is passed on.</summary>
+    public JsonObject StoreCatalogue()
+    {
+        var items = new JsonArray();
+        var keys = new HashSet<string>();
+        var names = new Dictionary<long, JsonNode?>();
+        foreach (var i in Arr(G(application, "items", null)))
+        {
+            var item = i!.AsObject();
+            names[Py.L(item["id"])] = C(item["name"]);  // a bundle may list an item the store does not show
+            if (Py.Truthy(G(item, "hidden", null))) continue;
+            var full = Py.IsNum(G(item, "price", null)) ? (long)Math.Floor(Py.D(item["price"]) + 0.5) : 0;
+            var ems = full > 0 ? Price(item, "price") : 0;
+            var key = item["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
+            keys.Add(key);
+            items.Add(new JsonObject
+            {
+                ["id"] = C(item["id"]), ["name"] = C(item["name"]), ["variant"] = C(G(item, "variationname", null)) ?? "",
+                ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
+                ["ems"] = ems, ["was"] = ems < full ? full : null,
+                ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Price(item, "silver_price") : 0,
+                ["buyable"] = full > 0 && !Py.Truthy(G(item, "notbuyable", null)),
+            });
+        }
+        var categories = new JsonArray();
+        foreach (var c in Arr(G(application, "categories", null)))
+        {
+            var children = Arr(c!["subcategories"]).Select(s => (JsonNode?)new JsonObject { ["key"] = Py.Str(s!["id"]), ["name"] = C(s["title"]) }).ToArray();
+            var key = Py.Str(c["default"]);
+            if (key != "all" && !children.Any(s => keys.Contains((string)s!["key"]!))) continue;
+            categories.Add(new JsonObject { ["key"] = key, ["name"] = C(c["title"]), ["children"] = new JsonArray(children) });
+        }
+        var bundles = new JsonArray();
+        foreach (var b in Arr(G(application, "bundles", null)))
+            bundles.Add(new JsonObject
+            {
+                ["id"] = C(b!["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
+                ["price"] = Py.IsNum(b["price"]) ? (long)Math.Floor(Py.D(b["price"]) + 0.5) : 0,
+                ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
+            });
+        return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
+    }
+
     /// <summary>Inventory/buy item_id, amount, wallet: charge now; the items (update 10) and the new balance (update 15)
     /// come with the next heartbeat, also mid-hunt.</summary>
     public byte[] BuyReply(long account, byte[] formBody)

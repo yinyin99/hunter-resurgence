@@ -17,7 +17,7 @@
         {
             <div class="card panel hover-tint">
                 @if (i.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
-                <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@($"item-{i.Id}")" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/item/@i.Id" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
                 <p class="price">
@@ -41,7 +41,7 @@
         {
             <div class="card panel hover-tint">
                 <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
-                <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@($"bundle-{b.Id}")" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
                 <p class="price"><b>@b.Price em$</b></p>
                 @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@

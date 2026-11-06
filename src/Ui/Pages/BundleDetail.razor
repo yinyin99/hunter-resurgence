@@ -11,7 +11,7 @@
     {
         <article class="item">
             <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
-            <AssetSlot Name="@($"bundle-{bundle.Id}")" Width="190" Height="207" Class="pic" />
+            <AssetSlot Name="@Mode.BundleSlot(bundle.Id)" Width="190" Height="207" Class="pic" />
             <div class="buy">
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!Mode.Live)
@@ -25,13 +25,13 @@
             <p class="text">@bundle.Description</p>
             @if (!bundle.Buyable && !Mode.Live) { <p class="own">@L["Store.MaxOwn"]</p> }
             <table class="tbl">
-                <thead><tr><th>@L["Store.Included"]</th>@if (!Mode.Live) { <th class="own">@L["Store.Own"]</th> }<th>@L["Store.OwnLimit"]</th><th>@L["Store.Value"]</th></tr></thead>
+                <thead><tr><th>@L["Store.Included"]</th>@if (!Mode.Live) { <th class="own">@L["Store.Own"]</th><th>@L["Store.OwnLimit"]</th> }<th>@L["Store.Value"]</th></tr></thead>
                 <tbody>
                     @* a line of the same item twice is one line with the counts added *@
                     @foreach (var g in bundle.Lines.GroupBy(l => l.ItemId))
                     {
                         var l = g.First();
-                        <tr><td><AssetSlot Name="@($"item-{l.ItemId}")" Width="30" Height="30" Class="thumb" /> @g.Sum(x => x.Count)x <a href="/store/item/@l.ItemId">@l.Name</a>@if (l.Variant.Length > 0) { <text> (@l.Variant)</text> }</td>@if (!Mode.Live) { <td class="own">@l.Owned</td> }<td>@(l.OwnLimit > 0 ? l.OwnLimit : L["Store.Unlimited"])</td><td>@g.Sum(x => x.Value) em$</td></tr>
+                        <tr><td><AssetSlot Name="@Mode.ItemSlot(l.ItemId)" Width="30" Height="30" Class="thumb" /> @g.Sum(x => x.Count)x <a href="/store/item/@l.ItemId">@l.Name</a>@if (l.Variant.Length > 0) { <text> (@l.Variant)</text> }</td>@if (!Mode.Live) { <td class="own">@l.Owned</td><td>@(l.OwnLimit > 0 ? l.OwnLimit : L["Store.Unlimited"])</td> }<td>@g.Sum(x => x.Value) em$</td></tr>
                     }
                 </tbody>
             </table>

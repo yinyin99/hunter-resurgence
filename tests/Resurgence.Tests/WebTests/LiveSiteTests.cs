@@ -42,6 +42,21 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<BundleDetail>(p => p.Add(b => b.Id, 1));
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("article.item")));
         Assert.Equal(columns, cut.FindAll("th.own").Count);
+        Assert.Equal(live ? 2 : 4, cut.FindAll("article.item thead th").Count);  // no own limit either: the server sends none
+    }
+
+    [Fact]
+    public void ARealCategoryNamesItsFirstSubCategoryNotItself()
+    {
+        const string reply = """{"categories": [{"key": "0", "name": "Weapons", "children": [{"key": "0", "name": "Rifles"}, {"key": "1", "name": "Handguns"}]}], "items": [], "bundles": []}""";
+        Services.AddSingleton<IStoreService>(new ServerStoreService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new StoreCache(), NullLogger<ServerStoreService>.Instance));
+
+        var cut = Render<Resurgence.Ui.Components.StoreFrame>(p => p.Add(f => f.Active, "0"));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("nav.menu a.sub")));
+        Assert.Equal(["Rifles", "Handguns"], cut.FindAll("nav.menu a.sub").Select(a => a.TextContent.Trim()));
+        Assert.Equal("Weapons", cut.Find("nav.menu a.top.open").TextContent.Trim());  // the top-level label is the translated one
     }
 
     [Theory]

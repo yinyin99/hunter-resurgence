@@ -2,7 +2,7 @@
 
 ## What this is
 
-The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. The website is the **mock** website: every page shows fixed, fictional data. A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says so; change or remove it when real features arrive.
+The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. The website is mostly the **mock** website: its pages show fixed, fictional data. With `SERVER_URL` (as in `compose.yml`) the store, the sign-in, the hunterscore and the restore page are the community server's, and the pages of the player's own data are hidden ([website.md](website.md#sign-in)). A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says so; change or remove it when real features arrive.
 
 | File | Purpose |
 |---|---|
@@ -258,4 +258,4 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 ## Known limits
 
-- Everything is a mock; the banner text has to change when that does.
+- Most pages are still a mock (the news, competitions, the other boards, help, and what a signed-out visitor sees of players); only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.

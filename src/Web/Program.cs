@@ -66,6 +66,9 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and buying are hidden (HostMode.Live)
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
+    // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is still hidden (HostMode.Live)
+    builder.Services.AddSingleton<StoreCache>();
+    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<StoreCache>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
