@@ -36,7 +36,7 @@ public class LiveTests
         // any player on a public board will do; the board is one of the reads the tool makes
         HttpResponseMessage board;
         try { board = await http.GetAsync($"https://{s.WebHost}/v1/game/user/leaderboards/antlers/single/all", ct); }
-        catch (HttpRequestException) { Assert.Skip("the antler board did not answer: a server outage, not a tool problem"); return; }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException && !ct.IsCancellationRequested) { Assert.Skip("the antler board did not answer: a server outage, not a tool problem"); return; }
         using (board)
         {
             if ((int)board.StatusCode >= 500 || (int)board.StatusCode == 429) Assert.Skip($"the antler board answered {(int)board.StatusCode}: a server outage, not a tool problem");
@@ -52,15 +52,21 @@ public class LiveTests
     static async Task Backup(Settings s, string handle, CancellationToken ct)
     {
         using var t = new TempDir("backup-live-");
-        var e = new Engine(s, new HttpClient(), _ => { }, (_, _) => { }, Path.Combine(t.Path, "claim.key")) { GiveUpLimit = 5 };
-        await e.Run(t.Path, handle, null, new HashSet<string> { "profile", "inventory", "trophies", "friends", "setups" }, false, false, ct);
+        var log = new List<string>();
+        var e = new Engine(s, new HttpClient(), l => { lock (log) log.Add(l); }, (_, _) => { }, Path.Combine(t.Path, "claim.key")) { GiveUpLimit = 5 };
+        try { await e.Run(t.Path, handle, null, new HashSet<string> { "profile", "inventory", "trophies", "friends", "setups" }, false, false, ct); }
+        catch (InvalidOperationException) when (log.Any(l => l.StartsWith("! giving up on") || l.StartsWith("! host not answering")))
+        {
+            Assert.Skip("the account lookup got no answer after its retries: a server outage, not a tool problem"); // any other lookup failure is the tool's and propagates
+        }
 
         var dir = Directory.GetDirectories(t.Path, "backup-*").Single();
         var uid = Path.GetFileName(dir)["backup-".Length..];
         var files = (JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")))!["files"] as JsonArray)!;
         var errors = files.Where(f => f?["error"] is { } err && !Normal.Contains(err.ToString())).Select(f => f!).ToList();
-        // no answer at all, or a 5xx or 429 after the retries: the server's trouble; any other failed request is the tool's to look at
-        bool Outage(JsonNode f) => f["status"] is not { } st || (int)st >= 500 || (int)st == 429;
+        // what the engine writes when a server stopped answering: the last try's HTTP 5xx or 429, or the exception, or a host already given up on. A 403 or 407 (a refusal),
+        // a reply of another shape and a repeated page are the tool's to look at, so they fail
+        static bool Outage(JsonNode f) => f["error"]!.ToString() is var m && (m is "host not answering, not tried" || System.Text.RegularExpressions.Regex.IsMatch(m, @"^(HTTP (5\d\d|429)|(HttpRequest|TaskCanceled|IO)Exception: )"));
         // paths and errors only: no host, no id in the output
         var failed = errors.Where(f => !Outage(f)).Select(f => $"{Local(f["endpoint"]!.ToString()).Replace(uid, "<uid>")}: {f["error"]} ({f["status"]})").ToList();
         Assert.True(failed.Count == 0, $"{failed.Count} request(s) failed while the server answered:\n{string.Join("\n", failed.Take(30))}");
