@@ -1,6 +1,6 @@
 # Pictures
 
-The website and the launcher draw every picture of the original screens in a *slot*: `<AssetSlot Name=… Width=… Height=…>` (`src/Ui/Components/AssetSlot.razor`) and the map of `MapPlaceholder` (`src/Ui/Components/MapPlaceholder.razor`). The repository holds no pictures: a slot is a labelled box unless the operator supplies its file.
+The website and the launcher draw every picture of the original screens in a *slot*: `<AssetSlot Name=… Width=… Height=…>` (`src/Ui/Components/AssetSlot.razor`), the map of `MapPlaceholder` (`src/Ui/Components/MapPlaceholder.razor`) and the website's page background `page-bg` (`src/Ui/Layouts/ShellLayout.razor`). The repository holds no pictures: a slot is a labelled box unless the operator supplies its file; without `page-bg` the page is plain black.
 
 ## How it works
 
@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-104 `<AssetSlot>` in 53 `.razor` files, and 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`). Recount:
+104 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
@@ -50,6 +50,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `logo-rating-<1-4>` | 62×82 | Footer | 4 of 4 |
 | `bg-hero` | 980×550 | Feed | yes: `bg-hero.webm`, the original landing page's background video (`landing_page_video.webm`, played muted and looping as there) |
 | `browser-bg` | 1280×760 | BrowserNotice | yes |
+| `page-bg` | behind the page, top centre, once, black below | ShellLayout (website only, as the original: its launcher had none) | yes: the original's `main_page_background2.jpg` (`body:not(.client)` in its stylesheet) |
 | `frame-leather` | 1280×760 | SignupLayout | yes |
 | `signup-bg-<1-5>` | 1200×674 | SignupCard (signup pages) | 5 of 5 |
 | `gift-frame` | 561×288 | Signup Page2 to Page5 | yes |

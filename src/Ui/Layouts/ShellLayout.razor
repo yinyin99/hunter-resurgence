@@ -6,8 +6,10 @@
 @inject ModalService Modal
 @inject ISessionService Sessions
 @inject ILauncherBridge Bridge
+@inject AssetImages Images
 
-<div class="shell @(Mode.Launcher ? "launcher" : "web")">
+@* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher had none *@
+<div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
     <WipBanner />
     <BackupButton />
     @if (isPublic)
@@ -36,6 +38,7 @@
     bool quick, alerted, eula;
     Session? session;
     Action? changed;
+    string? pageBg;
 
     /// <summary>The website without a session shows the public top bar and no menu.</summary>
     bool isPublic => !Mode.Launcher && session is null;
@@ -47,6 +50,7 @@
     protected override async Task OnInitializedAsync()
     {
         session = await Sessions.CurrentAsync();
+        if (!Mode.Launcher && (pageBg = Images.Url("page-bg")) is null) Images.NoteMissing("page-bg", new Uri(Nav.Uri).AbsolutePath);
         Sessions.Changed += changed = async () => await InvokeAsync(async () =>
         {
             session = await Sessions.CurrentAsync();
