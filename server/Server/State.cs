@@ -881,8 +881,9 @@ public sealed partial class State
 
     /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
     /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
-    /// today's price (<see cref="Price"/>; <c>was</c> the price before the discount) and the bundles. A catalogue from the install has no categories
-    /// or bundles: empty lists. No game data is made up: every name and price is the catalogue's.</summary>
+    /// today's price (<see cref="Price"/>, em$ and silver alike; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
+    /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's, and no field the
+    /// catalogue gives without a unit (the inventory weight) is passed on.</summary>
     public JsonObject StoreCatalogue()
     {
         var items = new JsonArray();
@@ -891,20 +892,19 @@ public sealed partial class State
         foreach (var i in Arr(G(application, "items", null)))
         {
             var item = i!.AsObject();
+            names[Py.L(item["id"])] = C(item["name"]);  // a bundle may list an item the store does not show
             if (Py.Truthy(G(item, "hidden", null))) continue;
-            var full = Py.IsNum(G(item, "price", null)) ? Py.L(item["price"]) : 0;
+            var full = Py.IsNum(G(item, "price", null)) ? (long)Math.Floor(Py.D(item["price"]) + 0.5) : 0;
             var ems = full > 0 ? Price(item, "price") : 0;
             var key = item["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
             keys.Add(key);
-            names[Py.L(item["id"])] = C(item["name"]);
             items.Add(new JsonObject
             {
                 ["id"] = C(item["id"]), ["name"] = C(item["name"]), ["variant"] = C(G(item, "variationname", null)) ?? "",
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
-                ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Py.L(item["silver_price"]) : 0,
+                ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Price(item, "silver_price") : 0,
                 ["buyable"] = full > 0 && !Py.Truthy(G(item, "notbuyable", null)),
-                ["capacity"] = item["inventory"]?["capacity"] is { } cap && Py.IsNum(cap) ? Py.L(cap) : 0,
             });
         }
         var categories = new JsonArray();

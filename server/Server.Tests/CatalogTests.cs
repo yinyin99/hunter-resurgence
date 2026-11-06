@@ -9,11 +9,11 @@ public class CatalogTests : StateTestBase
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
 
-    // fictional values only
+    // fictional values only; item 3 is hidden, and a bundle lists it
     const string Store = """
         {"species": [], "reserves": [], "locations": [],
          "items": [
-           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "inventory": {"capacity": 3}},
+           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "inventory": {"weight": 500, "capacity": 3}},
            {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0},
            {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1}],
          "categories": [
@@ -21,7 +21,7 @@ public class CatalogTests : StateTestBase
            {"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}, {"id": 1, "title": "Handguns"}], "default": 0},
            {"id": 7, "title": "Bundles", "subcategories": [{"id": 50, "title": "Bundles"}], "default": 50},
            {"id": 2, "title": "Sights", "subcategories": [{"id": 5, "title": "Rifle Sights"}], "default": 5}],
-         "bundles": [{"id": 9, "name": "Test Pack", "description": "Two things.", "price": 90.0, "items": [1, 2]}]}
+         "bundles": [{"id": 9, "name": "Test Pack", "description": "Three things.", "price": 90.0, "items": [1, 2, 3]}]}
         """;
 
     // item 1 is half price
@@ -38,18 +38,25 @@ public class CatalogTests : StateTestBase
     }
 
     [Fact]
-    public async Task TheStoreIsTheCataloguesWithTodaysPriceAndWithoutHiddenItems()
+    public async Task TheStoreIsTheCataloguesWithTodaysPricesAndWithoutHiddenItems()
     {
         var reply = await Get(Store);
         Assert.Equal(200, reply.Status);
         var items = JsonNode.Parse(reply.Body)!["items"]!.AsArray();
         Assert.Equal([1, 2], items.Select(i => (int)i!["id"]!));
         var rifle = items[0]!;
-        Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 4000L, true, 3L),
-            ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!, (long)rifle["capacity"]!));
+        Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 2000L, true),  // the silver price takes the discount too
+            ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!));
         var scope = items[1]!;
         Assert.Equal((200L, 0L, false), ((long)scope["ems"]!, (long)scope["gms"]!, (bool)scope["buyable"]!));
         Assert.Null(scope["was"]);
+    }
+
+    [Fact]
+    public async Task NoFieldTheCatalogueGivesWithoutAUnitIsPassedOn()
+    {
+        var rifle = JsonNode.Parse((await Get(Store)).Body)!["items"]![0]!.AsObject();
+        Assert.DoesNotContain(rifle, p => p.Key is "capacity" or "weight");
     }
 
     [Fact]
@@ -62,11 +69,11 @@ public class CatalogTests : StateTestBase
     }
 
     [Fact]
-    public async Task ABundleHasItsPriceRoundedAndItsItemsNamed()
+    public async Task ABundleHasItsPriceRoundedAndItsItemsNamedAHiddenOneToo()
     {
         var bundle = JsonNode.Parse((await Get(Store)).Body)!["bundles"]![0]!;
         Assert.Equal((9, "Test Pack", 90L), ((int)bundle["id"]!, (string)bundle["name"]!, (long)bundle["price"]!));
-        Assert.Equal(["Test Rifle", "Test Scope"], bundle["items"]!.AsArray().Select(i => (string)i!["name"]!));
+        Assert.Equal(["Test Rifle", "Test Scope", "Test Hidden"], bundle["items"]!.AsArray().Select(i => (string)i!["name"]!));
     }
 
     [Fact]

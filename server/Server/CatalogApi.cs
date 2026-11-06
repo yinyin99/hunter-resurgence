@@ -19,7 +19,7 @@ public static class CatalogApi
                 ? Json(200, c)
                 : Json(404, new JsonObject { ["error"] = "no catalogue" }))
             .WithName("StoreCatalogue").WithSummary("The store: categories, items with today's price, bundles")
-            .WithDescription("`{categories: [{key, name, children: [{key, name}]}], items: [{id, name, variant, description, category, ems, was, gms, buyable, capacity}], bundles: [{id, name, description, price, items: [{id, name}]}]}` from the application catalogue the server loaded (docs/server.md, Starting data); `was` is the price before an active discount, null without one. 404 when the catalogue has no items.")
+            .WithDescription("`{categories: [{key, name, children: [{key, name}]}], items: [{id, name, variant, description, category, ems, was, gms, buyable}], bundles: [{id, name, description, price, items: [{id, name}]}]}` from the application catalogue the server loaded (docs/server.md, Starting data); `ems` and `gms` are today's prices, `was` the em$ price before an active discount, null without one. 404 when the catalogue has no items.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }
 }

@@ -12,8 +12,8 @@ public sealed record ServerStore(ServerCategory[] Categories, ServerItem[] Items
 
 public sealed record ServerCategory(string Key, string Name, ServerCategory[]? Children = null);
 
-/// <summary><see cref="Ems"/> is today's price, <see cref="Was"/> the price before an active discount (null without one); <see cref="Category"/> the key of its sub-category.</summary>
-public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable, int Capacity);
+/// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (the discount of the day taken off), <see cref="Was"/> the em$ price before an active discount (null without one); <see cref="Category"/> the key of its sub-category.</summary>
+public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable);
 
 public sealed record ServerBundle(int Id, string Name, string Description, int Price, ServerBundleItem[] Items);
 
