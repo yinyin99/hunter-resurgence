@@ -73,7 +73,7 @@
     [Parameter] public bool Minimal { get; set; }
 
     Session? session => Session;
-    Balances balances = new(0, 0, 0, 0);
+    Balances balances = new(0, 0, null, null);
     int unread, requests, friendsKey;
     bool shut;
     string avatar = "avatar-default";

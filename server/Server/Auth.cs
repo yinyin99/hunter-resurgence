@@ -360,7 +360,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             ["userId"] = account, ["handle"] = Store.HandleOf(account),
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
             ["rank"] = Store.Rank(account, state.LocalAccount),
-            ["ems"] = wallet["em"] is { } em ? Py.RoundInt(Py.D(em)) : 0, ["gms"] = wallet["gm"] is { } gm ? Py.RoundInt(Py.D(gm)) : 0,
+            ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
         });
     }
 
