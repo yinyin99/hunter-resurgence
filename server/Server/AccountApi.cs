@@ -38,11 +38,10 @@ public static class AccountApi
         return r.Method == "POST" && (r.Headers.Origin.Count > 0 ? r.Headers.Origin[0] == $"https://{r.Host.Host.ToLowerInvariant()}" : r.Headers.ContainsKey("X-Requested-With"));
     }
 
-    public static void MapAccount(this WebApplication app, Game game, string dataDir)
+    public static void MapAccount(this WebApplication app, Game game)
     {
+        if (app.Services.GetService<Uploads>() is not { } uploads) return;
         var state = game.State!;
-        if (!state.Online) return;
-        var uploads = new Uploads(state, dataDir);
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
         long? Account(HttpContext ctx) => SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } c ? state.Store.ResolveWebSession(c) : null;

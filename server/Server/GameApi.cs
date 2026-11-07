@@ -20,8 +20,7 @@ public static class GameApi
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
     static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
 
-    /// <summary>dataDir: the server's data folder, where the account's own pages (/account/) keep and delete files; none: they are off.</summary>
-    public static void MapGame(this WebApplication app, Game game, string? dataDir = null)
+    public static void MapGame(this WebApplication app, Game game)
     {
         var s = game.State;
         app.Map("/{**path}", Handle(game, _ => new Reply(204, [], [], "sink")))
@@ -134,7 +133,7 @@ public static class GameApi
               .WithName("LauncherCalls").WithSummary("The old launcher's own calls: token, initialise, compatibleHardware, ping")
               .WithDescription("Answered without recordings on a community server; a local server replays them.");
             app.MapAuth(game);
-            if (dataDir is not null) app.MapAccount(game, dataDir);
+            app.MapAccount(game);
             app.MapHunters(game);
             app.MapCatalog(game);
             api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
