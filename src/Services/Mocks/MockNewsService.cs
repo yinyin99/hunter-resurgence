@@ -16,6 +16,6 @@ public sealed class MockNewsService(string? mock = null) : INewsService
             .. Enumerable.Range(3, mock == "news:many" ? 4 : 0).Select(i => new Featured($"Featured post {i}", "Message from the team", "Read it here", "news:featured-post-" + i, new(2026, 7, 10 + i))),
         ]);
 
-    public Task<DiscordInfo> DiscordAsync() =>
-        Task.FromResult(new DiscordInfo(952, Enumerable.Range(1, 14).Select(i => new DiscordMember($"Member{i:00}", i % 3 == 0 ? "Some game" : null)).ToList()));
+    public Task<DiscordInfo?> DiscordAsync() =>
+        Task.FromResult<DiscordInfo?>(new DiscordInfo(952, Enumerable.Range(1, 14).Select(i => new DiscordMember($"Member{i:00}", i % 3 == 0 ? "Some game" : null)).ToList()));
 }

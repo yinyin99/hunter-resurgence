@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>JUCAȚI GRATUIT</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Continuați lectura →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Arhiva de știri</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>În dezvoltare</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Acest server al comunității este construit în mod deschis, iar unele pagini încă arată conținut de exemplu.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Urmăriți proiectul pe GitHub</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBRI ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Intrați pe Discord</value></data>

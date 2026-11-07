@@ -31,8 +31,8 @@ public class ServerStoreServiceTests
                      {"id": 10, "name": "Test Gone Pack", "description": "", "price": 0, "buyable": false, "items": [{"id": 77, "name": "Gone"}]}]}
         """;
 
-    static ServerStoreService Make(HttpMessageHandler handler, StoreCache? cache = null, string? host = "site.test") =>
-        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = "secret", Host = host }, cache ?? new StoreCache(), NullLogger<ServerStoreService>.Instance);
+    static ServerStoreService Make(HttpMessageHandler handler, ServerCache<ServerStore>? cache = null, string? host = "site.test") =>
+        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = "secret", Host = host }, cache ?? new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance);
 
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
@@ -126,7 +126,7 @@ public class ServerStoreServiceTests
     [Fact]
     public async Task ASuccessIsKeptForEveryone()
     {
-        var cache = new StoreCache();
+        var cache = new ServerCache<ServerStore>();
         var good = new Fake(_ => Json(HttpStatusCode.OK, Store));
         await Make(good, cache).CategoriesAsync();
         await Make(good, cache).ItemsAsync("all", "", 1);  // another visitor
@@ -147,7 +147,7 @@ public class ServerStoreServiceTests
     [Fact]
     public void TheCacheKeepsAStoreForFiveMinutesAndPausesAFailureForTen()
     {
-        var cache = new StoreCache();
+        var cache = new ServerCache<ServerStore>();
         var start = new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
         Assert.Null(cache.Get(start));
         Assert.False(cache.Paused(start));
@@ -194,7 +194,7 @@ public class ServerStoreServiceTests
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
         var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" },
-            new StoreCache(), NullLogger<ServerStoreService>.Instance);
+            new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance);
         Assert.False((await service.BuyAsync(1, false, gms)).Ok);
         Assert.Empty(fake.Seen);
     }

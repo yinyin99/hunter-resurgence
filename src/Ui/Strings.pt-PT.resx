@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>JOGA GRATUITAMENTE</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Continuar a ler →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Arquivo de notícias</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>Em desenvolvimento</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Este servidor da comunidade está a ser construído de forma aberta, e algumas páginas ainda mostram conteúdo de exemplo.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Acompanha o projeto no GitHub</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBROS ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Junta-te ao Discord</value></data>

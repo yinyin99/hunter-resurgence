@@ -317,20 +317,31 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestDeletingIsRefusedWhileAnUploadIsBusy()
     {
-        var pipe = new Pipe();
-        using var first = new HttpRequestMessage(HttpMethod.Post, "http://web.test/account/restore") { Content = new StreamContent(pipe.Reader.AsStream()) };
-        first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-        first.Headers.Add("X-Requested-With", "XMLHttpRequest");
-        first.Headers.Add("Cookie", "hr_session=" + cookie);
-        var sending = server.Http.SendAsync(first);
-        await pipe.Writer.WriteAsync(new byte[1 << 17], TestContext.Current.CancellationToken);
-        await pipe.Writer.FlushAsync(TestContext.Current.CancellationToken);
+        // the first upload holds the slot while its body is open; a probe upload tells when it does (a delete before that would succeed). A probe also takes the slot for a
+        // moment, so a first upload that arrives then is refused as busy and ends: it is sent again
+        (Pipe Body, Task Write, Task<HttpResponseMessage> Sending) Upload()
+        {
+            var pipe = new Pipe();
+            var first = new HttpRequestMessage(HttpMethod.Post, "http://web.test/account/restore") { Content = new StreamContent(pipe.Reader.AsStream()) };
+            first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+            first.Headers.Add("X-Requested-With", "XMLHttpRequest");
+            first.Headers.Add("Cookie", "hr_session=" + cookie);
+            var sending = server.Http.SendAsync(first);
+            // enough body for the request to reach the server; not awaited here, since a refused upload never reads it and the write would wait for good
+            return (pipe, pipe.Writer.WriteAsync(new byte[1 << 17], TestContext.Current.CancellationToken).AsTask(), sending);
+        }
+        var (body, write, sending) = Upload();
         (string, string)[] headers = [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)];
         Reply busy;
         var deadline = DateTime.UtcNow.AddSeconds(10);
-        do  // a second upload tells when the first holds the slot (a delete before that would succeed)
+        do
         {
             await Task.Yield();
+            if (sending.IsCompleted)
+            {
+                (await sending).Dispose();
+                (body, write, sending) = Upload();
+            }
             busy = await server.SendAsync("POST", "web.test", "/account/restore", [("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], []);
         } while (busy.Status != 429 && DateTime.UtcNow < deadline);
         Assert.Equal(429, busy.Status);
@@ -338,7 +349,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(429, refused.Status);
         Assert.Equal("busy", Status(JsonNode.Parse(refused.Body)!));
         Assert.True(state.Store.AccountExists(player));
-        await pipe.Writer.CompleteAsync();
+        await write;
+        await body.Writer.CompleteAsync();
         using var done = await sending;
         Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/delete", headers, "confirm=delete"u8.ToArray())).Status);
         Assert.False(state.Store.AccountExists(player));

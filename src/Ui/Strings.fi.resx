@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>PELAA ILMAISEKSI</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Jatka lukemista →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Uutisarkisto</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>Kehityksessä</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Tätä yhteisöpalvelinta rakennetaan avoimesti, ja osa sivuista näyttää vielä esimerkkisisältöä.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Seuraa projektia GitHubissa</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Paikalla: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>JÄSENET PAIKALLA</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>

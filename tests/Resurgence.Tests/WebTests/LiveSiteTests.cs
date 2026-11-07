@@ -64,7 +64,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string reply = """{"categories": [{"key": "0", "name": "Weapons", "children": [{"key": "0", "name": "Rifles"}, {"key": "1", "name": "Handguns"}]}], "items": [], "bundles": []}""";
         Services.AddSingleton<IStoreService>(new ServerStoreService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
-            new ServerCookie(), new StoreCache(), NullLogger<ServerStoreService>.Instance));
+            new ServerCookie(), new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
 
         var cut = Render<Resurgence.Ui.Components.StoreFrame>(p => p.Add(f => f.Active, "0"));
 
@@ -149,5 +149,34 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05"));
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
         Assert.Equal(buttons, cut.FindAll("button.request").Count);
+    }
+
+    // the live slides are the original's: the picture is named after the one each showed, never the mock's stand-in of the target; no link text, no link
+    [Fact]
+    public void ALiveSlideIsNamedAfterItsPictureAndHasNoLinkWithoutText()
+    {
+        const string reply = """{"posts": [], "featured": [{"title": "Sale", "lead": "Half off", "linkText": "", "target": "/store/sales", "image": "big-sale", "date": "2026-01-01T00:00:00"}]}""";
+        Services.AddSingleton<INewsService>(new ServerNewsService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new ServerCache<ServerNews>(), NullLogger<ServerNewsService>.Instance));
+        Live(true);
+
+        var cut = Render<FeedCarousel>();
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".carousel")));
+        Assert.Contains("splash-big-sale", cut.Markup);
+        Assert.DoesNotContain("news-/store/sales", cut.Markup);
+        Assert.Empty(cut.FindAll(".caption a"));
+    }
+
+    // the live site says on its feed that it is still being built; the launcher and the development website (the mock) do not
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 1)]
+    public void OnlyTheLiveFeedHasTheDevelopmentNote(bool live, int notes)
+    {
+        Live(live);
+        var cut = Render<Feed>();
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".news")));
+        Assert.Equal(notes, cut.FindAll("article.dev-note").Count);
     }
 }

@@ -14,10 +14,10 @@ using Resurgence.Web.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-// LINK_BACKUP, GAME_NAME, GAME_FULL: set by the deploy from the repository variables of the same names (docs/deploy.md); each wins over its key in settings.json
+// LINK_BACKUP, LINK_SOURCE, GAME_NAME, GAME_FULL: set by the deploy (docs/deploy.md); each wins over its key in settings.json
 var config = builder.Configuration;
 builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
-    .With("link_backup", config["LINK_BACKUP"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
+    .With("link_backup", config["LINK_BACKUP"]).With("link_source", config["LINK_SOURCE"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
 builder.Services.AddMockServices();
 // with SERVER_URL the pages of mock data and the bank are hidden, and the store buys from the server (HostMode.Live, docs/website.md#sign-in)
 var live = builder.Configuration["SERVER_URL"] is { Length: > 0 };
@@ -67,8 +67,11 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
-    builder.Services.AddSingleton<StoreCache>();
-    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<StoreCache>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
+    builder.Services.AddSingleton<ServerCache<ServerStore>>();
+    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
+    // the feed's news and slides are the server's recorded ones, shared the same way; no Discord widget
+    builder.Services.AddSingleton<ServerCache<ServerNews>>();
+    builder.Services.AddScoped<INewsService>(sp => new ServerNewsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerNews>>(), sp.GetRequiredService<ILogger<ServerNewsService>>()));
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();

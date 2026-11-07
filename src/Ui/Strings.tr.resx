@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>ÜCRETSİZ OYNA</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Okumaya devam et →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Haber Arşivi</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>Geliştirme aşamasında</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Bu topluluk sunucusu açık bir şekilde geliştiriliyor ve bazı sayfalar hâlâ örnek içerik gösteriyor.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Projeyi GitHub'da takip edin</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Çevrimiçi: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>ÇEVRİMİÇİ ÜYELER</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>

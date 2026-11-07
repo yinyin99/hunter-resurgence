@@ -55,16 +55,19 @@ jobs:
         if: steps.secrets.outputs.ok
         env:
           LINK_BACKUP: ${{ vars.LINK_BACKUP }}
+          # the project's repository, for the live feed's development note; a LINK_SOURCE variable wins
+          LINK_SOURCE: ${{ vars.LINK_SOURCE || format('{0}/{1}', github.server_url, github.repository) }}
           GAME_NAME: ${{ vars.GAME_NAME }}
           GAME_FULL: ${{ vars.GAME_FULL }}
         run: |
-          # the repository variables go into .env and into a single-quoted remote command: LINK_BACKUP URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
+          # the repository variables go into .env and into a single-quoted remote command: the links URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
           extra=""
-          if [ -n "$LINK_BACKUP" ]; then
-            url='^https://[A-Za-z0-9._~:/?@!&+,;=%-]+$'
-            [[ $LINK_BACKUP =~ $url ]] || { echo "::error::LINK_BACKUP is not an https URL"; exit 1; }
-            extra=" && echo 'LINK_BACKUP=$LINK_BACKUP' >> .env"
-          fi
+          url='^https://[A-Za-z0-9._~:/?@!&+,;=%-]+$'
+          for v in LINK_BACKUP LINK_SOURCE; do
+            [ -n "${!v}" ] || continue
+            [[ ${!v} =~ $url ]] || { echo "::error::$v is not an https URL"; exit 1; }
+            extra+=" && echo '$v=${!v}' >> .env"
+          done
           name='^[A-Za-z0-9 .:-]+$'
           for v in GAME_NAME GAME_FULL; do
             [ -n "${!v}" ] || continue
@@ -75,6 +78,6 @@ jobs:
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy)
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2> /dev/null
           scp -i ~/.ssh/deploy deploy/compose.yml deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:web/"
-          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=$SHA/' -e 's/^SERVER_TAG=.*/SERVER_TAG=$SHA/' .env && sed -i -e '/^\(LINK_BACKUP\|GAME_NAME\|GAME_FULL\)=/d' -e '\$a\\' .env$extra && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
+          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=$SHA/' -e 's/^SERVER_TAG=.*/SERVER_TAG=$SHA/' .env && sed -i -e '/^\(LINK_BACKUP\|LINK_SOURCE\|GAME_NAME\|GAME_FULL\)=/d' -e '\$a\\' .env$extra && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
       - if: always()
         run: rm -f ~/.ssh/deploy

@@ -54,9 +54,9 @@ SERVER_TAG=latest
 SERVER_DIR=/home/deploy/server
 ```
 
-`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository variables of the same names (no line for an unset variable); compose passes them to `web`.
+`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `LINK_SOURCE=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository variables of the same names (no line for an unset variable; `LINK_SOURCE` defaults to the repository the deploy runs from); compose passes them to `web`.
 
-The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `GAME_FULL`, `GAME_NAME`, `IMAGES_DIR`, `LINK_BACKUP` and `SERVER_URL`. `IMAGES_DIR` is `/images`, where compose mounts `SERVER_DIR/images` read-only: the slot pictures ([images.md](images.md)). `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send `/auth/*` to the server for the sign-in links to work.
+The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `GAME_FULL`, `GAME_NAME`, `IMAGES_DIR`, `LINK_BACKUP`, `LINK_SOURCE` and `SERVER_URL`. `IMAGES_DIR` is `/images`, where compose mounts `SERVER_DIR/images` read-only: the slot pictures ([images.md](images.md)). `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send `/auth/*` to the server for the sign-in links to work.
 
 `settings.json` (the other links, see [launcher.md](launcher.md#settingsjson)) is optional. The game name and the backup tool link come from the `GAME_NAME`, `GAME_FULL` and `LINK_BACKUP` variables, which win over `game_name`, `game_full` and `link_backup` of the file. To use one, put it in `~/web/` and mount it in `compose.override.yml`, which Compose reads next to `compose.yml` and deploys never overwrite:
 
@@ -124,7 +124,7 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 `.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets):
 
 1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
-2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
+2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
 
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
@@ -141,10 +141,11 @@ Repository variables (Settings, Secrets and variables, Actions, Variables):
 | Variable | Value | Unset |
 |---|---|---|
 | `LINK_BACKUP` | the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` | `link_backup` of `settings.json`, if any, else no backup tool button |
+| `LINK_SOURCE` | the project's repository, linked by the live feed's development note | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |
 
-An unset variable removes its line. A `LINK_BACKUP` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
+An unset variable removes its line. A `LINK_BACKUP` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
 
 ## Rollback
 
@@ -258,4 +259,4 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 ## Known limits
 
-- Most pages are still a mock (the news, competitions, the other boards, help, and what a signed-out visitor sees of players); only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.
+- Most pages are still a mock (competitions, the other boards, help, and what a signed-out visitor sees of players); only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.
