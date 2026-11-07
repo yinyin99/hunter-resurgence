@@ -51,6 +51,16 @@ public sealed class MenuBarTests : UiContext
 
     [Theory]
     [InlineData(false, 1)]
+    [InlineData(true, 0)]  // the live site has no competitions
+    public void TheCompetitionsItemShowsOnlyOffTheLiveSite(bool live, int items)
+    {
+        Services.GetRequiredService<HostMode>().Live = live;
+        var cut = Render<MenuBar>();
+        Assert.Equal(items, cut.FindAll("a[href='/competitions']").Count);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
     [InlineData(true, 0)]
     public void TheMissionsItemShowsOnlyOffTheLiveSite(bool live, int items)
     {

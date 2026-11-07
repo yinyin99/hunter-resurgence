@@ -1,4 +1,5 @@
 @inject IProfileService Service
+@inject HostMode Mode
 
 @if (page is not null)
 {
@@ -8,7 +9,8 @@
         {
             <li>
                 <AssetSlot Name="@($"trophy-{t.Name}")" Width="150" Height="150" />
-                @if (t.CompetitionId is { } id) { <a href="/competitions/details/@id">@t.Competition</a> }
+                @if (t.CompetitionId is { } id && !Mode.Live) { <a href="/competitions/details/@id">@t.Competition</a> }
+                else if (t.CompetitionId is not null) { <span>@t.Competition</span> }  @* the live site has no competition pages *@
                 <b>@t.Name</b>
                 <span>@t.Date.ToString("yyyy-MM-dd")</span>
             </li>

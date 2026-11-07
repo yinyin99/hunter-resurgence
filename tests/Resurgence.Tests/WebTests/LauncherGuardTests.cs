@@ -31,8 +31,11 @@ public class LauncherGuardTests
     [InlineData("wallet/ems", true)]
     [InlineData("/Messages", true)]
     [InlineData("bank/ems", true)]
+    [InlineData("competitions", true)]               // no source on the live site: the recorded ones ended weeks ago
+    [InlineData("competitions/details/3/history", true)]
     [InlineData("restore", false)]
     [InlineData("store", false)]
     [InlineData("profile/x", false)]
-    public void TheMockOnlyRoutesAreTheSignedInOnesExceptRestore(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
+    [InlineData("leaderboards", false)]
+    public void TheMockOnlyRoutesAreTheSignedInOnesExceptRestoreAndTheCompetitions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
 }

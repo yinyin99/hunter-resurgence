@@ -1,5 +1,5 @@
-// The hunterscore board and one hunter's place on it, on the website's host: public, no cookie. The website's server calls
-// them over SERVER_URL; a browser never does, so the reverse proxy does not have to route /hunters/. Online only.
+// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public, no cookie. The website's
+// server calls them over SERVER_URL; a browser never does, so the reverse proxy does not have to route /hunters/ or /leaderboards/. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
@@ -41,6 +41,27 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("Hunter").WithSummary("A hunter's hunterscore and place on the board")
             .WithDescription("`{handle, hunterscore, rank}` (the handle as the account spells it); 404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .MapGet("/{kind}", (string kind, HttpContext ctx) =>
+            {
+                if (!Store.GameColumns.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
+                var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
+                var board = state.Store.GameBoard(kind, state.LocalAccount);
+                var total = board.Count;
+                var pages = Math.Max(1, (total + PageSize - 1) / PageSize);
+                page = Math.Min(page, pages);
+                var rows = board.Skip((page - 1) * PageSize).Take(PageSize).Select((r, i) => (Rank: (page - 1) * PageSize + i + 1, r.Handle, r.Score));
+                return Json(200, new JsonObject
+                {
+                    ["page"] = page, ["pages"] = pages, ["total"] = total,
+                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Score })]),
+                });
+            })
+            .WithName("GameBoard").WithSummary("One page of a minigame's board: lanebandit or bustthrough")
+            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores restored from the players' backups (statistics); an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
+            .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }
 }

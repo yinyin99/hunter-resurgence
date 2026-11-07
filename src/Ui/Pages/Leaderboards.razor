@@ -61,7 +61,8 @@
         case "lanebandit" or "bustthrough":
             <section class="panel head info">
                 <h4>@L[kind == "lanebandit" ? "Board.TopLane" : "Board.TopBust"]</h4>
-                <p>@L[kind == "lanebandit" ? "Board.LaneInfo" : "Board.BustInfo"] @if (kind == "lanebandit") { <a href="/store/item/66">@L["Board.GetLane"] <Icon Name="chevron-right" /></a> }</p>
+                @* the store link names the mock's item; the live store's ids are the original's *@
+                <p>@L[kind == "lanebandit" ? "Board.LaneInfo" : "Board.BustInfo"] @if (kind == "lanebandit" && !Mode.Live) { <a href="/store/item/66">@L["Board.GetLane"] <Icon Name="chevron-right" /></a> }</p>
             </section>
             @if (mine is not null || !Mode.Live)
             {
@@ -132,14 +133,21 @@ else
             (L["Board.Score"], "/leaderboards/score"), (L["Board.Range"], "/leaderboards/range"), (L["Board.HunterScore"], "/leaderboards/hunterscore"), (L["Board.HallOfFame"], "/leaderboards/halloffame"),
             (L["Board.LaneBandit"], "/leaderboards/lanebandit"), (L["Board.BustThrough"], "/leaderboards/bustthrough"), (L["Board.Single"], "/leaderboards/antlers/single"), (L["Board.Double"], "/leaderboards/antlers/double"),
         ];
+        // the community server has no seasons, species or antler boards: the live site offers the boards it has
+        if (Mode.Live) tabs = [.. tabs.Where(t => ServerLeaderboardsService.Kinds.Contains(t.Href["/leaderboards/".Length..]))];
     }
 
     protected override async Task OnParametersSetAsync()
     {
         loaded = false;
-        var p = (Path ?? "score").Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var p = (Path ?? (Mode.Live ? "hunterscore" : "score")).Split('/', StringSplitOptions.RemoveEmptyEntries);
         var numbers = p.SkipWhile(s => !int.TryParse(s, out _)).Select(int.Parse).ToArray();
         kind = p[0] == "antlers" ? "antlers-" + (p.Length > 1 ? p[1] : "single") : p[0];
+        if (Mode.Live && !ServerLeaderboardsService.Kinds.Contains(kind))
+        {
+            Nav.NavigateTo("/leaderboards/hunterscore", replace: true);
+            return;
+        }
         active = tabs.FirstOrDefault(t => t.Href == "/leaderboards/" + kind.Replace("-", "/")).Href ?? tabs[0].Href;
         season = current = await Service.SeasonAsync();
         (id, page, mine, boards, rows) = (0, 1, null, [], []);

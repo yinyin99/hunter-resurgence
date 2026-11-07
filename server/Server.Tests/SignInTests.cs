@@ -282,6 +282,28 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheMinigameBoardsListTheRestoredBestScores()
+    {
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "fourth");
+        state.CreateAccount(11, "nogame");
+        state.CreateAccount(12, "banned");
+        foreach (var (id, lane, bust) in new (long, long?, long?)[] { (9, 300, null), (10, 300, 40), (11, 0, null), (12, 900, 900) })
+        {
+            using var con = state.Store.Open(id);
+            PlayerRows.SetStatistics(con, new JsonObject(), 0, 0, bust, lane);
+        }
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        // equal scores: the lower account id first; a 0, no score and a banned account are not on it
+        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "third", "value": 300}, {"rank": 2, "handle": "fourth", "value": 300}]}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
+        Eq("""{"page": 1, "pages": 1, "total": 1, "rows": [{"rank": 1, "handle": "fourth", "value": 40}]}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
+        Assert.Equal(404, (await Get("web.test", "/leaderboards/score")).Status);
+    }
+
+    [Fact]
     public async Task TestEveryNewAccountGetsTheNextIdOfTheServersRange()
     {
         await SignIn("99999999999999991", "one");

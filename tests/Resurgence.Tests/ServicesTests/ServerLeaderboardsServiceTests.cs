@@ -39,12 +39,29 @@ public class ServerLeaderboardsServiceTests
         Assert.Equal("site.test", request.Headers.Host);
     }
 
+    // the server has no seasons, species, antler or hall of fame boards: none of them, and none of the mock's
     [Fact]
-    public async Task OtherBoardsAskNothing()
+    public async Task TheBoardsTheServerHasNotAreEmptyAndAskNothing()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
-        Assert.NotEmpty((await Make(fake).RowsAsync("score", 1, 1)).Rows);
+        var service = Make(fake);
+        Assert.Empty((await service.RowsAsync("score", 1, 1)).Rows);
+        Assert.Empty(await service.BoardsAsync("score"));
+        Assert.Empty(await service.HallAsync(1));
+        Assert.Equal(0, await service.SeasonAsync());
         Assert.Empty(fake.Seen);
+    }
+
+    [Theory]
+    [InlineData("lanebandit")]
+    [InlineData("bustthrough")]
+    public async Task AMinigameBoardIsTheServersPage(string kind)
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 3, "total": 61, "rows": [{"rank": 31, "handle": "Fox", "value": 4200}]}"""));
+        var page = await Make(fake).RowsAsync(kind, 0, 2);
+        Assert.Equal((2, 3, 61), (page.Number, page.Pages, page.Total));
+        Assert.Equal(new Ranked(31, "Fox", 4200), Assert.Single(page.Rows));
+        Assert.Equal($"/leaderboards/{kind}?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
     }
 
     [Fact]
@@ -79,11 +96,14 @@ public class ServerLeaderboardsServiceTests
     }
 
     [Theory]
-    [InlineData(HttpStatusCode.InternalServerError, "{}")]
-    [InlineData(HttpStatusCode.OK, "<html>")]
-    public async Task AFailedOrGarbledBoardIsEmpty(HttpStatusCode code, string body)
+    [InlineData("hunterscore", HttpStatusCode.InternalServerError, "{}")]
+    [InlineData("hunterscore", HttpStatusCode.OK, "<html>")]
+    [InlineData("hunterscore", HttpStatusCode.OK, "{}")]  // a reply without rows
+    [InlineData("lanebandit", HttpStatusCode.InternalServerError, "{}")]
+    [InlineData("bustthrough", HttpStatusCode.OK, "{}")]
+    public async Task AFailedOrGarbledBoardIsEmpty(string kind, HttpStatusCode code, string body)
     {
-        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync("hunterscore", 0, 1);
+        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync(kind, 0, 1);
         Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
     }
 
@@ -96,7 +116,7 @@ public class ServerLeaderboardsServiceTests
     public async Task OtherBoardsAskNothingForTheRankEither()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
-        Assert.Null(await Make(fake).MyRankAsync("score", 1));  // the mock's "Your rank" is a fictional hunter's
+        Assert.Null(await Make(fake).MyRankAsync("lanebandit", 0));  // the server keeps a place on the hunterscore board only
         Assert.Empty(fake.Seen);
     }
 }
