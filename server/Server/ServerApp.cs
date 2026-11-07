@@ -70,7 +70,7 @@ public static class ServerApp
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"),
             o.WorkDir is null ? null : Path.Combine(o.WorkDir, "telemetry.jsonl")));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
-        // the account's own pages (/account/) keep and delete files in the work folder; without one they are off
+        // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
         if (o.Game.State is { Online: true } state && o.WorkDir is not null) builder.Services.AddSingleton(new Uploads(state, o.WorkDir));
         builder.Services.AddProblemDetails();
         builder.Services.AddOpenApi("game", d =>
