@@ -75,7 +75,7 @@
   <data name="Alert.No" xml:space="preserve"><value>Non</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICATIONS</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>En cours de développement : rien ici n’est encore réel. Les serveurs officiels fonctionnent jusqu’au 2026-11-11.</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>En cours de développement : certaines pages affichent encore du contenu d’exemple. Les serveurs officiels fonctionnent jusqu’au 2026-11-11.</value></data>
   <data name="Backup.Banner" xml:space="preserve"><value>Sauvegardez votre profil d’ici là : téléchargez l’outil de sauvegarde</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Sauvegardez votre profil avec l’outil de sauvegarde</value></data>
   <data name="Backup.Intro" xml:space="preserve"><value>L’outil de sauvegarde est une petite application Windows qui enregistre votre profil (statistiques, inventaire, trophées, historique de chasse et plus) sous forme de fichiers sur votre PC tant que les serveurs officiels fonctionnent, jusqu’au 2026-11-11. Il ne fait que lire ; il ne modifie rien sur le serveur.</value></data>

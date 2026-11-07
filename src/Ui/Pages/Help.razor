@@ -5,6 +5,7 @@
 @inject Branding Brand
 @inject HostMode Mode
 @inject ModalService Modal
+@inject NavigationManager Nav
 
 <PageTitle>@L["Menu.Help"]</PageTitle>
 
@@ -24,7 +25,8 @@
                     <li>@L.Frag("Help.Support.Wiki", Ext("wiki", L["Help.Support.LinkWiki"]), Ext("wiki_de", L["Help.Lang.German"]), Ext("wiki_fr", L["Help.Lang.French"]), Ext("wiki_es", L["Help.Lang.Spanish"]))</li>
                     <li><ExternalLink Key="support_connections">@L["Help.Support.Connections"]</ExternalLink></li>
                 </ul>
-                <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="245" /><b>@L["Help.Support.NewTo"]</b><span>@L["Help.Support.Videos"]</span></a>
+                @* the video tutorials are the mock's on the live site (#225) *@
+                @if (!Mode.Live) { <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="245" /><b>@L["Help.Support.NewTo"]</b><span>@L["Help.Support.Videos"]</span></a> }
                 break;
             case "guides":
                 <h3>@L["Help.Guides.Title"]</h3>
@@ -74,7 +76,8 @@
 
     [Parameter] public string? Tab { get; set; }
     [Parameter] public int? Section { get; set; }
-    string tab => Section is not null ? "tutorials" : Tab is "guides" or "day-mission" or "tutorials" or "community" ? Tab! : "support";
+    string requested => Section is not null ? "tutorials" : Tab is "guides" or "day-mission" or "tutorials" or "community" ? Tab! : "support";
+    string tab => Mode.Live ? "support" : requested;
     int section => Section ?? 1;
 
     RenderFragment Ext(string key, string text) => @<ExternalLink Key="@key">@text</ExternalLink>;
@@ -85,9 +88,15 @@
     protected override async Task OnInitializedAsync()
     {
         tabs = [(L["Help.Tabs.Support"], "/help"), (L["Mis.Daily"], "/help/day-mission"), (L["Help.Tabs.Guides"], "/help/guides"), (L["Help.Tabs.Video"], "/help/tutorials"), (L["Help.Tabs.Community"], "/help/community")];
+        // the live site keeps the support tab: the guides, tutorials and community sites are the mock's, and the daily missions are not offered there (#225)
+        if (Mode.Live) { tabs = tabs.Take(1).ToList(); return; }
         (guides, sections, communities) = (await Service.GuidesAsync(), await Service.TutorialsAsync(), await Service.CommunitiesAsync());
         pills = sections.Select(s => (s.Title, "/help/tutorials/" + s.Id)).ToList();
     }
 
-    protected override void OnParametersSet() => current = sections.FirstOrDefault(s => s.Id == section);
+    protected override void OnParametersSet()
+    {
+        if (Mode.Live && requested != "support") Nav.NavigateTo("/help", replace: true);
+        current = sections.FirstOrDefault(s => s.Id == section);
+    }
 }
