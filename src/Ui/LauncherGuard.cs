@@ -6,8 +6,9 @@ public static class LauncherGuard
     static readonly string[] LauncherOnly = ["dashboard", "launch-map", "servers", "tutorials"];
     // the old "V" routes: signed-in players only (the inventory lists missions, wallet, messages, settings, dashboard, welcome and more)
     static readonly string[] SignedIn = ["missions", "wallet", "bank", "messages", "new-message", "settings", "game-management", "invite-friends", "welcome", "community-league", "community_league", "steam_callback", "restore"];
-    // the signed-in routes whose data is still the mock's: the website with a community server does not serve them (HostMode.Live)
-    static readonly string[] MockData = [.. SignedIn.Except(["restore"])];
+    // the routes whose data is still the mock's: the website with a community server does not serve them (HostMode.Live). Competitions have no
+    // source there: the only recorded ones ended weeks ago (docs/website.md#sign-in)
+    static readonly string[] MockData = [.. SignedIn.Except(["restore"]), "competitions"];
 
     public static bool Blocks(string path) => Starts(path, LauncherOnly);
 

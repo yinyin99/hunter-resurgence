@@ -24,18 +24,6 @@ public sealed class LiveSiteTests : UiContext
     [Theory]
     [InlineData(false, 1)]
     [InlineData(true, 0)]
-    public void TheEnrolledListAndTheActionsAreTheMocksPlayersNotLiveData(bool live, int shown)
-    {
-        Live(live);
-        var cut = Render<Competitions>();
-        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("table.comps.all tbody tr")));
-        Assert.Equal(shown, cut.FindAll("h4.enrolled").Count);
-        Assert.Equal(shown > 0, cut.FindAll("td.action").Count > 0);
-    }
-
-    [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 0)]
     public void TheBundlesOwnColumnIsNotShownLive(bool live, int columns)
     {
         Live(live);
@@ -114,16 +102,23 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
     }
 
+    // the community server has no seasons, species or antler boards: the live site offers the three it has, and another board's address goes to the hunterscore board
     [Theory]
-    [InlineData(false, 5)]
-    [InlineData(true, 3)]
-    public void ACompetitionShowsNoPositionAttemptsOrJoinLive(bool live, int stats)
+    [InlineData("score", "/leaderboards/hunterscore")]
+    [InlineData("halloffame/3", "/leaderboards/hunterscore")]
+    [InlineData("antlers/single", "/leaderboards/hunterscore")]
+    [InlineData("bustthrough", "/")]
+    public void TheLiveBoardsAreTheServersThree(string path, string landed)
     {
-        Live(live);
-        var cut = Render<CompetitionView>(p => p.Add(c => c.Id, 180100));
-        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("dl.stats")));
-        Assert.Equal(stats, cut.FindAll("dl.stats > div").Count);
-        Assert.Equal(live ? 0 : 1, cut.FindAll("button.leave").Count);
+        Services.AddSingleton<ILeaderboardsService>(new ServerLeaderboardsService(
+            new HttpClient(new Answer(HttpStatusCode.OK, """{"page": 1, "pages": 1, "total": 0, "rows": []}""")) { BaseAddress = new Uri("http://server.test") }, new ServerCookie(), NullLogger<ServerLeaderboardsService>.Instance));
+        Live(true);
+        var nav = Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
+
+        var cut = Render<Leaderboards>(p => p.Add(l => l.Path, path));
+
+        Assert.Equal(landed, "/" + nav.ToBaseRelativePath(nav.Uri));
+        Assert.Equal(["/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
     }
 
     [Theory]

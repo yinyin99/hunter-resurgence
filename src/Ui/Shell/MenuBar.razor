@@ -33,7 +33,7 @@ else
             {
                 <li><a href="/feed" class="@Active("feed")">@L["Menu.News"]</a></li>
             }
-            <li><a href="/competitions" class="@Active("competitions")">@L["Menu.Competitions"]</a></li>
+            @if (!Mode.Live) { <li><a href="/competitions" class="@Active("competitions")">@L["Menu.Competitions"]</a></li> }
             <li><a href="/leaderboards" class="@Active("leaderboards")">@L["Menu.Leaderboards"]</a></li>
             @if (!Mode.Live) { <li><a href="/missions/daily" class="@Active("missions")">@L["Menu.Missions"]</a></li> }
             @if (!Mode.Launcher)

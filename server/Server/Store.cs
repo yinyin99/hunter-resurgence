@@ -263,6 +263,30 @@ public sealed class Store
         return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
     }
 
+    /// <summary>The minigames' best scores of the restored accounts (statistics, from a backup), by kind.</summary>
+    public static readonly Dictionary<string, string> GameColumns = new() { ["lanebandit"] = "lane_bandit_score", ["bustthrough"] = "bust_through_score" };
+
+    /// <summary>One page of a minigame's board (a kind of <see cref="GameColumns"/>): the accounts with a score above 0, highest first, equal scores in account id order.
+    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); one query per account
+    /// on every page view, fine for the restored accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
+    public (List<(long Rank, string Handle, long Score)> Rows, long Total) GameBoard(string kind, long? excluded, int offset, int limit)
+    {
+        var column = GameColumns[kind];  // a fixed name, never the request's
+        List<(long Id, string Handle)> accounts;
+        using (var con = Open())
+            accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", excluded).Select(r => ((long)r[0], (string)r[1]))];
+        var scored = new List<(string Handle, long Score)>();
+        foreach (var (id, handle) in accounts)
+        {
+            using var con = Open(id);
+            if (con.Scalar($"SELECT {column} FROM statistics WHERE account_id = $a") is long score && score > 0)
+                scored.Add((handle, score));
+        }
+        var rows = scored.OrderByDescending(s => s.Score)  // a stable sort: equal scores keep the account id order
+            .Skip(offset).Take(limit).Select((s, i) => (offset + i + 1L, s.Handle, s.Score)).ToList();
+        return (rows, scored.Count);
+    }
+
     /// <summary>A hunter on the board by handle (case does not matter); null when unknown, banned or `excluded`.</summary>
     public (string Handle, long Hunterscore, long Rank)? Hunter(string handle, long? excluded)
     {
