@@ -2,7 +2,7 @@
 
 ## What this is
 
-The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. The website is mostly the **mock** website: its pages show fixed, fictional data. With `SERVER_URL` (as in `compose.yml`) the store, the sign-in, the hunterscore and the restore page are the community server's, and the pages of the player's own data are hidden ([website.md](website.md#sign-in)). A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says so; change or remove it when real features arrive.
+The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. Without `SERVER_URL` the website is the **mock** website: its pages show fixed, fictional data. With it (as in `compose.yml`) the sign-in, the store and buying, the news, the hunterscore and minigame boards and the restore page are the community server's, and the pages without a source are hidden ([website.md](website.md#sign-in), [Known limits](#known-limits)). A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says that some pages still show sample content; change or remove it when that is no longer so.
 
 | File | Purpose |
 |---|---|
@@ -259,4 +259,17 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 ## Known limits
 
-- Help is still a mock, and so is what a signed-out visitor sees of fictional players; competitions and the boards without a source are not offered. Only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.
+What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some pages still show sample content.
+
+- **Still sample content:** the profiles of the mock's fictional hunters (a signed-out visitor's preview, or an address typed by hand). The help page keeps its support tab only; its guides, video tutorials and community sites are the mock's ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225)).
+- **Not offered** (the address goes to the feed, or to the hunterscore board):
+  - the competitions and the community league, the season boards (species score and range, hall of fame) and the antler boards: the server has no seasons, competitions or antler measurements ([#222](https://github.com/yinyin99/hunter-resurgence/issues/222));
+  - missions, wallet, bank, messages, friends, settings and game management: the server keeps no such data for an account yet, and the bank would take real money.
+- **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A discount shows only when the recording holds one; the live server has none, so nothing is on sale.
+  - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)) and checks no ownership limit ([#220](https://github.com/yinyin99/hunter-resurgence/issues/220)).
+  - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).
+  - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
+  - After a purchase the status bar shows the new balance at its next 30 second refresh.
+- **The news** is the saved launcher feed (a recording, else the mirror's copy), frozen on the day it was saved, after the site's own development note. The slides' pictures are boxes until mapped (#224). There is no Discord widget: the server has no source for it.
+- **The Lane Bandit and Bust Through boards** list only the scores restored from backups: the server records no minigame score played on it ([#223](https://github.com/yinyin99/hunter-resurgence/issues/223)). Each page view reads every account once.
+- **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), so a flaky test there holds the live site back until `ci` is run again or the test is fixed ([#213](https://github.com/yinyin99/hunter-resurgence/issues/213), [#219](https://github.com/yinyin99/hunter-resurgence/issues/219)).

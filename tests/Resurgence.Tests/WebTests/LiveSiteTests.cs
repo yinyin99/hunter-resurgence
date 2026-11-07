@@ -121,6 +121,25 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(["/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
     }
 
+    // the live help keeps its support tab: the other tabs are the mock's (or explain a page the live site lacks), and their addresses go to /help
+    [Theory]
+    [InlineData("guides", "/help")]
+    [InlineData("tutorials", "/help")]
+    [InlineData("community", "/help")]
+    [InlineData("day-mission", "/help")]
+    [InlineData(null, "/")]
+    public void TheLiveHelpIsItsSupportTab(string? tab, string landed)
+    {
+        Live(true);
+        var nav = Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
+
+        var cut = Render<Help>(p => p.Add(h => h.Tab, tab));
+
+        Assert.Equal(landed, "/" + nav.ToBaseRelativePath(nav.Uri));
+        Assert.Equal(["/help"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
+        Assert.Empty(cut.FindAll("a.banner"));
+    }
+
     [Theory]
     [InlineData(false, 1)]
     [InlineData(true, 0)]
