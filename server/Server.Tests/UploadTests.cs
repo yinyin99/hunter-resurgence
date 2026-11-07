@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Server;
 using static Resurgence.Server.Replay;
 using static Resurgence.Server.Tests.Fixtures;
@@ -300,36 +301,28 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         return (pipe, pipe.Writer.WriteAsync(new byte[1 << 17], TestContext.Current.CancellationToken).AsTask(), sending);
     }
 
-    /// <summary>An open upload once a probe upload is refused as busy: then it holds the slot. A probe takes the slot for a moment too, so the probes are 50 ms
-    /// apart (back to back they hold it nearly all the time), and an open upload that arrived while a probe held it was refused and ended: it is opened again.</summary>
-    async Task<(Pipe Body, Task Write, Task<HttpResponseMessage> Sending, Reply Busy)> HoldTheSlot()
+    /// <summary>An open upload once the server's own <see cref="Uploads"/> says it holds the account's slot. Nothing else asks for the slot meanwhile:
+    /// a probe upload would take it for a moment, and an open upload arriving then is refused while its client keeps waiting to send the body.</summary>
+    async Task<(Pipe Body, Task Write, Task<HttpResponseMessage> Sending)> HoldTheSlot()
     {
+        var uploads = server.Services.GetRequiredService<Uploads>();
         var (body, write, sending) = OpenUpload();
-        Reply busy;
-        var reopened = 0;
         var deadline = DateTime.UtcNow.AddSeconds(10);
-        do
+        while (!uploads.Busy(player))
         {
-            await Task.Delay(50, TestContext.Current.CancellationToken);
-            if (sending.IsCompleted)
-            {
-                // only a busy refusal ends an open upload early; the reopened one gets its 50 ms before the next probe
-                using (var ended = await sending) Assert.Equal(429, (int)ended.StatusCode);
-                (body, write, sending) = OpenUpload();
-                reopened++;
-                await Task.Delay(50, TestContext.Current.CancellationToken);
-            }
-            busy = await server.SendAsync("POST", "web.test", "/account/restore", [("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], []);
-        } while (busy.Status != 429 && DateTime.UtcNow < deadline);
-        Assert.True(busy.Status == 429, $"no probe saw the open upload hold the slot ({reopened} reopened, last probe {busy.Status})");
-        return (body, write, sending, busy);
+            Assert.False(sending.IsCompleted, "the open upload ended before it held the slot");
+            Assert.True(DateTime.UtcNow < deadline, "the open upload never held the slot");
+            await Task.Delay(10, TestContext.Current.CancellationToken);
+        }
+        return (body, write, sending);
     }
 
     [Fact]
     public async Task TestASecondUploadWhileOneIsStillArrivingGetsBusy()
     {
-        var (body, write, sending, second) = await HoldTheSlot();
-        Assert.Equal("busy", Status(JsonNode.Parse(second.Body)!));
+        var (body, write, sending) = await HoldTheSlot();
+        var second = await Upload("x"u8.ToArray());
+        Assert.Equal((429, "busy"), (second.Reply.Status, Status(second.Body)));
         await write;
         await body.Writer.CompleteAsync();
         using var done = await sending;  // the first one ends (its bytes are no zip)
@@ -342,7 +335,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     public async Task TestDeletingIsRefusedWhileAnUploadIsBusy()
     {
         (string, string)[] headers = [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)];
-        var (body, write, sending, _) = await HoldTheSlot();  // a delete before the upload holds the slot would succeed
+        var (body, write, sending) = await HoldTheSlot();  // a delete before the upload holds the slot would succeed
         var refused = await server.SendAsync("POST", "web.test", "/account/delete", headers, "confirm=delete"u8.ToArray());
         Assert.Equal(429, refused.Status);
         Assert.Equal("busy", Status(JsonNode.Parse(refused.Body)!));

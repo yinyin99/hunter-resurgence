@@ -70,6 +70,8 @@ public static class ServerApp
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"),
             o.WorkDir is null ? null : Path.Combine(o.WorkDir, "telemetry.jsonl")));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
+        // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
+        if (o.Game.State is { Online: true } state && o.WorkDir is not null) builder.Services.AddSingleton(new Uploads(state, o.WorkDir));
         builder.Services.AddProblemDetails();
         builder.Services.AddOpenApi("game", d =>
         {
@@ -155,7 +157,7 @@ public static class ServerApp
         // localhost is not a game host: without this, the replay's fallback would answer a cross-site CORS preflight for
         // the admin API with the requesting origin echoed, and the browser would then send the POST
         app.MapFallback("/{**path}", () => TypedResults.NotFound()).RequireHost(LocalHosts).ExcludeFromDescription();
-        app.MapGame(o.Game, o.WorkDir);
+        app.MapGame(o.Game);
         return app;
     }
 
@@ -212,6 +214,8 @@ public sealed class Loopback : IAsyncDisposable
     Reply? last;
 
     public HttpClient Http { get; }
+
+    public IServiceProvider Services => app.Services;
 
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
