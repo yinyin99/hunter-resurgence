@@ -264,12 +264,13 @@ public sealed class Store
     }
 
     /// <summary>The minigames' best scores of the restored accounts (statistics, from a backup), by kind.</summary>
-    public static readonly Dictionary<string, string> GameColumns = new() { ["lanebandit"] = "lane_bandit_score", ["bustthrough"] = "bust_through_score" };
+    public static readonly IReadOnlyDictionary<string, string> GameColumns =
+        System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, string> { ["lanebandit"] = "lane_bandit_score", ["bustthrough"] = "bust_through_score" });
 
-    /// <summary>One page of a minigame's board (a kind of <see cref="GameColumns"/>): the accounts with a score above 0, highest first, equal scores in account id order.
+    /// <summary>A minigame's whole board (a kind of <see cref="GameColumns"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
     /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); one query per account
     /// on every page view, fine for the restored accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
-    public (List<(long Rank, string Handle, long Score)> Rows, long Total) GameBoard(string kind, long? excluded, int offset, int limit)
+    public List<(string Handle, long Score)> GameBoard(string kind, long? excluded)
     {
         var column = GameColumns[kind];  // a fixed name, never the request's
         List<(long Id, string Handle)> accounts;
@@ -282,9 +283,7 @@ public sealed class Store
             if (con.Scalar($"SELECT {column} FROM statistics WHERE account_id = $a") is long score && score > 0)
                 scored.Add((handle, score));
         }
-        var rows = scored.OrderByDescending(s => s.Score)  // a stable sort: equal scores keep the account id order
-            .Skip(offset).Take(limit).Select((s, i) => (offset + i + 1L, s.Handle, s.Score)).ToList();
-        return (rows, scored.Count);
+        return [.. scored.OrderByDescending(s => s.Score)];  // a stable sort: equal scores keep the account id order
     }
 
     /// <summary>A hunter on the board by handle (case does not matter); null when unknown, banned or `excluded`.</summary>

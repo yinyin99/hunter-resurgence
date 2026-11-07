@@ -96,11 +96,14 @@ public class ServerLeaderboardsServiceTests
     }
 
     [Theory]
-    [InlineData(HttpStatusCode.InternalServerError, "{}")]
-    [InlineData(HttpStatusCode.OK, "<html>")]
-    public async Task AFailedOrGarbledBoardIsEmpty(HttpStatusCode code, string body)
+    [InlineData("hunterscore", HttpStatusCode.InternalServerError, "{}")]
+    [InlineData("hunterscore", HttpStatusCode.OK, "<html>")]
+    [InlineData("hunterscore", HttpStatusCode.OK, "{}")]  // a reply without rows
+    [InlineData("lanebandit", HttpStatusCode.InternalServerError, "{}")]
+    [InlineData("bustthrough", HttpStatusCode.OK, "{}")]
+    public async Task AFailedOrGarbledBoardIsEmpty(string kind, HttpStatusCode code, string body)
     {
-        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync("hunterscore", 0, 1);
+        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync(kind, 0, 1);
         Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
     }
 

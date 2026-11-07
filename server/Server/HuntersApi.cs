@@ -48,10 +48,11 @@ public static class HuntersApi
             {
                 if (!Store.GameColumns.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
                 var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
-                var (rows, total) = state.Store.GameBoard(kind, state.LocalAccount, (page - 1) * PageSize, PageSize);
-                var pages = Math.Max(1, (int)((total + PageSize - 1) / PageSize));
-                if (page > pages)  // past the end: the last page, read again
-                    (rows, _) = state.Store.GameBoard(kind, state.LocalAccount, ((page = pages) - 1) * PageSize, PageSize);
+                var board = state.Store.GameBoard(kind, state.LocalAccount);
+                var total = board.Count;
+                var pages = Math.Max(1, (total + PageSize - 1) / PageSize);
+                page = Math.Min(page, pages);
+                var rows = board.Skip((page - 1) * PageSize).Take(PageSize).Select((r, i) => (Rank: (page - 1) * PageSize + i + 1, r.Handle, r.Score));
                 return Json(200, new JsonObject
                 {
                     ["page"] = page, ["pages"] = pages, ["total"] = total,
