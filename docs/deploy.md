@@ -262,7 +262,7 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some pages still show sample content.
 
 - **Still sample content:** the profiles of the mock's fictional hunters (a signed-out visitor's preview, or an address typed by hand).
-- **Hidden for a signed-in player** (no source on the server): their own profile is its header only, the store has no "you own" lines, and the boards show no "your rank".
+- **Hidden for a signed-in player** (no source on the server): their own profile is its header only, the store has no "you own" lines, and the minigame boards show no "your rank".
 - **Not offered** (the address goes to the feed, the hunterscore board or `/help`):
   - the competitions and the community league, the season boards (species score and range, hall of fame) and the antler boards: the server has no seasons, competitions or antler measurements ([#222](https://github.com/yinyin99/hunter-resurgence/issues/222));
   - help's guides, video tutorials, community sites and daily mission tabs: their content is the mock's; help keeps its support tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
