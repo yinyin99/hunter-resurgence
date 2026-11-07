@@ -124,12 +124,12 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(html, "class=\"card "));  // the one item, nothing of the mock's 46
     }
 
-    // the landing page with a fake answer of the server: its post and slide, not the mock's five posts
+    // the landing page with a fake answer of the server: the development note with the project's link first, then its post and slide, none of the mock's five posts
     [Fact]
     public async Task TheFeedShowsTheServersNewsNotTheMocks()
     {
         const string reply = """{"posts": [{"title": "Test Post", "date": "2026-10-29T14:05:00", "slug": "test-post", "excerpt": "Big news."}], "featured": [{"title": "Test Slide", "lead": "", "linkText": "Go", "target": "/store/sales", "date": "2026-01-01T00:00:00"}]}""";
-        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test").UseSetting("LINK_SOURCE", "https://example.test/project")
             .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => new ServerStub(reply))));
         using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
 
@@ -137,7 +137,8 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
 
         Assert.Contains("Test Post", html);
         Assert.Contains("Test Slide", html);
-        Assert.Single(System.Text.RegularExpressions.Regex.Matches(html, "<article"));
+        Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(html, "<article").Count);
+        Assert.Matches("<article class=\"dev-note\"[^>]*>[\\s\\S]*?href=\"https://example.test/project\"", html);
     }
 
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)

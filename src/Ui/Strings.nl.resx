@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>GRATIS SPELEN</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Verder lezen →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Nieuwsarchief</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>In ontwikkeling</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Deze communityserver wordt in het openbaar gebouwd, en sommige pagina's tonen nog voorbeeldinhoud.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Volg het project op GitHub</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>LEDEN ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Doe mee op Discord</value></data>

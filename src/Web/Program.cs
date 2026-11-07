@@ -14,10 +14,10 @@ using Resurgence.Web.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-// LINK_BACKUP, GAME_NAME, GAME_FULL: set by the deploy from the repository variables of the same names (docs/deploy.md); each wins over its key in settings.json
+// LINK_BACKUP, LINK_SOURCE, GAME_NAME, GAME_FULL: set by the deploy (docs/deploy.md); each wins over its key in settings.json
 var config = builder.Configuration;
 builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
-    .With("link_backup", config["LINK_BACKUP"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
+    .With("link_backup", config["LINK_BACKUP"]).With("link_source", config["LINK_SOURCE"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
 builder.Services.AddMockServices();
 // with SERVER_URL the pages of mock data and the bank are hidden, and the store buys from the server (HostMode.Live, docs/website.md#sign-in)
 var live = builder.Configuration["SERVER_URL"] is { Length: > 0 };

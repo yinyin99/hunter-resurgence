@@ -8,6 +8,7 @@ services:
       FORWARDED_TRUSTED: 172.30.10.2 # Caddy's fixed address on the internal network below, nothing else
       SERVER_URL: http://server:8080 # the website's server-side calls to the community server
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
+      LINK_SOURCE: ${LINK_SOURCE:-} # the project's repository, written like LINK_BACKUP: the live feed's development note links it
       GAME_NAME: ${GAME_NAME:-} # the game's name and its name with edition, written like LINK_BACKUP
       GAME_FULL: ${GAME_FULL:-}
       IMAGES_DIR: /images # the operator's pictures, never committed (docs/images.md); an empty folder: the labelled boxes

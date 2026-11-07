@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>SPIL GRATIS</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Læs videre →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Nyhedsarkiv</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>Under udvikling</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Denne fællesskabsserver bygges åbent, og nogle sider viser stadig eksempelindhold.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Følg projektet på GitHub</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEDLEMMER ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Kom med på Discord</value></data>

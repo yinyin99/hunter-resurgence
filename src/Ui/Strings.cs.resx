@@ -111,6 +111,9 @@
   <data name="Landing.Play" xml:space="preserve"><value>HRAJTE ZDARMA</value></data>
   <data name="Feed.ContinueReading" xml:space="preserve"><value>Číst dál →</value></data>
   <data name="Feed.NewsArchive" xml:space="preserve"><value>Archiv novinek</value></data>
+  <data name="Feed.DevTitle" xml:space="preserve"><value>Ve vývoji</value></data>
+  <data name="Feed.DevText" xml:space="preserve"><value>Tento komunitní server vzniká veřejně a některé stránky zatím ukazují ukázkový obsah.</value></data>
+  <data name="Feed.DevLink" xml:space="preserve"><value>Sledujte projekt na GitHubu</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>ČLENOVÉ ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Vstoupit na Discord</value></data>

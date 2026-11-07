@@ -167,4 +167,16 @@ public sealed class LiveSiteTests : UiContext
         Assert.DoesNotContain("news-/store/sales", cut.Markup);
         Assert.Empty(cut.FindAll(".caption a"));
     }
+
+    // the live site says on its feed that it is still being built; the launcher and the development website (the mock) do not
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 1)]
+    public void OnlyTheLiveFeedHasTheDevelopmentNote(bool live, int notes)
+    {
+        Live(live);
+        var cut = Render<Feed>();
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".news")));
+        Assert.Equal(notes, cut.FindAll("article.dev-note").Count);
+    }
 }

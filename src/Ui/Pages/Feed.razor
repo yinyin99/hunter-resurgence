@@ -4,6 +4,7 @@
 @inject INewsService News
 @inject ModalService Modal
 @inject Branding Brand
+@inject HostMode Mode
 
 <PageTitle>@L["Landing.Heading"]</PageTitle>
 
@@ -29,6 +30,14 @@
 <div class="columns">
     <div class="news">
         <h3>@L["Feed.News"]</h3>
+        @* the live site says first that it is still being built, and where (link_source: the project's repository) *@
+        @if (Mode.Live)
+        {
+            <article class="dev-note">
+                <h4>@L["Feed.DevTitle"]</h4>
+                <p class="excerpt">@L["Feed.DevText"] <ExternalLink Key="source">@L["Feed.DevLink"]</ExternalLink></p>
+            </article>
+        }
         @foreach (var post in posts)
         {
             <article>
