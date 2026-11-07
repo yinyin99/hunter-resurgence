@@ -313,9 +313,11 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             await Task.Delay(50, TestContext.Current.CancellationToken);
             if (sending.IsCompleted)
             {
-                (await sending).Dispose();
+                // only a busy refusal ends an open upload early; the reopened one gets its 50 ms before the next probe
+                using (var ended = await sending) Assert.Equal(429, (int)ended.StatusCode);
                 (body, write, sending) = OpenUpload();
                 reopened++;
+                await Task.Delay(50, TestContext.Current.CancellationToken);
             }
             busy = await server.SendAsync("POST", "web.test", "/account/restore", [("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], []);
         } while (busy.Status != 429 && DateTime.UtcNow < deadline);
