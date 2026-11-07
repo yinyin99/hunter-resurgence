@@ -54,7 +54,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `frame-leather` | 1280×760 | SignupLayout | yes |
 | `signup-bg-<1-5>` | 1200×674 | SignupCard (signup pages) | 5 of 5 |
 | `gift-frame` | 561×288 | Signup Page2 to Page5 | yes |
-| `gift-shotgun`, `gift-licenses`, `gift-membership` | 467×99, 476×193, 441×149 | Signup Page2, Page3, Page4 | no: not in the operator's files |
+| `gift-shotgun`, `gift-licenses`, `gift-membership` | 467×99, 476×193, 441×149 | Signup Page2, Page3, Page4 | yes: the original's signup pages 2, 3 and 4 showed `gift_shotgun`, `gift_licenses` and `gift_gun_membership`; their sizes are the slots' |
 | `paper-notice` | set by the page | Paper | yes |
 | `coin-ems`, `icon-store` | 46×46 | MenuBar | yes |
 | `avatar-default` | 24 to 160 square | MapPlaceholder, RankRow, JoinMapModal, Dashboard, Leaderboards, Messages, Servers, StatusBar, FriendsTab, FriendsDropdown, HunterProfile, Settings, Welcome | yes |
@@ -63,7 +63,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `profile-banner` | 940×200 | HunterProfile | no: player content (the player's latest kill) |
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
-| `video-<id>` | 900×506 | VideoModal (Help) | 0 of 19: not in the operator's files |
+| `video-<id>` | 900×506 | VideoModal (Help) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
 | `news-<target>` | 805×380, 175×95 | FeedCarousel | 6 of 6 |
 | `splash-<image>` (live site: the file name of the slide's recorded picture, lower case, without its extension; a slide without one shows the box `splash:none`) | 805×380, 175×95 | FeedCarousel with `SERVER_URL` | 1 of 1: the operator's mirror has the one picture both saved slides use |
@@ -72,13 +72,13 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |
 | `paw-badge-<easy, medium, hard>` | 80×80 | DailyMissions | 2 of 3: the original's `mission_icon_easy_02` and `mission_icon_medium_02` for 1 and 2 stars; no hard icon was saved |
 | `mission-giver-<day>` | 150×150 | DailyMissions | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
-| `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: not in the operator's files |
+| `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: the original showed the male or female picture of the mission's species by the mission's gender; the mock's missions 2–7 state none |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
 | `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |
 | `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the mock) | 2 of 2 |
-| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the live site: the server's items, with the original's ids) | 0 of 1,003: *not mapped yet*. A picture goes in only with evidence that it is that item's, as in the rules of the mirror task (#201) |
-| `store-bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the live site) | 0 of 129: *not mapped yet* |
+| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the live site: the server's items, with the original's ids) | 1,003 of 1,003: the item's `image` in the original's item table, `items/256/<image>.png` as the original store showed it |
+| `store-bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the live site) | 129 of 129: as the original store, the bundle's own `image`, else its first item's |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
 | `membership-<starter, special, basic>` | 100×70 | BankModal | 1 of 3: `starter` is the Wayfarer card (the original's one starter bundle, 3 months). `special`: the original had three bundle cards (Deer Hunter, Duck Hunter, Stealth Hunter) that the mock's two anonymous bundles cannot be matched to; `basic`: one card per length (3, 6, 12 months) under one key |
