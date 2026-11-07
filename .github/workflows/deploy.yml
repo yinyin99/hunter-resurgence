@@ -28,10 +28,15 @@ jobs:
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     steps:
-      - name: Check the deploy secrets
+      # two pushes close together deploy in the order their ci runs end, not in commit order: a commit that is no longer main's head rolls nothing out, since the newer one's deploy does (#230)
+      - name: Check the deploy secrets and that this is main's head
         id: secrets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$head" != "$SHA" ]; then echo "::notice::main is at $head now, not $SHA: its own deploy rolls it out; nothing deployed"
+          elif [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
           else echo "::notice::DEPLOY_HOST, DEPLOY_USER or DEPLOY_KEY is not set: nothing deployed"; fi
       # workflow_run runs this file from the default branch without a checkout of the tested commit
       - if: steps.secrets.outputs.ok

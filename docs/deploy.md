@@ -121,7 +121,7 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 
 ## Deploys
 
-`.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets):
+`.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets). Deploys run one at a time. When a deploy starts, if its commit is no longer the head of `main`, it ends with a notice and rolls nothing out: the newer commit's deploy does. Two pushes close together would otherwise deploy in the order their `ci` runs end, and the older commit could go out last. A re-run of an older deploy is skipped the same way, so a rollback is a revert on `main`. Otherwise the deploy:
 
 1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
 2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
