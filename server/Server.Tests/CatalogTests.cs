@@ -48,7 +48,8 @@ public class CatalogTests : StateTestBase
         return await server.SendAsync("GET", "web.test", path, []);
     }
 
-    // fictional values only: a post without an address and one without a date are left out, and so is a slide that links to another site
+    // fictional values only: a post without an address and one without a date are left out, and so are a slide that links to another site (a # route there too)
+    // and one whose start time is out of range
     const string Feed = """
         {"posts": [
            {"url": "https://news.test/first-post/", "title": "First &amp; best", "date": "2026-10-29 14:05:00",
@@ -56,9 +57,11 @@ public class CatalogTests : StateTestBase
            {"url": "", "title": "No address", "date": "2026-10-28 10:00:00", "excerpt": ""},
            {"url": "https://news.test/undated/", "title": "No date", "date": null, "excerpt": ""}],
          "splashes": [
-           {"subject": "SALES", "description": "<b>Half</b> off", "linktext": "See them", "link": "https://web.test/#store/sales", "start_ts": 1767225600},
+           {"subject": "SALES", "description": "<b>Half</b> off", "linktext": "See them", "link": "https://web.test/#store/sales", "image_url": "https://news.test/uploads/2026/08/Big Sale_805x380.png", "start_ts": 1767225600},
            {"subject": "A post", "description": "Read it", "linktext": "Here", "link": "https://news.test/first-post/", "start_ts": 1767225600},
-           {"subject": "Elsewhere", "description": "", "linktext": "", "link": "https://other.example/page", "start_ts": 1767225600}]}
+           {"subject": "Elsewhere", "description": "", "linktext": "", "link": "https://other.example/page", "start_ts": 1767225600},
+           {"subject": "Elsewhere too", "description": "", "linktext": "", "link": "https://other.example/page#top", "start_ts": 1767225600},
+           {"subject": "Never", "description": "", "linktext": "", "link": "https://web.test/#store", "start_ts": 1e300}]}
         """;
 
     [Fact]
@@ -72,12 +75,25 @@ public class CatalogTests : StateTestBase
             ((string)post["title"]!, (string)post["date"]!, (string)post["slug"]!, (string)post["excerpt"]!));  // the website adds its own "continue reading"
         var featured = news["featured"]!.AsArray();
         Assert.Equal(["/store/sales", "news:first-post"], featured.Select(f => (string)f!["target"]!));
-        Assert.Equal(("SALES", "Half off", "See them", "2026-01-01T00:00:00"),
-            ((string)featured[0]!["title"]!, (string)featured[0]!["lead"]!, (string)featured[0]!["linkText"]!, (string)featured[0]!["date"]!));
+        Assert.Equal(("SALES", "Half off", "See them", "big-sale_805x380", "2026-01-01T00:00:00"),
+            ((string)featured[0]!["title"]!, (string)featured[0]!["lead"]!, (string)featured[0]!["linkText"]!, (string)featured[0]!["image"]!, (string)featured[0]!["date"]!));
+        Assert.Null(featured[1]!["image"]);
+    }
+
+    // the replay's order: without a recording, the reply the mirror saved on the game's web host
+    [Fact]
+    public async Task WithoutARecordingTheMirrorsFeedIsTheNews()
+    {
+        var file = Path.Combine(tmp, "game_web.test", "v1", "splash", "feed_data", "index.html");
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        File.WriteAllText(file, Feed);
+        var reply = await Get(Store, path: "/catalog/news");
+        Assert.Equal(200, reply.Status);
+        Assert.Equal("first-post", (string)JsonNode.Parse(reply.Body)!["posts"]![0]!["slug"]!);
     }
 
     [Theory]
-    [InlineData(null)]                                  // no recording: the live server before one is uploaded
+    [InlineData(null)]                                  // no recording and no mirror: the live server before one is added
     [InlineData("""{"posts": [], "splashes": []}""")]
     [InlineData("not json")]
     public async Task WithoutRecordedPostsThereIsNoNews(string? feed) =>

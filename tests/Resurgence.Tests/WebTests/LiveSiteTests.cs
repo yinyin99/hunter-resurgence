@@ -150,4 +150,21 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
         Assert.Equal(buttons, cut.FindAll("button.request").Count);
     }
+
+    // the live slides are the original's: the picture is named after the one each showed, never the mock's stand-in of the target; no link text, no link
+    [Fact]
+    public void ALiveSlideIsNamedAfterItsPictureAndHasNoLinkWithoutText()
+    {
+        const string reply = """{"posts": [], "featured": [{"title": "Sale", "lead": "Half off", "linkText": "", "target": "/store/sales", "image": "big-sale", "date": "2026-01-01T00:00:00"}]}""";
+        Services.AddSingleton<INewsService>(new ServerNewsService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new ServerCache<ServerNews>(), NullLogger<ServerNewsService>.Instance));
+        Live(true);
+
+        var cut = Render<FeedCarousel>();
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".carousel")));
+        Assert.Contains("splash-big-sale", cut.Markup);
+        Assert.DoesNotContain("news-/store/sales", cut.Markup);
+        Assert.Empty(cut.FindAll(".caption a"));
+    }
 }

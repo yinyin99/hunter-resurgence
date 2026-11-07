@@ -7,21 +7,23 @@
     var cur = slides[index];
     <div class="carousel">
         <div class="slide">
-            <AssetSlot Name="@Mode.SlideSlot(cur.Target)" Width="805" Height="380" Class="image" />
+            <AssetSlot Name="@Mode.SlideSlot(cur)" Width="805" Height="380" Class="image" />
             <span class="date">@Fmt.MonthDay(cur.When)</span>
             <div class="caption">
                 <h2>@cur.Title</h2>
                 <p>
                     @cur.Lead @(" ")
-                    @if (cur.Target.StartsWith("news:"))
+                    @* no link text, no link: as the old feed *@
+                    @if (cur.LinkText.Length > 0 && cur.Target.StartsWith("news:"))
                     {
                         <ExternalLink Key="news" Path="@cur.Target[5..]">@cur.LinkText</ExternalLink>
+                        <Icon Name="chevron-right" />
                     }
-                    else
+                    else if (cur.LinkText.Length > 0)
                     {
                         <a href="@cur.Target">@cur.LinkText</a>
+                        <Icon Name="chevron-right" />
                     }
-                    <Icon Name="chevron-right" />
                 </p>
             </div>
         </div>
@@ -29,7 +31,7 @@
             @for (var i = 0; i < slides.Count; i++)
             {
                 var n = i;
-                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@Mode.SlideSlot(slides[i].Target)" Width="175" Height="95" /></button>
+                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@Mode.SlideSlot(slides[i])" Width="175" Height="95" /></button>
             }
         </div>
     </div>

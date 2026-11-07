@@ -17,7 +17,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `web_host` | Required. **Our website's public domain**: the sign-in pages and the account pages are served under it (the website forwards the browser's `Host`, and the Steam return address is built from it) |
 | `game_web_host` | Required. **The game's own web host**: the one name the current build sends everything to ([The current build](#the-current-build)). It is not our domain: a player's hosts file points it to their PC, and the request reaches the server in the `host_header` header |
 | `crash_host` | The host the game's crash reports go to (answered 204). Recommended |
-| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it. Left out, each is a placeholder (`<role>.invalid`) that no client asks for. The server routes by the `Host` of a request |
+| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it, and to find the recordings made of them. `news_host` also tells the website's news which slides link to a post ([The news](#the-news)). Left out, each is a placeholder (`<role>.invalid`) that no client asks for. The server routes by the `Host` of a request |
 | `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and hold the item and species definitions, and its sample files (`game/json_connect_results.json`, `game/json_inventory.json`) seed the connect reply and the item definitions ([Starting data](#starting-data)). Read only |
 | `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
 | `recordings_dir` | Default `recordings`: Optional: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
@@ -182,12 +182,12 @@ It is em$ only: the server keeps no gm$ price rule (`Inventory/buy` refuses the 
 
 ## The news
 
-`GET /catalog/news` on `web_host`, community server only, public and without a cookie, like [the store catalogue](#the-store-catalogue): the website's feed reads it over `SERVER_URL`. The answer is `{posts: [{title, date, slug, excerpt}], featured: [{title, lead, linkText, target, date}]}`, made from the recorded `GET /v1/splash/feed_data` reply (the one the launcher gets, without the server's notice):
+`GET /catalog/news` on `web_host`, community server only, public and without a cookie, like [the store catalogue](#the-store-catalogue): the website's feed reads it over `SERVER_URL`. The answer is `{posts: [{title, date, slug, excerpt}], featured: [{title, lead, linkText, target, image, date}]}`, made from the `GET /v1/splash/feed_data` reply the launcher gets (without the server's notice), in the replay's order: a recording of it (on `api_host` or `game_web_host`), else the mirror's saved copy (`<mirror_dir>/<game_web_host or api_host>/v1/splash/feed_data/index.html`):
 
 - **Posts**: those with an address, a title and a date (`yyyy-MM-dd HH:mm:ss` as recorded, sent as `yyyy-MM-ddTHH:mm:ss`). `slug` is the last part of the post's address; the title and the excerpt are plain text (tags and the excerpt's links, its "Continue reading", removed; entities decoded).
-- **Featured**: the recorded `splashes` with a start time (`date`). `target` is the website's own address for a link with a `#` route (`…/#store/sales` is `/store/sales`) or `news:<slug>` for a post on `news_host`; a slide that links to any other site is left out.
+- **Featured**: the `splashes` with a start time in range (`date`). `target` is the website's own address for a `#` route on `game_web_host` or `web_host` (`…/#store/sales` is `/store/sales`), or `news:<slug>` for a post on `news_host`; a slide that links to any other site is left out. `image` is the file name of the slide's picture (`image_url`), lower case, without its extension, or null: the website's picture slot `splash-<image>` ([docs/images.md](images.md)).
 
-Without the recording, or with no post, it answers 404 `{"error": "no news"}`. It is the recording as it is: the posts and slides of the day it was made, until another recording replaces it. Nothing comes from the news site itself (its pages, archive or pictures).
+Without either, or with no post, it answers 404 `{"error": "no news"}`. It is the reply as it was saved: the posts and slides of that day, until another one replaces it. Nothing comes from the news site itself (its pages, archive or pictures).
 
 ## Sign-in and tokens
 

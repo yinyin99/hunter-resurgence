@@ -10,7 +10,7 @@ public sealed class ServerNewsService(HttpClient http, ServerCookie cookie, Serv
         (await LoadAsync())?.Posts.Select(p => new NewsPost(p.Title, p.Date, p.Slug, p.Excerpt)).ToList() ?? [];
 
     public async Task<IReadOnlyList<Featured>> FeaturedAsync() =>
-        (await LoadAsync())?.Featured.Select(f => new Featured(f.Title, f.Lead, f.LinkText, f.Target, f.Date)).ToList() ?? [];
+        (await LoadAsync())?.Featured.Select(f => new Featured(f.Title, f.Lead, f.LinkText, f.Target, f.Date, f.Image)).ToList() ?? [];
 
     public Task<DiscordInfo?> DiscordAsync() => Task.FromResult<DiscordInfo?>(null);
 

@@ -14,7 +14,8 @@ public sealed record ServerNews(ServerPost[] Posts, ServerFeatured[] Featured);
 
 public sealed record ServerPost(string Title, DateTime Date, string Slug, string Excerpt);
 
-public sealed record ServerFeatured(string Title, string Lead, string LinkText, string Target, DateTime Date);
+/// <summary><see cref="Image"/>: the name of the slide's picture (its file name), or null.</summary>
+public sealed record ServerFeatured(string Title, string Lead, string LinkText, string Target, DateTime Date, string? Image = null);
 
 /// <summary>The JSON of <see cref="ServerCatalogApi.Store"/>. A category's <c>Key</c> is the store address part, a top-level one the key of its first sub-category.</summary>
 public sealed record ServerStore(ServerCategory[] Categories, ServerItem[] Items, ServerBundle[] Bundles);
