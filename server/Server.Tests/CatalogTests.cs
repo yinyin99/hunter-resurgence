@@ -9,32 +9,98 @@ public class CatalogTests : StateTestBase
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
 
-    // fictional values only; item 3 is hidden, and a bundle lists it
+    // fictional values only; item 3 is hidden, and a bundle lists it; item 4 is a service, item 5 costs nothing; bundles 11 to 13 are not sold
     const string Store = """
         {"species": [], "reserves": [], "locations": [],
          "items": [
-           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "inventory": {"weight": 500, "capacity": 3}},
-           {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0},
-           {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1}],
+           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "inventory": {"weight": 500, "capacity": 3}, "fit": {}},
+           {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1, "inventory": {}, "fit": {}},
+           {"id": 4, "name": "Test Service", "subcat": {"id": 0}, "price": 50, "type": 45, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}}],
          "categories": [
            {"id": "all", "title": "All Items", "subcategories": [{"id": "all", "title": "All Items"}], "default": "all"},
            {"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}, {"id": 1, "title": "Handguns"}], "default": 0},
            {"id": 7, "title": "Bundles", "subcategories": [{"id": 50, "title": "Bundles"}], "default": 50},
            {"id": 2, "title": "Sights", "subcategories": [{"id": 5, "title": "Rifle Sights"}], "default": 5}],
-         "bundles": [{"id": 9, "name": "Test Pack", "description": "Three things.", "price": 90.0, "items": [1, 2, 3]}]}
+         "bundles": [{"id": 9, "name": "Test Pack", "description": "Three things.", "price": 90.0, "items": [1, 2, 3]},
+                     {"id": 11, "name": "Test Free Pack", "price": 0, "items": [1]},
+                     {"id": 12, "name": "Test Paid Pack", "price": -5, "items": [1]},
+                     {"id": 13, "name": "Test Gone Pack", "price": 20, "items": [1, 404]}]}
         """;
 
     // item 1 is half price
     const string Discounts = """[{"item_id": 1, "percentage": 50, "start_ts": 0, "end_ts": 1099511627776}]""";
 
-    async Task<Reply> Get(string application, bool offline = false)
+    async Task<Loopback> Start(string application, bool offline = false)
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(application)!, LOCALE, TEXTURES,
             discounts: (JsonArray)JsonNode.Parse(Discounts)!, offline: offline);
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
-        await using var server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+        return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+    }
+
+    async Task<Reply> Get(string application, bool offline = false)
+    {
+        await using var server = await Start(application, offline);
         return await server.SendAsync("GET", "web.test", "/catalog/store", []);
+    }
+
+    /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$); its reply and the items ME got.</summary>
+    async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true)
+    {
+        await using var server = await Start(Store);
+        var before = state.Inventory(ME).Count;
+        List<(string, string)> headers = [("Content-Type", "application/x-www-form-urlencoded")];
+        if (signedIn) headers.Add(("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}"));
+        if (ownPage) headers.Add(("X-Requested-With", "XMLHttpRequest"));
+        var reply = await server.SendAsync("POST", "web.test", "/account/buy", headers, System.Text.Encoding.ASCII.GetBytes(form));
+        return (reply, [.. state.Inventory(ME).Skip(before).Select(i => (long)i!["item_id"]!)]);
+    }
+
+    [Theory]
+    [InlineData("id=1", 132L, new long[] { 1 })]              // today's price, half off
+    [InlineData("id=1&count=3", 32L, new long[] { 1, 1, 1 })]
+    [InlineData("id=9&bundle=1", 92L, new long[] { 1, 2, 3 })]  // the bundle's price, each of its items, a hidden one too
+    public async Task BuyingChargesTheStorePriceAndDeliversTheItems(string form, long left, long[] got)
+    {
+        var (reply, items) = await Buy(form);
+        Assert.Equal(200, reply.Status);
+        Assert.Equal(left, (long)JsonNode.Parse(reply.Body)!["ems"]!.AsValue().GetValue<double>());
+        Assert.Equal(got, items);
+        Eq($"{left}.0", state.Wallet(ME)["em"]);
+    }
+
+    [Theory]
+    [InlineData("id=1&count=4")]           // 200 em$ for 182
+    [InlineData("id=2")]                   // not buyable
+    [InlineData("id=3")]                   // hidden
+    [InlineData("id=77")]                  // unknown
+    [InlineData("id=9&bundle=1&count=2")]  // one bundle at a time
+    [InlineData("id=1&bundle=1")]          // not a bundle
+    [InlineData("id=4")]                   // a service
+    [InlineData("id=5")]                   // no price
+    [InlineData("id=11&bundle=1")]         // a bundle at 0 would be free, again and again
+    [InlineData("id=12&bundle=1")]         // one below 0 would pay the player
+    [InlineData("id=13&bundle=1")]         // an item the catalogue does not have
+    public async Task WhatIsNotForSaleOrTooDearChangesNothing(string form)
+    {
+        var (reply, items) = await Buy(form);
+        Assert.Equal(409, reply.Status);
+        Assert.Empty(items);
+        Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    [Theory]
+    [InlineData(false, true, 401)]
+    [InlineData(true, false, 400)]  // a cross-site form cannot set X-Requested-With
+    public async Task OnlyTheSignedInPlayerFromOurPageBuys(bool signedIn, bool ownPage, int status)
+    {
+        var (reply, items) = await Buy("id=1", signedIn, ownPage);
+        Assert.Equal(status, reply.Status);
+        Assert.Empty(items);
+        Eq("182.0", state.Wallet(ME)["em"]);
     }
 
     [Fact]
@@ -43,7 +109,8 @@ public class CatalogTests : StateTestBase
         var reply = await Get(Store);
         Assert.Equal(200, reply.Status);
         var items = JsonNode.Parse(reply.Body)!["items"]!.AsArray();
-        Assert.Equal([1, 2], items.Select(i => (int)i!["id"]!));
+        Assert.Equal([1, 2, 4, 5], items.Select(i => (int)i!["id"]!));
+        Assert.Equal([true, false, false, false], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
         var rifle = items[0]!;
         Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 2000L, true),  // the silver price takes the discount too
             ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!));
@@ -67,6 +134,10 @@ public class CatalogTests : StateTestBase
         Assert.Equal(["0", "1"], categories[1]!["children"]!.AsArray().Select(c => (string)c!["key"]!));
         Assert.Equal("Handguns", (string)categories[1]!["children"]![1]!["name"]!);
     }
+
+    [Fact]
+    public async Task TheStoreSellsTheBundlesThePurchaseTakes() =>
+        Assert.Equal([true, false, false, false], JsonNode.Parse((await Get(Store)).Body)!["bundles"]!.AsArray().Select(b => (bool)b!["buyable"]!));
 
     [Fact]
     public async Task ABundleHasItsPriceRoundedAndItsItemsNamedAHiddenOneToo()

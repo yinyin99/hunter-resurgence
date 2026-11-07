@@ -27,7 +27,8 @@ public class ServerStoreServiceTests
            {"id": 1, "name": "Test Rifle", "variant": "Blue", "description": "A rifle.", "category": "0", "ems": 50, "was": 100, "gms": 2000, "buyable": true},
            {"id": 2, "name": "Test Pistol", "variant": "", "description": "", "category": "1", "ems": 80, "was": null, "gms": 0, "buyable": true},
            {"id": 3, "name": "Test Scope", "variant": "Silver", "description": "", "category": "5", "ems": 200, "was": null, "gms": 0, "buyable": false}],
-         "bundles": [{"id": 9, "name": "Test Pack", "description": "Two.", "price": 90, "items": [{"id": 1, "name": "Test Rifle"}, {"id": 1, "name": "Test Rifle"}, {"id": 77, "name": "Gone"}]}]}
+         "bundles": [{"id": 9, "name": "Test Pack", "description": "Two.", "price": 90, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}, {"id": 1, "name": "Test Rifle"}, {"id": 77, "name": "Gone"}]},
+                     {"id": 10, "name": "Test Gone Pack", "description": "", "price": 0, "buyable": false, "items": [{"id": 77, "name": "Gone"}]}]}
         """;
 
     static ServerStoreService Make(HttpMessageHandler handler, StoreCache? cache = null, string? host = "site.test") =>
@@ -104,6 +105,8 @@ public class ServerStoreServiceTests
         Assert.Equal([(1, 100), (1, 100), (77, 0)], bundle.Lines.Select(l => (l.ItemId, l.Value)));  // the sale price is not the value
         Assert.Equal("Gone", bundle.Lines[2].Name);
         Assert.Null(await Ok().BundleAsync(404));
+        Assert.False((await Ok().BundleAsync(10))!.Buyable);  // the server does not sell it: the page's button is disabled
+        Assert.True(bundle.Buyable);
     }
 
     [Theory]
@@ -163,6 +166,36 @@ public class ServerStoreServiceTests
         Assert.False(cache.Paused(start));
     }
 
+    // a purchase is the player's: it carries the session cookie, the header a cross-site form cannot set, and the form the server reads
     [Fact]
-    public async Task BuyingIsNotServedYet() => Assert.False((await Ok().BuyAsync(1, false, false)).Ok);
+    public async Task BuyingPostsTheFormWithTheSessionCookie()
+    {
+        string? form = null;
+        var fake = new Fake(r => { form = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"status": "bought", "ems": 10}"""); });
+
+        Assert.True((await Make(fake).BuyAsync(9, true, false)).Ok);
+
+        var request = Assert.Single(fake.Seen);
+        Assert.Equal((HttpMethod.Post, "/account/buy", "site.test"), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Host));
+        Assert.Contains("secret", string.Join(";", request.Headers.GetValues("Cookie")));
+        Assert.True(request.Headers.Contains("X-Requested-With"));
+        Assert.Equal("id=9&count=1&bundle=1", form);
+    }
+
+    [Fact]
+    public async Task ARefusalIsAFailedPurchase() =>
+        Assert.Equal("Store.Oops", (await Make(new Fake(_ => Json(HttpStatusCode.Conflict, """{"status": "refused"}"""))).BuyAsync(1, false, false, 3)).Error);
+
+    // the server sells for em$ only, and a signed-out visitor buys nothing: neither asks the server
+    [Theory]
+    [InlineData(true, "secret")]
+    [InlineData(false, null)]
+    public async Task GmsOrSignedOutIsNotSent(bool gms, string? session)
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
+        var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" },
+            new StoreCache(), NullLogger<ServerStoreService>.Instance);
+        Assert.False((await service.BuyAsync(1, false, gms)).Ok);
+        Assert.Empty(fake.Seen);
+    }
 }

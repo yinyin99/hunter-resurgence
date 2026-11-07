@@ -1,6 +1,7 @@
-// The account's own data on the website's host, for the signed-in player (the session cookie): upload a backup zip, see
+// The account's own data on the website's host, for the signed-in player (the session cookie): buy from the store, upload a backup zip, see
 // what became of it, delete everything. The website's pages call these from their server over SERVER_URL; a browser
 // never needs to, so the reverse proxy does not have to route /account/. Online only. docs/server.md#upload-a-backup-zip.
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http.Features;
@@ -101,6 +102,24 @@ public static class AccountApi
             })
             .WithName("AccountDelete").WithSummary("Delete the account and all its data (form `confirm=delete`)")
             .WithDescription("Deletes the account's rows, tokens, sessions, kept backup zips and photos, its Steam id and handle. Signs the browser out.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/buy", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                string One(string key, string missing) => form.TryGetValue(key, out var v) ? v[0] : missing;
+                if (!long.TryParse(One("id", ""), NumberStyles.None, CultureInfo.InvariantCulture, out var id)
+                    || !int.TryParse(One("count", "1"), NumberStyles.None, CultureInfo.InvariantCulture, out var count))
+                    return Refuse(400, "invalid", "Buying needs a number id and count.");
+                return state.WebBuy(account, id, One("bundle", "0") == "1", count) is { } ems
+                    ? Json(200, new JsonObject { ["status"] = "bought", ["ems"] = ems })
+                    : Refuse(409, "refused", "This is not for sale, or you do not have enough em$.");
+            })
+            .WithName("AccountBuy").WithSummary("Buy from the store with em$ (form `id`, `count`, `bundle=1` for a bundle)")
+            .WithDescription("The item or bundle of `GET /catalog/store` at its price: em$ only. Answers `{status: bought, ems}` (the new balance), "
+                             + "or 409 `refused` for something not for sale or a balance too low. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
     }
 

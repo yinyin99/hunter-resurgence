@@ -894,7 +894,7 @@ public sealed partial class State
             var item = i!.AsObject();
             names[Py.L(item["id"])] = C(item["name"]);  // a bundle may list an item the store does not show
             if (Py.Truthy(G(item, "hidden", null))) continue;
-            var full = Py.IsNum(G(item, "price", null)) ? (long)Math.Floor(Py.D(item["price"]) + 0.5) : 0;
+            var full = Whole(G(item, "price", null));
             var ems = full > 0 ? Price(item, "price") : 0;
             var key = item["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
             keys.Add(key);
@@ -904,7 +904,7 @@ public sealed partial class State
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
                 ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Price(item, "silver_price") : 0,
-                ["buyable"] = full > 0 && !Py.Truthy(G(item, "notbuyable", null)),
+                ["buyable"] = StoreSells(item),
             });
         }
         var categories = new JsonArray();
@@ -920,35 +920,71 @@ public sealed partial class State
             bundles.Add(new JsonObject
             {
                 ["id"] = C(b!["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
-                ["price"] = Py.IsNum(b["price"]) ? (long)Math.Floor(Py.D(b["price"]) + 0.5) : 0,
+                ["price"] = Whole(b["price"]), ["buyable"] = BundleSale(b) is not null,
                 ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
             });
         return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
     }
 
-    /// <summary>Inventory/buy item_id, amount, wallet: charge now; the items (update 10) and the new balance (update 15)
-    /// come with the next heartbeat, also mid-hunt.</summary>
+    // ponytail: services (connect active_services with an expiry) are not sold
+    static bool Sellable(JsonObject item, string key) => item[key] is not null && !Py.Truthy(item["notbuyable"]) && !Is(item["type"], SERVICE);
+
+    /// <summary>A catalogue price rounded half up to a whole number; 0 for none.</summary>
+    static long Whole(JsonNode? price) => Py.IsNum(price) ? (long)Math.Floor(Py.D(price) + 0.5) : 0;
+
+    /// <summary>What the website's store sells of the items: shown, with a price of at least 1, and sellable.</summary>
+    static bool StoreSells(JsonObject item) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, "price", null)) > 0 && Sellable(item, "price");
+
+    /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue.</summary>
+    long[]? BundleSale(JsonNode b)
+    {
+        long[] ids = [.. Arr(b["items"]).Select(x => Py.L(x))];
+        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(this.items.ContainsKey) ? ids : null;
+    }
+
+    /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
+    /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0.</summary>
+    JsonNode? Charge(long account, string currency, long price, IEnumerable<long> itemIds)
+    {
+        using var con = Con(account);
+        con.Begin();
+        var balance = AddCurrency(con, currency, -price);
+        if (balance is null)
+            return null;
+        Deliver(con, itemIds, ItemInfo);
+        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
+        con.Commit();
+        return balance;
+    }
+
+    /// <summary>Inventory/buy item_id, amount, wallet: charge now, see <see cref="Charge"/>.</summary>
     public byte[] BuyReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (itemId, amount, wallet) = (Form1(form, "item_id"), Form1(form, "amount"), Form1(form, "wallet"));
         var item = Py.IsDigit(itemId) ? items.GetValueOrDefault(long.Parse(itemId)) : null;
         var (currency, key) = WALLETS.TryGetValue(wallet, out var w) ? w : (null!, null!);
-        // ponytail: services (connect active_services with an expiry) are not sold
-        if (!(Py.Truthy(item) && currency is not null && item![key] is not null && !Py.Truthy(item["notbuyable"])
-              && !Is(item["type"], SERVICE)
+        if (!(Py.Truthy(item) && currency is not null && Sellable(item!, key)
               && int.TryParse(amount, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n is >= 1 and <= MaxBuyAmount))
             return BUY_FAILED;
-        var price = Price(item, key) * n;
-        using var con = Con(account);
-        con.Begin();
-        var balance = AddCurrency(con, currency, -price);
-        if (balance is null)
-            return BUY_FAILED;
-        Deliver(con, Enumerable.Repeat(Py.L(item["id"]), n), ItemInfo);
-        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = balance, ["type"] = currency, ["update"] = 15 }));
-        con.Commit();
-        return Py.DumpBytes(new JsonObject { ["price"] = (double)price, ["success"] = true });
+        var price = Price(item!, key) * n;
+        return Charge(account, currency, price, Enumerable.Repeat(Py.L(item!["id"]), n)) is null
+            ? BUY_FAILED
+            : Py.DumpBytes(new JsonObject { ["price"] = (double)price, ["success"] = true });
+    }
+
+    /// <summary>The website's store (POST /account/buy): count of an item the store sells (<see cref="StoreSells"/>) at today's em$ price, or
+    /// one bundle it sells (<see cref="BundleSale"/>) at its price with each of its items. The new em$ balance, or null (nothing changed) for
+    /// something not for sale or a balance too low. ponytail: no own limit is checked, as Inventory/buy checks none.</summary>
+    public JsonNode? WebBuy(long account, long id, bool bundle, int count)
+    {
+        if (bundle)
+            return Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
+                ? Charge(account, "em", Whole(b["price"]), ids)
+                : null;
+        return items.GetValueOrDefault(id) is { } item && StoreSells(item) && count is >= 1 and <= MaxBuyAmount
+            ? Charge(account, "em", Price(item, "price") * count, Enumerable.Repeat(id, count))
+            : null;
     }
 
     /// <summary>Admin: add count items; a running hunt gets them with its next heartbeat (update 10), else the next

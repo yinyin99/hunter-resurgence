@@ -15,6 +15,7 @@ public sealed record ServerCategory(string Key, string Name, ServerCategory[]? C
 /// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (the discount of the day taken off), <see cref="Was"/> the em$ price before an active discount (null without one); <see cref="Category"/> the key of its sub-category.</summary>
 public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable);
 
-public sealed record ServerBundle(int Id, string Name, string Description, int Price, ServerBundleItem[] Items);
+/// <summary><see cref="Buyable"/>: the server sells it (a price of at least 1, only items of its catalogue).</summary>
+public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items);
 
 public sealed record ServerBundleItem(int Id, string Name);

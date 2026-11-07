@@ -45,6 +45,20 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(live ? 2 : 4, cut.FindAll("article.item thead th").Count);  // no own limit either: the server sends none
     }
 
+    // the store buys from the server: the buy buttons of the list and the bundle page are there on the live site too
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheBuyButtonsShowLive(bool live)
+    {
+        Live(live);
+        var buy = Services.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<Resurgence.Ui.Strings>>()["Store.Buy"].Value;
+        var list = Render<Store>();
+        list.WaitForAssertion(() => Assert.Contains(list.FindAll(".card button:not([disabled])"), b => b.TextContent.Trim() == buy));
+        var bundle = Render<BundleDetail>(p => p.Add(b => b.Id, 1));
+        bundle.WaitForAssertion(() => Assert.Single(bundle.FindAll("#buy-bundle")));
+    }
+
     [Fact]
     public void ARealCategoryNamesItsFirstSubCategoryNotItself()
     {
