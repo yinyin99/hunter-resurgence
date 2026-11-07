@@ -180,6 +180,15 @@ Only a recorded `Application/application` has categories and bundles: a catalogu
 
 It is em$ only: the server keeps no gm$ price rule (`Inventory/buy` refuses the `SILVER` wallet too). The charge and the items are one transaction, the one `Inventory/buy` uses: a running game gets the items (update 10) and the new balance (update 15) with its next heartbeat, else the next connect carries them. The answer is 200 `{status: "bought", ems}` with the new balance, 409 `refused` for something not for sale or a balance too low (nothing changes), 401 `signed_out`, or 400 `invalid` (not from our page, or no number id or count). No own limit is checked: `Inventory/buy` checks none either.
 
+## The news
+
+`GET /catalog/news` on `web_host`, community server only, public and without a cookie, like [the store catalogue](#the-store-catalogue): the website's feed reads it over `SERVER_URL`. The answer is `{posts: [{title, date, slug, excerpt}], featured: [{title, lead, linkText, target, date}]}`, made from the recorded `GET /v1/splash/feed_data` reply (the one the launcher gets, without the server's notice):
+
+- **Posts**: those with an address, a title and a date (`yyyy-MM-dd HH:mm:ss` as recorded, sent as `yyyy-MM-ddTHH:mm:ss`). `slug` is the last part of the post's address; the title and the excerpt are plain text (tags and the excerpt's links, its "Continue reading", removed; entities decoded).
+- **Featured**: the recorded `splashes` with a start time (`date`). `target` is the website's own address for a link with a `#` route (`…/#store/sales` is `/store/sales`) or `news:<slug>` for a post on `news_host`; a slide that links to any other site is left out.
+
+Without the recording, or with no post, it answers 404 `{"error": "no news"}`. It is the recording as it is: the posts and slides of the day it was made, until another recording replaces it. Nothing comes from the news site itself (its pages, archive or pictures).
+
 ## Sign-in and tokens
 
 With `offline_mode` false (a community server) players sign in with Steam; the endpoints that act for a player need a token that resolves (recorded replies, archives, the mirror, the launcher's calls and the start page are public). With it true none of the following is on (the `/auth/*` endpoints, the start page, the launcher's calls and the replies that carry tokens are the replay's, as before). Steam's OpenID 2.0 needs no key. No Steam name, e-mail or address is read or kept: only the 17-digit Steam id, the handle the player picks and the game data.

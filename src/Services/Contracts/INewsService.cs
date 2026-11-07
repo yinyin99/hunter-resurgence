@@ -12,5 +12,6 @@ public interface INewsService
 {
     Task<IReadOnlyList<NewsPost>> RecentAsync();
     Task<IReadOnlyList<Featured>> FeaturedAsync();
-    Task<DiscordInfo> DiscordAsync();
+    /// <summary>The Discord widget, or null for none.</summary>
+    Task<DiscordInfo?> DiscordAsync();
 }

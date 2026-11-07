@@ -32,20 +32,56 @@ public class CatalogTests : StateTestBase
     // item 1 is half price
     const string Discounts = """[{"item_id": 1, "percentage": 50, "start_ts": 0, "end_ts": 1099511627776}]""";
 
-    async Task<Loopback> Start(string application, bool offline = false)
+    async Task<Loopback> Start(string application, bool offline = false, string? feed = null)
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(application)!, LOCALE, TEXTURES,
             discounts: (JsonArray)JsonNode.Parse(Discounts)!, offline: offline);
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        if (feed is not null) table.Entries[new("GET", "api.test", Replay.FEED_DATA, null)] = new Replay.Hit(2, "", 200, [], System.Text.Encoding.UTF8.GetBytes(feed));
         return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    async Task<Reply> Get(string application, bool offline = false)
+    async Task<Reply> Get(string application, bool offline = false, string path = "/catalog/store", string? feed = null)
     {
-        await using var server = await Start(application, offline);
-        return await server.SendAsync("GET", "web.test", "/catalog/store", []);
+        await using var server = await Start(application, offline, feed);
+        return await server.SendAsync("GET", "web.test", path, []);
     }
+
+    // fictional values only: a post without an address and one without a date are left out, and so is a slide that links to another site
+    const string Feed = """
+        {"posts": [
+           {"url": "https://news.test/first-post/", "title": "First &amp; best", "date": "2026-10-29 14:05:00",
+            "excerpt": "<p>Big news&hellip; <a class=\"more-link\" href=\"https://news.test/first-post/\">Continue reading <span>&rarr;</span></a></p>"},
+           {"url": "", "title": "No address", "date": "2026-10-28 10:00:00", "excerpt": ""},
+           {"url": "https://news.test/undated/", "title": "No date", "date": null, "excerpt": ""}],
+         "splashes": [
+           {"subject": "SALES", "description": "<b>Half</b> off", "linktext": "See them", "link": "https://web.test/#store/sales", "start_ts": 1767225600},
+           {"subject": "A post", "description": "Read it", "linktext": "Here", "link": "https://news.test/first-post/", "start_ts": 1767225600},
+           {"subject": "Elsewhere", "description": "", "linktext": "", "link": "https://other.example/page", "start_ts": 1767225600}]}
+        """;
+
+    [Fact]
+    public async Task TheNewsIsTheRecordedFeedAsPlainText()
+    {
+        var reply = await Get(Store, path: "/catalog/news", feed: Feed);
+        Assert.Equal(200, reply.Status);
+        var news = JsonNode.Parse(reply.Body)!;
+        var post = Assert.Single(news["posts"]!.AsArray())!;
+        Assert.Equal(("First & best", "2026-10-29T14:05:00", "first-post", "Big news…"),
+            ((string)post["title"]!, (string)post["date"]!, (string)post["slug"]!, (string)post["excerpt"]!));  // the website adds its own "continue reading"
+        var featured = news["featured"]!.AsArray();
+        Assert.Equal(["/store/sales", "news:first-post"], featured.Select(f => (string)f!["target"]!));
+        Assert.Equal(("SALES", "Half off", "See them", "2026-01-01T00:00:00"),
+            ((string)featured[0]!["title"]!, (string)featured[0]!["lead"]!, (string)featured[0]!["linkText"]!, (string)featured[0]!["date"]!));
+    }
+
+    [Theory]
+    [InlineData(null)]                                  // no recording: the live server before one is uploaded
+    [InlineData("""{"posts": [], "splashes": []}""")]
+    [InlineData("not json")]
+    public async Task WithoutRecordedPostsThereIsNoNews(string? feed) =>
+        Assert.Equal(404, (await Get(Store, path: "/catalog/news", feed: feed)).Status);
 
     /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$); its reply and the items ME got.</summary>
     async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true)

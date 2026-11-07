@@ -20,6 +20,9 @@ public sealed class HostMode
 
     public string BundleSlot(int id) => Live ? $"store-bundle-{id}" : $"bundle-{id}";
 
+    /// <summary>The picture slot of a feed slide: the live site's slides are the original's, so they do not take the mock's stand-in pictures either.</summary>
+    public string SlideSlot(string target) => Live ? $"splash-{target}" : $"news-{target}";
+
     /// <summary>How often the status bar and the messages page read the server again: 30 seconds as the old interface; a development hook that lets something arrive shortens it to 2.</summary>
     public TimeSpan PollInterval => TimeSpan.FromSeconds(Mock is "poll:fast" or "friends:incoming" or "messages:incoming" ? 2 : 30);
 

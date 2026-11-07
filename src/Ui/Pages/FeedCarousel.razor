@@ -1,12 +1,13 @@
 @implements IDisposable
 @inject INewsService News
+@inject HostMode Mode
 
 @if (slides.Count > 0)
 {
     var cur = slides[index];
     <div class="carousel">
         <div class="slide">
-            <AssetSlot Name="@($"news-{cur.Target}")" Width="805" Height="380" Class="image" />
+            <AssetSlot Name="@Mode.SlideSlot(cur.Target)" Width="805" Height="380" Class="image" />
             <span class="date">@Fmt.MonthDay(cur.When)</span>
             <div class="caption">
                 <h2>@cur.Title</h2>
@@ -28,7 +29,7 @@
             @for (var i = 0; i < slides.Count; i++)
             {
                 var n = i;
-                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@($"news-{slides[i].Target}")" Width="175" Height="95" /></button>
+                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@Mode.SlideSlot(slides[i].Target)" Width="175" Height="95" /></button>
             }
         </div>
     </div>

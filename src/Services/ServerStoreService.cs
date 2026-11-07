@@ -1,32 +1,6 @@
-using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services;
-
-/// <summary>The store the community server sent, shared by every visitor: the website asks again only after <see cref="Lifetime"/>, and after a failure not before <see cref="Pause"/>
-/// (a page reads the store several times, and a server that hangs would cost a time-out each).</summary>
-public sealed class StoreCache
-{
-    public static readonly TimeSpan Lifetime = TimeSpan.FromMinutes(5);
-    public static readonly TimeSpan Pause = TimeSpan.FromSeconds(10);
-
-    sealed record Held(DateTime At, ServerStore Store);
-
-    volatile Held? held;
-    long failedAt;  // ticks of the last failure, 0 for none
-
-    public ServerStore? Get(DateTime now) => held is { } h && now - h.At < Lifetime ? h.Store : null;
-
-    public bool Paused(DateTime now) => Volatile.Read(ref failedAt) is var t && t != 0 && now - new DateTime(t, DateTimeKind.Utc) < Pause;
-
-    public void Set(DateTime now, ServerStore store)
-    {
-        held = new Held(now, store);
-        Volatile.Write(ref failedAt, 0);
-    }
-
-    public void Fail(DateTime now) => Volatile.Write(ref failedAt, now.Ticks);
-}
 
 /// <summary>The store of the community server (<see cref="ServerCatalogApi.Store"/>): the original's items, prices, sales and bundles. A server that does not answer is an empty store,
 /// never the mock's. What the player owns is not known (<c>Owned</c> 0, the live site does not show it), nor the limits of owning, nor a capacity cost. Buying is the server's
@@ -34,7 +8,7 @@ public sealed class StoreCache
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is the same for everyone and is asked without the
 /// session cookie; a purchase carries it.</param>
-public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, StoreCache cache, ILogger<ServerStoreService> log) : IStoreService
+public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, ServerCache<ServerStore> cache, ILogger<ServerStoreService> log) : IStoreService
 {
     public const int PageSize = 12;
 
@@ -107,33 +81,6 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Sto
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))]);
 
-    async Task<ServerStore> LoadAsync()
-    {
-        var now = DateTime.UtcNow;
-        if (cache.Get(now) is { } held) return held;
-        if (cache.Paused(now)) return Empty;
-        try
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Get, ServerCatalogApi.Store);
-            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
-            using var response = await http.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                // a reply that lacks a list is not a store: it would break every page until it expires
-                if (await response.Content.ReadFromJsonAsync<ServerStore>() is { Categories: not null, Items: not null, Bundles: not null } store)
-                {
-                    cache.Set(now, store);
-                    return store;
-                }
-                log.LogWarning("The server answered {Path} with a reply that is not a store: an empty store", ServerCatalogApi.Store);
-            }
-            else log.LogWarning("The server answered {Path} with {Status}: an empty store", ServerCatalogApi.Store, (int)response.StatusCode);
-        }
-        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
-        {
-            log.LogWarning("The server did not answer {Path} ({Reason}): an empty store", ServerCatalogApi.Store, e.Message);
-        }
-        cache.Fail(now);
-        return Empty;
-    }
+    async Task<ServerStore> LoadAsync() =>
+        await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log) ?? Empty;
 }

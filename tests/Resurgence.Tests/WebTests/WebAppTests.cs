@@ -124,6 +124,22 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(html, "class=\"card "));  // the one item, nothing of the mock's 46
     }
 
+    // the landing page with a fake answer of the server: its post and slide, not the mock's five posts
+    [Fact]
+    public async Task TheFeedShowsTheServersNewsNotTheMocks()
+    {
+        const string reply = """{"posts": [{"title": "Test Post", "date": "2026-10-29T14:05:00", "slug": "test-post", "excerpt": "Big news."}], "featured": [{"title": "Test Slide", "lead": "", "linkText": "Go", "target": "/store/sales", "date": "2026-01-01T00:00:00"}]}""";
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
+            .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => new ServerStub(reply))));
+        using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+        var html = await Html(await Get(client, "/feed"));
+
+        Assert.Contains("Test Post", html);
+        Assert.Contains("Test Slide", html);
+        Assert.Single(System.Text.RegularExpressions.Regex.Matches(html, "<article"));
+    }
+
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)
     {
         using var scope = f.Services.CreateScope();

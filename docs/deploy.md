@@ -258,4 +258,4 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 ## Known limits
 
-- Most pages are still a mock (the news, competitions, the other boards, help, and what a signed-out visitor sees of players); only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.
+- Most pages are still a mock (competitions, the other boards, help, and what a signed-out visitor sees of players); only what [website.md](website.md#sign-in) lists as the server's is real. The banner text has to change when that does.

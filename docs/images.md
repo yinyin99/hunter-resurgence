@@ -66,6 +66,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `video-<id>` | 900×506 | VideoModal (Help) | 0 of 19: not in the operator's files |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
 | `news-<target>` | 805×380, 175×95 | FeedCarousel | 6 of 6 |
+| `splash-<target>` (live site: `/store/sales`, `news:<slug>`) | 805×380, 175×95 | FeedCarousel with `SERVER_URL` | 0: the original's slides, not mapped yet |
 | `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |

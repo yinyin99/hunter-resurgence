@@ -5,7 +5,16 @@ public static class ServerCatalogApi
 {
     /// <summary>GET: 200 <see cref="ServerStore"/>, or 404 when the server holds no catalogue.</summary>
     public const string Store = "/catalog/store";
+    /// <summary>GET: 200 <see cref="ServerNews"/>, or 404 when the server holds no recorded news.</summary>
+    public const string News = "/catalog/news";
 }
+
+/// <summary>The JSON of <see cref="ServerCatalogApi.News"/>: plain text. A post's <c>Slug</c> is its address on the news site; a slide's <c>Target</c> an address of the website or <c>news:&lt;slug&gt;</c>.</summary>
+public sealed record ServerNews(ServerPost[] Posts, ServerFeatured[] Featured);
+
+public sealed record ServerPost(string Title, DateTime Date, string Slug, string Excerpt);
+
+public sealed record ServerFeatured(string Title, string Lead, string LinkText, string Target, DateTime Date);
 
 /// <summary>The JSON of <see cref="ServerCatalogApi.Store"/>. A category's <c>Key</c> is the store address part, a top-level one the key of its first sub-category.</summary>
 public sealed record ServerStore(ServerCategory[] Categories, ServerItem[] Items, ServerBundle[] Bundles);

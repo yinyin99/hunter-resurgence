@@ -64,7 +64,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string reply = """{"categories": [{"key": "0", "name": "Weapons", "children": [{"key": "0", "name": "Rifles"}, {"key": "1", "name": "Handguns"}]}], "items": [], "bundles": []}""";
         Services.AddSingleton<IStoreService>(new ServerStoreService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
-            new ServerCookie(), new StoreCache(), NullLogger<ServerStoreService>.Instance));
+            new ServerCookie(), new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
 
         var cut = Render<Resurgence.Ui.Components.StoreFrame>(p => p.Add(f => f.Active, "0"));
 

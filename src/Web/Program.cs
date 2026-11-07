@@ -67,8 +67,11 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
-    builder.Services.AddSingleton<StoreCache>();
-    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<StoreCache>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
+    builder.Services.AddSingleton<ServerCache<ServerStore>>();
+    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
+    // the feed's news and slides are the server's recorded ones, shared the same way; no Discord widget
+    builder.Services.AddSingleton<ServerCache<ServerNews>>();
+    builder.Services.AddScoped<INewsService>(sp => new ServerNewsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerNews>>(), sp.GetRequiredService<ILogger<ServerNewsService>>()));
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
