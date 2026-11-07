@@ -58,12 +58,12 @@ Released today: the backup tool, and the player kit, which lets you play on the 
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
 5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
-6. **New website** (preview online, sample data): profiles, trophies, hunt history with kill pages, leaderboards; then the store (in-game currency only, nothing sold for real money), missions and friends.
+6. **New website** (preview online, partly real): the store with buying in em$, the news, the hunterscore and minigame boards; still sample data: profiles, trophies, hunt history, missions and friends.
 7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
 
 ### Website preview
 
-[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. Two parts are real: sign-in with Steam, and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Every other page shows fixed, fictional data, and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
+[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. The real parts: sign-in with Steam; the store, with buying in em$ for a signed-in player; the news; the hunterscore and minigame boards; and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle, your purchases and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Pages without a source on the server are hidden or still show fixed, fictional data ([known limits](docs/deploy.md#known-limits)), and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
 
 ![The website preview, signed out](docs/img/website.png)
 

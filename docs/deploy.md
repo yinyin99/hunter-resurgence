@@ -261,15 +261,17 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some pages still show sample content.
 
-- **Still sample content:** the profiles of the mock's fictional hunters (a signed-out visitor's preview, or an address typed by hand). The help page keeps its support tab only; its guides, video tutorials and community sites are the mock's ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225)).
-- **Not offered** (the address goes to the feed, or to the hunterscore board):
+- **Still sample content:** the profiles of the mock's fictional hunters (a signed-out visitor's preview, or an address typed by hand).
+- **Hidden for a signed-in player** (no source on the server): their own profile is its header only, the store has no "you own" lines, and the boards show no "your rank".
+- **Not offered** (the address goes to the feed, the hunterscore board or `/help`):
   - the competitions and the community league, the season boards (species score and range, hall of fame) and the antler boards: the server has no seasons, competitions or antler measurements ([#222](https://github.com/yinyin99/hunter-resurgence/issues/222));
+  - help's guides, video tutorials, community sites and daily mission tabs: their content is the mock's; help keeps its support tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
   - missions, wallet, bank, messages, friends, settings and game management: the server keeps no such data for an account yet, and the bank would take real money.
-- **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A discount shows only when the recording holds one; the live server has none, so nothing is on sale.
+- **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A sale shows only when the recording holds one. Without a recording that matches the settings' host names, the server falls back to the install's items, with no categories or bundles ([server.md](server.md#the-store-catalogue)).
   - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)) and checks no ownership limit ([#220](https://github.com/yinyin99/hunter-resurgence/issues/220)).
   - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
   - After a purchase the status bar shows the new balance at its next 30 second refresh.
 - **The news** is the saved launcher feed (a recording, else the mirror's copy), frozen on the day it was saved, after the site's own development note. The slides' pictures are boxes until mapped (#224). There is no Discord widget: the server has no source for it.
 - **The Lane Bandit and Bust Through boards** list only the scores restored from backups: the server records no minigame score played on it ([#223](https://github.com/yinyin99/hunter-resurgence/issues/223)). Each page view reads every account once.
-- **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), so a flaky test there holds the live site back until `ci` is run again or the test is fixed ([#213](https://github.com/yinyin99/hunter-resurgence/issues/213), [#219](https://github.com/yinyin99/hunter-resurgence/issues/219)).
+- **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), so a flaky test there holds the live site back until `ci` is run again or the test is fixed ([#213](https://github.com/yinyin99/hunter-resurgence/issues/213); [#219](https://github.com/yinyin99/hunter-resurgence/issues/219) is flaky locally).

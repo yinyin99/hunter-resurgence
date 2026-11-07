@@ -290,35 +290,24 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestASecondUploadWhileOneIsStillArrivingGetsBusy()
     {
-        // a probe upload takes the slot for a moment too: a first upload that arrives then is refused as busy and ends, and is sent again (as below)
-        (Pipe Body, Task Write, Task<HttpResponseMessage> Sending) Upload1()
-        {
-            var pipe = new Pipe();
-            var first = new HttpRequestMessage(HttpMethod.Post, "http://web.test/account/restore") { Content = new StreamContent(pipe.Reader.AsStream()) };
-            first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-            first.Headers.Add("X-Requested-With", "XMLHttpRequest");
-            first.Headers.Add("Cookie", "hr_session=" + cookie);
-            var sending = server.Http.SendAsync(first);
-            // more than a write buffer: the headers are out and the body has begun; not awaited, since a refused upload never reads it
-            return (pipe, pipe.Writer.WriteAsync(new byte[1 << 17], TestContext.Current.CancellationToken).AsTask(), sending);
-        }
-        var (body, write, sending) = Upload1();
+        var pipe = new Pipe();
+        using var first = new HttpRequestMessage(HttpMethod.Post, "http://web.test/account/restore") { Content = new StreamContent(pipe.Reader.AsStream()) };
+        first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+        first.Headers.Add("X-Requested-With", "XMLHttpRequest");
+        first.Headers.Add("Cookie", "hr_session=" + cookie);
+        var sending = server.Http.SendAsync(first);
+        await pipe.Writer.WriteAsync(new byte[1 << 17], TestContext.Current.CancellationToken);  // more than a write buffer: the headers are out and the body has begun
+        await pipe.Writer.FlushAsync(TestContext.Current.CancellationToken);
         Reply second;
         var deadline = DateTime.UtcNow.AddSeconds(10);
         do
         {
             await Task.Delay(50, TestContext.Current.CancellationToken);
-            if (sending.IsCompleted)
-            {
-                (await sending).Dispose();
-                (body, write, sending) = Upload1();
-            }
             second = await server.SendAsync("POST", "web.test", "/account/restore", [("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], []);
         } while (second.Status != 429 && DateTime.UtcNow < deadline);
         Assert.Equal(429, second.Status);
         Assert.Equal("busy", Status(JsonNode.Parse(second.Body)!));
-        await write;
-        await body.Writer.CompleteAsync();
+        await pipe.Writer.CompleteAsync();
         using var done = await sending;  // the first one ends (its bytes are no zip)
         Assert.Equal(400, (int)done.StatusCode);
         // the slot is free again
@@ -344,21 +333,18 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var (body, write, sending) = Upload();
         (string, string)[] headers = [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)];
         Reply busy;
-        var resent = 0;
         var deadline = DateTime.UtcNow.AddSeconds(10);
         do
         {
-            // a pause between probes: back to back they hold the slot nearly all the time, and every first upload that arrives is refused
-            await Task.Delay(50, TestContext.Current.CancellationToken);
+            await Task.Yield();
             if (sending.IsCompleted)
             {
                 (await sending).Dispose();
                 (body, write, sending) = Upload();
-                resent++;
             }
             busy = await server.SendAsync("POST", "web.test", "/account/restore", [("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], []);
         } while (busy.Status != 429 && DateTime.UtcNow < deadline);
-        Assert.True(busy.Status == 429, $"no probe saw the first upload hold the slot ({resent} resent, last probe {busy.Status})");
+        Assert.Equal(429, busy.Status);
         var refused = await server.SendAsync("POST", "web.test", "/account/delete", headers, "confirm=delete"u8.ToArray());
         Assert.Equal(429, refused.Status);
         Assert.Equal("busy", Status(JsonNode.Parse(refused.Body)!));

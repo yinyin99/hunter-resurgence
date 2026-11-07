@@ -3,7 +3,7 @@
 @inject ModalService Modal
 @inject IJSRuntime JS
 
-@* the website only: everything behind it is a mock; until the official servers close it also offers the backup tool *@
+@* the website only: some pages are still the mock's (all of them without SERVER_URL); until the official servers close it also offers the backup tool *@
 @if (!Mode.Launcher)
 {
     <div class="wip" role="status">@L["Wip.Banner"]@if (offered) { <text> </text><button type="button" class="backup" @onclick="Open">@L["Backup.Banner"]</button> }</div>
