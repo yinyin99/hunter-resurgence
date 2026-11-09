@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Verwenden Sie ein Backup, das im Modus „Mein Konto“ erstellt wurde. Dem Betreiber wird angezeigt, ob es für das Steam-Konto erstellt wurde, mit dem Sie angemeldet sind; das ist ein Hinweis, kein Beweis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Ein Backup kann einmal wiederhergestellt werden. Wenn Sie auf diesem Server noch nicht gespielt haben, übernimmt Ihr Konto dann die Benutzer-ID und den Namen aus dem Backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Jedes Zip wird aufbewahrt, damit ein Betreiber es von Hand prüfen kann. Nichts wird automatisch wiederhergestellt, daher kann es eine Weile dauern.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Ein Zip darf höchstens 64 MiB groß sein.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Ein Zip darf höchstens 1 GiB groß sein.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Backup-Zip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Hochladen</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Wird hochgeladen…</value></data>

@@ -2,24 +2,31 @@ using System.Text.Json;
 
 namespace Backup;
 
-/// <summary>"Send to the community server": signs in with the server's code-link flow (docs/server.md#sign-in: the tool shows a code, the player signs in with Steam in the browser, the tool polls), then uploads a saved zip to POST /account/restore with that session. Runs only when the player presses the button.</summary>
+/// <summary>"Send to the community server": signs in with the server's code-link flow (docs/server.md#sign-in: the tool shows a code, the player signs in with Steam in the browser, the tool polls),
+/// then uploads a saved zip in parts with that session (POST /account/restore/start, /&lt;id&gt;/&lt;part&gt;, /&lt;id&gt;/finish). Runs only when the player presses the button.</summary>
 static class Send
 {
     /// <summary>The server's limit for one zip (Uploads.MaxZipBytes): a larger file is not sent at all.</summary>
-    public const long MaxZipBytes = 64L << 20;
+    public const long MaxZipBytes = 1L << 30;
+    /// <summary>The server's limit for one request (Uploads.MaxPartBytes), under a proxy's 100 MB.</summary>
+    public const int PartBytes = 90 << 20;
+    /// <summary>Tries of one part before the send gives up: a part that fails on the way is sent again.</summary>
+    const int Tries = 3;
 
     static readonly HashSet<string> Kinds = ["review", "already", "taken", "invalid", "busy", "too_large", "signed_out"];
 
     /// <summary>Kind: the server's status (review, already, taken, invalid, busy, too_large, signed_out) or the tool's own: timeout, error. Message: the server's reason, English, or the network error.</summary>
     public sealed record Result(string Kind, string Message = "");
 
-    /// <summary>showCode gets the code the player compares and the address to open in the browser. Not-ok results are returned, never thrown; cancellation throws.</summary>
-    public static async Task<Result> Run(HttpClient http, string server, string zipPath, Action<string, string> showCode, CancellationToken ct, TimeSpan? interval = null, TimeSpan? giveUp = null)
+    /// <summary>showCode gets the code the player compares and the address to open in the browser; sending gets the part being sent and the number of parts, from 1.
+    /// Not-ok results are returned, never thrown; cancellation throws.</summary>
+    public static async Task<Result> Run(HttpClient http, string server, string zipPath, Action<string, string> showCode, CancellationToken ct, TimeSpan? interval = null, TimeSpan? giveUp = null,
+        Action<int, int>? sending = null, int partBytes = PartBytes)
     {
         try
         {
             var size = new FileInfo(zipPath).Length;
-            if (size > MaxZipBytes) return new("too_large", "A backup zip is at most 64 MiB.");
+            if (size > MaxZipBytes) return new("too_large", "A backup zip is at most 1 GiB.");
             var root = server.TrimEnd('/');
 
             var (_, link, _) = await Call(http, HttpMethod.Post, root + "/auth/link", null, null, ct);
@@ -41,17 +48,41 @@ static class Send
                 if (Str(body, "status") == "ok") cookie = set ?? throw new HttpRequestException("the server did not set a session");
             }
 
-            using var file = File.OpenRead(zipPath);
-            var content = new StreamContent(file);
-            content.Headers.ContentType = new("application/zip");
-            var (_, reply, _) = await Call(http, HttpMethod.Post, root + "/account/restore", cookie, content, ct);
-            return Str(reply, "status") is { } kind && Kinds.Contains(kind) ? new(kind, Str(reply, "message") ?? "") : new("error", "The server's reply was not understood.");
+            var (_, started, _) = await Call(http, HttpMethod.Post, root + "/account/restore/start", cookie, null, ct);
+            if (Str(started, "status") != "started" || Str(started, "id") is not { Length: > 0 } id) return Outcome(started);
+            await using var file = File.OpenRead(zipPath);
+            var buf = new byte[Math.Min(size, partBytes)];
+            var parts = (int)((size + partBytes - 1) / partBytes);
+            for (var part = 0; part < parts; part++)
+            {
+                sending?.Invoke(part + 1, parts);
+                var n = await file.ReadAtLeastAsync(buf, buf.Length, throwOnEndOfStream: false, ct);
+                for (var tries = 1; ; tries++)
+                {
+                    Dictionary<string, JsonElement>? reply = null;
+                    try
+                    {
+                        var content = new ByteArrayContent(buf, 0, n);
+                        content.Headers.ContentType = new("application/zip");
+                        (_, reply, _) = await Call(http, HttpMethod.Post, $"{root}/account/restore/{id}/{part}", cookie, content, ct);
+                        if (Str(reply, "status") == "received") break;
+                    }
+                    catch (Exception e) when (!ct.IsCancellationRequested && tries < Tries && e is HttpRequestException or TaskCanceledException or IOException) { }
+                    if (Str(reply, "status") is not null || tries >= Tries) return Outcome(reply);  // the server's refusal is final; a reply that is not its (a proxy's page) is tried again
+                    await Task.Delay(interval ?? TimeSpan.FromSeconds(2), ct);
+                }
+            }
+            var (_, done, _) = await Call(http, HttpMethod.Post, $"{root}/account/restore/{id}/finish", cookie, null, ct);
+            return Outcome(done);
         }
         catch (Exception e) when (!ct.IsCancellationRequested && e is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or UriFormatException)
         {
             return new("error", e.Message);
         }
     }
+
+    static Result Outcome(Dictionary<string, JsonElement>? reply) =>
+        Str(reply, "status") is { } kind && Kinds.Contains(kind) ? new(kind, Str(reply, "message") ?? "") : new("error", "The server's reply was not understood.");
 
     /// <summary>One request; the answer's JSON (null if it is not JSON, e.g. a proxy's page) and the value of the session cookie it set.</summary>
     static async Task<(int Status, Dictionary<string, JsonElement>? Body, string? Cookie)> Call(HttpClient http, HttpMethod method, string url, string? cookie, HttpContent? content, CancellationToken ct)

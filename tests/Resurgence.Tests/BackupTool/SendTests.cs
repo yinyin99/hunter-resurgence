@@ -15,6 +15,9 @@ public sealed class SendTests : IDisposable
     readonly string zip;
     int polls;
     byte[]? uploaded;
+    readonly List<byte[]> parts = [];
+    /// <summary>This part's first try answers with a proxy's error page.</summary>
+    int failOnce = -1;
     /// <summary>After this many pending polls the sign-in is confirmed; never when negative.</summary>
     int confirmAfter = 2;
     (int Status, string Json) uploadReply = (200, """{"status":"review","message":"kept","report":null}""");
@@ -60,15 +63,26 @@ public sealed class SendTests : IDisposable
                 }
                 else reply = (200, """{"status":"pending"}""");
             }
-            else if (req.HttpMethod == "POST" && path == "/account/restore")
+            else if (req.HttpMethod == "POST" && path.StartsWith("/account/restore/", StringComparison.Ordinal))
             {
                 if (req.Headers["Cookie"] != "hr_session=secret") reply = (401, """{"status":"signed_out","message":"Sign in first."}""");
-                else
+                else if (path == "/account/restore/start") reply = (200, """{"status":"started","id":"up1","partBytes":4}""");
+                else if (path == "/account/restore/up1/finish")
+                {
+                    uploaded = [.. parts.SelectMany(b => b)];
+                    reply = uploadReply;
+                }
+                else if (int.TryParse(path["/account/restore/up1/".Length..], out var part))
                 {
                     using var ms = new MemoryStream();
                     await req.InputStream.CopyToAsync(ms);
-                    uploaded = ms.ToArray();
-                    reply = uploadReply;
+                    if (part == failOnce) { failOnce = -1; reply = (502, "<html>"); }
+                    else
+                    {
+                        if (part == parts.Count - 1) parts.RemoveAt(part);  // sent again
+                        if (part == parts.Count) { parts.Add(ms.ToArray()); reply = (200, """{"status":"received"}"""); }
+                        else reply = (409, """{"status":"invalid","message":"out of order"}""");
+                    }
                 }
             }
             var bytes = Encoding.UTF8.GetBytes(reply.Item2);
@@ -78,8 +92,8 @@ public sealed class SendTests : IDisposable
         }
     }
 
-    Task<Send.Result> Run(List<(string Code, string Url)> shown, TimeSpan? giveUp = null) =>
-        Send.Run(new HttpClient(), root + "/", zip, (c, u) => shown.Add((c, u)), CancellationToken.None, TimeSpan.FromMilliseconds(20), giveUp);
+    Task<Send.Result> Run(List<(string Code, string Url)> shown, TimeSpan? giveUp = null, Action<int, int>? sending = null, int partBytes = Send.PartBytes) =>
+        Send.Run(new HttpClient(), root + "/", zip, (c, u) => shown.Add((c, u)), CancellationToken.None, TimeSpan.FromMilliseconds(20), giveUp, sending, partBytes);
 
     [Fact]
     public async Task SignInThenUploadIsKeptForReview()
@@ -89,6 +103,20 @@ public sealed class SendTests : IDisposable
         Assert.Equal(new Send.Result("review", "kept"), res);
         Assert.Equal([("ABCD-1234", root + "/auth/steam/login?link=abcd1234abcd1234")], shown);
         Assert.Equal("PK-fake-zip"u8.ToArray(), uploaded); // the zip as saved, with the sign-in's cookie
+        Assert.Single(parts);
+    }
+
+    [Fact]
+    public async Task ALargerZipIsSentInPartsAndAFailedPartIsSentAgain()
+    {
+        failOnce = 1;
+        var progress = new List<(int, int)>();
+        var res = await Run([], sending: (i, n) => progress.Add((i, n)), partBytes: 4);
+        Assert.Equal(new Send.Result("review", "kept"), res);
+        Assert.Equal([(1, 3), (2, 3), (3, 3)], progress);
+        Assert.Equal(["PK-f", "ake-", "zip"], parts.Select(b => Encoding.ASCII.GetString(b)));
+        Assert.Equal("PK-fake-zip"u8.ToArray(), uploaded);
+        Assert.Equal(2, seen.Count(s => s == "POST /account/restore/up1/1"));
     }
 
     [Fact]
@@ -106,7 +134,7 @@ public sealed class SendTests : IDisposable
         var res = await Run([], TimeSpan.FromMilliseconds(300));
         Assert.Equal("timeout", res.Kind);
         Assert.Null(uploaded);
-        Assert.DoesNotContain("POST /account/restore", seen);
+        Assert.DoesNotContain("POST /account/restore/start", seen);
     }
 
     [Fact]
@@ -147,7 +175,7 @@ public sealed class SendTests : IDisposable
     {
         noCookie = true;
         Assert.Equal("error", (await Run([])).Kind);
-        Assert.DoesNotContain("POST /account/restore", seen);
+        Assert.DoesNotContain("POST /account/restore/start", seen);
     }
 
     [Theory]

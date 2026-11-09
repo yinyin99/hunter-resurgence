@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Käytä varmuuskopiota, joka on tehty tilassa ”My account”. Operaattori näkee, onko se tehty Steam-tilille, jolla kirjauduit sisään; se on vihje, ei todiste.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Varmuuskopion voi palauttaa vain kerran. Jos et ole vielä pelannut tällä palvelimella, tilisi saa silloin varmuuskopion käyttäjätunnuksen ja nimen.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Jokainen zip säilytetään, jotta operaattori voi tarkistaa sen käsin. Mitään ei palauteta automaattisesti, joten se voi viedä hetken.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Zip saa olla enintään 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip saa olla enintään 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Varmuuskopio-zip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Lähetä</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Lähetetään…</value></data>

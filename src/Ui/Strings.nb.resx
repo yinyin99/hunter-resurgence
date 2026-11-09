@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Bruk en sikkerhetskopi laget i modusen «My account». Operatøren får se om den ble laget for Steam-kontoen du logget inn med; det er et hint, ikke et bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En sikkerhetskopi kan gjenopprettes én gang. Hvis du ikke har spilt på denne serveren ennå, får kontoen din deretter bruker-ID-en og navnet fra sikkerhetskopien.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Hver zip-fil lagres slik at en operatør kan sjekke den manuelt. Ingenting gjenopprettes automatisk, så det kan ta en stund.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>En zip-fil kan være på maks. 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>En zip-fil kan være på maks. 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip-fil med sikkerhetskopi</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Last opp</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Laster opp…</value></data>
