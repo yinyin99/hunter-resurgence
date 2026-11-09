@@ -294,7 +294,7 @@ Restores a [backup zip](backup.md) into `state.db` in `data_dir` and prints the 
 
 ## Upload a backup zip
 
-On a community server (`offline_mode` false) a signed-in player uploads their own backup from the website ([docs/website.md](website.md#restore-and-your-data)). The website's server calls these endpoints over `SERVER_URL`, with the player's session cookie (`hr_session`), on `web_host` under `/account/`. An upload is never restored by itself: an operator approves it (below). A browser never calls them itself, so the reverse proxy does not have to route `/account/` to the server (and `/auth/` still has to be). With `offline_mode` true they do not exist (the replay answers), and `import backup` above is the local way.
+On a community server (`offline_mode` false) a signed-in player uploads their own backup from the website ([docs/website.md](website.md#restore-and-your-data)) or from the backup tool ([docs/backup.md](backup.md)). The website's server calls these endpoints over `SERVER_URL`, with the player's session cookie (`hr_session`), on `web_host` under `/account/`; the backup tool calls `/account/restore/start`, the parts and `/finish` on the public domain, so the reverse proxy routes `/account/restore/*` to the server (with `/auth/`); the rest of `/account/` is only called by the website's server. An upload is never restored by itself: an operator approves it (below). With `offline_mode` true they do not exist (the replay answers), and `import backup` above is the local way.
 
 | Endpoint | |
 |---|---|
