@@ -566,9 +566,6 @@ public sealed partial class State
         return offline ? LocalAccount : null;
     }
 
-    /// <summary>The account a public page of a handle shows; the local account for any handle on a local server.</summary>
-    public long? AccountForHandle(string handle) => offline ? LocalAccount : Store.AccountByHandle(handle);
-
     string? SpeciesName(JsonNode? sp)
     {
         // ponytail: the antler-type suffix is dropped ("Mule Deer (Typical)" → "Mule Deer"); only checked for mule deer

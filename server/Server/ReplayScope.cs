@@ -26,7 +26,7 @@ public static class ReplayScope
 
     const string Stats = """{"duration": 0, "distance": 0, "data": {"collectables": {}, "weapon": {}, "animal": {}, "daily_missions": {}}}""";
     const string HandlerError = """{"error": 1, "code": "handlerError"}""";
-    const string Missing = """{"id":"server","code":"not_found","status":404,"detail":"not found"}""";
+    public const string Missing = """{"id":"server","code":"not_found","status":404,"detail":"not found"}""";
     const string Nothing = """{"id": 0, "define": "", "name": "", "scoretype": 0, "total": 0, "position": null, "records": []}""";
 
     static Rule Global(string host, string path) => new(host, path);
