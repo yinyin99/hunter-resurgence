@@ -257,7 +257,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open(8))
         {
             con.Begin();
-            PlayerRows.AddAchievement(con, 1, 1, 1, 1, O("""{"1": 1600000000}"""));
+            PlayerRows.AddAchievement(con, 1, 1, 1, 1, O("""{"1": 1600000000, "2": 1600000100, "3": 0}"""));  // two thresholds earned, one without a time
             PlayerRows.AddAchievement(con, 2, 1, 1, 0, new JsonObject());  // not earned
             PlayerRows.SetExtra(con, "game_user_8_profile.json", O("""{"background": 3, "ribbon": "gold", "hunterscore": 1234}"""));
             con.Commit();
@@ -273,7 +273,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
 
         var v2 = await Send(community, "GET", "apiv2.test", "/game/user/8/profile", null);
         Assert.Equal((200, "state"), (v2.Status, v2.Source));
-        Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 1}""", JsonNode.Parse(v2.Body));
+        Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 2}""", JsonNode.Parse(v2.Body));
         Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", null)).Body);  // the current build's path
         foreach (var id in new[] { 7, 9, 99 })
             Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/profile", tokenB)).Status);

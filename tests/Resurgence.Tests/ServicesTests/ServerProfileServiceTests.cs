@@ -176,6 +176,33 @@ public class ServerProfileServiceTests
     [InlineData(HttpStatusCode.OK, "<html>")]
     public async Task AFailedDogsAnswerIsNoDogs(HttpStatusCode code, string body) => Assert.Empty(await Make(new Fake(_ => Json(code, body))).DogsAsync("fox"));
 
+    const string Achievements = """{"categories":[{"name":"Animals","level":1,"done":4,"total":5}],"unlocked":4,"recent":[{"title":"25 Mule Deer","description":"25 Mule Deer harvested.","date":"2023-11-15"}]}""";
+
+    [Fact]
+    public async Task TheAchievementSummaryIsTheServers()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Achievements));
+        var summary = await Make(fake).AchievementSummaryAsync("fox");
+        Assert.Equal("/hunters/fox/achievements", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal(("Animals", 1, 4, 5), summary.Categories.Select(c => (c.Name, c.Level, c.Done, c.Total)).Single());
+        Assert.Equal(4, summary.Unlocked);
+        Assert.Equal(("25 Mule Deer", "25 Mule Deer harvested.", new DateOnly(2023, 11, 15)), summary.Recent.Select(a => (a.Title, a.Description, a.Date)).Single());
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedAchievementsAnswerIsAnEmptySummary(HttpStatusCode code, string body)
+    {
+        var summary = await Make(new Fake(_ => Json(code, body))).AchievementSummaryAsync("fox");
+        Assert.Empty(summary.Categories);
+        Assert.Empty(summary.Recent);
+        Assert.Equal(0, summary.Unlocked);
+    }
+
+    [Fact]
+    public void TheAchievementsTabHasAServerSource() => Assert.Contains("achievements", ServerProfileService.Tabs);
+
     [Fact]
     public void TheDogsTabHasAServerSource() => Assert.Contains("dogs", ServerProfileService.Tabs);
 

@@ -367,6 +367,45 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAnyAccountsAchievementsAreServedToEveryone()
+    {
+        var connect = CONNECT;
+        connect["achievements"] = JsonNode.Parse("""
+            [{"id": 0, "category": 0, "category_title": "Animals", "group": 0, "title": "%d Harvests", "description": "%d animals harvested.", "value": "animal.*.ethical_kills", "triggers": [50, 250, 500]},
+             {"id": 1, "category": 0, "category_title": "Animals", "group": 1, "title": "%d Mule Deer", "description": "%d Mule Deer harvested.", "value": "animal.MULE_DEER.ethical_kills", "triggers": [1, 25]},
+             {"id": 25, "category": 2, "category_title": "Exploration", "group": 0, "title": "%d km", "description": "%d km walked.", "value": "distance", "triggers": [10]}]
+            """);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS, offline: false, facts: Ranks);
+        state.CreateAccount(B, "second");
+        state.CreateAccount(9, "third");
+        using (var con = state.Store.Open(9))
+        {
+            PlayerRows.AddAchievement(con, 0, 0, 0, 300, O("""{"50": 1700000000, "250": 1700086400, "500": 0}"""));  // a threshold without a time is not earned
+            PlayerRows.AddAchievement(con, 1, 0, 1, 30, O("""{"1": 1600000000, "25": 1700086400}"""));
+            PlayerRows.AddAchievement(con, 25, 2, 0, 3, O("""{"10": 1700000000000}"""));  // a restored time in milliseconds: the last day there is
+        }
+        // the other player's own call: the rows of user id 9 (the earn times), ordered by id; an unknown user id none
+        Eq("""
+            [{"category_id": 0, "group_id": 0, "id": 0, "triggers": {"50": 1700000000, "250": 1700086400, "500": 0}, "value": 300},
+             {"category_id": 0, "group_id": 1, "id": 1, "triggers": {"1": 1600000000, "25": 1700086400}, "value": 30},
+             {"category_id": 2, "group_id": 0, "id": 25, "triggers": {"10": 1700000000000}, "value": 3}]
+            """, JsonNode.Parse(state.AchievementReply(B, "user_id=9"u8.ToArray())!));
+        Assert.Null(state.AchievementReply(B, "user_id=424242"u8.ToArray()));
+        // animals: 4 of 5 thresholds (the deer's definition is complete, the total's lacks 500); the walk's one has a time in milliseconds
+        Eq("""
+            {"categories": [{"name": "Animals", "level": 1, "done": 4, "total": 5}, {"name": "Exploration", "level": 1, "done": 1, "total": 1}],
+             "unlocked": 5,
+             "recent": [{"title": "10 km", "description": "10 km walked.", "date": "9999-12-31"},
+                        {"title": "250 Harvests", "description": "250 animals harvested.", "date": "2023-11-15"},
+                        {"title": "25 Mule Deer", "description": "25 Mule Deer harvested.", "date": "2023-11-15"},
+                        {"title": "50 Harvests", "description": "50 animals harvested.", "date": "2023-11-14"},
+                        {"title": "1 Mule Deer", "description": "1 Mule Deer harvested.", "date": "2020-09-13"}]}
+            """, state.PublicAchievements(9));
+        Eq("""{"categories": [{"name": "Animals", "level": 0, "done": 0, "total": 5}, {"name": "Exploration", "level": 0, "done": 0, "total": 1}], "unlocked": 0, "recent": []}""",
+           state.PublicAchievements(B));
+    }
+
+    [Fact]
     public void TestTheSchemaOfVersion6RecountsTheClosedHuntsForTheirPickups()
     {
         var file = Path.Combine(tmp, "v6.db");
@@ -429,10 +468,13 @@ public class HunterscoreTests : StateTestBase
         state.Clock = () => now;
         state.CreateAccount(B, "second");
         using (var con = state.Store.Open(B))  // earned before, as a restore stores it
+        {
             PlayerRows.AddAchievement(con, 1, 0, 1, 5, O("""{"1": 1600000000}"""));
+            PlayerRows.AddAchievement(con, 40, 0, 9, 0, O("""{"1": 0}"""));  // a threshold stored without a time gets one when it is reached
+        }
         state.ConnectReply(B);
         Kill(B, 81, 1, 10);
-        Assert.Single(JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray());  // mid-hunt: nothing yet
+        Assert.Equal(2, JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray().Count);  // mid-hunt: nothing new yet
         using (var con = state.Store.Open(B))  // a hunt of 3700 s: past one hour
             con.Exec("UPDATE expeditions SET start_ts = start_ts - 3700 WHERE account_id = $a AND end_ts IS NULL");
         state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
@@ -454,6 +496,6 @@ public class HunterscoreTests : StateTestBase
         state.Disconnect(B, "{}"u8.ToArray());
         Eq("""{"category_id": 1, "group_id": 0, "id": 13, "triggers": {"1": 1700000000}, "value": 2}""",
            JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)![2]);
-        Assert.Null(state.AchievementReply(B, "user_id=7"u8.ToArray()));  // another player's user id: not this account's
+        Assert.Null(state.AchievementReply(B, "user_id=7"u8.ToArray()));  // the recorded player's user id: not a player of this server
     }
 }
