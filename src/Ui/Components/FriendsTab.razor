@@ -1,6 +1,7 @@
 @inject IProfileService Service
 @inject ModalService Modal
 @inject IFriendsService Friends
+@inject HostMode Mode
 
 @if (page is not null)
 {
@@ -12,7 +13,7 @@
                 <AssetSlot Name="avatar-default" Width="48" Height="48" />
                 <a href="/profile/@f.Handle" class="handle">@f.Handle</a> <Icon Name="paw" /> @f.HunterScore
                 <span class="buttons">
-                    <a class="btn btn-primary" href="/messages/@f.Handle">@L["Friends.SendMessage"]</a>
+                    @if (!Mode.Live) { <a class="btn btn-primary" href="/messages/@f.Handle">@L["Friends.SendMessage"]</a> }  @* the messages are the mock's *@
                     @if (Own) { <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button> }
                 </span>
             </li>

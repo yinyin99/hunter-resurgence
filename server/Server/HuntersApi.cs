@@ -91,6 +91,15 @@ public static class HuntersApi
                              + "404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicFriends(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterFriends").WithSummary("One page of a hunter's friends")
+            .WithDescription($"`{{page, pages, total, rows: [{{handle, hunterscore}}]}}`, {State.FriendsPageSize} rows a page, by handle (upper case, ordinal): the friends of docs/server.md#friends. "
+                             + "404 for a handle that is unknown or banned.")
+            .QueryParams(("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {

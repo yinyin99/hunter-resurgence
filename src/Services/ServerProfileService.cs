@@ -9,11 +9,11 @@ namespace Resurgence.Services;
 /// does not know, or an answer that fails, is no profile (the page is "Page not found"), never a hunter of the mock pages.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, ISessionService sessions, MockProfileService mock,
-    ILogger<ServerProfileService> log) : IProfileService
+    ILogger<ServerProfileService> log, IFriendsService? friends = null) : IProfileService
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "ranks" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "ranks" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -26,7 +26,11 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerProfile>() is { } h)
             {
                 var own = (await sessions.CurrentAsync())?.Handle is { } me && string.Equals(me, h.Handle, StringComparison.OrdinalIgnoreCase);
-                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, Friend: false, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar));
+                // whether the signed-in player is a friend of this hunter, or has asked it to be (the header's request button)
+                var (friend, pending) = !own && cookie.Value is not null && friends is not null
+                    ? ((await friends.FriendsAsync()).Any(f => string.Equals(f.Handle, h.Handle, StringComparison.OrdinalIgnoreCase)), (await friends.PendingAsync()).Contains(h.Handle, StringComparer.OrdinalIgnoreCase))
+                    : (false, false);
+                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar));
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }
@@ -158,7 +162,24 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return [];
     }
-    public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => mock.FriendsAsync(handle, page);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/friends?page=n</c>: one page of 20. A failed answer is an empty page.</summary>
+    public async Task<Page<ProfileFriend>> FriendsAsync(string handle, int page)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.FriendsSuffix}?page={page}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerFriendsPage>() is { } f)
+                return new([.. (f.Rows ?? []).Select(r => new ProfileFriend(r.Handle, r.Hunterscore))], f.Page, f.Pages, f.Total);
+            log.LogWarning("The server answered {Path} with {Status}: no friends", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no friends", path, e.Message);
+        }
+        return new([], 1, 1);
+    }
     public Task<Expedition?> ExpeditionAsync(string handle, long? id) => mock.ExpeditionAsync(handle, id);
     public Task<Page<HistoryRow>> HistoryAsync(string handle, int page) => mock.HistoryAsync(handle, page);
     public Task<PersonalBest> BestAsync(string handle, int season) => mock.BestAsync(handle, season);

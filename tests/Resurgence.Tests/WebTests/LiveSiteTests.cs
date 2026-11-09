@@ -104,9 +104,9 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
-        Assert.Empty(cut.FindAll("button.request"));
+        Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
     }
 
     [Fact]
@@ -270,15 +270,72 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(blocks, cut.FindAll("p.norank").Count);
     }
 
+    // the friend requests are the server's: a signed-in player can ask any other hunter, the live site too
     [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 0)]
-    public void AFictionalHunterOffersNoFriendRequestLive(bool live, int buttons)
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AHunterOffersAFriendRequestLiveToo(bool live)
     {
         Live(live);
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05"));
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
-        Assert.Equal(buttons, cut.FindAll("button.request").Count);
+        Assert.Single(cut.FindAll("button.request"));
+    }
+
+    /// <summary>Answers by path: the friends page of a hunter, the signed-in player's friends, and a change of them (kept in <see cref="Posts"/>).</summary>
+    sealed class FriendsServer : HttpMessageHandler
+    {
+        public readonly List<string> Posts = [];
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var path = request.RequestUri!.AbsolutePath;
+            if (request.Method == HttpMethod.Post) Posts.Add(path + "?" + await request.Content!.ReadAsStringAsync(ct));
+            var body = path switch
+            {
+                "/hunters/Fox/friends" => """{"page":1,"pages":2,"total":21,"rows":[{"handle":"Birch","hunterscore":120},{"handle":"Elm","hunterscore":80}]}""",
+                "/hunters/Fox" => """{"handle":"Fox","hunterscore":5,"rank":3}""",
+                "/account/friends" => """{"friends":[{"handle":"Birch","online":true},{"handle":"Elm","online":false}],"requests":[{"handle":"Oak","online":false},{"handle":"Ash","online":false}],"pending":[{"handle":"Fox","online":false}]}""",
+                _ => """{"status":"ok"}""",
+            };
+            return new(HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+        }
+    }
+
+    ServerFriendsService FriendsOf(FriendsServer server) =>
+        new(new HttpClient(server) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, NullLogger<ServerFriendsService>.Instance);
+
+    [Fact]
+    public void TheFriendsTabShowsTheServersFriendsWithoutMessageButtons()
+    {
+        var server = new FriendsServer();
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(server) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Services.AddSingleton<IFriendsService>(FriendsOf(server));
+        Live(true);
+        var cut = Render<FriendsTab>(p => p.Add(t => t.Handle, "Fox").Add(t => t.Own, true));
+        cut.WaitForAssertion(() => Assert.Equal(["Birch", "Elm"], cut.FindAll("ul.list a.handle").Select(a => a.TextContent)));
+        Assert.Empty(cut.FindAll("a[href^='/messages']"));  // the messages are the mock's
+        Assert.Equal(2, cut.FindAll("button.btn-inverse").Count);  // the remove buttons of the own list
+        Assert.Equal("/profile/Fox/friends/2", cut.Find("p.pager a").GetAttribute("href"));  // 21 friends: a second page
+    }
+
+    [Fact]
+    public void TheStatusBarListsTheServersFriendsAndCountsItsRequests()
+    {
+        var server = new FriendsServer();
+        Services.AddSingleton<IFriendsService>(FriendsOf(server));
+        Live(true);
+        var cut = Render<StatusBar>(p => p.Add(b => b.Session, new Session("Fox", 5)));
+        cut.WaitForAssertion(() => Assert.Equal("2", cut.Find("button.friends .count").TextContent));
+        cut.Find("button.friends").Click();
+        cut.WaitForAssertion(() => Assert.Equal(["Oak", "Birch", "Elm"], cut.FindAll("#friends .handle").Select(e => e.TextContent)));
+        Assert.Empty(cut.FindAll("#friends a[href^='/new-message']"));
+        // accepting asks the server; declining removes
+        cut.Find("#friends .answer .btn-primary").Click();
+        cut.WaitForAssertion(() => Assert.Single(server.Posts));
+        cut.Find("#friends .answer .btn-inverse").Click();
+        cut.WaitForAssertion(() => Assert.Equal(["/account/friends/add?handle=Oak", "/account/friends/remove?handle=Oak"], server.Posts));
     }
 
     // the community server has no Discord widget: a signed-in player sees it on the launcher and the development website only
