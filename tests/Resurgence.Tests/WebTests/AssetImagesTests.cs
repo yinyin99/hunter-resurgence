@@ -19,7 +19,7 @@ public class AssetImagesTests
 
     [Theory]
     [InlineData("species-Alpine Ibex", "species-alpine-ibex")]
-    [InlineData("map:06 Rotes Moor", "map-06-rotes-moor")]
+    [InlineData("map:06 Reserve 06", "map-06-reserve-06")]
     public void KeyNormalises(string name, string key) => Assert.Equal(key, AssetImages.Key(name));
 
     [Fact]
