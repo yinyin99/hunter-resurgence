@@ -61,8 +61,10 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
 {
     // the hunterscore board and the profile header are the community server's; registered after the mocks they wrap
     builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
+    // the friends (the status bar's list, the profile tab and its buttons) are the account's on the server
+    builder.Services.Replace(ServiceDescriptor.Scoped<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>())));
     builder.Services.AddScoped<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
-        new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>()));
+        new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>(), sp.GetRequiredService<IFriendsService>()));
     // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and the bank are hidden (HostMode.Live)
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
