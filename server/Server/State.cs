@@ -231,8 +231,13 @@ public sealed partial class State
                 updates.Add(update);
             }
             else if (Is(e["event"], 24) || Is(e["event"], 36))  // a pickup or shed antler: the game asks every second until update 7 answers it
-                // ponytail: the score is always 0, no rule for a collectable's score is known
+            {
+                // a pickup in a hunt that already closed (a heartbeat after its close): its statistics are counted again
+                con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND end_ts IS NOT NULL"
+                         + " AND id = (SELECT MAX(id) FROM expeditions WHERE account_id = $a)");
+                // ponytail: the score is always 0, no rule for a collectable's score is known; Expedition/list counts the pickups of every hunt on each call
                 updates.Add(new JsonObject { ["collectable_id"] = C(e["collectable_id"]), ["score"] = 0, ["update"] = 7 });
+            }
         }
         con.Commit();
         return updates;
@@ -296,8 +301,8 @@ public sealed partial class State
         {
             var (antler, e) = (Is(Py.FromSql(r[0]), 36), Parse(r[1]));
             var id = antler ? e["species_id"] : e["type"];
-            if (!Py.IsInt(id) || !seen.Add(Py.Dumps(e["collectable_id"]))) continue;  // a type that is no whole number counts 0
-            list.Add((e, antler ? 2000 + Py.L(id) % 100 : Py.L(id), antler));  // a variant (species 100 and up) is its species' type
+            if (!TryKey(id, out var key) || !seen.Add(Py.Dumps(e["collectable_id"]))) continue;  // a type that is no 64-bit whole number counts 0
+            list.Add((e, antler ? 2000 + key % 100 : key, antler));  // a variant (species 100 and up) is its species' type
         }
         return list;
     }

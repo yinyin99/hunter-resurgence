@@ -397,6 +397,19 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAPickupAfterItsHuntClosedStillCountsAndAHugeTypeCountsNothing()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.Disconnect(B, "{}"u8.ToArray());
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 24, "collectable_id": 1, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 24, "collectable_id": 2, "type": 100000000000000000000000000000, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
+        Eq("""{"9": {"collected": 1}}""", Total(B)["data"]!["collectables"]);
+    }
+
+    [Fact]
     public void TestAHuntsCloseAwardsTheAchievementsItsStatisticsReach()
     {
         var connect = CONNECT;
