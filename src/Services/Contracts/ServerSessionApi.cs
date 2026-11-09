@@ -16,6 +16,8 @@ public static class ServerSessionApi
     public const string SkillsSuffix = "/skills";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. Public: no cookie needed.</summary>
     public const string DogsSuffix = "/dogs";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/achievements</c>: 200 <see cref="ServerAchievements"/> or 404. Public: no cookie needed.</summary>
+    public const string AchievementsSuffix = "/achievements";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
     public const string TrophiesSuffix = "/trophies";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. Public: no cookie needed.</summary>
@@ -74,6 +76,14 @@ public sealed record ServerRank(long Id, string Category, string Name, long Valu
 /// <param name="Category">animals, weapons, exploration or day-mission.</param>
 /// <param name="Steps">The thresholds; <c>Value</c> the counter they are reached by.</param>
 public sealed record ServerMilestone(string Category, string Title, long[] Steps, long Value);
+
+/// <summary>A hunter's achievements of <see cref="ServerSessionApi.AchievementsSuffix"/>: the progress of each category, how many are unlocked and the latest.</summary>
+public sealed record ServerAchievements(ServerAchievementCategory[] Categories, int Unlocked, ServerAchievement[] Recent);
+
+public sealed record ServerAchievementCategory(string Name, int Level, int Done, int Total);
+
+/// <param name="Date">The day, yyyy-MM-dd.</param>
+public sealed record ServerAchievement(string Title, string Description, string Date);
 
 /// <summary>One page of a hunter's friends of <see cref="ServerSessionApi.FriendsSuffix"/>.</summary>
 public sealed record ServerFriendsPage(int Page, int Pages, int Total, ServerFriendRow[] Rows);

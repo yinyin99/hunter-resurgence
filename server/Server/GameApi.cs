@@ -163,9 +163,8 @@ public static class GameApi
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("AchievementStats").WithSummary("Achievements of a player with their earn times")
-               .WithDescription("The player's own achievements: the restored ones and those earned on a community server, with their earn times; "
-                                + "for other players a local server replays the recording (also for its unrestored accounts) and a community "
-                                + "server sends `[]`.")
+               .WithDescription("The restored achievements and those earned on a community server, with their earn times: the player's own on a local "
+                                + "server (other players replay the recording, also for its unrestored accounts), any account's on a community server (`[]` for an unknown, banned or recorded user id).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
