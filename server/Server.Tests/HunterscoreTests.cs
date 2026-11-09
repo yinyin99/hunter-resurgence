@@ -338,16 +338,16 @@ public class HunterscoreTests : StateTestBase
         state.Clock = () => now;
         state.CreateAccount(B, "second");
         using (var con = state.Store.Open(B))  // earned before, as a restore stores it
-            PlayerRows.AddAchievement(con, 1, 0, 1, 0, O("""{"1": 1600000000}"""));
+            PlayerRows.AddAchievement(con, 1, 0, 1, 5, O("""{"1": 1600000000}"""));
         state.ConnectReply(B);
         Kill(B, 81, 1, 10);
         Assert.Single(JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray());  // mid-hunt: nothing yet
         state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
-        // the restored time stays; the weapon, the distance (12 km) and the listed species are earned now; the total keeps its
+        // the restored time and its larger value stay; the weapon, the distance (12 km) and the listed species are earned now; the total keeps its
         // count without a time (50 not reached); the rabbit has nothing
         var earned = """
             [{"category_id": 0, "group_id": 0, "id": 0, "value": 1},
-             {"category_id": 0, "group_id": 1, "id": 1, "triggers": {"1": 1600000000}, "value": 1},
+             {"category_id": 0, "group_id": 1, "id": 1, "triggers": {"1": 1600000000}, "value": 5},
              {"category_id": 1, "group_id": 0, "id": 13, "triggers": {"1": 1700000000}, "value": 1},
              {"category_id": 2, "group_id": 0, "id": 25, "triggers": {"10": 1700000000}, "value": 12},
              {"category_id": 0, "group_id": 9, "id": 40, "triggers": {"1": 1700000000}, "value": 1}]
