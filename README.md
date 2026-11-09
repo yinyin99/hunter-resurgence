@@ -98,4 +98,4 @@ One document per part:
 
 Unofficial fan project. Not affiliated with, endorsed by or connected to the developer or publisher of theHunter Classic. theHunter Classic is a trademark of its respective owner. This repository contains no game files or game data; you need your own copy of the game.
 
-Licensed under the [GNU AGPL-3.0](LICENSE).
+Copyright (C) 2026 the Hunter Resurgence project, [yinyin99](https://github.com/yinyin99). Licensed under the [GNU AGPL-3.0](LICENSE): copies and modified versions keep this notice.
