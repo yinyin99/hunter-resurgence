@@ -72,6 +72,45 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(local, Stored(ME));  // the recorded account keeps the recorded player's value
     }
 
+    [Fact]
+    public void TestTheTimerClosesAStaleHuntWithoutAGameCall()
+    {
+        state = Online();
+        double now = Py.Now();
+        state.Clock = () => now;
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        now += State.HEARTBEAT_TIMEOUT - 1;
+        state.CloseStaleHunts();
+        Assert.Equal(0, Stored(B));  // a heartbeat came within the timeout
+        now += 2;
+        state.CloseStaleHunts();
+        Assert.Equal(2, Stored(B));
+        state.CloseStaleHunts();
+        Assert.Equal(2, Stored(B));  // closed once, credited once
+    }
+
+    [Fact]
+    public void TestALateHeartbeatReopensAStaleClosedHunt()
+    {
+        state = Online();
+        double now = Py.Now();
+        state.Clock = () => now;
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        now += 200;
+        state.CloseStaleHunts();
+        Assert.Equal(2, Stored(B));
+        Kill(B, 82, 1, 10);  // the late heartbeat: the same hunt is open again
+        using (var con = state.Store.Open(B))
+            Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND end_ts IS NULL"));
+        now += 200;
+        state.CloseStaleHunts();
+        Assert.Equal(4, Stored(B));  // both kills, each once
+    }
+
     /// <summary>A fresh state with account B holding one open hunt with a kill; the hunt closes only through <paramref name="close"/>.</summary>
     void ClosedBy(Action<State> close, bool stale)
     {
