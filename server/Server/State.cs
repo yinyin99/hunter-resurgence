@@ -1172,7 +1172,8 @@ public sealed partial class State
     public byte[] ExpeditionReply(long account, byte[] recorded, byte[]? formBody = null)
     {
         var wanted = Form1(Py.ParseQs(formBody is null ? "" : Encoding.UTF8.GetString(formBody)), "expedition_id");
-        if (wanted != "" && !long.TryParse(wanted, out _))
+        long wantedId = 0;
+        if (wanted != "" && !long.TryParse(wanted, out wantedId))
             return recorded;
         object[] row;
         JsonArray kills;
@@ -1185,7 +1186,8 @@ public sealed partial class State
             if (stale)
                 UpdateHunterscore(con, account);
             var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
-                                 + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = " + long.Parse(wanted)) + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                                 + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
+                                 wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
                 return recorded;
             row = found;
@@ -1316,14 +1318,15 @@ public sealed partial class State
             ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = 0, ["location_id"] = Py.FromSql(r[2]),
             ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
         }).ToList();
-        var expeditions = new List<JsonNode?>(ours);
-        if (Py.Truthy(reply["expeditions"]))
-            expeditions.AddRange(reply["expeditions"]!.AsArray().Select(C));
+        var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];
+        if (skip >= ours.Count && theirs.Count > 0)
+            return recorded;  // past the server hunts the recording is the page asked for
         var take = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), int.MaxValue) : int.MaxValue;
-        reply["expeditions"] = new JsonArray(expeditions.Skip(skip).Take(take).ToArray());
+        var shown = ours.Skip(skip).Take(take).Concat(theirs).ToList();  // the recorded entries fill what the server hunts leave
+        reply["expeditions"] = new JsonArray(shown.Take(take).ToArray());
         var total = G(reply, "total", 0);
         reply["total"] = Py.IsInt(total) ? JsonValue.Create(Py.L(total) + ours.Count) : JsonValue.Create(Py.D(total) + ours.Count);
-        reply["has_more"] = (long)skip + take < expeditions.Count;  // the current build asks for this instead of `total`
+        reply["has_more"] = (long)skip + take < ours.Count || shown.Count > take;  // the current build asks for this instead of `total`
         return Py.DumpBytes(reply);
     }
 

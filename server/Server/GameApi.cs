@@ -180,10 +180,10 @@ public static class GameApi
             api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body, r.Body), "state") : null)
                     : null)
-               .WithName("LastHunt").WithSummary("The latest expedition with its kills and stats")
+               .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
                .WithDescription("`stats` stays null while the hunt is open; `expedition_id` picks an older hunt (an unknown id and the "
                                 + "time before the first server hunt: the recorded reply, a community server: `null`).")
-               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+               .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state") : null)
                     : null)
@@ -440,6 +440,8 @@ public static class GameApi
     public sealed record UserForm(long user_id, string? oauth_access_token);
 
     public sealed record ExpeditionListForm(long user_id, long limit, long offset);
+
+    public sealed record ExpeditionForm(long user_id, string? oauth_access_token, long? expedition_id);
 
     public sealed record StartSinglePlayerForm(
         [property: Description("Start time of day, minutes")] long time, long loadout_id,
