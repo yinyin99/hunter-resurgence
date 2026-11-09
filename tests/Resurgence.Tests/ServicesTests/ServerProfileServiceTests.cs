@@ -134,4 +134,27 @@ public class ServerProfileServiceTests
 
     [Fact]
     public void TheSkillsTabHasAServerSource() => Assert.Contains("skills", ServerProfileService.Tabs);
+
+    [Fact]
+    public async Task TrophiesAreTheServersPageOfTheHandle()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"name":"Red Fox","date":"2026-09-13"}]}"""));
+        var page = await Make(fake).TrophiesAsync("fox", 2);
+        Assert.Equal("/hunters/fox/trophies?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
+        Assert.Equal((2, 3, 50), (page.Number, page.Pages, page.Total));
+        var t = Assert.Single(page.Rows);
+        Assert.Equal(("Red Fox", new DateOnly(2026, 9, 13), null, null), (t.Name, t.Date, t.CompetitionId, t.Competition));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedTrophiesAnswerIsAnEmptyPage(HttpStatusCode code, string body)
+    {
+        var page = await Make(new Fake(_ => Json(code, body))).TrophiesAsync("fox", 1);
+        Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
+    }
+
+    [Fact]
+    public void TheTrophiesTabHasAServerSource() => Assert.Contains("trophies", ServerProfileService.Tabs);
 }

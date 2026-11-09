@@ -14,6 +14,8 @@ public static class ServerSessionApi
     public const string Hunters = "/hunters";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. Public: no cookie needed.</summary>
     public const string SkillsSuffix = "/skills";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
+    public const string TrophiesSuffix = "/trophies";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
     public const string Leaderboards = "/leaderboards";
 }
@@ -42,3 +44,9 @@ public sealed record ServerSkills(ServerSpeciesSkill[] Species, ServerWeaponSkil
 public sealed record ServerSpeciesSkill(string Name, double Spotting, double? Tracking);
 
 public sealed record ServerWeaponSkill(string Name, string? Group, double Value);
+
+/// <summary>One page of a hunter's trophies of <see cref="ServerSessionApi.TrophiesSuffix"/>.</summary>
+public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy[] Rows);
+
+/// <param name="Date">The day, yyyy-MM-dd; empty when the trophy has none.</param>
+public sealed record ServerTrophy(string Name, string Date);
