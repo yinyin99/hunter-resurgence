@@ -157,7 +157,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var mine = await Api(Replay.TROPHY_LIST, tokenA, "user_id=7&limit=1&offset=1");
         Eq("""[2, [{"id": 2, "name": "second"}]]""", T(mine["total"], mine["trophies"]));
         Eq("0", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=8"))["total"]);
-        Eq("0", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=7"))["total"]);  // not B's to read
+        Eq("0", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=7"))["total"]);  // the recorded player's account: no player here owns it, so nobody reads it
         async Task<(int, string)> V2(string path, string token)
         {
             var reply = await Send(community, "GET", "apiv2.test", path, token);
