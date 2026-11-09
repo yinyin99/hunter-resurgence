@@ -38,6 +38,17 @@ sealed class TestZip
         .Reply("Skill_list.json", "/v1/Skill/list", $$"""{"weapon":{"300":4.75,"200":10.2},"tracking":[{{Zeros(59, "1.5")}}],"spotting":[{{Zeros(59, "2")}}]}""", ("user_id", uid))
         .Reply("loadout.json", "/game/user/loadout", $$$"""{"slots":[1,2],"contact":{"email":"{{{Email}}}"}}""");
 
+    /// <summary>Three hunts in the saved list (two pages, newest first); only the newest and the oldest were saved with their detail.</summary>
+    public TestZip Hunts() =>
+        Reply($"Expedition_list__user_id={Uid}__offset=0__limit=2.json", "/v1/Expedition/list",
+              """{"total":3,"expeditions":[{"id":9003,"kills":1,"start_ts":1700000300},{"id":9002,"kills":0,"start_ts":1700000200}]}""", ("offset", "0"), ("limit", "2"))
+        .Reply($"Expedition_list__user_id={Uid}__offset=2__limit=2.json", "/v1/Expedition/list",
+               """{"total":3,"expeditions":[{"id":9001,"kills":2,"start_ts":1700000100}]}""", ("offset", "2"), ("limit", "2"))
+        .Reply($"Public_user_expedition__user_id={Uid}__expedition_id=9003.json", "/v1/Public_user/expedition",
+               """{"stats":null,"kills":[],"expedition":{"id":9003}}""", ("user_id", Uid), ("expedition_id", "9003"))
+        .Reply($"Public_user_expedition__user_id={Uid}__expedition_id=9001.json", "/v1/Public_user/expedition",
+               """{"stats":null,"kills":[],"expedition":{"id":9001}}""", ("user_id", Uid), ("expedition_id", "9001"));
+
     /// <summary>Public zip by id: no Me/me, wallet or skills.</summary>
     public static TestZip Public(string uid = "1001") => new TestZip(false, uid, null, "sample").Common();
 

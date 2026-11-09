@@ -184,14 +184,14 @@ public static class GameApi
                     : null)
                .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
                .WithDescription("`stats` stays null while the hunt is open; `expedition_id` picks an older hunt (an unknown id and the "
-                                + "time before the first server hunt: the recorded reply, a community server: `null`).")
+                                + "time before the first server hunt: a hunt a restore saved, else the recorded reply, a community server: `null`).")
                .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
-               .WithDescription("Server expeditions ahead of the recorded ones, paged by `offset` and `limit` (a community "
-                                + "server: empty).")
+               .WithDescription("Server expeditions ahead of the hunts a restore saved, else the recorded ones, paged by `offset` and `limit` "
+                                + "(a community server: empty).")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
             {
