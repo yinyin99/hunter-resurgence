@@ -82,11 +82,20 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    [Fact]
-    public void ARealPlayersProfileIsTheServersHeaderWithNoTabYet()
+    /// <summary>Answers the skills path with the skills and every other with the profile header.</summary>
+    sealed class Server(string header, string skills) : HttpMessageHandler
     {
-        const string reply = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
-        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
+            Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StringContent(request.RequestUri!.AbsolutePath.EndsWith("/skills") ? skills : header, System.Text.Encoding.UTF8, "application/json") });
+    }
+
+    [Fact]
+    public void ARealPlayersProfileIsTheServersHeaderWithTheSkillsTab()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
+        const string skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[]}""";
+        var real = new ServerProfileService(new HttpClient(new Server(header, skills)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
@@ -94,7 +103,8 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Empty(cut.FindAll("ul.tabs"));  // ServerProfileService.Tabs: no tab has a server source yet
+        Assert.Equal(["/profile/Fox/skills"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: only skills has a server source
+        cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
     }
 
