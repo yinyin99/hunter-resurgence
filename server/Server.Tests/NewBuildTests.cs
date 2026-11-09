@@ -82,7 +82,8 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         Assert.Equal(2_592_000, (long)Claims(refresh)["exp"]! - (long)Claims(refresh)["iat"]!);
         Assert.Null(tokens.RefreshedAccount(access));  // an access token does not refresh
         var parts = refresh.Split('.');
-        Assert.Null(tokens.RefreshedAccount($"{parts[0]}.{parts[1]}.{parts[2][..^2]}AA"));  // wrong signature
+        var tampered = (parts[2][0] == 'A' ? 'B' : 'A') + parts[2][1..];  // always differs from the real signature
+        Assert.Null(tokens.RefreshedAccount($"{parts[0]}.{parts[1]}.{tampered}"));  // wrong signature
         Assert.Null(tokens.RefreshedAccount(tokens.Sign(Account, "refresh", 1, TimeSpan.FromSeconds(-5))));  // expired
         Assert.Null(tokens.RefreshedAccount("not.a.jwt"));
         Assert.Null(tokens.RefreshedAccount("x"));
