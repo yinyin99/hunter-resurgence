@@ -143,6 +143,12 @@ public class HunterscoreTests : StateTestBase
         Kill(B, 85, 1, 10);
         state.Disconnect(B, "{}"u8.ToArray());
         Assert.Equal(3, Stored(B));  // 81: the species row; 85: the species and the weapon row
+        // a hunt with a hit the database cannot read back counts nothing, and its close still works
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, """{"events": [{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e999}]}"""u8.ToArray());
+        Kill(B, 87, 1, 10);
+        state.Disconnect(B, "{}"u8.ToArray());
+        Assert.Equal(3, Stored(B));
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         // the zip's own hunterscore (1234) never stays: the value is always the computed one
@@ -217,11 +223,24 @@ public class HunterscoreTests : StateTestBase
         Eq("944.5", Total(B)["distance"]);  // the zip's 12.5 plus the hunts'
         Assert.Equal(4, Stored(B));
 
-        // a hunt closed before its statistics were stored gets them at the next start
+        // a hunt closed before its statistics were stored gets the same ones at the next start (its events end where the next hunt's begin)
+        var before = Total(B);
         using (var con = state.Store.Open(B))
             con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a");
         state = Online();
         Assert.Equal(4, Stored(B));
-        Eq("944.5", Total(B)["distance"]);
+        Eq(before, Total(B));
+    }
+
+    [Fact]
+    public void TestAHarvestAfterItsHuntClosedStillCounts()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.Disconnect(B, "{}"u8.ToArray());
+        Kill(B, 81, 1, 10);  // a heartbeat after the disconnect: the harvest lands in the closed hunt
+        Assert.Equal(2, Stored(B));
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
     }
 }

@@ -193,6 +193,8 @@ public sealed partial class State
                 var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
                 con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
                     e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
+                // a harvest in a hunt that already closed (a heartbeat after its close): its statistics are counted again
+                con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND id = ? AND end_ts IS NOT NULL", Py.FromSql(expedition?[0]));
                 var update = new JsonObject
                 {
                     ["individual"] = C(e["individual"]),
@@ -260,10 +262,10 @@ public sealed partial class State
     /// the site sends for a finished hunt: `data` holds `achievements` first, then `weapon` and
     /// `animal` only when not empty, and each counter only when not 0, in Statistics/total's key order.
     ///
-    /// kills: [(species, hits, ethical)] of the expedition. Events after first_event: 1 = hit, 21 = miss (matches the
-    /// client's disconnect totals); 11 = spot and 12 = track clue, counted as distinct animals per species
-    /// (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
-    public static JsonObject HuntStats(Db con, JsonNode? firstEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
+    /// kills: [(species, hits, ethical)] of the expedition. Events after first_event up to untilEvent (the next expedition's
+    /// first_event): 1 = hit, 21 = miss (matches the client's disconnect totals); 11 = spot and 12 = track clue, counted as
+    /// distinct animals per species (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
+    public static JsonObject HuntStats(Db con, JsonNode? firstEvent, long untilEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
                                        long duration, JsonNode? distance)
     {
         var weapon = new JsonObject();
@@ -276,8 +278,8 @@ public sealed partial class State
         JsonObject Species(JsonNode? sp) =>
             SetDefault(animal, Py.Str(sp), () => new JsonObject { ["spots"] = 0, ["tracks"] = 0, ["kills"] = 0, ["ethical_kills"] = 0 });
 
-        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND id > ? AND event IN (1, 11, 12, 21)"
-                                   + " ORDER BY id", firstEvent))
+        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND id > ? AND id <= ? AND event IN (1, 11, 12, 21)"
+                                   + " ORDER BY id", firstEvent, untilEvent))
         {
             var (eventId, ev, e) = ((long)r[0], Py.FromSql(r[1]), Parse(r[2]));
             if (Is(ev, 1))
@@ -1121,10 +1123,10 @@ public sealed partial class State
             events = new JsonArray();
         }
         using var con = Con(account);
-        return Py.DumpBytes(new JsonObject
-        {
-            ["updates"] = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates), ["err"] = 0,
-        });
+        var updates = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates);
+        if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
+            UpdateHunterscore(con, account);
+        return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
     }
 
     /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`.</summary>

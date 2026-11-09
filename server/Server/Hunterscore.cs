@@ -36,13 +36,14 @@ public sealed partial class State
     }
 
     /// <summary>Store the statistics (<see cref="HuntStats"/>) of every closed expedition of the account that has none yet; call
-    /// it inside a transaction. Its kills are its harvests (event 3): each counts for its species and for the ammo of its last
-    /// hit, ethical when no hit used an ammo not permitted on its species. One whose rows cannot be read back (a number that is
-    /// not finite) is skipped and logged.
-    /// ponytail: a harvest that lands in an expedition after its close (a heartbeat between a disconnect and the next connect) is not counted.</summary>
+    /// it inside a transaction. Its events end where the next expedition's begin; its kills are its harvests (event 3): each
+    /// counts for its species and for the ammo of its last hit, ethical when no hit used an ammo not permitted on its species.
+    /// A kill whose rows cannot be read back (a number that is not finite) is skipped and logged; a hunt with such an event
+    /// counts nothing (logged), stored as empty so it is not read again.</summary>
     void StoreHuntStats(Db con, long account)
     {
-        foreach (var e in con.Rows("SELECT id, start_ts, end_ts, first_event, distance FROM expeditions"
+        foreach (var e in con.Rows("SELECT id, start_ts, end_ts, first_event, distance, (SELECT MIN(n.first_event) FROM expeditions n"
+                                   + " WHERE n.account_id = $a AND n.id > e.id) FROM expeditions e"
                                    + " WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL"))
         {
             var kills = new List<(JsonNode?, List<JsonObject>, bool)>();
@@ -59,8 +60,18 @@ public sealed partial class State
                     Console.WriteLine($"statistics of account {account}: a kill is not counted: {ex.Message}");
                 }
             var distance = Py.FromSql(e[4]);
-            con.Exec("UPDATE expeditions SET stats = ? WHERE account_id = $a AND id = ?", Py.Dumps(HuntStats(con, Py.FromSql(e[3]), kills,
-                (long)(Convert.ToDouble(e[2]) - Convert.ToDouble(e[1])), Py.Truthy(distance) ? distance : 0)), e[0]);
+            JsonObject stats;
+            try
+            {
+                stats = HuntStats(con, Py.FromSql(e[3]), e[5] is long until ? until : long.MaxValue, kills,
+                                  (long)(Convert.ToDouble(e[2]) - Convert.ToDouble(e[1])), Py.Truthy(distance) ? distance : 0);
+            }
+            catch (Exception ex) when (ex is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
+            {
+                Console.WriteLine($"statistics of account {account}: a hunt is not counted: {ex.Message}");
+                stats = new JsonObject { ["duration"] = 0, ["distance"] = 0, ["data"] = new JsonObject { ["achievements"] = new JsonArray() } };
+            }
+            con.Exec("UPDATE expeditions SET stats = ? WHERE account_id = $a AND id = ?", Py.Dumps(stats), e[0]);
         }
     }
 
