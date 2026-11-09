@@ -82,12 +82,12 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills path with the skills and every other with the profile header.</summary>
-    sealed class Server(string header, string skills) : HttpMessageHandler
+    /// <summary>Answers the skills and statistics paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath.EndsWith("/skills") ? skills : header, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath.EndsWith("/skills") ? skills : request.RequestUri.AbsolutePath.EndsWith("/statistics") ? statistics : header, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -103,9 +103,26 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/skills"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: only skills has a server source
+        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/statistics"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
+    }
+
+    [Fact]
+    public void TheStatisticsTabShowsTheServersLifetimeStatisticsOnly()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":null}""";
+        const string statistics = """
+            {"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":123.0}],
+             "animals":[{"name":"Fox Deer","spotted":3,"tracked":2,"harvested":1}],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}
+            """;
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", statistics)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics"));
+        cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
+        Assert.Contains("Fox Deer", cut.Markup);
+        Assert.Equal(["/profile/Fox/statistics/lifetime"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's pills are hidden
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>
