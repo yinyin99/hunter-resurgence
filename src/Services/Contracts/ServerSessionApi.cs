@@ -20,6 +20,8 @@ public static class ServerSessionApi
     public const string AchievementsSuffix = "/achievements";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
     public const string TrophiesSuffix = "/trophies";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
+    public const string FriendsSuffix = "/friends";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
     public const string Leaderboards = "/leaderboards";
 }
@@ -69,3 +71,17 @@ public sealed record ServerAchievementCategory(string Name, int Level, int Done,
 
 /// <param name="Date">The day, yyyy-MM-dd.</param>
 public sealed record ServerAchievement(string Title, string Description, string Date);
+
+/// <summary>One page of a hunter's friends of <see cref="ServerSessionApi.FriendsSuffix"/>.</summary>
+public sealed record ServerFriendsPage(int Page, int Pages, int Total, ServerFriendRow[] Rows);
+
+public sealed record ServerFriendRow(string Handle, int Hunterscore);
+
+/// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open.</summary>
+public sealed record ServerPlayer(string Handle, bool Online);
+
+/// <summary>The signed-in player's friends of <see cref="ServerAccountApi.Friends"/>: <c>Requests</c> asked them to be friends, <c>Pending</c> were asked by them.</summary>
+public sealed record ServerFriends(ServerPlayer[] Friends, ServerPlayer[] Requests, ServerPlayer[] Pending);
+
+/// <summary>The players of <see cref="ServerAccountApi.FriendSearch"/>.</summary>
+public sealed record ServerPlayers(ServerPlayer[] Hunters);

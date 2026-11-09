@@ -468,10 +468,13 @@ public class HunterscoreTests : StateTestBase
         state.Clock = () => now;
         state.CreateAccount(B, "second");
         using (var con = state.Store.Open(B))  // earned before, as a restore stores it
+        {
             PlayerRows.AddAchievement(con, 1, 0, 1, 5, O("""{"1": 1600000000}"""));
+            PlayerRows.AddAchievement(con, 40, 0, 9, 0, O("""{"1": 0}"""));  // a threshold stored without a time gets one when it is reached
+        }
         state.ConnectReply(B);
         Kill(B, 81, 1, 10);
-        Assert.Single(JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray());  // mid-hunt: nothing yet
+        Assert.Equal(2, JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray().Count);  // mid-hunt: nothing new yet
         using (var con = state.Store.Open(B))  // a hunt of 3700 s: past one hour
             con.Exec("UPDATE expeditions SET start_ts = start_ts - 3700 WHERE account_id = $a AND end_ts IS NULL");
         state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());

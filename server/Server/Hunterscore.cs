@@ -124,7 +124,7 @@ public sealed partial class State
 
     /// <summary>Award the achievements the account's statistics reach: for every definition of the connect reply's
     /// `achievements` (`value` path, `triggers` thresholds), store the current time for each threshold at most its value
-    /// (<see cref="AchievementValue"/>) that has no time yet, and that value (a stored larger one stays), in the account's
+    /// (<see cref="AchievementValue"/>) that has no time yet (a stored 0 is none), and that value (a stored larger one stays), in the account's
     /// achievement row (made when the value is above 0). Times already stored, a restore's too, are kept. Call it inside a transaction.
     /// ponytail: one query per definition (a few hundred) at every close and, for every account, at every start; read the
     /// account's rows once if that gets slow.</summary>
@@ -141,7 +141,7 @@ public sealed partial class State
                 continue;
             var triggers = row is null ? new JsonObject() : Parse(row[0]);
             foreach (var t in Arr(def["triggers"]))
-                if (Py.IsNum(t) && Py.D(t) <= value && triggers[Py.Str(t)] is null)
+                if (Py.IsNum(t) && Py.D(t) <= value && !(triggers[Py.Str(t)] is { } had && Py.IsNum(had) && Py.D(had) > 0))
                     triggers[Py.Str(t)] = now;
             var stored = row is null ? null : JsonNode.Parse((string)row[1]);
             PlayerRows.AddAchievement(con, id, TryKey(def["category"], out var c) ? c : 0, TryKey(def["group"], out var g) ? g : 0,
