@@ -293,23 +293,54 @@ public sealed partial class State
         return Convert.ToDouble(con.Scalar("SELECT COALESCE(MAX(COALESCE(end_ts, last_seen, start_ts)), 0) FROM expeditions WHERE account_id = $a"));
     }
 
-    /// <summary>Inventory/list of the account: a row per owned item with its definition and the owned rows. ponytail: a placed
-    /// item's `location` is null (its position is not sent).</summary>
-    public byte[] InventoryListReply(long account)
+    /// <summary>The slot of a placed item.</summary>
+    const long PLACED_SLOT = 23;
+
+    /// <summary>The account's item rows by item id, as (item id, owned rows) in the shape of Inventory/list and Inventory/dict:
+    /// `{id, slot, units, metadata, location}`.</summary>
+    List<(long ItemId, JsonNode?[] Own)> OwnRows(long account)
     {
         List<object[]> rows;
         using (var con = Con(account))
             rows = con.Rows("SELECT item_id, guid, slot, units, metadata FROM items WHERE account_id = $a ORDER BY item_id, guid");
-        return Py.DumpBytes(new JsonArray(rows.GroupBy(r => (long)r[0]).Select(g => (JsonNode?)new JsonObject
+        return [.. rows.GroupBy(r => (long)r[0]).Select(g => (g.Key, g.Select(r =>
         {
-            ["item"] = items.TryGetValue(g.Key, out var def) ? C(def) : new JsonObject { ["id"] = g.Key },
-            ["own"] = new JsonArray(g.Select(r =>
+            var metadata = Parse(r[4]);
+            JsonNode? Take(string key)
             {
-                var metadata = Parse(r[4]);
-                metadata.Remove(POSITION);
-                metadata.Remove(DIRECTION);
-                return (JsonNode?)new JsonObject { ["slot"] = Py.FromSql(r[2]), ["units"] = Py.FromSql(r[3]), ["metadata"] = metadata, ["id"] = Py.FromSql(r[1]), ["location"] = null };
-            }).ToArray()),
+                metadata.TryGetPropertyValue(key, out var value);
+                metadata.Remove(key);
+                return value;
+            }
+            // millimetres and x 1000 in the row, metres and unit vectors in the location
+            static JsonNode? Scaled(JsonNode? v) => v is JsonObject o
+                ? new JsonObject { ["x"] = Py.D(o["x"]) / 1000, ["y"] = Py.D(o["y"]) / 1000, ["z"] = Py.D(o["z"]) / 1000 } : null;
+            var (pos, dir, reserve) = (Take(POSITION), Take(DIRECTION), Take(RESERVE));
+            JsonNode? location = null;
+            if ((long)r[2] == PLACED_SLOT && pos is not null)
+            {
+                location = new JsonObject { ["reserve"] = reserve, ["pos"] = Scaled(pos) };
+                if (dir is not null) location["dir"] = Scaled(dir);
+            }
+            return (JsonNode?)new JsonObject { ["slot"] = Py.FromSql(r[2]), ["units"] = Py.FromSql(r[3]), ["metadata"] = metadata, ["id"] = Py.FromSql(r[1]), ["location"] = location };
+        }).ToArray()))];
+    }
+
+    /// <summary>Inventory/list of the account: a row per owned item with its definition and the owned rows. A placed item
+    /// (slot 23) has `location` `{reserve, pos: {x, y, z}, dir: {x, y, z}}`, else null.</summary>
+    public byte[] InventoryListReply(long account) =>
+        Py.DumpBytes(new JsonArray(OwnRows(account).Select(g => (JsonNode?)new JsonObject
+        {
+            ["item"] = items.TryGetValue(g.ItemId, out var def) ? C(def) : new JsonObject { ["id"] = g.ItemId },
+            ["own"] = new JsonArray(g.Own),
         }).ToArray()));
+
+    /// <summary>Inventory/dict of the account: `{<item id>: [{id, slot, units, metadata, location}]}`.</summary>
+    public byte[] InventoryDictReply(long account)
+    {
+        var dict = new JsonObject();
+        foreach (var (itemId, own) in OwnRows(account))
+            dict[itemId.ToString()] = new JsonArray(own);
+        return Py.DumpBytes(dict);
     }
 }

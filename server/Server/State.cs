@@ -23,8 +23,9 @@ public sealed partial class State
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
     public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
-    /// <summary>Metadata keys of a restored item's placement: the items table has no columns for them (see <see cref="Items"/>).</summary>
-    public const string POSITION = "__position", DIRECTION = "__direction";
+    /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
+    /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.</summary>
+    public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve";
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
@@ -53,13 +54,14 @@ public sealed partial class State
     static long NextId(Db con, string table, string column) =>
         (long)con.Scalar($"SELECT COALESCE(MAX({column}), 0) + 1 FROM {table} WHERE account_id = $a")!;
 
-    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A restored placed item keeps its
+    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A placed item keeps its
     /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
-    /// here as the row's own members.</summary>
+    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped.</summary>
     public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
     {
         var metadata = JsonNode.Parse((string)r[3])!.AsObject();
         var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
+        metadata.Remove(RESERVE);
         foreach (var (key, member) in new[] { (POSITION, "position"), (DIRECTION, "direction") })
             if (metadata.TryGetPropertyValue(key, out var value))
             {
@@ -186,6 +188,22 @@ public sealed partial class State
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
                 con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
+            else if (Is(e["event"], 25) && ItemGuid(e["item"]) is { } placed && Vec(e, "position") is { } position)
+            {
+                // the placement waits for event 8 (slot 23); the reserve is the hunt's. A missing direction removes the old one
+                var reserve = con.Rows("SELECT reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault()?[0];
+                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?", Py.Dumps(new JsonObject
+                {
+                    [POSITION] = position, [DIRECTION] = Vec(e, "direction"), [RESERVE] = Py.FromSql(reserve),
+                }), placed);
+            }
+            else if (Is(e["event"], 8) && ItemGuid(e["item"]) is { } moved && Py.IsInt(e["slot"]))
+                // a slot other than 23 is a pick-up: the item keeps no placement
+                con.Exec("UPDATE items SET slot = ?1, metadata = CASE WHEN ?1 = 23 THEN metadata"
+                         + " ELSE json_remove(metadata, '$.__position', '$.__direction', '$.__reserve') END WHERE account_id = $a AND guid = ?2",
+                         e["slot"], moved);
+            else if (Is(e["event"], 33))
+                MoveUnits(con, e);
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
@@ -241,6 +259,48 @@ public sealed partial class State
         }
         con.Commit();
         return updates;
+    }
+
+    /// <summary>The guid of an item event's `item` (a string of digits), else null.</summary>
+    static long? ItemGuid(JsonNode? item) => Py.IsDigit(Py.Str(item)) && long.TryParse(Py.Str(item), out var guid) ? guid : null;
+
+    /// <summary>`{prefix}_x/y/z` of an event as {x, y, z} whole numbers (millimetres or x 1000, as the client sends them), null
+    /// unless the three are numbers within the restore's limit of 2,000,000.</summary>
+    static JsonObject? Vec(JsonObject e, string prefix)
+    {
+        var v = new JsonObject();
+        foreach (var axis in "xyz")
+        {
+            var n = e[$"{prefix}_{axis}"];
+            if (!Py.IsNum(n) || Math.Abs(Py.D(n)) > 2_000_000) return null;
+            v[axis.ToString()] = (long)Math.Round(Py.D(n), MidpointRounding.AwayFromZero);
+        }
+        return v;
+    }
+
+    /// <summary>Event 33 `{item_from, quantity, item_to?}`: `quantity` units leave a stack and join another stack of the same
+    /// item, or a new stack in the stash when `item_to` is missing. Nothing moves when a stack is not the account's, has no
+    /// units, holds fewer than `quantity`, or the two are one.</summary>
+    static void MoveUnits(Db con, JsonObject e)
+    {
+        var quantity = Py.IsNum(e["quantity"]) ? (long)Py.D(e["quantity"]) : 0;
+        if (ItemGuid(e["item_from"]) is not { } fromGuid || quantity <= 0
+            || con.Rows("SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ?", fromGuid, quantity).FirstOrDefault() is not { } source)
+            return;
+        long to;
+        if (Py.Truthy(G(e, "item_to", null)))
+        {
+            if (ItemGuid(e["item_to"]) is not { } target || target == fromGuid) return;
+            to = target;
+        }
+        else
+        {
+            to = NextId(con, "items", "guid");
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', 0)", to, source[0]);
+        }
+        if (con.Exec("UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL", quantity, to, source[0]) == 0)
+            return;
+        con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END WHERE account_id = $a AND guid = ?2", quantity, fromGuid);
     }
 
     /// <summary>Hit events (event 1) on the animal of a kill since its latest spawn (individual ids are reused across

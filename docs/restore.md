@@ -35,7 +35,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 
 | Model | Rows |
 |---|---|
-| `Items` | `items`. `Units` as read (layer A applied the catalogue). A placed item's `Position` and `Direction` (millimetres) go into its metadata under `__position` and `__direction` (the table has no columns for them); the connect reply moves them back to the row's `position` and `direction`. `WebReserve` is dropped: the connect row has none |
+| `Items` | `items`. `Units` as read (layer A applied the catalogue). A placed item's `Position` and `Direction` (millimetres) go into its metadata under `__position` and `__direction` (the table has no columns for them); the connect reply moves them back to the row's `position` and `direction`. `WebReserve` goes into it as `__reserve` (the connect row has none; `Inventory/list` shows it as the `location`'s `reserve`) |
 | `Wallet` | `wallet` (`em`, `gm`); a zip without one (a public zip) stores 0 |
 | `Skills` | `skills`: weapon by item id, tracking and spotting by species slot; `xp` is `Skills.Xp(level plus progress)`. A zip without skills stores a new player's 59 + 59 |
 | `Profile`, the zip's own `Me/me` | `profile`: the reply of `Me/me` without `ems`, `gms` and `unread_messages`, over the typed profile fields (`id` and `handle` are the account's) |
@@ -45,7 +45,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | `Extras` | `extras`, keyed by the path in the zip |
 | `Account`, `Profile` | the account's `account` object (the connect reply's): handle, `user_id`, `account_id` (= the user id), hostname, gender, hunterscore, membership, avatar URL, the importer's defaults for `face` and the Facebook fields. On a community server the hunterscore is then the one the server computes from the restored statistics ([docs/server.md](server.md#the-hunterscore)), in `account` and in the profile |
 
-What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (a Steam id match is shown to the operator as information, is not proof of ownership, and an account's `steam_id64` is only one the server verified); the web reserve of placed items.
+What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (a Steam id match is shown to the operator as information, is not proof of ownership, and an account's `steam_id64` is only one the server verified).
 
 The target is the zip's user id, created from the zip's handle (`user-<id>` without one) when it does not exist; a handle that another account has refuses the import. `--account <id>` targets an existing account, whatever the zip's user id: the account keeps its id and takes the zip's handle only when nobody else has it. A local server (`offline_mode` true) with no `--account` restores into the local account, the one the game connects as.
 
