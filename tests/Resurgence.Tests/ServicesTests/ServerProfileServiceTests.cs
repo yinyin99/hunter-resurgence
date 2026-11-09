@@ -178,4 +178,48 @@ public class ServerProfileServiceTests
 
     [Fact]
     public void TheDogsTabHasAServerSource() => Assert.Contains("dogs", ServerProfileService.Tabs);
+
+    [Fact]
+    public async Task FriendsAreTheServersPageOfTheHandle()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":45,"rows":[{"handle":"Birch","hunterscore":120}]}"""));
+        var page = await Make(fake).FriendsAsync("fox", 2);
+        Assert.Equal("/hunters/fox/friends", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal("page=2", fake.Seen[0].RequestUri!.Query.TrimStart('?'));
+        Assert.Equal((2, 3), (page.Number, page.Pages));
+        Assert.Equal(new ProfileFriend("Birch", 120), Assert.Single(page.Rows));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, """{"error": "not found"}""")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedFriendsAnswerIsNoFriends(HttpStatusCode code, string body) => Assert.Empty((await Make(new Fake(_ => Json(code, body))).FriendsAsync("fox", 1)).Rows);
+
+    [Fact]
+    public void TheFriendsTabHasAServerSource() => Assert.Contains("friends", ServerProfileService.Tabs);
+
+    sealed class Friends(string[] friends, string[] pending) : IFriendsService
+    {
+        public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult<IReadOnlyList<Friend>>([.. friends.Select(h => new Friend(h, false))]);
+        public Task<IReadOnlyList<Friend>> SearchAsync(string text) => throw new NotSupportedException();
+        public Task<IReadOnlyList<string>> RequestsAsync() => throw new NotSupportedException();
+        public Task<IReadOnlyList<string>> PendingAsync() => Task.FromResult<IReadOnlyList<string>>(pending);
+        public Task<Result> SendRequestAsync(string handle) => throw new NotSupportedException();
+        public Task<Result> AcceptAsync(string handle) => throw new NotSupportedException();
+        public Task<Result> DeclineAsync(string handle) => throw new NotSupportedException();
+        public Task<Result> RemoveAsync(string handle) => throw new NotSupportedException();
+    }
+
+    [Theory]
+    [InlineData("Oak", true, false)]
+    [InlineData("oak", true, false)]
+    [InlineData("Ash", false, true)]
+    [InlineData("Elm", false, false)]
+    public async Task AHeaderSaysWhetherThePlayerIsAFriendOrHasAsked(string handle, bool friend, bool pending)
+    {
+        var service = new ServerProfileService(new HttpClient(new Fake(_ => Json(HttpStatusCode.OK, $$"""{"handle": "{{handle}}", "hunterscore": 1, "rank": 2}"""))) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, new Fox(), new MockProfileService(), NullLogger<ServerProfileService>.Instance, new Friends(["Oak"], ["Ash"]));
+        var p = await service.ProfileAsync(handle);
+        Assert.Equal((friend, pending), (p!.Friend, p.RequestPending));
+    }
 }

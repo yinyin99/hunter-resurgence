@@ -369,6 +369,14 @@ public sealed class Store
         return con.Scalar($"SELECT id FROM accounts WHERE {(idOrHandle is long ? "id" : "handle")} = ? AND banned = 0 AND id IS NOT ?", idOrHandle, excluded) as long?;
     }
 
+    /// <summary>The accounts whose handle contains the text (any case), by handle, at most `limit`; never `self`, a banned one or `excluded`.</summary>
+    public List<long> SearchHandles(string text, long self, long? excluded, int limit)
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id <> ?1 AND id IS NOT ?2 AND instr(lower(handle), lower(?3)) > 0 ORDER BY handle COLLATE NOCASE LIMIT ?4",
+                            self, excluded, text, limit).Select(r => (long)r[0])];
+    }
+
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an
     /// importer's). id is the game's user id; account is the connect reply's `account` object. Throws when the id,
     /// the handle or the Steam id is taken.</summary>

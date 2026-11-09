@@ -19,7 +19,7 @@
         @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
         <div class="polaroid"><AssetSlot Name="@avatar" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
-        @if (signedIn && !profile.Own && !profile.Friend && !Mode.Live)
+        @if (signedIn && !profile.Own && !profile.Friend)
         {
             <button type="button" class="btn btn-primary request" disabled="@profile.RequestPending" @onclick="Request">
                 @if (profile.RequestPending) { <Icon Name="check" /> @L["Prof.RequestPending"] } else { @L["Prof.Request"] }
