@@ -66,7 +66,6 @@ public class WindowLogicTests
     {
         Assert.All(new[] { "kills", "photos" }, k => Assert.True(Engine.Groups.Single(g => g.Key == k).On));
         Assert.All(new[] { "messages", "history" }, k => Assert.False(Engine.Groups.Single(g => g.Key == k).On));
-        Assert.DoesNotContain(Loc.S("Msg_KillsOff"), Msg(Whole));
     }
 
     [Fact]

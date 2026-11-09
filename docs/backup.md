@@ -63,7 +63,7 @@ The default output folder is `Documents\game-backup`. The backup folder is `back
 | Map setups | the equipment placed on each map (`map-setups.json`, see below) | partly |
 | Trophies and lodges | trophy list (asked in pages of 300 and saved as one file, as if one reply held it all), lodges (they need the game session, so a public profile has none), harvest record of each own trophy | partly |
 | Hunt history | every hunt with its kills, shots and scores; if a hunt in the hunt list could not be saved, or a page of the hunt list did not answer, the result bar says so and the manifest has `checks.hunts` | no |
-| Kill pages and photos | score sheet page of every scored kill and the picture of every kill that has one, newest hunts first; many requests. On by default: a restore needs them for the gallery, kill photos and score sheets, and they cannot be fetched after the official servers close | no |
+| Kill pages and photos | score sheet page of every scored kill and the picture of every kill that has one, newest hunts first; many requests. On by default: a restore needs them for the kill photos and score sheets, and they cannot be fetched after the official servers close | no |
 | Account | missions, wallet history, bank transactions, competition states, message settings, recruits, backgrounds | yes |
 | Friends | friends list, friend requests | partly |
 | Photos | gallery pictures at full size. On by default, for the same reason as the kill pages | no |
