@@ -41,7 +41,10 @@ static class BackupReader
         }
     }
 
-    /// <summary>Count the central directory's headers the way the zip library finds them, before it loads them all: it reads every header there is,
+    /// <summary>The zip's list of entries at most: a real backup's is about 100 bytes per entry.</summary>
+    const int MaxDirectoryBytes = 64 << 20;
+
+    /// <summary>Count the central directory's headers the way the zip library finds them, and add up their size, before it loads them all: it reads every header there is,
     /// whatever the end record says, so a zip of millions of tiny entries would take gigabytes of memory before the entry cap is checked.</summary>
     static void CheckEntries(Stream s, int cap)
     {
@@ -69,10 +72,13 @@ static class BackupReader
         s.Position = start;
         var h = new byte[46];
         var n = 0;
+        long size = 0;
         while (s.ReadAtLeast(h, h.Length, throwOnEndOfStream: false) == h.Length && h.AsSpan(0, 4).SequenceEqual("PK\x01\x02"u8))
         {
             if (++n > cap) throw new RestoreException($"too many entries: over {cap}");
-            s.Seek(U16(h, 28) + U16(h, 30) + U16(h, 32), SeekOrigin.Current);
+            var skip = U16(h, 28) + U16(h, 30) + U16(h, 32);
+            if ((size += h.Length + skip) > MaxDirectoryBytes) throw new RestoreException($"central directory over {MaxDirectoryBytes} bytes");
+            s.Seek(skip, SeekOrigin.Current);
         }
         s.Position = at;
     }
