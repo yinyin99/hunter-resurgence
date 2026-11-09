@@ -73,7 +73,31 @@ public sealed partial class State
     public byte[]? RowReply(long account, string table, string source, string id) =>
         Restored(account, table, source, id).FirstOrDefault() is { } node ? Py.DumpBytes(node) : null;
 
-    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's restored trophies.</summary>
+    static readonly string[] TrophyFields = ["species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
+                                             "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
+
+    /// <summary>The account's own trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
+    /// server in the restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.
+    /// A new kill id is above every restored id (see Heartbeat).</summary>
+    List<JsonNode?> TrophyRows(long account)
+    {
+        var rows = Restored(account, "trophies", "/game/user/trophies");
+        using var con = Con(account);
+        foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a ORDER BY kill_id"))
+        {
+            var body = JsonNode.Parse((string)r[1])!;
+            var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = false };
+            foreach (var field in TrophyFields)
+                row[field] = C(body[field]);
+            rows.Add(row);
+        }
+        return rows;
+    }
+
+    /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
+    public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
+
+    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's restored trophies (rows of their own kind).</summary>
     public byte[] TrophyListReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));

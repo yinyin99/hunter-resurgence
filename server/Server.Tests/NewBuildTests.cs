@@ -92,6 +92,29 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestThePhotoUploaderRefreshesWithItsPlaceholderAndTheSession()
+    {
+        var session = state.Store.CreateToken(Account, Lifetimes.Session);
+        (string, string)[] client = [("X-Hun-Session", session), ("X-App-Id", "client")];
+        // the game's photo uploader starts with the text "refresh_token" as its refresh token and asks before its first upload
+        var refresh = await Post("/auth/jwt/refresh", new JsonObject { ["application_token"] = "x" }, [.. client, Cookie(ProtocolLiterals.RefreshCookie, "refresh_token")]);
+        Assert.Equal(200, refresh.Status);
+        var access = (string)Body(refresh)["access_token"]!;
+        Assert.Equal(Account, state.Store.ResolveToken(access));
+        var beat = await Post(ProtocolLiterals.WebRpcBase + "/heartbeat", new JsonObject { ["events"] = new JsonArray(new JsonObject { ["event"] = 4, ["hash"] = 5, ["photo_type"] = 2 }) }, ("X-Hun-Session", session));
+        var url = new Uri((string)Body(beat)["updates"]![0]!["url"]!);
+        var upload = await server.SendAsync("POST", Host, url.PathAndQuery, [.. client, Bearer(access), ("Content-Type", "application/json")], [0xff, 0xd8]);
+        Assert.Equal(("state", 200), (upload.Source, upload.Status));
+        Assert.NotNull(state.PhotoFile($"/photos/{Account}/1-2.jpg"));
+        // the refresh JWT lasts as long as the session (7 days), not 30
+        Assert.InRange((long)Claims((string)Body(refresh)["refresh_token"]!)["exp"]! - DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 604700, 604800);
+        // the placeholder alone, with a session that is not the server's, or with a JWT in the session header, is no credential
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", game.Tokens!.Access(Account, 4)), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", "nope"), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
+    }
+
+    [Fact]
     public async Task TestRefreshNeverReturnsAnExpiredToken()
     {
         var refresh = game.Tokens!.Refresh(Account, 1);
