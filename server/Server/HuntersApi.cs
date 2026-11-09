@@ -48,6 +48,14 @@ public static class HuntersApi
                              + "the avatar's picture URL); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/statistics", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.StatisticsPage(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterStatistics").WithSummary("A hunter's statistics tab: weapons, animals, distance and hunt time")
+            .WithDescription("`{weapons: [{weapon, ammo, shots, accuracy, kills, killsPerHit, longest}], animals: [{name, spotted, tracked, harvested}], collectables: [], "
+                             + "distanceKm, huntSeconds}`: the restored statistics plus the closed server hunts; 404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         group.MapGet("/{handle}/skills", (string handle) => state.PublicAccount(handle) is { } id
                 ? Json(200, state.PublicSkills(id))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
