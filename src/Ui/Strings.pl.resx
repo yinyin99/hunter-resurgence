@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Przesyłanie…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Twoja kopia zapasowa użytkownika o id {0} została przywrócona na tym koncie.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Kopie czekające na sprawdzenie przez operatora: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Zachowano {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Przywrócono {0}: Twoje id użytkownika to {1}, a Twoja nazwa to {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Nazwa jest taka, jak w Twojej kopii zapasowej.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Twoja nazwa została zachowana: nazwa z kopii zapasowej jest niedozwolona lub należy do innego gracza.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Odrzucono przez operatora {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Szczegóły</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Co ten serwer przechowuje o Tobie</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Przywrócono</value></data>

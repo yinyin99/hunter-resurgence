@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>A enviar…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>A sua cópia de segurança do ID de utilizador {0} foi restaurada nesta conta.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Cópias de segurança guardadas para revisão do operador: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Guardada em {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurada em {0}: o seu ID de utilizador é {1} e o seu nome é {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>O nome é o da sua cópia de segurança.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>O seu nome foi mantido: o nome da cópia de segurança não é permitido ou pertence a outro jogador.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Rejeitada pelo operador em {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detalhes</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>O que este servidor guarda sobre si</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurada</value></data>

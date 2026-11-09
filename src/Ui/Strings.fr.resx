@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Envoi en cours…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Votre sauvegarde de l’id utilisateur {0} est restaurée sur ce compte.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Sauvegardes conservées en attente de vérification par l’opérateur : {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Conservée le {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurée le {0} : votre id utilisateur est {1} et votre nom est {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Le nom est celui de votre sauvegarde.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Votre nom a été conservé : celui de la sauvegarde n’est pas autorisé ou appartient à un autre joueur.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Rejetée par l’opérateur le {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Détails</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Ce que ce serveur conserve à votre sujet</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurée</value></data>
