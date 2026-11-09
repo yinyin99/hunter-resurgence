@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 4;
+    public const int Version = 5;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -89,7 +89,8 @@ public sealed class Store
             PRIMARY KEY (account_id, kill_id));
         CREATE TABLE expeditions (
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
-            first_event INTEGER, distance INTEGER, last_seen REAL);
+            first_event INTEGER, distance INTEGER, last_seen REAL,
+            stats TEXT);  -- a closed hunt's statistics (State.HuntStats), stored at its close
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL,
@@ -172,6 +173,7 @@ public sealed class Store
             if (version < 2) con.Script(WebSessions);
             if (version < 3) con.Script(Uploads);
             if (version < 4) con.Script(UploadResults);
+            if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

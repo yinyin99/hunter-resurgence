@@ -193,6 +193,8 @@ public sealed partial class State
                 var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
                 con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
                     e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
+                // a harvest in a hunt that already closed (a heartbeat after its close): its statistics are counted again
+                con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND id = ? AND end_ts IS NOT NULL", Py.FromSql(expedition?[0]));
                 var update = new JsonObject
                 {
                     ["individual"] = C(e["individual"]),
@@ -260,10 +262,10 @@ public sealed partial class State
     /// the site sends for a finished hunt: `data` holds `achievements` first, then `weapon` and
     /// `animal` only when not empty, and each counter only when not 0, in Statistics/total's key order.
     ///
-    /// kills: [(species, hits, ethical)] of the expedition. Events after first_event: 1 = hit, 21 = miss (matches the
-    /// client's disconnect totals); 11 = spot and 12 = track clue, counted as distinct animals per species
-    /// (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
-    public static JsonObject HuntStats(Db con, JsonNode? firstEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
+    /// kills: [(species, hits, ethical)] of the expedition. Events after first_event up to untilEvent (the next expedition's
+    /// first_event): 1 = hit, 21 = miss (matches the client's disconnect totals); 11 = spot and 12 = track clue, counted as
+    /// distinct animals per species (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
+    public static JsonObject HuntStats(Db con, JsonNode? firstEvent, long untilEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
                                        long duration, JsonNode? distance)
     {
         var weapon = new JsonObject();
@@ -276,8 +278,8 @@ public sealed partial class State
         JsonObject Species(JsonNode? sp) =>
             SetDefault(animal, Py.Str(sp), () => new JsonObject { ["spots"] = 0, ["tracks"] = 0, ["kills"] = 0, ["ethical_kills"] = 0 });
 
-        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND id > ? AND event IN (1, 11, 12, 21)"
-                                   + " ORDER BY id", firstEvent))
+        foreach (var r in con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND id > ? AND id <= ? AND event IN (1, 11, 12, 21)"
+                                   + " ORDER BY id", firstEvent, untilEvent))
         {
             var (eventId, ev, e) = ((long)r[0], Py.FromSql(r[1]), Parse(r[2]));
             if (Is(ev, 1))
@@ -484,15 +486,14 @@ public sealed partial class State
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
             Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
-        if (Online)  // the stored values follow the rank table and the counts of today, also after a server update
-        {
-            List<long> ids;
-            using (var all = Store.Open())
-                ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
-            foreach (var id in ids)
-                using (var con = Store.Open(id))
-                    UpdateHunterscore(con, id);
-        }
+        // every closed hunt has its statistics, and the stored hunterscores follow the rank table and the counts of today, also
+        // after a server update
+        List<long> ids;
+        using (var all = Store.Open())
+            ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+        foreach (var id in ids)
+            using (var con = Store.Open(id))
+                UpdateHunterscore(con, id);
     }
 
     /// <summary>The start's `account`: the template of every new account. Never the recorded one when there is a start.</summary>
@@ -649,20 +650,22 @@ public sealed partial class State
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
     }
 
-    /// <summary>Statistics/total for the player's user_id from the restored rows; null for anyone else and for an account
-    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
-    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+    /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
+    /// else and, on a local server, for an account without a restored profile (its recorded reply is replayed). On a community
+    /// server every account has them (a new account's base is empty).</summary>
+    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal, Online);
 
-    /// <summary>Achievement/stats, as <see cref="StatisticsReply"/>.</summary>
+    /// <summary>Achievement/stats for the player's user_id from the restored rows; null for anyone else and for an account
+    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
     public byte[]? AchievementReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.AchievementStats);
 
-    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read)
+    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read, bool everyAccount = false)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
             return null;
         using var con = Con(account);
-        return RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
+        return everyAccount || RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
     }
 
     /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
@@ -1120,10 +1123,10 @@ public sealed partial class State
             events = new JsonArray();
         }
         using var con = Con(account);
-        return Py.DumpBytes(new JsonObject
-        {
-            ["updates"] = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates), ["err"] = 0,
-        });
+        var updates = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates);
+        if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
+            UpdateHunterscore(con, account);
+        return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
     }
 
     /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`.</summary>
@@ -1178,7 +1181,7 @@ public sealed partial class State
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
-            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance FROM expeditions"
+            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
                                  + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (found is null)
                 return recorded;
@@ -1192,19 +1195,9 @@ public sealed partial class State
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
             kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
-            // stats are null mid-hunt; expeditions from before first_event have no scope
-            if (row[4] is not DBNull && row[5] is not DBNull)
-            {
-                var ks = new List<(JsonNode?, List<JsonObject>, bool)>();
-                foreach (var r in rows)
-                {
-                    var sp = Parse(r[2])["extended_species"];
-                    ks.Add((sp, hits[(long)r[0]], Ethical(sp, hits[(long)r[0]])));
-                }
-                var distance = Py.FromSql(row[6]);
-                stats = HuntStats(con, Py.FromSql(row[5]), ks, (long)(Convert.ToDouble(row[4]) - Convert.ToDouble(row[3])),
-                                  Py.Truthy(distance) ? distance : 0);
-            }
+            // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
+            if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
+                stats = Parse(s);
         }
         var (x, y, z) = StartPosition(Py.FromSql(row[2]));
         // an open expedition's start_ts is fractional; a closed one's start_ts and end_ts are whole seconds
@@ -1428,8 +1421,9 @@ public sealed partial class State
     /// <summary>n == v for a JSON number (or bool, as in Python).</summary>
     static bool Is(JsonNode? n, double v) => n is JsonValue && !Py.IsStr(n) && Py.D(n) == v;
 
-    /// <summary>n * 10, int stays int.</summary>
-    static JsonNode Times10(JsonNode? n) => Py.IsInt(n) ? JsonValue.Create(Py.L(n) * 10) : JsonValue.Create(Py.D(n) * 10);
+    /// <summary>n * 10, int stays int; a product beyond a double (a hit distance a player sent) is 0, so it never stores a
+    /// number the database cannot read back.</summary>
+    static JsonNode Times10(JsonNode? n) => Py.IsInt(n) ? JsonValue.Create(Py.L(n) * 10) : double.IsFinite(Py.D(n) * 10) ? JsonValue.Create(Py.D(n) * 10) : 0;
 
     /// <summary>Python n % 100 (floor modulo).</summary>
     static long Mod100(JsonNode? n) => ((Py.L(n) % 100) + 100) % 100;

@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Nodes;
 using Resurgence.Server;
 using static Resurgence.Server.Tests.Fixtures;
@@ -43,13 +44,13 @@ public class HunterscoreTests : StateTestBase
               {"id": 4, "title": "Finds", "category": "collectable", "types": [0, 1]}]}}
             """);
         var stats = O("""
-            {"animal": {"101": {"ethical_kills": 2}, "17": {"kills": 5}, "x": {"ethical_kills": 9}},
-             "weapon": {"5": {"10": {"ethical_kills": 1}, "11": {"ethical_kills": 1}}, "999": {"10": {"ethical_kills": 4}}},
+            {"animal": {"101": {"ethical_kills": 2}, "1": {"ethical_kills": 2}, "17": {"kills": 5}, "x": {"ethical_kills": 9}},
+             "weapon": {"5": {"10": {"ethical_kills": 1}, "11": {"ethical_kills": 1}}, "706": {"10": {"ethical_kills": 1}}, "999": {"10": {"ethical_kills": 4}}},
              "collectables": {"0": {"collected": 1}, "1": {"collected": 1}}}
             """);
-        // species 1: 2 (its variant 101) + 2 kills, capped to 3; species 17: no ethical_kills, 0; the weapon row 1 + 1 + the kill
-        // with 706 (999 is in no row); collectables 1 + 1
-        Assert.Equal(3 + 0 + 3 + 2, State.Score(facts, stats, [(1, 706), (1, null)]));
+        // species 1: 2 + 2 (its variant 101), capped to 3; species 17: no ethical_kills, 0; the weapon row 1 + 1 + 1 with 706
+        // (999 is in no row); collectables 1 + 1
+        Assert.Equal(3 + 0 + 3 + 2, State.Score(facts, stats));
     }
 
     [Fact]
@@ -120,7 +121,7 @@ public class HunterscoreTests : StateTestBase
     {
         // a restored counter too large for a number of 64 bits counts the cap
         var stats = O("""{"animal": {"1": {"ethical_kills": 99999999999999999999}}, "weapon": {"5": {"10": {"ethical_kills": 9223372036854775807}, "11": {"ethical_kills": 9223372036854775807}}}}""");
-        Assert.Equal(2000, State.Score(Ranks, stats, []));
+        Assert.Equal(2000, State.Score(Ranks, stats));
 
         state = Online();
         state.CreateAccount(B, "second");
@@ -142,6 +143,18 @@ public class HunterscoreTests : StateTestBase
         Kill(B, 85, 1, 10);
         state.Disconnect(B, "{}"u8.ToArray());
         Assert.Equal(3, Stored(B));  // 81: the species row; 85: the species and the weapon row
+        // hunts with a hit the database cannot read back, a hit without a distance or a miss with a weapon that is a list count
+        // nothing, and their close still works
+        foreach (var bad in new[] { """{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e999}""",
+                                     """{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": null}""",
+                                     """{"event": 21, "weapon_id": [1], "ammunition_id": 10}""" })
+        {
+            state.ConnectReply(B);
+            state.HeartbeatReply(B, Encoding.UTF8.GetBytes($$"""{"events": [{{bad}}]}"""));
+            Kill(B, 87, 1, 10);
+            state.Disconnect(B, "{}"u8.ToArray());
+            Assert.Equal(3, Stored(B));
+        }
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         // the zip's own hunterscore (1234) never stays: the value is always the computed one
@@ -176,5 +189,96 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal((0L, 0L), (Stored(1001), Profile()));
         state = Online();
         Assert.Equal(0L, Stored(1001));
+    }
+
+    JsonNode Total(long account) => Reply(state.StatisticsReply(account, Encoding.UTF8.GetBytes($"user_id={account}"))!);
+
+    JsonNode ConnectStats(long account) => Reply(state.ConnectReply(account))["user_stats"]!["user_stats"]!;
+
+    [Fact]
+    public void TestEachClosedHuntAddsToTheStatistics()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        Eq("""{"duration": 0, "distance": 0, "data": {"collectables": {}, "weapon": {}, "animal": {}, "daily_missions": {}}}""", Total(B));
+        foreach (var individual in new[] { 81L, 82L })
+        {
+            state.ConnectReply(B);
+            Kill(B, individual, 1, 10);
+            state.Disconnect(B, """{"distance_travelled": 466}"""u8.ToArray());
+        }
+        const string data = """
+            {"collectables": {}, "weapon": {"5": {"10": {"ethical_kills": 2, "hits": 2, "kills": 2}}},
+             "animal": {"1": {"ethical_kills": 2, "kills": 2}}, "daily_missions": {}}
+            """;
+        Eq(data, Total(B)["data"]);
+        Eq("932", Total(B)["distance"]);
+        var connect = ConnectStats(B);
+        Eq("932", connect["distance"]);
+        connect.AsObject().Remove("distance");
+        connect.AsObject().Remove("duration");
+        Eq(data, connect);
+        Assert.Equal(4, Stored(B));  // each kill counts once: 2 in the species row, 2 in the weapon row
+
+        // a restore replaces the base only: the server hunts stay and still add on top
+        Restorer.Import(state, TestZip.Own().Write(tmp), B, tmp);
+        Eq("""
+           {"collectables": {}, "weapon": {"5": {"10": {"ethical_kills": 2, "hits": 2, "kills": 2}}},
+            "animal": {"5": {"kills": 2}, "1": {"ethical_kills": 2, "kills": 2}}, "daily_missions": {}}
+           """, Total(B)["data"]);
+        Eq("944.5", Total(B)["distance"]);  // the zip's 12.5 plus the hunts'
+        Assert.Equal(4, Stored(B));
+
+        // a hunt closed before its statistics were stored gets the same ones at the next start (its events end where the next hunt's begin)
+        var before = Total(B);
+        using (var con = state.Store.Open(B))
+            con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a");
+        state = Online();
+        Assert.Equal(4, Stored(B));
+        Eq(before, Total(B));
+    }
+
+    [Fact]
+    public void TestAHarvestAfterItsHuntClosedStillCounts()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.Disconnect(B, "{}"u8.ToArray());
+        Kill(B, 81, 1, 10);  // a heartbeat after the disconnect: the harvest lands in the closed hunt
+        Assert.Equal(2, Stored(B));
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
+    }
+
+    [Fact]
+    public void TestAHitDistanceBeyondADoubleCountsNoneAndTheHuntStillCounts()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 7, "individual": 81, "species": 1, "gender": 0, "weight_grams": 1000, "texture": 0}"""),
+            O("""{"event": 1, "individual": 81, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e308}"""),
+            O("""{"event": 3, "individual": 81, "extended_species": 1}""")));
+        state.Disconnect(B, "{}"u8.ToArray());
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Reply(state.ExpeditionReply(B, "{}"u8.ToArray()))["stats"]!["data"]!["weapon"]);
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
+        Assert.Equal(2, Stored(B));
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion4IsMigratedToTheHuntStatistics()
+    {
+        var file = Path.Combine(tmp, "v4.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
+            con.Exec("PRAGMA user_version = 4");
+        }
+        var migrated = new Store(file);
+        migrated.CreateAccount(5, "five", new JsonObject());
+        using var check = migrated.Open(5);
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
 }

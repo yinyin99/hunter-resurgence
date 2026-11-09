@@ -267,9 +267,12 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         var achievements = await Post(Replay.ACHIEVEMENT_STATS, token1001, "&user_id=1001");
         Assert.Equal("state", achievements.Source);
         Assert.Equal(2, JsonNode.Parse(achievements.Body)!.AsArray().Count);
-        // another player's user id, and an account without a restore, get the empty reply, never the recorded one
+        // another player's user id gets the empty reply, never the recorded one; an account without a restore has a new account's
+        // statistics (its server hunts only) and the empty achievements
         Assert.Equal("empty", (await Post(Replay.STATISTICS_TOTAL, token1001, "&user_id=555")).Source);
-        Assert.Equal("empty", (await Post(Replay.STATISTICS_TOTAL, token7, "&user_id=7")).Source);
+        var fresh = await Post(Replay.STATISTICS_TOTAL, token7, "&user_id=7");
+        Assert.Equal("state", fresh.Source);
+        Eq("""{"duration": 0, "distance": 0, "data": {"collectables": {}, "weapon": {}, "animal": {}, "daily_missions": {}}}""", JsonNode.Parse(fresh.Body));
         Assert.Equal("empty", (await Post(Replay.ACHIEVEMENT_STATS, token7, "&user_id=7")).Source);
     }
 }

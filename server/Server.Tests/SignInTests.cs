@@ -711,6 +711,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             con.Exec("DROP TABLE uploads");
             con.Exec("DROP TABLE restored_ids");
             con.Exec("DROP TABLE upload_results");
+            con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
             con.Exec("PRAGMA user_version = 1");
         }
         var migrated = new Store(file);
