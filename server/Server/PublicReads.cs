@@ -36,7 +36,8 @@ public sealed partial class State
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
     /// <summary>The account's trophy rows: the restored rows of a source as stored, then one row per harvest made on this server in the
-    /// restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.</summary>
+    /// restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved;
+    /// kill ids start at 1 like restored ids, so a clash would list one id twice and its harvest page would be the server kill's.</summary>
     List<JsonNode?> TrophyRows(long account, string source)
     {
         var rows = Restored(account, "trophies", source);

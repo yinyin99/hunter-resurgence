@@ -224,13 +224,13 @@ public static class GameApi
                     api.MapGet(path, Handle(game, r => r.Method == "GET" && r.Path == path ? profile(r) : null)).WithName("MeGet")
                        .WithSummary("Own profile, read with the game API v2 JWT").Produces(200, contentType: "application/json");
             }
-            // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
+            // community server only (a local server replays): the account's items and trophies, from the database; another player's list is the empty reply
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
                .WithName("InventoryList").WithSummary("Owned items with their definitions")
                .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is null. Another player's `user_id`: `[]`.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
-               .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
+               .WithName("TrophyList").WithSummary("The account's trophies, one page")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
@@ -264,7 +264,7 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
-            // the account's restored trophies and lodges (community server only); the lodges of another user id are the empty reply
+            // the account's trophies and restored lodges (community server only); the lodges of another user id are the empty reply
             var restored = Handle(game, r =>
             {
                 var lodges = Lodges.Match(r.Path);
@@ -278,7 +278,7 @@ public static class GameApi
                     : (s.RowsReply(a, "lodges", "/game/user/lodges"), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
                 return Has(body) ? new(200, [("Content-Type", type), .. Cors(r.Header)], body!, "state") : null;
             });
-            apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's restored trophies")
+            apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's trophies: restored, then harvested here")
                  .Produces(200, contentType: "application/json");
             apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The account's restored lodges")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");

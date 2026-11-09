@@ -1362,7 +1362,7 @@ public sealed partial class State
         using var con = Con(account);
         con.Begin();
         var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE account_id = $a AND kill_id = ?", killId);
-        if (n == 0)
+        if (n == 0 && Online)
             n = con.Exec("UPDATE trophies SET node = json_set(node, '$.taxidermized', json('true')) WHERE account_id = $a AND source = '/game/user/harvest' AND id = ?", killId.ToString());
         con.Commit();
         return n > 0;
