@@ -261,7 +261,7 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some pages still show sample content.
 
-- **Profiles are their header and the skills tab** (handle, membership, hunterscore, rank and avatar; skills from `GET /hunters/<handle>/skills`): each other tab stays hidden until the server serves its area ([#244](https://github.com/yinyin99/hunter-resurgence/issues/244)). A handle the server does not know is "Page not found".
+- **Profiles are their header, the skills tab and the statistics tab** (handle, membership, hunterscore, rank and avatar; skills from `GET /hunters/<handle>/skills`; the lifetime statistics of animals and weapons, without collectables): each other tab stays hidden until the server serves its area ([#244](https://github.com/yinyin99/hunter-resurgence/issues/244)), and so do the statistics' last hunt, history and personal bests. A handle the server does not know is "Page not found".
 - **Hidden for a signed-in player** (no source on the server): the store has no "you own" lines, and the minigame boards show no "your rank".
 - **Not offered** (the address goes to the feed, the hunterscore board or `/help`):
   - the competitions and the community league, the season boards (species score and range, hall of fame) and the antler boards: the server has no seasons, competitions or antler measurements ([#222](https://github.com/yinyin99/hunter-resurgence/issues/222));

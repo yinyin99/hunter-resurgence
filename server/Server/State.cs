@@ -700,10 +700,19 @@ public sealed partial class State
         };
     }
 
-    /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
-    /// else and, on a local server, for an account without a restored profile (its recorded reply is replayed). On a community
-    /// server every account has them (a new account's base is empty).</summary>
-    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+    /// <summary>Statistics/total for a user_id: the restored statistics plus the closed server hunts. On a community server that is
+    /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
+    /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>
+    public byte[]? StatisticsReply(long account, byte[] formBody)
+    {
+        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
+        if (!Online || userId == Py.Str(Account(account)["user_id"]))
+            return RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+        if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
+            return null;
+        using var con = Con(other);
+        return Py.DumpBytes(RestoredReads.StatisticsTotal(con));
+    }
 
     /// <summary>Achievement/stats for the player's user_id: the restored achievements with the times this server stored
     /// (<see cref="AwardAchievements"/>); null as <see cref="StatisticsReply"/>.</summary>
@@ -1218,7 +1227,7 @@ public sealed partial class State
         return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
-    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; the recorded reply if there is none.</summary>
+    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; else a hunt a restore saved (the newest without an id); else the recorded reply.</summary>
     public byte[] ExpeditionReply(long account, byte[] recorded, byte[]? formBody = null)
     {
         var wanted = Form1(Py.ParseQs(formBody is null ? "" : Encoding.UTF8.GetString(formBody)), "expedition_id");
@@ -1341,7 +1350,7 @@ public sealed partial class State
                                                        locale, textures, sheet));
     }
 
-    /// <summary>Expedition/list: the server expeditions (newest first), then the recorded ones, paged by offset and limit.</summary>
+    /// <summary>Expedition/list: the server expeditions (newest first), then the hunts a restore saved, else the recorded ones, paged by offset and limit.</summary>
     public byte[] ExpeditionListReply(long account, byte[] recorded, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));

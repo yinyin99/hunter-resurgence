@@ -58,8 +58,7 @@ public static class PlayerRows
             .Select(r => (Offset: Regex.Match((string)r[0], @"__offset=(\d+)").Groups[1].Value, Body: (string)r[1]))
             .OrderBy(p => p.Offset.Length == 0 ? 0 : long.Parse(p.Offset))
             .SelectMany(p => JsonNode.Parse(p.Body)?["expeditions"] is JsonArray page ? (IEnumerable<JsonNode?>)page : [])
-            .Where(e => e is not null && seen.Add(Py.Dumps(e["id"])))
-            .Select(e => e!.DeepClone())];
+            .Where(e => e is not null && seen.Add(Py.Dumps(e["id"])))];
     }
 
     /// <summary>The saved `Public_user/expedition` reply of hunt `id`, else (null) of the newest one; null when none was saved.</summary>
