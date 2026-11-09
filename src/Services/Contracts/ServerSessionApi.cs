@@ -48,4 +48,5 @@ public sealed record ServerWeaponSkill(string Name, string? Group, double Value)
 /// <summary>One page of a hunter's trophies of <see cref="ServerSessionApi.TrophiesSuffix"/>.</summary>
 public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy[] Rows);
 
-public sealed record ServerTrophy(string Name, DateOnly Date);
+/// <param name="Date">The day, yyyy-MM-dd; empty when the trophy has none.</param>
+public sealed record ServerTrophy(string Name, string Date);

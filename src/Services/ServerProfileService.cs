@@ -13,11 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-<<<<<<< HEAD
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "trophies" };
-=======
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics" };
->>>>>>> origin/main
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -102,7 +98,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerTrophies>() is { } t)
-                return new([.. (t.Rows ?? []).Select(r => new Trophy(r.Name, r.Date, null, null))], t.Page, t.Pages, t.Total);
+                return new([.. (t.Rows ?? []).Select(r => new Trophy(r.Name, DateOnly.TryParse(r.Date, out var day) ? day : default, null, null))], t.Page, t.Pages, t.Total);
             log.LogWarning("The server answered {Path} with {Status}: no trophies", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

@@ -147,7 +147,7 @@ public sealed partial class State
         var own = IsOwn(account, formBody);
         if (!own)
         {
-            if (!Online || !long.TryParse(Form1(form, "user_id"), out var id) || PublicAccount(id) is not { } other)
+            if (!long.TryParse(Form1(form, "user_id"), out var id) || PublicAccount(id) is not { } other)
                 return null;
             account = other;
         }
@@ -173,11 +173,17 @@ public sealed partial class State
             ["page"] = page, ["pages"] = pages, ["total"] = all.Count,
             ["rows"] = new JsonArray([.. all.Skip((page - 1) * TrophiesPageSize).Take(TrophiesPageSize).Select(t => (JsonNode?)new JsonObject
             {
-                ["name"] = SpeciesName(t?["species"]) ?? "Trophy",
-                ["date"] = DateTimeOffset.FromUnixTimeSeconds(Py.IsNum(t?["timestamp"]) ? Math.Clamp(Py.L(t!["timestamp"]), 0, 253402300799) : 0).ToString("yyyy-MM-dd"),
+                ["name"] = SpeciesName(t?["species"]) ?? "#" + Py.Str(t?["species"]),
+                ["date"] = TrophyDay(t?["timestamp"]),
             })]),
         };
     }
+
+    /// <summary>The day (UTC, yyyy-MM-dd) of a trophy row's `timestamp`: an ISO time (a harvest made here) or Unix seconds; "" for anything else.</summary>
+    static string TrophyDay(JsonNode? timestamp) =>
+        timestamp is JsonValue v && v.TryGetValue<string>(out var s) && DateTimeOffset.TryParse(s, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out var iso) ? iso.ToString("yyyy-MM-dd")
+        : Py.IsNum(timestamp) ? DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(Py.L(timestamp), 0, 253402300799)).ToString("yyyy-MM-dd") : "";
 
     /// <summary>The account's Me/me as it stands: the restored profile, else what a new account has (no recorded value).</summary>
     JsonObject MeOf(Db con, long account)
