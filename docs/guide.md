@@ -12,7 +12,7 @@ This needs the official servers, so do it while they are up (until 2026-11-11). 
 2. Download `backup-win-x64.zip`, unpack it and keep `backup.exe` and `settings.json` in the same folder. Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
 3. Start the game and start a hunt. The backup tool reads your account through the running game, and the game is signed in only once a hunt has started.
 4. Start `backup.exe`, choose **My account (from the running game)**, keep the ticks the tool proposes and press **Start**. The groups that are off by default (messages, photos, kill pages, competition history) are not needed for a restore, and ticking Messages marks your unread messages as read for good. Leave the game running until it is done.
-5. The result is a backup zip in `Documents\game-backup`. Keep it private: it holds your profile and the key that links it to your account.
+5. The result is a backup zip in `Documents\game-backup`. Keep it private: it holds your profile and a claim key, a hint that the backup is yours.
 
 Only a backup made in My account mode can be restored with your wallet. Each run is a copy of your profile at that moment: anything you play afterwards is not in it.
 
@@ -56,6 +56,6 @@ Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` 
 - **"Could not listen on port 80 or 443"** in the `2-run.cmd` window: another program uses that port (a web server, a second `2-run.cmd`). Close it and run again.
 - **The game cannot connect**: the `2-run.cmd` window must be open, and the game allowed in Windows Firewall.
 - **The game still reaches the official servers**: `2-run.cmd` says so; run `1-setup.cmd` again. Some antivirus programs block edits of the hosts file.
-- **You hunted before the restore**: the backup can no longer be restored onto that account. Open **Restore your backup** on the website and use **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
+- **You hunted before the restore**: the backup can no longer be restored onto that account. Open **Restore your backup** on the website tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
 
 More detail on each tool: [backup tool](backup.md), [player kit](play.md), [website](website.md#restore-and-your-data).
