@@ -1,6 +1,6 @@
 // The account's own data on the website's host, for the signed-in player (the session cookie): buy from the store, upload a backup zip, see
-// what became of it, delete everything. The website's pages call these from their server over SERVER_URL; a browser
-// never needs to, so the reverse proxy does not have to route /account/. Online only. docs/server.md#upload-a-backup-zip.
+// what became of it, delete everything. The website's pages call these from their server over SERVER_URL; the backup tool calls
+// /account/restore/* on the public domain, so the reverse proxy routes that path here. Online only. docs/server.md#upload-a-backup-zip.
 using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
