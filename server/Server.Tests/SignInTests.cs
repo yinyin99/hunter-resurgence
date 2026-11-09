@@ -276,7 +276,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         // equal hunterscores: the lower account id first
         Eq("""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70}, {"rank": 2, "handle": "one", "hunterscore": 50}, {"rank": 3, "handle": "two", "hunterscore": 50}]}""", board);
         Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
-        Eq("""{"handle": "two", "hunterscore": 50, "rank": 3}""", JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body));
+        var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
+        Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
+        Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)two["avatar"]!);  // a new account's picture
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody")).Status);
         Assert.Equal(404, (await Get("web.test", "/hunters/banned")).Status);
     }

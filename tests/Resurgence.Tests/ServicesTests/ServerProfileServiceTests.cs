@@ -42,25 +42,25 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task ARealPlayersHeaderIsTheServers()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 1234, "rank": 2}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 1234, "rank": 2, "membership": "Hunter", "avatar": "https://web.test/media/avatar/256/1000000.png"}"""));
         var p = await Make(fake).ProfileAsync("fox");
-        Assert.Equal(("Fox", 1234, 2, true, true, ""), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Real, p.Membership));
+        Assert.Equal(("Fox", 1234, 2, true, "Hunter", "avatar-1000000"), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Membership, p.Avatar));
+        Assert.Same(ServerProfileService.Tabs, p.Tabs);
         Assert.Equal("/hunters/fox", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
     }
 
-    [Fact]
-    public async Task AnUnknownHandleIsTheMocksHunterAndNotReal()
-    {
-        var p = await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter05");
-        Assert.Equal((115000, false), (p!.HunterScore, p.Real));
-    }
+    // the live site never shows the mock: a handle the server does not know is no profile, not a fictional hunter
+    [Theory]
+    [InlineData("Hunter05")]
+    [InlineData("Hunter01")]
+    public async Task AnUnknownHandleIsNoProfile(string handle) =>
+        Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync(handle));
 
-    [Fact]
-    public async Task AHandleTheServerDoesNotKnowIsNeverTheSignedInPlayers()
-    {
-        var p = await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync("Hunter01");
-        Assert.False(p!.Own);
-    }
+    [Theory]
+    [InlineData("https://web.test/media/avatar/256/1000005.png", "avatar-1000005")]
+    [InlineData("https://avatars.test/uploads/a.jpg", "avatar-default")]
+    [InlineData(null, "avatar-default")]
+    public void TheAvatarSlotIsNamedByThePicturesId(string? url, string slot) => Assert.Equal(slot, ServerProfileService.AvatarSlot(url));
 
     // PL20: a visitor-typed handle goes into the request path
     [Fact]
