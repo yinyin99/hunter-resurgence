@@ -72,6 +72,10 @@ Every page's `<head>` (`src/Web/Components/App.razor`) has a meta description (`
 
 `src/Web/wwwroot/robots.txt` (served at `/robots.txt`) turns away two SEO backlink crawlers, `MJ12bot` and `serpstatbot`: they sent most of the website's requests and brought no visitors, and every page they fetch is rendered on the server. It also keeps the Blazor hub (`/_blazor/`) and the pages that give a crawler only an empty shell or a redirect out of search engines: sign-in, sign-up, payment, per-session and launcher-only pages. The news, profiles, competitions, leaderboards, store, help and download stay open. It is a request, not access control: the CDN's bot rules handle crawlers that ignore it. The CI docker smoke test checks that it is served.
 
+## Credit
+
+The footer of the website and the launcher (`src/Ui/Shell/Footer.razor`, after "Your data") links "Hunter Resurgence © yinyin99" to the repository. README's "Disclaimer and license" makes keeping it an additional term of the AGPL-3.0 (section 7(b)), so copies and modified versions keep it there. It is a name, so it is the same in every language and has no resx key. `FooterTests` checks that it is shown.
+
 ## Security headers
 
 A middleware, the first one in `src/Web/Program.cs`, adds these headers to every response (pages, static files, the 404 page, the Blazor endpoints):
