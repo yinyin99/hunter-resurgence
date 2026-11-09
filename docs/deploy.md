@@ -141,7 +141,7 @@ Repository variables (Settings, Secrets and variables, Actions, Variables):
 | Variable | Value | Unset |
 |---|---|---|
 | `LINK_BACKUP` | the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` | `link_backup` of `settings.json`, if any, else no backup tool button |
-| `LINK_SOURCE` | the project's repository, linked by the live feed's development note | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
+| `LINK_SOURCE` | the project's repository, linked by the feed's development post | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |
 
@@ -272,6 +272,6 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
   - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
   - After a purchase the status bar shows the new balance at its next 30 second refresh.
-- **The news** is the saved launcher feed (a recording, else the mirror's copy), frozen on the day it was saved, after the site's own development note. The slides' pictures are boxes until mapped (#224). There is no Discord widget: the server has no source for it.
+- **The news** is the project's two posts (the backup tool and the project in development), the same as on the mock website; there is no Discord widget: the server has no source for it. The posts' pictures are boxes until added (`news-backup`, `news-dev`).
 - **The Lane Bandit and Bust Through boards** list only the scores restored from backups: the server records no minigame score played on it ([#223](https://github.com/yinyin99/hunter-resurgence/issues/223)). Each page view reads every account once.
 - **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), and an older green commit still queued skips too, since it is no longer `main`'s head ([Deploys](#deploys)). A flaky test there holds the live site back until `ci` is run again or the test is fixed ([#213](https://github.com/yinyin99/hunter-resurgence/issues/213); [#219](https://github.com/yinyin99/hunter-resurgence/issues/219) is flaky locally).

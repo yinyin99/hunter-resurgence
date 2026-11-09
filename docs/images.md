@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 657 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 653 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
@@ -65,8 +65,7 @@ With the values the mock services give, the slots have 657 distinct keys; a patt
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
 | `video-<id>` | 900×506 | VideoModal (Help) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
-| `news-<target>` | 805×380, 175×95 | FeedCarousel | 6 of 6 |
-| `splash-<image>` (live site: the file name of the slide's recorded picture, lower case, without its extension; a slide without one shows the box `splash:none`) | 805×380, 175×95 | FeedCarousel with `SERVER_URL` | 1 of 1: the operator's mirror has the one picture both saved slides use |
+| `news-backup`, `news-dev` | 805×380, 175×95 | FeedCarousel | no: not in the operator's files (the project's own posts) |
 | `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |

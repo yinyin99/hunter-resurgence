@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Введите действительный адрес электронной почты.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Неверный код. Попробуйте ещё раз.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>ИГРАЙТЕ БЕСПЛАТНО</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Читать далее →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Архив новостей</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>В разработке</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Этот сервер сообщества создаётся открыто, и некоторые страницы пока показывают демонстрационное содержимое.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Следите за проектом на GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence в разработке</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Сервер сообщества создаётся открыто. Аккаунты, восстановление вашей резервной копии и этот сайт обретают форму, а сервер скоро откроется для всех.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Скоро откроется для всех.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Сохраните аккаунт до закрытия официальных серверов</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Официальные серверы закроются 11 ноября 2026 года. Скачайте инструмент резервного копирования и сохраните профиль уже сейчас: инвентарь, трофеи, статистику и многое другое. Вы сможете восстановить его на сервере сообщества, когда он откроется.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Сохраните профиль до 11 ноября 2026 года.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Читать</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Онлайн: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>УЧАСТНИКОВ ОНЛАЙН</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>

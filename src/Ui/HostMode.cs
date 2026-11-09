@@ -20,10 +20,6 @@ public sealed class HostMode
 
     public string BundleSlot(int id) => Live ? $"store-bundle-{id}" : $"bundle-{id}";
 
-    /// <summary>The picture slot of a feed slide: the live site's slides are the original's and are named after the picture they showed (a new recording with a new picture is a
-    /// new slot), never the mock's stand-in pictures, which are named after the target. A live slide without a picture gets <c>splash:none</c>, which no picture name can match.</summary>
-    public string SlideSlot(Resurgence.Services.Featured slide) => Live ? slide.Image is { } image ? $"splash-{image}" : "splash:none" : $"news-{slide.Target}";
-
     /// <summary>How often the status bar and the messages page read the server again: 30 seconds as the old interface; a development hook that lets something arrive shortens it to 2.</summary>
     public TimeSpan PollInterval => TimeSpan.FromSeconds(Mock is "poll:fast" or "friends:incoming" or "messages:incoming" ? 2 : 30);
 

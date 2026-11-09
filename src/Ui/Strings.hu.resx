@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Kérjük, adj meg érvényes e-mail címet.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Helytelen kód. Kérjük, próbáld újra.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>JÁTSZ INGYEN</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Olvass tovább →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Hírarchívum</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>Fejlesztés alatt</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Ez a közösségi szerver nyíltan készül, és néhány oldal még mintatartalmat mutat.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Kövesd a projektet a GitHubon</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>A Hunter Resurgence fejlesztés alatt áll</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>A közösségi szerver nyilvánosan épül. A fiókok, a mentésed visszaállítása és ez a weboldal készülőben van, a szerver hamarosan megnyílik a nyilvánosság előtt.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Hamarosan nyílik a nyilvános játék.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Mentsd el a fiókodat, mielőtt a hivatalos szerverek bezárnak</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezárnak. Töltsd le a mentőeszközt, és mentsd el a profilodat most: felszerelés, trófeák, statisztikák és más. A közösségi szerveren visszaállíthatod, amint megnyílik.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Mentsd el a profilod 2026. november 11. előtt.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Olvasd el itt</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>TAG ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Csatlakozz a Discordhoz</value></data>

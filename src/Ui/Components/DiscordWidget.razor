@@ -1,4 +1,5 @@
 @inject INewsService News
+@inject HostMode Mode
 
 @if (widget is not null)
 {
@@ -20,5 +21,6 @@
 @code {
     DiscordInfo? widget;
 
-    protected override async Task OnInitializedAsync() => widget = await News.DiscordAsync();
+    // the community server has no Discord widget
+    protected override async Task OnInitializedAsync() => widget = Mode.Live ? null : await News.DiscordAsync();
 }

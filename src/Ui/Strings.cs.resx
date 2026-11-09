@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Zadejte prosím platnou e-mailovou adresu.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Nesprávný kód. Zkuste to prosím znovu.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>HRAJTE ZDARMA</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Číst dál →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Archiv novinek</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>Ve vývoji</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Tento komunitní server vzniká veřejně a některé stránky zatím ukazují ukázkový obsah.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Sledujte projekt na GitHubu</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence je ve vývoji</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Komunitní server vzniká veřejně. Účty, obnova zálohy i tento web postupně nabírají podobu a server se brzy otevře veřejnosti.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Veřejná hra se brzy otevře.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Uložte si účet dřív, než se oficiální servery zavřou</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Oficiální servery se zavřou 11. listopadu 2026. Stáhněte si zálohovací nástroj a uložte si profil hned teď: inventář, trofeje, statistiky a další. Po otevření komunitního serveru ho můžete obnovit.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Zálohujte si profil před 11. listopadem 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Přečtěte si to zde</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>ČLENOVÉ ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Vstoupit na Discord</value></data>

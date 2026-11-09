@@ -1,10 +1,8 @@
 @page "/"
 @page "/feed"
 @inject ISessionService Sessions
-@inject INewsService News
 @inject ModalService Modal
 @inject Branding Brand
-@inject HostMode Mode
 
 <PageTitle>@L["Landing.Heading"]</PageTitle>
 
@@ -30,23 +28,14 @@
 <div class="columns">
     <div class="news">
         <h3>@L["Feed.News"]</h3>
-        @* the live site says first that it is still being built, and where (link_source: the project's repository) *@
-        @if (Mode.Live)
+        @foreach (var post in NewsPosts.All)
         {
-            <article class="dev-note">
-                <h4>@L["Feed.DevTitle"]</h4>
-                <p class="excerpt">@L["Feed.DevText"] <ExternalLink Key="source">@L["Feed.DevLink"]</ExternalLink></p>
-            </article>
-        }
-        @foreach (var post in posts)
-        {
-            <article>
-                <h4><ExternalLink Key="news" Path="@post.Slug">@post.Title</ExternalLink></h4>
+            <article id="@post.Slot">
+                <h4>@L[$"News.{post.Id}.Title"]</h4>
                 <p class="when">@Fmt.DateTime(post.When)</p>
-                <p class="excerpt">@post.Excerpt <ExternalLink Key="news" Path="@post.Slug">@L["Feed.ContinueReading"]</ExternalLink></p>
+                <p class="excerpt">@L[$"News.{post.Id}.Text"] <ExternalLink Key="@post.LinkKey">@L[post.LinkText]</ExternalLink></p>
             </article>
         }
-        <p class="archive"><ExternalLink Key="news_archive">@L["Feed.NewsArchive"]</ExternalLink></p>
     </div>
     @if (signedIn == true) { <DiscordWidget /> }
 </div>
@@ -55,13 +44,8 @@
     [SupplyParameterFromQuery(Name = "ref")] public string? Ref { get; set; }
 
     bool? signedIn;
-    IReadOnlyList<NewsPost> posts = [];
 
-    protected override async Task OnInitializedAsync()
-    {
-        signedIn = await Sessions.CurrentAsync() is not null;
-        posts = await News.RecentAsync();
-    }
+    protected override async Task OnInitializedAsync() => signedIn = await Sessions.CurrentAsync() is not null;
 
     void Trailer() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = "Watch the trailer" });
 }

@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Lütfen geçerli bir e-posta adresi girin.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Hatalı kod. Lütfen tekrar deneyin.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>ÜCRETSİZ OYNA</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Okumaya devam et →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Haber Arşivi</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>Geliştirme aşamasında</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Bu topluluk sunucusu açık bir şekilde geliştiriliyor ve bazı sayfalar hâlâ örnek içerik gösteriyor.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Projeyi GitHub'da takip edin</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence geliştirme aşamasında</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Topluluk sunucusu herkesin gözü önünde geliştiriliyor. Hesaplar, yedeğinizi geri yükleme ve bu web sitesi şekilleniyor; sunucu yakında herkese açılacak.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Herkese açılış çok yakında.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Resmi sunucular kapanmadan hesabınızı kaydedin</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Resmi sunucular 11 Kasım 2026'da kapanıyor. Yedekleme aracını indirin ve profilinizi hemen kaydedin: envanter, ödüller, istatistikler ve daha fazlası. Topluluk sunucusu açıldığında geri yükleyebilirsiniz.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Profilinizi 11 Kasım 2026'dan önce yedekleyin.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Buradan okuyun</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Çevrimiçi: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>ÇEVRİMİÇİ ÜYELER</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>

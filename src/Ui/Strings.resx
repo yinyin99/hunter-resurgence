@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Please enter a valid email address.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Incorrect code. Please try again.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>PLAY FOR FREE</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Continue reading →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>News Archive</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>In development</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>This community server is being built in the open, and some pages still show sample content.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Follow the project on GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence is in development</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>The community server is being built in the open. Accounts, restoring your backup and this website are taking shape, and the server opens to the public soon.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Public play opens soon.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Save your account before the official servers close</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>The official servers close on 11 November 2026. Download the backup tool and save your profile now: inventory, trophies, statistics and more. You can restore it on the community server once it opens.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Back up your profile before 11 November 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Read it here</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBERS ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join Discord</value></data>

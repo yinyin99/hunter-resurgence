@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Anna kelvollinen sähköpostiosoite.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Väärä koodi. Yritä uudelleen.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>PELAA ILMAISEKSI</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Jatka lukemista →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Uutisarkisto</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>Kehityksessä</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Tätä yhteisöpalvelinta rakennetaan avoimesti, ja osa sivuista näyttää vielä esimerkkisisältöä.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Seuraa projektia GitHubissa</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence on kehitteillä</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Yhteisöpalvelinta rakennetaan avoimesti. Tilit, varmuuskopion palautus ja tämä sivusto ovat muotoutumassa, ja palvelin avautuu pian kaikille.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Julkinen pelaaminen alkaa pian.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Tallenna tilisi ennen kuin viralliset palvelimet sulkeutuvat</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Viralliset palvelimet sulkeutuvat 11. marraskuuta 2026. Lataa varmuuskopiotyökalu ja tallenna profiilisi nyt: varusteet, palkinnot, tilastot ja muuta. Voit palauttaa sen yhteisöpalvelimelle, kun se avautuu.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Varmuuskopioi profiilisi ennen 11. marraskuuta 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Lue se täältä</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Paikalla: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>JÄSENET PAIKALLA</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>

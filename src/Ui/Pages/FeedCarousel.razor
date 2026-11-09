@@ -1,54 +1,40 @@
 @implements IDisposable
-@inject INewsService News
-@inject HostMode Mode
 
-@if (slides.Count > 0)
-{
-    var cur = slides[index];
-    <div class="carousel">
-        <div class="slide">
-            <AssetSlot Name="@Mode.SlideSlot(cur)" Width="805" Height="380" Class="image" />
-            <span class="date">@Fmt.MonthDay(cur.When)</span>
-            <div class="caption">
-                <h2>@cur.Title</h2>
-                <p>
-                    @cur.Lead @(" ")
-                    @* no link text, no link: as the old feed *@
-                    @if (cur.LinkText.Length > 0 && cur.Target.StartsWith("news:"))
-                    {
-                        <ExternalLink Key="news" Path="@cur.Target[5..]">@cur.LinkText</ExternalLink>
-                        <Icon Name="chevron-right" />
-                    }
-                    else if (cur.LinkText.Length > 0)
-                    {
-                        <a href="@cur.Target">@cur.LinkText</a>
-                        <Icon Name="chevron-right" />
-                    }
-                </p>
-            </div>
-        </div>
-        <div class="thumbs">
-            @for (var i = 0; i < slides.Count; i++)
-            {
-                var n = i;
-                <button type="button" class="thumb" aria-label="@slides[i].Title" @onclick="() => Select(n)"><AssetSlot Name="@Mode.SlideSlot(slides[i])" Width="175" Height="95" /></button>
-            }
+@{ var cur = slides[index]; }
+
+<div class="carousel">
+    <div class="slide">
+        <AssetSlot Name="@cur.Slot" Width="805" Height="380" Class="image" />
+        <span class="date">@Fmt.MonthDay(cur.When)</span>
+        <div class="caption">
+            <h2>@L[$"News.{cur.Id}.Title"]</h2>
+            <p>
+                @L[$"News.{cur.Id}.Lead"] @(" ")
+                <a href="#@cur.Slot">@L["News.ReadIt"]</a>
+                <Icon Name="chevron-right" />
+            </p>
         </div>
     </div>
-}
+    <div class="thumbs">
+        @for (var i = 0; i < slides.Count; i++)
+        {
+            var n = i;
+            var title = L[$"News.{slides[i].Id}.Title"].Value;
+            <button type="button" class="thumb" aria-label="@title" @onclick="() => Select(n)"><AssetSlot Name="@slides[i].Slot" Width="175" Height="95" /></button>
+        }
+    </div>
+</div>
 
 @code {
-    IReadOnlyList<Featured> slides = [];
+    // one slide per post, in the feed's order
+    static readonly IReadOnlyList<NewsPost> slides = NewsPosts.All;
     int index;
     PeriodicTimer? timer;
-
-    // the old feed shows four slides at most
-    protected override async Task OnInitializedAsync() => slides = (await News.FeaturedAsync()).Take(4).ToList();
 
     /// <summary>The slides change every 18 seconds, as in the old feed.</summary>
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && slides.Count > 1) _ = Run();
+        if (firstRender) _ = Run();
     }
 
     async Task Run()

@@ -10,9 +10,9 @@ public class BrandingTests
     [Fact]
     public void GameTokensAndLinksAreExpandedByTheBrandingAndTheLocalizer()
     {
-        var b = new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo", ["link_news"] = "https://example.test/n", ["link_forum"] = "<forum>" });
+        var b = new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo", ["link_support"] = "https://example.test/n", ["link_forum"] = "<forum>" });
         Assert.True(b.Expand("{GAME} NEWS, {game}, {game_full}") == "FOO NEWS, Foo, Foo", "tokens expand to the configured name");
-        Assert.True(b.Link("news") == "https://example.test/n" && b.Link("forum") is null && b.Link("wiki") is null, "links: configured, placeholder and missing");
+        Assert.True(b.Link("support") == "https://example.test/n" && b.Link("forum") is null && b.Link("wiki") is null, "links: configured, placeholder and missing");
         Assert.True(new Resurgence.Ui.Branding().Expand("FOLLOW {GAME} / {game}") == "FOLLOW THE GAME / the game", "no settings: the game");
         var old = CultureInfo.CurrentUICulture;
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
