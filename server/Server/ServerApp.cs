@@ -29,6 +29,8 @@ public static class ServerApp
     static bool IsLocal(HttpContext ctx) => LocalHosts.Contains(ctx.Request.Host.Host, StringComparer.OrdinalIgnoreCase);
 
     const long AdminMaxBodyBytes = 64 * 1024;
+    /// <summary>How often the server closes the hunts nobody has sent a heartbeat for.</summary>
+    static readonly TimeSpan StaleSweep = TimeSpan.FromSeconds(30);
     static readonly string[] ForwardingHeaders = ["X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "Forwarded", "Via", "X-Real-IP"];
     static readonly Regex HostName = new(@"\A[A-Za-z0-9][A-Za-z0-9.\-]*(:\d{1,5})?\z", RegexOptions.ECMAScript);
 
@@ -158,6 +160,18 @@ public static class ServerApp
         // the admin API with the requesting origin echoed, and the browser would then send the POST
         app.MapFallback("/{**path}", () => TypedResults.NotFound()).RequireHost(LocalHosts).ExcludeFromDescription();
         app.MapGame(o.Game);
+        if (o.Game.State is { } hunts)
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(async () =>
+            {
+                using var tick = new PeriodicTimer(StaleSweep);
+                try
+                {
+                    while (await tick.WaitForNextTickAsync(app.Lifetime.ApplicationStopping))
+                        try { hunts.CloseStaleHunts(); }
+                        catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("stale hunts: " + e.Message); }  // retried at the next tick
+                }
+                catch (OperationCanceledException) { }
+            }));
         return app;
     }
 
