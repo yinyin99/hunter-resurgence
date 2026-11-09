@@ -41,7 +41,7 @@ The player kit connects your game to the community server over the internet. Dow
 - It never changes the game's files. One script in the kit, `3-remove.cmd`, undoes everything and gives the official servers back.
 - While it is installed, the game talks only to the community server. **Make your backup first**: the backup tool needs the official servers.
 
-Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md).
+Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md). The whole way from backup to playing: [the player guide](docs/guide.md).
 
 ## No money, ever
 
