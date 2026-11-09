@@ -30,7 +30,7 @@
         <h3>@L["Feed.News"]</h3>
         @foreach (var post in NewsPosts.All)
         {
-            <article id="@post.Slot">
+            <article id="@post.Anchor">
                 <h4>@L[$"News.{post.Id}.Title"]</h4>
                 <p class="when">@Fmt.DateTime(post.When)</p>
                 <p class="excerpt">@L[$"News.{post.Id}.Text"] <ExternalLink Key="@post.LinkKey">@L[post.LinkText]</ExternalLink></p>

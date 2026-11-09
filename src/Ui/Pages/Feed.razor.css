@@ -11,7 +11,7 @@
 .news { width: 620px; padding-left: 0; }
 h3 { margin: 0 0 14px; font-size: var(--fs-h3); line-height: 30px; text-transform: uppercase; }
 article { margin-bottom: 19px; }
-h4 { margin: 0; font-size: var(--fs-h4); line-height: 24px; }
+h4 { margin: 0; font-size: var(--fs-h4); line-height: 24px; color: var(--accent); }
 p { margin: 0; }
 .when { margin-bottom: 10px; font-size: 11px; line-height: 16px; color: var(--fg-muted-2); }
 .excerpt { color: var(--fg-muted-2); }

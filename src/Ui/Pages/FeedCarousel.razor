@@ -4,13 +4,13 @@
 
 <div class="carousel">
     <div class="slide">
-        <AssetSlot Name="@cur.Slot" Width="805" Height="380" Class="image" />
+        <AssetSlot Name="@cur.Picture" Width="805" Height="380" Class="image" />
         <span class="date">@Fmt.MonthDay(cur.When)</span>
         <div class="caption">
             <h2>@L[$"News.{cur.Id}.Title"]</h2>
             <p>
                 @L[$"News.{cur.Id}.Lead"] @(" ")
-                <a href="#@cur.Slot">@L["News.ReadIt"]</a>
+                <a href="#@cur.Anchor">@L["News.ReadIt"]</a>
                 <Icon Name="chevron-right" />
             </p>
         </div>
@@ -20,7 +20,7 @@
         {
             var n = i;
             var title = L[$"News.{slides[i].Id}.Title"].Value;
-            <button type="button" class="thumb" aria-label="@title" @onclick="() => Select(n)"><AssetSlot Name="@slides[i].Slot" Width="175" Height="95" /></button>
+            <button type="button" class="thumb" aria-label="@title" @onclick="() => Select(n)"><AssetSlot Name="@slides[i].Picture" Width="175" Height="95" /></button>
         }
     </div>
 </div>
