@@ -18,6 +18,7 @@ public static class GameApi
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
     static readonly Regex Lodges = new(@"\A/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript);
     static readonly Regex UserProfile = new(@"\A(?:/v1)?/game/user/(\d+)/profile\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex UserRanks = new(@"\A/game/user/(\d+)/ranks\z", RegexOptions.ECMAScript);
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
     static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
 
@@ -269,6 +270,14 @@ public static class GameApi
                     : new(404, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)], Encoding.UTF8.GetBytes(ReplayScope.Missing), "state");
             });
             api.MapGet("/v1/game/user/{id}/profile", userProfile).ExcludeFromDescription();  // the current build's path of the same page
+            var userRanks = Handle(game, r =>
+            {
+                var m = UserRanks.Match(r.Path);
+                if (!s.Online || r.Method != "GET" || !m.Success) return null;
+                return long.TryParse(m.Groups[1].Value, out var id) && s.PublicAccount(id) is { } a
+                    ? new(200, [("Content-Type", "application/vnd.game_data.user.rank+json; type=collection"), .. Cors(r.Header)], s.RanksReply(a), "state")
+                    : new(404, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)], Encoding.UTF8.GetBytes(ReplayScope.Missing), "state");
+            });
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
             var harvest = Handle(game, r =>
@@ -325,6 +334,11 @@ public static class GameApi
                  .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of any account here, without a token (`background` and `ribbon` "
                                   + "as its backup had them, else null); 404 for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.profile+json").Produces(404, contentType: "application/vnd.goa.error");
+            apiv2.MapGet("/game/user/{id}/ranks", userRanks).WithName("UserRanks").WithSummary("A player's ranks, by user id")
+                 .WithDescription("`[{id, category_id, value}]`, one per rank row of the facts file (`category_id` 1 animals, 2 weapons, 3 collectables), `value` the ethical kills "
+                                  + "or pickups from the account's statistics (restored plus closed server hunts) as the hunterscore counts them, before its cap; "
+                                  + "no token; 404 for a user id that is unknown or banned.")
+                 .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.rank+json; type=collection").Produces(404, contentType: "application/vnd.goa.error");
 
             var web = Group(app, game.Web, "Website (web_host)");
             web.MapGet("/user/{handle}/score/", Handle(game, r =>

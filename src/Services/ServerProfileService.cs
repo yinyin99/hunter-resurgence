@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "ranks" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -41,9 +41,42 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public static string AvatarSlot(string? url) =>
         Path.GetFileNameWithoutExtension(url) is { Length: > 0 } id && id.All(char.IsAsciiDigit) ? "avatar-" + id : "avatar-default";
 
-    public Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind) => mock.RanksAsync(handle, kind);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/ranks</c>: for "overview" the hunterscore and the three categories as bars of what the rows add up to (each row counts to the cap), else
+    /// the rows of the kind (animals, weapons or collectables) by name, each with its count (up to the cap) as level and as the way to the cap. A failed answer is no bars.</summary>
+    public async Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind)
+    {
+        if (await GetRanksAsync(handle) is not { } r) return [];
+        RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
+        if (kind != "overview")
+            return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
+                .Select(x => new RankBar(x.Name, Count(Math.Min(x.Value, r.Cap)), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap)))];
+        return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
+                Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
+    }
+
+    static int Count(long n) => (int)Math.Clamp(n, 0, int.MaxValue);
+
+    async Task<ServerRanks?> GetRanksAsync(string handle)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.RanksSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerRanks>() is { Ranks: not null, Milestones: not null } r) return r;
+            log.LogWarning("The server answered {Path} with {Status}: no ranks", ServerSessionApi.Hunters + "/<handle>" + ServerSessionApi.RanksSuffix, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no ranks", ServerSessionApi.Hunters + "/<handle>" + ServerSessionApi.RanksSuffix, e.Message);
+        }
+        return null;
+    }
     public Task<AchievementSummary> AchievementSummaryAsync(string handle) => mock.AchievementSummaryAsync(handle);
-    public Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind) => mock.MilestonesAsync(handle, kind);
+    /// <summary>The milestones of a kind (animals, weapons, exploration or day-mission) from <c>GET /hunters/&lt;handle&gt;/ranks</c>: the steps reached of each row's thresholds. A failed answer is none.</summary>
+    public async Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind) => await GetRanksAsync(handle) is { } r
+        ? [.. r.Milestones.Where(m => m.Category == kind).Select(m => new Milestone(m.Title, m.Steps.Count(s => m.Value >= s), [.. m.Steps.Select(Count)], Count(m.Value)))]
+        : [];
     public Task<IReadOnlyList<Challenge>> ChallengesAsync(string handle) => mock.ChallengesAsync(handle);
     /// <summary><c>GET /hunters/&lt;handle&gt;/skills</c>: the species with their spotting and tracking rings, or the weapons grouped by their category with a shooting ring. A failed answer is no skills.</summary>
     public async Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind)
