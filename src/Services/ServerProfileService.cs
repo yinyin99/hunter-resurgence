@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string>();
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -45,7 +45,29 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public Task<AchievementSummary> AchievementSummaryAsync(string handle) => mock.AchievementSummaryAsync(handle);
     public Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind) => mock.MilestonesAsync(handle, kind);
     public Task<IReadOnlyList<Challenge>> ChallengesAsync(string handle) => mock.ChallengesAsync(handle);
-    public Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind) => mock.SkillsAsync(handle, kind);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/skills</c>: the species with their spotting and tracking rings, or the weapons grouped by their category with a shooting ring. A failed answer is no skills.</summary>
+    public async Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.SkillsSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerSkills>() is { } s)
+                return kind == "weapons"
+                    ? [.. (s.Weapons ?? []).Select(w => new Skill(w.Name, w.Group, [Ring("Shooting", w.Value)]))]
+                    : [.. (s.Species ?? []).Select(x => new Skill(x.Name, null, [Ring("Spotting", x.Spotting), Ring("Tracking", x.Tracking ?? 1)]))];
+            log.LogWarning("The server answered {Path} with {Status}: no skills", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no skills", path, e.Message);
+        }
+        return [];
+    }
+
+    /// <summary>A skill number (level plus the fraction of its span) as a ring: its level and the percent of the span done.</summary>
+    static SkillRing Ring(string label, double value) => new(label, (int)value, (int)Math.Floor(Math.Round((value - Math.Floor(value)) * 100, 6)));
     public Task<Totals> TotalsAsync(string handle) => mock.TotalsAsync(handle);
     public Task<ScoreSheet?> SheetAsync(string handle, string kind, long id) => mock.SheetAsync(handle, kind, id);
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => mock.GalleryAsync(handle, page);

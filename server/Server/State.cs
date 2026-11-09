@@ -189,7 +189,8 @@ public sealed partial class State
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
-                var killId = NextId(con, "kills", "kill_id");
+                var killId = Math.Max(NextId(con, "kills", "kill_id"), (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/game/user/harvest')")!);
+                // a new kill id is above every restored harvest id. ponytail: kills that already exist, and kills made before a later restore, are not renumbered
                 con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
                          killId, e["individual"], e["extended_species"], harvest);
                 var (e7, e22) = KillEvents(con, e["individual"], harvest);
@@ -660,14 +661,35 @@ public sealed partial class State
         return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
     }
 
-    /// <summary>Skill/list for the player's user_id; null for anyone else (a local server replays their recorded reply, a
-    /// community server sends the empty one).</summary>
+    /// <summary>Skill/list for the user_id: the player's own, and on a community server any account's of this server
+    /// (<see cref="PublicAccount(long)"/>); null for anyone else (a local server replays their recorded reply, a community
+    /// server sends the empty one).</summary>
     public byte[]? SkillListReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
-            return null;
+            return Online && long.TryParse(userId, out var id) && PublicAccount(id) is { } other ? Py.DumpBytes(SkillNumbers(other, Skills.Value)) : null;
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
+    }
+
+    /// <summary>What a profile page's skills tab shows of an account: `species` [{name, spotting, tracking}] (the numbers of
+    /// Skill/list, one per species of the connect's list) and `weapons` [{name, group, value}] (the item's name and its
+    /// sub-category's name, null without one).</summary>
+    public JsonObject PublicSkills(long account)
+    {
+        var n = SkillNumbers(account, Skills.Value);
+        var spotting = n["spotting"]!.AsArray();
+        var tracking = n["tracking"]!.AsArray();
+        return new JsonObject
+        {
+            ["species"] = new JsonArray([.. species.OrderBy(s => s.Key).Where(s => s.Key < spotting.Count).Select(s => (JsonNode?)new JsonObject
+                { ["name"] = C(s.Value["name"]), ["spotting"] = C(spotting[(int)s.Key]), ["tracking"] = s.Key < tracking.Count ? C(tracking[(int)s.Key]) : null })]),
+            ["weapons"] = new JsonArray([.. n["weapon"]!.AsObject().Select(w =>
+            {
+                var item = items.GetValueOrDefault(long.Parse(w.Key));
+                return (JsonNode?)new JsonObject { ["name"] = C(item?["name"]) ?? "#" + w.Key, ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
+            })]),
+        };
     }
 
     /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
@@ -1188,9 +1210,13 @@ public sealed partial class State
         return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
-    /// <summary>Public_user/expedition: the latest server expedition and its kills; the recorded reply if none yet.</summary>
-    public byte[] ExpeditionReply(long account, byte[] recorded)
+    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; the recorded reply if there is none.</summary>
+    public byte[] ExpeditionReply(long account, byte[] recorded, byte[]? formBody = null)
     {
+        var wanted = Form1(Py.ParseQs(formBody is null ? "" : Encoding.UTF8.GetString(formBody)), "expedition_id");
+        long wantedId = 0;
+        if (wanted != "" && !long.TryParse(wanted, out wantedId))
+            return recorded;
         object[] row;
         JsonArray kills;
         JsonNode? stats = null;
@@ -1202,7 +1228,8 @@ public sealed partial class State
             if (stale)
                 UpdateHunterscore(con, account);
             var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
-                                 + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                                 + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
+                                 wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
                 return recorded;
             row = found;
@@ -1306,15 +1333,12 @@ public sealed partial class State
                                                        locale, textures, sheet));
     }
 
-    /// <summary>Expedition/list: server expeditions (newest first) ahead of the recorded ones.
-    ///
-    /// Only the first page is merged; later pages replay the recording.</summary>
+    /// <summary>Expedition/list: the server expeditions (newest first), then the recorded ones, paged by offset and limit.</summary>
     public byte[] ExpeditionListReply(long account, byte[] recorded, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
-        if (offset is not ("" or "0"))
-            return recorded;
+        var skip = Py.IsDigit(offset) ? (int)Math.Min(long.Parse(offset), int.MaxValue) : 0;
         List<object[]> rows;
         using (var con = Con(account))
         {
@@ -1336,13 +1360,21 @@ public sealed partial class State
             ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = 0, ["location_id"] = Py.FromSql(r[2]),
             ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
         }).ToList();
-        var expeditions = new List<JsonNode?>(ours);
-        if (Py.Truthy(reply["expeditions"]))
-            expeditions.AddRange(reply["expeditions"]!.AsArray().Select(C));
-        reply["expeditions"] = new JsonArray((Py.IsDigit(limit) ? expeditions.Take((int)Math.Min(long.Parse(limit), int.MaxValue)) : expeditions).ToArray());
+        var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];
+        if (skip >= ours.Count && theirs.Count > 0)
+        {
+            // ponytail: a recording is one saved page, so recorded hunts at the join (or before it, with more server hunts than `limit`) are not
+            // shown; the page is the recording's own, `total` plus the server hunts. Exact merge needs the whole recorded list.
+            var t = G(reply, "total", 0);
+            reply["total"] = Py.IsInt(t) ? JsonValue.Create(Py.L(t) + ours.Count) : JsonValue.Create(Py.D(t) + ours.Count);
+            return Py.DumpBytes(reply);
+        }
+        var take = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), int.MaxValue) : int.MaxValue;
+        var shown = ours.Skip(skip).Take(take).Concat(theirs).ToList();  // the recorded entries fill what the server hunts leave
+        reply["expeditions"] = new JsonArray(shown.Take(take).ToArray());
         var total = G(reply, "total", 0);
         reply["total"] = Py.IsInt(total) ? JsonValue.Create(Py.L(total) + ours.Count) : JsonValue.Create(Py.D(total) + ours.Count);
-        reply["has_more"] = Py.IsDigit(limit) && expeditions.Count > long.Parse(limit);  // the current build asks for this instead of `total`
+        reply["has_more"] = (long)skip + take < ours.Count || shown.Count > take;  // the current build asks for this instead of `total`
         return Py.DumpBytes(reply);
     }
 
@@ -1376,14 +1408,16 @@ public sealed partial class State
         };
     }
 
-    /// <summary>Mark a stored harvest taxidermized; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
+    /// <summary>Mark a harvest taxidermized: this server's, else the record a restore brought; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
     public bool Taxidermize(long account, long killId)
     {
         using var con = Con(account);
         con.Begin();
         var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE account_id = $a AND kill_id = ?", killId);
+        if (n == 0 && Online)
+            n = con.Exec("UPDATE trophies SET node = json_set(node, '$.taxidermized', json('true')) WHERE account_id = $a AND source = '/game/user/harvest' AND id = ?", killId.ToString());
         con.Commit();
-        return n == 1;
+        return n > 0;
     }
 
     string UploadUrl(long photoId, string part) =>
