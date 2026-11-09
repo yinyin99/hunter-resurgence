@@ -64,6 +64,15 @@ public static class HuntersApi
                              + "404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/trophies", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicTrophies(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterTrophies").WithSummary("One page of a hunter's trophies")
+            .WithDescription($"`{{page, pages, total, rows: [{{name, date}}]}}`, {State.TrophiesPageSize} rows a page: the restored trophies, then the harvests made here (as `/game/user/trophies`), "
+                             + "the hidden ones left out; `name` is the species' name, `date` the day of the harvest (UTC, yyyy-MM-dd). 404 for a handle that is unknown or banned.")
+            .QueryParams(("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         group.MapGet("/{handle}/dogs", (string handle) => state.PublicAccount(handle) is { } id
                 ? Json(200, state.PublicDogs(id))
                 : Json(404, new JsonObject { ["error"] = "not found" }))

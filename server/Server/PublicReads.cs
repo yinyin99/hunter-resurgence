@@ -178,10 +178,10 @@ public sealed partial class State
     static readonly string[] TrophyFields = ["species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
-    /// <summary>The account's own trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
+    /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
     /// server in the restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.
-    /// A new kill id is above every restored id (see Heartbeat).</summary>
-    List<JsonNode?> TrophyRows(long account)
+    /// A new kill id is above every restored id (see Heartbeat). Another player's view (`own` false) leaves out the hidden ones.</summary>
+    List<JsonNode?> TrophyRows(long account, bool own = true)
     {
         var rows = Restored(account, "trophies", "/game/user/trophies");
         using var con = Con(account);
@@ -193,22 +193,61 @@ public sealed partial class State
                 row[field] = C(body[field]);
             rows.Add(row);
         }
-        return rows;
+        return own ? rows : [.. rows.Where(NotHidden)];
     }
+
+    static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
 
     /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
     public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
-    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's restored trophies (rows of their own kind).</summary>
-    public byte[] TrophyListReply(long account, byte[] formBody)
+    /// <summary>Trophy/list for the form's user_id: one page (`offset`, `limit`) of the restored trophies (rows of their own kind) of the player's own
+    /// account or, on a community server, of any other account of this server without its hidden ones (<see cref="PublicAccount(long)"/>);
+    /// null for anyone else.</summary>
+    public byte[]? TrophyListReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         long Number(string key) => long.TryParse(Form1(form, key), out var n) && n > 0 ? n : 0;
+        var own = IsOwn(account, formBody);
+        if (!own)
+        {
+            if (!long.TryParse(Form1(form, "user_id"), out var id) || PublicAccount(id) is not { } other)
+                return null;
+            account = other;
+        }
         var all = Restored(account, "trophies", "/v1/Trophy/list");
+        if (!own)
+            all = [.. all.Where(NotHidden)];
         var page = all.Skip((int)Math.Min(Number("offset"), int.MaxValue));
         var limit = Number("limit");
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["trophies"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).ToArray()) });
     }
+
+    public const int TrophiesPageSize = 24;
+
+    /// <summary>What a profile page's trophies tab shows of an account: one page of its trophies without the hidden ones (the restored, then the
+    /// harvests made here), `{page, pages, total, rows: [{name, date}]}`: the species' name and the day of the harvest (UTC).</summary>
+    public JsonObject PublicTrophies(long account, int page)
+    {
+        var all = TrophyRows(account, false);
+        var pages = Math.Max(1, (all.Count + TrophiesPageSize - 1) / TrophiesPageSize);
+        page = Math.Clamp(page, 1, pages);
+        return new JsonObject
+        {
+            ["page"] = page, ["pages"] = pages, ["total"] = all.Count,
+            ["rows"] = new JsonArray([.. all.Skip((page - 1) * TrophiesPageSize).Take(TrophiesPageSize).Select(t => (JsonNode?)new JsonObject
+            {
+                ["name"] = SpeciesName(t?["species"]) ?? "#" + Py.Str(t?["species"]),
+                ["date"] = TrophyDay(t?["timestamp"]),
+            })]),
+        };
+    }
+
+    /// <summary>The day (UTC, yyyy-MM-dd) of a trophy row's `timestamp`: an ISO time (a harvest made here) or Unix seconds; "" for anything else.</summary>
+    static string TrophyDay(JsonNode? timestamp) =>
+        timestamp is JsonValue v && v.TryGetValue<string>(out var s) && DateTimeOffset.TryParse(s, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out var iso) ? iso.ToString("yyyy-MM-dd")
+        : Py.IsNum(timestamp) ? DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(Py.L(timestamp), 0, 253402300799)).ToString("yyyy-MM-dd") : "";
 
     /// <summary>The account's Me/me as it stands: the restored profile, else what a new account has (no recorded value).</summary>
     JsonObject MeOf(Db con, long account)

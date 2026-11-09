@@ -229,13 +229,14 @@ public static class GameApi
                     api.MapGet(path, Handle(game, r => r.Method == "GET" && r.Path == path ? profile(r) : null)).WithName("MeGet")
                        .WithSummary("Own profile, read with the game API v2 JWT").Produces(200, contentType: "application/json");
             }
-            // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
+            // community server only (a local server replays): the account's items and restored trophies, from the database; another player's item list is the empty reply, its trophy list the public one
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
                .WithName("InventoryList").WithSummary("Owned items with their definitions")
                .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is null. Another player's `user_id`: `[]`.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
-               .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
+            api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.TrophyListReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+               .WithName("TrophyList").WithSummary("A player's restored trophies, one page")
+               .WithDescription("`{total, trophies}` of the `user_id`: the player's own, or any other account's here without its hidden trophies (needs any player's token); the empty reply for an unknown or banned one.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             // friends (community server only): the Friends table of the Store; a friend counts while both accounts exist here
             api.MapExactPost(game, ME_FRIENDS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MeFriendsReply(a), "state"), WithJsonToken(r)))
