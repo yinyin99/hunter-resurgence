@@ -339,6 +339,7 @@ public class HunterscoreTests : StateTestBase
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
+            con.Exec("DROP TABLE friends");
             con.Exec("PRAGMA user_version = 4");
         }
         var migrated = new Store(file);
@@ -346,6 +347,7 @@ public class HunterscoreTests : StateTestBase
         using var check = migrated.Open(5);
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Empty(migrated.FriendsOf(5, null).Friends);  // version 6: the friends table
     }
 
     [Fact]
