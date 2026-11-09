@@ -292,11 +292,13 @@ public sealed class Store
         con.Exec("DELETE FROM friends WHERE (account_id = ?1 AND other_id = ?2) OR (account_id = ?2 AND other_id = ?1)", id, other);
     }
 
-    /// <summary>A restore's edge (inside its transaction): kept when the pair has one already.</summary>
+    /// <summary>A restore's edge (inside its transaction): a `friend` edge replaces a request of the same direction; any other
+    /// edge the pair has already stays.</summary>
     public static void RestoreFriendEdge(Db con, long id, long other, string state)
     {
         if (id > 0 && other > 0 && id != other)
-            con.Exec("INSERT OR IGNORE INTO friends (account_id, other_id, state) VALUES (?, ?, ?)", id, other, state);
+            con.Exec("INSERT INTO friends (account_id, other_id, state) VALUES (?, ?, ?)"
+                     + " ON CONFLICT (account_id, other_id) DO UPDATE SET state = excluded.state WHERE excluded.state = 'friend'", id, other, state);
     }
 
     /// <summary>The Steam id the account signed in with; null when it has none.</summary>

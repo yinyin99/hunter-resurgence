@@ -350,5 +350,12 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         mine = await Api(Replay.ME_FRIENDS, token);
         Eq("[[4242, 8], [4343]]", T(Ids(mine["friends"]!), Ids(mine["requests"]!)));  // later, second
         Eq("[4242, 8]", Ids(JsonNode.Parse((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, "user_id=1001")).Body)!["friends"]!));
+
+        // 4343's own restore holds 1001: its request (from 1001's backup) becomes a friendship, whichever restore came first
+        var asker = TestZip.Own(uid: "4343", handle: "asker")
+            .Reply("User_friendslist__user_id=4343.json", "/v1/User/friendslist", """{"total": 1, "friends": [{"id": 1001}]}""", ("user_id", "4343"));
+        Restorer.Import(state, asker.Write(tmp, "asker.zip"), null, tmp);
+        mine = await Api(Replay.ME_FRIENDS, token);
+        Eq("[[4343, 4242, 8], []]", T(Ids(mine["friends"]!), mine["requests"]));  // asker, later, second
     }
 }
