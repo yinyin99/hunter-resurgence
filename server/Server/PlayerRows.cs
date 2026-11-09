@@ -1,6 +1,7 @@
 // Typed inserts for the rows a restored backup writes. Each takes the Db of one account (Store.Open(account)) and
 // belongs inside that caller's transaction; nothing here reads a zip.
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Resurgence.Server;
 
@@ -48,6 +49,27 @@ public static class PlayerRows
     /// <summary>A saved reply with no typed home, keyed by its path in the zip.</summary>
     public static void SetExtra(Db con, string path, JsonNode? body) =>
         con.Exec("INSERT OR REPLACE INTO extras (account_id, path, body) VALUES ($a, ?, ?)", path, Py.Dumps(body));
+
+    /// <summary>The hunts a backup zip held, as saved: every `Expedition/list` page (by offset) joined, newest first as saved, each hunt once.</summary>
+    public static List<JsonNode?> RestoredHunts(Db con)
+    {
+        var seen = new HashSet<string>();
+        return [.. con.Rows("SELECT path, body FROM extras WHERE account_id = $a AND path LIKE 'Expedition!_list%' ESCAPE '!'")
+            .Select(r => (Offset: Regex.Match((string)r[0], @"__offset=(\d+)").Groups[1].Value, Body: (string)r[1]))
+            .OrderBy(p => p.Offset.Length == 0 ? 0 : long.Parse(p.Offset))
+            .SelectMany(p => JsonNode.Parse(p.Body)?["expeditions"] is JsonArray page ? (IEnumerable<JsonNode?>)page : [])
+            .Where(e => e is not null && seen.Add(Py.Dumps(e["id"])))];
+    }
+
+    /// <summary>The saved `Public_user/expedition` reply of hunt `id`, else (null) of the newest one; null when none was saved.</summary>
+    public static JsonNode? RestoredHunt(Db con, long? id)
+    {
+        var saved = con.Rows("SELECT path, body FROM extras WHERE account_id = $a AND path LIKE 'Public!_user!_expedition%' ESCAPE '!'")
+            .Select(r => (Id: Regex.Match((string)r[0], @"__expedition_id=(\d+)\.json$").Groups[1].Value, Body: (string)r[1]))
+            .Where(p => p.Id.Length > 0 && long.TryParse(p.Id, out _));
+        var hit = id is { } want ? saved.Where(p => long.Parse(p.Id) == want) : saved.OrderByDescending(p => long.Parse(p.Id));
+        return hit.Select(p => JsonNode.Parse(p.Body)).FirstOrDefault();
+    }
 
     /// <summary>One row per restore of a zip (its SHA-256, hex), kept when the profile rows are replaced.</summary>
     public static void AddAudit(Db con, string zipSha256, string mode, string report) =>
