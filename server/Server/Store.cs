@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 5;
+    public const int Version = 6;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -46,6 +46,16 @@ public sealed class Store
         CREATE INDEX upload_results_account ON upload_results (account_id, id);
         """;
 
+    // friend edges: account_id asked other_id (`request`), or the two are friends (`friend`: accepted here, or one's restored list
+    // holds the other). No foreign keys: a restored edge may name a player with no account here yet; it counts once that account
+    // exists (the reads join accounts). DeleteAccount drops both directions.
+    const string Friends = """
+        CREATE TABLE friends (
+            account_id INTEGER NOT NULL, other_id INTEGER NOT NULL, state TEXT NOT NULL,
+            PRIMARY KEY (account_id, other_id)) WITHOUT ROWID;
+        CREATE INDEX friends_other ON friends (other_id);
+        """;
+
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
     /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
     public const long FirstServerId = 2_000_000_000;
@@ -67,6 +77,7 @@ public sealed class Store
             created_ts INTEGER NOT NULL,
             expires_ts INTEGER);
         CREATE INDEX tokens_account ON tokens (account_id);
+        {Friends}
         {WebSessions}
         {Uploads}
         {UploadResults}
@@ -174,6 +185,7 @@ public sealed class Store
             if (version < 3) con.Script(Uploads);
             if (version < 4) con.Script(UploadResults);
             if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
+            if (version < 6) con.Script(Friends);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -231,11 +243,60 @@ public sealed class Store
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
-    /// sessions, its Steam id and handle. Files are the caller's.</summary>
+    /// sessions, its Steam id and handle; and its friend edges both ways. Files are the caller's.</summary>
     public void DeleteAccount(long id)
     {
         using var con = Open();
+        con.Begin();
+        con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", id);
         con.Exec("DELETE FROM accounts WHERE id = ?", id);
+        con.Commit();
+    }
+
+    // ---- friends (the Friends table)
+
+    // the accounts at the other end of an edge that count: not banned, not `excluded` (the recorded player's), never the account itself
+    const string Counted = "SELECT id FROM accounts WHERE banned = 0 AND id IS NOT ?2 AND id <> ?1";
+    const string FriendIds = "SELECT other_id FROM friends WHERE account_id = ?1 AND state = 'friend' UNION SELECT account_id FROM friends WHERE other_id = ?1 AND state = 'friend'";
+
+    /// <summary>The account's friends, the accounts that asked it (incoming requests) and those it asked (pending), by user id;
+    /// an edge counts only while both accounts exist here.</summary>
+    public (List<long> Friends, List<long> Requests, List<long> Pending) FriendsOf(long id, long? excluded)
+    {
+        using var con = Open();
+        List<long> Ids(string sql) => [.. con.Rows($"SELECT * FROM ({sql}) INTERSECT {Counted}", id, excluded).Select(r => (long)r[0])];
+        return (Ids(FriendIds),
+                Ids($"SELECT account_id FROM friends WHERE other_id = ?1 AND state = 'request' EXCEPT SELECT * FROM ({FriendIds})"),
+                Ids($"SELECT other_id FROM friends WHERE account_id = ?1 AND state = 'request' EXCEPT SELECT * FROM ({FriendIds})"));
+    }
+
+    /// <summary>Friend/add by `id` of `other`: accepts other's open request (they become friends), else asks other; nothing
+    /// when they are friends already.</summary>
+    public void AddFriend(long id, long other)
+    {
+        using var con = Open();
+        con.Begin();
+        if (con.Scalar($"SELECT 1 FROM ({FriendIds}) WHERE other_id = ?2", id, other) is null)
+        {
+            var accept = con.Scalar("SELECT 1 FROM friends WHERE account_id = ? AND other_id = ? AND state = 'request'", other, id) is not null;
+            con.Exec("INSERT OR REPLACE INTO friends (account_id, other_id, state) VALUES (?, ?, ?)", id, other, accept ? "friend" : "request");
+            if (accept) con.Exec("DELETE FROM friends WHERE account_id = ? AND other_id = ?", other, id);
+        }
+        con.Commit();
+    }
+
+    /// <summary>Friend/remove: every edge between the two goes (a declined, cancelled or removed request or friendship).</summary>
+    public void RemoveFriend(long id, long other)
+    {
+        using var con = Open();
+        con.Exec("DELETE FROM friends WHERE (account_id = ?1 AND other_id = ?2) OR (account_id = ?2 AND other_id = ?1)", id, other);
+    }
+
+    /// <summary>A restore's edge (inside its transaction): kept when the pair has one already.</summary>
+    public static void RestoreFriendEdge(Db con, long id, long other, string state)
+    {
+        if (id > 0 && other > 0 && id != other)
+            con.Exec("INSERT OR IGNORE INTO friends (account_id, other_id, state) VALUES (?, ?, ?)", id, other, state);
     }
 
     /// <summary>The Steam id the account signed in with; null when it has none.</summary>

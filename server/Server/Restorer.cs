@@ -77,6 +77,7 @@ public static class Restorer
             report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup);
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
+            Friends(con, finalId, model.Extras);
         }
         try
         {
@@ -118,6 +119,23 @@ public static class Restorer
         foreach (var table in new[] { "tokens", "web_sessions", "restored_ids" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
+        foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
+            con.Exec($"UPDATE OR IGNORE friends SET {column} = ? WHERE {column} = ?", to, from);
+        con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", from);
+    }
+
+    /// <summary>The friend edges of the restored `User_friendslist` and `Me_friends` replies: a friend, an incoming request (`requests`),
+    /// an outgoing one (`pending`). Each counts once the other player has an account here (<see cref="Store.FriendsOf"/>).</summary>
+    static void Friends(Db con, long id, IReadOnlyDictionary<string, JsonNode?> extras)
+    {
+        static IEnumerable<JsonNode?> List(JsonNode? body, string key) => (body as JsonObject)?[key] as JsonArray ?? [];
+        static long Id(JsonNode? n) => n is JsonObject o ? Id(o["id"]) : n is JsonValue v && v.TryGetValue<long>(out var l) ? l : 0;
+        foreach (var (path, body) in extras.Where(e => e.Key.StartsWith("User_friendslist", StringComparison.Ordinal) || e.Key == "Me_friends.json"))
+        {
+            foreach (var f in List(body, "friends")) Store.RestoreFriendEdge(con, id, Id(f), "friend");
+            foreach (var f in List(body, "requests")) Store.RestoreFriendEdge(con, Id(f), id, "request");
+            foreach (var f in List(body, "pending")) Store.RestoreFriendEdge(con, id, Id(f), "request");
+        }
     }
 
     /// <summary>The connect reply's `account` object: base (the account's own, or the recorded one for a new account) with the

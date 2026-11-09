@@ -32,6 +32,10 @@ public static class Replay
     public const string EXPEDITION_LIST = "/v1/Expedition/list";
     public const string ME = "/v1/Me/me";
     public const string POLL = "/v1/Me/poll";
+    public const string ME_FRIENDS = "/v1/Me/friends";
+    public const string FRIENDS_LIST = "/v1/User/friendslist";
+    public const string FRIEND_ADD = "/v1/Friend/add";
+    public const string FRIEND_REMOVE = "/v1/Friend/remove";
     public const string CHAT_CONVERSATIONS = "/v1/Chat/conversations";
     public const string CHAT_CONVERSATION = "/v1/Chat/conversation";
     public const string SKILL_LIST = "/v1/Skill/list";
