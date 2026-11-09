@@ -281,7 +281,7 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
-            // the account's restored trophies and lodges (community server only); the lodges of another user id are the empty reply
+            // the account's trophies and restored lodges (community server only); the lodges of another user id are the empty reply
             var restored = Handle(game, r =>
             {
                 var lodges = Lodges.Match(r.Path);
@@ -289,13 +289,13 @@ public static class GameApi
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
-                var (body, type) = r.Path == "/game/user/trophies" ? (s.RowsReply(a, "trophies", "/game/user/trophies"), "application/json")  // ponytail: the trophy list's own media type is not known
+                var (body, type) = r.Path == "/game/user/trophies" ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
                     : !s.IsUser(a, lodges.Groups[1].Value) ? (null, "")
                     : lodges.Groups[2].Success ? (s.RowReply(a, "lodges", "/game/user/lodge", lodges.Groups[2].Value), "application/vnd.game.user.trophy_lodge.lodge+json")
                     : (s.RowsReply(a, "lodges", "/game/user/lodges"), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
                 return Has(body) ? new(200, [("Content-Type", type), .. Cors(r.Header)], body!, "state") : null;
             });
-            apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's restored trophies")
+            apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's trophies: restored, then harvested here")
                  .Produces(200, contentType: "application/json");
             apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The account's restored lodges")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");

@@ -189,7 +189,8 @@ public sealed partial class State
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
-                var killId = NextId(con, "kills", "kill_id");
+                var killId = Math.Max(NextId(con, "kills", "kill_id"), (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/game/user/harvest')")!);
+                // a new kill id is above every restored harvest id. ponytail: kills that already exist, and kills made before a later restore, are not renumbered
                 con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
                          killId, e["individual"], e["extended_species"], harvest);
                 var (e7, e22) = KillEvents(con, e["individual"], harvest);
@@ -1407,14 +1408,16 @@ public sealed partial class State
         };
     }
 
-    /// <summary>Mark a stored harvest taxidermized; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
+    /// <summary>Mark a harvest taxidermized: this server's, else the record a restore brought; false for an unknown kill. No gold charged (taxidermy price unknown).</summary>
     public bool Taxidermize(long account, long killId)
     {
         using var con = Con(account);
         con.Begin();
         var n = con.Exec("UPDATE harvests SET body = json_set(body, '$.taxidermized', json('true')) WHERE account_id = $a AND kill_id = ?", killId);
+        if (n == 0 && Online)
+            n = con.Exec("UPDATE trophies SET node = json_set(node, '$.taxidermized', json('true')) WHERE account_id = $a AND source = '/game/user/harvest' AND id = ?", killId.ToString());
         con.Commit();
-        return n == 1;
+        return n > 0;
     }
 
     string UploadUrl(long photoId, string part) =>
