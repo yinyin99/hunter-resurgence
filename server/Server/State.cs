@@ -660,14 +660,35 @@ public sealed partial class State
         return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
     }
 
-    /// <summary>Skill/list for the player's user_id; null for anyone else (a local server replays their recorded reply, a
-    /// community server sends the empty one).</summary>
+    /// <summary>Skill/list for the user_id: the player's own, and on a community server any account's of this server
+    /// (<see cref="PublicAccount(long)"/>); null for anyone else (a local server replays their recorded reply, a community
+    /// server sends the empty one).</summary>
     public byte[]? SkillListReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
-            return null;
+            return Online && long.TryParse(userId, out var id) && PublicAccount(id) is { } other ? Py.DumpBytes(SkillNumbers(other, Skills.Value)) : null;
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
+    }
+
+    /// <summary>What a profile page's skills tab shows of an account: `species` [{name, spotting, tracking}] (the numbers of
+    /// Skill/list, one per species of the connect's list) and `weapons` [{name, group, value}] (the item's name and its
+    /// sub-category's name, null without one).</summary>
+    public JsonObject PublicSkills(long account)
+    {
+        var n = SkillNumbers(account, Skills.Value);
+        var spotting = n["spotting"]!.AsArray();
+        var tracking = n["tracking"]!.AsArray();
+        return new JsonObject
+        {
+            ["species"] = new JsonArray([.. species.OrderBy(s => s.Key).Where(s => s.Key < spotting.Count).Select(s => (JsonNode?)new JsonObject
+                { ["name"] = C(s.Value["name"]), ["spotting"] = C(spotting[(int)s.Key]), ["tracking"] = s.Key < tracking.Count ? C(tracking[(int)s.Key]) : null })]),
+            ["weapons"] = new JsonArray([.. n["weapon"]!.AsObject().Select(w =>
+            {
+                var item = items.GetValueOrDefault(long.Parse(w.Key));
+                return (JsonNode?)new JsonObject { ["name"] = C(item?["name"]) ?? "#" + w.Key, ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
+            })]),
+        };
     }
 
     /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
