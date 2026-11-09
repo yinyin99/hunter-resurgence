@@ -1,4 +1,6 @@
 using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using Resurgence.Ui;
 using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
@@ -9,10 +11,12 @@ public sealed class NewsFeedTests : UiContext
     [Fact]
     public void TheFeedShowsTheBackupPostThenTheDevPostEachWithItsLink()
     {
+        Services.AddSingleton(new Branding(new() { ["link_backup"] = "https://example.test/backup.zip", ["link_source"] = "https://example.test/repo" }));
         var cut = Render<Feed>();
 
-        Assert.Equal(["news-backup", "news-dev"], cut.FindAll(".news article").Select(a => a.Id));
-        Assert.All(cut.FindAll(".news article"), a => Assert.Single(a.QuerySelectorAll("p.excerpt")));
+        var posts = cut.FindAll(".news article");
+        Assert.Equal(["news-backup", "news-dev"], posts.Select(a => a.Id));
+        Assert.Equal(["https://example.test/backup.zip", "https://example.test/repo"], posts.Select(a => a.QuerySelector("p.excerpt a")!.GetAttribute("href")));
         Assert.Empty(cut.FindAll(".archive"));
     }
 

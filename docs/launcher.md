@@ -91,7 +91,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
-| `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
+| `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip, linked from the news), `source` (the project's repository: "Follow the project on GitHub" in the news), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
 
 Texts say `{game}`, `{GAME}` or `{game_full}` where the original named the game; they are filled from `game_name` and `game_full`. Absolute paths and paths with `..` in the file names are rejected.
 
@@ -103,8 +103,9 @@ Real today:
 - **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so is whether game settings were saved once (the next game start no longer asks). The game folder chosen by hand is saved there too and used from the next start.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
+- **The news**: the project's own posts and their carousel, the same as on the website (`src/Ui/NewsPosts.cs`, [website.md](website.md#sign-in)).
 
-Mock: sign-in (the code step accepts any six digits), sign-up, the news, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
+Mock: sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
 ## Files on the PC
 
