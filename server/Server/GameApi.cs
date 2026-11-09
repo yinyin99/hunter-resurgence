@@ -179,17 +179,17 @@ public static class GameApi
             // Base: the recorded reply on a local server, the endpoint's empty shape on a community server (ReplayScope).
             // Another player's user_id is the empty reply there. ponytail: no other player's data is served yet.
             api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Base(r) is { } hit
-                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body), "state") : null)
+                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body, r.Body), "state") : null)
                     : null)
-               .WithName("LastHunt").WithSummary("The latest expedition with its kills and stats")
-               .WithDescription("`stats` stays null while the hunt is open; before the first server hunt the recorded reply (a community "
-                                + "server: `null`).")
-               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+               .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
+               .WithDescription("`stats` stays null while the hunt is open; `expedition_id` picks an older hunt (an unknown id and the "
+                                + "time before the first server hunt: the recorded reply, a community server: `null`).")
+               .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
-               .WithDescription("Server expeditions ahead of the recorded ones on the first page; later pages are replayed (a community "
+               .WithDescription("Server expeditions ahead of the recorded ones, paged by `offset` and `limit` (a community "
                                 + "server: empty).")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
@@ -463,6 +463,8 @@ public static class GameApi
     public sealed record HostnameForm([property: Description("The player's handle (any case)")] string hostname);
 
     public sealed record ExpeditionListForm(long user_id, long limit, long offset);
+
+    public sealed record ExpeditionForm(long user_id, string? oauth_access_token, long? expedition_id);
 
     public sealed record StartSinglePlayerForm(
         [property: Description("Start time of day, minutes")] long time, long loadout_id,
