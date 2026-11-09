@@ -484,15 +484,14 @@ public sealed partial class State
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
             Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
-        if (Online)  // the stored values follow the rank table and the counts of today, also after a server update
-        {
-            List<long> ids;
-            using (var all = Store.Open())
-                ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
-            foreach (var id in ids)
-                using (var con = Store.Open(id))
-                    UpdateHunterscore(con, id);
-        }
+        // every closed hunt has its statistics, and the stored hunterscores follow the rank table and the counts of today, also
+        // after a server update
+        List<long> ids;
+        using (var all = Store.Open())
+            ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+        foreach (var id in ids)
+            using (var con = Store.Open(id))
+                UpdateHunterscore(con, id);
     }
 
     /// <summary>The start's `account`: the template of every new account. Never the recorded one when there is a start.</summary>
@@ -649,20 +648,22 @@ public sealed partial class State
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
     }
 
-    /// <summary>Statistics/total for the player's user_id from the restored rows; null for anyone else and for an account
-    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
-    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+    /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
+    /// else and, on a local server, for an account without a restored profile (its recorded reply is replayed). On a community
+    /// server every account has them (a new account's base is empty).</summary>
+    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal, Online);
 
-    /// <summary>Achievement/stats, as <see cref="StatisticsReply"/>.</summary>
+    /// <summary>Achievement/stats for the player's user_id from the restored rows; null for anyone else and for an account
+    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
     public byte[]? AchievementReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.AchievementStats);
 
-    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read)
+    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read, bool everyAccount = false)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
             return null;
         using var con = Con(account);
-        return RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
+        return everyAccount || RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
     }
 
     /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
@@ -1178,7 +1179,7 @@ public sealed partial class State
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
-            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance FROM expeditions"
+            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
                                  + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (found is null)
                 return recorded;
@@ -1192,19 +1193,9 @@ public sealed partial class State
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
             kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
-            // stats are null mid-hunt; expeditions from before first_event have no scope
-            if (row[4] is not DBNull && row[5] is not DBNull)
-            {
-                var ks = new List<(JsonNode?, List<JsonObject>, bool)>();
-                foreach (var r in rows)
-                {
-                    var sp = Parse(r[2])["extended_species"];
-                    ks.Add((sp, hits[(long)r[0]], Ethical(sp, hits[(long)r[0]])));
-                }
-                var distance = Py.FromSql(row[6]);
-                stats = HuntStats(con, Py.FromSql(row[5]), ks, (long)(Convert.ToDouble(row[4]) - Convert.ToDouble(row[3])),
-                                  Py.Truthy(distance) ? distance : 0);
-            }
+            // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
+            if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
+                stats = Parse(s);
         }
         var (x, y, z) = StartPosition(Py.FromSql(row[2]));
         // an open expedition's start_ts is fractional; a closed one's start_ts and end_ts are whole seconds

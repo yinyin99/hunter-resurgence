@@ -1,5 +1,5 @@
 // The hunterscore of a community server's account (docs/server.md#the-hunterscore): the rank rows of the facts file over the
-// restored statistics plus this server's ethical kills, credited when an expedition closes.
+// account's statistics (the restored ones plus this server's closed hunts, stored when each closes).
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -8,9 +8,8 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     /// <summary>The hunterscore of these counts: per rank row, min(cap, value), summed. userStats is the Statistics/total `data`
-    /// (`animal.<species>.ethical_kills`, `weapon.<item>.<ammo>.ethical_kills`, `collectables.<type>.collected`);
-    /// kills are this server's ethical kills of closed hunts: (species, weapon item of the last hit, null without a hit).</summary>
-    public static long Score(Facts facts, JsonObject userStats, IEnumerable<(long Species, long? Weapon)> kills)
+    /// (`animal.<species>.ethical_kills`, `weapon.<item>.<ammo>.ethical_kills`, `collectables.<type>.collected`).</summary>
+    public static long Score(Facts facts, JsonObject userStats)
     {
         // a backup's user_stats is stored verbatim: a key that is no id or a counter that is no number counts 0, and a counter
         // counts at most the cap (a row never adds more), so no sum below can overflow
@@ -28,12 +27,6 @@ public sealed partial class State
             Add(weapon, id, e.Sum(ammo => ammo.Value is JsonObject a ? Count(a["ethical_kills"]) : 0));
         foreach (var (id, e) in Entries(userStats, "collectables"))
             Add(collectables, id, Count(e["collected"]));
-        foreach (var (sp, w) in kills)
-        {
-            Add(animal, sp, 1);
-            if (w is { } item)
-                Add(weapon, item, 1);
-        }
         return facts.Ranks.Sum(r => Math.Min(facts.RankCap, r.Category switch
         {
             "animal" => animal.GetValueOrDefault(r.Ids[0]),
@@ -42,35 +35,36 @@ public sealed partial class State
         }));
     }
 
-    /// <summary>This server's ethical kills of the account's closed expeditions: (species, weapon item of the last hit). A
-    /// kill counts once harvested (event 3); kills of the open expedition wait for its close. The heartbeat stores events as
-    /// sent: a kill whose species is no whole number is skipped, one whose rows cannot be read back (a number that is not
-    /// finite) is skipped and logged, and a weapon that is no whole number counts for the species only.</summary>
-    List<(long, long?)> ClosedKills(Db con, long account)
+    /// <summary>Store the statistics (<see cref="HuntStats"/>) of every closed expedition of the account that has none yet; call
+    /// it inside a transaction. Its kills are its harvests (event 3): each counts for its species and for the ammo of its last
+    /// hit, ethical when no hit used an ammo not permitted on its species. One whose rows cannot be read back (a number that is
+    /// not finite) is skipped and logged.
+    /// ponytail: a harvest that lands in an expedition after its close (a heartbeat between a disconnect and the next connect) is not counted.</summary>
+    void StoreHuntStats(Db con, long account)
     {
-        var kills = new List<(long, long?)>();
-        foreach (var row in con.Rows(
-            "SELECT k.individual, k.harvest FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
-            + " WHERE k.account_id = $a AND NOT EXISTS (SELECT 1 FROM expeditions e WHERE e.account_id = $a AND e.end_ts IS NULL"
-            + " AND e.id = json_extract(h.body, '$.expedition_id'))"))
+        foreach (var e in con.Rows("SELECT id, start_ts, end_ts, first_event, distance FROM expeditions"
+                                   + " WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL"))
         {
-            try
-            {
-                if (!TryKey(Parse(row[1])["extended_species"], out var sp))
-                    continue;
-                var hits = KillHits(con, Py.FromSql(row[0]), (string)row[1]);
-                if (Ethical(sp, hits))
-                    kills.Add((((sp % 100) + 100) % 100, hits.Count > 0 && TryKey(hits[^1]["weapon_id"], out var w) ? w : null));
-            }
-            catch (Exception e) when (e is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
-            {
-                Console.WriteLine($"hunterscore of account {account}: a kill is not counted: {e.Message}");
-            }
+            var kills = new List<(JsonNode?, List<JsonObject>, bool)>();
+            foreach (var k in con.Rows("SELECT k.individual, k.harvest FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
+                                       + " WHERE k.account_id = $a AND json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", e[0]))
+                try
+                {
+                    var sp = Parse(k[1])["extended_species"];
+                    var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
+                    kills.Add((sp, hits, Ethical(sp, hits)));
+                }
+                catch (Exception ex) when (ex is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
+                {
+                    Console.WriteLine($"statistics of account {account}: a kill is not counted: {ex.Message}");
+                }
+            var distance = Py.FromSql(e[4]);
+            con.Exec("UPDATE expeditions SET stats = ? WHERE account_id = $a AND id = ?", Py.Dumps(HuntStats(con, Py.FromSql(e[3]), kills,
+                (long)(Convert.ToDouble(e[2]) - Convert.ToDouble(e[1])), Py.Truthy(distance) ? distance : 0)), e[0]);
         }
-        return kills;
     }
 
-    /// <summary>The restored statistics (`data` of Statistics/total); {} when they cannot be read back (logged).</summary>
+    /// <summary>The account's statistics (`data` of Statistics/total); only its closed hunts when the restored ones cannot be read back (logged).</summary>
     static JsonObject StoredStats(Db con, long account)
     {
         try
@@ -80,23 +74,28 @@ public sealed partial class State
         catch (Exception e) when (e is JsonException or InvalidCastException or InvalidOperationException)
         {
             Console.WriteLine($"hunterscore of account {account}: the restored statistics are not counted: {e.Message}");
-            return [];
+            var hunts = new JsonObject();
+            RestoredReads.AddHunts(con, hunts);
+            return hunts;
         }
     }
 
-    /// <summary>Recompute the account's hunterscore and store it in its connect `account` and, for a restored account, its Me/me
-    /// profile. Community server only; the recorded account (LocalAccount) keeps the recorded player's value. Call it outside a transaction.
-    /// Always the computed value: what cannot be read counts 0, so a close, a restore or the start never fails and a backup's own
-    /// value never stays.
-    /// ponytail: recounts every kill of the account (one KillHits query each) at every close; keep a running total if that gets slow.</summary>
+    /// <summary>Store the statistics of the account's newly closed hunts (<see cref="StoreHuntStats"/>), then recompute its
+    /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile. Every close path, a
+    /// restore and every start call it, outside a transaction. The hunterscore is computed on a community server only; the
+    /// recorded account (LocalAccount) keeps the recorded player's value. Always the computed value: what cannot be read counts
+    /// 0, so a close, a restore or the start never fails and a backup's own value never stays.
+    /// ponytail: sums every stored hunt of the account at every close; keep a running total if that gets slow.</summary>
     public void UpdateHunterscore(Db con, long account)
     {
-        if (!Online || account == LocalAccount)
-            return;
-        var score = Score(facts, StoredStats(con, account), ClosedKills(con, account));
         con.Begin();
-        con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
-        con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
+        StoreHuntStats(con, account);
+        if (Online && account != LocalAccount)
+        {
+            var score = Score(facts, StoredStats(con, account));
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
+            con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
+        }
         con.Commit();
     }
 }
