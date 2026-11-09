@@ -214,12 +214,15 @@ public static class GameApi
                         reply["gms"] = wallet["gm"]!.DeepClone();
                         reply["ems"] = wallet["em"]!.DeepClone();
                         reply["unread_messages"] = s.Unread(a);
+                        if (s.Online)
+                            reply["friend_requests"] = s.FriendRequests(a);
                         return new(hit.Status, hit.Headers, Py.DumpBytes(reply), "state");
                     });
                 api.MapExactPost(game, path, profile)
                    .WithName(name).WithSummary(name == "Me" ? "Own profile" : "Launcher poll")
                    .WithDescription("The recorded reply (Me: the account's restored profile instead, when it has one) with `gms`, `ems` and "
-                                    + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone, "
+                                    + "`unread_messages` from the state; Poll also `last_hunt_update_ts` and the campaign keys. A community server builds them from the account alone "
+                                    + "(`friend_requests`: the players who asked it to be friends), "
                                     + "except Me's `rank`: the account's place by hunterscore among the accounts not banned, the recorded player's account left out.")
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
                 if (path == ME)  // the in-game page reads it with GET and its JWT
@@ -234,6 +237,21 @@ public static class GameApi
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
                .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            // friends (community server only): the Friends table of the Store; a friend counts while both accounts exist here
+            api.MapExactPost(game, ME_FRIENDS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MeFriendsReply(a), "state"), WithJsonToken(r)))
+               .WithName("MeFriends").WithSummary("The account's friends, incoming requests and the user ids it asked")
+               .WithDescription("`{friends: [{id, handle, avatar, fullbody_avatar, hostname, hunterscore, online}], friendCount, requests: [same], requestCount, pending: [user id]}`, sorted by handle.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            foreach (var (path, name, add) in new[] { (FRIEND_ADD, "FriendAdd", true), (FRIEND_REMOVE, "FriendRemove", false) })
+                api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.FriendReply(a, r.Body, add), "state")))
+                   .WithName(name).WithSummary(add ? "Ask a player to be friends, or accept their request" : "Decline or cancel a request, or remove a friend")
+                   .WithDescription("`true`; `{\"errorCode\": 400}` for the player's own id or one that has no account here.")
+                   .Body<FriendForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, FRIENDS_LIST, r => !s.Online ? null : new(200, JsonAnyOrigin(), s.FriendsListReply(r.Body), "state"))
+               .WithName("FriendsList").WithSummary("Any player's friends, one page, without a token")
+               .WithDescription("`{total, friends: [as Me/friends]}`; `limit` 1 to 50 (missing, empty or below 1: all). No `user_id`: `{\"errorCode\": 400}`; "
+                                + "an empty, non-positive or unknown one: `null`; a non-numeric value: the handler error.")
+               .Body<FriendsListForm>(Form).Produces(200, contentType: "application/json");
             // the public reads (community server only; a local server replays): any account here (State.PublicAccount), no token
             api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null
                     : new(200, JsonAnyOrigin(), s.PublicAccount(FormValue(r, "hostname") ?? "") is { } a ? Py.DumpBytes(s.PublicUser(a)) : "null"u8.ToArray(), "state"))
@@ -460,6 +478,8 @@ public static class GameApi
         [property: Description("Start time of day, minutes")] long time, long loadout_id, string? oauth_access_token);
 
     public sealed record UserForm(long user_id, string? oauth_access_token);
+    public sealed record FriendForm(long friend_user_id, string? oauth_access_token);
+    public sealed record FriendsListForm(long user_id, long? offset, long? limit);
 
     public sealed record HostnameForm([property: Description("The player's handle (any case)")] string hostname);
 

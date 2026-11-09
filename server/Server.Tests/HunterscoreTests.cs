@@ -355,6 +355,7 @@ public class HunterscoreTests : StateTestBase
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
+            con.Exec("DROP TABLE friends");
             con.Exec("PRAGMA user_version = 4");
         }
         var migrated = new Store(file);
@@ -362,19 +363,20 @@ public class HunterscoreTests : StateTestBase
         using var check = migrated.Open(5);
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Empty(migrated.FriendsOf(5, null).Friends);  // version 6: the friends table
     }
 
     [Fact]
-    public void TestTheSchemaOfVersion5RecountsTheClosedHuntsForTheirPickups()
+    public void TestTheSchemaOfVersion6RecountsTheClosedHuntsForTheirPickups()
     {
-        var file = Path.Combine(tmp, "v5.db");
+        var file = Path.Combine(tmp, "v6.db");
         var store = new Store(file);
         store.CreateAccount(5, "five", new JsonObject());
         using (var con = store.Open(5))
         {
             con.Exec("INSERT INTO expeditions (account_id, start_ts, end_ts, stats) VALUES ($a, 1, 2, '{}')");
             con.Exec("INSERT INTO expeditions (account_id, start_ts, stats) VALUES ($a, 3, '{}')");
-            con.Exec("PRAGMA user_version = 5");
+            con.Exec("PRAGMA user_version = 6");
         }
         using var check = new Store(file).Open(5);
         Assert.Equal(["", "{}"], check.Rows("SELECT COALESCE(stats, '') FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (string)r[0]));
