@@ -297,14 +297,12 @@ public sealed class Store
         return [.. scored.OrderByDescending(s => s.Score)];  // a stable sort: equal scores keep the account id order
     }
 
-    /// <summary>A hunter on the board by handle (case does not matter); null when unknown, banned or `excluded`.</summary>
-    public (string Handle, long Hunterscore, long Rank)? Hunter(string handle, long? excluded)
+    /// <summary>An account on the boards and the profile pages, by user id (a long) or handle (a string, any case); null when
+    /// unknown, banned or `excluded`.</summary>
+    public long? Listed(object idOrHandle, long? excluded)
     {
-        object[]? row;
-        using (var con = Open())
-            row = con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) FROM accounts"
-                           + " WHERE handle = ? AND banned = 0 AND id IS NOT ?", handle, excluded).FirstOrDefault();
-        return row is null ? null : ((string)row[1], Convert.ToInt64(row[2]), Rank((long)row[0], excluded));
+        using var con = Open();
+        return con.Scalar($"SELECT id FROM accounts WHERE {(idOrHandle is long ? "id" : "handle")} = ? AND banned = 0 AND id IS NOT ?", idOrHandle, excluded) as long?;
     }
 
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an

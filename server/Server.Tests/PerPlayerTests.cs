@@ -175,6 +175,37 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsPublicProfileIsReadWithoutAToken()
+    {
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        using (var con = state.Store.Open(8))
+        {
+            con.Begin();
+            PlayerRows.AddAchievement(con, 1, 1, 1, 1, O("""{"1": 1600000000}"""));
+            PlayerRows.AddAchievement(con, 2, 1, 1, 0, new JsonObject());  // not earned
+            PlayerRows.SetExtra(con, "game_user_8_profile.json", O("""{"background": 3, "ribbon": "gold", "hunterscore": 1234}"""));
+            con.Commit();
+        }
+        state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());  // a hunt just opened: online
+        var p = (await Api(Replay.PUBLIC_USER, null, "hostname=SECOND"))!;
+        Eq("""[8, "second", "second", 0, 1, 0, "freeplay", true, {"distance": 0, "duration": 0}]""",
+           T(p["id"], p["handle"], p["hostname"], p["hunterscore"], p["rank"], p["membership"], p["membershipType"], p["online"], p["stats"]));
+        Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)p["avatar"]!);
+        // unknown, banned, and the recorded player's account (no player here owns it): null, never an empty profile
+        foreach (var handle in new[] { "nobody", "banned", "hunter" })
+            Assert.Equal("null", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.PUBLIC_USER, null, "hostname=" + handle)).Body));
+
+        var v2 = await Send(community, "GET", "apiv2.test", "/game/user/8/profile", null);
+        Assert.Equal((200, "state"), (v2.Status, v2.Source));
+        Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 1}""", JsonNode.Parse(v2.Body));
+        Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", null)).Body);  // the current build's path
+        foreach (var id in new[] { 7, 9, 99 })
+            Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/profile", tokenB)).Status);
+    }
+
+    [Fact]
     public void TestANewAccountsConnectHasItsOwnAccountAndEmptyStatistics()
     {
         var connect = JsonNode.Parse(state.ConnectReply(8))!;

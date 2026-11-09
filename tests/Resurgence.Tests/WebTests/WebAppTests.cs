@@ -103,10 +103,26 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.False(((Resurgence.Ui.HostMode)Resolve(site, typeof(Resurgence.Ui.HostMode))).Live);
     }
 
-    sealed class ServerStub(string body) : HttpMessageHandler
+    sealed class ServerStub(string body, HttpStatusCode status = HttpStatusCode.OK) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
-            Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+            Task.FromResult(new HttpResponseMessage(status) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+    }
+
+    // the live site never shows the mock: a handle the server does not know is the "Page not found" page, a known one the server's header
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, """{"error": "not found"}""", "Page not found")]
+    [InlineData(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 5, "rank": 3, "membership": "", "avatar": null}""", ">Fox</h1>")]
+    public async Task AProfilePageIsTheServersOrNotFound(HttpStatusCode server, string reply, string shown)
+    {
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
+            .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => new ServerStub(reply, server))));
+        using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+        var r = await Get(client, "/profile/Fox");
+
+        Assert.Equal(server, r.StatusCode);
+        Assert.Contains(shown, await Html(r));
     }
 
     // the store page of the real website, with a fake answer of the server: its items, not the mock's

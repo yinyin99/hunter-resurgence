@@ -7,6 +7,7 @@
 @inject IAccountService Account
 @inject IFriendsService Friends
 @inject HostMode Mode
+@inject NavigationManager Nav
 
 <PageTitle>@L["Prof.Title", Handle]</PageTitle>
 
@@ -16,7 +17,7 @@
     <header class="head">
         @* the header picture the player chose in the settings: none, the most recent kill or a picture *@
         @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
-        <div class="polaroid"><AssetSlot Name="@(profile.Own ? avatar : "avatar-default")" Width="170" Height="185" /><Icon Name="paw" /></div>
+        <div class="polaroid"><AssetSlot Name="@avatar" Width="170" Height="185" /><Icon Name="paw" /></div>
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend && !Mode.Live)
         {
@@ -31,11 +32,11 @@
             @if (profile.Online) { <span class="online" data-tip="@L["Prof.TipOnline", profile.Handle]"><i></i>@L["Prof.Online"]</span> }
         </p>
     </header>
-    @if (!profile.Real)
+    @if (tab is not null)
     {
     <div class="body">
         <ul class="tabs">
-            @foreach (var (key, label, icon) in tabs)
+            @foreach (var (key, label, icon) in tabs.Where(t => Shown(t.Key)))
             {
                 <li class="@(key == marked ? "on" : "")"><a href="/profile/@profile.Handle/@key"><Icon Name="@icon" /> @L[label]</a></li>
             }
@@ -73,7 +74,10 @@
     [Parameter] public string? Tab { get; set; }
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    string tab => tabs.Any(t => t.Key == Tab) || Tab is "expedition" or "score" or "antler" ? Tab! : "ranks";
+    /// <summary>Does the profile show this tab: every tab on the mock, on the live site only those with a server source (Profile.Tabs).</summary>
+    bool Shown(string key) => profile?.Tabs?.Contains(key) ?? true;
+    /// <summary>The tab asked for when the profile shows it, else its first tab; null when it shows none (the header only).</summary>
+    string? tab => (tabs.Any(t => t.Key == Tab) || Tab is "expedition" or "score" or "antler") && Shown(Tab!) ? Tab : tabs.Select(t => t.Key).FirstOrDefault(Shown);
     /// <summary>The tab shown as open: an expedition belongs to Statistics, a scoring sheet to none.</summary>
     string? marked => tab is "score" or "antler" ? null : tab == "expedition" ? "statistics" : tab;
     long id => long.TryParse(Sub, out var n) ? n : 0;
@@ -81,10 +85,11 @@
     protected override async Task OnParametersSetAsync()
     {
         profile = await Service.ProfileAsync(Handle);
+        if (profile is null) { Nav.NotFound(); return; }  // an unknown handle: "Page not found", HTTP 404
         signedIn = await Session.CurrentAsync() is not null;
-        // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here)
-        if (profile?.Own == true && !profile.Real) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
-        else (header, avatar) = ("recent", "avatar-default");
+        // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here); a player of the server has their own avatar
+        if (profile is { Own: true, Tabs: null }) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
+        else (header, avatar) = ("recent", profile.Avatar ?? "avatar-default");
     }
 
     // the request goes to the friends service; the profile then says it is pending, also when the page is opened again

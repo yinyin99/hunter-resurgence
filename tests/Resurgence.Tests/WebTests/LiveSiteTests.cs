@@ -83,16 +83,48 @@ public sealed class LiveSiteTests : UiContext
     }
 
     [Fact]
-    public void ARealPlayersProfileIsTheHeaderOnly()
+    public void ARealPlayersProfileIsTheServersHeaderWithNoTabYet()
     {
-        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, """{"handle":"Fox","hunterscore":5,"rank":3}""")) { BaseAddress = new Uri("http://server.test") },
+        const string reply = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
+        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox"));
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
-        Assert.Empty(cut.FindAll("ul.tabs"));
+        Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
+        Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
+        Assert.Empty(cut.FindAll("ul.tabs"));  // ServerProfileService.Tabs: no tab has a server source yet
         Assert.Empty(cut.FindAll("button.request"));
+    }
+
+    /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>
+    public class TabsOf : System.Reflection.DispatchProxy
+    {
+        public IProfileService Inner = new MockProfileService();
+        public IReadOnlySet<string>? Tabs;
+
+        protected override object? Invoke(System.Reflection.MethodInfo? method, object?[]? args)
+        {
+            var result = method!.Invoke(Inner, args);
+            return method.Name == nameof(IProfileService.ProfileAsync) ? ((Task<Profile?>)result!).ContinueWith(t => t.Result! with { Tabs = Tabs }) : result;
+        }
+    }
+
+    // each tab is hidden on its own until it has a server source; an address of a hidden tab opens the first shown one
+    [Theory]
+    [InlineData(null)]
+    [InlineData("ranks")]
+    [InlineData("expedition")]
+    public void OnlyTheTabsWithASourceAreShown(string? asked)
+    {
+        var proxy = System.Reflection.DispatchProxy.Create<IProfileService, TabsOf>();
+        ((TabsOf)(object)proxy).Tabs = new HashSet<string> { "statistics" };
+        Services.AddSingleton(proxy);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter05").Add(h => h.Tab, asked));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
+        Assert.Equal(["/profile/Hunter05/statistics"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));
+        Assert.Single(cut.FindAll("ul.tabs li.on"));
     }
 
     [Fact]

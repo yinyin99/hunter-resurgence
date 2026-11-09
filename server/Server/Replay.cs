@@ -28,6 +28,7 @@ public static class Replay
     public const string OAUTH_TOKEN = "/v1/Oauth/token";
     public const string APPLICATION = "/v1/Application/application";
     public const string PUBLIC_EXPEDITION = "/v1/Public_user/expedition";
+    public const string PUBLIC_USER = "/v1/Public_user/getByHostname";
     public const string EXPEDITION_LIST = "/v1/Expedition/list";
     public const string ME = "/v1/Me/me";
     public const string POLL = "/v1/Me/poll";

@@ -1,8 +1,9 @@
 namespace Resurgence.Services;
 
 /// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs, <see cref="RequestPending"/> a friend request of the signed-in player that is not answered yet.
-/// <see cref="Real"/> is a player of the community server: only the header is theirs, so the page shows no tabs.</summary>
-public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false, bool Real = false);
+/// <see cref="Tabs"/> are the tabs the page shows (null: all of them, the mock's); <see cref="Avatar"/> is the slot of the player's picture (null: the default one).</summary>
+public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false,
+    IReadOnlySet<string>? Tabs = null, string? Avatar = null);
 /// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one.</summary>
 public sealed record RankBar(string Name, int Level, int Done, int Total);
 public sealed record Achievement(string Title, string Description, DateOnly Date);

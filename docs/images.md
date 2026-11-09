@@ -59,6 +59,7 @@ With the values the mock services give, the slots have 651 distinct keys; a patt
 | `coin-ems`, `icon-store` | 46×46 | MenuBar | yes |
 | `avatar-default` | 24 to 160 square | MapPlaceholder, RankRow, JoinMapModal, Dashboard, Leaderboards, Messages, Servers, StatusBar, FriendsTab, FriendsDropdown, HunterProfile, Settings, Welcome | yes |
 | `avatar-<NN>`, `avatar-locked` | 34 to 170 | Settings, StatusBar, Welcome, HunterProfile, Signup Page1 | 55 of 55 |
+| `avatar-<id>` | 170×185 | HunterProfile (the live site: a player's avatar, by the id in its picture's file name, `…/256/<id>.png`; another URL shows `avatar-default`) | no: the game's avatar list |
 | `avatar-discord` | 18×18 | DiscordWidget | no: player content |
 | `profile-banner` | 940×200 | HunterProfile | no: player content (the player's latest kill) |
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
