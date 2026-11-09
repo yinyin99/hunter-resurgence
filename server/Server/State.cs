@@ -701,36 +701,35 @@ public sealed partial class State
     }
 
     const long DogCategory = 12, DogType = 25;  // the catalogue's DOGS category and DOG type (the collars, vests and treats are other types)
-    static long Num(JsonObject o, string key) => G(o, key, null) is { } v && Py.IsNum(v) ? Py.L(v) : -1;
-    static readonly HashSet<string> DogSkillKinds = ["loyalty", "retrieving", "scent", "pointing"];
 
     static string Words(string define, string prefix) =>
         string.Join(' ', (define.StartsWith(prefix) ? define[prefix.Length..] : define).Split('_', StringSplitOptions.RemoveEmptyEntries)
             .Select(w => char.ToUpperInvariant(w[0]) + w[1..].ToLowerInvariant()));
 
     /// <summary>What a profile page's dogs tab shows of an account: `dogs` [{name, type, level, percent, skills: [{title, level}], trophies}], one per
-    /// owned dog (an inventory row of the dog category and type): the name and the experience are its metadata's. The level is the number of the connect's
-    /// `dog_skills` rows whose cumulative `xp` the experience has reached, `percent` the way to the next one (100 at the last), the skills and trophies
-    /// the `unlocks` of the rows reached (a skill's define as words, a trophy's too).</summary>
+    /// owned dog (an inventory row of the dog category and type): the name and the experience are its metadata's. The connect's `dog_skills` rows
+    /// (cumulative `xp`, `lvl`, `unlocks`) the experience has reached give the level (the last one's `lvl`, 0 without any), the skills (a define as
+    /// words, at its row's `lvl`) and the trophies; `percent` is the way to the next row (100 at the last, 0 without a table).</summary>
     public JsonObject PublicDogs(long account)
     {
-        var table = Arr(G(connect, "dog_skills", null)).OfType<JsonObject>().OrderBy(r => Py.D(r["xp"])).ToList();
+        var table = Arr(G(connect, "dog_skills", null)).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.IsNum(r["lvl"])).OrderBy(r => Py.D(r["xp"])).ToList();
         using var con = Con(account);
         var dogs = new JsonArray();
         foreach (var row in Items(con).OfType<JsonObject>())
         {
             var item = items.GetValueOrDefault(Py.L(row["item_id"]));
-            if (item is null || Num(item, "cat") != DogCategory || Num(item, "type") != DogType) continue;
+            if (item is null || !Is(G(item, "cat", null), DogCategory) || !Is(G(item, "type", null), DogType)) continue;
             var metadata = row["metadata"]!.AsObject();
             var experience = G(metadata, "experience", null) is { } e && Py.IsNum(e) ? Py.D(e) : 0;
-            var level = table.Count(r => Py.D(r["xp"]) <= experience);
-            var from = level > 0 ? Py.D(table[level - 1]["xp"]) : 0;
-            var percent = level < table.Count ? (int)Math.Floor((experience - from) / (Py.D(table[level]["xp"]) - from) * 100) : 100;
+            var reached = table.Where(r => Py.D(r["xp"]) <= experience).ToList();
+            var level = reached.Count > 0 ? Py.L(reached[^1]["lvl"]) : 0;
+            var from = reached.Count > 0 ? Py.D(reached[^1]["xp"]) : 0;
+            var percent = reached.Count < table.Count ? (int)Math.Floor((experience - from) / (Py.D(table[reached.Count]["xp"]) - from) * 100) : table.Count > 0 ? 100 : 0;
             var skills = new JsonArray();
             var trophies = new JsonArray();
-            foreach (var r in table.Take(level))
+            foreach (var r in reached)
                 foreach (var u in Arr(r["unlocks"]).OfType<JsonObject>())
-                    if (DogSkillKinds.Contains((string?)u["type"] ?? "") && u["skill"] is { } skill)
+                    if (u["skill"] is { } skill)
                         skills.Add(new JsonObject { ["title"] = Words((string)skill!, "DOG_SKILL_"), ["level"] = C(r["lvl"]) });
                     else if ((string?)u["type"] == "trophy" && u["define"] is { } define)
                         trophies.Add(Words((string)define!, ""));

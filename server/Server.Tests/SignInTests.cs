@@ -365,17 +365,19 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             PlayerRows.AddItem(con, 1, 700, 0, null, O("""{"dog_name": "Rex", "experience": 150.5}"""));
             PlayerRows.AddItem(con, 2, 700, 0, null, O("""{}"""));
             PlayerRows.AddItem(con, 3, 700, 0, null, O("""{"dog_name": "Old", "experience": 300}"""));
+            PlayerRows.AddItem(con, 6, 700, 0, null, O("""{"dog_name": "Max", "experience": 900}"""));
             PlayerRows.AddItem(con, 4, 701, 0, null, O("""{"experience": 999}"""));  // not a dog
             PlayerRows.AddItem(con, 5, 5, 0, null, O("""{}"""));
         }
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         var dogs = JsonNode.Parse((await Get("web.test", "/hunters/third/dogs")).Body)!;
-        // 150.5 of 100..300: level 2 and a quarter of the way; no experience: level 1; at the last row's xp: level 3, 100 %
+        // 150.5 of 100..300: level 2 and a quarter of the way; no experience: level 1; 300 starts the span to the row that is level 5 (its lvl, not the fourth row's number)
         Eq("""
             {"dogs": [{"name": "Rex", "type": "Test Hound", "level": 2, "percent": 25, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]},
                       {"name": "", "type": "Test Hound", "level": 1, "percent": 0, "skills": [{"title": "Loyalty One", "level": 1}], "trophies": []},
-                      {"name": "Old", "type": "Test Hound", "level": 3, "percent": 100, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]}]}
+                      {"name": "Old", "type": "Test Hound", "level": 3, "percent": 0, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]},
+                      {"name": "Max", "type": "Test Hound", "level": 5, "percent": 100, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]}]}
             """, dogs);
         Eq("""{"dogs": []}""", JsonNode.Parse((await Get("web.test", "/hunters/one/dogs")).Body));  // an account without a dog
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/dogs")).Status);
@@ -915,5 +917,20 @@ public class SignInClockTests : StateTestBase
         }
         Assert.Equal(404, signIn.PollLink(Rq("GET", "/auth/link/" + codes[0])).Status);
         Assert.Equal(200, signIn.PollLink(Rq("GET", "/auth/link/" + codes[^1])).Status);
+    }
+}
+
+public class DogsWithoutATableTests : StateTestBase
+{
+    [Fact]
+    public void TestWithoutDogSkillsADogIsLevelZeroAndItsRingIsEmpty()
+    {
+        var connect = Fixtures.CONNECT;
+        connect.Remove("dog_skills");
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS);
+        state.CreateAccount(9, "third");
+        using (var con = state.Store.Open(9))
+            PlayerRows.AddItem(con, 1, 700, 0, null, O("""{"dog_name": "Rex", "experience": 150}"""));
+        Eq("""{"dogs": [{"name": "Rex", "type": "Test Hound", "level": 0, "percent": 0, "skills": [], "trophies": []}]}""", state.PublicDogs(9));
     }
 }
