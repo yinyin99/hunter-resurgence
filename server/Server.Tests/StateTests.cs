@@ -673,6 +673,23 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
+    public void TestPickupsGetUpdate7AndCountOncePerHunt()
+    {
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        var pickup = O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}""");
+        var antler = O("""{"event": 36, "collectable_id": 78, "species_id": 5, "double_antler": 0, "x": 1, "y": 2, "z": 3}""");
+        var updates = Hb(pickup, antler).Where(u => Py.Eq(u!["update"], 7)).ToList();
+        Eq("""[{"collectable_id": 77, "score": 0, "update": 7}, {"collectable_id": 78, "score": 0, "update": 7}]""", new JsonArray(updates.Select(u => C(u)).ToArray()));
+        Assert.Single(Hb(C(pickup)!), u => Py.Eq(u!["update"], 7));  // the game repeats an event until its update arrives: answered again, counted once
+        Hb(O("""{"event": 24, "collectable_id": 79, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""));
+        var antlers = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["antler_collectables"]!.AsArray();
+        Eq("78", Assert.Single(antlers)!["collectable_id"]);
+        Eq("3", Reply(state.ExpeditionListReply(ME, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()))["expeditions"]![0]!["collectables"]);
+        state.Disconnect(ME, """{"distance_travelled": 1, "shots_fired": 0, "shots_hit": 0}"""u8.ToArray());
+        Eq("""{"9": {"collected": 2}, "2005": {"collected": 1}}""", Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!["data"]!["collectables"]);
+    }
+
+    [Fact]
     public void TestHuntEndsAtLastHeartbeatWithoutDisconnect()
     {
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
