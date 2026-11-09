@@ -114,11 +114,11 @@ public static class AccountApi
                     return Refuse(400, "invalid", "Buying needs a number id and count.");
                 return state.WebBuy(account, id, One("bundle", "0") == "1", count) is { } ems
                     ? Json(200, new JsonObject { ["status"] = "bought", ["ems"] = ems })
-                    : Refuse(409, "refused", "This is not for sale, or you do not have enough em$.");
+                    : Refuse(409, "refused", "This is not for sale, you do not have enough em$, or you own as many as allowed.");
             })
             .WithName("AccountBuy").WithSummary("Buy from the store with em$ (form `id`, `count`, `bundle=1` for a bundle)")
             .WithDescription("The item or bundle of `GET /catalog/store` at its price: em$ only. Answers `{status: bought, ems}` (the new balance), "
-                             + "or 409 `refused` for something not for sale or a balance too low. The game gets the items with its next heartbeat or connect.")
+                             + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
     }
 

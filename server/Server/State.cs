@@ -943,11 +943,14 @@ public sealed partial class State
     }
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
-    /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0.</summary>
+    /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0
+    /// or the player would own more of an item than the catalogue allows (<see cref="OverOwnLimit"/>).</summary>
     JsonNode? Charge(long account, string currency, long price, IEnumerable<long> itemIds)
     {
         using var con = Con(account);
         con.Begin();
+        if (itemIds.GroupBy(i => i).Any(g => OverOwnLimit(con, g.Key, g.Count())))
+            return null;
         var balance = AddCurrency(con, currency, -price);
         if (balance is null)
             return null;
@@ -955,6 +958,19 @@ public sealed partial class State
         con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return balance;
+    }
+
+    /// <summary>Whether n more copies of the item put the player over the catalogue's `ownLimit`, or over 1 when `ownMultiple` is false:
+    /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit. An item with `units`
+    /// (a one-use order or refill) is exempt from the `ownMultiple` rule only: the original store never showed one as owned.</summary>
+    bool OverOwnLimit(Db con, long itemId, int n)
+    {
+        if (items.GetValueOrDefault(itemId) is not { } item)
+            return false;
+        var limit = Py.Truthy(item["ownLimit"]) ? Py.L(item["ownLimit"]) : long.MaxValue;
+        if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]) && !Py.Truthy(item["units"]))
+            limit = Math.Min(limit, 1);
+        return limit != long.MaxValue && (long)con.Scalar("SELECT COUNT(*) FROM items WHERE account_id = $a AND item_id = ?", itemId)! + n > limit;
     }
 
     /// <summary>Inventory/buy item_id, amount, wallet: charge now, see <see cref="Charge"/>.</summary>
@@ -975,7 +991,7 @@ public sealed partial class State
 
     /// <summary>The website's store (POST /account/buy): count of an item the store sells (<see cref="StoreSells"/>) at today's em$ price, or
     /// one bundle it sells (<see cref="BundleSale"/>) at its price with each of its items. The new em$ balance, or null (nothing changed) for
-    /// something not for sale or a balance too low. ponytail: no own limit is checked, as Inventory/buy checks none.</summary>
+    /// something not for sale, a balance too low or an own limit reached.</summary>
     public JsonNode? WebBuy(long account, long id, bool bundle, int count)
     {
         if (bundle)

@@ -268,7 +268,7 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
   - help's guides, video tutorials, community sites and daily mission tabs: their content is the mock's; help keeps its support tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
   - missions, wallet, bank, messages, friends, settings and game management: the server keeps no such data for an account yet, and the bank would take real money.
 - **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A sale shows only when the recording holds one. Without a recording that matches the settings' host names, the server falls back to the install's items, with no categories or bundles ([server.md](server.md#the-store-catalogue)).
-  - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)) and checks no ownership limit ([#220](https://github.com/yinyin99/hunter-resurgence/issues/220)).
+  - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)).
   - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
   - After a purchase the status bar shows the new balance at its next 30 second refresh.

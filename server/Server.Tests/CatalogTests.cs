@@ -9,15 +9,17 @@ public class CatalogTests : StateTestBase
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
 
-    // fictional values only; item 3 is hidden, and a bundle lists it; item 4 is a service, item 5 costs nothing; bundles 11 to 13 are not sold
+    // fictional values only; item 3 is hidden, and a bundle lists it; item 4 is a service, item 5 costs nothing; bundles 11 to 13 are not sold;
+    // a player may own 5 of item 1 and one of item 3
     const string Store = """
         {"species": [], "reserves": [], "locations": [],
          "items": [
-           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "inventory": {"weight": 500, "capacity": 3}, "fit": {}},
+           {"id": 1, "name": "Test Rifle", "variationname": "Blue", "description": "A rifle.", "subcat": {"id": 0}, "price": 100, "silver_price": 4000, "notbuyable": 0, "hidden": 0, "ownMultiple": true, "ownLimit": 5, "inventory": {"weight": 500, "capacity": 3}, "fit": {}},
            {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
-           {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1, "inventory": {}, "fit": {}},
+           {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1, "ownMultiple": false, "inventory": {}, "fit": {}},
            {"id": 4, "name": "Test Service", "subcat": {"id": 0}, "price": 50, "type": 45, "hidden": 0, "inventory": {}, "fit": {}},
-           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}}],
+           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 6, "name": "Test Refill", "subcat": {"id": 0}, "price": 5, "hidden": 0, "ownMultiple": false, "units": {"count": 1, "name": "uses"}, "inventory": {}, "fit": {}}],
          "categories": [
            {"id": "all", "title": "All Items", "subcategories": [{"id": "all", "title": "All Items"}], "default": "all"},
            {"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}, {"id": 1, "title": "Handguns"}], "default": 0},
@@ -47,10 +49,13 @@ public class CatalogTests : StateTestBase
         return await server.SendAsync("GET", "web.test", "/catalog/store", []);
     }
 
-    /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$); its reply and the items ME got.</summary>
-    async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true)
+    /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$) who already owns the owned items; its reply and
+    /// the items ME got.</summary>
+    async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true, long[]? owned = null)
     {
         await using var server = await Start(Store);
+        foreach (var id in owned ?? [])
+            state.GrantItems(ME, id);
         var before = state.Inventory(ME).Count;
         List<(string, string)> headers = [("Content-Type", "application/x-www-form-urlencoded")];
         if (signedIn) headers.Add(("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}"));
@@ -62,10 +67,12 @@ public class CatalogTests : StateTestBase
     [Theory]
     [InlineData("id=1", 132L, new long[] { 1 })]              // today's price, half off
     [InlineData("id=1&count=3", 32L, new long[] { 1, 1, 1 })]
+    [InlineData("id=1&count=3", 32L, new long[] { 1, 1, 1 }, new long[] { 1, 1 })]  // up to the own limit
+    [InlineData("id=6", 177L, new long[] { 6 }, new long[] { 6 })]  // a one-use item the player holds is bought again
     [InlineData("id=9&bundle=1", 92L, new long[] { 1, 2, 3 })]  // the bundle's price, each of its items, a hidden one too
-    public async Task BuyingChargesTheStorePriceAndDeliversTheItems(string form, long left, long[] got)
+    public async Task BuyingChargesTheStorePriceAndDeliversTheItems(string form, long left, long[] got, long[]? owned = null)
     {
-        var (reply, items) = await Buy(form);
+        var (reply, items) = await Buy(form, owned: owned);
         Assert.Equal(200, reply.Status);
         Assert.Equal(left, (long)JsonNode.Parse(reply.Body)!["ems"]!.AsValue().GetValue<double>());
         Assert.Equal(got, items);
@@ -93,6 +100,32 @@ public class CatalogTests : StateTestBase
     }
 
     [Theory]
+    [InlineData("id=1&count=3", new long[] { 1, 1, 1 })]  // 6 of a rifle the player may own 5 of
+    [InlineData("id=9&bundle=1", new long[] { 3 })]       // the bundle's hidden item may be owned once
+    public async Task APurchaseOverTheOwnLimitChangesNothing(string form, long[] owned)
+    {
+        var (reply, items) = await Buy(form, owned: owned);
+        Assert.Equal(409, reply.Status);
+        Assert.Empty(items);
+        Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    [Theory]
+    [InlineData("item_id=1&amount=3&wallet=GOLD", new long[] { 1, 1, 1 })]
+    [InlineData("item_id=3&amount=1&wallet=GOLD", new long[] { 3 })]
+    [InlineData("item_id=3&amount=2&wallet=GOLD", new long[0])]
+    public async Task TheGamesPurchaseOverTheOwnLimitChangesNothing(string form, long[] owned)
+    {
+        await using var server = await Start(Store);
+        foreach (var id in owned)
+            state.GrantItems(ME, id);
+        var count = state.Inventory(ME).Count;
+        Eq("""{"success": false}""", Reply(state.BuyReply(ME, System.Text.Encoding.ASCII.GetBytes(form))));
+        Assert.Equal(count, state.Inventory(ME).Count);
+        Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    [Theory]
     [InlineData(false, true, 401)]
     [InlineData(true, false, 400)]  // a cross-site form cannot set X-Requested-With
     public async Task OnlyTheSignedInPlayerFromOurPageBuys(bool signedIn, bool ownPage, int status)
@@ -109,8 +142,8 @@ public class CatalogTests : StateTestBase
         var reply = await Get(Store);
         Assert.Equal(200, reply.Status);
         var items = JsonNode.Parse(reply.Body)!["items"]!.AsArray();
-        Assert.Equal([1, 2, 4, 5], items.Select(i => (int)i!["id"]!));
-        Assert.Equal([true, false, false, false], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
+        Assert.Equal([1, 2, 4, 5, 6], items.Select(i => (int)i!["id"]!));
+        Assert.Equal([true, false, false, false, true], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
         var rifle = items[0]!;
         Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 2000L, true),  // the silver price takes the discount too
             ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!));
