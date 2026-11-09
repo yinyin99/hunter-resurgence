@@ -385,6 +385,57 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheWebsitesFriendsAreReadAndChangedByTheSignedInPlayer()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        state.CreateAccount(9, "Third");
+        state.CreateAccount(10, "banned");
+        state.CreateAccount(11, "Fourth");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        var me = state.Store.Listed("one", null)!.Value;
+        async Task<string[]> Handles(string path, string key)
+        {
+            var reply = await Get("web.test", path, ck);
+            return [.. JsonNode.Parse(reply.Body)![key]!.AsArray().Select(h => (string)h!["handle"]!)];
+        }
+        Task<Reply> Act(string action, string handle, params (string, string)[] headers) => server.SendAsync("POST", "web.test", "/account/friends/" + action,
+            [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes("handle=" + handle));
+        var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
+
+        Assert.Equal(200, (await Act("add", "third", xhr)).Status);  // any case
+        Assert.Equal(["Third"], await Handles("/account/friends", "pending"));
+        state.Store.AddFriend(11, me);
+        Assert.Equal(["Fourth"], await Handles("/account/friends", "requests"));
+        Assert.Equal(200, (await Act("add", "Fourth", xhr)).Status);  // accepts
+        Assert.Empty(await Handles("/account/friends", "requests"));
+        Assert.Equal(["Fourth"], await Handles("/account/friends", "friends"));
+        Assert.Equal(["Fourth"], await Handles("/hunters/one/friends", "rows"));
+        Assert.Equal(["one"], await Handles("/hunters/fourth/friends", "rows"));
+        var past = JsonNode.Parse((await Get("web.test", "/hunters/Fourth/friends?page=9")).Body)!;  // a page past the end is the last
+        Assert.Equal((1, 1, 1), ((int)past["page"]!, (int)past["pages"]!, (int)past["total"]!));
+        Assert.Equal(["Fourth", "Third"], await Handles("/account/friends/search?text=r", "hunters"));  // contains, any case; not "one", not the banned
+        Assert.Empty(await Handles("/account/friends/search?text=banned", "hunters"));
+        Assert.Empty(await Handles("/account/friends/search?text=one", "hunters"));  // never the player itself
+        Assert.Equal(200, (await Act("remove", "FOURTH", xhr)).Status);
+        Assert.Empty(await Handles("/account/friends", "friends"));
+        Assert.Empty(await Handles("/hunters/fourth/friends", "rows"));
+        Assert.Equal(200, (await Act("remove", "Third", xhr)).Status);  // cancels the request
+        Assert.Empty(await Handles("/account/friends", "pending"));
+        // not another player: the own handle, a banned or an unknown one
+        foreach (var handle in new[] { "one", "banned", "nobody", "" })
+            Assert.Equal(404, (await Act("add", handle, xhr)).Status);
+        // signed out, or not from a page of this server
+        Assert.Equal(401, (await Get("web.test", "/account/friends")).Status);
+        Assert.Equal(401, (await Get("web.test", "/account/friends/search?text=r")).Status);
+        Assert.Equal(401, (await Act("add", "Third", ("X-Requested-With", "XMLHttpRequest"))).Status);
+        Assert.Equal(400, (await Act("add", "Third", ck)).Status);
+        Assert.Empty(await Handles("/account/friends", "pending"));
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/friends")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/friends")).Status);
+    }
+
+    [Fact]
     public async Task TestTheMinigameBoardsListTheRestoredBestScores()
     {
         state.CreateAccount(9, "third");

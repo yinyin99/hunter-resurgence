@@ -18,9 +18,10 @@
         @if (!Minimal)
         {
             <div class="left">
+                @* the friends are the account's on the server too *@
+                <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
                 @if (!Mode.Live)
                 {
-                    <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
                     <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
                     <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
                     <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
@@ -61,7 +62,7 @@
             }
         </div>
     </div>
-    @if (!Minimal && !Mode.Live)
+    @if (!Minimal)
     {
         @* the list is built the first time the button is pressed and again at every press (so it is current); the browser opens, closes and light-dismisses it *@
         <div id="friends" class="friends-pos" popover>@if (friendsKey > 0) { <FriendsDropdown @key="friendsKey" Changed="Refresh" /> }</div>
@@ -100,9 +101,9 @@
     async Task Refresh()
     {
         balances = await Wallet.BalancesAsync();
-        if (Mode.Live) return;  // the friend requests and messages are the mock's
-        unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
         requests = (await Friends.RequestsAsync()).Count;
+        if (Mode.Live) return;  // the messages are the mock's
+        unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
     }
 
     // another avatar in the settings shows here at once
