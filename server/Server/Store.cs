@@ -13,10 +13,10 @@ public sealed class Store
     /// <summary>Tables with an `account_id` column: Db refuses SQL on them that does not bind the account.</summary>
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
-         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads"];
+         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 3;
+    public const int Version = 4;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -37,6 +37,13 @@ public sealed class Store
         CREATE TABLE restored_ids (
             user_id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, ts INTEGER NOT NULL);
         CREATE INDEX restored_ids_account ON restored_ids (account_id);
+        """;
+
+    // what the operator decided about a kept zip, for the player: kind restored (user_id, handle, handle_kept) or rejected (user_id, reason)
+    const string UploadResults = $"""
+        CREATE TABLE upload_results (
+            id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, kind TEXT NOT NULL, user_id INTEGER, handle TEXT, handle_kept INTEGER NOT NULL, reason TEXT NOT NULL);
+        CREATE INDEX upload_results_account ON upload_results (account_id, id);
         """;
 
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
@@ -62,6 +69,7 @@ public sealed class Store
         CREATE INDEX tokens_account ON tokens (account_id);
         {WebSessions}
         {Uploads}
+        {UploadResults}
 
         CREATE TABLE items (
             {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER,
@@ -163,6 +171,7 @@ public sealed class Store
         {
             if (version < 2) con.Script(WebSessions);
             if (version < 3) con.Script(Uploads);
+            if (version < 4) con.Script(UploadResults);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

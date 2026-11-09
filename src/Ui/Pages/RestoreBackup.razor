@@ -17,7 +17,34 @@
             <li>@L["Restore.Rule4"]</li>
         </ul>
         @if (status?.RestoredUserId is { } restored) { <p class="alert ok">@L["Restore.Restored", restored]</p> }
-        @if (status is { Review: > 0 }) { <p class="alert">@L["Restore.Waiting", status.Review]</p> }
+        @if (status?.Review.Count > 0)
+        {
+            <p class="alert">@L["Restore.Waiting", status.Review.Count]</p>
+            <ul class="kept">
+                @foreach (var kept in status.Review)
+                {
+                    <li><b>@L["Restore.Kept", At(kept.Ts)]</b><br />@kept.Note</li>
+                }
+            </ul>
+        }
+        @if (status is not null)
+        {
+            foreach (var done in status.Decisions)
+            {
+                <div class="alert @(done.Kind == "restored" ? "ok" : "bad")">
+                    @if (done.Kind == "restored")
+                    {
+                        <b>@L["Restore.Done.restored", At(done.Ts), done.UserId ?? 0, done.Handle ?? ""]</b><br />
+                        @L[done.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"]
+                    }
+                    else
+                    {
+                        <b>@L["Restore.Done.rejected", At(done.Ts)]</b>
+                        if (done.Reason.Length > 0) { <br />@done.Reason }
+                    }
+                </div>
+            }
+        }
         <div class="pick">
             <label for="zip">@L["Restore.Choose"]</label>
             <InputFile id="zip" OnChange="Picked" accept=".zip,application/zip" disabled="@busy" />
@@ -49,6 +76,8 @@
     bool busy, confirmDelete, deleteFailed;
 
     protected override async Task OnInitializedAsync() => status = await Service.StatusAsync();
+
+    static string At(long ts) => DateTimeOffset.FromUnixTimeSeconds(ts).ToString("yyyy-MM-dd HH:mm 'UTC'", System.Globalization.CultureInfo.InvariantCulture);
 
     void Picked(InputFileChangeEventArgs e)
     {

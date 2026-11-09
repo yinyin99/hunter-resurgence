@@ -104,7 +104,7 @@ public sealed class Uploads(State state, string dataDir)
     UploadOutcome? Refusal(long account, long uid)
     {
         if (Store.RestoredBy(uid) is not null)
-            return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed. If something went wrong, ask the operator to reset it.");
+            return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed.");
         if (uid < 1 || uid >= Store.FirstServerId)
             return new(409, "refused", "This backup has a user id this server does not accept.");
         if (uid != account && Store.AccountExists(uid))
@@ -167,7 +167,8 @@ public sealed class Uploads(State state, string dataDir)
                            steam is not null && steam == Store.SteamId64(r.Account), r.Note, r.Sha);
     }).ToList();
 
-    /// <summary>The operator's approve: the rules above, then the restore (the kept zip stays, the waiting row goes). Status 404: no such id.</summary>
+    /// <summary>The operator's approve: the rules above, then the restore (the kept zip stays, the waiting row goes; the player gets a notice and a result).
+    /// A refusal is kept as the zip's note, and the player gets a notice of it once. Status 404: no such id.</summary>
     public UploadOutcome Approve(long id)
     {
         lock (decide)
@@ -178,16 +179,17 @@ public sealed class Uploads(State state, string dataDir)
             try { read = Importer.Read(path, state.Catalogue, ZipLimits); }
             catch (Exception e) when (e is RestoreException or InvalidDataException or IOException)
             {
-                return new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed.");
+                return Refused(row, new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed."));
             }
             var model = read.Model;
             var uid = long.Parse(model.Identity.Uid);
             var account = row.Account;
-            if (Refusal(account, uid) is { } refused) return refused;
+            if (Refusal(account, uid) is { } refused) return Refused(row, refused);
             var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
             var current = (string)Store.AccountJson(account)["handle"]!;
             var adopt = zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
             var handle = adopt ? zipHandle! : current;
+            var summary = Summary(model, handle != current, zipHandle is not null && !adopt);
             try
             {
                 var result = Restorer.Apply(state, path, row.Sha, read, account, uid, handle, exists: true, backupDatabase: false, dataDir,
@@ -195,24 +197,51 @@ public sealed class Uploads(State state, string dataDir)
                     {
                         con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
                         con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
+                        con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'restored', ?, ?, ?, '')",
+                                 Store.Now(), uid, handle, handle == current ? 1 : 0);
+                        Notify(con, $"{summary} Your user id is {uid} and your name is {handle}.");
                     });
-                return new(200, "restored", Summary(model, handle != current, zipHandle is not null && !adopt), result.Report);
+                return new(200, "restored", summary, result.Report);
             }
             catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the user id or the handle was taken between the check and the write
             {
-                return new(409, "taken", "This backup's user id or name was taken a moment ago. Nothing was changed.");
+                return Refused(row, new(409, "taken", "This backup's user id or name was taken a moment ago. Nothing was changed."));
             }
         }
     }
 
-    /// <summary>The operator's reject: delete the kept zip and its row. False: no such id.</summary>
-    public bool Reject(long id)
+    /// <summary>A refused approve: the reason becomes the zip's note and the player's notice, unless it is the note already.</summary>
+    UploadOutcome Refused(Row row, UploadOutcome outcome)
+    {
+        if (outcome.Message == row.Note) return outcome;
+        using var con = Store.Open(row.Account);
+        con.Begin();
+        con.Exec("UPDATE uploads SET note = ? WHERE account_id = $a AND id = ?", outcome.Message, row.Id);
+        Notify(con, $"Your backup was not restored: {outcome.Message}");
+        con.Commit();
+        return outcome;
+    }
+
+    /// <summary>A message in the account's inbox from the server's notice sender (the thread Chat/conversations lists).</summary>
+    static void Notify(Db con, string text) =>
+        con.Exec("INSERT INTO messages (account_id, sender, content, ts) VALUES ($a, ?, ?, ?)", State.SYSTEM_SENDER, text, Store.Now());
+
+    /// <summary>The operator's reject: delete the kept zip and its row, keep the reason (may be empty) and tell the player. False: no such id.</summary>
+    public bool Reject(long id, string? reason = null)
     {
         lock (decide)
         {
             if (Rows(id).SingleOrDefault() is not { } row) return false;
+            reason = reason?.Trim() ?? "";
             using (var con = Store.Open(row.Account))
+            {
+                con.Begin();
                 con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
+                con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'rejected', ?, NULL, 0, ?)",
+                         Store.Now(), row.UserId, reason);
+                Notify(con, reason == "" ? "Your backup was rejected by the operator." : $"Your backup was rejected by the operator: {reason}");
+                con.Commit();
+            }
             File.Delete(Kept(row));
             return true;
         }
@@ -232,14 +261,19 @@ public sealed class Uploads(State state, string dataDir)
         return text;
     }
 
-    /// <summary>What the account page shows: the user id restored (once), and the zips waiting for review.</summary>
-    public (long? RestoredUserId, List<(long Ts, string Note)> Review) Status(long account)
+    /// <summary>What the operator decided about a kept zip. Kind: restored (UserId, Handle, HandleKept: the account kept its own name) or rejected (UserId, Reason).</summary>
+    public sealed record Decision(long Ts, string Kind, long? UserId, string? Handle, bool HandleKept, string Reason);
+
+    /// <summary>What the account page shows: the user id restored (once), the zips waiting for review, and what was decided about the others.</summary>
+    public (long? RestoredUserId, List<(long Ts, string Note)> Review, List<Decision> Decisions) Status(long account)
     {
         using var con = Store.Open();
         var restored = con.Scalar("SELECT user_id FROM restored_ids WHERE account_id = ?", account) as long?;
         using var mine = Store.Open(account);
         var review = mine.Rows("SELECT ts, note FROM uploads WHERE account_id = $a ORDER BY id").Select(r => ((long)r[0], (string)r[1])).ToList();
-        return (restored, review);
+        var decisions = mine.Rows("SELECT ts, kind, user_id, handle, handle_kept, reason FROM upload_results WHERE account_id = $a ORDER BY id")
+            .Select(r => new Decision((long)r[0], (string)r[1], r[2] as long?, r[3] as string, (long)r[4] != 0, (string)r[5])).ToList();
+        return (restored, review, decisions);
     }
 
     /// <summary>Delete the account and everything of it: its rows, tokens and sessions (the foreign keys), the kept zips and the photos.</summary>

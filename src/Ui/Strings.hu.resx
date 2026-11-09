@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Feltöltés…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>A(z) {0} azonosítójú felhasználó mentése vissza lett állítva ezen a fiókon.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Az üzemeltető általi ellenőrzésre váró mentések: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Elmentve: {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Visszaállítva: {0}. A felhasználói azonosítód {1}, a neved pedig {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>A név a mentésedben szereplő név.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>A neved megmaradt: a mentésben szereplő név nem engedélyezett, vagy egy másik játékosé.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Az üzemeltető elutasította: {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Részletek</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Mit tárol rólad ez a szerver</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Visszaállítva</value></data>

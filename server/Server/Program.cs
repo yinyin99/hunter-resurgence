@@ -31,10 +31,11 @@ const string ImportUsage = """
 const string ReviewUsage = """
     The backup zips players uploaded: every one is kept for an operator and never restored automatically.
 
-    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> | review reject <id>
+    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> | review reject <id> [reason]
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     approve restores it by the community rules (once per game user id, never a user id another account holds, the account's user id
-    changes only before it has played) and prints the report or the refusal; reject deletes the kept zip and its row.
+    changes only before it has played) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
+    reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. Both leave the player a notice in the game.
     """;
 
 var words = args.ToList();
@@ -147,7 +148,8 @@ void Import(string[] a)
 void Review(string[] a)
 {
     long id = 0;
-    if (!(a is ["list"] || (a is ["approve" or "reject", var n] && long.TryParse(n, out id)))) Die(ReviewUsage);
+    var reason = "";
+    if (!(a is ["list"] || (a is ["approve", var n] && long.TryParse(n, out id)) || (a is ["reject", var r, .. var rest] && long.TryParse(r, out id) && (reason = string.Join(' ', rest)) is not null))) Die(ReviewUsage);
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
@@ -167,7 +169,7 @@ void Review(string[] a)
             Console.Write(done.Report);
             break;
         default:
-            if (!uploads.Reject(id)) Die($"no kept zip {id}");
+            if (!uploads.Reject(id, reason)) Die($"no kept zip {id}");
             Console.WriteLine($"rejected {id}: the zip and its row are deleted");
             break;
     }

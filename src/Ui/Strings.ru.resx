@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Загрузка…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Ваша резервная копия с ID пользователя {0} восстановлена в этом аккаунте.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Резервных копий, ожидающих проверки оператором: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Сохранена {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Восстановлено {0}: ваш ID пользователя — {1}, ваше имя — {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Имя взято из вашей резервной копии.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ваше имя сохранено: имя из резервной копии недопустимо или принадлежит другому игроку.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Отклонено оператором {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Подробности</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Что этот сервер хранит о вас</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Восстановлено</value></data>
