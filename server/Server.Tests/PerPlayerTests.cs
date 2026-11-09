@@ -132,6 +132,10 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Contains(10L, Ids(await Api(Replay.INVENTORY_LIST, tokenB, "user_id=8")));
         // another player's id is the empty reply, whoever asks
         Assert.Empty((await Api(Replay.INVENTORY_LIST, tokenA, "user_id=8")).AsArray());
+        // the same through Inventory/dict: keyed by item id, owner only
+        Assert.DoesNotContain("19", (await Api(Replay.INVENTORY_DICT, tokenA)).AsObject().Select(kv => kv.Key));
+        Assert.Contains("19", (await Api(Replay.INVENTORY_DICT, tokenB)).AsObject().Select(kv => kv.Key));
+        Assert.Empty((await Api(Replay.INVENTORY_DICT, tokenA, "user_id=8")).AsObject());
         Assert.Equal(1, (int)(await Api(Replay.EXPEDITION_LIST, tokenB, "user_id=8&limit=10&offset=0"))["total"]!);
         Assert.Equal(0, (int)(await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=7&limit=10&offset=0"))["total"]!);
         Assert.Equal(0, (int)(await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=8&limit=10&offset=0"))["total"]!);

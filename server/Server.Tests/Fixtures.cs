@@ -80,7 +80,7 @@ public static class Fixtures
                  "dog_skills": [{"id": 1, "lvl": 1, "xp": 0, "unlocks": [{"type": "loyalty", "skill": "DOG_SKILL_LOYALTY_ONE"}]},
                                 {"id": 2, "lvl": 2, "xp": 100, "unlocks": [{"type": "pointing", "skill": "DOG_SKILL_POINT_TWO"}, {"type": "trophy", "define": "RIBBON"}]},
                                 {"id": 3, "lvl": 3, "xp": 300, "unlocks": [{"type": "rewards", "data": [{"type": "SILVER", "amount": 100}]}]},
-                                {"id": 4, "lvl": 5, "xp": 600, "unlocks": []}]}
+                                {"id": 4, "lvl": 5, "xp": 600, "unlocks": [{"type": "rewards", "data": [{"type": "SILVER", "amount": 300}]}]}]}
                 """);
             connect["species"] = new JsonArray(Enumerable.Range(0, 55)
                 .Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = i == 1 ? 0.8 : 1.0, ["variant_id"] = i }).ToArray());

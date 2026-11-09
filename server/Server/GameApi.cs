@@ -233,7 +233,11 @@ public static class GameApi
             // community server only (a local server replays): the account's items and restored trophies, from the database; another player's item list is the empty reply, its trophy list the public one
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
                .WithName("InventoryList").WithSummary("Owned items with their definitions")
-               .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is null. Another player's `user_id`: `[]`.")
+               .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is `{reserve, pos, dir}` (`pos` in metres, `dir` the direction divided by 1000). Another player's `user_id`: `[]`.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, INVENTORY_DICT, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryDictReply(a), "state") : null))
+               .WithName("InventoryDict").WithSummary("Owned items by item id")
+               .WithDescription("`{<item id>: [{id, slot, units, metadata, location}]}` of the account's items, the rows of Inventory/list. Another player's `user_id`: `{}`.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.TrophyListReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
                .WithName("TrophyList").WithSummary("A player's restored trophies, one page")

@@ -61,16 +61,16 @@ public static class AuthPages
         <p><button type="submit">Continue</button></p></form>
         """);
 
-    /// <summary>A launcher is waiting for this sign-in: confirm only when the code is the one it shows.</summary>
+    /// <summary>An app (the launcher or the backup tool) is waiting for this sign-in: confirm only when the code is the one it shows.</summary>
     public static string Confirm(string csrf, string handle, string userCode) => Page($"""
-        <h1>Sign in the launcher?</h1>
-        <p>You are <b>{E(handle)}</b>. The launcher that shows the code <b>{E(userCode)}</b> will be signed in as you.</p>
-        <p class="small">Confirm only if this code is on your launcher right now.</p>
+        <h1>Sign in the app that shows this code?</h1>
+        <p>You are <b>{E(handle)}</b>. The app that shows the code <b>{E(userCode)}</b> (the launcher or the backup tool) will be signed in as you.</p>
+        <p class="small">Confirm only if this code is on your screen right now.</p>
         <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
         <p><button type="submit">Yes, sign in</button></p></form>
         """);
 
-    public static string Done() => Page("<h1>Done</h1><p>Go back to the launcher.</p>");
+    public static string Done() => Page("<h1>Done</h1><p>Go back to the app that showed the code (the launcher or the backup tool).</p>");
 
     public static string Problem(string text) => Page($"<h1>Sorry</h1><p>{E(text)}</p>");
 }
