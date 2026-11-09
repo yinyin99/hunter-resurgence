@@ -118,7 +118,7 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject
         {
             ["background"] = C(restored?["background"]), ["ribbon"] = C(restored?["ribbon"]), ["hunterscore"] = C(MeOf(con, account)["hunterscore"]),
-            ["earned_achievements"] = (long)con.Scalar("SELECT COUNT(*) FROM achievements WHERE account_id = $a AND EXISTS (SELECT 1 FROM json_each(triggers) WHERE value > 0)")!,
+            ["earned_achievements"] = (long)con.Scalar("SELECT COUNT(*) FROM achievements, json_each(triggers) WHERE account_id = $a AND json_each.value > 0")!,
         });
     }
 

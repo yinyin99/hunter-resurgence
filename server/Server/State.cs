@@ -775,31 +775,26 @@ public sealed partial class State
     /// <summary>Statistics/total for a user_id: the restored statistics plus the closed server hunts. On a community server that is
     /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
     /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>
-    public byte[]? StatisticsReply(long account, byte[] formBody)
+    public byte[]? StatisticsReply(long account, byte[] formBody) => PublicReply(account, formBody, RestoredReads.StatisticsTotal);
+
+    /// <summary>The reply of a per-user_id read of the restored rows: on a community server any account's (null for a user id that is none), else the player's own.</summary>
+    byte[]? PublicReply(long account, byte[] formBody, Func<Db, JsonNode> read)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (!Online || userId == Py.Str(Account(account)["user_id"]))
-            return RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+            return RestoredReply(account, formBody, read);
         if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
             return null;
         using var con = Con(other);
-        return Py.DumpBytes(RestoredReads.StatisticsTotal(con));
+        return Py.DumpBytes(read(con));
     }
 
     /// <summary>Achievement/stats for a user_id: the restored achievements with the times this server stored (<see cref="AwardAchievements"/>).
     /// On a community server any account's (<see cref="PublicAccount(long)"/>), null for a user id that is none; otherwise as <see cref="StatisticsReply"/>.</summary>
-    public byte[]? AchievementReply(long account, byte[] formBody)
-    {
-        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
-        if (!Online || userId == Py.Str(Account(account)["user_id"]))
-            return RestoredReply(account, formBody, RestoredReads.AchievementStats);
-        if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
-            return null;
-        using var con = Con(other);
-        return Py.DumpBytes(RestoredReads.AchievementStats(con));
-    }
+    public byte[]? AchievementReply(long account, byte[] formBody) => PublicReply(account, formBody, RestoredReads.AchievementStats);
 
     const int RecentAchievements = 10;
+    const long MaxEarnTime = 253402300799;  // 9999-12-31: a restored time past it (milliseconds) shows as that day
 
     /// <summary>What a profile page's achievements tab shows of an account: `categories` [{name, level, done, total}] (a category's
     /// `category_title`; `total` the thresholds of its connect definitions, `done` those with an earn time, `level` the definitions with every
@@ -835,7 +830,7 @@ public sealed partial class State
             ["recent"] = new JsonArray(earned.OrderByDescending(e => e.Time).ThenBy(e => e.Id).ThenByDescending(e => e.Threshold).Take(RecentAchievements)
                 .Select(e => (JsonNode?)new JsonObject
                 {
-                    ["title"] = e.Title, ["description"] = e.Text, ["date"] = DateTimeOffset.FromUnixTimeSeconds((long)e.Time).UtcDateTime.ToString("yyyy-MM-dd"),
+                    ["title"] = e.Title, ["description"] = e.Text, ["date"] = DateTimeOffset.FromUnixTimeSeconds((long)Math.Min(e.Time, MaxEarnTime)).UtcDateTime.ToString("yyyy-MM-dd"),
                 }).ToArray()),
         };
     }
