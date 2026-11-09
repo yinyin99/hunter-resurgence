@@ -312,6 +312,34 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsDogsAreServedToEveryone()
+    {
+        await SignIn("99999999999999991", "one");
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open(9))
+        {
+            PlayerRows.AddItem(con, 1, 700, 0, null, O("""{"dog_name": "Rex", "experience": 150.5}"""));
+            PlayerRows.AddItem(con, 2, 700, 0, null, O("""{}"""));
+            PlayerRows.AddItem(con, 3, 700, 0, null, O("""{"dog_name": "Old", "experience": 300}"""));
+            PlayerRows.AddItem(con, 4, 701, 0, null, O("""{"experience": 999}"""));  // not a dog
+            PlayerRows.AddItem(con, 5, 5, 0, null, O("""{}"""));
+        }
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        var dogs = JsonNode.Parse((await Get("web.test", "/hunters/third/dogs")).Body)!;
+        // 150.5 of 100..300: level 2 and a quarter of the way; no experience: level 1; at the last row's xp: level 3, 100 %
+        Eq("""
+            {"dogs": [{"name": "Rex", "type": "Test Hound", "level": 2, "percent": 25, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]},
+                      {"name": "", "type": "Test Hound", "level": 1, "percent": 0, "skills": [{"title": "Loyalty One", "level": 1}], "trophies": []},
+                      {"name": "Old", "type": "Test Hound", "level": 3, "percent": 100, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]}]}
+            """, dogs);
+        Eq("""{"dogs": []}""", JsonNode.Parse((await Get("web.test", "/hunters/one/dogs")).Body));  // an account without a dog
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/dogs")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/dogs")).Status);
+    }
+
+    [Fact]
     public async Task TestTheMinigameBoardsListTheRestoredBestScores()
     {
         state.CreateAccount(9, "third");

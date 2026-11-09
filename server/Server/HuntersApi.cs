@@ -56,6 +56,14 @@ public static class HuntersApi
                              + "404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/dogs", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicDogs(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterDogs").WithSummary("A hunter's dogs: name, level and skills")
+            .WithDescription("`{dogs: [{name, type, level, percent, skills: [{title, level}], trophies: [string]}]}`, one per owned dog (`type` is the item's name, `level` from its experience "
+                             + "and the connect's `dog_skills`, `percent` the way to the next level); 404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {

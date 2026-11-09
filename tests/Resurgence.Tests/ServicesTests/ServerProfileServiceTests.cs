@@ -110,4 +110,25 @@ public class ServerProfileServiceTests
 
     [Fact]
     public void TheSkillsTabHasAServerSource() => Assert.Contains("skills", ServerProfileService.Tabs);
+
+    const string Dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+
+    [Fact]
+    public async Task DogsCarryTheirLevelSkillsAndTrophies()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Dogs));
+        var dog = Assert.Single(await Make(fake).DogsAsync("fox"));
+        Assert.Equal("/hunters/fox/dogs", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal(("Rex", "Test Hound", 2, 25), (dog.Name, dog.Type, dog.Level, dog.Percent));
+        Assert.Equal(["Ribbon"], dog.Trophies);
+        Assert.Equal([("Loyalty One", 1)], dog.Skills.Select(s => (s.Title, s.Level)));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedDogsAnswerIsNoDogs(HttpStatusCode code, string body) => Assert.Empty(await Make(new Fake(_ => Json(code, body))).DogsAsync("fox"));
+
+    [Fact]
+    public void TheDogsTabHasAServerSource() => Assert.Contains("dogs", ServerProfileService.Tabs);
 }

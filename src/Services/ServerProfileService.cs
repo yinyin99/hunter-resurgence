@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "dogs" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -74,7 +74,24 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public Task<Result> DeleteGalleryImageAsync(long id) => mock.DeleteGalleryImageAsync(id);
     public Task<byte[]> GalleryZipAsync(string handle) => mock.GalleryZipAsync(handle);
     public Task<Page<Trophy>> TrophiesAsync(string handle, int page) => mock.TrophiesAsync(handle, page);
-    public Task<IReadOnlyList<Dog>> DogsAsync(string handle) => mock.DogsAsync(handle);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/dogs</c>: each owned dog with its level and skills. A failed answer is no dogs.</summary>
+    public async Task<IReadOnlyList<Dog>> DogsAsync(string handle)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.DogsSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerDogs>() is { } d)
+                return [.. (d.Dogs ?? []).Select(x => new Dog(x.Name, x.Type, x.Level, x.Percent, [.. (x.Skills ?? []).Select(s => new DogSkill(s.Title, "", s.Level))], x.Trophies ?? []))];
+            log.LogWarning("The server answered {Path} with {Status}: no dogs", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no dogs", path, e.Message);
+        }
+        return [];
+    }
     public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => mock.FriendsAsync(handle, page);
     public Task<Expedition?> ExpeditionAsync(string handle, long? id) => mock.ExpeditionAsync(handle, id);
     public Task<Page<HistoryRow>> HistoryAsync(string handle, int page) => mock.HistoryAsync(handle, page);

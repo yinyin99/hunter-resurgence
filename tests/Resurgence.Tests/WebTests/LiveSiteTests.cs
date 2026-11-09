@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
+using Resurgence.Ui.Components;
 using Resurgence.Ui.Pages;
 using Resurgence.Ui.Shell;
 
@@ -82,20 +83,21 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills path with the skills and every other with the profile header.</summary>
-    sealed class Server(string header, string skills) : HttpMessageHandler
+    /// <summary>Answers the skills and dogs paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string dogs) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath.EndsWith("/skills") ? skills : header, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/dogs") => dogs, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
-    public void ARealPlayersProfileIsTheServersHeaderWithTheSkillsTab()
+    public void ARealPlayersProfileIsTheServersHeaderWithTheSkillsAndDogsTabs()
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
         const string skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[]}""";
-        var real = new ServerProfileService(new HttpClient(new Server(header, skills)) { BaseAddress = new Uri("http://server.test") },
+        const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[],"trophies":[]}]}""";
+        var real = new ServerProfileService(new HttpClient(new Server(header, skills, dogs)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
@@ -103,7 +105,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/skills"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: only skills has a server source
+        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: only skills and dogs have a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
     }
@@ -119,6 +121,20 @@ public sealed class LiveSiteTests : UiContext
             var result = method!.Invoke(Inner, args);
             return method.Name == nameof(IProfileService.ProfileAsync) ? ((Task<Profile?>)result!).ContinueWith(t => t.Result! with { Tabs = Tabs }) : result;
         }
+    }
+
+    [Fact]
+    public void TheDogsTabShowsTheServersDogs()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
+        const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", dogs)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<DogsTab>(p => p.Add(d => d.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li > div:last-child > b").TextContent));
+        Assert.Contains("Loyalty One", cut.Find("ul.dogs li em").TextContent);
+        Assert.Contains("Ribbon", cut.Markup);
     }
 
     // each tab is hidden on its own until it has a server source; an address of a hidden tab opens the first shown one

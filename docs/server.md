@@ -131,6 +131,7 @@ What a profile page shows of any player, in the game and on the website (communi
 | `GET /hunters/<handle>` on `web_host`, for the website's server | `{handle, hunterscore, rank, membership, avatar}` ([The board](#the-hunterscore)) |
 | `POST /v1/Skill/list`, form `user_id`, with any player's token | The numbers of the account of that user id (the player's own, or any other account here: `{weapon: {item id: n}, tracking: [n], spotting: [n]}`, n = level plus the fraction of its span); the empty skills for an unknown or banned one |
 | `GET /hunters/<handle>/skills` on `web_host`, for the website's server | `{species: [{name, spotting, tracking}], weapons: [{name, group, value}]}`, the same numbers named by the catalogue (`group` is the weapon's sub-category, null without one); 404 for an unknown or banned handle |
+| `GET /hunters/<handle>/dogs` on `web_host`, for the website's server | `{dogs: [{name, type, level, percent, skills: [{title, level}], trophies: [string]}]}`: one per owned dog (an inventory row whose catalogue item is of the DOGS category and the DOG type); `name` is its metadata's `dog_name` ("" without one), `type` the item's name. `level` is the number of rows of the connect's `dog_skills` whose cumulative `xp` is at most the metadata's `experience` (0 without), `percent` the way to the next row (100 at the last), `skills` and `trophies` the `unlocks` of the rows reached (a skill's define without its `DOG_SKILL_` prefix, a trophy's define, both as capitalised words); 404 for an unknown or banned handle |
 
 ## The facts file
 
