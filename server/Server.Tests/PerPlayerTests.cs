@@ -175,6 +175,40 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAServerHarvestIsInTheOwnTrophiesAboveEveryRestoredIdAndEachCanBeTaxidermized()
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "1", O("""{"id": 1, "name": "first"}"""));
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "500", O("""{"id": 500, "name": "listed"}"""));  // another kind of row: it does not raise the kill id
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "9", O("""{"id": 9, "own": true}"""));
+            PlayerRows.AddTrophy(con, "/game/user/harvest", "9", O("""{"id": 9, "taxidermized": false}"""));
+            con.Commit();
+        }
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Hb(AccountIsolationTests.Harvest(71, 50000));
+        string[] fields = ["id", "hidden", "species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
+                           "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
+        // Trophy/list stays the restored rows only
+        var page = await Api(Replay.TROPHY_LIST, tokenA, "user_id=7");
+        Eq("""[2, [{"id": 1, "name": "first"}, {"id": 500, "name": "listed"}]]""", T(page["total"], page["trophies"]));
+        var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
+        var row = own[1]!.AsObject();
+        Eq("""[2, 9, 10]""", T(own.Count, own[0]!["id"], row["id"]));  // the server kill got an id above the restored 9
+        Assert.Equal(fields, row.Select(kv => kv.Key));
+        Eq("""[false, "MULE_DEER", 50000, 0.9, 46658, false]""", T(row["hidden"], row["species_define"], row["weight"], row["scale"], row["antlers_seed"], row["is_skull"]));
+
+        async Task<JsonNode> Harvest(int id) => JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/harvest/" + id, tokenA)).Body)!;
+        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/9/taxidermize", tokenA)).Status);
+        Assert.True((bool)(await Harvest(9))["taxidermized"]!);
+        Assert.False((bool)(await Harvest(10))["taxidermized"]!);  // the server kill is its own
+        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/10/taxidermize", tokenA)).Status);
+        Assert.True((bool)(await Harvest(10))["taxidermized"]!);
+        Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/11/taxidermize", tokenA)).Status);
+    }
+
+    [Fact]
     public async Task TestAnyAccountsPublicProfileIsReadWithoutAToken()
     {
         state.CreateAccount(9, "banned");

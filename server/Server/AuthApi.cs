@@ -41,8 +41,8 @@ public static class AuthApi
         var gameWeb = app.MapGroup("/auth").RequireHost(game.GameWeb).WithGroupName("game").WithTags("Game credentials (game_web_host)");
         gameWeb.MapPost("/jwt/refresh", Always(r => Refresh(game, r))).WithName("JwtRefresh")
              .WithSummary("A fresh access JWT and refresh JWT")
-             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else, on a local server, the local account. "
-                              + "The access JWT expires in 900 s; a stored token is never replayed.")
+             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else, for the photo uploader (`X-App-Id: client`, the cookie text `refresh_token`, the session), "
+                              + "else, on a local server, the local account. The access JWT expires in 900 s; a stored token is never replayed.")
              .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json");
         gameWeb.MapPost("/emotelauncher/token", Always(_ => new(401, Json(), SteamTicketRefused, "auth"))).WithName("SteamTicket")
              .WithSummary("The launcher's Steam ticket: always refused, so the launcher shows the sign-in page")
@@ -60,8 +60,9 @@ public static class AuthApi
 
     /// <summary>POST /auth/jwt/refresh: the game and the launcher page ask for a new access JWT before the old one runs out.
     /// Only a refresh JWT this server signed (`typ` refresh: body or cookie) is a credential; an access JWT, a session id or
-    /// any other token gets the 401. A local server answers for its one account. ponytail: a refresh token is not rotated
-    /// (the game may keep presenting the one of its launch URL); it ends with its 30 days, a ban or a delete.</summary>
+    /// any other token gets the 401, with one exception: the game's photo uploader (see <see cref="UploaderSession"/>). A local
+    /// server answers for its one account. ponytail: a refresh token is not rotated (the game may keep presenting the one of
+    /// its launch URL); it ends with its 30 days, a ban or a delete.</summary>
     internal static Reply Refresh(Game game, Req r)
     {
         JsonObject? body = null;
@@ -69,15 +70,25 @@ public static class AuthApi
         catch (JsonException) { }
         var tokens = game.Tokens!;
         var account = new[] { (string?)body?["refresh_token"], SignIn.CookieOf(r, ProtocolLiterals.RefreshCookie) }
-            .Select(t => t is { Length: > 0 } ? tokens.RefreshedAccount(t) : null).FirstOrDefault(a => a is not null)
-            ?? (game.State!.Online ? null : game.State.LocalAccount);  // a local server's one player needs no credential
+            .Select(t => t is { Length: > 0 } ? tokens.RefreshedAccount(t) : null).FirstOrDefault(a => a is not null);
+        var lifetime = Lifetimes.Refresh;
+        if (account is null && UploaderSession(game, r) is { } uploader)
+            (account, lifetime) = (uploader, Lifetimes.Session);  // the session's own lifetime, not the 30 days
+        account ??= game.State!.Online ? null : game.State.LocalAccount;  // a local server's one player needs no credential
         if (account is not { } id)
             return new(401, Json(), """{"error":{"code":"auth.invalid_refresh_token","message":"Invalid refresh token","details":[]}}"""u8.ToArray(), "denied");
         var scope = r.Header("X-App-Id") == "client" ? GameTokens.GameScope : GameTokens.WebScope;
-        var (access, refresh) = (tokens.Access(id, scope), tokens.Refresh(id, scope));
+        var (access, refresh) = (tokens.Access(id, scope), tokens.Sign(id, "refresh", scope, lifetime));
         return new(200, [("Content-Type", "application/json"), ("Cache-Control", "no-store"),
                          ("Set-Cookie", $"{ProtocolLiterals.AccessCookie}={access}; HttpOnly; Max-Age=63072000; Path=/; SameSite=lax; Secure"),
-                         ("Set-Cookie", $"{ProtocolLiterals.RefreshCookie}={refresh}; HttpOnly; Max-Age={(long)Lifetimes.Refresh.TotalSeconds}; Path=/auth/jwt/refresh; SameSite=lax; Secure")],
+                         ("Set-Cookie", $"{ProtocolLiterals.RefreshCookie}={refresh}; HttpOnly; Max-Age={(long)lifetime.TotalSeconds}; Path=/auth/jwt/refresh; SameSite=lax; Secure")],
                    Py.DumpBytes(new JsonObject { ["expires_in"] = 63072000, ["access_token"] = access, ["refresh_token"] = refresh }), "auth");
     }
+
+    /// <summary>The game's photo uploader has no tokens of its own: it presents the text `refresh_token` as its refresh token, with the
+    /// session it copied from the game. Without a JWT it sends no upload, so the session is its credential, for this shape only.
+    /// Only a session-shaped token (40 hex) counts: a JWT or a refresh token in that header is refused.</summary>
+    static long? UploaderSession(Game game, Req r) =>
+        r.Header("X-App-Id") == "client" && SignIn.CookieOf(r, ProtocolLiterals.RefreshCookie) == "refresh_token"
+        && r.Header("X-Hun-Session") is { Length: 40 } session && session.All(Uri.IsHexDigit) ? game.State!.Store.ResolveToken(session) : null;
 }
