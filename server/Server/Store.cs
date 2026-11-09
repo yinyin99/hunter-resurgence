@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 6;
+    public const int Version = 7;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -186,6 +186,7 @@ public sealed class Store
             if (version < 4) con.Script(UploadResults);
             if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
             if (version < 6) con.Script(Friends);
+            if (version < 7) con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL");  // closed hunts count their pickups: stored again at the start
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
