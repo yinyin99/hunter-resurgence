@@ -8,7 +8,7 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     /// <summary>Does the request ask for this account's own data: no `user_id`, or its own? A local server has one account, so
-    /// always. ponytail: another player's page shows the empty reply; per-user reads of other accounts come when a profile page needs them.</summary>
+    /// always. The owner-only areas check this; a public area reads the account of <see cref="PublicAccount(long)"/>.</summary>
     public bool IsOwn(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
@@ -16,6 +16,47 @@ public sealed partial class State
     }
 
     public bool IsUser(long account, string userId) => userId == Py.Str(Account(account)["user_id"]);
+
+    /// <summary>The account a public read shows (a profile page, in the game and on the website), by user id or by handle (any
+    /// case): an account of this server that is not banned and is not the recorded player's (LocalAccount: no player here owns
+    /// it, so a backup nobody restored onto their account is never shown); else null. A local server has one account: always
+    /// it. Read the account's rows with `Con(account)` (Store.Open, the per-account `$a` rule).</summary>
+    public long? PublicAccount(long userId) => offline ? LocalAccount : Store.Listed(userId, LocalAccount);
+
+    /// <inheritdoc cref="PublicAccount(long)"/>
+    public long? PublicAccount(string handle) => offline ? LocalAccount : Store.Listed(handle, LocalAccount);
+
+    /// <summary>Public_user/getByHostname of an account: who it is (`membership` as its connect `account` has it, the type and
+    /// title as its Me/me does), its hunterscore and rank, `online` while a hunt of it is open and alive, and the distance and
+    /// duration of its statistics (restored base plus the closed server hunts).</summary>
+    public JsonObject PublicUser(long account)
+    {
+        using var con = Con(account);
+        var me = MeOf(con, account);
+        var stats = RestoredReads.StatisticsTotal(con);
+        return new JsonObject
+        {
+            ["id"] = account, ["handle"] = C(me["handle"]), ["hostname"] = C(me["hostname"]), ["avatar"] = C(me["avatar"]),
+            ["hunterscore"] = C(me["hunterscore"]), ["rank"] = Store.Rank(account, LocalAccount),
+            ["membership"] = C(G(Account(account), "membership", 0)), ["membershipType"] = C(me["membershipType"]), ["membershipTitle"] = C(me["membershipTitle"]),
+            ["online"] = con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL AND COALESCE(last_seen, start_ts) >= ?",
+                                    Clock() - HEARTBEAT_TIMEOUT) is not null,
+            ["stats"] = new JsonObject { ["distance"] = C(stats["distance"]), ["duration"] = C(stats["duration"]) },
+        };
+    }
+
+    /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
+    /// hunterscore and how many achievements it has earned.</summary>
+    public byte[] UserProfileReply(long account)
+    {
+        using var con = Con(account);
+        var restored = con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", $"game_user_{account}_profile.json") is string s ? JsonNode.Parse(s) : null;
+        return Py.DumpBytes(new JsonObject
+        {
+            ["background"] = C(restored?["background"]), ["ribbon"] = C(restored?["ribbon"]), ["hunterscore"] = C(MeOf(con, account)["hunterscore"]),
+            ["earned_achievements"] = (long)con.Scalar("SELECT COUNT(*) FROM achievements WHERE account_id = $a AND EXISTS (SELECT 1 FROM json_each(triggers))")!,
+        });
+    }
 
     /// <summary>The reply nodes a restore stored in `trophies` or `lodges` for a source, as stored (none: empty).</summary>
     List<JsonNode?> Restored(long account, string table, string source, string? id = null)

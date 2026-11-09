@@ -36,11 +36,16 @@ public static class HuntersApi
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json");
 
-        group.MapGet("/{handle}", (string handle) => state.Store.Hunter(handle, state.LocalAccount) is { } h
-                ? Json(200, new JsonObject { ["handle"] = h.Handle, ["hunterscore"] = h.Hunterscore, ["rank"] = h.Rank })
+        group.MapGet("/{handle}", (string handle) => state.PublicAccount(handle) is { } id && state.PublicUser(id) is var p
+                ? Json(200, new JsonObject
+                {
+                    ["handle"] = p["handle"]?.DeepClone(), ["hunterscore"] = p["hunterscore"]?.DeepClone(), ["rank"] = p["rank"]?.DeepClone(),
+                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = p["avatar"]?.DeepClone(),
+                })
                 : Json(404, new JsonObject { ["error"] = "not found" }))
-            .WithName("Hunter").WithSummary("A hunter's hunterscore and place on the board")
-            .WithDescription("`{handle, hunterscore, rank}` (the handle as the account spells it); 404 for a handle that is unknown or banned.")
+            .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership and avatar")
+            .WithDescription("`{handle, hunterscore, rank, membership, avatar}` (the handle as the account spells it, the membership's title, \"\" without one, "
+                             + "the avatar's picture URL); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")

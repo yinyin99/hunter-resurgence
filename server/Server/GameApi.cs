@@ -17,6 +17,7 @@ public static class GameApi
     static readonly Regex Harvest = new(@"\A/game/user/harvest/(\d+)(/taxidermize)?\z", RegexOptions.ECMAScript);
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
     static readonly Regex Lodges = new(@"\A/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript);
+    static readonly Regex UserProfile = new(@"\A(?:/v1)?/game/user/(\d+)/profile\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
     static readonly byte[] NoError = "{\"err\": 0}"u8.ToArray();
 
@@ -232,6 +233,22 @@ public static class GameApi
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
                .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            // the public reads (community server only; a local server replays): any account here (State.PublicAccount), no token
+            api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null
+                    : new(200, JsonAnyOrigin(), s.PublicAccount(FormValue(r, "hostname") ?? "") is { } a ? Py.DumpBytes(s.PublicUser(a)) : "null"u8.ToArray(), "state"))
+               .WithName("PublicUser").WithSummary("A player's public profile, by handle")
+               .WithDescription("`{id, handle, hostname, avatar, hunterscore, rank, membership, membershipType, membershipTitle, online, stats: {distance, duration}}` "
+                                + "of any account here, without a token; `null` for a handle that is unknown or banned.")
+               .Body<HostnameForm>(Form).Produces(200, contentType: "application/json");
+            var userProfile = Handle(game, r =>
+            {
+                var m = UserProfile.Match(r.Path);
+                if (!s.Online || r.Method != "GET" || !m.Success) return null;
+                return long.TryParse(m.Groups[1].Value, out var id) && s.PublicAccount(id) is { } a
+                    ? new(200, [("Content-Type", "application/vnd.game_data.user.profile+json"), .. Cors(r.Header)], s.UserProfileReply(a), "state")
+                    : new(404, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)], Encoding.UTF8.GetBytes(ReplayScope.Missing), "state");
+            });
+            api.MapGet("/v1/game/user/{id}/profile", userProfile).ExcludeFromDescription();  // the current build's path of the same page
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
             var harvest = Handle(game, r =>
@@ -284,6 +301,10 @@ public static class GameApi
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
             apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One restored lodge")
                  .PathParams(("id", "user id"), ("lodge", "lodge id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json");
+            apiv2.MapGet("/game/user/{id}/profile", userProfile).WithName("UserProfile").WithSummary("A player's profile page header, by user id")
+                 .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of any account here, without a token (`background` and `ribbon` "
+                                  + "as its backup had them, else null); 404 for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
+                 .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.profile+json").Produces(404, contentType: "application/vnd.goa.error");
 
             var web = Group(app, game.Web, "Website (web_host)");
             web.MapGet("/user/{handle}/score/", Handle(game, r =>
@@ -292,7 +313,7 @@ public static class GameApi
                         return null;
                     var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
-                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) && s.AccountForHandle(handle) is { } account
+                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) && s.PublicAccount(handle) is { } account
                         ? s.ScorePageReply(account, kid) : null;
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
@@ -438,6 +459,8 @@ public static class GameApi
         [property: Description("Start time of day, minutes")] long time, long loadout_id, string? oauth_access_token);
 
     public sealed record UserForm(long user_id, string? oauth_access_token);
+
+    public sealed record HostnameForm([property: Description("The player's handle (any case)")] string hostname);
 
     public sealed record ExpeditionListForm(long user_id, long limit, long offset);
 

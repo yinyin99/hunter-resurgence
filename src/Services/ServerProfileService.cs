@@ -5,12 +5,16 @@ using Resurgence.Services.Mocks;
 
 namespace Resurgence.Services;
 
-/// <summary>The profile header of a real player from the community server (handle, hunterscore, rank); a handle the
-/// server does not know is a fictional hunter of the mock pages. Every tab is still the mock's.</summary>
+/// <summary>The profile of a player of the community server: the header from <c>GET /hunters/&lt;handle&gt;</c>, and the tabs in <see cref="Tabs"/>. A handle the server
+/// does not know, or an answer that fails, is no profile (the page is "Page not found"), never a hunter of the mock pages.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, ISessionService sessions, MockProfileService mock,
     ILogger<ServerProfileService> log) : IProfileService
 {
+    /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
+    /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string>();
+
     public async Task<Profile?> ProfileAsync(string handle)
     {
         var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}";
@@ -18,12 +22,11 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         {
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.NotFound) return await mock.ProfileAsync(handle) is { } fictional ? fictional with { Own = false } : null;  // a handle typed by hand is never the signed-in player's
-            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerHunter>() is { } h)
+            if (response.StatusCode == HttpStatusCode.NotFound) return null;
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerProfile>() is { } h)
             {
                 var own = (await sessions.CurrentAsync())?.Handle is { } me && string.Equals(me, h.Handle, StringComparison.OrdinalIgnoreCase);
-                var p = await mock.ProfileAsync(h.Handle);
-                return p! with { Handle = h.Handle, HunterScore = h.Hunterscore, Rank = h.Rank, Own = own, Online = false, Membership = "", Friend = false, RequestPending = false, Real = true };
+                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, Friend: false, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar));
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }
@@ -33,6 +36,10 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return null;
     }
+
+    /// <summary>The slot of a game avatar picture (<c>…/&lt;id&gt;.png</c> → <c>avatar-&lt;id&gt;</c>, docs/images.md); <c>avatar-default</c> for any other URL.</summary>
+    public static string AvatarSlot(string? url) =>
+        Path.GetFileNameWithoutExtension(url) is { Length: > 0 } id && id.All(char.IsAsciiDigit) ? "avatar-" + id : "avatar-default";
 
     public Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind) => mock.RanksAsync(handle, kind);
     public Task<AchievementSummary> AchievementSummaryAsync(string handle) => mock.AchievementSummaryAsync(handle);

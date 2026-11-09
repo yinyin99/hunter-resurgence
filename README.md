@@ -60,7 +60,7 @@ Released today: the backup tool, and the player kit, which lets you play on the 
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
 5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
-6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards; still sample data: the fictional hunters' profiles, trophies and hunt history; missions and friends are not offered yet.
+6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards, every player's profile header (its tabs come one by one); missions and friends are not offered yet.
 7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
 
 ### Website

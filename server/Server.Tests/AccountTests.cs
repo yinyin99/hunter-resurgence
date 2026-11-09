@@ -449,7 +449,7 @@ public class AccountIsolationTests : StateTestBase
         state.CreateAccount(9, "third", "steam-3");
         Assert.Equal(9L, state.Store.AccountBySteam("steam-3"));
         Eq("[182.0, 33.0]", T(state.Wallet(9)["em"], state.Wallet(9)["gm"]));
-        Assert.Equal(A, state.AccountForHandle("third"));  // offline: the page of any handle is the local account's
+        Assert.Equal(A, state.PublicAccount("third"));  // offline: the page of any handle is the local account's
     }
 }
 
