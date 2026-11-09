@@ -1257,7 +1257,7 @@ public sealed partial class State
         return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
-    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; the recorded reply if there is none.</summary>
+    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; else a hunt a restore saved (the newest without an id); else the recorded reply.</summary>
     public byte[] ExpeditionReply(long account, byte[] recorded, byte[]? formBody = null)
     {
         var wanted = Form1(Py.ParseQs(formBody is null ? "" : Encoding.UTF8.GetString(formBody)), "expedition_id");
@@ -1279,7 +1279,7 @@ public sealed partial class State
                                  + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
                                  wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
-                return recorded;
+                return (wanted == "" ? PlayerRows.RestoredHunt(con, null) : PlayerRows.RestoredHunt(con, wantedId)) is { } saved ? Py.DumpBytes(saved) : recorded;
             row = found;
             var expeditionId = Py.FromSql(row[0]);
             var rows = con.Rows(
@@ -1383,7 +1383,7 @@ public sealed partial class State
                                                        locale, textures, sheet));
     }
 
-    /// <summary>Expedition/list: the server expeditions (newest first), then the recorded ones, paged by offset and limit.</summary>
+    /// <summary>Expedition/list: the server expeditions (newest first), then the hunts a restore saved, else the recorded ones, paged by offset and limit.</summary>
     public byte[] ExpeditionListReply(long account, byte[] recorded, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
@@ -1391,6 +1391,7 @@ public sealed partial class State
         var skip = Py.IsDigit(offset) ? (int)Math.Min(long.Parse(offset), int.MaxValue) : 0;
         List<object[]> rows;
         List<int> counts;
+        List<JsonNode?> restored;
         using (var con = Con(account))
         {
             con.Begin();
@@ -1404,6 +1405,7 @@ public sealed partial class State
                 + " (SELECT MIN(n.first_event) FROM expeditions n WHERE n.account_id = $a AND n.id > e.id)"
                 + " FROM expeditions e WHERE e.account_id = $a ORDER BY e.id DESC");
             counts = rows.Select(r => Pickups(con, Py.FromSql(r[6]), r[7] is long u ? u : long.MaxValue).Count).ToList();
+            restored = PlayerRows.RestoredHunts(con);
         }
         var reply = JsonNode.Parse(recorded)!.AsObject();
         var ours = rows.Select((r, i) => (JsonNode?)new JsonObject
@@ -1413,6 +1415,17 @@ public sealed partial class State
             ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = counts[i], ["location_id"] = Py.FromSql(r[2]),
             ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
         }).ToList();
+        if (restored.Count > 0)
+        {
+            // a restored account: the server hunts, then the saved ones as saved; `total` counts what the backup zip holds
+            var all = ours.Concat(restored).ToList();
+            var from = Math.Min(skip, all.Count);
+            var count = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), all.Count - from) : all.Count - from;
+            reply["expeditions"] = new JsonArray(all.Skip(from).Take(count).Select(C).ToArray());
+            reply["total"] = all.Count;
+            reply["has_more"] = from + count < all.Count;
+            return Py.DumpBytes(reply);
+        }
         var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];
         if (skip >= ours.Count && theirs.Count > 0)
         {
