@@ -265,4 +265,20 @@ public class HunterscoreTests : StateTestBase
         Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
         Assert.Equal(2, Stored(B));
     }
+
+    [Fact]
+    public void TestTheSchemaOfVersion4IsMigratedToTheHuntStatistics()
+    {
+        var file = Path.Combine(tmp, "v4.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
+            con.Exec("PRAGMA user_version = 4");
+        }
+        var migrated = new Store(file);
+        migrated.CreateAccount(5, "five", new JsonObject());
+        using var check = migrated.Open(5);
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+    }
 }

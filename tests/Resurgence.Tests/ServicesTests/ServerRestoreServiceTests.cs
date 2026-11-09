@@ -74,12 +74,22 @@ public class ServerRestoreServiceTests
     }
 
     [Fact]
-    public async Task StatusCountsTheZipsWaitingForReview()
+    public async Task StatusListsTheZipsWaitingAndWhatWasDecided()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"restoredUserId":1001,"review":[{"ts":1,"note":"a"},{"ts":2,"note":"b"}]}"""));
-        Assert.Equal(new RestoreStatus(1001, 2), await Make(fake).StatusAsync());
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """
+            {"restoredUserId":1001,"review":[{"ts":1,"note":"a"},{"ts":2,"note":"b"}],
+             "decisions":[{"ts":3,"kind":"restored","userId":1001,"handle":"sample","handleKept":false,"reason":""},
+                          {"ts":4,"kind":"rejected","userId":7,"handle":null,"handleKept":false,"reason":"duplicate"}]}
+            """));
+        var status = (await Make(fake).StatusAsync())!;
+        Assert.Equal(1001, status.RestoredUserId);
+        Assert.Equal([new KeptZip(1, "a"), new KeptZip(2, "b")], status.Review);
+        Assert.Equal([new RestoreDecision(3, "restored", 1001, "sample", false, ""), new RestoreDecision(4, "rejected", 7, null, false, "duplicate")], status.Decisions);
         Assert.Equal(HttpMethod.Get, fake.Seen[0].Request.Method);
-        Assert.Equal(new RestoreStatus(null, 0), await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"restoredUserId":null,"review":[]}"""))).StatusAsync());
+        var none = (await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"restoredUserId":null,"review":[]}"""))).StatusAsync())!;
+        Assert.Null(none.RestoredUserId);
+        Assert.Empty(none.Review);
+        Assert.Empty(none.Decisions);
         Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.Unauthorized, "{}"))).StatusAsync());
     }
 

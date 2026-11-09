@@ -243,7 +243,7 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 
 | Endpoint | |
 |---|---|
-| `GET /account/restore` | `{restoredUserId, review: [{ts, note}]}`: the backup user id this account restored (once), or null, and the zips kept for the operator. 401 when signed out |
+| `GET /account/restore` | `{restoredUserId, review: [{ts, note}], decisions: [{ts, kind, userId, handle, handleKept, reason}]}`: the backup user id this account restored (once), or null; the zips kept for the operator, each with the time it was kept and its note (`waiting for the operator`, or the reason of the operator's latest refused approve); and what the operator decided about the others, oldest first. `kind` is `restored` (`userId`, the account's `handle` now, `handleKept`: the account kept its own name because the backup's was not allowed or belongs to another player) or `rejected` (`userId`, `reason`: the operator's words, possibly empty). 401 when signed out |
 | `POST /account/restore` | The zip is the request body, at most 64 MiB. Answers `{status, message}` (below). Needs the cookie and `X-Requested-With` or a same-origin `Origin` (a form of another site cannot set either) |
 | `POST /account/delete` | Form `confirm=delete`, same checks: deletes the account and all its data (below), clears the cookie |
 | `POST /account/buy` | Form `id`, `count`, `bundle=1`, same checks: buys with em$ ([Buying from the website](#buying-from-the-website)) |
@@ -262,19 +262,21 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 **Review.** The operator works the kept zips with the server's command line (no web page):
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> | reject <id>
+dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> | reject <id> [reason]
 ```
 
-`list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only). `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; `reject <id>` deletes the kept zip and its `uploads` row. Like `import backup` it runs on its own and needs the recordings.
+`list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only). `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; `reject <id> [reason]` deletes the kept zip and its `uploads` row and keeps the reason (the rest of the line) for the player. Like `import backup` it runs on its own and needs the recordings.
+
+**What the player is told.** A refused approve stores its reason as the zip's `note`; an approve that restores, and a reject, add a row to `upload_results` (the `decisions` above) and every one of these three leaves a message from the server's notice sender in the account's inbox, the thread `Chat/conversations` lists: "Your backup was not restored: <reason>" (once per reason: the same refusal again adds nothing), "The backup was restored: …" with the user id and the name, or "Your backup was rejected by the operator", with the reason when there is one. The website's restore page shows the same. The messages are English, like the server's other notices.
 
 | `approve` | Result |
 |---|---|
 | The user id was not restored before, is not held by another account, is from 1 to 1,999,999,999, and the account has not played (no row in `expeditions` and `events`) or already has that user id | Full restore, once per game user id: the profile rows are replaced, the account takes the zip's user id and (when it is a plain name of at most 32 characters nobody else has; otherwise it keeps its own) the zip's handle. The Steam id, tokens and sessions follow it. One audit row, one row in `restored_ids`; the row in `uploads` goes, the zip stays. The whole database is **not** copied (`Store.Backup` is the local rule): the kept zip is the way back |
-| A user id restored before, held by another account, outside that range, or an account that has played and would have to change its user id | Refused with the reason; the zip stays kept until the operator rejects it |
+| A user id restored before, held by another account, outside that range, or an account that has played and would have to change its user id | Refused with the reason, which becomes the zip's note; the zip stays kept until the operator rejects it |
 
 A user id is restored once, enforced by the primary key of `restored_ids`, so two uploads at the same moment cannot both win. If a restore turns out wrong, the operator deletes the account's rows (or the account) and imports the kept zip again with `import backup <zip> --account <id>`; deleting the account frees its user id.
 
-**Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row, the tokens, the cookie sessions, the review rows and the restored user id; then the account's `restores/<id>/` and `photos/<id>/` folders. The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
+**Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row, the tokens, the cookie sessions, the review rows, the decisions and the restored user id; then the account's `restores/<id>/` and `photos/<id>/` folders. The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
 
 ## Behind a reverse proxy
 

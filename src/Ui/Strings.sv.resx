@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Laddar upp…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Din säkerhetskopia av användar-id {0} har återställts på det här kontot.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Säkerhetskopior som väntar på operatörens granskning: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Sparad {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Återställd {0}: ditt användar-id är {1} och ditt namn är {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Namnet är det från din säkerhetskopia.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ditt namn behölls: namnet i säkerhetskopian är inte tillåtet eller tillhör en annan spelare.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Avvisad av operatören {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detaljer</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Vad den här servern lagrar om dig</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Återställd</value></data>

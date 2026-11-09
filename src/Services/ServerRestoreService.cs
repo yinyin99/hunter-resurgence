@@ -10,7 +10,7 @@ namespace Resurgence.Services;
 /// <param name="http">Base address is the server, <c>UseCookies</c> off, and a timeout long enough for an upload (the sign-in's is 5 s).</param>
 public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, ILogger<ServerRestoreService> log) : IRestoreService
 {
-    sealed record StatusJson(long? RestoredUserId, JsonElement[]? Review);
+    sealed record StatusJson(long? RestoredUserId, KeptZip[]? Review, RestoreDecision[]? Decisions);
 
     sealed record ResultJson(string? Status, string? Message, string? Report);
 
@@ -30,7 +30,7 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
             var json = await response.Content.ReadFromJsonAsync<StatusJson>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-            return json is null ? null : new RestoreStatus(json.RestoredUserId, json.Review?.Length ?? 0);
+            return json is null ? null : new RestoreStatus(json.RestoredUserId, json.Review ?? [], json.Decisions ?? []);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException)
         {

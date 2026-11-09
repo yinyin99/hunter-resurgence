@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Caricamento in corso…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Il tuo backup dell’id utente {0} è stato ripristinato su questo account.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backup conservati in attesa della verifica dell’operatore: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Conservato il {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Ripristinato il {0}: il tuo id utente è {1} e il tuo nome è {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Il nome è quello del tuo backup.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Il tuo nome è stato mantenuto: il nome nel backup non è consentito o appartiene a un altro giocatore.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Rifiutato dall’operatore il {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Dettagli</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Cosa memorizza questo server su di te</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Ripristinato</value></data>

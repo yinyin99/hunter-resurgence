@@ -31,7 +31,7 @@ A backup zip is at most 64 MiB. "Not a usable backup" means the file is not a ba
 
 ## 4. Wait for the operator
 
-Nothing is restored automatically: the operator (the person who runs the server) checks every backup by hand, so it can take a while. Open **Restore your backup** on the website to see where it stands: it shows how many backups are waiting for review, and once yours is done it says "Your backup of user id … is restored on this account". Your account then has the name and user id of your profile, with its inventory, wallet, skills, statistics, achievements and trophies.
+Nothing is restored automatically: the operator (the person who runs the server) checks every backup by hand, so it can take a while. Open **Restore your backup** on the website to see where it stands. Each backup waiting for review is listed with the time it was kept and, under it, the operator's reason if the restore was refused (in English). When the operator has decided you get a message in the game's inbox (the server's notice thread) and the page says what happened: restored, with your user id and name (and whether your name stayed because the one in the backup is not allowed or belongs to another player), or rejected, with the operator's reason. Your account then has the name and user id of your profile, with its inventory, wallet, skills, statistics, achievements and trophies.
 
 Do not hunt on the community server before that.
 
@@ -56,6 +56,6 @@ Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` 
 - **"Could not listen on port 80 or 443"** in the `2-run.cmd` window: another program uses that port (a web server, a second `2-run.cmd`). Close it and run again.
 - **The game cannot connect**: the `2-run.cmd` window must be open, and the game allowed in Windows Firewall.
 - **The game still reaches the official servers**: `2-run.cmd` says so; run `1-setup.cmd` again. Some antivirus programs block edits of the hosts file.
-- **You hunted before the restore**: the backup can no longer be restored onto that account. Open **Restore your backup** on the website, tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
+- **You hunted before the restore**: the backup can no longer be restored onto that account, and the restore page shows that reason under the waiting backup. Open **Restore your backup** on the website, tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
 
 More detail on each tool: [backup tool](backup.md), [player kit](play.md), [website](website.md#restore-and-your-data).

@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Nahrávání…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Vaše záloha s id uživatele {0} je obnovena na tomto účtu.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Zálohy čekající na kontrolu operátorem: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Uloženo {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Obnoveno {0}: vaše id uživatele je {1} a vaše jméno je {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Jméno je to z vaší zálohy.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Vaše jméno zůstalo: jméno ze zálohy není povolené nebo patří jinému hráči.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Zamítnuto operátorem {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Podrobnosti</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Co o vás tento server ukládá</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Obnoveno</value></data>

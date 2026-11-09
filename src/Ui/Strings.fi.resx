@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Lähetetään…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Varmuuskopiosi käyttäjätunnukselle {0} on palautettu tälle tilille.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Operaattorin tarkistettavina olevat varmuuskopiot: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Tallennettu {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Palautettu {0}: käyttäjätunnuksesi on {1} ja nimesi on {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Nimi on varmuuskopiosi nimi.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Nimesi säilytettiin: varmuuskopion nimi ei ole sallittu tai kuuluu toiselle pelaajalle.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Operaattori hylkäsi {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Tiedot</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Mitä tämä palvelin tallentaa sinusta</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Palautettu</value></data>

@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Se încarcă…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Backup-ul dvs. pentru ID-ul de utilizator {0} a fost restaurat pe acest cont.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backup-uri păstrate pentru verificarea de către operator: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Păstrat la {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurat la {0}: ID-ul dvs. de utilizator este {1}, iar numele dvs. este {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Numele este cel din backup-ul dvs.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Numele dvs. a fost păstrat: numele din backup nu este permis sau aparține altui jucător.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Respins de operator la {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detalii</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Ce stochează acest server despre dvs.</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurat</value></data>

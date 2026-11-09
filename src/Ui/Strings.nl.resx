@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Uploaden…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Je back-up van gebruikers-id {0} is hersteld op dit account.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Back-ups die de operator nog moet controleren: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Bewaard op {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Hersteld op {0}: je gebruikers-id is {1} en je naam is {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>De naam is die uit je back-up.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Je naam is behouden: de naam in de back-up is niet toegestaan of is van een andere speler.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Afgewezen door de operator op {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Details</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Wat deze server over jou opslaat</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Hersteld</value></data>

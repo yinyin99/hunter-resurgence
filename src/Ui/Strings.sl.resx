@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Nalaganje …</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Vaša varnostna kopija uporabnika z id {0} je obnovljena na tem računu.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Varnostne kopije, ki čakajo na pregled operaterja: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>Shranjeno {0}</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>Obnovljeno {0}: vaš id uporabnika je {1}, vaše ime pa {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Ime je tisto iz vaše varnostne kopije.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Vaše ime je ostalo: ime iz varnostne kopije ni dovoljeno ali pripada drugemu igralcu.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Operater je zavrnil {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Podrobnosti</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Kaj ta strežnik shranjuje o vas</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Obnovljeno</value></data>

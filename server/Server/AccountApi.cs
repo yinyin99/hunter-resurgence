@@ -49,15 +49,20 @@ public static class AccountApi
         group.MapGet("/restore", (HttpContext ctx) =>
             {
                 if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
-                var (restored, review) = uploads.Status(account);
+                var (restored, review, decisions) = uploads.Status(account);
                 return Json(200, new JsonObject
                 {
                     ["restoredUserId"] = restored,
                     ["review"] = new JsonArray([.. review.Select(x => (JsonNode?)new JsonObject { ["ts"] = x.Ts, ["note"] = x.Note })]),
+                    ["decisions"] = new JsonArray([.. decisions.Select(x => (JsonNode?)new JsonObject
+                    {
+                        ["ts"] = x.Ts, ["kind"] = x.Kind, ["userId"] = x.UserId, ["handle"] = x.Handle, ["handleKept"] = x.HandleKept, ["reason"] = x.Reason,
+                    })]),
                 });
             })
             .WithName("AccountRestoreStatus").WithSummary("What became of the player's uploads")
-            .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator.");
+            .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator, each with its time and note "
+                             + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected, userId, handle, handleKept, reason}`.");
 
         group.MapPost("/restore", async (HttpContext ctx) =>
             {

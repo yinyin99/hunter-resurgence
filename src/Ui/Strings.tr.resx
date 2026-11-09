@@ -1256,6 +1256,11 @@
   <data name="Restore.Working" xml:space="preserve"><value>Yükleniyor…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>{0} kullanıcı id'li yedeğiniz bu hesaba geri yüklendi.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Operatörün incelemesi için saklanan yedekler: {0}</value></data>
+  <data name="Restore.Kept" xml:space="preserve"><value>{0} tarihinde saklandı</value></data>
+  <data name="Restore.Done.restored" xml:space="preserve"><value>{0} tarihinde geri yüklendi: kullanıcı id'niz {1} ve adınız {2}.</value></data>
+  <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Ad, yedeğinizdeki addır.</value></data>
+  <data name="Restore.Done.nameKept" xml:space="preserve"><value>Adınız korundu: yedekteki ad izinli değil ya da başka bir oyuncuya ait.</value></data>
+  <data name="Restore.Done.rejected" xml:space="preserve"><value>Operatör {0} tarihinde reddetti</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Ayrıntılar</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Bu sunucunun sizin hakkınızda sakladıkları</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Geri yüklendi</value></data>

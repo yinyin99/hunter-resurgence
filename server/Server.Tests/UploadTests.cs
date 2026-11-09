@@ -167,6 +167,119 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Null(state.Store.RestoredBy(1001));
     }
 
+    async Task<JsonNode> RestoreStatusOf(string session) =>
+        JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + session)])).Body)!;
+
+    /// <summary>The account's inbox from the server's notice sender, oldest first.</summary>
+    List<string> Notices(long account)
+    {
+        using var con = state.Store.Open(account);
+        return con.Rows("SELECT content FROM messages WHERE account_id = $a AND sender = ? ORDER BY id", State.SYSTEM_SENDER).Select(r => (string)r[0]).ToList();
+    }
+
+    [Fact]
+    public async Task TestARefusalAfterPlayIsTheZipsNoteAndTheAccountIsToldOnce()
+    {
+        var id = await Keep(TestZip.Own(), "played.zip", player, cookie);
+        Assert.Equal("waiting for the operator", Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!["note"]!.ToString());
+        state.ConnectReply(player);  // a hunt was opened: the account has played
+        var refused = Operator.Approve(id);
+        Assert.Equal((409, "refused"), (refused.Status, refused.Kind));
+        var kept = Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!;
+        Assert.Equal(refused.Message, (string)kept["note"]!);
+        Assert.True((long)kept["ts"]! > 0);
+        Assert.Equal(refused.Message, Operator.List().Single().Note);
+        Assert.Equal([$"Your backup was not restored: {refused.Message}"], Notices(player));
+        Assert.Equal($"Your backup was not restored: {refused.Message}", (string)JsonNode.Parse(state.ConversationsReply(player))!.AsArray()[0]!["preview"]!);  // the game's inbox lists it
+        Operator.Approve(id);  // the same refusal again: no second notice
+        Assert.Single(Notices(player));
+        Assert.Empty((await RestoreStatusOf(cookie))["decisions"]!.AsArray());
+    }
+
+    [Fact]
+    public async Task TestAnApproveIsToldToThePlayerWithTheUserIdAndTheFinalName()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        var status = await RestoreStatusOf(cookie);
+        Assert.Empty(status["review"]!.AsArray());
+        var done = Assert.Single(status["decisions"]!.AsArray())!;
+        Assert.Equal(("restored", 1001L, "sample", false, ""), ((string)done["kind"]!, (long)done["userId"]!, (string)done["handle"]!, (bool)done["handleKept"]!, (string)done["reason"]!));
+        Assert.True((long)done["ts"]! > 0);
+        // the inbox followed the account to its new user id
+        var notice = Assert.Single(Notices(1001));
+        Assert.Contains("The backup was restored", notice);
+        Assert.Contains("Your user id is 1001 and your name is sample.", notice);
+        Assert.Empty(Notices(player));
+        Assert.Equal(1L, Count(1001, "upload_results"));
+        Assert.Equal(0L, Count(player, "upload_results"));
+    }
+
+    [Fact]
+    public async Task TestAHandleThatCannotBeAdoptedIsToldAsKept()
+    {
+        state.CreateAccount(2, "sample");  // the backup's name belongs to another account
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        var done = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("player", true), ((string)done["handle"]!, (bool)done["handleKept"]!));
+    }
+
+    [Fact]
+    public async Task TestABackupNameTheAccountAlreadyHasIsToldAsTheBackupsNotAsKept()
+    {
+        const string steam = "76561190000000005";
+        var (same, sameCookie) = SignedIn("sample", steam);  // the account is already called what the backup says
+        var id = await Keep(TestZip.Own(steam: steam), "same.zip", same, sameCookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        var done = Assert.Single((await RestoreStatusOf(sameCookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("sample", false), ((string)done["handle"]!, (bool)done["handleKept"]!));
+    }
+
+    [Fact]
+    public async Task TestAnUnreadableKeptZipGivesThePlayerPlainWordsNotAPath()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        File.WriteAllBytes(Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "mine.zip")) + ".zip"), [1, 2, 3]);
+        var refused = Operator.Approve(id);
+        Assert.Equal((400, "invalid"), (refused.Status, refused.Kind));
+        var note = (string)Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!["note"]!;
+        Assert.Equal("The kept zip cannot be read, so it was not restored.", note);
+        Assert.Equal(["Your backup was not restored: " + note], Notices(player));
+    }
+
+    [Fact]
+    public async Task TestARejectKeepsItsReasonForThePlayerAndSaysSoInTheGame()
+    {
+        var first = await Keep(TestZip.Own(), "first.zip", player, cookie);
+        var second = await Keep(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":2.0"), "second.zip", player, cookie);
+        Assert.True(Operator.Reject(first, "  This is not your backup.  "));
+        Assert.True(Operator.Reject(second));
+        var status = await RestoreStatusOf(cookie);
+        Assert.Empty(status["review"]!.AsArray());
+        var decisions = status["decisions"]!.AsArray();
+        Assert.Equal(["rejected", "rejected"], decisions.Select(d => (string)d!["kind"]!));
+        Assert.Equal(["This is not your backup.", ""], decisions.Select(d => (string)d!["reason"]!));
+        Assert.Equal([1001L, 1001L], decisions.Select(d => (long)d!["userId"]!));
+        Assert.Equal(["Your backup was rejected by the operator: This is not your backup.", "Your backup was rejected by the operator."], Notices(player));
+        Assert.True(state.Store.AccountExists(player));
+        Assert.Null(state.Store.RestoredBy(1001));
+    }
+
+    [Fact]
+    public async Task TestTheAlreadyRefusalPromisesNoReset()
+    {
+        var first = await Keep(TestZip.Own(), "first.zip", player, cookie);
+        var second = await Keep(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":2.0"), "second.zip", player, cookie);
+        Assert.Equal("restored", Operator.Approve(first).Kind);
+        var refused = Operator.Approve(second);
+        Assert.Equal("already", refused.Kind);
+        Assert.DoesNotContain("reset", refused.Message);
+        Assert.DoesNotContain("ask the operator", refused.Message, StringComparison.OrdinalIgnoreCase);
+        var again = await Upload(TestZip.Own(wallet: "\"ems\":3.0,\"gms\":4.0"), "third.zip");
+        Assert.DoesNotContain("reset", (string)again.Body["message"]!);
+    }
+
     [Fact]
     public async Task TestAZipWithAnotherOrNoSteamIdIsKeptForReviewAndNothingIsRestored()
     {
@@ -428,6 +541,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         {
             con.Exec("DROP TABLE uploads");
             con.Exec("DROP TABLE restored_ids");
+            con.Exec("DROP TABLE upload_results");
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
             con.Exec("PRAGMA user_version = 2");
         }
@@ -436,6 +550,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Null(migrated.RestoredBy(1));
         using var check = migrated.Open(5);
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a"));
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM upload_results WHERE account_id = $a"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
 }
