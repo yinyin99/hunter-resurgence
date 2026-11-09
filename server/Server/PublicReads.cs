@@ -37,7 +37,7 @@ public sealed partial class State
 
     /// <summary>The account's own trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
     /// server in the restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.
-    /// A server kill id is always above every restored id (see Heartbeat), so ids never clash.</summary>
+    /// A new kill id is above every restored id (see Heartbeat).</summary>
     List<JsonNode?> TrophyRows(long account)
     {
         var rows = Restored(account, "trophies", "/game/user/trophies");

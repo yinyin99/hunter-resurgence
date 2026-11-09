@@ -181,6 +181,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Begin();
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "1", O("""{"id": 1, "name": "first"}"""));
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "500", O("""{"id": 500, "name": "listed"}"""));  // another kind of row: it does not raise the kill id
             PlayerRows.AddTrophy(con, "/game/user/trophies", "9", O("""{"id": 9, "own": true}"""));
             PlayerRows.AddTrophy(con, "/game/user/harvest", "9", O("""{"id": 9, "taxidermized": false}"""));
             con.Commit();
@@ -191,7 +192,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
                            "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
         // Trophy/list stays the restored rows only
         var page = await Api(Replay.TROPHY_LIST, tokenA, "user_id=7");
-        Eq("""[1, [{"id": 1, "name": "first"}]]""", T(page["total"], page["trophies"]));
+        Eq("""[2, [{"id": 1, "name": "first"}, {"id": 500, "name": "listed"}]]""", T(page["total"], page["trophies"]));
         var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
         var row = own[1]!.AsObject();
         Eq("""[2, 9, 10]""", T(own.Count, own[0]!["id"], row["id"]));  // the server kill got an id above the restored 9
