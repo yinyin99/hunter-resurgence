@@ -40,7 +40,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | `Skills` | `skills`: weapon by item id, tracking and spotting by species slot; `xp` is `Skills.Xp(level plus progress)`. A zip without skills stores a new player's 59 + 59 |
 | `Profile`, the zip's own `Me/me` | `profile`: the reply of `Me/me` without `ems`, `gms` and `unread_messages`, over the typed profile fields (`id` and `handle` are the account's) |
 | `Stats` | `statistics` |
-| `Achievements` | `achievements` (earn times in `triggers`) |
+| `Achievements` | `achievements` (earn times in `triggers`). On a community server the check right after it adds the earn time of each threshold the account's statistics reach that has none, and a larger counter as `value` ([docs/server.md](server.md#achievements)) |
 | `Trophies`, `Lodges` | `trophies`, `lodges` as read |
 | `Extras` | `extras`, keyed by the path in the zip |
 | `Account`, `Profile` | the account's `account` object (the connect reply's): handle, `user_id`, `account_id` (= the user id), hostname, gender, hunterscore, membership, avatar URL, the importer's defaults for `face` and the Facebook fields. On a community server the hunterscore is then the one the server computes from the restored statistics ([docs/server.md](server.md#the-hunterscore)), in `account` and in the profile |
