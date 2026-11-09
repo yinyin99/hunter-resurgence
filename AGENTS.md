@@ -37,6 +37,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 - The player kit has six translations in `tools/play/Strings*.resx` (console texts); `PlayKit/TranslationsTests` checks them like the backup tool's. Its `settings.example.json` lists `server_url` and the `*_host` keys the game asks for (`game_web_host`, `crash_host`); they are the server's keys of the same names (`server/Server/settings.example.json`): change them together.
 - The backup tool's "What isn't saved?" dialog (resx keys `NotCovered_<n>`) mirrors the "What is not saved" section of `docs/backup.md`. Change both together.
 - The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`) mirrors README's "For players: the backup tool" and quotes the backup tool's `Public_Radio` and `Start` labels; `Restore.Rule1` quotes its `Own_Radio` label ("My account", in English where the backup tool has no translation). Change them together.
+- The footer's credit "Hunter Resurgence © yinyin99" (`src/Ui/Shell/Footer.razor`) is the attribution README's AGPL-3.0 section 7(b) term requires. Never remove or reword it; a change to it changes README too.
 
 ## Agent skills
 
