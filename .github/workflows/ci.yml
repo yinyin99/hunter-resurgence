@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-sdk
       - run: dotnet test --project server/Server.Tests -c Release
-  # the workflows, the compose file and the firewall script: errors here show only on main, on a tag or on the VPS
+  # the workflows, the compose file, the firewall script and the proxy's routes: errors here show only on main, on a tag or on the VPS
   scripts:
     runs-on: ubuntu-latest
     steps:
@@ -77,6 +77,32 @@ jobs:
           grep -qx -- '-A CLOUDFLARE -s 198.51.100.0/24 -j RETURN' "$LOG"
           grep -qx -- '-A CLOUDFLARE -j DROP' "$LOG"
           grep -qx -- '-I DOCKER-USER -i eth0 -p tcp -m multiport --dports 80,443 -j CLOUDFLARE' "$LOG"
+      # the real Caddyfile in front of two stub backends that answer their own name: each path must reach the right one (docs/deploy.md)
+      - name: Proxy routes
+        run: |
+          dir=$(mktemp -d)
+          openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=site.test -keyout "$dir/origin.key" -out "$dir/origin.pem" -days 1 2> /dev/null
+          chmod 644 "$dir"/*
+          docker network create proxy-ci > /dev/null
+          for name in server web; do
+            docker run -d --name "proxy-ci-$name" --network proxy-ci --network-alias "$name" caddy:2.11 caddy respond --listen :8080 --body "$name" > /dev/null
+          done
+          docker run -d --name proxy-ci-caddy --network proxy-ci --network-alias site.test -e SITE_DOMAIN=site.test \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" -v "$dir:/certs:ro" caddy:2.11 > /dev/null
+          check() {
+            want=$1; shift
+            got=$(docker run --rm --network proxy-ci curlimages/curl:8.11.1 -sk --retry 10 --retry-all-errors --retry-delay 1 "$@")
+            [ "$got" = "$want" ] || { echo "$* went to '$got', want $want"; exit 1; }
+          }
+          check server -X POST https://site.test/auth/link
+          check server -X POST https://site.test/account/restore/start
+          check server -X POST https://site.test/account/restore/up1/0
+          check server -X POST https://site.test/account/restore/up1/finish
+          check server -H 'X-Game-Host: game.test' https://site.test/anything
+          check web https://site.test/restore
+          check web -X POST https://site.test/account/delete
+          check web https://site.test/
+          echo routes ok
   # the website's container image (deploy/): builds, starts, serves the banner, the import map of shell.js and the search engine tags, lists Linux time zones, serves robots.txt, sends the security headers, and shows the operator's pictures from IMAGES_DIR
   docker:
     runs-on: ubuntu-latest
