@@ -430,6 +430,7 @@ public sealed partial class State
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
     readonly OrderedDictionary<long, long> family = new();
+    readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
 
     /// <summary>baseUrl: scheme+host this server answers on; upload and photo URLs point there.
@@ -457,7 +458,11 @@ public sealed partial class State
         this.iconUrl = iconUrl;
         this.application = application;
         foreach (var s in Arr(G(application, "species", null)))
+        {
             species[Py.L(s!["id"])] = s.AsObject();
+            if (Py.IsStr(s["define"]))
+                speciesIds[(string)s["define"]!] = Py.L(s["id"]);
+        }
         foreach (var i in Arr(G(application, "items", null)))
             items[Py.L(i!["id"])] = i.AsObject();
         foreach (var r in Arr(G(application, "reserves", null)))
@@ -490,7 +495,10 @@ public sealed partial class State
         avatarBase = avatarUrl.IndexOf("/256/", StringComparison.Ordinal) is var cut and > 0 ? avatarUrl[..cut] : $"{scheme}://{netloc}";
         var byDefine = new Dictionary<string, JsonObject>();
         foreach (var d in Arr(itemDefs))
+        {
             byDefine[(string)d!["define"]!] = d.AsObject();
+            itemIds[(string)d["define"]!] = Py.L(d["id"]);
+        }
 
         long Root(JsonObject d)
         {
@@ -699,24 +707,24 @@ public sealed partial class State
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (!Online || userId == Py.Str(Account(account)["user_id"]))
-            return RestoredReply(account, formBody, RestoredReads.StatisticsTotal, Online);
+            return RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
         if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
             return null;
         using var con = Con(other);
         return Py.DumpBytes(RestoredReads.StatisticsTotal(con));
     }
 
-    /// <summary>Achievement/stats for the player's user_id from the restored rows; null for anyone else and for an account
-    /// without a restored profile (a local server replays their recorded reply, a community server sends the empty one).</summary>
+    /// <summary>Achievement/stats for the player's user_id: the restored achievements with the times this server stored
+    /// (<see cref="AwardAchievements"/>); null as <see cref="StatisticsReply"/>.</summary>
     public byte[]? AchievementReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.AchievementStats);
 
-    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read, bool everyAccount = false)
+    byte[]? RestoredReply(long account, byte[] formBody, Func<Db, JsonNode> read)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
             return null;
         using var con = Con(account);
-        return everyAccount || RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
+        return Online || RestoredReads.Has(con) ? Py.DumpBytes(read(con)) : null;
     }
 
     /// <summary>Me/me of an account with a restored profile: its stored reply, with every key the recorded reply has and the
