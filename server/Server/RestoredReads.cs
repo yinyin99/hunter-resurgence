@@ -78,7 +78,7 @@ public static class RestoredReads
             }
             distance += Py.IsNum(hunt["distance"]) ? Py.D(hunt["distance"]) : 0;
             duration += Py.D(hunt["duration"]);
-            foreach (var kind in new[] { "animal", "weapon" })
+            foreach (var kind in new[] { "animal", "weapon", "collectables" })
                 if (hunt["data"]![kind] is JsonObject counts)
                     Add(data, kind, counts);
         }

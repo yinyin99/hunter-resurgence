@@ -230,6 +230,9 @@ public sealed partial class State
                     update["thumb_url"] = uploadUrl(photoId, "thumb");
                 updates.Add(update);
             }
+            else if (Is(e["event"], 24) || Is(e["event"], 36))  // a pickup or shed antler: the game asks every second until update 7 answers it
+                // ponytail: the score is always 0, no rule for a collectable's score is known
+                updates.Add(new JsonObject { ["collectable_id"] = C(e["collectable_id"]), ["score"] = 0, ["update"] = 7 });
         }
         con.Commit();
         return updates;
@@ -282,6 +285,22 @@ public sealed partial class State
 
     public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a")!;
 
+    /// <summary>The pickups (event 24) and shed antlers (event 36, type 2000 + species) of the hunt whose events lie after
+    /// firstEvent up to untilEvent, one per collectable_id (the game repeats an event until its update 7 arrives).</summary>
+    public static List<(JsonObject Body, long Type, bool Antler)> Pickups(Db con, JsonNode? firstEvent, long untilEvent)
+    {
+        var seen = new HashSet<string>();
+        var list = new List<(JsonObject, long, bool)>();
+        foreach (var r in con.Rows("SELECT event, body FROM events WHERE account_id = $a AND id > ? AND id <= ? AND event IN (24, 36) ORDER BY id",
+                                   firstEvent, untilEvent))
+        {
+            var (antler, e) = (Is(Py.FromSql(r[0]), 36), Parse(r[1]));
+            if (!seen.Add(Py.Dumps(e["collectable_id"]))) continue;
+            list.Add((e, antler ? 2000 + Py.L(e["species_id"]) : Py.L(e["type"]), antler));
+        }
+        return list;
+    }
+
     /// <summary>Public_user/expedition `stats` (the Statistics/total shape the site's formatStats/formatAnimals read), as
     /// the site sends for a finished hunt: `data` holds `achievements` first, then `weapon` and
     /// `animal` only when not empty, and each counter only when not 0, in Statistics/total's key order.
@@ -324,6 +343,9 @@ public sealed partial class State
                     Inc(Species(Py.FromSql(row[0])), Is(ev, 11) ? "spots" : "tracks");
             }
         }
+        var collectables = new JsonObject();
+        foreach (var (_, type, _) in Pickups(con, firstEvent, untilEvent))
+            Inc(SetDefault(collectables, type.ToString(), () => new JsonObject { ["collected"] = 0 }), "collected");
         foreach (var (sp, hits, ethical) in kills)
             foreach (var s in hits.Count > 0 ? new[] { Species(sp), Ammo(hits[^1]) } : [Species(sp)])
             {
@@ -339,6 +361,7 @@ public sealed partial class State
             return o;
         }
         var data = new JsonObject { ["achievements"] = new JsonArray() };
+        if (collectables.Count > 0) data["collectables"] = collectables;
         var weaponOut = new JsonObject();
         foreach (var (w, ammo) in weapon)
         {
@@ -1220,6 +1243,7 @@ public sealed partial class State
         object[] row;
         JsonArray kills;
         JsonNode? stats = null;
+        List<(JsonObject Body, long Type, bool Antler)> pickups;
         using (var con = Con(account))
         {
             con.Begin();
@@ -1245,6 +1269,7 @@ public sealed partial class State
             // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
                 stats = Parse(s);
+            pickups = Pickups(con, Py.FromSql(row[5]), con.Scalar("SELECT MIN(first_event) FROM expeditions WHERE account_id = $a AND id > ?", row[0]) is long u ? u : long.MaxValue);
         }
         var (x, y, z) = StartPosition(Py.FromSql(row[2]));
         // an open expedition's start_ts is fractional; a closed one's start_ts and end_ts are whole seconds
@@ -1257,7 +1282,8 @@ public sealed partial class State
             ["start_ts"] = closed ? JsonValue.Create((long)Convert.ToDouble(row[3])) : Py.FromSql(row[3]),
             ["id"] = Py.FromSql(row[0]), ["reserve"] = Py.FromSql(row[1]),
         };
-        return Py.DumpBytes(new JsonObject { ["stats"] = stats, ["antler_collectables"] = new JsonArray(), ["kills"] = kills, ["expedition"] = expedition });
+        var antlers = new JsonArray(pickups.Where(p => p.Antler).Select(p => (JsonNode?)p.Body.DeepClone()).ToArray());
+        return Py.DumpBytes(new JsonObject { ["stats"] = stats, ["antler_collectables"] = antlers, ["kills"] = kills, ["expedition"] = expedition });
     }
 
     /// <summary>GET &lt;web-host&gt;/user/&lt;handle&gt;/score/?id=&lt;kill_id&gt;: kill details HTML, or null for an unknown kill.</summary>
@@ -1340,6 +1366,7 @@ public sealed partial class State
         var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
         var skip = Py.IsDigit(offset) ? (int)Math.Min(long.Parse(offset), int.MaxValue) : 0;
         List<object[]> rows;
+        List<int> counts;
         using (var con = Con(account))
         {
             con.Begin();
@@ -1349,15 +1376,17 @@ public sealed partial class State
                 UpdateHunterscore(con, account);
             rows = con.Rows(
                 "SELECT e.id, e.reserve, e.location_id, e.start_ts, e.end_ts, (SELECT COUNT(*) FROM harvests"
-                + " WHERE account_id = $a AND json_extract(body, '$.expedition_id') = e.id)"
+                + " WHERE account_id = $a AND json_extract(body, '$.expedition_id') = e.id), e.first_event,"
+                + " (SELECT MIN(n.first_event) FROM expeditions n WHERE n.account_id = $a AND n.id > e.id)"
                 + " FROM expeditions e WHERE e.account_id = $a ORDER BY e.id DESC");
+            counts = rows.Select(r => Pickups(con, Py.FromSql(r[6]), r[7] is long u ? u : long.MaxValue).Count).ToList();
         }
         var reply = JsonNode.Parse(recorded)!.AsObject();
-        var ours = rows.Select(r => (JsonNode?)new JsonObject
+        var ours = rows.Select((r, i) => (JsonNode?)new JsonObject
         {
             ["map"] = 0, ["kills"] = Py.FromSql(r[5]), ["singleplayer"] = 1,
             ["end_ts"] = r[4] is DBNull || Convert.ToDouble(r[4]) == 0 ? null : JsonValue.Create((long)Convert.ToDouble(r[4])),
-            ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = 0, ["location_id"] = Py.FromSql(r[2]),
+            ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = counts[i], ["location_id"] = Py.FromSql(r[2]),
             ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
         }).ToList();
         var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];

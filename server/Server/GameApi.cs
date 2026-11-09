@@ -429,7 +429,7 @@ public static class GameApi
         [property: Description("Game time of day")] double time_of_day, JsonElement weather, JsonElement ping_to_host, JsonElement player_positions);
 
     public sealed record HeartbeatReply(
-        [property: Description("Queued updates: 3 toast, 6 trophy score, 10 items, 11 photo upload URL, 15 balance")] JsonElement[] updates,
+        [property: Description("Queued updates: 3 toast, 6 trophy score, 7 collectable score, 10 items, 11 photo upload URL, 15 balance")] JsonElement[] updates,
         int err);
 
     public sealed record DisconnectRequest(int animals_killed, int animals_spotted, int animals_tracked,

@@ -278,6 +278,22 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAHuntsPickupsCountInTheStatisticsOnceItCloses()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 36, "collectable_id": 78, "species_id": 5, "double_antler": 0, "x": 1, "y": 2, "z": 3}""")));
+        Eq("{}", Total(B)["data"]!["collectables"]);  // an open hunt counts nothing yet
+        state.Disconnect(B, "{}"u8.ToArray());
+        const string counted = """{"9": {"collected": 1}, "2005": {"collected": 1}}""";
+        Eq(counted, Total(B)["data"]!["collectables"]);
+        Eq(counted, ConnectStats(B)["collectables"]);
+    }
+
+    [Fact]
     public void TestAHarvestAfterItsHuntClosedStillCounts()
     {
         state = Online();
