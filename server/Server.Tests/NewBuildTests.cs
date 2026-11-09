@@ -106,7 +106,10 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var upload = await server.SendAsync("POST", Host, url.PathAndQuery, [.. client, Bearer(access), ("Content-Type", "application/json")], [0xff, 0xd8]);
         Assert.Equal(("state", 200), (upload.Source, upload.Status));
         Assert.NotNull(state.PhotoFile($"/photos/{Account}/1-2.jpg"));
-        // the placeholder alone, or with a session that is not the server's, is no credential
+        // the refresh JWT lasts as long as the session (7 days), not 30
+        Assert.InRange((long)Claims((string)Body(refresh)["refresh_token"]!)["exp"]! - DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 604700, 604800);
+        // the placeholder alone, with a session that is not the server's, or with a JWT in the session header, is no credential
+        Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", game.Tokens!.Access(Account, 4)), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
         Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
         Assert.Equal(401, (await Post("/auth/jwt/refresh", new JsonObject(), ("X-Hun-Session", "nope"), ("X-App-Id", "client"), Cookie(ProtocolLiterals.RefreshCookie, "refresh_token"))).Status);
     }

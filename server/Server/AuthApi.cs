@@ -41,7 +41,7 @@ public static class AuthApi
         var gameWeb = app.MapGroup("/auth").RequireHost(game.GameWeb).WithGroupName("game").WithTags("Game credentials (game_web_host)");
         gameWeb.MapPost("/jwt/refresh", Always(r => Refresh(game, r))).WithName("JwtRefresh")
              .WithSummary("A fresh access JWT and refresh JWT")
-             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else, for the photo uploader (`X-App-Id: client`, the cookie text `refresh_token`, a valid `X-Hun-Session`), "
+             .WithDescription($"For a refresh JWT of this server (body `refresh_token` or the cookie `{ProtocolLiterals.RefreshCookie}`), else, for the photo uploader (`X-App-Id: client`, the cookie text `refresh_token`, the session), "
                               + "else, on a local server, the local account. The access JWT expires in 900 s; a stored token is never replayed.")
              .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json");
         gameWeb.MapPost("/emotelauncher/token", Always(_ => new(401, Json(), SteamTicketRefused, "auth"))).WithName("SteamTicket")
@@ -86,8 +86,9 @@ public static class AuthApi
     }
 
     /// <summary>The game's photo uploader has no tokens of its own: it presents the text `refresh_token` as its refresh token, with the
-    /// session it copied from the game. Without a JWT it sends no upload, so the session is its credential, for this shape only.</summary>
+    /// session it copied from the game. Without a JWT it sends no upload, so the session is its credential, for this shape only.
+    /// Only a session-shaped token (40 hex) counts: a JWT or a refresh token in that header is refused.</summary>
     static long? UploaderSession(Game game, Req r) =>
         r.Header("X-App-Id") == "client" && SignIn.CookieOf(r, ProtocolLiterals.RefreshCookie) == "refresh_token"
-        && r.Header("X-Hun-Session") is { Length: > 0 } session ? game.State!.Store.ResolveToken(session) : null;
+        && r.Header("X-Hun-Session") is { Length: 40 } session && session.All(Uri.IsHexDigit) ? game.State!.Store.ResolveToken(session) : null;
 }
