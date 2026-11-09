@@ -804,13 +804,21 @@ public class SkillTests : StateTestBase
     [Fact]
     public void TestDogLevelRewardPaidOnce()
     {
-        Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 100}}"""));
-        var gm = Reply(state.ConnectReply(ME))["wallet"]!["gm"]!.GetValue<double>();
-        var paid = new JsonArray(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")).Where(u => (int?)u!["update"] == 15).Select(u => u!.DeepClone()).ToArray());
-        Eq(new JsonArray(new JsonObject { ["amount"] = gm + 100, ["type"] = "gm", ["update"] = 15 }), paid);
-        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")));
-        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 50}}""")));
-        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")));
-        Eq("650.5", Items()["100"]!["metadata"]!["experience"]);
+        double gm;
+        using (var con = state.Store.Open(ME))
+        {
+            PlayerRows.AddItem(con, 300, 700, 0, null, O("""{"experience": 100}"""));
+            gm = Convert.ToDouble(con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = 'gm'"));
+        }
+        JsonArray Gm(string xp) => new(Hb(O("{\"event\": 23, \"item\": \"300\", \"metadata\": {\"dog_name\": \"Rex\", \"experience\": " + xp + "}}"))
+            .Where(u => (int?)u!["update"] == 15).Select(u => u!.DeepClone()).ToArray());
+        Eq(new JsonArray(new JsonObject { ["amount"] = gm + 400, ["type"] = "gm", ["update"] = 15 }), Gm("650.5"));  // levels at 300 and 600 in one event
+        Assert.Empty(Gm("650.5"));
+        Assert.Empty(Gm("50"));
+        Assert.Empty(Gm("650"));
+        using (var con = state.Store.Open(ME))
+            Assert.Equal("""{"experience":650.5,"dog_name":"Rex"}""", (string)con.Scalar("SELECT metadata FROM items WHERE account_id = $a AND guid = 300")!);
+        Assert.Empty(new JsonArray(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 900}}"""), O("""{"event": 23, "item": "999", "metadata": {"experience": 900}}"""))
+            .Where(u => (int?)u!["update"] == 15).ToArray()));  // not a dog, not an item
     }
 }

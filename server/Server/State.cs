@@ -149,7 +149,7 @@ public sealed partial class State
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
-                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills)
+                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -185,11 +185,11 @@ public sealed partial class State
                          + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
-                if (G(metadata, "experience", null) is { } xp && Py.IsNum(xp))
+                var dog = con.Rows("SELECT item_id, json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"]))).FirstOrDefault();
+                if (dog is not null && isDog(Convert.ToInt64(dog[0])) && G(metadata, "experience", null) is { } xp && Py.IsNum(xp))
                 {
                     // a dog's levels pay once: the stored experience only grows, and each level with a SILVER reward crossed is paid
-                    var old = con.Rows("SELECT json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"])))
-                        .FirstOrDefault()?[0] is double d ? d : 0;
+                    var old = dog[1] is long or double ? Convert.ToDouble(dog[1]) : 0;
                     var paid = Arr(dogSkills).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.D(r["xp"]) > old && Py.D(r["xp"]) <= Py.D(xp))
                         .SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>().Where(u => (string?)u["type"] == "rewards"))
                         .SelectMany(u => Arr(u["data"]).OfType<JsonObject>().Where(x => (string?)x["type"] == "SILVER" && Py.IsNum(x["amount"])))
@@ -1269,7 +1269,8 @@ public sealed partial class State
             events = new JsonArray();
         }
         using var con = Con(account);
-        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null));
+        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
+                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType));
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
