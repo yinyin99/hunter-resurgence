@@ -56,6 +56,6 @@ Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` 
 - **"Could not listen on port 80 or 443"** in the `2-run.cmd` window: another program uses that port (a web server, a second `2-run.cmd`). Close it and run again.
 - **The game cannot connect**: the `2-run.cmd` window must be open, and the game allowed in Windows Firewall.
 - **The game still reaches the official servers**: `2-run.cmd` says so; run `1-setup.cmd` again. Some antivirus programs block edits of the hosts file.
-- **You hunted before the restore**: the backup can no longer be restored onto that account. Open **Restore your backup** on the website tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
+- **You hunted before the restore**: the backup can no longer be restored onto that account. Open **Restore your backup** on the website, tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
 
 More detail on each tool: [backup tool](backup.md), [player kit](play.md), [website](website.md#restore-and-your-data).
