@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -29,6 +30,7 @@ static class BackupReader
 
     public static BackupContent Read(Stream stream, Limits lim)
     {
+        if (stream.CanSeek) CheckEntries(stream, lim.Entries);
         ZipArchive zip;
         try { zip = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true); }
         catch (InvalidDataException) { throw new RestoreException("not a zip"); }
@@ -37,6 +39,42 @@ static class BackupReader
             try { return Read(zip, lim); }
             catch (InvalidDataException e) { throw new RestoreException("damaged zip: " + e.Message); }
         }
+    }
+
+    /// <summary>Count the central directory's headers the way the zip library finds them, before it loads them all: it reads every header there is,
+    /// whatever the end record says, so a zip of millions of tiny entries would take gigabytes of memory before the entry cap is checked.</summary>
+    static void CheckEntries(Stream s, int cap)
+    {
+        static uint U32(ReadOnlySpan<byte> b, int at) => BinaryPrimitives.ReadUInt32LittleEndian(b[at..]);
+        static ushort U16(ReadOnlySpan<byte> b, int at) => BinaryPrimitives.ReadUInt16LittleEndian(b[at..]);
+        var at = s.Position;
+        var tail = new byte[(int)Math.Min(s.Length, 22 + ushort.MaxValue)];
+        s.Position = s.Length - tail.Length;
+        s.ReadExactly(tail);
+        var end = tail.AsSpan().LastIndexOf("PK\x05\x06"u8);
+        if (end < 0 || end + 22 > tail.Length) throw new RestoreException("not a zip");
+        long start = U32(tail, end + 16);
+        if ((U16(tail, end + 4) == ushort.MaxValue || start == uint.MaxValue || U16(tail, end + 10) == ushort.MaxValue)
+            && end >= 20 && tail.AsSpan(end - 20, 4).SequenceEqual("PK\x06\x07"u8))  // zip64: the library reads its record
+        {
+            var z = new byte[56];
+            var record = BinaryPrimitives.ReadUInt64LittleEndian(tail.AsSpan(end - 12));
+            if (s.Length < z.Length || record > (ulong)(s.Length - z.Length)) throw new RestoreException("not a zip");
+            s.Position = (long)record;
+            s.ReadExactly(z);
+            if (!z.AsSpan(0, 4).SequenceEqual("PK\x06\x06"u8)) throw new RestoreException("not a zip");
+            start = (long)BinaryPrimitives.ReadUInt64LittleEndian(z.AsSpan(48));
+        }
+        if (start < 0 || start > s.Length) throw new RestoreException("not a zip");
+        s.Position = start;
+        var h = new byte[46];
+        var n = 0;
+        while (s.ReadAtLeast(h, h.Length, throwOnEndOfStream: false) == h.Length && h.AsSpan(0, 4).SequenceEqual("PK\x01\x02"u8))
+        {
+            if (++n > cap) throw new RestoreException($"too many entries: over {cap}");
+            s.Seek(U16(h, 28) + U16(h, 30) + U16(h, 32), SeekOrigin.Current);
+        }
+        s.Position = at;
     }
 
     static BackupContent Read(ZipArchive zip, Limits lim)

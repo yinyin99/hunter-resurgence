@@ -75,17 +75,18 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
-    /// <summary>Is an upload of this account running (a delete waits for it).</summary>
+    /// <summary>Is an upload of this account running (a delete waits for it; one that waits for its next part is dropped).</summary>
     public bool Busy(long account)
     {
-        Sweep();
+        Sweep(account);
         return inFlight.ContainsKey(account);
     }
 
-    /// <summary>Open an upload for the account: its id, or null when the account has one open already or the server is busy.</summary>
+    /// <summary>Open an upload for the account: its id, or null when a part of the account's upload is being received or the server is busy.
+    /// An upload of the account that waits for its next part is dropped: this one starts over.</summary>
     public string? Start(long account)
     {
-        Sweep();
+        Sweep(account);
         if (Directory.Exists(Tmp))  // left by a server that stopped mid-upload
             foreach (var f in Directory.EnumerateFiles(Tmp))
                 if (!open.Values.Any(u => u.Path == f) && File.GetLastWriteTimeUtc(f) < DateTime.UtcNow.AddSeconds(-AbandonedSeconds)) File.Delete(f);
@@ -140,10 +141,10 @@ public sealed class Uploads(State state, string dataDir)
             }
             return over ? TooLarge : new(200, "received", $"Part {index} was received.");
         }
-        catch (BadHttpRequestException e) when (e.StatusCode == 413)  // the part is over the request's limit
+        catch (BadHttpRequestException e) when (e.StatusCode == 413)  // a chunked body over the request's limit
         {
             over = true;
-            return TooLarge;
+            return new(413, "too_large", "This request is too large: a request is at most 90 MiB, and a larger zip is sent in parts.");
         }
         catch (IOException)
         {
@@ -151,9 +152,13 @@ public sealed class Uploads(State state, string dataDir)
         }
         finally
         {
-            u.Touched = state.Clock();
             if (over) Drop(id);
-            else u.Writing = false;
+            else
+                lock (u)
+                {
+                    u.Touched = state.Clock();
+                    u.Writing = false;
+                }
         }
     }
 
@@ -179,15 +184,15 @@ public sealed class Uploads(State state, string dataDir)
         u.Slot.Dispose();
     }
 
-    /// <summary>Drop the uploads that got no part for <see cref="AbandonedSeconds"/> (not one a part is being written to).</summary>
-    void Sweep()
+    /// <summary>Drop the uploads that got no part for <see cref="AbandonedSeconds"/>, and every one of `account`; never one a part is being written to.</summary>
+    void Sweep(long? account = null)
     {
         var now = state.Clock();
         foreach (var (id, u) in open)
         {
             lock (u)
             {
-                if (u.Writing || now - u.Touched <= AbandonedSeconds) continue;
+                if (u.Writing || (u.Account != account && now - u.Touched <= AbandonedSeconds)) continue;
                 u.Writing = true;
             }
             Drop(id);

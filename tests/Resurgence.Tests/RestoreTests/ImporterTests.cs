@@ -48,6 +48,19 @@ public class ImporterTests
     }
 
     [Fact]
+    public void EntriesAreCountedBeforeTheZipIsOpened()
+    {
+        // an end record that claims one entry: the zip library would load all six, then fail; the count comes first
+        using var ms = new MemoryStream();
+        using (var z = new ZipArchive(ms, ZipArchiveMode.Create, true))
+            for (var i = 0; i < 6; i++) z.CreateEntry($"{i}.json");
+        var bytes = ms.ToArray();
+        bytes[^12] = bytes[^14] = 1;  // entries on this disk and in all
+        Assert.Contains("too many entries: over 5", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(bytes), limits: new Limits(Entries: 5))).Message);
+        Assert.Equal("not a zip", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream("PK"u8.ToArray()))).Message);
+    }
+
+    [Fact]
     public void ChecksRejectFilesOrTheZip()
     {
         var tampered = SyntheticZip.Own();

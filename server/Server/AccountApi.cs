@@ -104,7 +104,7 @@ public static class AccountApi
                 : Refuse(429, "busy", Busy))))
             .WithName("AccountRestoreStart").WithSummary("Start an upload of a backup zip in parts")
             .WithDescription("Answers `{status: started, id, partBytes}`: send the zip in parts of at most `partBytes` to `POST /account/restore/<id>/<part>`, "
-                             + "then `POST /account/restore/<id>/finish`. One upload at a time per account (`429` `busy`); one that gets no part for 30 minutes is deleted.")
+                             + "then `POST /account/restore/<id>/finish`. One upload at a time per account: a start drops the account's upload that waits for its next part (`429` `busy` while a part is received); one that gets no part for 30 minutes is deleted.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/restore/{id}/{part:int:min(0)}", (HttpContext ctx, string id, int part) => Upload(ctx, async account =>

@@ -471,16 +471,32 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var now = Py.Now();
         state.Clock = () => now;
         var uploads = new Uploads(state, tmp);
+        var held = new[] { uploads.Begin(2), uploads.Begin(3), uploads.Begin(4) };  // three of the server's four slots
         var id = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(new byte[6]))).Kind);
-        Assert.Null(uploads.Start(player));  // one open upload per account
         now += Uploads.AbandonedSeconds - 1;
-        Assert.Null(uploads.Start(player));
+        Assert.Null(uploads.Start(5));  // the server's slots are all taken
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         now += 2;
-        var again = uploads.Start(player);
-        Assert.NotNull(again);
+        var other = uploads.Start(5);  // the abandoned upload was deleted and freed its slot
+        Assert.NotNull(other);
         Assert.Equal(404, (await uploads.Part(player, id, 1, new MemoryStream(new byte[1]))).Status);
-        Assert.Equal(again + ".zip", Path.GetFileName(Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")))));
+        Assert.Equal(other + ".zip", Path.GetFileName(Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")))));
+        foreach (var h in held) h!.Dispose();
+    }
+
+    [Fact]
+    public async Task TestAStartOverDropsTheAccountsUnfinishedUpload()
+    {
+        var uploads = new Uploads(state, tmp);
+        var first = uploads.Start(player)!;
+        Assert.Equal("received", (await uploads.Part(player, first, 0, new MemoryStream(new byte[6]))).Kind);
+        var second = uploads.Start(player);
+        Assert.NotNull(second);
+        Assert.Equal(404, (await uploads.Part(player, first, 1, new MemoryStream(new byte[1]))).Status);
+        Assert.Equal(second + ".zip", Path.GetFileName(Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")))));
+        Assert.False(uploads.Busy(player));  // waiting for a part is not running: a delete drops it
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
     }
 
     /// <summary>An upload whose body stays open, so it holds the account's slot. The write is enough body for the request to reach the server; it is not

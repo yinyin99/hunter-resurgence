@@ -15,8 +15,8 @@ public class ServerRestoreServiceTests
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            var body = request.Content is null ? "" : await request.Content.ReadAsStringAsync(ct);
-            Seen.Add((request, KeepBodies ? body : body[^Math.Min(3, body.Length)..]));
+            var body = request.Content is null ? [] : await request.Content.ReadAsByteArrayAsync(ct);
+            Seen.Add((request, System.Text.Encoding.UTF8.GetString(KeepBodies ? body : body[^Math.Min(3, body.Length)..])));
             return answer(request);
         }
     }
