@@ -129,6 +129,8 @@ What a profile page shows of any player, in the game and on the website (communi
 | `POST /v1/Public_user/getByHostname`, form `hostname=<handle>` (any case), no token | `{id, handle, hostname, avatar, hunterscore, rank, membership, membershipType, membershipTitle, online, stats: {distance, duration}}`: `membership` as the connect `account` has it, the type and title as `Me/me` has them; `online` while a hunt of the account is open and had a heartbeat in the last `HEARTBEAT_TIMEOUT`; `stats` the distance and duration of [the statistics](#the-statistics). `null` for a handle that is unknown or banned |
 | `GET /game/user/<id>/profile` (API v2; also `/v1/game/user/<id>/profile`, the current build), no token | `{background, ribbon, hunterscore, earned_achievements}`: `background` and `ribbon` of the account's restored reply (null without one), the achievements it has earned. 404 (`application/vnd.goa.error`) for a user id that is unknown or banned |
 | `GET /hunters/<handle>` on `web_host`, for the website's server | `{handle, hunterscore, rank, membership, avatar}` ([The board](#the-hunterscore)) |
+| `POST /v1/Skill/list`, form `user_id`, with any player's token | The numbers of the account of that user id (the player's own, or any other account here: `{weapon: {item id: n}, tracking: [n], spotting: [n]}`, n = level plus the fraction of its span); the empty skills for an unknown or banned one |
+| `GET /hunters/<handle>/skills` on `web_host`, for the website's server | `{species: [{name, spotting, tracking}], weapons: [{name, group, value}]}`, the same numbers named by the catalogue (`group` is the weapon's sub-category, null without one); 404 for an unknown or banned handle |
 
 ## The facts file
 

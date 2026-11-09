@@ -284,6 +284,32 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsSkillsAreServedToEveryone()
+    {
+        await SignIn("99999999999999991", "one");
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open(9))
+        {  // the fixture's connect has no skills: a new account has the rows its hunts earn (species 0 and 1)
+            foreach (var kind in new[] { "spotting", "tracking" })
+                for (var key = 0; key < 2; key++)
+                    con.Exec("INSERT OR REPLACE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", kind, key, kind == "spotting" && key == 1 ? Skills.Threshold(3) : Skills.FRESH_XP);
+        }
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        var third = JsonNode.Parse((await Get("web.test", "/hunters/third/skills")).Body)!;
+        Assert.Contains(third["species"]!.AsArray(), s => (double)s!["spotting"]! == 3 && (double)s["tracking"]! > 1);
+        Assert.All(third["weapons"]!.AsArray(), w => Assert.False(string.IsNullOrEmpty((string?)w!["name"])));
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/skills")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/skills")).Status);
+        // Skill/list of another account's user id: its numbers, not the empty reply
+        var own = Store.FirstServerId;
+        Assert.Equal(3.0, (double)JsonNode.Parse(state.SkillListReply(own, "user_id=9"u8.ToArray())!)!["spotting"]![1]!);
+        Assert.Null(state.SkillListReply(own, "user_id=10"u8.ToArray()));  // banned
+        Assert.Null(state.SkillListReply(own, "user_id=424242"u8.ToArray()));  // unknown
+    }
+
+    [Fact]
     public async Task TestTheMinigameBoardsListTheRestoredBestScores()
     {
         state.CreateAccount(9, "third");
