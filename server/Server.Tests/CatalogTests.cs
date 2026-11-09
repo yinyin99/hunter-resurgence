@@ -18,7 +18,8 @@ public class CatalogTests : StateTestBase
            {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1, "ownMultiple": false, "inventory": {}, "fit": {}},
            {"id": 4, "name": "Test Service", "subcat": {"id": 0}, "price": 50, "type": 45, "hidden": 0, "inventory": {}, "fit": {}},
-           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}}],
+           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 6, "name": "Test Refill", "subcat": {"id": 0}, "price": 5, "hidden": 0, "ownMultiple": false, "units": {"count": 1, "name": "uses"}, "inventory": {}, "fit": {}}],
          "categories": [
            {"id": "all", "title": "All Items", "subcategories": [{"id": "all", "title": "All Items"}], "default": "all"},
            {"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}, {"id": 1, "title": "Handguns"}], "default": 0},
@@ -67,6 +68,7 @@ public class CatalogTests : StateTestBase
     [InlineData("id=1", 132L, new long[] { 1 })]              // today's price, half off
     [InlineData("id=1&count=3", 32L, new long[] { 1, 1, 1 })]
     [InlineData("id=1&count=3", 32L, new long[] { 1, 1, 1 }, new long[] { 1, 1 })]  // up to the own limit
+    [InlineData("id=6", 177L, new long[] { 6 }, new long[] { 6 })]  // a one-use item the player holds is bought again
     [InlineData("id=9&bundle=1", 92L, new long[] { 1, 2, 3 })]  // the bundle's price, each of its items, a hidden one too
     public async Task BuyingChargesTheStorePriceAndDeliversTheItems(string form, long left, long[] got, long[]? owned = null)
     {
@@ -140,8 +142,8 @@ public class CatalogTests : StateTestBase
         var reply = await Get(Store);
         Assert.Equal(200, reply.Status);
         var items = JsonNode.Parse(reply.Body)!["items"]!.AsArray();
-        Assert.Equal([1, 2, 4, 5], items.Select(i => (int)i!["id"]!));
-        Assert.Equal([true, false, false, false], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
+        Assert.Equal([1, 2, 4, 5, 6], items.Select(i => (int)i!["id"]!));
+        Assert.Equal([true, false, false, false, true], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
         var rifle = items[0]!;
         Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 2000L, true),  // the silver price takes the discount too
             ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!));

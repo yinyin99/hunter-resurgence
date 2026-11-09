@@ -961,13 +961,14 @@ public sealed partial class State
     }
 
     /// <summary>Whether n more copies of the item put the player over the catalogue's `ownLimit`, or over 1 when `ownMultiple` is false:
-    /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit.</summary>
+    /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit. An item with `units`
+    /// (a one-use order or refill) is never "owned": the game's own store gave no row for one, and the server keeps its row.</summary>
     bool OverOwnLimit(Db con, long itemId, int n)
     {
         if (items.GetValueOrDefault(itemId) is not { } item)
             return false;
         var limit = Py.Truthy(item["ownLimit"]) ? Py.L(item["ownLimit"]) : long.MaxValue;
-        if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]))
+        if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]) && !Py.Truthy(item["units"]))
             limit = Math.Min(limit, 1);
         return limit != long.MaxValue && (long)con.Scalar("SELECT COUNT(*) FROM items WHERE account_id = $a AND item_id = ?", itemId)! + n > limit;
     }
