@@ -62,6 +62,20 @@ public class WindowLogicTests
     }
 
     [Fact]
+    public void PicturesAreOnByDefaultAndMessagesAndHistoryAreOff()
+    {
+        Assert.All(new[] { "kills", "photos" }, k => Assert.True(Engine.Groups.Single(g => g.Key == k).On));
+        Assert.All(new[] { "messages", "history" }, k => Assert.False(Engine.Groups.Single(g => g.Key == k).On));
+        Assert.DoesNotContain(Loc.S("Msg_KillsOff"), Msg(Whole));
+    }
+
+    [Fact]
+    public void NotCoveredNoLongerClaimsAchievementDates()
+    {
+        Assert.DoesNotContain(Engine.NotCovered, s => s.Contains("chievement", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void ACutHuntListWinsOverAShortOne()
     {
         var s = Whole with { HuntsSaved = 2, HuntsListed = 3 };

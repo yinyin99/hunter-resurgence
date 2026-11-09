@@ -152,7 +152,7 @@
     <value>Les données des autres joueurs.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Les dates d’obtention des succès, le score personnel de mini-jeu hors du top 30, les compteurs de missions, le réglage des unités et les licences de réserve.</value>
+    <value>Le score personnel de mini-jeu hors du top 30, les compteurs de missions, le réglage des unités et les licences de réserve.</value>
   </data>
   <data name="NotCovered_6" xml:space="preserve">
     <value>Les codes cadeaux.</value>
