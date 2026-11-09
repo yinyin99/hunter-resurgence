@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Uporabite varnostno kopijo, narejeno v načinu „My account“. Operater vidi, ali je bila narejena za račun Steam, s katerim ste se prijavili; to je namig, ne dokaz.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Varnostno kopijo je mogoče obnoviti enkrat. Če na tem strežniku še niste igrali, vaš račun nato prevzame uporabniški id in ime iz varnostne kopije.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Vsak zip se shrani, da ga operater preveri ročno. Nič se ne obnovi samodejno, zato lahko traja nekaj časa.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Zip je lahko velik največ 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip je lahko velik največ 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip varnostne kopije</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Naloži</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Nalaganje …</value></data>

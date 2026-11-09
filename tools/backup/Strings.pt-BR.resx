@@ -473,7 +473,7 @@
     <value>Enviando o backup</value>
   </data>
   <data name="Send_Sending_Text" xml:space="preserve">
-    <value>Login feito. Enviando {0}...</value>
+    <value>Login feito. Enviando {0}: parte {1} de {2}...</value>
   </data>
   <data name="Send_review_Title" xml:space="preserve">
     <value>Recebido: aguardando revisão</value>
@@ -509,7 +509,7 @@
     <value>Recusado: grande demais</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
-    <value>Um zip de backup tem no máximo 64 MiB. Nada foi enviado.</value>
+    <value>Um zip de backup tem no máximo 1 GiB. Nada foi enviado.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Sessão encerrada</value>

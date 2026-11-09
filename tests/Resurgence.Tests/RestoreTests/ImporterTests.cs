@@ -44,7 +44,7 @@ public class ImporterTests
         var deepReply = SyntheticZip.Own().File("Me_friends.json", "/v1/Me/friends", Encoding.UTF8.GetBytes(new string('[', 70) + new string(']', 70)));
         Assert.Contains("Me_friends.json: not JSON, nested deeper than 64 or with a duplicate key", deepReply.Read().Report.Rejected);
 
-        Assert.Equal(new Limits(20_000, 1L << 30, 64 << 20, 32 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
+        Assert.Equal(new Limits(100_000, 1L << 30, 64 << 20, 32 << 20, 64, 100, 1 << 20, 128L << 20, 32 << 20), Limits.Default);
     }
 
     [Fact]

@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Olyan mentést használj, amely a „My account” módban készült. Az üzemeltető látja, hogy a mentés arra a Steam-fiókra készült-e, amellyel bejelentkeztél; ez támpont, nem bizonyíték.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>A mentés egyszer állítható vissza. Ha még nem játszottál ezen a szerveren, a fiókod ezután átveszi a mentés felhasználói azonosítóját és nevét.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Minden zipet megőrzünk, hogy egy üzemeltető kézzel ellenőrizhesse. Semmi sem áll vissza automatikusan, ezért ez eltarthat egy ideig.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip legfeljebb 64 MiB lehet.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>A zip legfeljebb 1 GiB lehet.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Mentési zip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Feltöltés</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Feltöltés…</value></data>

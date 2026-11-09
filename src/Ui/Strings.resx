@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>A zip is at most 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Backup zip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>

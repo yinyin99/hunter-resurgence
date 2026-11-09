@@ -15,20 +15,40 @@ public sealed record UploadOutcome(int Status, string Kind, string Message, stri
 
 public sealed class Uploads(State state, string dataDir)
 {
-    /// <summary>The largest zip taken, compressed. A real backup is under 1 MiB, one with pictures a few.</summary>
-    public const int MaxZipBytes = 64 << 20;
-    /// <summary>The reader's caps for an upload: what the zip may hold uncompressed (the default 1 GiB is for a local PC).</summary>
-    public static readonly Limits ZipLimits = new(TotalBytes: 256L << 20);
+    /// <summary>The largest zip taken, compressed: the reader's 1 GiB of content (a heavy profile with kill pages and photos holds hundreds of MiB).</summary>
+    public const long MaxZipBytes = 1L << 30;
+    /// <summary>The largest request body of an upload, one part or a whole zip sent at once: under the 100 MB a proxy in front may allow.</summary>
+    public const int MaxPartBytes = 90 << 20;
+    /// <summary>An open upload that gets no part for this long is deleted and frees its slots.</summary>
+    public const double AbandonedSeconds = 30 * 60;
     /// <summary>Zips one account may have waiting for review.</summary>
     public const int MaxReview = 3;
-    /// <summary>Uploads being read at once on the whole server (each is held in memory).</summary>
+    /// <summary>Uploads open at once on the whole server (each is a file of uploads-tmp, read from disk at its finish).</summary>
     const int MaxAtOnce = 4;
+
+    /// <summary>The cap of one zip; a test lowers it.</summary>
+    public long MaxZip { get; init; } = MaxZipBytes;
 
     static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
 
     readonly ConcurrentDictionary<long, bool> inFlight = new();
     readonly SemaphoreSlim slots = new(MaxAtOnce);
     readonly Lock decide = new();  // one decision at a time: "once per user id" is checked and taken in one step (one server process, ADR 0001)
+
+    /// <summary>An upload between its start and its finish: its file, the parts joined so far (Before: the length before the last one) and its slot.
+    /// Writing: a part or the finish holds it (under its lock), so nothing else writes, reads or deletes the file meanwhile.</summary>
+    sealed class Open(long account, string path, IDisposable slot)
+    {
+        public readonly long Account = account;
+        public readonly string Path = path;
+        public readonly IDisposable Slot = slot;
+        public int Next;
+        public long Before, Length;
+        public double Touched;
+        public bool Writing;
+    }
+
+    readonly ConcurrentDictionary<string, Open> open = new();
 
     Store Store => state.Store;
 
@@ -56,21 +76,121 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>Is an upload of this account running (a delete waits for it).</summary>
-    public bool Busy(long account) => inFlight.ContainsKey(account);
-
-    /// <summary>Apply the rules to the zip (as bytes, already read within the limit) for the signed-in account.</summary>
-    public UploadOutcome Accept(long account, byte[] zip)
+    public bool Busy(long account)
     {
+        Sweep();
+        return inFlight.ContainsKey(account);
+    }
+
+    /// <summary>Open an upload for the account: its id, or null when the account has one open already or the server is busy.</summary>
+    public string? Start(long account)
+    {
+        Sweep();
+        if (Directory.Exists(Tmp))  // left by a server that stopped mid-upload
+            foreach (var f in Directory.EnumerateFiles(Tmp))
+                if (!open.Values.Any(u => u.Path == f) && File.GetLastWriteTimeUtc(f) < DateTime.UtcNow.AddSeconds(-AbandonedSeconds)) File.Delete(f);
+        if (Begin(account) is not { } slot) return null;
         Directory.CreateDirectory(Tmp);
-        var path = Path.Combine(Tmp, Guid.NewGuid().ToString("N") + ".zip");
-        File.WriteAllBytes(path, zip);
+        var id = Guid.NewGuid().ToString("N");
+        var path = Path.Combine(Tmp, id + ".zip");
+        File.Create(path).Dispose();
+        open[id] = new(account, path, slot) { Touched = state.Clock() };
+        return id;
+    }
+
+    static readonly UploadOutcome Gone = new(404, "invalid", "This upload is not open: it finished, or got no part for too long. Send the zip again.");
+    static readonly UploadOutcome Receiving = new(429, "busy", "A part of this upload is still being received.");
+    static readonly UploadOutcome TooLarge = new(413, "too_large", "This file is too large: a backup zip is at most 1 GiB.");
+
+    /// <summary>Claim the account's open upload for a part or the finish; an outcome when it cannot be.</summary>
+    UploadOutcome? Claim(long account, string id, out Open u)
+    {
+        Sweep();
+        if (!open.TryGetValue(id, out u!) || u.Account != account) return Gone;
+        lock (u)
+        {
+            if (!open.ContainsKey(id)) return Gone;
+            if (u.Writing) return Receiving;
+            u.Writing = true;
+            return null;
+        }
+    }
+
+    /// <summary>Append part `index` (from 0) of the upload; the last part may be sent again and replaces itself. A zip over the cap ends the upload.</summary>
+    public async Task<UploadOutcome> Part(long account, string id, int index, Stream body)
+    {
+        if (Claim(account, id, out var u) is { } no) return no;
+        var over = false;
         try
         {
-            return Decide(account, path);
+            if (index != u.Next && index != u.Next - 1) return new(409, "invalid", $"Part {index} is out of order: the server expects part {u.Next}.");
+            var start = index == u.Next ? u.Length : u.Before;
+            await using (var file = new FileStream(u.Path, FileMode.Open, FileAccess.Write))
+            {
+                file.SetLength(start);
+                file.Position = start;
+                var buf = new byte[81920];
+                int n;
+                while ((n = await body.ReadAsync(buf)) > 0)
+                {
+                    if (file.Position + n > MaxZip) { over = true; break; }
+                    await file.WriteAsync(buf.AsMemory(0, n));
+                }
+                if (!over) (u.Before, u.Length, u.Next) = (start, file.Position, index + 1);
+            }
+            return over ? TooLarge : new(200, "received", $"Part {index} was received.");
+        }
+        catch (BadHttpRequestException e) when (e.StatusCode == 413)  // the part is over the request's limit
+        {
+            over = true;
+            return TooLarge;
+        }
+        catch (IOException)
+        {
+            return new(400, "invalid", $"Part {index} did not arrive whole. Send it again.");
         }
         finally
         {
-            File.Delete(path);
+            u.Touched = state.Clock();
+            if (over) Drop(id);
+            else u.Writing = false;
+        }
+    }
+
+    /// <summary>Apply the rules to the joined zip (read from its file) for the signed-in account; the upload ends whatever the outcome.</summary>
+    public UploadOutcome Finish(long account, string id)
+    {
+        if (Claim(account, id, out var u) is { } no) return no;
+        try
+        {
+            return Decide(account, u.Path);
+        }
+        finally
+        {
+            Drop(id);
+        }
+    }
+
+    /// <summary>End an upload: delete its file, free its slots. Its caller holds it, or it is abandoned.</summary>
+    public void Drop(string id)
+    {
+        if (!open.TryRemove(id, out var u)) return;
+        File.Delete(u.Path);
+        u.Slot.Dispose();
+    }
+
+    /// <summary>Drop the uploads that got no part for <see cref="AbandonedSeconds"/> (not one a part is being written to).</summary>
+    void Sweep()
+    {
+        var now = state.Clock();
+        foreach (var (id, u) in open)
+        {
+            lock (u)
+            {
+                if (u.Writing || now - u.Touched <= AbandonedSeconds) continue;
+                u.Writing = true;
+            }
+            Drop(id);
         }
     }
 
@@ -80,7 +200,7 @@ public sealed class Uploads(State state, string dataDir)
         Restored read;
         try
         {
-            read = Importer.Read(path, state.Catalogue, ZipLimits);
+            read = Importer.Read(path, state.Catalogue);
         }
         catch (RestoreException e)
         {
@@ -160,7 +280,7 @@ public sealed class Uploads(State state, string dataDir)
     public List<Pending> List() => Rows().Select(r =>
     {
         PlayerModel? m = null;
-        try { m = Importer.Read(Kept(r), state.Catalogue, ZipLimits).Model; }
+        try { m = Importer.Read(Kept(r), state.Catalogue).Model; }
         catch (Exception e) when (e is RestoreException or InvalidDataException or IOException) { }
         var steam = m?.Identity.SteamId64;
         return new Pending(r.Id, r.Account, r.Ts, r.UserId, m is null ? null : m.Profile.Handle ?? m.Identity.Handle,
@@ -176,7 +296,7 @@ public sealed class Uploads(State state, string dataDir)
             if (Rows(id).SingleOrDefault() is not { } row) return new(404, "unknown", $"No kept zip {id}.");
             var path = Kept(row);
             Restored read;
-            try { read = Importer.Read(path, state.Catalogue, ZipLimits); }
+            try { read = Importer.Read(path, state.Catalogue); }
             catch (Exception e) when (e is RestoreException or InvalidDataException or IOException)
             {
                 return Refused(row, new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed."), "The kept zip cannot be read, so it was not restored.");

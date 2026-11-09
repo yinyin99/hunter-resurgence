@@ -20,15 +20,21 @@ public static class AccountApi
 
     static Reply Refuse(int status, string kind, string message) => Outcome(new(status, kind, message));
 
-    /// <summary>A refusal that does not read the body: the reply is logged from a request with an empty one, so a too large upload
-    /// is never buffered just to be turned away.</summary>
-    static Reply Refuse(HttpContext ctx, int status, string kind, string message)
+    /// <summary>The request is logged with an empty body, so an upload is never buffered for the log (a refused one is never read at all).</summary>
+    static void NoBody(HttpContext ctx)
     {
         var r = ctx.Request;
         var headers = r.Headers;
         ctx.Items[typeof(Req)] = new Req(r.Method, r.Host.Host.ToLowerInvariant(), r.Path.Value ?? "", r.QueryString.Value?.TrimStart('?') ?? "",
             k => headers.TryGetValue(k, out var v) && v.Count > 0 ? v[0] : null, [], r.IsHttps);
-        return Refuse(status, kind, message);
+    }
+
+    /// <summary>A body over one request's limit is refused unread; otherwise the limit is set, so a chunked one stops there too.</summary>
+    static bool Oversized(HttpContext ctx)
+    {
+        if (ctx.Request.ContentLength > Uploads.MaxPartBytes) return true;
+        ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = Uploads.MaxPartBytes;
+        return false;
     }
 
     /// <summary>A state-changing request comes from our own page: a same-origin Origin, or the header a cross-site form cannot set.</summary>
@@ -64,32 +70,53 @@ public static class AccountApi
             .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator, each with its time and note "
                              + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected, userId, handle, handleKept, reason}`.");
 
-        group.MapPost("/restore", async (HttpContext ctx) =>
+        // an upload's requests: our own page, signed in; the body is never buffered for the log
+        async Task<Reply> Upload(HttpContext ctx, Func<long, Task<Reply>> then)
+        {
+            NoBody(ctx);
+            if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+            if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+            return await then(account);
+        }
+
+        group.MapPost("/restore", Task<Reply> (HttpContext ctx) => Upload(ctx, async account =>
             {
-                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
-                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
-                if (ctx.Request.ContentLength > Uploads.MaxZipBytes) return Refuse(ctx, 413, "too_large", TooLarge);
-                ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = Uploads.MaxZipBytes;
-                using var slot = uploads.Begin(account);
-                if (slot is null)
-                    return Refuse(ctx, 429, "busy", "An upload of yours is still being processed, or the server is busy. Try again in a minute.");
-                byte[] zip;
+                if (Oversized(ctx)) return Refuse(413, "too_large", TooLarge);
+                if (uploads.Start(account) is not { } id) return Refuse(429, "busy", Busy);
                 try
                 {
-                    using var body = new MemoryStream();
-                    await ctx.Request.Body.CopyToAsync(body);
-                    zip = body.ToArray();
+                    var part = await uploads.Part(account, id, 0, ctx.Request.Body);
+                    return Outcome(part.Kind == "received" ? uploads.Finish(account, id) : part);
                 }
-                catch (BadHttpRequestException)
+                finally
                 {
-                    return Refuse(413, "too_large", TooLarge);
+                    uploads.Drop(id);
                 }
-                return Outcome(uploads.Accept(account, zip));
-            })
-            .WithName("AccountRestore").WithSummary("Upload a backup zip (raw body)")
-            .WithDescription("The zip is the request body (at most 64 MiB), one upload at a time per account. A readable zip is kept for an operator "
+            }))
+            .WithName("AccountRestore").WithSummary("Upload a backup zip in one request (raw body)")
+            .WithDescription("The zip is the request body (at most 90 MiB; a larger zip is sent in parts, below), one upload at a time per account. A readable zip is kept for an operator "
                              + "and never restored automatically (`server review approve <id>`). "
                              + "Answers `{status, message}`: status `review`, `already`, `taken`, `invalid`, `busy` or `too_large`.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/restore/start", Task<Reply> (HttpContext ctx) => Upload(ctx, account => Task.FromResult(uploads.Start(account) is { } id
+                ? Json(200, new JsonObject { ["status"] = "started", ["id"] = id, ["partBytes"] = Uploads.MaxPartBytes })
+                : Refuse(429, "busy", Busy))))
+            .WithName("AccountRestoreStart").WithSummary("Start an upload of a backup zip in parts")
+            .WithDescription("Answers `{status: started, id, partBytes}`: send the zip in parts of at most `partBytes` to `POST /account/restore/<id>/<part>`, "
+                             + "then `POST /account/restore/<id>/finish`. One upload at a time per account (`429` `busy`); one that gets no part for 30 minutes is deleted.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/restore/{id}/{part:int:min(0)}", (HttpContext ctx, string id, int part) => Upload(ctx, async account =>
+                Oversized(ctx) ? Refuse(413, "too_large", TooLarge) : Outcome(await uploads.Part(account, id, part, ctx.Request.Body))))
+            .WithName("AccountRestorePart").WithSummary("One part of an upload (raw body)")
+            .WithDescription("Part `<part>`, from 0, in order, at most 90 MiB: the server appends it to the upload's file. The last part may be sent again (it replaces itself). "
+                             + "Answers `{status: received}`; `409` `invalid` for a part out of order, `404` `invalid` for an upload not open, `413` `too_large` when the zip passes 1 GiB (the upload ends).")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/restore/{id}/finish", (HttpContext ctx, string id) => Upload(ctx, account => Task.FromResult(Outcome(uploads.Finish(account, id)))))
+            .WithName("AccountRestoreFinish").WithSummary("Finish an upload: the joined zip is read like a zip sent at once")
+            .WithDescription("Answers what `POST /account/restore` answers; the upload ends whatever the outcome.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/delete", async (HttpContext ctx) =>
@@ -127,5 +154,6 @@ public static class AccountApi
             .Produces(200, contentType: "application/json");
     }
 
-    const string TooLarge = "This file is too large: a backup zip is at most 64 MiB.";
+    const string TooLarge = "This request is too large: a request is at most 90 MiB, and a larger zip is sent in parts.";
+    const string Busy = "An upload of yours is still being processed, or the server is busy. Try again in a minute.";
 }

@@ -40,11 +40,11 @@ public class UploadTests : StateTestBase, IAsyncLifetime
 
     string Zip(TestZip zip, string name) => zip.Write(tmp, name);
 
-    async Task<(Reply Reply, JsonNode Body)> Upload(byte[] zip, string? session = null, bool own = true)
+    async Task<(Reply Reply, JsonNode Body)> Upload(byte[] zip, string? session = null, bool own = true, string path = "/account/restore")
     {
         (string, string)[] headers = [("Content-Type", "application/zip"), .. own ? [("X-Requested-With", "XMLHttpRequest")] : Array.Empty<(string, string)>(),
                                       ("Cookie", "hr_session=" + (session ?? cookie))];
-        var reply = await server.SendAsync("POST", "web.test", "/account/restore", headers, zip);
+        var reply = await server.SendAsync("POST", "web.test", path, headers, zip);
         return (reply, JsonNode.Parse(reply.Body)!);
     }
 
@@ -376,7 +376,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         // Expect: 100-continue, so the client stops when the server refuses (a reset mid-send fails on Linux)
         var big = await server.SendAsync("POST", "web.test", "/account/restore",
             [("Content-Type", "application/zip"), ("X-Requested-With", "XMLHttpRequest"), ("Expect", "100-continue"), ("Cookie", "hr_session=" + cookie)],
-            new byte[Uploads.MaxZipBytes + 1]);
+            new byte[Uploads.MaxPartBytes + 1]);
         Assert.Equal((413, "too_large"), (big.Status, Status(JsonNode.Parse(big.Body)!)));
         Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         Assert.True(state.Store.AccountExists(player));
@@ -399,6 +399,88 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         using var again = uploads.Begin(1);
         Assert.NotNull(again);
         foreach (var m in more) m!.Dispose();
+    }
+
+    Task<(Reply Reply, JsonNode Body)> Post(string path, byte[]? body = null, string? session = null) => Upload(body ?? [], session, path: path);
+
+    /// <summary>Start an upload in parts; its id.</summary>
+    async Task<string> StartParts()
+    {
+        var (reply, body) = await Post("/account/restore/start");
+        Assert.Equal((200, "started", Uploads.MaxPartBytes), (reply.Status, Status(body), (int)body["partBytes"]!));
+        return (string)body["id"]!;
+    }
+
+    [Fact]
+    public async Task TestAZipSentInPartsIsJoinedOnDiskAndKept()
+    {
+        var zip = File.ReadAllBytes(Zip(TestZip.Own(), "parts.zip"));
+        var id = await StartParts();
+        var cuts = new[] { 0, zip.Length / 3, 2 * zip.Length / 3, zip.Length };
+        for (var i = 0; i < 3; i++)
+        {
+            var (part, body) = await Post($"/account/restore/{id}/{i}", zip[cuts[i]..cuts[i + 1]]);
+            Assert.Equal((200, "received"), (part.Status, Status(body)));
+        }
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        var (reply, done) = await Post($"/account/restore/{id}/finish");
+        Assert.Equal((200, "review"), (reply.Status, Status(done)));
+        Assert.True(File.Exists(Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "parts.zip")) + ".zip")));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        var (gone, _) = await Post($"/account/restore/{id}/finish");  // the finish ended the upload
+        Assert.Equal(404, gone.Status);
+        Assert.NotNull(await StartParts());  // and freed the account's slot
+    }
+
+    [Fact]
+    public async Task TestAPartOutOfOrderIsRefusedAndTheLastPartMayBeSentAgain()
+    {
+        var zip = File.ReadAllBytes(Zip(TestZip.Own(), "order.zip"));
+        var half = zip.Length / 2;
+        var id = await StartParts();
+        var (early, body) = await Post($"/account/restore/{id}/1", zip[half..]);
+        Assert.Equal((409, "invalid"), (early.Status, Status(body)));
+        Assert.Contains("expects part 0", (string)body["message"]!);
+        Assert.Equal(200, (await Post($"/account/restore/{id}/0", zip[..10])).Reply.Status);
+        Assert.Equal(200, (await Post($"/account/restore/{id}/0", zip[..half])).Reply.Status);  // sent again: it replaces itself
+        Assert.Equal(409, (await Post($"/account/restore/{id}/2", zip[half..])).Reply.Status);
+        Assert.Equal(200, (await Post($"/account/restore/{id}/1", zip[half..])).Reply.Status);
+        var (other, _) = await Post($"/account/restore/{id}/finish", session: SignedIn("other", "76561190000000001").Cookie);
+        Assert.Equal(404, other.Status);  // another account's upload is not open for it
+        var (reply, done) = await Post($"/account/restore/{id}/finish");
+        Assert.Equal((200, "review"), (reply.Status, Status(done)));
+        Assert.True(File.Exists(Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "order.zip")) + ".zip")));
+    }
+
+    [Fact]
+    public async Task TestAZipOverTheCapInPartsEndsTheUpload()
+    {
+        var uploads = new Uploads(state, tmp) { MaxZip = 10 };
+        var id = uploads.Start(player)!;
+        Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(new byte[6]))).Kind);
+        var over = await uploads.Part(player, id, 1, new MemoryStream(new byte[6]));
+        Assert.Equal((413, "too_large"), (over.Status, over.Kind));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        Assert.Equal(404, (await uploads.Part(player, id, 1, new MemoryStream(new byte[1]))).Status);
+        Assert.NotNull(uploads.Start(player));  // the slot is free again
+    }
+
+    [Fact]
+    public async Task TestAnAbandonedUploadIsDeletedAndFreesItsSlot()
+    {
+        var now = Py.Now();
+        state.Clock = () => now;
+        var uploads = new Uploads(state, tmp);
+        var id = uploads.Start(player)!;
+        Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(new byte[6]))).Kind);
+        Assert.Null(uploads.Start(player));  // one open upload per account
+        now += Uploads.AbandonedSeconds - 1;
+        Assert.Null(uploads.Start(player));
+        now += 2;
+        var again = uploads.Start(player);
+        Assert.NotNull(again);
+        Assert.Equal(404, (await uploads.Part(player, id, 1, new MemoryStream(new byte[1]))).Status);
+        Assert.Equal(again + ".zip", Path.GetFileName(Assert.Single(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")))));
     }
 
     /// <summary>An upload whose body stays open, so it holds the account's slot. The write is enough body for the request to reach the server; it is not

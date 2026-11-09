@@ -8,7 +8,7 @@ namespace Resurgence.Restore;
 /// <summary>The caps of a backup zip read for restore, all in one place. A zip over any of them is refused.
 /// MaxRatio applies to entries of at least RatioMinBytes (uncompressed bytes per compressed byte). JsonTotalBytes (manifest.json included) and JsonEntryBytes cap the
 /// .json entries that are parsed (a real backup holds under 4 MiB of JSON; pictures are bounded by EntryBytes and TotalBytes only).</summary>
-public sealed record Limits(int Entries = 20_000, long TotalBytes = 1L << 30, int EntryBytes = 64 << 20, int ManifestBytes = 32 << 20, int JsonDepth = 64,
+public sealed record Limits(int Entries = 100_000, long TotalBytes = 1L << 30, int EntryBytes = 64 << 20, int ManifestBytes = 32 << 20, int JsonDepth = 64,
     int MaxRatio = 100, int RatioMinBytes = 1 << 20, long JsonTotalBytes = 128L << 20, int JsonEntryBytes = 32 << 20)
 {
     public static readonly Limits Default = new();

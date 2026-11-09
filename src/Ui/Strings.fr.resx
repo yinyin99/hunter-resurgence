@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Utilisez une sauvegarde faite en mode « Mon compte ». L’opérateur voit si elle a été faite pour le compte Steam avec lequel vous êtes connecté ; c’est un indice, pas une preuve.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Une sauvegarde ne peut être restaurée qu’une seule fois. Si vous n’avez pas encore joué sur ce serveur, votre compte reprend alors l’id utilisateur et le nom de la sauvegarde.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Chaque zip est conservé pour qu’un opérateur le vérifie à la main. Rien n’est restauré automatiquement, cela peut donc prendre un moment.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Un zip fait 64 Mio au maximum.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Un zip fait 1 Gio au maximum.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip de sauvegarde</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Envoyer</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Envoi en cours…</value></data>

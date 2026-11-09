@@ -473,7 +473,7 @@
     <value>Enviando la copia</value>
   </data>
   <data name="Send_Sending_Text" xml:space="preserve">
-    <value>Sesión iniciada. Enviando {0}...</value>
+    <value>Sesión iniciada. Enviando {0}: parte {1} de {2}...</value>
   </data>
   <data name="Send_review_Title" xml:space="preserve">
     <value>Recibida: pendiente de revisión</value>
@@ -509,7 +509,7 @@
     <value>Rechazada: demasiado grande</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
-    <value>Un zip de copia pesa como máximo 64 MiB. No se envió nada.</value>
+    <value>Un zip de copia pesa como máximo 1 GiB. No se envió nada.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Sesión cerrada</value>

@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Użyj kopii utworzonej w trybie „My account”. Operator widzi, czy powstała dla konta Steam, na które się zalogowano; to wskazówka, nie dowód.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Kopię można przywrócić raz. Jeśli nie grano jeszcze na tym serwerze, konto otrzyma wtedy id użytkownika i nazwę z kopii.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Każdy plik zip jest przechowywany do ręcznego sprawdzenia przez operatora. Nic nie jest przywracane automatycznie, więc może to chwilę potrwać.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Plik zip może mieć najwyżej 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Plik zip może mieć najwyżej 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip kopii zapasowej</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Prześlij</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Przesyłanie…</value></data>

@@ -473,7 +473,7 @@
     <value>Envoi de la sauvegarde</value>
   </data>
   <data name="Send_Sending_Text" xml:space="preserve">
-    <value>Connecté. Envoi de {0}...</value>
+    <value>Connecté. Envoi de {0} : partie {1} sur {2}...</value>
   </data>
   <data name="Send_review_Title" xml:space="preserve">
     <value>Reçue : en attente de vérification</value>
@@ -509,7 +509,7 @@
     <value>Refusée : trop volumineuse</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
-    <value>Un zip de sauvegarde fait au plus 64 Mio. Rien n'a été envoyé.</value>
+    <value>Un zip de sauvegarde fait au plus 1 Gio. Rien n'a été envoyé.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Déconnecté</value>
