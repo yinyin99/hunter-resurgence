@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "trophies" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -73,7 +73,24 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => mock.GalleryAsync(handle, page);
     public Task<Result> DeleteGalleryImageAsync(long id) => mock.DeleteGalleryImageAsync(id);
     public Task<byte[]> GalleryZipAsync(string handle) => mock.GalleryZipAsync(handle);
-    public Task<Page<Trophy>> TrophiesAsync(string handle, int page) => mock.TrophiesAsync(handle, page);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/trophies?page=n</c>: one page of 24. A failed answer is an empty page.</summary>
+    public async Task<Page<Trophy>> TrophiesAsync(string handle, int page)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.TrophiesSuffix}?page={page}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerTrophies>() is { } t)
+                return new([.. (t.Rows ?? []).Select(r => new Trophy(r.Name, r.Date, null, null))], t.Page, t.Pages, t.Total);
+            log.LogWarning("The server answered {Path} with {Status}: no trophies", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no trophies", path, e.Message);
+        }
+        return new([], 1, 1);
+    }
     public Task<IReadOnlyList<Dog>> DogsAsync(string handle) => mock.DogsAsync(handle);
     public Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => mock.FriendsAsync(handle, page);
     public Task<Expedition?> ExpeditionAsync(string handle, long? id) => mock.ExpeditionAsync(handle, id);

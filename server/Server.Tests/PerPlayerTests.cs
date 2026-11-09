@@ -175,6 +175,39 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsTrophiesAreReadWithoutTheHiddenOnesAndPagedOnTheWebsite()
+    {
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        using (var con = state.Store.Open(8))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "1", O("""{"id": 1, "name": "shown"}"""));
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "2", O("""{"id": 2, "name": "secret", "hidden": true}"""));
+            for (var id = 1; id <= 26; id++)
+                PlayerRows.AddTrophy(con, "/game/user/trophies", id.ToString(), O($$"""{"id": {{id}}, "hidden": {{(id == 5 ? "true" : "false")}}, "species": 1, "timestamp": 1600000000}"""));
+            con.Commit();
+        }
+        // Trophy/list of another account's user id: its rows without the hidden ones; its own owner sees all; a banned or unknown id is the empty reply
+        var other = await Api(Replay.TROPHY_LIST, tokenA, "user_id=8");
+        Eq("""[1, [{"id": 1, "name": "shown"}]]""", T(other["total"], other["trophies"]));
+        Eq("2", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=8"))["total"]);
+        foreach (var id in new[] { 9, 99 })
+            Eq("0", (await Api(Replay.TROPHY_LIST, tokenA, $"user_id={id}"))["total"]);
+
+        async Task<JsonNode> Page(string query) => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/trophies" + query, null)).Body)!;
+        var first = await Page("?page=1");
+        Eq("""[1, 2, 25]""", T(first["page"], first["pages"], first["total"]));
+        Assert.Equal(24, first["rows"]!.AsArray().Count);
+        Eq("""{"name": "Test Deer", "date": "2020-09-13"}""", first["rows"]![0]);
+        var last = await Page("?page=3");  // past the end: the last page
+        Eq("""[2, 1]""", T(last["page"], last["rows"]!.AsArray().Count));
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/banned/trophies", null)).Status);
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/trophies", null)).Status);
+    }
+
+    [Fact]
     public async Task TestAServerHarvestIsInTheOwnTrophiesAboveEveryRestoredIdAndEachCanBeTaxidermized()
     {
         using (var con = state.Store.Open(ME))
