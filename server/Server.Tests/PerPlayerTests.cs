@@ -271,8 +271,14 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, "state"), (v2.Status, v2.Source));
         Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 1}""", JsonNode.Parse(v2.Body));
         Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", null)).Body);  // the current build's path
+        var ranks = await Send(community, "GET", "apiv2.test", "/game/user/8/ranks", null);
+        Assert.Equal((200, "state"), (ranks.Status, ranks.Source));
+        Assert.Equal(ranks.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/ranks", null)).Body);  // the current build's path
         foreach (var id in new[] { 7, 9, 99 })
+        {
             Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/profile", tokenB)).Status);
+            Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/ranks", tokenB)).Status);
+        }
     }
 
     [Fact]
