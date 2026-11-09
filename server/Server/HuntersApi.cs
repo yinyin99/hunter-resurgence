@@ -56,6 +56,14 @@ public static class HuntersApi
                              + "distanceKm, huntSeconds}`: the restored statistics plus the closed server hunts; 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/skills", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicSkills(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterSkills").WithSummary("A hunter's skills: the species' spotting and tracking, the weapons' shooting")
+            .WithDescription("`{species: [{name, spotting, tracking}], weapons: [{name, group, value}]}`, each number a level plus the fraction of its span (as Skill/list); "
+                             + "404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {
