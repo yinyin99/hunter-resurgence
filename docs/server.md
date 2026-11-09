@@ -72,7 +72,7 @@ The server's own answers for this build:
 
 | Path | Answer | Replay scope |
 |---|---|---|
-| `POST /auth/jwt/refresh` | A new access JWT (`exp` = now + 900 s) and refresh JWT, in the body (`expires_in`, `access_token`, `refresh_token`) and the access and refresh cookies (the refresh one for the path `/auth/jwt/refresh` only). The only credential is a refresh JWT this server signed (`typ` refresh: body `refresh_token` or the cookie); an access JWT, a session id or any other token gets 401. Nothing valid: 401. A local server: the local account. `scp` is 4 for `X-App-Id: client`, else 1 | - |
+| `POST /auth/jwt/refresh` | A new access JWT (`exp` = now + 900 s) and refresh JWT, in the body (`expires_in`, `access_token`, `refresh_token`) and the access and refresh cookies (the refresh one for the path `/auth/jwt/refresh` only). The credential is a refresh JWT this server signed (`typ` refresh: body `refresh_token` or the cookie); an access JWT, a session id or any other token gets 401. One exception, the game's photo uploader (it has no JWT of its own and sends no upload without one): `X-App-Id: client`, the refresh cookie text `refresh_token` and an `X-Hun-Session` that is a session (40 hex characters) that resolves; the refresh JWT it gets lasts 7 days, the session's lifetime (a later refresh with that JWT is an ordinary one, 30 days). Nothing valid: 401. A local server: the local account. `scp` is 4 for `X-App-Id: client`, else 1 | - |
 | `POST /auth/emotelauncher/token` | Always 401 `auth.invalid_steam_ticket` (a Steam ticket cannot be checked, [above](#sign-in-and-tokens)): the launcher falls back to the page | - |
 | `GET /launcher` | The start page ([above](#sign-in-and-tokens)): sign in, then `ewlauncher.startGame(<launch URL>)`. A local server: the recorded page | global |
 | `POST /v1/session/start_single_player` | `{session_id, network_id}` (the session is the first segment of the launch URL a launcher builds from it, and the game's `X-Hun-Session`) and the session and network id as cookies; opens the expedition at `lodge_id` in `reserve` | - |
@@ -226,7 +226,7 @@ With `offline_mode` false (a community server) players sign in with Steam; the e
 | refresh (starts with `r`) | `Launch/start` | 30 days; the only ones `Oauth/token` renews; `Oauth/token` (`oauth_refresh_token`) returns a new access token and the same refresh token |
 | JWT (`Bearer`) | `User/jwt`, on the game host and the API host, for the `oauth_access_token` of its JSON or form body | 30 minutes; three dot-separated parts whose payload has `sub`, `iat` and `exp` (the client reads `exp`); the third part is random, not a signature |
 | access JWT (`Bearer`, `oauth_access_token`) | `/auth/jwt/refresh`, the launch URL ([The current build](#the-current-build)) | 900 s; HS256-signed, kept in `tokens` |
-| refresh JWT | the same, the cookie | 30 days; renews only through `/auth/jwt/refresh`; not rotated (the game may keep presenting the one of its launch URL), so it ends with its 30 days, a ban or a delete |
+| refresh JWT | the same, the cookie | 30 days (7 days when the photo uploader asks with its placeholder and the session); renews only through `/auth/jwt/refresh`; not rotated (the game may keep presenting the one of its launch URL), so it ends with its 30 days, a ban or a delete |
 | web session cookie | the sign-in | 30 days |
 
 Expired rows are deleted at startup. `Launch/start`, `User/jwt` and `Oauth/token` answer a request without a valid token as every other state endpoint does (the expired-token reply).
