@@ -249,4 +249,20 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(2, Stored(B));
         Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
     }
+
+    [Fact]
+    public void TestAHitDistanceBeyondADoubleCountsNoneAndTheHuntStillCounts()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 7, "individual": 81, "species": 1, "gender": 0, "weight_grams": 1000, "texture": 0}"""),
+            O("""{"event": 1, "individual": 81, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e308}"""),
+            O("""{"event": 3, "individual": 81, "extended_species": 1}""")));
+        state.Disconnect(B, "{}"u8.ToArray());
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Reply(state.ExpeditionReply(B, "{}"u8.ToArray()))["stats"]!["data"]!["weapon"]);
+        Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "kills": 1}}}""", Total(B)["data"]!["weapon"]);
+        Assert.Equal(2, Stored(B));
+    }
 }

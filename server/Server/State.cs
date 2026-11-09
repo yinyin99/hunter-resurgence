@@ -1421,8 +1421,9 @@ public sealed partial class State
     /// <summary>n == v for a JSON number (or bool, as in Python).</summary>
     static bool Is(JsonNode? n, double v) => n is JsonValue && !Py.IsStr(n) && Py.D(n) == v;
 
-    /// <summary>n * 10, int stays int.</summary>
-    static JsonNode Times10(JsonNode? n) => Py.IsInt(n) ? JsonValue.Create(Py.L(n) * 10) : JsonValue.Create(Py.D(n) * 10);
+    /// <summary>n * 10, int stays int; a product beyond a double (a hit distance a player sent) is 0, so it never stores a
+    /// number the database cannot read back.</summary>
+    static JsonNode Times10(JsonNode? n) => Py.IsInt(n) ? JsonValue.Create(Py.L(n) * 10) : double.IsFinite(Py.D(n) * 10) ? JsonValue.Create(Py.D(n) * 10) : 0;
 
     /// <summary>Python n % 100 (floor modulo).</summary>
     static long Mod100(JsonNode? n) => ((Py.L(n) % 100) + 100) % 100;
