@@ -58,7 +58,7 @@ public static class RestoredReads
                 row is null ? null : Py.FromSql(row[3]), row is null ? null : Py.FromSql(row[4]));
     }
 
-    /// <summary>Add the stored statistics of the account's closed hunts (State.HuntStats) to data's `animal` and `weapon`: counters
+    /// <summary>Add the stored statistics of the account's closed hunts (State.HuntStats) to data's `animal`, `weapon` and `collectables`: counters
     /// add up, a weapon's `distance` (its longest hit) is the largest, a counter of data that is no number is replaced. Returns the
     /// hunts' summed distance and duration. A hunt that cannot be read back (a number that is not finite) is skipped and logged.</summary>
     public static (double Distance, double Duration) AddHunts(Db con, JsonObject data)

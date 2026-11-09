@@ -294,6 +294,33 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAnyAccountsStatisticsAreReadByAnotherUserIdAndShownAsATab()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        state.Disconnect(B, """{"distance_travelled": 466}"""u8.ToArray());
+
+        // the closed hunt is in the statistics another account asks for; a banned, an unknown and the recorded player's user id are not served
+        Eq(Total(B), Reply(state.StatisticsReply(ME, "user_id=8"u8.ToArray())!));
+        foreach (var id in new[] { 9, 99, 7 })
+            Assert.Null(state.StatisticsReply(B, Encoding.UTF8.GetBytes($"user_id={id}")));
+
+        var page = state.StatisticsPage(B);
+        var w = page["weapons"]!.AsArray().Single()!;
+        Assert.Equal(("Test Rifle", "Test Bullet", 1, 100.0, 1, 100.0), ((string)w["weapon"]!, (string)w["ammo"]!, (int)w["shots"]!, (double)w["accuracy"]!, (int)w["kills"]!, (double)w["killsPerHit"]!));
+        Assert.Null(w["longest"]);
+        var a = page["animals"]!.AsArray().Single()!;
+        Assert.Equal(("Test Deer", 0, 0, 1), ((string)a["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!));
+        Assert.Equal(0.466, (double)page["distanceKm"]!, 6);
+        Assert.Empty(page["collectables"]!.AsArray());
+    }
+
+    [Fact]
     public void TestAHarvestAfterItsHuntClosedStillCounts()
     {
         state = Online();
@@ -335,6 +362,38 @@ public class HunterscoreTests : StateTestBase
         using var check = migrated.Open(5);
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion5RecountsTheClosedHuntsForTheirPickups()
+    {
+        var file = Path.Combine(tmp, "v5.db");
+        var store = new Store(file);
+        store.CreateAccount(5, "five", new JsonObject());
+        using (var con = store.Open(5))
+        {
+            con.Exec("INSERT INTO expeditions (account_id, start_ts, end_ts, stats) VALUES ($a, 1, 2, '{}')");
+            con.Exec("INSERT INTO expeditions (account_id, start_ts, stats) VALUES ($a, 3, '{}')");
+            con.Exec("PRAGMA user_version = 5");
+        }
+        using var check = new Store(file).Open(5);
+        Assert.Equal(["", "{}"], check.Rows("SELECT COALESCE(stats, '') FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (string)r[0]));
+    }
+
+    [Fact]
+    public void TestAVariantAntlerAndAMalformedPickupCountForTheirTypeOrNothing()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 36, "collectable_id": 1, "species_id": 105, "double_antler": 0, "x": 1, "y": 2, "z": 3}"""),
+            O("""{"event": 24, "collectable_id": 2, "type": "x", "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 24, "collectable_id": 3, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
+        state.Disconnect(B, "{}"u8.ToArray());
+        Eq("""{"2005": {"collected": 1}}""", Total(B)["data"]!["collectables"]);
+        Assert.NotNull(Reply(state.ExpeditionReply(B, "{}"u8.ToArray()))["stats"]);
+        Eq("1", Reply(state.ExpeditionListReply(B, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()))["expeditions"]![0]!["collectables"]);
     }
 
     [Fact]

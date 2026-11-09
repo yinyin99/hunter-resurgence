@@ -295,8 +295,9 @@ public sealed partial class State
                                    firstEvent, untilEvent))
         {
             var (antler, e) = (Is(Py.FromSql(r[0]), 36), Parse(r[1]));
-            if (!seen.Add(Py.Dumps(e["collectable_id"]))) continue;
-            list.Add((e, antler ? 2000 + Py.L(e["species_id"]) : Py.L(e["type"]), antler));
+            var id = antler ? e["species_id"] : e["type"];
+            if (!Py.IsInt(id) || !seen.Add(Py.Dumps(e["collectable_id"]))) continue;  // a type that is no whole number counts 0
+            list.Add((e, antler ? 2000 + Py.L(id) % 100 : Py.L(id), antler));  // a variant (species 100 and up) is its species' type
         }
         return list;
     }
@@ -307,7 +308,8 @@ public sealed partial class State
     ///
     /// kills: [(species, hits, ethical)] of the expedition. Events after first_event up to untilEvent (the next expedition's
     /// first_event): 1 = hit, 21 = miss (matches the client's disconnect totals); 11 = spot and 12 = track clue, counted as
-    /// distinct animals per species (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).</summary>
+    /// distinct animals per species (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).
+    /// `collectables.<type>.collected` counts the hunt's pickups (<see cref="Pickups"/>).</summary>
     public static JsonObject HuntStats(Db con, JsonNode? firstEvent, long untilEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
                                        long duration, JsonNode? distance)
     {
@@ -723,10 +725,19 @@ public sealed partial class State
         };
     }
 
-    /// <summary>Statistics/total for the player's user_id: the restored statistics plus the closed server hunts; null for anyone
-    /// else and, on a local server, for an account without a restored profile (its recorded reply is replayed). On a community
-    /// server every account has them (a new account's base is empty).</summary>
-    public byte[]? StatisticsReply(long account, byte[] formBody) => RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+    /// <summary>Statistics/total for a user_id: the restored statistics plus the closed server hunts. On a community server that is
+    /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
+    /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>
+    public byte[]? StatisticsReply(long account, byte[] formBody)
+    {
+        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
+        if (!Online || userId == Py.Str(Account(account)["user_id"]))
+            return RestoredReply(account, formBody, RestoredReads.StatisticsTotal);
+        if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
+            return null;
+        using var con = Con(other);
+        return Py.DumpBytes(RestoredReads.StatisticsTotal(con));
+    }
 
     /// <summary>Achievement/stats for the player's user_id: the restored achievements with the times this server stored
     /// (<see cref="AwardAchievements"/>); null as <see cref="StatisticsReply"/>.</summary>
