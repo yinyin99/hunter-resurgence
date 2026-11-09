@@ -36,7 +36,8 @@ public static class Fixtures
                              {"id": 17, "name": "Test Rabbit", "define": "COTTONTAIL_RABBIT"}],
                  "items": [{"id": 5, "name": "Test Rifle"}, {"id": 2, "name": "Test Scope"},
                            {"id": 10, "name": "Test Bullet", "sponsor_image": "testbrand_logo.jpg"},
-                           {"id": 14, "name": "Test Shot A"}, {"id": 241, "name": "Test Shot B"}],
+                           {"id": 14, "name": "Test Shot A"}, {"id": 241, "name": "Test Shot B"},
+                           {"id": 700, "name": "Test Hound", "cat": 12, "type": 25}, {"id": 701, "name": "Test Collar", "cat": 12, "type": 26}],
                  "reserves": [{"id": 2, "name": "Test Reserve"}],
                  "locations": [{"id": 101, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": 2}]}
                 """);
@@ -75,7 +76,11 @@ public static class Fixtures
                     "active_services": {}},
                  "expedition": {"expedition_id": 730218845, "lodge": 100, "x": -9150.0, "y": 140.0, "z": 4875.0},
                  "account": {"handle": "hunter", "user_id": 7, "avatar_url": "https://avatar.test/256/1.png"},
-                 "wallet": {"em": 182.0, "gm": 33.0}}
+                 "wallet": {"em": 182.0, "gm": 33.0},
+                 "dog_skills": [{"id": 1, "lvl": 1, "xp": 0, "unlocks": [{"type": "loyalty", "skill": "DOG_SKILL_LOYALTY_ONE"}]},
+                                {"id": 2, "lvl": 2, "xp": 100, "unlocks": [{"type": "pointing", "skill": "DOG_SKILL_POINT_TWO"}, {"type": "trophy", "define": "RIBBON"}]},
+                                {"id": 3, "lvl": 3, "xp": 300, "unlocks": [{"type": "rewards", "data": [{"type": "SILVER", "amount": 100}]}]},
+                                {"id": 4, "lvl": 5, "xp": 600, "unlocks": []}]}
                 """);
             connect["species"] = new JsonArray(Enumerable.Range(0, 55)
                 .Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = i == 1 ? 0.8 : 1.0, ["variant_id"] = i }).ToArray());

@@ -730,6 +730,48 @@ public sealed partial class State
         };
     }
 
+    const long DogCategory = 12, DogType = 25;  // the catalogue's DOGS category and DOG type (the collars, vests and treats are other types)
+
+    static string Words(string define, string prefix) =>
+        string.Join(' ', (define.StartsWith(prefix) ? define[prefix.Length..] : define).Split('_', StringSplitOptions.RemoveEmptyEntries)
+            .Select(w => char.ToUpperInvariant(w[0]) + w[1..].ToLowerInvariant()));
+
+    /// <summary>What a profile page's dogs tab shows of an account: `dogs` [{name, type, level, percent, skills: [{title, level}], trophies}], one per
+    /// owned dog (an inventory row of the dog category and type): the name and the experience are its metadata's. The connect's `dog_skills` rows
+    /// (cumulative `xp`, `lvl`, `unlocks`) the experience has reached give the level (the last one's `lvl`, 0 without any), the skills (a define as
+    /// words, at its row's `lvl`) and the trophies; `percent` is the way to the next row (100 at the last, 0 without a table).</summary>
+    public JsonObject PublicDogs(long account)
+    {
+        var table = Arr(G(connect, "dog_skills", null)).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.IsNum(r["lvl"])).OrderBy(r => Py.D(r["xp"])).ToList();
+        using var con = Con(account);
+        var dogs = new JsonArray();
+        foreach (var row in Items(con).OfType<JsonObject>())
+        {
+            var item = items.GetValueOrDefault(Py.L(row["item_id"]));
+            if (item is null || !Is(G(item, "cat", null), DogCategory) || !Is(G(item, "type", null), DogType)) continue;
+            var metadata = row["metadata"]!.AsObject();
+            var experience = G(metadata, "experience", null) is { } e && Py.IsNum(e) ? Math.Max(Py.D(e), 0) : 0;
+            var reached = table.Where(r => Py.D(r["xp"]) <= experience).ToList();
+            var level = reached.Count > 0 ? Py.L(reached[^1]["lvl"]) : 0;
+            var from = reached.Count > 0 ? Py.D(reached[^1]["xp"]) : 0;
+            var percent = reached.Count < table.Count ? (int)Math.Floor((experience - from) / (Py.D(table[reached.Count]["xp"]) - from) * 100) : table.Count > 0 ? 100 : 0;
+            var skills = new JsonArray();
+            var trophies = new JsonArray();
+            foreach (var r in reached)
+                foreach (var u in Arr(r["unlocks"]).OfType<JsonObject>())
+                    if (u["skill"] is { } skill)
+                        skills.Add(new JsonObject { ["title"] = Words((string)skill!, "DOG_SKILL_"), ["level"] = C(r["lvl"]) });
+                    else if ((string?)u["type"] == "trophy" && u["define"] is { } define)
+                        trophies.Add(Words((string)define!, ""));
+            dogs.Add(new JsonObject
+            {
+                ["name"] = C(G(metadata, "dog_name", null)) ?? "", ["type"] = C(item["name"]), ["level"] = level, ["percent"] = percent,
+                ["skills"] = skills, ["trophies"] = trophies,
+            });
+        }
+        return new JsonObject { ["dogs"] = dogs };
+    }
+
     /// <summary>Statistics/total for a user_id: the restored statistics plus the closed server hunts. On a community server that is
     /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
     /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>

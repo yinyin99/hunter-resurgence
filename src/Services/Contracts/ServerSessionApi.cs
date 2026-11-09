@@ -14,6 +14,8 @@ public static class ServerSessionApi
     public const string Hunters = "/hunters";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. Public: no cookie needed.</summary>
     public const string SkillsSuffix = "/skills";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. Public: no cookie needed.</summary>
+    public const string DogsSuffix = "/dogs";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
     public const string TrophiesSuffix = "/trophies";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
@@ -50,3 +52,10 @@ public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy
 
 /// <param name="Date">The day, yyyy-MM-dd; empty when the trophy has none.</param>
 public sealed record ServerTrophy(string Name, string Date);
+
+/// <summary>A hunter's dogs of <see cref="ServerSessionApi.DogsSuffix"/>: <c>Percent</c> is the way to the next level.</summary>
+public sealed record ServerDogs(ServerDog[] Dogs);
+
+public sealed record ServerDog(string Name, string Type, int Level, int Percent, ServerDogSkill[] Skills, string[] Trophies);
+
+public sealed record ServerDogSkill(string Title, int Level);
