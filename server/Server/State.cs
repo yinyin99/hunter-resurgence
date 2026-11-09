@@ -720,7 +720,7 @@ public sealed partial class State
             var item = items.GetValueOrDefault(Py.L(row["item_id"]));
             if (item is null || !Is(G(item, "cat", null), DogCategory) || !Is(G(item, "type", null), DogType)) continue;
             var metadata = row["metadata"]!.AsObject();
-            var experience = G(metadata, "experience", null) is { } e && Py.IsNum(e) ? Py.D(e) : 0;
+            var experience = G(metadata, "experience", null) is { } e && Py.IsNum(e) ? Math.Max(Py.D(e), 0) : 0;
             var reached = table.Where(r => Py.D(r["xp"]) <= experience).ToList();
             var level = reached.Count > 0 ? Py.L(reached[^1]["lvl"]) : 0;
             var from = reached.Count > 0 ? Py.D(reached[^1]["xp"]) : 0;
