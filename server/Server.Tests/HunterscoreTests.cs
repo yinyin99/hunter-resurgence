@@ -296,10 +296,10 @@ public class HunterscoreTests : StateTestBase
 
         var page = state.StatisticsPage(B);
         var w = page["weapons"]!.AsArray().Single()!;
-        Assert.Equal(("Test Rifle", "Test Bullet", 1L, 100.0, 1L, 100.0), ((string)w["weapon"]!, (string)w["ammo"]!, (long)w["shots"]!, (double)w["accuracy"]!, (long)w["kills"]!, (double)w["killsPerHit"]!));
+        Assert.Equal(("Test Rifle", "Test Bullet", 1, 100.0, 1, 100.0), ((string)w["weapon"]!, (string)w["ammo"]!, (int)w["shots"]!, (double)w["accuracy"]!, (int)w["kills"]!, (double)w["killsPerHit"]!));
         Assert.Null(w["longest"]);
         var a = page["animals"]!.AsArray().Single()!;
-        Assert.Equal(("Test Deer", 0L, 0L, 1L), ((string)a["name"]!, (long)a["spotted"]!, (long)a["tracked"]!, (long)a["harvested"]!));
+        Assert.Equal(("Test Deer", 0, 0, 1), ((string)a["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!));
         Assert.Equal(0.466, (double)page["distanceKm"]!, 6);
         Assert.Empty(page["collectables"]!.AsArray());
     }

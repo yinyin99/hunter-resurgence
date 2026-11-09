@@ -308,6 +308,24 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(404, (await Get("web.test", "/hunters/banned/statistics")).Status);
     }
 
+    // a restore keeps the backup's statistics as they are: members of another type or counters of any size must not fail the tab
+    [Fact]
+    public async Task TestTheStatisticsTabSurvivesOddRestoredStatistics()
+    {
+        state.CreateAccount(9, "odd");
+        using (var con = state.Store.Open(9))
+            PlayerRows.SetStatistics(con, O("""
+                {"collectables": [], "daily_missions": {}, "animal": {"1": 5, "2": {"kills": 99999999999, "spots": -3}}, "weapon": {"5": 3, "6": [], "7": {"10": {"hits": 1e30, "misses": "x"}}}}
+                """), 5000, 1e30, null, null);
+        var reply = await Get("web.test", "/hunters/odd/statistics");
+        Assert.Equal(200, reply.Status);
+        var page = JsonNode.Parse(reply.Body)!;
+        Assert.Equal(int.MaxValue, (int)page["huntSeconds"]!);
+        Assert.Equal([("2", 0, 0, int.MaxValue), ("Test Deer", 0, 0, 0)],  // a negative counter is 0, a member that is no object counts nothing
+                     page["animals"]!.AsArray().Select(a => ((string)a!["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!)));
+        Assert.Equal(int.MaxValue, (int)page["weapons"]!.AsArray().Single()!["shots"]!);
+    }
+
     [Fact]
     public async Task TestTheMinigameBoardsListTheRestoredBestScores()
     {

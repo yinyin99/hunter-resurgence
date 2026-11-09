@@ -67,31 +67,32 @@ public sealed partial class State
         JsonObject total;
         using (var con = Con(account))
             total = RestoredReads.StatisticsTotal(con).AsObject();
-        static double N(JsonNode? o, string key) => o?[key] is { } n && Py.IsNum(n) ? Py.D(n) : 0;
+        static double N(JsonNode? o, string key) => o is JsonObject x && x[key] is { } n && Py.IsNum(n) ? Py.D(n) : 0;  // a restored backup is the player's: any member can be of another type
+        static int Count(double d) => (int)Math.Clamp(d, 0, int.MaxValue);  // and a counter any size: the website holds ints
         static JsonNode? Key(string id) => long.TryParse(id, out var n) ? JsonValue.Create(n) : null;  // the catalogues are keyed by number
         string Weapon(string id) => Py.Str(Lookup(items, Key(id))?["name"] ?? id);
         var weapons = new List<(string Name, JsonObject Row)>();
-        foreach (var (w, ammo) in total["data"]!["weapon"]?.AsObject() ?? [])
-            foreach (var (a, c) in ammo?.AsObject() ?? [])
+        foreach (var (w, ammo) in total["data"]!["weapon"] as JsonObject ?? [])
+            foreach (var (a, c) in ammo as JsonObject ?? [])
             {
                 double hits = N(c, "hits"), shots = hits + N(c, "misses"), mm = N(c, "distance");
                 weapons.Add((Weapon(w), new JsonObject
                 {
-                    ["weapon"] = Weapon(w), ["ammo"] = Weapon(a), ["shots"] = (long)shots, ["accuracy"] = shots > 0 ? Math.Round(hits / shots * 100, 1) : 0,
-                    ["kills"] = (long)N(c, "kills"), ["killsPerHit"] = hits > 0 ? Math.Round(N(c, "kills") / hits * 100, 1) : 0, ["longest"] = mm > 0 ? mm / 1000 : null,
+                    ["weapon"] = Weapon(w), ["ammo"] = Weapon(a), ["shots"] = Count(shots), ["accuracy"] = shots > 0 ? Math.Round(hits / shots * 100, 1) : 0,
+                    ["kills"] = Count(N(c, "kills")), ["killsPerHit"] = hits > 0 ? Math.Round(N(c, "kills") / hits * 100, 1) : 0, ["longest"] = mm > 0 ? mm / 1000 : null,
                 }));
             }
         var animals = new List<(string Name, JsonObject Row)>();
-        foreach (var (sp, c) in total["data"]!["animal"]?.AsObject() ?? [])
+        foreach (var (sp, c) in total["data"]!["animal"] as JsonObject ?? [])
         {
             var name = SpeciesName(Key(sp)) ?? sp;
-            animals.Add((name, new JsonObject { ["name"] = name, ["spotted"] = (long)N(c, "spots"), ["tracked"] = (long)N(c, "tracks"), ["harvested"] = (long)N(c, "kills") }));
+            animals.Add((name, new JsonObject { ["name"] = name, ["spotted"] = Count(N(c, "spots")), ["tracked"] = Count(N(c, "tracks")), ["harvested"] = Count(N(c, "kills")) }));
         }
         return new JsonObject
         {
             ["weapons"] = new JsonArray([.. weapons.OrderBy(w => w.Name, StringComparer.Ordinal).Select(w => (JsonNode?)w.Row)]),
             ["animals"] = new JsonArray([.. animals.OrderBy(a => a.Name, StringComparer.Ordinal).Select(a => (JsonNode?)a.Row)]),
-            ["collectables"] = new JsonArray(), ["distanceKm"] = N(total, "distance") / 1000, ["huntSeconds"] = (long)N(total, "duration"),
+            ["collectables"] = new JsonArray(), ["distanceKm"] = N(total, "distance") / 1000, ["huntSeconds"] = Count(N(total, "duration")),
         };
     }
 

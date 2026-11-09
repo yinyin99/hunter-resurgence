@@ -155,8 +155,8 @@ public static class GameApi
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("StatisticsTotal").WithSummary("Statistics of a player")
-               .WithDescription("The player's own restored statistics (`data`, `distance`, `duration`); for other players and unrestored "
-                                + "accounts a local server replays the recording and a community server sends empty statistics.")
+               .WithDescription("The restored statistics plus the closed server hunts (`data`, `distance`, `duration`): the player's own on a local "
+                                + "server (other players and unrestored accounts replay the recording), any account's on a community server (an unknown, banned or recorded user id gets empty statistics).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, ACHIEVEMENT_STATS, r => Own(game, r, a => s.AchievementReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
