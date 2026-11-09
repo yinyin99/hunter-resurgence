@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Utilize uma cópia de segurança criada no modo «Minha conta». O operador vê se foi criada para a conta Steam com que iniciou sessão; é uma indicação, não uma prova.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Uma cópia de segurança só pode ser restaurada uma vez. Se ainda não jogou neste servidor, a sua conta passa então a ter o ID de utilizador e o nome da cópia de segurança.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Todos os zips são guardados para um operador os verificar manualmente. Nada é restaurado automaticamente, por isso pode demorar algum tempo.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Um zip pode ter no máximo 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Um zip pode ter no máximo 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip de cópia de segurança</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Enviar</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>A enviar…</value></data>

@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Brug en backup lavet i tilstanden »My account«. Operatøren kan se, om den er lavet til den Steam-konto, du loggede ind med; det er et fingerpeg, ikke et bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En backup kan kun gendannes én gang. Hvis du endnu ikke har spillet på denne server, overtager din konto så backuppens bruger-id og navn.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Hver zip gemmes, så en operatør kan tjekke den manuelt. Intet gendannes automatisk, så det kan tage et stykke tid.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>En zip er højst 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>En zip er højst 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Backup-zip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Upload</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Uploader…</value></data>

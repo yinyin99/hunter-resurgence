@@ -473,7 +473,7 @@
     <value>Отправка копии</value>
   </data>
   <data name="Send_Sending_Text" xml:space="preserve">
-    <value>Вход выполнен. Отправляется {0}...</value>
+    <value>Вход выполнен. Отправляется {0}: часть {1} из {2}...</value>
   </data>
   <data name="Send_review_Title" xml:space="preserve">
     <value>Получено: ждёт проверки</value>
@@ -509,7 +509,7 @@
     <value>Отклонено: слишком большой файл</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
-    <value>Zip с копией — не более 64 МиБ. Ничего не отправлено.</value>
+    <value>Zip с копией — не более 1 ГиБ. Ничего не отправлено.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Выход из аккаунта</value>

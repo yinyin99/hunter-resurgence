@@ -677,7 +677,7 @@ public partial class MainWindow : FluentWindow
             {
                 Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Code_Title"), Loc.F("Send_Code_Text", code)), zip);
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }, sendCts.Token);
+            }, sendCts.Token, sending: (part, parts) => Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Sending_Title"), Loc.F("Send_Sending_Text", name, part, parts)), zip));
             Log($"send: {res.Kind} {res.Message}");
             sev = res.Kind == "review" ? InfoBarSeverity.Success : InfoBarSeverity.Warning;
             text = () => (Loc.S($"Send_{res.Kind}_Title"), Loc.F($"Send_{res.Kind}_Text", res.Message));
