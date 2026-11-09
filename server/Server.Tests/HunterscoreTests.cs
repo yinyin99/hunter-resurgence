@@ -330,6 +330,7 @@ public class HunterscoreTests : StateTestBase
              {"id": 1, "category": 0, "group": 1, "value": "animal.MULE_DEER.ethical_kills", "triggers": [1, 25]},
              {"id": 13, "category": 1, "group": 0, "value": "weapon.TEST_RIFLE.*.ethical_kills", "triggers": [1, 25]},
              {"id": 25, "category": 2, "group": 0, "value": "distance", "triggers": [10, 42]},
+             {"id": 26, "category": 2, "group": 1, "value": "duration", "triggers": [1, 24]},
              {"id": 40, "category": 0, "group": 9, "value": "animal.[MULE_DEER,COTTONTAIL_RABBIT].kills", "triggers": [1]},
              {"id": 41, "category": 0, "group": 10, "value": "animal.COTTONTAIL_RABBIT.kills", "triggers": [1]}]
             """);
@@ -342,14 +343,17 @@ public class HunterscoreTests : StateTestBase
         state.ConnectReply(B);
         Kill(B, 81, 1, 10);
         Assert.Single(JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray());  // mid-hunt: nothing yet
+        using (var con = state.Store.Open(B))  // a hunt of 3700 s: past one hour
+            con.Exec("UPDATE expeditions SET start_ts = start_ts - 3700 WHERE account_id = $a AND end_ts IS NULL");
         state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
-        // the restored time and its larger value stay; the weapon, the distance (12 km) and the listed species are earned now; the total keeps its
-        // count without a time (50 not reached); the rabbit has nothing
+        // the restored time and its larger value stay; the weapon, the distance (12 km), the duration (1 h) and the listed species
+        // are earned now; the total keeps its count without a time (50 not reached); the rabbit has nothing
         var earned = """
             [{"category_id": 0, "group_id": 0, "id": 0, "value": 1},
              {"category_id": 0, "group_id": 1, "id": 1, "triggers": {"1": 1600000000}, "value": 5},
              {"category_id": 1, "group_id": 0, "id": 13, "triggers": {"1": 1700000000}, "value": 1},
              {"category_id": 2, "group_id": 0, "id": 25, "triggers": {"10": 1700000000}, "value": 12},
+             {"category_id": 2, "group_id": 1, "id": 26, "triggers": {"1": 1700000000}, "value": 1},
              {"category_id": 0, "group_id": 9, "id": 40, "triggers": {"1": 1700000000}, "value": 1}]
             """;
         Eq(earned, JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!));

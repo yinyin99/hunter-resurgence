@@ -98,14 +98,14 @@ public sealed partial class State
     static readonly Dictionary<string, long> DailyMissions = new() { ["EASY"] = 1, ["MEDIUM"] = 2, ["HARD"] = 3 };
 
     /// <summary>The counter an achievement's `value` path names in the statistics (Statistics/total): segments split on `.`; the
-    /// root `animal`, `weapon`, `collectable` or `daily_missions` is that object of `data`, `distance` the metres x 0.001 (km) and
-    /// `duration` x 0.000256 (hours); the segment after the root is a name (a species or item define, a daily mission kind) or an
+    /// root `animal`, `weapon`, `collectable` or `daily_missions` is that object of `data`, `distance` the metres / 1000 (km) and
+    /// `duration` the seconds / 3600 (hours); the segment after the root is a name (a species or item define, a daily mission kind) or an
     /// id; `*` sums every child, `[a,b]` the ones listed; the last segment is the counter. What is missing or no number counts 0.</summary>
     double AchievementValue(JsonObject stats, string path)
     {
         var segments = path.Split('.');
         if (segments[0] is "distance" or "duration")
-            return Py.IsNum(stats[segments[0]]) ? Py.D(stats[segments[0]]) * (segments[0] == "distance" ? 0.001 : 0.000256) : 0;
+            return Py.IsNum(stats[segments[0]]) ? Py.D(stats[segments[0]]) / (segments[0] == "distance" ? 1000 : 3600) : 0;
         var names = segments[0] switch { "animal" => speciesIds, "weapon" or "collectable" => itemIds, _ => DailyMissions };
         double Sum(JsonNode? n, int i)
         {
