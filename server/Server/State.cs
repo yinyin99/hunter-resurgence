@@ -1320,7 +1320,13 @@ public sealed partial class State
         }).ToList();
         var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];
         if (skip >= ours.Count && theirs.Count > 0)
-            return recorded;  // past the server hunts the recording is the page asked for
+        {
+            // ponytail: a recording is one saved page, so recorded hunts at the join (or before it, with more server hunts than `limit`) are not
+            // shown; the page is the recording's own, `total` plus the server hunts. Exact merge needs the whole recorded list.
+            var t = G(reply, "total", 0);
+            reply["total"] = Py.IsInt(t) ? JsonValue.Create(Py.L(t) + ours.Count) : JsonValue.Create(Py.D(t) + ours.Count);
+            return Py.DumpBytes(reply);
+        }
         var take = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), int.MaxValue) : int.MaxValue;
         var shown = ours.Skip(skip).Take(take).Concat(theirs).ToList();  // the recorded entries fill what the server hunts leave
         reply["expeditions"] = new JsonArray(shown.Take(take).ToArray());

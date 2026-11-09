@@ -441,7 +441,9 @@ public class InventoryTests : StateTestBase
         Assert.Equal([true, false], listed["expeditions"]!.AsArray().Select(e => e!["end_ts"] is null));
         Eq(second, Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["expedition"]!["id"]);
         Assert.True((bool)listed["has_more"]!);  // the recorded hunt is left
-        Assert.Equal(upstreamList, state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));  // past the server hunts: the recorded page
+        var recordedPage = Reply(state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));  // past the server hunts: the recorded page
+        Assert.Equal("[{\"id\":730218841}]", recordedPage["expeditions"]!.ToJsonString());
+        Assert.Equal("13", Py.Dumps(recordedPage["total"]));
         // a community server: nothing recorded, the pages are the server hunts alone
         var none = "{\"total\": 0, \"expeditions\": []}"u8.ToArray();
         List<(string Ids, string Total, bool More)> Page(string form)
