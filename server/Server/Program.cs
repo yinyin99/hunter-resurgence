@@ -149,7 +149,8 @@ void Review(string[] a)
 {
     long id = 0;
     var reason = "";
-    if (!(a is ["list"] || (a is ["approve", var n] && long.TryParse(n, out id)) || (a is ["reject", var r, .. var rest] && long.TryParse(r, out id) && (reason = string.Join(' ', rest)) is not null))) Die(ReviewUsage);
+    if (a is ["reject", var r, .. var rest] && long.TryParse(r, out id)) reason = string.Join(' ', rest);
+    else if (!(a is ["list"] || (a is ["approve", var n] && long.TryParse(n, out id)))) Die(ReviewUsage);
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }

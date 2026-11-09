@@ -226,6 +226,29 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestABackupNameTheAccountAlreadyHasIsToldAsTheBackupsNotAsKept()
+    {
+        const string steam = "76561190000000005";
+        var (same, sameCookie) = SignedIn("sample", steam);  // the account is already called what the backup says
+        var id = await Keep(TestZip.Own(steam: steam), "same.zip", same, sameCookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        var done = Assert.Single((await RestoreStatusOf(sameCookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("sample", false), ((string)done["handle"]!, (bool)done["handleKept"]!));
+    }
+
+    [Fact]
+    public async Task TestAnUnreadableKeptZipGivesThePlayerPlainWordsNotAPath()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        File.WriteAllBytes(Path.Combine(tmp, "restores", player.ToString(), Restorer.Sha256(Path.Combine(tmp, "mine.zip")) + ".zip"), [1, 2, 3]);
+        var refused = Operator.Approve(id);
+        Assert.Equal((400, "invalid"), (refused.Status, refused.Kind));
+        var note = (string)Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!["note"]!;
+        Assert.Equal("The kept zip cannot be read, so it was not restored.", note);
+        Assert.Equal(["Your backup was not restored: " + note], Notices(player));
+    }
+
+    [Fact]
     public async Task TestARejectKeepsItsReasonForThePlayerAndSaysSoInTheGame()
     {
         var first = await Keep(TestZip.Own(), "first.zip", player, cookie);

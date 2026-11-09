@@ -179,7 +179,7 @@ public sealed class Uploads(State state, string dataDir)
             try { read = Importer.Read(path, state.Catalogue, ZipLimits); }
             catch (Exception e) when (e is RestoreException or InvalidDataException or IOException)
             {
-                return Refused(row, new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed."));
+                return Refused(row, new(400, "invalid", $"The kept zip cannot be read: {e.Message}. Nothing was changed."), "The kept zip cannot be read, so it was not restored.");
             }
             var model = read.Model;
             var uid = long.Parse(model.Identity.Uid);
@@ -198,7 +198,7 @@ public sealed class Uploads(State state, string dataDir)
                         con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
                         con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
                         con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'restored', ?, ?, ?, '')",
-                                 Store.Now(), uid, handle, handle == current ? 1 : 0);
+                                 Store.Now(), uid, handle, adopt ? 0 : 1);
                         Notify(con, $"{summary} Your user id is {uid} and your name is {handle}.");
                     });
                 return new(200, "restored", summary, result.Report);
@@ -210,14 +210,16 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
-    /// <summary>A refused approve: the reason becomes the zip's note and the player's notice, unless it is the note already.</summary>
-    UploadOutcome Refused(Row row, UploadOutcome outcome)
+    /// <summary>A refused approve: the reason becomes the zip's note and the player's notice, unless it is the note already. The player gets the
+    /// outcome's words unless `forPlayer` is given (the operator's outcome may hold a technical detail, such as a path).</summary>
+    UploadOutcome Refused(Row row, UploadOutcome outcome, string? forPlayer = null)
     {
-        if (outcome.Message == row.Note) return outcome;
+        var reason = forPlayer ?? outcome.Message;
+        if (reason == row.Note) return outcome;
         using var con = Store.Open(row.Account);
         con.Begin();
-        con.Exec("UPDATE uploads SET note = ? WHERE account_id = $a AND id = ?", outcome.Message, row.Id);
-        Notify(con, $"Your backup was not restored: {outcome.Message}");
+        con.Exec("UPDATE uploads SET note = ? WHERE account_id = $a AND id = ?", reason, row.Id);
+        Notify(con, $"Your backup was not restored: {reason}");
         con.Commit();
         return outcome;
     }
