@@ -4,9 +4,9 @@
 
 ## State
 
-The screens follow the original website screen for screen (same theme, places, navigation and English texts; French uses the original French). Everything behind them is a **mock** until the community server exists: the services in `src/Services/Mocks/` return fixed, fictional data and the actions do nothing real. The pictures are not in the repo: each one is a labelled box unless the operator supplies its file ([images.md](images.md)). See [launcher.md](launcher.md) for the service layer in `src/Services/Contracts/`.
+The screens follow the original website screen for screen (same theme, places, navigation and English texts; French uses the original French). With `SERVER_URL` set (the live site) the sign-in, the store, the hunterscore and minigame boards, the restore page and "Delete my data" are the community server's ([Sign-in](#sign-in), [Restore and your data](#restore-and-your-data)), and the news is the project's own; the other pages are hidden or still the **mock**'s: the services in `src/Services/Mocks/` return fixed, fictional data and their actions do nothing real. The pictures are not in the repo: each one is a labelled box unless the operator supplies its file ([images.md](images.md)). See [launcher.md](launcher.md) for the service layer in `src/Services/Contracts/`.
 
-The mock session starts signed in as a fictional hunter (`Hunter01`); sign out in the top bar to see the public site. Sign-in is the email, then a six-digit code (there is no password); the mock accepts any address with an `@` and any six digits.
+Without `SERVER_URL` (development, the CI smoke test) every service is the mock. Its session starts signed in as a fictional hunter (`Hunter01`); sign out in the top bar to see the public site. Its sign-in is the email, then a six-digit code (there is no password), and it accepts any address with an `@` and any six digits. The live site has no email sign-in.
 
 ## Sign-in
 

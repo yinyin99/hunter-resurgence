@@ -1,6 +1,6 @@
 # Hunter Resurgence: community server for theHunter Classic
 
-**Website preview: [hunter-resurgence.com](https://hunter-resurgence.com)** (mostly fictional data, not the game server: [what you can try](#website-preview))
+**Website: [hunter-resurgence.com](https://hunter-resurgence.com)** (sign-in with Steam, the store, backup restore and deleting your data are real; some pages still show sample data: [what works](#website))
 
 [![ci](https://github.com/yinyin99/hunter-resurgence/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yinyin99/hunter-resurgence/actions/workflows/ci.yml) [![release](https://img.shields.io/github/v/release/yinyin99/hunter-resurgence)](https://github.com/yinyin99/hunter-resurgence/releases/latest) [![license](https://img.shields.io/github/license/yinyin99/hunter-resurgence)](LICENSE)
 
@@ -50,7 +50,7 @@ This project and the community server run by its maintainer take no donations (n
 Released today: the backup tool, and the player kit, which lets you play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
 
 1. **Profile backup** (available now; run it before 2026-11-11): the [backup tool](#for-players-the-backup-tool).
-2. **Community server, accounts and restore** (in progress; the server is built, see [docs/server.md](docs/server.md)).
+2. **Community server, accounts and restore** (online now, early: play on it with the [player kit](#for-players-the-player-kit); see [docs/server.md](docs/server.md)).
    - Sign in with a Steam account (email sign-in may follow).
    - Restore: upload your backup zip on the website. Once the operator (the person who runs the server) approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically.
    - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions, leaderboards and the trophy-lodge pages may be missing at first, and there is no seasonal event by default.
@@ -58,14 +58,14 @@ Released today: the backup tool, and the player kit, which lets you play on the 
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
 5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
-6. **New website** (preview online, partly real): the store with buying in em$, the news, the hunterscore and minigame boards; still sample data: the fictional hunters' profiles, trophies and hunt history; missions and friends are not offered yet.
+6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards; still sample data: the fictional hunters' profiles, trophies and hunt history; missions and friends are not offered yet.
 7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
 
-### Website preview
+### Website
 
-[hunter-resurgence.com](https://hunter-resurgence.com) shows the new website. The real parts: sign-in with Steam; the store, with buying in em$ for a signed-in player; the news; the hunterscore and minigame boards; and the restore page, where a signed-in player can upload a backup zip for the operator's review. The server keeps your Steam id, your handle, your purchases and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Pages without a source on the server are hidden or still show fixed, fictional data ([known limits](docs/deploy.md#known-limits)), and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
+[hunter-resurgence.com](https://hunter-resurgence.com) is the new website. The real parts: sign-in with Steam; the store, with buying in em$ for a signed-in player; the news; the hunterscore and minigame boards; the restore page, where a signed-in player can upload a backup zip for the operator's review; and "Delete my data", which deletes the account and everything stored with it. The server keeps your Steam id, your handle, your purchases and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Pages without a source on the server are hidden or still show fixed, fictional data ([known limits](docs/deploy.md#known-limits)), and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
 
-![The website preview, signed out](docs/img/website.png)
+![The website, signed out](docs/img/website.png)
 
 *The website: sample data, placeholder images.*
 
