@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
+using Resurgence.Ui.Components;
 using Resurgence.Ui.Pages;
 using Resurgence.Ui.Shell;
 
@@ -82,12 +83,12 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills and statistics paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}") : HttpMessageHandler
+    /// <summary>Answers the skills, statistics and dogs paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath.EndsWith("/skills") ? skills : request.RequestUri.AbsolutePath.EndsWith("/statistics") ? statistics : header, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
     }
@@ -123,6 +124,20 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
         Assert.Contains("Fox Deer", cut.Markup);
         Assert.Equal(["/profile/Fox/statistics/lifetime"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's pills are hidden
+    }
+
+    [Fact]
+    public void TheDogsTabShowsTheServersDogs()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
+        const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", dogs: dogs)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<DogsTab>(p => p.Add(d => d.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li > div:last-child > b").TextContent));
+        Assert.Contains("Loyalty One", cut.Find("ul.dogs li em").TextContent);
+        Assert.Contains("Ribbon", cut.Markup);
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>
