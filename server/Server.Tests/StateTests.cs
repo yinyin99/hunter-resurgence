@@ -432,6 +432,9 @@ public class InventoryTests : StateTestBase
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         var first = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];
         Eq(first, Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"]);  // 2nd connect
+        Hb(O("""{"event": 7, "individual": 413, "species": 17, "gender": 0, "weight_grams": 1100, "feature": 1100250}"""),
+           O("""{"event": 1, "individual": 413, "ammunition_id": 14, "weapon_id": 391}"""),
+           O("""{"event": 3, "individual": 413, "extended_species": 17}"""));  // a kill in the first hunt
         state.Disconnect(ME, []);
         var second = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];  // direct launch: opens one
         Assert.False(Py.Eq(second, first));
@@ -458,8 +461,10 @@ public class InventoryTests : StateTestBase
         byte[] Hunt(string form) => state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray(), System.Text.Encoding.UTF8.GetBytes(form));
         var older = Reply(Hunt("expedition_id=" + Py.Dumps(first)));
         Eq(first, older["expedition"]!["id"]);
-        Assert.NotNull(older["kills"]);
-        Eq(second, Reply(Hunt(""))["expedition"]!["id"]);
+        Assert.Single(older["kills"]!.AsArray());
+        var latest = Reply(Hunt(""));
+        Eq(second, latest["expedition"]!["id"]);
+        Assert.Empty(latest["kills"]!.AsArray());
         Assert.Equal("{\"replayed\": 1}"u8.ToArray(), Hunt("expedition_id=99999999999"));
     }
 
