@@ -32,12 +32,35 @@ public sealed partial class State
     public byte[]? RowReply(long account, string table, string source, string id) =>
         Restored(account, table, source, id).FirstOrDefault() is { } node ? Py.DumpBytes(node) : null;
 
-    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's restored trophies.</summary>
+    static readonly string[] TrophyFields = ["species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
+                                             "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
+
+    /// <summary>The account's trophy rows: the restored rows of a source as stored, then one row per harvest made on this server in the
+    /// restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.</summary>
+    List<JsonNode?> TrophyRows(long account, string source)
+    {
+        var rows = Restored(account, "trophies", source);
+        using var con = Con(account);
+        foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a ORDER BY kill_id"))
+        {
+            var body = JsonNode.Parse((string)r[1])!;
+            var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = false };
+            foreach (var field in TrophyFields)
+                row[field] = C(body[field]);
+            rows.Add(row);
+        }
+        return rows;
+    }
+
+    /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
+    public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account, "/game/user/trophies").ToArray()));
+
+    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's trophies.</summary>
     public byte[] TrophyListReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         long Number(string key) => long.TryParse(Form1(form, key), out var n) && n > 0 ? n : 0;
-        var all = Restored(account, "trophies", "/v1/Trophy/list");
+        var all = TrophyRows(account, "/v1/Trophy/list");
         var page = all.Skip((int)Math.Min(Number("offset"), int.MaxValue));
         var limit = Number("limit");
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["trophies"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).ToArray()) });

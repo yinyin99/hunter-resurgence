@@ -175,6 +175,35 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAServerHarvestIsInBothTrophyListsAndARestoredHarvestCanBeTaxidermized()
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "1", O("""{"id": 1, "name": "first"}"""));
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "9", O("""{"id": 9, "own": true}"""));
+            PlayerRows.AddTrophy(con, "/game/user/harvest", "9", O("""{"id": 9, "taxidermized": false}"""));
+            con.Commit();
+        }
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Hb(AccountIsolationTests.Harvest(71, 50000));
+        string[] fields = ["id", "hidden", "species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
+                           "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
+        var page = await Api(Replay.TROPHY_LIST, tokenA, "user_id=7&limit=1&offset=1");
+        var row = Assert.Single(page["trophies"]!.AsArray())!.AsObject();
+        Assert.Equal((2, 1), ((int)page["total"]!, page["trophies"]!.AsArray().Count));
+        Assert.Equal(fields, row.Select(kv => kv.Key));
+        Eq("""[1, false, "MULE_DEER", 50000, 0.9, 46658, false]""", T(row["id"], row["hidden"], row["species_define"], row["weight"], row["scale"], row["antlers_seed"], row["is_skull"]));
+        var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
+        Eq("[9, 1]", T(own[0]!["id"], own[1]!["id"]));
+        Assert.Equal(fields, own[1]!.AsObject().Select(kv => kv.Key));
+
+        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/9/taxidermize", tokenA)).Status);
+        Assert.True((bool)JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/harvest/9", tokenA)).Body)!["taxidermized"]!);
+        Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/10/taxidermize", tokenA)).Status);
+    }
+
+    [Fact]
     public void TestANewAccountsConnectHasItsOwnAccountAndEmptyStatistics()
     {
         var connect = JsonNode.Parse(state.ConnectReply(8))!;

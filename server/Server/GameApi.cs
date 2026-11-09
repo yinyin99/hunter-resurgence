@@ -272,7 +272,7 @@ public static class GameApi
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
-                var (body, type) = r.Path == "/game/user/trophies" ? (s.RowsReply(a, "trophies", "/game/user/trophies"), "application/json")  // ponytail: the trophy list's own media type is not known
+                var (body, type) = r.Path == "/game/user/trophies" ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
                     : !s.IsUser(a, lodges.Groups[1].Value) ? (null, "")
                     : lodges.Groups[2].Success ? (s.RowReply(a, "lodges", "/game/user/lodge", lodges.Groups[2].Value), "application/vnd.game.user.trophy_lodge.lodge+json")
                     : (s.RowsReply(a, "lodges", "/game/user/lodges"), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
