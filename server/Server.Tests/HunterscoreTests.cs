@@ -143,12 +143,18 @@ public class HunterscoreTests : StateTestBase
         Kill(B, 85, 1, 10);
         state.Disconnect(B, "{}"u8.ToArray());
         Assert.Equal(3, Stored(B));  // 81: the species row; 85: the species and the weapon row
-        // a hunt with a hit the database cannot read back counts nothing, and its close still works
-        state.ConnectReply(B);
-        state.HeartbeatReply(B, """{"events": [{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e999}]}"""u8.ToArray());
-        Kill(B, 87, 1, 10);
-        state.Disconnect(B, "{}"u8.ToArray());
-        Assert.Equal(3, Stored(B));
+        // hunts with a hit the database cannot read back, a hit without a distance or a miss with a weapon that is a list count
+        // nothing, and their close still works
+        foreach (var bad in new[] { """{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 1e999}""",
+                                     """{"event": 1, "individual": 86, "weapon_id": 5, "ammunition_id": 10, "distance_cms": null}""",
+                                     """{"event": 21, "weapon_id": [1], "ammunition_id": 10}""" })
+        {
+            state.ConnectReply(B);
+            state.HeartbeatReply(B, Encoding.UTF8.GetBytes($$"""{"events": [{{bad}}]}"""));
+            Kill(B, 87, 1, 10);
+            state.Disconnect(B, "{}"u8.ToArray());
+            Assert.Equal(3, Stored(B));
+        }
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         // the zip's own hunterscore (1234) never stays: the value is always the computed one

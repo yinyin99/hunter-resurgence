@@ -2,6 +2,7 @@
 // account's statistics (the restored ones plus this server's closed hunts, stored when each closes).
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.Data.Sqlite;
 
 namespace Resurgence.Server;
 
@@ -55,7 +56,7 @@ public sealed partial class State
                     var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
                     kills.Add((sp, hits, Ethical(sp, hits)));
                 }
-                catch (Exception ex) when (ex is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
+                catch (Exception ex) when (ex is not SqliteException)  // a value a player sent, of any kind; a database error stays an error
                 {
                     Console.WriteLine($"statistics of account {account}: a kill is not counted: {ex.Message}");
                 }
@@ -66,7 +67,7 @@ public sealed partial class State
                 stats = HuntStats(con, Py.FromSql(e[3]), e[5] is long until ? until : long.MaxValue, kills,
                                   (long)(Convert.ToDouble(e[2]) - Convert.ToDouble(e[1])), Py.Truthy(distance) ? distance : 0);
             }
-            catch (Exception ex) when (ex is JsonException or InvalidCastException or OverflowException or InvalidOperationException)
+            catch (Exception ex) when (ex is not SqliteException)
             {
                 Console.WriteLine($"statistics of account {account}: a hunt is not counted: {ex.Message}");
                 stats = new JsonObject { ["duration"] = 0, ["distance"] = 0, ["data"] = new JsonObject { ["achievements"] = new JsonArray() } };
