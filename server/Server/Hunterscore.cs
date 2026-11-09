@@ -1,5 +1,6 @@
-// The hunterscore of a community server's account (docs/server.md#the-hunterscore): the rank rows of the facts file over the
-// account's statistics (the restored ones plus this server's closed hunts, stored when each closes).
+// The hunterscore and achievements of a community server's account (docs/server.md#the-hunterscore): the rank rows of the facts
+// file and the achievement definitions over the account's statistics (the restored ones plus this server's closed hunts, stored
+// when each closes).
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Data.Sqlite;
@@ -76,27 +77,82 @@ public sealed partial class State
         }
     }
 
-    /// <summary>The account's statistics (`data` of Statistics/total); only its closed hunts when the restored ones cannot be read back (logged).</summary>
+    /// <summary>The account's statistics (Statistics/total: `duration`, `distance`, `data`); only its closed hunts when the
+    /// restored ones cannot be read back (logged).</summary>
     static JsonObject StoredStats(Db con, long account)
     {
         try
         {
-            return (JsonObject)RestoredReads.StatisticsTotal(con)["data"]!;
+            return (JsonObject)RestoredReads.StatisticsTotal(con);
         }
         catch (Exception e) when (e is JsonException or InvalidCastException or InvalidOperationException)
         {
             Console.WriteLine($"hunterscore of account {account}: the restored statistics are not counted: {e.Message}");
             var hunts = new JsonObject();
-            RestoredReads.AddHunts(con, hunts);
-            return hunts;
+            var (distance, duration) = RestoredReads.AddHunts(con, hunts);
+            return new JsonObject { ["duration"] = duration, ["distance"] = distance, ["data"] = hunts };
+        }
+    }
+
+    /// <summary>The daily mission kinds of an achievement path by name, as the statistics key them.</summary>
+    static readonly Dictionary<string, long> DailyMissions = new() { ["EASY"] = 1, ["MEDIUM"] = 2, ["HARD"] = 3 };
+
+    /// <summary>The counter an achievement's `value` path names in the statistics (Statistics/total): segments split on `.`; the
+    /// root `animal`, `weapon`, `collectable` or `daily_missions` is that object of `data`, `distance` the metres x 0.001 (km) and
+    /// `duration` x 0.000256 (hours); the segment after the root is a name (a species or item define, a daily mission kind) or an
+    /// id; `*` sums every child, `[a,b]` the ones listed; the last segment is the counter. What is missing or no number counts 0.</summary>
+    double AchievementValue(JsonObject stats, string path)
+    {
+        var segments = path.Split('.');
+        if (segments[0] is "distance" or "duration")
+            return Py.IsNum(stats[segments[0]]) ? Py.D(stats[segments[0]]) * (segments[0] == "distance" ? 0.001 : 0.000256) : 0;
+        var names = segments[0] switch { "animal" => speciesIds, "weapon" or "collectable" => itemIds, _ => DailyMissions };
+        double Sum(JsonNode? n, int i)
+        {
+            if (i == segments.Length)
+                return Py.IsNum(n) ? Py.D(n) : 0;
+            if (n is not JsonObject o)
+                return 0;
+            var s = segments[i];
+            if (s == "*")
+                return o.Sum(kv => Sum(kv.Value, i + 1));
+            return (s.StartsWith('[') && s.EndsWith(']') ? s[1..^1].Split(',') : [s]).Select(k => k.Trim())
+                .Sum(k => Sum(o[i == 1 && names.TryGetValue(k, out var key) ? key.ToString() : k], i + 1));
+        }
+        return Sum((stats["data"] as JsonObject)?[segments[0] == "collectable" ? "collectables" : segments[0]], 1);
+    }
+
+    /// <summary>Award the achievements the account's statistics reach: for every definition of the connect reply's
+    /// `achievements` (`value` path, `triggers` thresholds), store the current time for each threshold at most its value
+    /// (<see cref="AchievementValue"/>) that has no time yet, and that value, in the account's achievement row (made when the
+    /// value is above 0). Times already stored, a restore's too, are kept. Call it inside a transaction.
+    /// ponytail: evaluates every definition (a few hundred) at every close; only the touched roots if that gets slow.</summary>
+    void AwardAchievements(Db con, JsonObject stats)
+    {
+        var now = (long)Clock();
+        foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>())
+        {
+            if (!TryKey(def["id"], out var id) || !Py.IsStr(def["value"]))
+                continue;
+            var value = AchievementValue(stats, (string)def["value"]!);
+            var row = con.Rows("SELECT triggers FROM achievements WHERE account_id = $a AND id = ?", id).FirstOrDefault();
+            if (row is null && value <= 0)
+                continue;
+            var triggers = row is null ? new JsonObject() : Parse(row[0]);
+            foreach (var t in Arr(def["triggers"]))
+                if (Py.IsNum(t) && Py.D(t) <= value && triggers[Py.Str(t)] is null)
+                    triggers[Py.Str(t)] = now;
+            PlayerRows.AddAchievement(con, id, TryKey(def["category"], out var c) ? c : 0, TryKey(def["group"], out var g) ? g : 0,
+                                      (long)Math.Clamp(Math.Floor(value), 0, 1e15), triggers);
         }
     }
 
     /// <summary>Store the statistics of the account's newly closed hunts (<see cref="StoreHuntStats"/>), then recompute its
-    /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile. Every close path, a
-    /// restore and every start call it, outside a transaction. The hunterscore is computed on a community server only; the
-    /// recorded account (LocalAccount) keeps the recorded player's value. Always the computed value: what cannot be read counts
-    /// 0, so a close, a restore or the start never fails and a backup's own value never stays.
+    /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile, and award the
+    /// achievements its statistics reach (<see cref="AwardAchievements"/>). Every close path, a restore and every start call it,
+    /// outside a transaction. The hunterscore and achievements are computed on a community server only; the recorded account
+    /// (LocalAccount) keeps the recorded player's values. Always the computed value: what cannot be read counts 0, so a close, a
+    /// restore or the start never fails and a backup's own value never stays.
     /// ponytail: sums every stored hunt of the account at every close; keep a running total if that gets slow.</summary>
     public void UpdateHunterscore(Db con, long account)
     {
@@ -104,9 +160,11 @@ public sealed partial class State
         StoreHuntStats(con, account);
         if (Online && account != LocalAccount)
         {
-            var score = Score(facts, StoredStats(con, account));
+            var stats = StoredStats(con, account);
+            var score = Score(facts, (JsonObject)stats["data"]!);
             con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
             con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
+            AwardAchievements(con, stats);
         }
         con.Commit();
     }

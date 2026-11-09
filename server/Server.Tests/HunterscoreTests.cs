@@ -320,4 +320,46 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
+
+    [Fact]
+    public void TestAHuntsCloseAwardsTheAchievementsItsStatisticsReach()
+    {
+        var connect = CONNECT;
+        connect["achievements"] = JsonNode.Parse("""
+            [{"id": 0, "category": 0, "group": 0, "value": "animal.*.ethical_kills", "triggers": [50]},
+             {"id": 1, "category": 0, "group": 1, "value": "animal.MULE_DEER.ethical_kills", "triggers": [1, 25]},
+             {"id": 13, "category": 1, "group": 0, "value": "weapon.TEST_RIFLE.*.ethical_kills", "triggers": [1, 25]},
+             {"id": 25, "category": 2, "group": 0, "value": "distance", "triggers": [10, 42]},
+             {"id": 40, "category": 0, "group": 9, "value": "animal.[MULE_DEER,COTTONTAIL_RABBIT].kills", "triggers": [1]},
+             {"id": 41, "category": 0, "group": 10, "value": "animal.COTTONTAIL_RABBIT.kills", "triggers": [1]}]
+            """);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS, offline: false, facts: Ranks);
+        double now = 1700000000;
+        state.Clock = () => now;
+        state.CreateAccount(B, "second");
+        using (var con = state.Store.Open(B))  // earned before, as a restore stores it
+            PlayerRows.AddAchievement(con, 1, 0, 1, 0, O("""{"1": 1600000000}"""));
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        Assert.Single(JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray());  // mid-hunt: nothing yet
+        state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
+        // the restored time stays; the weapon, the distance (12 km) and the listed species are earned now; the total keeps its
+        // count without a time (50 not reached); the rabbit has nothing
+        var earned = """
+            [{"category_id": 0, "group_id": 0, "id": 0, "value": 1},
+             {"category_id": 0, "group_id": 1, "id": 1, "triggers": {"1": 1600000000}, "value": 1},
+             {"category_id": 1, "group_id": 0, "id": 13, "triggers": {"1": 1700000000}, "value": 1},
+             {"category_id": 2, "group_id": 0, "id": 25, "triggers": {"10": 1700000000}, "value": 12},
+             {"category_id": 0, "group_id": 9, "id": 40, "triggers": {"1": 1700000000}, "value": 1}]
+            """;
+        Eq(earned, JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!));
+        Eq(earned, Reply(state.ConnectReply(B))["user_stats"]!["achievement_stats"]);
+        // a later close keeps every time and counts on
+        now += 100;
+        Kill(B, 82, 1, 10);
+        state.Disconnect(B, "{}"u8.ToArray());
+        Eq("""{"category_id": 1, "group_id": 0, "id": 13, "triggers": {"1": 1700000000}, "value": 2}""",
+           JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)![2]);
+        Assert.Null(state.AchievementReply(B, "user_id=7"u8.ToArray()));  // another player's user id: not this account's
+    }
 }
