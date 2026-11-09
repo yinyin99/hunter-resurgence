@@ -35,12 +35,12 @@ public sealed partial class State
     static readonly string[] TrophyFields = ["species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
-    /// <summary>The account's trophy rows: the restored rows of a source as stored, then one row per harvest made on this server in the
-    /// restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved;
-    /// kill ids start at 1 like restored ids, so a clash would list one id twice and its harvest page would be the server kill's.</summary>
-    List<JsonNode?> TrophyRows(long account, string source)
+    /// <summary>The account's own trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
+    /// server in the restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.
+    /// A server kill id is always above every restored id (see Heartbeat), so ids never clash.</summary>
+    List<JsonNode?> TrophyRows(long account)
     {
-        var rows = Restored(account, "trophies", source);
+        var rows = Restored(account, "trophies", "/game/user/trophies");
         using var con = Con(account);
         foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a ORDER BY kill_id"))
         {
@@ -54,14 +54,14 @@ public sealed partial class State
     }
 
     /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
-    public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account, "/game/user/trophies").ToArray()));
+    public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
-    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's trophies.</summary>
+    /// <summary>Trophy/list: one page (`offset`, `limit`) of the account's restored trophies (rows of their own kind).</summary>
     public byte[] TrophyListReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         long Number(string key) => long.TryParse(Form1(form, key), out var n) && n > 0 ? n : 0;
-        var all = TrophyRows(account, "/v1/Trophy/list");
+        var all = Restored(account, "trophies", "/v1/Trophy/list");
         var page = all.Skip((int)Math.Min(Number("offset"), int.MaxValue));
         var limit = Number("limit");
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["trophies"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).ToArray()) });

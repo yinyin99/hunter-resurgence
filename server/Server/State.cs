@@ -189,7 +189,7 @@ public sealed partial class State
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
-                var killId = NextId(con, "kills", "kill_id");
+                var killId = Math.Max(NextId(con, "kills", "kill_id"), (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a")!);  // above every restored id: a kill id names one trophy
                 con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
                          killId, e["individual"], e["extended_species"], harvest);
                 var (e7, e22) = KillEvents(con, e["individual"], harvest);

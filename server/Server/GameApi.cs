@@ -224,13 +224,13 @@ public static class GameApi
                     api.MapGet(path, Handle(game, r => r.Method == "GET" && r.Path == path ? profile(r) : null)).WithName("MeGet")
                        .WithSummary("Own profile, read with the game API v2 JWT").Produces(200, contentType: "application/json");
             }
-            // community server only (a local server replays): the account's items and trophies, from the database; another player's list is the empty reply
+            // community server only (a local server replays): the account's items and restored trophies, from the database; another player's list is the empty reply
             api.MapExactPost(game, INVENTORY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.InventoryListReply(a), "state") : null))
                .WithName("InventoryList").WithSummary("Owned items with their definitions")
                .WithDescription("`[{item, own: [{id, slot, units, metadata, location}]}]` of the account's items; a placed item's `location` is null. Another player's `user_id`: `[]`.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.IsOwn(a, r.Body) ? new(200, JsonAnyOrigin(), s.TrophyListReply(a, r.Body), "state") : null))
-               .WithName("TrophyList").WithSummary("The account's trophies, one page")
+               .WithName("TrophyList").WithSummary("The account's restored trophies, one page")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
 
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
