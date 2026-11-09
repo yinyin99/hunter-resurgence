@@ -1168,9 +1168,12 @@ public sealed partial class State
         return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
-    /// <summary>Public_user/expedition: the latest server expedition and its kills; the recorded reply if none yet.</summary>
-    public byte[] ExpeditionReply(long account, byte[] recorded)
+    /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; the recorded reply if there is none.</summary>
+    public byte[] ExpeditionReply(long account, byte[] recorded, byte[]? formBody = null)
     {
+        var wanted = Form1(Py.ParseQs(formBody is null ? "" : Encoding.UTF8.GetString(formBody)), "expedition_id");
+        if (wanted != "" && !long.TryParse(wanted, out _))
+            return recorded;
         object[] row;
         JsonArray kills;
         JsonNode? stats = null;
@@ -1182,7 +1185,7 @@ public sealed partial class State
             if (stale)
                 UpdateHunterscore(con, account);
             var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
-                                 + " WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+                                 + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = " + long.Parse(wanted)) + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (found is null)
                 return recorded;
             row = found;
@@ -1286,15 +1289,12 @@ public sealed partial class State
                                                        locale, textures, sheet));
     }
 
-    /// <summary>Expedition/list: server expeditions (newest first) ahead of the recorded ones.
-    ///
-    /// Only the first page is merged; later pages replay the recording.</summary>
+    /// <summary>Expedition/list: the server expeditions (newest first), then the recorded ones, paged by offset and limit.</summary>
     public byte[] ExpeditionListReply(long account, byte[] recorded, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
-        if (offset is not ("" or "0"))
-            return recorded;
+        var skip = Py.IsDigit(offset) ? (int)Math.Min(long.Parse(offset), int.MaxValue) : 0;
         List<object[]> rows;
         using (var con = Con(account))
         {
@@ -1319,10 +1319,11 @@ public sealed partial class State
         var expeditions = new List<JsonNode?>(ours);
         if (Py.Truthy(reply["expeditions"]))
             expeditions.AddRange(reply["expeditions"]!.AsArray().Select(C));
-        reply["expeditions"] = new JsonArray((Py.IsDigit(limit) ? expeditions.Take((int)Math.Min(long.Parse(limit), int.MaxValue)) : expeditions).ToArray());
+        var take = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), int.MaxValue) : int.MaxValue;
+        reply["expeditions"] = new JsonArray(expeditions.Skip(skip).Take(take).ToArray());
         var total = G(reply, "total", 0);
         reply["total"] = Py.IsInt(total) ? JsonValue.Create(Py.L(total) + ours.Count) : JsonValue.Create(Py.D(total) + ours.Count);
-        reply["has_more"] = Py.IsDigit(limit) && expeditions.Count > long.Parse(limit);  // the current build asks for this instead of `total`
+        reply["has_more"] = (long)skip + take < expeditions.Count;  // the current build asks for this instead of `total`
         return Py.DumpBytes(reply);
     }
 

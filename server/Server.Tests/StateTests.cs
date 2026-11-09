@@ -440,7 +440,16 @@ public class InventoryTests : StateTestBase
         Eq(T(second, first), new JsonArray(listed["expeditions"]!.AsArray().Select(e => C(e!["id"])).ToArray()));
         Assert.Equal([true, false], listed["expeditions"]!.AsArray().Select(e => e!["end_ts"] is null));
         Eq(second, Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["expedition"]!["id"]);
-        Assert.Equal(upstreamList, state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));
+        Assert.True((bool)listed["has_more"]!);
+        // page 2: the older server hunt and the recorded one follow; past the end is empty with the same total
+        var page2 = Reply(state.ExpeditionListReply(ME, upstreamList, "limit=2&offset=2"u8.ToArray()));
+        Eq(T(730218841), new JsonArray(page2["expeditions"]!.AsArray().Select(e => C(e!["id"])).ToArray()));
+        Assert.False((bool)page2["has_more"]!);
+        Assert.Equal("13", Py.Dumps(page2["total"]));
+        Assert.Empty(Reply(state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()))["expeditions"]!.AsArray());
+        // an older hunt by id; an unknown id is the recorded reply
+        Eq(first, Reply(state.ExpeditionReply(ME, "{}"u8.ToArray(), System.Text.Encoding.UTF8.GetBytes("expedition_id=" + Py.Dumps(first))))["expedition"]!["id"]);
+        Assert.Equal("{\"replayed\": 1}"u8.ToArray(), state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray(), "expedition_id=99999999999"u8.ToArray()));
     }
 
     [Fact]
