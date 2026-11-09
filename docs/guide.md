@@ -27,7 +27,7 @@ Either way works; do one of them once:
 - **On the website**: open **Restore your backup** in the **Settings** menu, choose the backup zip, press **Upload**. It says "Received: an operator will check it".
 - **From the backup tool**: after a backup, press **Send to the community server** in the result bar (shown only when your copy of the tool knows the server), then **Send**. Your browser opens: sign in with Steam and confirm that the code is the one the tool shows (the page asks "Sign in the launcher?" even then: press **Yes, sign in**).
 
-A backup zip is at most 64 MiB. "Not a usable backup" means the file is not a backup zip the server can read; "User id in use" ("Refused: profile in use" in the backup tool) means another account already holds that profile.
+A backup zip is at most 1 GiB. "Not a usable backup" means the file is not a backup zip the server can read; "User id in use" ("Refused: profile in use" in the backup tool) means another account already holds that profile.
 
 ## 4. Wait for the operator
 

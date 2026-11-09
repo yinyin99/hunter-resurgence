@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Gebruik een back-up die is gemaakt in de modus "My account". De operator ziet of hij is gemaakt voor het Steam-account waarmee je bent ingelogd; dat is een aanwijzing, geen bewijs.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Een back-up kan één keer worden hersteld. Als je nog niet op deze server hebt gespeeld, krijgt je account dan het gebruikers-id en de naam uit de back-up.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Elke zip wordt bewaard zodat een operator hem met de hand kan controleren. Er wordt niets automatisch hersteld, dus het kan even duren.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Een zip is maximaal 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Een zip is maximaal 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Back-upzip</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Uploaden</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Uploaden…</value></data>

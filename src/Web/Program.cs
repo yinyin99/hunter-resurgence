@@ -29,8 +29,8 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 } serverUrl)
     builder.Services.AddHttpClient("server", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromSeconds(5); })
         .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
     builder.Services.AddScoped<ISessionService>(sp => new ServerSessionService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSessionService>>()));
-    // the player's backup and data: an upload takes longer than the sign-in's 5 s
-    builder.Services.AddHttpClient("server-upload", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromMinutes(2); })
+    // the player's backup and data: one part of an upload (up to 90 MiB, streamed from the browser) takes longer than the sign-in's 5 s
+    builder.Services.AddHttpClient("server-upload", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromMinutes(10); })
         .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
     builder.Services.AddScoped<IRestoreService>(sp => new ServerRestoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server-upload"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreService>>()));
 }

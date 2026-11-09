@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Используйте резервную копию, созданную в режиме «Мой аккаунт». Оператор видит, создана ли она для аккаунта Steam, с которым вы вошли; это подсказка, а не доказательство.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Резервную копию можно восстановить один раз. Если вы ещё не играли на этом сервере, ваш аккаунт получит ID пользователя и имя из резервной копии.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Каждый zip-архив сохраняется, чтобы оператор проверил его вручную. Ничего не восстанавливается автоматически, поэтому это может занять некоторое время.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Размер zip-архива — не более 64 МиБ.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Размер zip-архива — не более 1 ГиБ.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip-архив резервной копии</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Загрузить</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Загрузка…</value></data>

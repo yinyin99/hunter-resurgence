@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Použijte zálohu vytvořenou v režimu „My account“. Operátor uvidí, zda byla vytvořena pro účet na Steamu, kterým jste se přihlásili; je to jen nápověda, ne důkaz.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Zálohu lze obnovit jen jednou. Pokud jste na tomto serveru ještě nehráli, váš účet pak převezme id uživatele a jméno ze zálohy.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Každý zip se uchovává, aby ho operátor ručně zkontroloval. Nic se neobnovuje automaticky, takže to může chvíli trvat.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>Zip může mít nejvýše 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>Zip může mít nejvýše 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip zálohy</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Nahrát</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Nahrávání…</value></data>

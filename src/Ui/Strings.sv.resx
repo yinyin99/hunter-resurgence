@@ -1250,7 +1250,7 @@
   <data name="Restore.Rule1" xml:space="preserve"><value>Använd en säkerhetskopia som gjorts i läget ”My account”. Operatören ser om den gjordes för det Steam-konto du loggade in med; det är en ledtråd, inte ett bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En säkerhetskopia kan återställas en gång. Om du inte har spelat på den här servern än tar ditt konto sedan över användar-id och namn från säkerhetskopian.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Varje zip-fil sparas så att en operatör kan granska den manuellt. Inget återställs automatiskt, så det kan ta en stund.</value></data>
-  <data name="Restore.Rule4" xml:space="preserve"><value>En zip-fil får vara högst 64 MiB.</value></data>
+  <data name="Restore.Rule4" xml:space="preserve"><value>En zip-fil får vara högst 1 GiB.</value></data>
   <data name="Restore.Choose" xml:space="preserve"><value>Zip-fil med säkerhetskopia</value></data>
   <data name="Restore.Upload" xml:space="preserve"><value>Ladda upp</value></data>
   <data name="Restore.Working" xml:space="preserve"><value>Laddar upp…</value></data>

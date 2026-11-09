@@ -10,10 +10,13 @@ public class ServerRestoreServiceTests
     sealed class Fake(Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
     {
         public List<(HttpRequestMessage Request, string Body)> Seen { get; } = [];
+        /// <summary>False: keep only a body's last three bytes (a part of 90 MiB is not kept as text).</summary>
+        public bool KeepBodies { get; init; } = true;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            Seen.Add((request, request.Content is null ? "" : await request.Content.ReadAsStringAsync(ct)));
+            var body = request.Content is null ? [] : await request.Content.ReadAsByteArrayAsync(ct);
+            Seen.Add((request, System.Text.Encoding.UTF8.GetString(KeepBodies ? body : body[^Math.Min(3, body.Length)..])));
             return answer(request);
         }
     }
@@ -28,20 +31,53 @@ public class ServerRestoreServiceTests
 
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
+    /// <summary>The server's answers to an upload in parts: started, each part received, the finish's result.</summary>
+    static HttpResponseMessage Parts(HttpRequestMessage r) => r.RequestUri!.AbsolutePath switch
+    {
+        "/account/restore/start" => Json(HttpStatusCode.OK, """{"status":"started","id":"u1","partBytes":94371840}"""),
+        "/account/restore/u1/finish" => Json(HttpStatusCode.OK, """{"status":"restored","message":"Your backup was restored.","report":"stored: items 2"}"""),
+        _ => Json(HttpStatusCode.OK, """{"status":"received"}"""),
+    };
+
     [Fact]
     public async Task UploadSendsTheZipWithTheCookieHostAndTheHeaderAPageOfOursSends()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"status":"restored","message":"Your backup was restored.","report":"stored: items 2"}"""));
+        var fake = new Fake(Parts);
         var result = await Make(fake).UploadAsync(new MemoryStream("zipbytes"u8.ToArray()), 8);
         Assert.Equal(new RestoreResult("restored", "Your backup was restored.", "stored: items 2"), result);
-        var (request, body) = Assert.Single(fake.Seen);
-        Assert.Equal(HttpMethod.Post, request.Method);
-        Assert.Equal("/account/restore", request.RequestUri!.AbsolutePath);
-        Assert.Equal("hr_session=abc", Assert.Single(request.Headers.GetValues("Cookie")));
-        Assert.Equal("XMLHttpRequest", Assert.Single(request.Headers.GetValues("X-Requested-With")));
-        Assert.Equal("site.test", request.Headers.Host);
-        Assert.Equal("application/zip", request.Content!.Headers.ContentType!.MediaType);
+        Assert.Equal(["/account/restore/start", "/account/restore/u1/0", "/account/restore/u1/finish"], fake.Seen.Select(s => s.Request.RequestUri!.AbsolutePath));
+        foreach (var (request, _) in fake.Seen)
+        {
+            Assert.Equal(HttpMethod.Post, request.Method);
+            Assert.Equal("hr_session=abc", Assert.Single(request.Headers.GetValues("Cookie")));
+            Assert.Equal("XMLHttpRequest", Assert.Single(request.Headers.GetValues("X-Requested-With")));
+            Assert.Equal("site.test", request.Headers.Host);
+        }
+        var (part, body) = fake.Seen[1];
+        Assert.Equal("application/zip", part.Content!.Headers.ContentType!.MediaType);
+        Assert.Equal(8, part.Content.Headers.ContentLength);
         Assert.Equal("zipbytes", body);
+    }
+
+    [Fact]
+    public async Task AZipOverOnePartIsSentInPartsInOrder()
+    {
+        var zip = new byte[ServerAccountApi.PartBytes + 3];
+        zip[^1] = 7;
+        var fake = new Fake(Parts) { KeepBodies = false };
+        var result = await Make(fake).UploadAsync(new MemoryStream(zip), zip.Length);
+        Assert.Equal("restored", result.Status);
+        Assert.Equal(["/account/restore/start", "/account/restore/u1/0", "/account/restore/u1/1", "/account/restore/u1/finish"], fake.Seen.Select(s => s.Request.RequestUri!.AbsolutePath));
+        Assert.Equal([ServerAccountApi.PartBytes, 3], fake.Seen[1..3].Select(s => s.Request.Content!.Headers.ContentLength));
+        Assert.Equal("\0\0\a", fake.Seen[2].Body);
+    }
+
+    [Fact]
+    public async Task ARefusedPartEndsTheUploadWithTheServersReason()
+    {
+        var fake = new Fake(r => r.RequestUri!.AbsolutePath == "/account/restore/u1/0" ? Json(HttpStatusCode.Conflict, """{"status":"invalid","message":"Out of order."}""") : Parts(r));
+        Assert.Equal(new RestoreResult("invalid", "Out of order.", null), await Make(fake).UploadAsync(new MemoryStream([1]), 1));
+        Assert.DoesNotContain(fake.Seen, s => s.Request.RequestUri!.AbsolutePath.EndsWith("/finish", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -140,11 +176,4 @@ public class ServerRestoreServiceTests
     public async Task AStatusThatIsNotANumberIsNoStatus() =>
         Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"restoredUserId":"nope","review":[]}"""))).StatusAsync());
 
-    [Fact]
-    public async Task UploadSendsTheGivenContentLength()
-    {
-        long? length = null;
-        await Make(new Fake(r => { length = r.Content!.Headers.ContentLength; return Json(HttpStatusCode.OK, """{"status":"restored"}"""); })).UploadAsync(new MemoryStream("zipbytes"u8.ToArray()), 8);
-        Assert.Equal(8, length);
-    }
 }
