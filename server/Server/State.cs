@@ -18,6 +18,8 @@ public sealed partial class State
     // the client often exits without disconnect: an open expedition with no heartbeat for this long has ended
     // (the client sends heartbeats about every 20 s)
     public const int HEARTBEAT_TIMEOUT = 120;
+    /// <summary>The time of the stale checks and heartbeats; a test sets it.</summary>
+    public Func<double> Clock { get; set; } = Py.Now;
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
     public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
@@ -143,14 +145,18 @@ public sealed partial class State
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
     /// stamina).</summary>
-    public static JsonArray Heartbeat(Db con, JsonArray events, Func<long, string, string> uploadUrl,
+    public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates)
     {
         con.Begin();
-        con.Exec("UPDATE expeditions SET last_seen = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now());
+        // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
+        // its statistics are counted again when it closes
+        con.Exec("UPDATE expeditions SET end_ts = NULL, stats = NULL WHERE account_id = $a AND end_ts = last_seen"
+                 + " AND id = (SELECT MAX(id) FROM expeditions WHERE account_id = $a)");
+        con.Exec("UPDATE expeditions SET last_seen = ? WHERE account_id = $a AND end_ts IS NULL", now);
         var updates = new JsonArray(con.Rows("SELECT id, body FROM pending WHERE account_id = $a ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
         con.Exec("DELETE FROM pending WHERE account_id = $a");
         foreach (var node in events)
@@ -251,10 +257,27 @@ public sealed partial class State
         return (Latest(7), Latest(22));
     }
 
-    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT (call inside a transaction);
-    /// true when it closed one (credit the hunterscore after the commit).</summary>
-    public static bool CloseStale(Db con) =>
-        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", Py.Now() - HEARTBEAT_TIMEOUT) > 0;
+    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT before <paramref name="now"/>
+    /// (call inside a transaction); true when it closed one (credit the hunterscore after the commit).</summary>
+    public static bool CloseStale(Db con, double now) =>
+        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", now - HEARTBEAT_TIMEOUT) > 0;
+
+    /// <summary>Close and credit the stale hunts of every account (the timer's work: a quit through the game's menu sends no disconnect).</summary>
+    public void CloseStaleHunts()
+    {
+        List<long> ids;
+        using (var all = Store.Open())
+            ids = all.Rows("SELECT id FROM accounts").Select(r => (long)r[0]).ToList();
+        foreach (var id in ids)  // ponytail: one cheap UPDATE per account a tick; select only accounts with an open hunt if they reach the tens of thousands
+        {
+            using var con = Con(id);
+            con.Begin();
+            var stale = CloseStale(con, Clock());
+            con.Commit();
+            if (stale)
+                UpdateHunterscore(con, id);
+        }
+    }
 
     public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a")!;
 
@@ -777,7 +800,7 @@ public sealed partial class State
             // delete first: a login that connects twice still shows one toast
             con.Exec("DELETE FROM pending WHERE account_id = $a AND body = ?", toast);
             con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", toast);
-            var closed = CloseStale(con);
+            var closed = CloseStale(con, Clock());
             // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
             // with the first heartbeat
             con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
@@ -1123,7 +1146,7 @@ public sealed partial class State
             events = new JsonArray();
         }
         using var con = Con(account);
-        var updates = Heartbeat(con, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates);
+        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
@@ -1181,7 +1204,7 @@ public sealed partial class State
         using (var con = Con(account))
         {
             con.Begin();
-            var stale = CloseStale(con);
+            var stale = CloseStale(con, Clock());
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
@@ -1301,7 +1324,7 @@ public sealed partial class State
         using (var con = Con(account))
         {
             con.Begin();
-            var stale = CloseStale(con);
+            var stale = CloseStale(con, Clock());
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
