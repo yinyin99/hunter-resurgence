@@ -152,7 +152,7 @@
     <value>Data of other players.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Achievement dates, your own minigame score outside the top 30, mission counters, the units setting and your reserve licences.</value>
+    <value>Your own minigame score outside the top 30, mission counters, the units setting and your reserve licences.</value>
   </data>
   <data name="NotCovered_6" xml:space="preserve">
     <value>Gift codes.</value>

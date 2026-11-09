@@ -152,7 +152,7 @@
     <value>Daten anderer Spieler.</value>
   </data>
   <data name="NotCovered_5" xml:space="preserve">
-    <value>Zeitpunkte von Erfolgen, der eigene Minispiel-Wert außerhalb der Top 30, Missionszähler, die Einheiteneinstellung und Revierlizenzen.</value>
+    <value>Der eigene Minispiel-Wert außerhalb der Top 30, Missionszähler, die Einheiteneinstellung und Revierlizenzen.</value>
   </data>
   <data name="NotCovered_6" xml:space="preserve">
     <value>Geschenkcodes.</value>

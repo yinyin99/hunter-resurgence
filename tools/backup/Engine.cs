@@ -38,10 +38,10 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
         ("setups", true, Session.Part),
         ("trophies", true, Session.Part),
         ("hunts", true, Session.None),
-        ("kills", false, Session.None),
+        ("kills", true, Session.None),
         ("account", true, Session.All),
         ("friends", true, Session.Part),
-        ("photos", false, Session.None),
+        ("photos", true, Session.None),
         ("history", false, Session.None),
         ("messages", false, Session.All),
     ];
