@@ -312,12 +312,12 @@ public sealed partial class State
                 metadata.Remove(key);
                 return value;
             }
-            // millimetres and x 1000 in the row, metres and unit vectors in the location
+            // millimetres and x 1000 in the row, both divided by 1000 in the location
             static JsonNode? Scaled(JsonNode? v) => v is JsonObject o
                 ? new JsonObject { ["x"] = Py.D(o["x"]) / 1000, ["y"] = Py.D(o["y"]) / 1000, ["z"] = Py.D(o["z"]) / 1000 } : null;
             var (pos, dir, reserve) = (Take(POSITION), Take(DIRECTION), Take(RESERVE));
             JsonNode? location = null;
-            if ((long)r[2] == PLACED_SLOT && pos is not null)
+            if (r[2] is PLACED_SLOT && pos is not null)
             {
                 location = new JsonObject { ["reserve"] = reserve, ["pos"] = Scaled(pos) };
                 if (dir is not null) location["dir"] = Scaled(dir);
@@ -327,7 +327,7 @@ public sealed partial class State
     }
 
     /// <summary>Inventory/list of the account: a row per owned item with its definition and the owned rows. A placed item
-    /// (slot 23) has `location` `{reserve, pos: {x, y, z}, dir: {x, y, z}}`, else null.</summary>
+    /// (slot 23) has `location` `{reserve, pos: {x, y, z}, dir: {x, y, z}}` (`dir` only with a direction), else null.</summary>
     public byte[] InventoryListReply(long account) =>
         Py.DumpBytes(new JsonArray(OwnRows(account).Select(g => (JsonNode?)new JsonObject
         {

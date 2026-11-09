@@ -146,7 +146,8 @@ public sealed partial class State
     /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
-    /// stamina).</summary>
+    /// stamina). Item placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up
+    /// (event 8 with another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
@@ -278,27 +279,15 @@ public sealed partial class State
         return v;
     }
 
-    /// <summary>Event 33 `{item_from, quantity, item_to?}`: `quantity` units leave a stack and join another stack of the same
-    /// item, or a new stack in the stash when `item_to` is missing. Nothing moves when a stack is not the account's, has no
-    /// units, holds fewer than `quantity`, or the two are one.</summary>
+    /// <summary>Event 33 `{item_from, quantity, item_to?}`: `quantity` units leave a stack and join `item_to`, another stack of the
+    /// same item. Nothing moves when a stack is not the account's, has no units, holds fewer than `quantity`, the two are one, or
+    /// `item_to` is missing (ponytail: how the client splits a stack into a new one is not known, no stack is made up).</summary>
     static void MoveUnits(Db con, JsonObject e)
     {
         var quantity = Py.IsNum(e["quantity"]) ? (long)Py.D(e["quantity"]) : 0;
-        if (ItemGuid(e["item_from"]) is not { } fromGuid || quantity <= 0
-            || con.Rows("SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ?", fromGuid, quantity).FirstOrDefault() is not { } source)
-            return;
-        long to;
-        if (Py.Truthy(G(e, "item_to", null)))
-        {
-            if (ItemGuid(e["item_to"]) is not { } target || target == fromGuid) return;
-            to = target;
-        }
-        else
-        {
-            to = NextId(con, "items", "guid");
-            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', 0)", to, source[0]);
-        }
-        if (con.Exec("UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL", quantity, to, source[0]) == 0)
+        if (ItemGuid(e["item_from"]) is not { } fromGuid || ItemGuid(e["item_to"]) is not { } to || to == fromGuid || quantity <= 0
+            || con.Rows("SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ?", fromGuid, quantity).FirstOrDefault() is not { } source
+            || con.Exec("UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL", quantity, to, source[0]) == 0)
             return;
         con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END WHERE account_id = $a AND guid = ?2", quantity, fromGuid);
     }

@@ -91,21 +91,25 @@ public class PlacedItemsTests : StateTestBase
     [Fact]
     public void TestUnitsMoveBetweenStacks()
     {
-        JsonNode Units() => T(Inventory(state, ME)["200"]!["units"], Inventory(state, ME).TryGetPropertyValue("201", out var n) ? n!["units"] : null);
-        // no item_to: a new stack in the stash
-        Beat(ME, O("""{"event": 33, "item_from": "200", "quantity": 4}"""));
-        Eq("[6, 4]", Units());
-        Eq("[1, 0]", T(Inventory(state, ME)["200"]!["slot"], Inventory(state, ME)["201"]!["slot"]));
-        Beat(ME, O("""{"event": 33, "item_from": "201", "quantity": 3, "item_to": "200"}"""));
-        Eq("[9, 1]", Units());
-        // nothing moves: more than the stack holds, another item, a stack without units, the same stack, a bad quantity, a stack that is not there
-        Beat(ME, O("""{"event": 33, "item_from": "201", "quantity": 5, "item_to": "200"}"""), O("""{"event": 33, "item_from": "201", "quantity": 1, "item_to": "100"}"""),
+        using (var con = state.Store.Open(ME))  // a second stack of item 10, next to the connect's 200 with 10 units
+        {
+            con.Begin();
+            PlayerRows.AddItem(con, 201, 10, 0, 4, new JsonObject());
+            con.Commit();
+        }
+        JsonNode Units() => T(Inventory(state, ME)["200"]!["units"], Inventory(state, ME)["201"]!["units"]);
+        Beat(ME, O("""{"event": 33, "item_from": "200", "quantity": 3, "item_to": "201"}"""));
+        Eq("[7, 7]", Units());
+        // nothing moves: more than the stack holds, another item, a stack without units, the same stack, a bad quantity, a stack that is not
+        // there, no item_to
+        Beat(ME, O("""{"event": 33, "item_from": "201", "quantity": 8, "item_to": "200"}"""), O("""{"event": 33, "item_from": "201", "quantity": 1, "item_to": "100"}"""),
              O("""{"event": 33, "item_from": "100", "quantity": 1, "item_to": "200"}"""), O("""{"event": 33, "item_from": "200", "quantity": 1, "item_to": "200"}"""),
-             O("""{"event": 33, "item_from": "200", "quantity": -1, "item_to": "201"}"""), O("""{"event": 33, "item_from": "200", "quantity": 1, "item_to": "999"}"""));
-        Eq("[9, 1]", Units());
+             O("""{"event": 33, "item_from": "200", "quantity": -1, "item_to": "201"}"""), O("""{"event": 33, "item_from": "200", "quantity": 1, "item_to": "999"}"""),
+             O("""{"event": 33, "item_from": "200", "quantity": 1}"""));
+        Eq("[7, 7]", Units());
         // an emptied stack goes to the stash like a used-up one, and the move survives a reconnect
-        Beat(ME, O("""{"event": 33, "item_from": "200", "quantity": 9, "item_to": "201"}"""));
+        Beat(ME, O("""{"event": 33, "item_from": "200", "quantity": 7, "item_to": "201"}"""));
         var items = Inventory(Reopen(), ME);
-        Eq("[0, 0, 10]", T(items["200"]!["units"], items["200"]!["slot"], items["201"]!["units"]));
+        Eq("[0, 0, 14]", T(items["200"]!["units"], items["200"]!["slot"], items["201"]!["units"]));
     }
 }
