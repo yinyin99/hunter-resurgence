@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace Resurgence.Ui;
 
 /// <summary>
-/// The game's name and its external links, read from the untracked settings.json (game_name, game_full, link_news, link_forum, ...).
+/// The game's name and its external links, read from the untracked settings.json (game_name, game_full, link_forum, ...).
 /// A missing file, a missing key or a placeholder (&lt;...&gt;) gives "the game" and no link, so the repository never needs the real values.
 /// </summary>
 public sealed class Branding

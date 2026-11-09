@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Veuillez saisir une adresse email valide.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Code incorrect. Veuillez réessayer.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>JOUER GRATUITEMENT</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Lire la suite →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Actualités passées</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>En développement</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Ce serveur communautaire se construit en public, et certaines pages affichent encore du contenu d’exemple.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Suivre le projet sur GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence est en développement</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Le serveur communautaire se construit en toute transparence. Les comptes, la restauration de votre sauvegarde et ce site prennent forme, et le serveur ouvrira bientôt au public.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>L’accès public ouvre bientôt.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Sauvegardez votre compte avant la fermeture des serveurs officiels</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Les serveurs officiels ferment le 11 novembre 2026. Téléchargez l’outil de sauvegarde et enregistrez votre profil dès maintenant : inventaire, trophées, statistiques et plus. Vous pourrez le restaurer sur le serveur communautaire à son ouverture.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Sauvegardez votre profil avant le 11 novembre 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>À lire ici</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>En ligne : {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBRES EN LIGNE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Rejoindre Discord</value></data>

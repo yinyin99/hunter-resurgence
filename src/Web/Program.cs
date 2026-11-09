@@ -42,7 +42,7 @@ else
 // the development states (?mock=patch:..., ?mock=settings:first) are per browser circuit too
 builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));
-builder.Services.AddScoped<INewsService>(sp => new MockNewsService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<INewsService>(sp => new MockNewsService());
 builder.Services.AddScoped<IMissionsService>(sp => new MockMissionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IFriendsService>(sp => new MockFriendsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IMessagesService>(sp => new MockMessagesService(sp.GetRequiredService<HostMode>().Mock));
@@ -69,9 +69,6 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
-    // the feed's news and slides are the server's recorded ones, shared the same way; no Discord widget
-    builder.Services.AddSingleton<ServerCache<ServerNews>>();
-    builder.Services.AddScoped<INewsService>(sp => new ServerNewsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerNews>>(), sp.GetRequiredService<ILogger<ServerNewsService>>()));
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();

@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Voer een geldig e-mailadres in.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Onjuiste code. Probeer het opnieuw.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>GRATIS SPELEN</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Verder lezen →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Nieuwsarchief</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>In ontwikkeling</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Deze communityserver wordt in het openbaar gebouwd, en sommige pagina's tonen nog voorbeeldinhoud.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Volg het project op GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence is in ontwikkeling</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>De communityserver wordt openlijk gebouwd. Accounts, het terugzetten van je back-up en deze website krijgen vorm, en de server opent binnenkort voor het publiek.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Publiek spelen opent binnenkort.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Bewaar je account voordat de officiële servers sluiten</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>De officiële servers sluiten op 11 november 2026. Download de back-uptool en bewaar nu je profiel: inventaris, trofeeën, statistieken en meer. Je kunt het terugzetten op de communityserver zodra die opent.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Maak vóór 11 november 2026 een back-up van je profiel.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Lees het hier</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>LEDEN ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Doe mee op Discord</value></data>

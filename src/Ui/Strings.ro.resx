@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Introduceți o adresă de e-mail validă.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Cod incorect. Încercați din nou.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>JUCAȚI GRATUIT</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Continuați lectura →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Arhiva de știri</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>În dezvoltare</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Acest server al comunității este construit în mod deschis, iar unele pagini încă arată conținut de exemplu.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Urmăriți proiectul pe GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence este în dezvoltare</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Serverul comunității este construit în mod deschis. Conturile, restaurarea backup-ului dvs. și acest site prind contur, iar serverul se deschide în curând publicului.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Jocul se deschide în curând.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Salvați-vă contul înainte ca serverele oficiale să se închidă</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Serverele oficiale se închid pe 11 noiembrie 2026. Descărcați instrumentul de backup și salvați-vă profilul acum: inventar, trofee, statistici și altele. Îl puteți restaura pe serverul comunității când se va deschide.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Faceți backup profilului înainte de 11 noiembrie 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Citiți aici</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEMBRI ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Intrați pe Discord</value></data>

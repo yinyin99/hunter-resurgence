@@ -109,11 +109,14 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Angiv en gyldig e-mailadresse.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Forkert kode. Prøv igen.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>SPIL GRATIS</value></data>
-  <data name="Feed.ContinueReading" xml:space="preserve"><value>Læs videre →</value></data>
-  <data name="Feed.NewsArchive" xml:space="preserve"><value>Nyhedsarkiv</value></data>
-  <data name="Feed.DevTitle" xml:space="preserve"><value>Under udvikling</value></data>
-  <data name="Feed.DevText" xml:space="preserve"><value>Denne fællesskabsserver bygges åbent, og nogle sider viser stadig eksempelindhold.</value></data>
   <data name="Feed.DevLink" xml:space="preserve"><value>Følg projektet på GitHub</value></data>
+  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence er under udvikling</value></data>
+  <data name="News.Dev.Text" xml:space="preserve"><value>Fællesskabsserveren bygges åbent. Konti, gendannelse af din backup og dette websted tager form, og serveren åbner snart for alle.</value></data>
+  <data name="News.Dev.Lead" xml:space="preserve"><value>Offentlig spilning åbner snart.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Gem din konto, før de officielle servere lukker</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>De officielle servere lukker den 11. november 2026. Download backupværktøjet, og gem din profil nu: inventar, trofæer, statistik og mere. Du kan gendanne den på fællesskabsserveren, når den åbner.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Tag backup af din profil inden den 11. november 2026.</value></data>
+  <data name="News.ReadIt" xml:space="preserve"><value>Læs det her</value></data>
   <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
   <data name="Discord.Members" xml:space="preserve"><value>MEDLEMMER ONLINE</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Kom med på Discord</value></data>

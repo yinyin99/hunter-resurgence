@@ -32,7 +32,7 @@ static class LauncherServices
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
-        services.AddSingleton<INewsService>(new MockNewsService(mock));
+        services.AddSingleton<INewsService>(new MockNewsService());
         services.AddSingleton<IMissionsService>(new MockMissionsService(mock));
         services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
         services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
