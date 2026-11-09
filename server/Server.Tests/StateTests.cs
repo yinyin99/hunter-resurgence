@@ -432,6 +432,9 @@ public class InventoryTests : StateTestBase
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         var first = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];
         Eq(first, Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"]);  // 2nd connect
+        Hb(O("""{"event": 7, "individual": 413, "species": 17, "gender": 0, "weight_grams": 1100, "feature": 1100250}"""),
+           O("""{"event": 1, "individual": 413, "ammunition_id": 14, "weapon_id": 391}"""),
+           O("""{"event": 3, "individual": 413, "extended_species": 17}"""));  // a kill in the first hunt
         state.Disconnect(ME, []);
         var second = Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"];  // direct launch: opens one
         Assert.False(Py.Eq(second, first));
@@ -440,7 +443,29 @@ public class InventoryTests : StateTestBase
         Eq(T(second, first), new JsonArray(listed["expeditions"]!.AsArray().Select(e => C(e!["id"])).ToArray()));
         Assert.Equal([true, false], listed["expeditions"]!.AsArray().Select(e => e!["end_ts"] is null));
         Eq(second, Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["expedition"]!["id"]);
-        Assert.Equal(upstreamList, state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));
+        Assert.True((bool)listed["has_more"]!);  // the recorded hunt is left
+        var recordedPage = Reply(state.ExpeditionListReply(ME, upstreamList, "limit=10&offset=10"u8.ToArray()));  // past the server hunts: the recorded page
+        Assert.Equal("[{\"id\":730218841}]", recordedPage["expeditions"]!.ToJsonString());
+        Assert.Equal("13", Py.Dumps(recordedPage["total"]));
+        // a community server: nothing recorded, the pages are the server hunts alone
+        var none = "{\"total\": 0, \"expeditions\": []}"u8.ToArray();
+        List<(string Ids, string Total, bool More)> Page(string form)
+        {
+            var p = Reply(state.ExpeditionListReply(ME, none, System.Text.Encoding.UTF8.GetBytes(form)));
+            return [(Py.Dumps(new JsonArray(p["expeditions"]!.AsArray().Select(e => C(e!["id"])).ToArray())), Py.Dumps(p["total"]), (bool)p["has_more"]!)];
+        }
+        Assert.Equal([(Py.Dumps(T(second)), "2", true)], Page("limit=1&offset=0"));
+        Assert.Equal([(Py.Dumps(T(first)), "2", false)], Page("limit=1&offset=1"));
+        Assert.Equal([("[]", "2", false)], Page("limit=1&offset=2"));
+        // an older hunt by id (with its kills), the latest without it; an unknown id is the recorded reply
+        byte[] Hunt(string form) => state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray(), System.Text.Encoding.UTF8.GetBytes(form));
+        var older = Reply(Hunt("expedition_id=" + Py.Dumps(first)));
+        Eq(first, older["expedition"]!["id"]);
+        Assert.Single(older["kills"]!.AsArray());
+        var latest = Reply(Hunt(""));
+        Eq(second, latest["expedition"]!["id"]);
+        Assert.Empty(latest["kills"]!.AsArray());
+        Assert.Equal("{\"replayed\": 1}"u8.ToArray(), Hunt("expedition_id=99999999999"));
     }
 
     [Fact]
