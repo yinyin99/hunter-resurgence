@@ -11,6 +11,8 @@ After that date the game stops working, even for a single-player hunt, because i
 > [!IMPORTANT]
 > **Save your profile with the [backup tool](#for-players-the-backup-tool) before 2026-11-11** (download it from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest)). It needs the official servers, so after that date it cannot save anything, and a restore can only bring back what a backup saved. Keep the game installed: you will play with your copy, on the community server or on a server on your own PC.
 
+**New here? [The player guide](docs/guide.md) takes you from backup to playing on the community server, step by step.**
+
 ## For players: the backup tool
 
 The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. Your backup stays on your PC: the tool sends it to the community server only if you press "Send to the community server" after a backup ([how](docs/backup.md#send-to-the-community-server)). Its window follows your Windows language (English, French, Spanish, Portuguese, German or Russian).
@@ -85,6 +87,7 @@ Build, test, the repository's rules and releases: [CONTRIBUTING.md](CONTRIBUTING
 
 One document per part:
 
+- [docs/guide.md](docs/guide.md): the player guide, from backup to playing on the community server.
 - [docs/backup.md](docs/backup.md): the backup tool.
 - [docs/play.md](docs/play.md): the player kit.
 - [docs/launcher.md](docs/launcher.md): the launcher.
