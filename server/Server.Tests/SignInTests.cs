@@ -385,6 +385,18 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsAchievementsAreServedToEveryone()
+    {
+        await SignIn("99999999999999991", "one");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        Eq("""{"categories": [], "unlocked": 0, "recent": []}""", JsonNode.Parse((await Get("web.test", "/hunters/one/achievements")).Body));  // no definitions in the sample connect
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/achievements")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/achievements")).Status);
+    }
+
+    [Fact]
     public async Task TestTheMinigameBoardsListTheRestoredBestScores()
     {
         state.CreateAccount(9, "third");

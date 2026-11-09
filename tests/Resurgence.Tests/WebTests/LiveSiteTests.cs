@@ -84,11 +84,11 @@ public sealed class LiveSiteTests : UiContext
     }
 
     /// <summary>Answers the skills, statistics and dogs paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}") : HttpMessageHandler
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string achievements = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/achievements") => achievements, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -100,11 +100,11 @@ public sealed class LiveSiteTests : UiContext
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
-        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox"));
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "skills"));
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
     }
@@ -138,6 +138,21 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li > div:last-child > b").TextContent));
         Assert.Contains("Loyalty One", cut.Find("ul.dogs li em").TextContent);
         Assert.Contains("Ribbon", cut.Markup);
+    }
+
+    [Fact]
+    public void TheAchievementsTabShowsTheServersOverviewOnly()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
+        const string achievements = """{"categories":[{"name":"Animals","level":1,"done":4,"total":5}],"unlocked":4,"recent":[{"title":"25 Mule Deer","description":"25 Mule Deer harvested.","date":"2023-11-15"}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", achievements: achievements)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<AchievementsTab>(p => p.Add(a => a.Handle, "Fox").Add(a => a.Sub, "challenges"));  // a mock page: the overview shows
+        cut.WaitForAssertion(() => Assert.Equal("25 Mule Deer", cut.Find("div.item .text b").TextContent));
+        Assert.Contains("2023-11-15", cut.Find("div.item time").TextContent);
+        Assert.Contains("4", cut.Find("p.line").TextContent);
+        Assert.Single(cut.FindAll("ul.pills a"));
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>

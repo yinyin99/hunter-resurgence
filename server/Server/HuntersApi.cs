@@ -81,6 +81,14 @@ public static class HuntersApi
                              + "and the connect's `dog_skills`, `percent` the way to the next level); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/achievements", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicAchievements(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterAchievements").WithSummary("A hunter's achievements: the categories' progress, the number unlocked and the latest")
+            .WithDescription("`{categories: [{name, level, done, total}], unlocked, recent: [{title, description, date}]}` over the connect's achievement definitions: `done` of `total` thresholds "
+                             + "have an earn time, `unlocked` counts them all, `recent` the last ten by earn time (`date` UTC, yyyy-MM-dd); 404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {

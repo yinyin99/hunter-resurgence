@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "achievements" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -42,7 +42,25 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         Path.GetFileNameWithoutExtension(url) is { Length: > 0 } id && id.All(char.IsAsciiDigit) ? "avatar-" + id : "avatar-default";
 
     public Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind) => mock.RanksAsync(handle, kind);
-    public Task<AchievementSummary> AchievementSummaryAsync(string handle) => mock.AchievementSummaryAsync(handle);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/achievements</c>: the categories' progress, the number unlocked and the latest. A failed answer is an empty summary.</summary>
+    public async Task<AchievementSummary> AchievementSummaryAsync(string handle)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.AchievementsSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerAchievements>() is { } a)
+                return new([.. (a.Categories ?? []).Select(c => new RankBar(c.Name, c.Level, c.Done, c.Total))], a.Unlocked,
+                    [.. (a.Recent ?? []).Select(r => new Achievement(r.Title, r.Description, DateOnly.TryParseExact(r.Date, "yyyy-MM-dd", out var d) ? d : default))]);
+            log.LogWarning("The server answered {Path} with {Status}: no achievements", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no achievements", path, e.Message);
+        }
+        return new([], 0, []);
+    }
     public Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind) => mock.MilestonesAsync(handle, kind);
     public Task<IReadOnlyList<Challenge>> ChallengesAsync(string handle) => mock.ChallengesAsync(handle);
     /// <summary><c>GET /hunters/&lt;handle&gt;/skills</c>: the species with their spotting and tracking rings, or the weapons grouped by their category with a shooting ring. A failed answer is no skills.</summary>
