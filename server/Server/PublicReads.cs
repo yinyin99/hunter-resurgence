@@ -40,7 +40,7 @@ public sealed partial class State
             ["hunterscore"] = C(me["hunterscore"]), ["rank"] = Store.Rank(account, LocalAccount),
             ["membership"] = C(G(Account(account), "membership", 0)), ["membershipType"] = C(me["membershipType"]), ["membershipTitle"] = C(me["membershipTitle"]),
             ["online"] = con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL AND COALESCE(last_seen, start_ts) >= ?",
-                                    Py.Now() - HEARTBEAT_TIMEOUT) is not null,
+                                    Clock() - HEARTBEAT_TIMEOUT) is not null,
             ["stats"] = new JsonObject { ["distance"] = C(stats["distance"]), ["duration"] = C(stats["duration"]) },
         };
     }
