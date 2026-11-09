@@ -1,6 +1,7 @@
 @inject IProfileService Service
+@inject HostMode Mode
 
-<SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/statistics")" />
+<SubPills Items="pills" Active="@sub" Base="@("/profile/" + Handle + "/statistics")" />
 @switch (sub)
 {
     case "":
@@ -55,7 +56,9 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    string sub => Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+    // the live site has a server source for the lifetime statistics only: the last hunt, the history and the bests are the mock's
+    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[1..2] : subs;
+    string sub => Mode.Live ? "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
 
     protected override async Task OnParametersSetAsync()
     {

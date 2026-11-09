@@ -79,6 +79,30 @@ public class ServerProfileServiceTests
         Assert.Equal(("Owl", 5, 3, false, false), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Online));
     }
 
+    [Fact]
+    public async Task TheStatisticsAreTheServersTotals()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """
+            {"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":null}],
+             "animals":[{"name":"Deer","spotted":3,"tracked":2,"harvested":1}],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}
+            """));
+        var t = await Make(fake).TotalsAsync("a b");
+        Assert.EndsWith("/hunters/a%20b/statistics", Assert.Single(fake.Seen).RequestUri!.OriginalString);
+        Assert.Equal(new WeaponStat("Rifle", "Bullet", 4, 75.0, 1, 33.3, null), Assert.Single(t.Weapons));
+        Assert.Equal(new SpeciesStat("Deer", 3, 2, 1), Assert.Single(t.Animals));
+        Assert.Equal((0, 5.0, 7200), (t.Collectables.Count, t.DistanceKm, t.HuntSeconds));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    [InlineData(HttpStatusCode.OK, """{"handle": "Owl", "hunterscore": 5}""")]  // an answer without the lists
+    public async Task AFailedStatisticsAnswerIsAnEmptyTotals(HttpStatusCode code, string body)
+    {
+        var t = await Make(new Fake(_ => Json(code, body))).TotalsAsync("Owl");
+        Assert.Equal((0, 0, 0, 0.0, 0), (t.Weapons.Count, t.Animals.Count, t.Collectables.Count, t.DistanceKm, t.HuntSeconds));
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.InternalServerError, "{}")]
     [InlineData(HttpStatusCode.OK, "<html>")]

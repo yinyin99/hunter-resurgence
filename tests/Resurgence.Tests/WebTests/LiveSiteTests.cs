@@ -83,12 +83,13 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills and dogs paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string dogs) : HttpMessageHandler
+    /// <summary>Answers the skills, statistics and dogs paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/dogs") => dogs, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+
     }
 
     [Fact]
@@ -97,7 +98,7 @@ public sealed class LiveSiteTests : UiContext
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
         const string skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[]}""";
         const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[],"trophies":[]}]}""";
-        var real = new ServerProfileService(new HttpClient(new Server(header, skills, dogs)) { BaseAddress = new Uri("http://server.test") },
+        var real = new ServerProfileService(new HttpClient(new Server(header, skills, dogs: dogs)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
@@ -105,9 +106,27 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: only skills and dogs have a server source
+        Assert.Equal(["/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Empty(cut.FindAll("button.request"));
+    }
+
+    [Fact]
+    public void TheStatisticsTabShowsTheServersLifetimeStatisticsOnly()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":null}""";
+        const string statistics = """
+            {"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":123.0}],
+             "animals":[{"name":"Fox Deer","spotted":3,"tracked":2,"harvested":1}],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}
+            """;
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", statistics)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics"));
+        cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
+        Assert.Contains("Fox Deer", cut.Markup);
+        Assert.Equal(["/profile/Fox/statistics/lifetime"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's pills are hidden
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>
@@ -128,7 +147,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
         const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
-        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", dogs)) { BaseAddress = new Uri("http://server.test") },
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", dogs: dogs)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
         var cut = Render<DogsTab>(p => p.Add(d => d.Handle, "Fox"));

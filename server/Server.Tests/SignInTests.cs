@@ -284,6 +284,49 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheStatisticsTabIsAnyAccountsStatisticsByHandle()
+    {
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        using (var con = state.Store.Open(9))
+            PlayerRows.SetStatistics(con, O("""
+                {"collectables": {}, "daily_missions": {}, "animal": {"1": {"spots": 3, "tracks": 2, "kills": 1}, "99": {"kills": 4}},
+                 "weapon": {"5": {"10": {"hits": 3, "misses": 1, "kills": 1, "distance": 123000}}}}
+                """), 5000, 7200, null, null);
+        var reply = await Get("web.test", "/hunters/THIRD/statistics");
+        Assert.Equal(200, reply.Status);
+        var page = JsonNode.Parse(reply.Body)!;
+        var w = page["weapons"]!.AsArray().Single()!;
+        Assert.Equal(("Test Rifle", "Test Bullet", 4L, 75.0, 1L, 33.3, 123.0), ((string)w["weapon"]!, (string)w["ammo"]!, (long)w["shots"]!, (double)w["accuracy"]!, (long)w["kills"]!, (double)w["killsPerHit"]!, (double)w["longest"]!));
+        // by name, species the catalogue does not know keep their id
+        Assert.Equal([("99", 0L, 0L, 4L), ("Test Deer", 3L, 2L, 1L)],
+            page["animals"]!.AsArray().Select(a => ((string)a!["name"]!, (long)a["spotted"]!, (long)a["tracked"]!, (long)a["harvested"]!)));
+        Assert.Equal((5.0, 7200L, 0), ((double)page["distanceKm"]!, (long)page["huntSeconds"]!, page["collectables"]!.AsArray().Count));
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/statistics")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/statistics")).Status);
+    }
+
+    // a restore keeps the backup's statistics as they are: members of another type or counters of any size must not fail the tab
+    [Fact]
+    public async Task TestTheStatisticsTabSurvivesOddRestoredStatistics()
+    {
+        state.CreateAccount(9, "odd");
+        using (var con = state.Store.Open(9))
+            PlayerRows.SetStatistics(con, O("""
+                {"collectables": [], "daily_missions": {}, "animal": {"1": 5, "2": {"kills": 99999999999, "spots": -3}}, "weapon": {"5": 3, "6": [], "7": {"10": {"hits": 1e30, "misses": "x"}}}}
+                """), 5000, 1e30, null, null);
+        var reply = await Get("web.test", "/hunters/odd/statistics");
+        Assert.Equal(200, reply.Status);
+        var page = JsonNode.Parse(reply.Body)!;
+        Assert.Equal(int.MaxValue, (int)page["huntSeconds"]!);
+        Assert.Equal([("2", 0, 0, int.MaxValue), ("Test Deer", 0, 0, 0)],  // a negative counter is 0, a member that is no object counts nothing
+                     page["animals"]!.AsArray().Select(a => ((string)a!["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!)));
+        Assert.Equal(int.MaxValue, (int)page["weapons"]!.AsArray().Single()!["shots"]!);
+    }
+
+    [Fact]
     public async Task TestAnyAccountsSkillsAreServedToEveryone()
     {
         await SignIn("99999999999999991", "one");

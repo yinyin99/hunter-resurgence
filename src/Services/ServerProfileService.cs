@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "dogs" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "dogs" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -68,7 +68,23 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 
     /// <summary>A skill number (level plus the fraction of its span) as a ring: its level and the percent of the span done.</summary>
     static SkillRing Ring(string label, double value) => new(label, (int)value, (int)Math.Floor(Math.Round((value - Math.Floor(value)) * 100, 6)));
-    public Task<Totals> TotalsAsync(string handle) => mock.TotalsAsync(handle);
+    /// <summary>The lifetime statistics from <c>GET /hunters/&lt;handle&gt;/statistics</c> (JSON of <see cref="Totals"/>); empty ones when the server does not answer.</summary>
+    public async Task<Totals> TotalsAsync(string handle)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}/statistics";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<Totals>() is { Weapons: not null, Animals: not null, Collectables: not null } totals) return totals;
+            log.LogWarning("The server answered {Path} with {Status}: empty statistics", ServerSessionApi.Hunters + "/<handle>/statistics", (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): empty statistics", ServerSessionApi.Hunters + "/<handle>/statistics", e.Message);
+        }
+        return new([], [], [], 0, 0);
+    }
     public Task<ScoreSheet?> SheetAsync(string handle, string kind, long id) => mock.SheetAsync(handle, kind, id);
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => mock.GalleryAsync(handle, page);
     public Task<Result> DeleteGalleryImageAsync(long id) => mock.DeleteGalleryImageAsync(id);
