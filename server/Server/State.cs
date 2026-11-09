@@ -962,7 +962,7 @@ public sealed partial class State
 
     /// <summary>Whether n more copies of the item put the player over the catalogue's `ownLimit`, or over 1 when `ownMultiple` is false:
     /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit. An item with `units`
-    /// (a one-use order or refill) is never "owned": the game's own store gave no row for one, and the server keeps its row.</summary>
+    /// (a one-use order or refill) is exempt from the `ownMultiple` rule only: the original store never showed one as owned.</summary>
     bool OverOwnLimit(Db con, long itemId, int n)
     {
         if (items.GetValueOrDefault(itemId) is not { } item)
