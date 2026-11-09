@@ -186,17 +186,22 @@ public sealed partial class State
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
                 var dog = con.Rows("SELECT item_id, json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"]))).FirstOrDefault();
-                if (dog is not null && isDog(Convert.ToInt64(dog[0])) && G(metadata, "experience", null) is { } xp && Py.IsNum(xp))
+                if (dog is not null && isDog(Convert.ToInt64(dog[0])) && metadata.ContainsKey("experience"))
                 {
-                    // a dog's levels pay once: the stored experience only grows, and each level with a SILVER reward crossed is paid
-                    var old = dog[1] is long or double ? Convert.ToDouble(dog[1]) : 0;
-                    var paid = Arr(dogSkills).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.D(r["xp"]) > old && Py.D(r["xp"]) <= Py.D(xp))
-                        .SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>().Where(u => (string?)u["type"] == "rewards"))
-                        .SelectMany(u => Arr(u["data"]).OfType<JsonObject>().Where(x => (string?)x["type"] == "SILVER" && Py.IsNum(x["amount"])))
-                        .Sum(x => Py.L(x["amount"]));
-                    if (paid > 0 && AddCurrency(con, "gm", paid) is { } balance)
-                        updates.Add(new JsonObject { ["amount"] = balance, ["type"] = "gm", ["update"] = 15 });
-                    if (Py.D(xp) < old) { metadata = metadata.DeepClone().AsObject(); metadata["experience"] = old; }
+                    metadata = metadata.DeepClone().AsObject();
+                    if (metadata["experience"] is not { } xp || !Py.IsNum(xp)) metadata.Remove("experience");  // null or text would erase the stored value
+                    else
+                    {
+                        // a dog's levels pay once: the stored experience only grows, and each level with a SILVER reward crossed is paid
+                        var old = dog[1] is long or double ? Convert.ToDouble(dog[1]) : 0;
+                        var paid = Arr(dogSkills).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.D(r["xp"]) > old && Py.D(r["xp"]) <= Py.D(xp))
+                            .SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>().Where(u => (string?)u["type"] == "rewards"))
+                            .SelectMany(u => Arr(u["data"]).OfType<JsonObject>().Where(x => (string?)x["type"] == "SILVER" && Py.IsNum(x["amount"])))
+                            .Sum(x => Py.L(x["amount"]));
+                        if (paid > 0 && AddCurrency(con, "gm", paid) is { } balance)
+                            updates.Add(new JsonObject { ["amount"] = balance, ["type"] = "gm", ["update"] = 15 });
+                        if (Py.D(xp) < old) metadata["experience"] = old;
+                    }
                 }
                 con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));

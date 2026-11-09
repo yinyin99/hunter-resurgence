@@ -816,6 +816,8 @@ public class SkillTests : StateTestBase
         Assert.Empty(Gm("650.5"));
         Assert.Empty(Gm("50"));
         Assert.Empty(Gm("650"));
+        Assert.Empty(Gm("null"));
+        Assert.Empty(Gm("650.5"));
         using (var con = state.Store.Open(ME))
             Assert.Equal("""{"experience":650.5,"dog_name":"Rex"}""", (string)con.Scalar("SELECT metadata FROM items WHERE account_id = $a AND guid = 300")!);
         Assert.Empty(new JsonArray(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 900}}"""), O("""{"event": 23, "item": "999", "metadata": {"experience": 900}}"""))

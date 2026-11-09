@@ -164,7 +164,9 @@ A request's account comes from its token. The tokens it carries are tried in thi
 
 The database is in WAL mode with `synchronous=NORMAL` and a 5 s busy timeout, connections are pooled, every transaction starts with `BEGIN IMMEDIATE`, and the schema and its migrations run once at startup under `PRAGMA user_version`. A database call is scoped to one account: the SQL names it as `$a`, and a statement that touches a per-player table without it throws, so a forgotten filter fails in the tests and never reads another player's rows.
 
-A dog's level rewards are paid from its heartbeat event 23 for an owned dog item, which comes every 60 s and carries the dog's cumulative `experience`. Each connect `dog_skills` row whose `xp` the stored experience (missing: 0) is below and the event's is at or above adds the `SILVER` amounts of its `rewards` unlocks to the `gm` wallet, and the heartbeat reply carries one update 15 with the new balance. The stored experience only grows (`max` of both), so a repeated or lower value pays nothing, and a dog restored or bought with a high experience pays only for levels crossed afterwards. The ribbon trophy and the skills are not paid: the game and the website show them from the experience.
+## Dog level rewards
+
+A dog's level rewards are paid from its heartbeat event 23 for an owned dog item, which comes every 60 s and carries the dog's cumulative `experience`. Each connect `dog_skills` row whose `xp` the stored experience (missing: 0) is below and the event's is at or above adds the `SILVER` amounts of its `rewards` unlocks to the `gm` wallet, and the heartbeat reply carries one update 15 with the new balance. The stored experience only grows (an event whose `experience` is not a number leaves it as it is) (`max` of both), so a repeated or lower value pays nothing, and a dog restored or bought with a high experience pays only for levels crossed afterwards. The ribbon trophy and the skills are not paid: the game and the website show them from the experience.
 
 ## The hunterscore
 
