@@ -20,6 +20,8 @@ public static class ServerSessionApi
     public const string AchievementsSuffix = "/achievements";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
     public const string TrophiesSuffix = "/trophies";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. Public: no cookie needed.</summary>
+    public const string RanksSuffix = "/ranks";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
     public const string FriendsSuffix = "/friends";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
@@ -63,6 +65,17 @@ public sealed record ServerDogs(ServerDog[] Dogs);
 public sealed record ServerDog(string Name, string Type, int Level, int Percent, ServerDogSkill[] Skills, string[] Trophies);
 
 public sealed record ServerDogSkill(string Title, int Level);
+
+/// <summary>A hunter's ranks and milestones of <see cref="ServerSessionApi.RanksSuffix"/>: <c>Cap</c> is the most a rank row adds to the hunterscore.</summary>
+public sealed record ServerRanks(long Cap, ServerRank[] Ranks, ServerMilestone[] Milestones);
+
+/// <param name="Category">animals, weapons or collectables.</param>
+/// <param name="Value">The count of ethical kills or pickups, before the cap.</param>
+public sealed record ServerRank(long Id, string Category, string Name, long Value);
+
+/// <param name="Category">animals, weapons, exploration or day-mission.</param>
+/// <param name="Steps">The thresholds; <c>Value</c> the counter they are reached by.</param>
+public sealed record ServerMilestone(string Category, string Title, long[] Steps, long Value);
 
 /// <summary>A hunter's achievements of <see cref="ServerSessionApi.AchievementsSuffix"/>: the progress of each category, how many are unlocked and the latest.</summary>
 public sealed record ServerAchievements(ServerAchievementCategory[] Categories, int Unlocked, ServerAchievement[] Recent);

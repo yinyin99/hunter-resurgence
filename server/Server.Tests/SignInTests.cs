@@ -385,6 +385,36 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsRanksAreServedToEveryone()
+    {
+        await SignIn("99999999999999991", "one");
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open(9))  // the species 19 (and its variant 119): the first rank row; the weapon 369: row 41; a count counts before the cap
+            PlayerRows.SetStatistics(con, O("""{"animal": {"19": {"ethical_kills": 1500}, "119": {"ethical_kills": 4}}, "weapon": {"369": {"10": {"ethical_kills": 7}}}}"""), 0, 0, null, null);
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+
+        var game = await Get("apiv2.test", "/game/user/9/ranks");
+        Assert.Equal("application/vnd.game_data.user.rank+json; type=collection", game.Headers.Single(h => h.Name == "Content-Type").Value);
+        var rows = JsonNode.Parse(game.Body)!.AsArray();
+        Assert.Equal(Facts.Default.Ranks.Length, rows.Count);
+        Eq("""{"id": 1, "category_id": 1, "value": 1504}""", rows.Single(r => (long)r!["id"]! == 1));
+        Eq("""{"id": 41, "category_id": 2, "value": 7}""", rows.Single(r => (long)r!["id"]! == 41));
+        Eq("""{"id": 38, "category_id": 3, "value": 0}""", rows.Single(r => (long)r!["id"]! == 38));
+        foreach (var id in new[] { 7, 10, 99 })  // the recorded player's, a banned and an unknown user id
+            Assert.Equal(404, (await Get("apiv2.test", $"/game/user/{id}/ranks")).Status);
+
+        var site = JsonNode.Parse((await Get("web.test", "/hunters/third/ranks")).Body)!;
+        Assert.Equal(1000, (long)site["cap"]!);
+        Eq("""{"id": 1, "category": "animals", "name": "Alpine Ibex", "value": 1504}""", site["ranks"]!.AsArray().Single(r => (long)r!["id"]! == 1));
+        Assert.Equal(rows.Count, site["ranks"]!.AsArray().Count);
+        Assert.IsType<JsonArray>(site["milestones"]);
+        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/ranks")).Status);
+        Assert.Equal(404, (await Get("web.test", "/hunters/banned/ranks")).Status);
+    }
+
+    [Fact]
     public async Task TestAnyAccountsAchievementsAreServedToEveryone()
     {
         await SignIn("99999999999999991", "one");

@@ -321,6 +321,40 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestRanksAreTheCountsTheScoreAddsUpAndMilestonesTheirThresholds()
+    {
+        var connect = CONNECT;
+        connect["achievements"] = JsonNode.Parse("""
+            [{"id": 0, "category": 0, "group": 0, "group_title": "Total", "value": "animal.*.ethical_kills", "triggers": [1, 2, 50]},
+             {"id": 1, "category": 0, "group": 1, "group_title": "Mule Deer", "value": "animal.MULE_DEER.ethical_kills", "triggers": [1, 25]},
+             {"id": 13, "category": 1, "group": 0, "group_title": "Test Rifle", "value": "weapon.TEST_RIFLE.*.ethical_kills", "triggers": [1, 25]},
+             {"id": 25, "category": 2, "group": 0, "group_title": "Distance", "value": "distance", "triggers": [10, 42]},
+             {"id": 90, "category": 3, "group_title": "No such tab", "value": "distance", "triggers": [1]},
+             {"id": 91, "category": 0, "group_title": "No path", "value": null, "triggers": [1]}]
+            """);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS, offline: false, facts: Ranks);
+        state.CreateAccount(B, "second");
+        using (var con = state.Store.Open(B))  // a restored base of 1500 kills with the species 1 and the weapon 5
+            PlayerRows.SetStatistics(con, O("""{"animal": {"1": {"ethical_kills": 1500}}, "weapon": {"5": {"10": {"ethical_kills": 1500}}}}"""), 0, 0, null, null);
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
+
+        // the base plus the closed hunt, before the cap: the hunterscore adds up 1000 + 0 + 1000
+        Assert.Equal(2000, Stored(B));
+        Eq("""[{"id": 1, "category_id": 1, "value": 1501}, {"id": 2, "category_id": 1, "value": 0}, {"id": 3, "category_id": 2, "value": 1501}]""", JsonNode.Parse(state.RanksReply(B)));
+        Eq("""
+            {"cap": 1000,
+             "ranks": [{"id": 1, "category": "animals", "name": "One", "value": 1501}, {"id": 2, "category": "animals", "name": "Rabbit", "value": 0},
+                       {"id": 3, "category": "weapons", "name": "Five", "value": 1501}],
+             "milestones": [{"category": "animals", "title": "Total", "steps": [1, 2, 50], "value": 1501}, {"category": "animals", "title": "Mule Deer", "steps": [1, 25], "value": 1501},
+                            {"category": "weapons", "title": "Test Rifle", "steps": [1, 25], "value": 1501}, {"category": "exploration", "title": "Distance", "steps": [10, 42], "value": 12}]}
+            """, state.PublicRanks(B));
+        state.CreateAccount(9, "third");
+        Eq("""[{"id": 1, "category_id": 1, "value": 0}, {"id": 2, "category_id": 1, "value": 0}, {"id": 3, "category_id": 2, "value": 0}]""", JsonNode.Parse(state.RanksReply(9)));  // an account without a count
+    }
+
+    [Fact]
     public void TestAHarvestAfterItsHuntClosedStillCounts()
     {
         state = Online();

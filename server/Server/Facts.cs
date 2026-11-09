@@ -23,9 +23,9 @@ public sealed class Facts
         RankCap = ranks["cap"] is { } cap ? Py.L(cap) : 0;
         Ranks = [.. (ranks["rows"] as JsonArray ?? []).Select(r => (string?)r!["category"] switch
         {
-            "animal" => new Rank("animal", [Py.L(r["species"])]),
-            "weapon" => new Rank("weapon", [.. r["items"]!.AsArray().Select(Py.L)]),
-            "collectable" => new Rank("collectable", [.. r["types"]!.AsArray().Select(Py.L)]),
+            "animal" => new Rank(Py.L(r["id"]), (string?)r["title"] ?? "", "animal", [Py.L(r["species"])]),
+            "weapon" => new Rank(Py.L(r["id"]), (string?)r["title"] ?? "", "weapon", [.. r["items"]!.AsArray().Select(Py.L)]),
+            "collectable" => new Rank(Py.L(r["id"]), (string?)r["title"] ?? "", "collectable", [.. r["types"]!.AsArray().Select(Py.L)]),
             var c => throw new InvalidDataException($"facts: unknown rank category {c}"),
         })];
     }
@@ -47,9 +47,9 @@ public sealed class Facts
     /// <summary>Species id → score family (Scoring).</summary>
     public readonly Dictionary<int, string> Families = [];
 
-    /// <summary>A row of the hunterscore: `animal` (Ids = the species id), `weapon` (the weapon item ids, all ammo summed) or
-    /// `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>
-    public sealed record Rank(string Category, long[] Ids);
+    /// <summary>A row of the hunterscore: its `id` (the game's ranks reply names it so) and `title`; `animal` (Ids = the species id), `weapon` (the weapon
+    /// item ids, all ammo summed) or `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>
+    public sealed record Rank(long Id, string Title, string Category, long[] Ids);
     /// <summary>The rank rows of the hunterscore (`ranks.rows`); empty when the file has none.</summary>
     public readonly Rank[] Ranks;
     /// <summary>The most a rank row adds to the hunterscore (`ranks.cap`); 0 when the file has no table.</summary>

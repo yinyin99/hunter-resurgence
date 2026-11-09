@@ -158,6 +158,53 @@ public class ServerProfileServiceTests
     [Fact]
     public void TheTrophiesTabHasAServerSource() => Assert.Contains("trophies", ServerProfileService.Tabs);
 
+    const string Ranks = """
+        {"cap":1000,"ranks":[{"id":1,"category":"animals","name":"Red Fox","value":1500},{"id":2,"category":"animals","name":"Alpine Ibex","value":25},
+                             {"id":41,"category":"weapons","name":"Rifles","value":3},{"id":38,"category":"collectables","name":"Mushrooms","value":0}],
+         "milestones":[{"category":"animals","title":"Total","steps":[50,250],"value":60},{"category":"animals","title":"Red Fox","steps":[1,25,100],"value":25},
+                       {"category":"exploration","title":"Distance","steps":[10,42],"value":12}]}
+        """;
+
+    [Fact]
+    public async Task RankBarsOfAKindAreTheRowsByNameCountedToTheCap()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Ranks));
+        var bars = await Make(fake).RanksAsync("fox", "animals");
+        Assert.Equal("/hunters/fox/ranks", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal([("Alpine Ibex", 25, 25, 1000), ("Red Fox", 1000, 1000, 1000)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total)));
+    }
+
+    [Fact]
+    public async Task TheRanksOverviewIsTheScoreAndTheThreeCategories()
+    {
+        var bars = await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).RanksAsync("fox", "overview");
+        Assert.Equal([("Hunter Score", 1028, 4000), ("Animals", 1025, 2000), ("Weapons", 3, 1000), ("Collectables", 0, 1000)], bars.Select(b => (b.Name, b.Done, b.Total)));
+    }
+
+    [Fact]
+    public async Task MilestonesAreTheStepsReachedOfTheKind()
+    {
+        var animals = await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "animals");
+        Assert.Equal([("Total", 1, 60), ("Red Fox", 2, 25)], animals.Select(m => (m.Title, m.Done, m.Value)));
+        Assert.Equal([1, 25, 100], animals[1].Steps);
+        Assert.Equal([("Distance", 1)], (await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "exploration")).Select(m => (m.Title, m.Done)));
+        Assert.Empty(await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "day-mission"));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    [InlineData(HttpStatusCode.OK, """{"handle": "Owl"}""")]  // an answer without the lists
+    public async Task AFailedRanksAnswerIsNoBarsAndNoMilestones(HttpStatusCode code, string body)
+    {
+        var service = Make(new Fake(_ => Json(code, body)));
+        Assert.Empty(await service.RanksAsync("fox", "overview"));
+        Assert.Empty(await service.MilestonesAsync("fox", "animals"));
+    }
+
+    [Fact]
+    public void TheRanksTabHasAServerSource() => Assert.Contains("ranks", ServerProfileService.Tabs);
+
     const string Dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
 
     [Fact]

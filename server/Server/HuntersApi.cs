@@ -81,6 +81,16 @@ public static class HuntersApi
                              + "and the connect's `dog_skills`, `percent` the way to the next level); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/ranks", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicRanks(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterRanks").WithSummary("A hunter's ranks and milestones")
+            .WithDescription("`{cap, ranks: [{id, category, name, value}], milestones: [{category, title, steps, value}]}`: `ranks` one per rank row of the facts file (`category` animals, "
+                             + "weapons or collectables; `value` the count of `/game/user/<id>/ranks`, `cap` the most a row adds to the hunterscore), `milestones` one per achievement "
+                             + "definition of the connect reply (`category` animals, weapons, exploration or day-mission; `steps` its thresholds, `value` the counter its path names); "
+                             + "404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         group.MapGet("/{handle}/achievements", (string handle) => state.PublicAccount(handle) is { } id
                 ? Json(200, state.PublicAchievements(id))
                 : Json(404, new JsonObject { ["error"] = "not found" }))

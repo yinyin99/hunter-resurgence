@@ -83,12 +83,12 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills, statistics and dogs paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string achievements = "{}") : HttpMessageHandler
+    /// <summary>Answers the skills, statistics, dogs, ranks and achievements paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/achievements") => achievements, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
     }
@@ -139,6 +139,37 @@ public sealed class LiveSiteTests : UiContext
         Assert.Contains("Loyalty One", cut.Find("ul.dogs li em").TextContent);
         Assert.Contains("Ribbon", cut.Markup);
     }
+
+    const string Ranks = """
+        {"cap":1000,"ranks":[{"id":2,"category":"animals","name":"Red Fox","value":1500},{"id":1,"category":"animals","name":"Alpine Ibex","value":7},
+                             {"id":41,"category":"weapons","name":"Rifle","value":3},{"id":38,"category":"collectables","name":"Mushrooms","value":0}],
+         "milestones":[]}
+        """;
+
+    ServerProfileService RealRanks() => new(new HttpClient(new Server("""{"handle":"Fox","hunterscore":5,"rank":3}""", "{}", ranks: Ranks)) { BaseAddress = new Uri("http://server.test") },
+        new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
+
+    [Fact]
+    public void TheRanksTabShowsTheServersCountsByAnimalName()
+    {
+        Services.AddSingleton<IProfileService>(RealRanks());
+        Live(true);
+        var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox").Add(r => r.Sub, "animals"));
+        cut.WaitForAssertion(() => Assert.Equal(["Alpine Ibex", "Red Fox"], cut.FindAll("div.what h4").Select(h => h.TextContent)));
+        Assert.Equal(["7", "1000"], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // a count counts to the cap
+        Assert.Equal(["width:0%", "width:100%"], cut.FindAll("div.what .bar i").Select(i => i.GetAttribute("style")));
+    }
+
+    [Fact]
+    public void TheRanksOverviewAddsTheRowsUpToTheCap()
+    {
+        Services.AddSingleton<IProfileService>(RealRanks());
+        Live(true);
+        var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
+        // hunterscore 1000 + 7 + 3 + 0 of 4 rows; animals 1007 of 2000 (a row counts 1000 at most), weapons 3 of 1000; collectables none
+        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
+    }
+
 
     [Fact]
     public void TheAchievementsTabShowsTheServersOverviewOnly()

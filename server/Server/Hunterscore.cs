@@ -9,14 +9,17 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    /// <summary>The hunterscore of these counts: per rank row, min(cap, value), summed. userStats is the Statistics/total `data`
+    /// <summary>The hunterscore of these counts: per rank row, min(cap, value), summed (<see cref="RankValues"/>).</summary>
+    public static long Score(Facts facts, JsonObject userStats) => RankValues(facts, userStats).Sum(v => Math.Min(facts.RankCap, v));
+
+    /// <summary>The value of every rank row of the facts file, in its order: the ethical kills of its species (the variants, 100 and up, count for
+    /// theirs) or of its weapons (all ammo), or the pickups of its collectable types. userStats is the Statistics/total `data`
     /// (`animal.<species>.ethical_kills`, `weapon.<item>.<ammo>.ethical_kills`, `collectables.<type>.collected`).</summary>
-    public static long Score(Facts facts, JsonObject userStats)
+    public static long[] RankValues(Facts facts, JsonObject userStats)
     {
         // a backup's user_stats is stored verbatim: a key that is no id or a counter that is no number counts 0, and a counter
-        // counts at most the cap (a row never adds more), so no sum below can overflow
-        var cap = facts.RankCap;
-        long Count(JsonNode? n) => Py.IsNum(n) ? (long)Math.Clamp(Py.D(n), 0, cap) : 0;
+        // counts at most a billion (far above any real count), so no sum below can overflow
+        static long Count(JsonNode? n) => Py.IsNum(n) ? (long)Math.Clamp(Py.D(n), 0, 1e9) : 0;
         static IEnumerable<(long Id, JsonObject Entry)> Entries(JsonObject stats, string kind) =>
             (stats[kind] as JsonObject ?? []).Where(kv => kv.Value is JsonObject && long.TryParse(kv.Key, out _))
                 .Select(kv => (long.Parse(kv.Key), (JsonObject)kv.Value!));
@@ -29,12 +32,12 @@ public sealed partial class State
             Add(weapon, id, e.Sum(ammo => ammo.Value is JsonObject a ? Count(a["ethical_kills"]) : 0));
         foreach (var (id, e) in Entries(userStats, "collectables"))
             Add(collectables, id, Count(e["collected"]));
-        return facts.Ranks.Sum(r => Math.Min(facts.RankCap, r.Category switch
+        return [.. facts.Ranks.Select(r => r.Category switch
         {
             "animal" => animal.GetValueOrDefault(r.Ids[0]),
             "weapon" => r.Ids.Sum(weapon.GetValueOrDefault),
             _ => r.Ids.Sum(collectables.GetValueOrDefault),
-        }));
+        })];
     }
 
     /// <summary>Store the statistics (<see cref="HuntStats"/>) of every closed expedition of the account that has none yet; call
@@ -169,5 +172,47 @@ public sealed partial class State
             AwardAchievements(con, stats);
         }
         con.Commit();
+    }
+
+    /// <summary>The game's category ids of the rank rows, and the names the website's tabs give them (index = category id - 1).</summary>
+    static readonly string[] RankKinds = ["animals", "weapons", "collectables"];
+
+    static int RankCategory(Facts.Rank r) => r.Category switch { "animal" => 1, "weapon" => 2, _ => 3 };
+
+    /// <summary>The website's milestone rows by the achievement category they come from.</summary>
+    static readonly Dictionary<long, string> MilestoneKinds = new() { [0] = "animals", [1] = "weapons", [2] = "exploration", [4] = "day-mission" };
+
+    JsonObject StatisticsOf(long account)
+    {
+        using var con = Con(account);
+        return StoredStats(con, account);
+    }
+
+    /// <summary>`/game/user/&lt;id&gt;/ranks` of an account: `[{id, category_id, value}]`, one per rank row of the facts file (<see cref="RankValues"/>
+    /// over the account's statistics, the restored ones plus the closed server hunts: the same counts the hunterscore adds up, here before its cap).</summary>
+    public byte[] RanksReply(long account) => Py.DumpBytes(new JsonArray([.. RankValues(facts, (JsonObject)StatisticsOf(account)["data"]!)
+        .Zip(facts.Ranks, (v, r) => (JsonNode?)new JsonObject { ["id"] = r.Id, ["category_id"] = RankCategory(r), ["value"] = v })]));
+
+    /// <summary>What a profile page's ranks tab and milestones show of an account, `GET /hunters/&lt;handle&gt;/ranks`: `cap` (what a rank row adds to the
+    /// hunterscore at most), `ranks` [{id, category: animals|weapons|collectables, name, value}] (the rows of <see cref="RanksReply"/> with their titles) and
+    /// `milestones` [{category: animals|weapons|exploration|day-mission, title, steps, value}], one per connect `achievements` definition: its
+    /// group's title, its `triggers` thresholds and the counter its `value` path names (<see cref="AchievementValue"/>, whole).</summary>
+    public JsonObject PublicRanks(long account)
+    {
+        var stats = StatisticsOf(account);
+        var ranks = RankValues(facts, (JsonObject)stats["data"]!).Zip(facts.Ranks, (v, r) => (JsonNode?)new JsonObject
+        {
+            ["id"] = r.Id, ["category"] = RankKinds[RankCategory(r) - 1], ["name"] = r.Title, ["value"] = v,
+        });
+        var milestones = new JsonArray();
+        foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>())
+            if (TryKey(def["category"], out var category) && MilestoneKinds.TryGetValue(category, out var kind) && Py.IsStr(def["value"]))
+                milestones.Add(new JsonObject
+                {
+                    ["category"] = kind, ["title"] = C(def["group_title"]) ?? "",
+                    ["steps"] = new JsonArray([.. Arr(def["triggers"]).Where(Py.IsNum).Select(t => (JsonNode?)Py.L(t))]),
+                    ["value"] = (long)Math.Clamp(Math.Floor(AchievementValue(stats, (string)def["value"]!)), 0, 1e15),
+                });
+        return new JsonObject { ["cap"] = facts.RankCap, ["ranks"] = new JsonArray([.. ranks]), ["milestones"] = milestones };
     }
 }
