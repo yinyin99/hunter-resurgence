@@ -1231,7 +1231,7 @@ public sealed partial class State
                                  + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
                                  wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
-                return recorded;
+                return (wanted == "" ? PlayerRows.RestoredHunt(con, null) : PlayerRows.RestoredHunt(con, wantedId)) is { } saved ? Py.DumpBytes(saved) : recorded;
             row = found;
             var expeditionId = Py.FromSql(row[0]);
             var rows = con.Rows(
@@ -1340,6 +1340,7 @@ public sealed partial class State
         var (offset, limit) = (Form1(form, "offset"), Form1(form, "limit"));
         var skip = Py.IsDigit(offset) ? (int)Math.Min(long.Parse(offset), int.MaxValue) : 0;
         List<object[]> rows;
+        List<JsonNode?> restored;
         using (var con = Con(account))
         {
             con.Begin();
@@ -1351,6 +1352,7 @@ public sealed partial class State
                 "SELECT e.id, e.reserve, e.location_id, e.start_ts, e.end_ts, (SELECT COUNT(*) FROM harvests"
                 + " WHERE account_id = $a AND json_extract(body, '$.expedition_id') = e.id)"
                 + " FROM expeditions e WHERE e.account_id = $a ORDER BY e.id DESC");
+            restored = PlayerRows.RestoredHunts(con);
         }
         var reply = JsonNode.Parse(recorded)!.AsObject();
         var ours = rows.Select(r => (JsonNode?)new JsonObject
@@ -1360,6 +1362,17 @@ public sealed partial class State
             ["start_ts"] = (long)Convert.ToDouble(r[3]), ["collectables"] = 0, ["location_id"] = Py.FromSql(r[2]),
             ["id"] = Py.FromSql(r[0]), ["reserve"] = Py.FromSql(r[1]),
         }).ToList();
+        if (restored.Count > 0)
+        {
+            // a restored account: the server hunts, then the saved ones as saved; `total` counts what the backup zip holds
+            var all = ours.Concat(restored).ToList();
+            var from = Math.Min(skip, all.Count);
+            var count = Py.IsDigit(limit) ? (int)Math.Min(long.Parse(limit), all.Count - from) : all.Count - from;
+            reply["expeditions"] = new JsonArray(all.Skip(from).Take(count).Select(C).ToArray());
+            reply["total"] = all.Count;
+            reply["has_more"] = from + count < all.Count;
+            return Py.DumpBytes(reply);
+        }
         var theirs = Py.Truthy(reply["expeditions"]) ? reply["expeditions"]!.AsArray().Select(C).ToList() : [];
         if (skip >= ours.Count && theirs.Count > 0)
         {

@@ -203,6 +203,36 @@ public class RestoreTests : StateTestBase
         Assert.Empty(reply["skills"]!["weapon"]!.AsObject());
         Assert.Equal("user-1001", reply["account"]!["handle"]!.ToString());
     }
+
+    [Fact]
+    public void TestRestoredHuntsFollowTheServerHuntsAndAreNotCounted()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Hunts()), null, tmp);
+        var none = "{\"total\": 0, \"expeditions\": []}"u8.ToArray();
+        JsonNode Page(string form) => JsonNode.Parse(state.ExpeditionListReply(1001, none, Encoding.UTF8.GetBytes(form)))!;
+        string Ids(JsonNode p) => string.Join(",", p["expeditions"]!.AsArray().Select(e => e!["id"]!.ToString()));
+        Assert.Equal(("9003,9002", "3", true), (Ids(Page("limit=2&offset=0")), Page("limit=2&offset=0")["total"]!.ToString(), (bool)Page("limit=2&offset=0")["has_more"]!));
+        Assert.Equal("9001", Ids(Page("limit=2&offset=2")));
+        var statistics = JsonNode.Parse(state.StatisticsReply(1001, "user_id=1001"u8.ToArray()))!.ToJsonString();
+        // a server hunt comes first; `total` counts both
+        state.NoteLaunch(1001, "start=100&reserve=2"u8.ToArray());
+        var all = Page("limit=10&offset=0");
+        Assert.Equal(("4", 4), (all["total"]!.ToString(), all["expeditions"]!.AsArray().Count));
+        Assert.Equal("9003,9002,9001", string.Join(",", all["expeditions"]!.AsArray().Skip(1).Select(e => e!["id"]!.ToString())));
+        // a restored hunt by id answers the saved reply; an unsaved id is the recorded reply; without an id the server hunt is the latest
+        byte[] Hunt(string form) => state.ExpeditionReply(1001, "{\"replayed\": 1}"u8.ToArray(), Encoding.UTF8.GetBytes(form));
+        Eq("9001", JsonNode.Parse(Hunt("expedition_id=9001"))!["expedition"]!["id"]);
+        Assert.Equal("{\"replayed\": 1}"u8.ToArray(), Hunt("expedition_id=9002"));
+        Assert.NotEqual("9003", JsonNode.Parse(Hunt(""))!["expedition"]!["id"]!.ToString());
+        Assert.Equal(statistics, JsonNode.Parse(state.StatisticsReply(1001, "user_id=1001"u8.ToArray()))!.ToJsonString());
+    }
+
+    [Fact]
+    public void TestWithoutAServerHuntTheNewestRestoredHuntIsTheLatest()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Hunts()), null, tmp);
+        Eq("9003", JsonNode.Parse(state.ExpeditionReply(1001, "{}"u8.ToArray()))!["expedition"]!["id"]);
+    }
 }
 
 /// <summary>The restored account's profile reads over HTTP: Me/me, Statistics/total and Achievement/stats, with the tokens of two accounts.</summary>
