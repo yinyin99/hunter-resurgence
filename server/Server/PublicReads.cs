@@ -39,10 +39,74 @@ public sealed partial class State
             ["id"] = account, ["handle"] = C(me["handle"]), ["hostname"] = C(me["hostname"]), ["avatar"] = C(me["avatar"]),
             ["hunterscore"] = C(me["hunterscore"]), ["rank"] = Store.Rank(account, LocalAccount),
             ["membership"] = C(G(Account(account), "membership", 0)), ["membershipType"] = C(me["membershipType"]), ["membershipTitle"] = C(me["membershipTitle"]),
-            ["online"] = con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL AND COALESCE(last_seen, start_ts) >= ?",
-                                    Clock() - HEARTBEAT_TIMEOUT) is not null,
+            ["online"] = HuntAlive(con),
             ["stats"] = new JsonObject { ["distance"] = C(stats["distance"]), ["duration"] = C(stats["duration"]) },
         };
+    }
+
+    /// <summary>Is a hunt of the connection's account open and had a heartbeat in the last HEARTBEAT_TIMEOUT.</summary>
+    bool HuntAlive(Db con) =>
+        con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL AND COALESCE(last_seen, start_ts) >= ?", Clock() - HEARTBEAT_TIMEOUT) is not null;
+
+    /// <summary>Friend entries of accounts, as Me/friends and User/friendslist send them, sorted by `handle` (upper case, ordinal).</summary>
+    List<JsonNode?> FriendEntries(IEnumerable<long> accounts) => [.. accounts.Select(account =>
+    {
+        using var con = Con(account);
+        var me = MeOf(con, account);
+        return (JsonNode?)new JsonObject
+        {
+            ["id"] = account, ["handle"] = C(me["handle"]), ["avatar"] = C(me["avatar"]), ["fullbody_avatar"] = C(me["fullbody_avatar"]) ?? 0,
+            ["hostname"] = C(me["hostname"]), ["hunterscore"] = C(me["hunterscore"]), ["online"] = HuntAlive(con),
+        };
+    }).OrderBy(e => Py.Str(e!["handle"]).ToUpperInvariant(), StringComparer.Ordinal)];
+
+    /// <summary>Me/friends: the account's friends, the players who asked it (`requests`, the same entries) and the user ids it asked (`pending`).</summary>
+    public byte[] MeFriendsReply(long account)
+    {
+        var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
+        return Py.DumpBytes(new JsonObject
+        {
+            ["friends"] = new JsonArray([.. FriendEntries(friends)]), ["friendCount"] = friends.Count,
+            ["requests"] = new JsonArray([.. FriendEntries(requests)]), ["requestCount"] = requests.Count,
+            ["pending"] = new JsonArray([.. pending.Select(id => (JsonNode?)id)]),
+        });
+    }
+
+    /// <summary>How many players asked the account to be friends: Me/poll's and Me/me's `friend_requests`.</summary>
+    public long FriendRequests(long account) => Store.FriendsOf(account, LocalAccount).Requests.Count;
+
+    /// <summary>Friend/add (ask, or accept the other's request) or Friend/remove (decline, cancel, remove) of `friend_user_id`:
+    /// `true`; `{"errorCode": 400}` for the account's own id or one that is not a player here (<see cref="PublicAccount(long)"/>).</summary>
+    public byte[] FriendReply(long account, byte[] formBody, bool add)
+    {
+        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "friend_user_id"), out var id) || id == account || PublicAccount(id) is not { } other)
+            return """{"errorCode": 400}"""u8.ToArray();
+        if (add) Store.AddFriend(account, other);
+        else Store.RemoveFriend(account, other);
+        return "true"u8.ToArray();
+    }
+
+    /// <summary>User/friendslist of `user_id` (any player here, no token): `{total, friends}`, one page by `offset` and `limit` (1 to 50;
+    /// missing, empty or below 1: every friend). No `user_id`: `{"errorCode": 400}`; an empty, non-positive or unknown one: `null`;
+    /// a non-numeric value: the handler error.</summary>
+    public byte[] FriendsListReply(byte[] formBody)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody), keepBlank: true);
+        string? Value(string key) => form.TryGetValue(key, out var v) ? v[0] : null;
+        var (user, offset, limit) = (Value("user_id"), Value("offset"), Value("limit"));
+        if (new[] { user, offset, limit }.Any(v => v is { Length: > 0 } && !long.TryParse(v, out _)))
+            return """{"error": 1, "code": "handlerError"}"""u8.ToArray();
+        if (user is null)
+            return """{"errorCode": 400}"""u8.ToArray();
+        if (!long.TryParse(user, out var id) || id <= 0 || PublicAccount(id) is not { } account)
+            return "null"u8.ToArray();
+        var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends);
+        var page = all.Skip(long.TryParse(offset, out var o) && o > 0 ? (int)Math.Min(o, int.MaxValue) : 0);
+        return Py.DumpBytes(new JsonObject
+        {
+            ["total"] = all.Count,
+            ["friends"] = new JsonArray([.. long.TryParse(limit, out var l) && l > 0 ? page.Take((int)Math.Min(l, 50)) : page]),
+        });
     }
 
     /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
