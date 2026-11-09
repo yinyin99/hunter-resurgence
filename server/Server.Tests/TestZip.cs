@@ -18,7 +18,7 @@ sealed class TestZip
 
     TestZip(bool own, string uid, string? steam, string handle) => (this.own, Uid, Steam, Handle) = (own, uid, steam, handle);
 
-    TestZip Reply(string path, string endpoint, string json, params (string K, string V)[] ps)
+    public TestZip Reply(string path, string endpoint, string json, params (string K, string V)[] ps)
     {
         files.Add((path, endpoint, json, ps.ToDictionary(p => p.K, p => p.V)));
         return this;

@@ -58,7 +58,7 @@ public static class ReplayScope
         Own("Me/friends", """{"friends": [], "requests": [], "pending": [], "requestCount": 0, "friendCount": 0}"""),
         Own("Me/accept_license", "true"),  // the license is accepted on every new account
         Own("User/friendslist", """{"total": 0, "friends": []}"""),
-        Own("Friend/add", "false"),
+        Own("Friend/(add|remove)", "false"),
         Own("Network/list", "[]"),  // the live multiplayer games: this server has none
         Own("Expedition/list", """{"total": 0, "has_more": false, "expeditions": []}"""),
         Own("Expedition/animal", "null"),

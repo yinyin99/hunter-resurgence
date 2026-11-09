@@ -260,4 +260,102 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("""{}""", connect["user_stats"]!["user_stats"]!["weapon"]);
         Eq("[]", connect["user_stats"]!["achievement_stats"]);
     }
+
+    static JsonNode Ids(JsonNode list) => new JsonArray([.. list.AsArray().Select(e => e!["id"]!.DeepClone())]);
+
+    [Fact]
+    public async Task TestFriendRequestsAreSentAcceptedDeclinedAndRemoved()
+    {
+        state.CreateAccount(10, "Third");
+        state.CreateAccount(11, "alpha");
+        var (tokenC, tokenD) = (state.Store.CreateToken(10), state.Store.CreateToken(11));
+        Task<JsonNode> Friends(string token) => Api(Replay.ME_FRIENDS, token);
+        async Task<string> Call(string path, string token, long id) => Encoding.ASCII.GetString((await Send(community, "POST", "api.test", path, token, $"friend_user_id={id}")).Body);
+
+        // 8 asks 10: a request on both sides, counted by the poll and Me/me of 10
+        Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenB, 10));
+        Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenB, 10));  // asking again changes nothing
+        Eq("""{"friends": [], "friendCount": 0, "requests": [], "requestCount": 0, "pending": [10]}""", await Friends(tokenB));
+        var asked = await Friends(tokenC);
+        Eq("""[1, [8], []]""", T(asked["requestCount"], Ids(asked["requests"]!), asked["pending"]));
+        var entry = asked["requests"]![0]!;
+        Eq("""[8, "second", 0, "second", 0, false]""", T(entry["id"], entry["handle"], entry["fullbody_avatar"], entry["hostname"], entry["hunterscore"], entry["online"]));
+        Assert.EndsWith(".png", (string)entry["avatar"]!);
+        Eq("[1, 1]", T((await Api(Replay.POLL, tokenC))["friend_requests"], (await Api(Replay.ME, tokenC))["friend_requests"]));
+
+        // 10 accepts with the current build's call (game web host, lower case, JSON body)
+        var accept = await community.SendAsync("POST", "game_web.test", "/v1/friend/add?locale=en_us", [("Content-Type", "application/json")],
+                                               Encoding.UTF8.GetBytes($$"""{"oauth_access_token": "{{tokenC}}", "friend_user_id": 8}"""));
+        Assert.Equal("true", Encoding.ASCII.GetString(accept.Body));
+        foreach (var token in new[] { tokenB, tokenC })
+        {
+            var f = await Friends(token);
+            Eq($"[1, [{(token == tokenB ? 10 : 8)}], 0, [], []]", T(f["friendCount"], Ids(f["friends"]!), f["requestCount"], f["requests"], f["pending"]));
+        }
+        Eq("0", (await Api(Replay.POLL, tokenC))["friend_requests"]);
+
+        // 11 asks 8, 8 declines; then 8 asks 11 and 11 accepts
+        Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenD, 8));
+        Assert.Equal("true", await Call(Replay.FRIEND_REMOVE, tokenB, 11));
+        Eq("""[[10], [], []]""", T(Ids((await Friends(tokenB))["friends"]!), (await Friends(tokenB))["requests"], (await Friends(tokenD))["pending"]));
+        Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenB, 11));
+        Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenD, 8));
+        Eq("[11, 10]", Ids((await Friends(tokenB))["friends"]!));  // by handle, any case: alpha, Third
+
+        // any player's list without a token, paged; its errors
+        async Task<string> List(string body) => Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, body)).Body);
+        var all = JsonNode.Parse(await List("user_id=8&offset=0&limit=0"))!;
+        Eq("[2, [11, 10]]", T(all["total"], Ids(all["friends"]!)));
+        Eq(all, JsonNode.Parse(await List("user_id=8")));
+        var page = JsonNode.Parse(await List("user_id=8&offset=1&limit=1"))!;
+        Eq("[2, [10]]", T(page["total"], Ids(page["friends"]!)));
+        Eq("""{"total": 2, "friends": []}""", JsonNode.Parse(await List("user_id=8&offset=5&limit=20")));
+        Assert.Equal("""{"errorCode": 400}""", await List("offset=0"));
+        foreach (var body in new[] { "user_id=", "user_id=0", "user_id=-3", "user_id=99", "user_id=7" })
+            Assert.Equal("null", await List(body));
+        foreach (var body in new[] { "user_id=x", "user_id=8&offset=x", "user_id=8&limit=x" })
+            Assert.Equal("""{"error": 1, "code": "handlerError"}""", await List(body));
+
+        // 8 removes 10: gone on both sides; an own, unknown or the recorded player's id is refused
+        Assert.Equal("true", await Call(Replay.FRIEND_REMOVE, tokenB, 10));
+        Eq("[]", (await Friends(tokenC))["friends"]);
+        Eq("""{"total": 0, "friends": []}""", JsonNode.Parse(await List("user_id=10")));
+        Eq("[11]", Ids((await Friends(tokenB))["friends"]!));
+        foreach (var id in new[] { 8, 99, 7 })
+            Assert.Equal("""{"errorCode": 400}""", await Call(Replay.FRIEND_ADD, tokenB, id));
+
+        state.Store.DeleteAccount(11);  // its edges go with it
+        state.CreateAccount(11, "again");
+        Eq("[]", (await Friends(tokenB))["friends"]);
+    }
+
+    [Fact]
+    public async Task TestARestoredFriendListCountsOnceTheFriendHasAnAccountHere()
+    {
+        state.CreateAccount(10, "third");
+        var zip = TestZip.Own()
+            .Reply("User_friendslist__user_id=1001__offset=0__limit=0.json", "/v1/User/friendslist", """{"total": 2, "friends": [{"id": 8}, {"id": 4242}]}""",
+                   ("user_id", "1001"), ("offset", "0"), ("limit", "0"))
+            .Reply("Me_friends.json", "/v1/Me/friends", """{"friends": [{"id": 8}, {"id": 4242}], "requests": [{"id": 4343}], "pending": [10]}""");
+        Restorer.Import(state, zip.Write(tmp), null, tmp);
+        var token = state.Store.CreateToken(1001);
+
+        var mine = await Api(Replay.ME_FRIENDS, token);
+        Eq("[1, [8], 0, [10]]", T(mine["friendCount"], Ids(mine["friends"]!), mine["requestCount"], mine["pending"]));
+        Eq("[1001]", Ids((await Api(Replay.ME_FRIENDS, tokenB))["friends"]!));  // mutual: 8's own list never held it
+        Eq("[1001]", Ids((await Api(Replay.ME_FRIENDS, state.Store.CreateToken(10)))["requests"]!));
+
+        state.CreateAccount(4242, "later");
+        state.CreateAccount(4343, "asker");
+        mine = await Api(Replay.ME_FRIENDS, token);
+        Eq("[[4242, 8], [4343]]", T(Ids(mine["friends"]!), Ids(mine["requests"]!)));  // later, second
+        Eq("[4242, 8]", Ids(JsonNode.Parse((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, "user_id=1001")).Body)!["friends"]!));
+
+        // 4343's own restore holds 1001: its request (from 1001's backup) becomes a friendship, whichever restore came first
+        var asker = TestZip.Own(uid: "4343", handle: "asker")
+            .Reply("User_friendslist__user_id=4343.json", "/v1/User/friendslist", """{"total": 1, "friends": [{"id": 1001}]}""", ("user_id", "4343"));
+        Restorer.Import(state, asker.Write(tmp, "asker.zip"), null, tmp);
+        mine = await Api(Replay.ME_FRIENDS, token);
+        Eq("[[4343, 4242, 8], []]", T(Ids(mine["friends"]!), mine["requests"]));  // asker, later, second
+    }
 }
