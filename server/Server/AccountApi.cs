@@ -152,6 +152,35 @@ public static class AccountApi
             .WithDescription("The item or bundle of `GET /catalog/store` at its price: em$ only. Answers `{status: bought, ems}` (the new balance), "
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
+
+        group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WebFriends(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountFriends").WithSummary("The player's friends, the players who asked to be friends and those the player asked")
+            .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online}` by handle (upper case, ordinal).")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/friends/search", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WebFriendSearch(account, ctx.Request.Query["text"].ToString()))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountFriendSearch").WithSummary("Players whose handle contains the text (query `text`)")
+            .WithDescription($"`{{hunters: [{{handle, online}}]}}`, by handle, at most {State.FriendSearchLimit}; never the player itself.")
+            .QueryParams(("text", "A part of the handle, any case"))
+            .Produces(200, contentType: "application/json");
+
+        foreach (var (path, name, add) in new[] { ("/friends/add", "AccountFriendAdd", true), ("/friends/remove", "AccountFriendRemove", false) })
+            group.MapPost(path, async (HttpContext ctx) =>
+                {
+                    if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                    if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                    var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                    return form.TryGetValue("handle", out var h) && state.WebFriend(account, h[0], add)
+                        ? Json(200, new JsonObject { ["status"] = "ok" })
+                        : Refuse(404, "invalid", "This is not another player of this server.");
+                })
+                .WithName(name).WithSummary(add ? "Ask a player to be friends, or accept their request (form `handle`)" : "Decline or cancel a request, or remove a friend (form `handle`)")
+                .WithDescription("`{status: ok}`; 404 `invalid` for the player's own handle or one that has no account here.")
+                .Produces(200, contentType: "application/json");
     }
 
     const string TooLarge = "This request is too large: a request is at most 90 MiB, and a larger zip is sent in parts.";

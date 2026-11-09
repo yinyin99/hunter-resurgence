@@ -109,6 +109,47 @@ public sealed partial class State
         });
     }
 
+    public const int FriendsPageSize = 20;
+    public const int FriendSearchLimit = 20;
+
+    /// <summary>What a profile page's friends tab shows of an account, `GET /hunters/&lt;handle&gt;/friends`: one page of its friends by handle,
+    /// `{page, pages, total, rows: [{handle, hunterscore}]}`.</summary>
+    public JsonObject PublicFriends(long account, int page)
+    {
+        var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends);
+        var pages = Math.Max(1, (all.Count + FriendsPageSize - 1) / FriendsPageSize);
+        page = Math.Clamp(page, 1, pages);
+        return new JsonObject
+        {
+            ["page"] = page, ["pages"] = pages, ["total"] = all.Count,
+            ["rows"] = new JsonArray([.. all.Skip((page - 1) * FriendsPageSize).Take(FriendsPageSize).Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["hunterscore"] = C(e["hunterscore"]) })]),
+        };
+    }
+
+    static JsonArray Hunters(IEnumerable<JsonNode?> entries) => new([.. entries.Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["online"] = C(e["online"]) })]);
+
+    /// <summary>The signed-in website player's friends, `GET /account/friends`: `{friends: [{handle, online}], requests: [{handle, online}], pending: [{handle, online}]}`,
+    /// each by handle (`requests` asked the account, `pending` were asked by it).</summary>
+    public JsonObject WebFriends(long account)
+    {
+        var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
+        return new JsonObject { ["friends"] = Hunters(FriendEntries(friends)), ["requests"] = Hunters(FriendEntries(requests)), ["pending"] = Hunters(FriendEntries(pending)) };
+    }
+
+    /// <summary>`GET /account/friends/search?text=`: the players whose handle contains the text, never the account itself, `{hunters: [{handle, online}]}`.</summary>
+    public JsonObject WebFriendSearch(long account, string text) =>
+        new() { ["hunters"] = Hunters(FriendEntries(Store.SearchHandles(text, account, LocalAccount, FriendSearchLimit))) };
+
+    /// <summary>`POST /account/friends/add` (ask, or accept the other's request) or `/remove` (decline, cancel, remove) of a player by handle (any case);
+    /// false, and nothing changed, for the account's own handle or one that is not a player here.</summary>
+    public bool WebFriend(long account, string handle, bool add)
+    {
+        if (PublicAccount(handle) is not { } other || other == account) return false;
+        if (add) Store.AddFriend(account, other);
+        else Store.RemoveFriend(account, other);
+        return true;
+    }
+
     /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
     /// hunterscore and how many achievements it has earned.</summary>
     public byte[] UserProfileReply(long account)

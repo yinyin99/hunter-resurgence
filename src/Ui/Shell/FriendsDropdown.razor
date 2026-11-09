@@ -2,6 +2,7 @@
 @inject IFriendsService Friends
 @inject ModalService Modal
 @inject IJSRuntime JS
+@inject HostMode Mode
 
 <div class="friends-dropdown">
     @if (requests.Count > 0)
@@ -38,7 +39,7 @@
                     <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
                     @if (f.Online) { <span class="online" aria-hidden="true"></span> }
                     <span class="buttons">
-                        <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a>
+                        @if (!Mode.Live) { <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a> }
                         <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
                     </span>
                 </li>
@@ -60,7 +61,7 @@
                         <span class="buttons">
                             @if (friends.Any(x => x.Handle == f.Handle))
                             {
-                                <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a>
+                                if (!Mode.Live) { <a class="btn btn-primary" href="/new-message/@f.Handle" @onclick="Close">@L["Friends.SendMessage"]</a> }
                                 <button class="btn btn-inverse" @onclick="() => Remove(f)">@L["Friends.Remove"]</button>
                             }
                             else if (pending.Contains(f.Handle))
