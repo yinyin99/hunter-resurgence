@@ -13,10 +13,13 @@ namespace Resurgence.Tests.WebTests;
 /// <summary>HostMode.Live (the website with a community server): what the signed-in player owns or has joined, and the account's own pages, are not shown.</summary>
 public sealed class LiveSiteTests : UiContext
 {
-    sealed class Answer(HttpStatusCode code, string body) : HttpMessageHandler
+    sealed class Answer(HttpStatusCode code, string body, string? statistics = null) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
-            Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+            Task.FromResult(new HttpResponseMessage(code)
+            {
+                Content = new StringContent(statistics is not null && request.RequestUri!.AbsolutePath.EndsWith("/statistics") ? statistics : body, System.Text.Encoding.UTF8, "application/json"),
+            });
     }
 
     void Live(bool live) => Services.GetRequiredService<HostMode>().Live = live;
@@ -83,10 +86,14 @@ public sealed class LiveSiteTests : UiContext
     }
 
     [Fact]
-    public void ARealPlayersProfileIsTheServersHeaderWithNoTabYet()
+    public void ARealPlayersProfileIsTheServersHeaderAndItsStatisticsTab()
     {
         const string reply = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
-        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
+        const string statistics = """
+            {"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":123.0}],
+             "animals":[{"name":"Fox Deer","spotted":3,"tracked":2,"harvested":1}],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}
+            """;
+        var real = new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, reply, statistics)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
         Services.AddSingleton<IProfileService>(real);
         Live(true);
@@ -94,7 +101,10 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Empty(cut.FindAll("ul.tabs"));  // ServerProfileService.Tabs: no tab has a server source yet
+        Assert.Equal(["/profile/Fox/statistics"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs
+        Assert.Equal(["/profile/Fox/statistics/lifetime"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's pills are hidden
+        cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
+        Assert.Contains("Fox Deer", cut.Markup);
         Assert.Empty(cut.FindAll("button.request"));
     }
 

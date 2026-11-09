@@ -10,7 +10,7 @@ public static class ServerSessionApi
     public const string SignOut = "/auth/signout";
     /// <summary>Takes <c>?next=</c>, a local path to come back to.</summary>
     public const string SteamLogin = "/auth/steam/login";
-    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404. Public: no cookie needed.</summary>
     public const string Hunters = "/hunters";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
     public const string Leaderboards = "/leaderboards";

@@ -278,6 +278,33 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAnyAccountsStatisticsAreReadByAnotherUserIdAndShownAsATab()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        state.ConnectReply(B);
+        Kill(B, 81, 1, 10);
+        state.Disconnect(B, """{"distance_travelled": 466}"""u8.ToArray());
+
+        // the closed hunt is in the statistics another account asks for; a banned, an unknown and the recorded player's user id are not served
+        Eq(Total(B), Reply(state.StatisticsReply(ME, "user_id=8"u8.ToArray())!));
+        foreach (var id in new[] { 9, 99, 7 })
+            Assert.Null(state.StatisticsReply(B, Encoding.UTF8.GetBytes($"user_id={id}")));
+
+        var page = state.StatisticsPage(B);
+        var w = page["weapons"]!.AsArray().Single()!;
+        Assert.Equal(("Test Rifle", "Test Bullet", 1L, 100.0, 1L, 100.0), ((string)w["weapon"]!, (string)w["ammo"]!, (long)w["shots"]!, (double)w["accuracy"]!, (long)w["kills"]!, (double)w["killsPerHit"]!));
+        Assert.Null(w["longest"]);
+        var a = page["animals"]!.AsArray().Single()!;
+        Assert.Equal(("Test Deer", 0L, 0L, 1L), ((string)a["name"]!, (long)a["spotted"]!, (long)a["tracked"]!, (long)a["harvested"]!));
+        Assert.Equal(0.466, (double)page["distanceKm"]!, 6);
+        Assert.Empty(page["collectables"]!.AsArray());
+    }
+
+    [Fact]
     public void TestAHarvestAfterItsHuntClosedStillCounts()
     {
         state = Online();

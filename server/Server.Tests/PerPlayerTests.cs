@@ -206,6 +206,19 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsStatisticsAreReadWithAnotherPlayersToken()
+    {
+        using (var con = state.Store.Open(8))
+            PlayerRows.SetStatistics(con, O("""{"collectables": {}, "weapon": {}, "animal": {"1": {"kills": 2}}, "daily_missions": {}}"""), 12.5, 3600, null, null);
+        var theirs = await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenA, "user_id=8");
+        Assert.Equal((200, "state"), (theirs.Status, theirs.Source));
+        Eq("""{"duration": 3600, "distance": 12.5, "data": {"collectables": {}, "weapon": {}, "animal": {"1": {"kills": 2}}, "daily_missions": {}}}""", JsonNode.Parse(theirs.Body));
+        // an unknown user id and the recorded player's are not served
+        foreach (var id in new[] { 7, 99 })
+            Assert.Equal("empty", (await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, $"user_id={id}")).Source);
+    }
+
+    [Fact]
     public void TestANewAccountsConnectHasItsOwnAccountAndEmptyStatistics()
     {
         var connect = JsonNode.Parse(state.ConnectReply(8))!;
