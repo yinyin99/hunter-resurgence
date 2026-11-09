@@ -225,7 +225,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         var q = Py.ParseQs(r.Query);
         var link = q.TryGetValue("link", out var l) ? l[0] : null;
         if (link is not null && !(links.TryGetValue(link, out var entry) && entry.Expires > now()))
-            return Problem(400, "This sign-in link ran out of time. Start again from the launcher.");
+            return Problem(400, "This sign-in link ran out of time. Start again from the launcher or the backup tool.");
         Purge();
         if (logins.Count >= MaxPending) // full: the one that expires first goes, so a flood cannot lock the players out
             logins.TryRemove(logins.MinBy(kv => kv.Value.Expires).Key, out _);
@@ -304,7 +304,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     public Reply Confirm(Req r)
     {
         if (Current(r) is not { Link: { } code, Account: { } account } login || !links.TryGetValue(code, out var entry))
-            return Problem(400, "This sign-in ran out of time. Start again from the launcher.");
+            return Problem(400, "This sign-in ran out of time. Start again from the launcher or the backup tool.");
         if (r.Method == "GET")
             return Html(200, AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(code)));
         if (!OwnPost(r) || (Py.ParseQs(Encoding.UTF8.GetString(r.Body)).TryGetValue("csrf", out var c) ? c[0] : "") != login.Id)

@@ -23,8 +23,9 @@ public sealed partial class State
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
     public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
-    /// <summary>Metadata keys of a restored item's placement: the items table has no columns for them (see <see cref="Items"/>).</summary>
-    public const string POSITION = "__position", DIRECTION = "__direction";
+    /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
+    /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.</summary>
+    public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve";
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
@@ -53,13 +54,14 @@ public sealed partial class State
     static long NextId(Db con, string table, string column) =>
         (long)con.Scalar($"SELECT COALESCE(MAX({column}), 0) + 1 FROM {table} WHERE account_id = $a")!;
 
-    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A restored placed item keeps its
+    /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A placed item keeps its
     /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
-    /// here as the row's own members.</summary>
+    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped.</summary>
     public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
     {
         var metadata = JsonNode.Parse((string)r[3])!.AsObject();
         var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
+        metadata.Remove(RESERVE);
         foreach (var (key, member) in new[] { (POSITION, "position"), (DIRECTION, "direction") })
             if (metadata.TryGetPropertyValue(key, out var value))
             {
@@ -144,12 +146,14 @@ public sealed partial class State
     /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
-    /// stamina).</summary>
+    /// stamina) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
+    /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
+    /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
-                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates)
+                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -184,8 +188,44 @@ public sealed partial class State
                 con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
                          + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
+            {
+                var dog = con.Rows("SELECT item_id, json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"]))).FirstOrDefault();
+                if (dog is not null && isDog(Convert.ToInt64(dog[0])) && metadata.ContainsKey("experience"))
+                {
+                    metadata = metadata.DeepClone().AsObject();
+                    if (metadata["experience"] is not { } xp || !Py.IsNum(xp)) metadata.Remove("experience");  // null or text would erase the stored value
+                    else
+                    {
+                        // a dog's levels pay once: the stored experience only grows, and each level with a SILVER reward crossed is paid
+                        var old = dog[1] is long or double ? Convert.ToDouble(dog[1]) : 0;
+                        var paid = Arr(dogSkills).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.D(r["xp"]) > old && Py.D(r["xp"]) <= Py.D(xp))
+                            .SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>().Where(u => (string?)u["type"] == "rewards"))
+                            .SelectMany(u => Arr(u["data"]).OfType<JsonObject>().Where(x => (string?)x["type"] == "SILVER" && Py.IsNum(x["amount"])))
+                            .Sum(x => Py.L(x["amount"]));
+                        if (paid > 0 && AddCurrency(con, "gm", paid) is { } balance)
+                            updates.Add(new JsonObject { ["amount"] = balance, ["type"] = "gm", ["update"] = 15 });
+                        if (Py.D(xp) < old) metadata["experience"] = old;
+                    }
+                }
                 con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
+            }
+            else if (Is(e["event"], 25) && ItemGuid(e["item"]) is { } placed && Vec(e, "position") is { } position)
+            {
+                // the placement waits for event 8 (slot 23); the reserve is the hunt's. A missing direction removes the old one
+                var reserve = con.Rows("SELECT reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault()?[0];
+                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?", Py.Dumps(new JsonObject
+                {
+                    [POSITION] = position, [DIRECTION] = Vec(e, "direction"), [RESERVE] = Py.FromSql(reserve),
+                }), placed);
+            }
+            else if (Is(e["event"], 8) && ItemGuid(e["item"]) is { } moved && Py.IsInt(e["slot"]))
+                // a slot other than 23 is a pick-up: the item keeps no placement
+                con.Exec("UPDATE items SET slot = ?1, metadata = CASE WHEN ?1 = 23 THEN metadata"
+                         + " ELSE json_remove(metadata, '$.__position', '$.__direction', '$.__reserve') END WHERE account_id = $a AND guid = ?2",
+                         e["slot"], moved);
+            else if (Is(e["event"], 33))
+                MoveUnits(con, e);
             else if (Is(e["event"], 3))
             {
                 var harvest = Py.Dumps(e);
@@ -241,6 +281,36 @@ public sealed partial class State
         }
         con.Commit();
         return updates;
+    }
+
+    /// <summary>The guid of an item event's `item` (a string of digits), else null.</summary>
+    static long? ItemGuid(JsonNode? item) => Py.IsDigit(Py.Str(item)) && long.TryParse(Py.Str(item), out var guid) ? guid : null;
+
+    /// <summary>`{prefix}_x/y/z` of an event as {x, y, z} whole numbers (millimetres or x 1000, as the client sends them), null
+    /// unless the three are numbers within the restore's limit of 2,000,000.</summary>
+    static JsonObject? Vec(JsonObject e, string prefix)
+    {
+        var v = new JsonObject();
+        foreach (var axis in "xyz")
+        {
+            var n = e[$"{prefix}_{axis}"];
+            if (!Py.IsNum(n) || Math.Abs(Py.D(n)) > 2_000_000) return null;
+            v[axis.ToString()] = (long)Math.Round(Py.D(n), MidpointRounding.AwayFromZero);
+        }
+        return v;
+    }
+
+    /// <summary>Event 33 `{item_from, quantity, item_to?}`: `quantity` units leave a stack and join `item_to`, another stack of the
+    /// same item. Nothing moves when a stack is not the account's, has no units, holds fewer than `quantity`, the two are one, or
+    /// `item_to` is missing (ponytail: how the client splits a stack into a new one is not known, no stack is made up).</summary>
+    static void MoveUnits(Db con, JsonObject e)
+    {
+        var quantity = Py.IsNum(e["quantity"]) ? (long)Py.D(e["quantity"]) : 0;
+        if (ItemGuid(e["item_from"]) is not { } fromGuid || ItemGuid(e["item_to"]) is not { } to || to == fromGuid || quantity <= 0
+            || con.Rows("SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ?", fromGuid, quantity).FirstOrDefault() is not { } source
+            || con.Exec("UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL", quantity, to, source[0]) == 0)
+            return;
+        con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END WHERE account_id = $a AND guid = ?2", quantity, fromGuid);
     }
 
     /// <summary>Hit events (event 1) on the animal of a kill since its latest spawn (individual ids are reused across
@@ -1302,7 +1372,8 @@ public sealed partial class State
             events = new JsonArray();
         }
         using var con = Con(account);
-        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates);
+        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
+                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType));
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });

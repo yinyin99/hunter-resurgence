@@ -231,10 +231,10 @@ public static class Restorer
             metadata.Remove(State.DIRECTION);
             if (i.Position is { } pos) metadata[State.POSITION] = Vec(pos);
             if (i.Direction is { } dir) metadata[State.DIRECTION] = Vec(dir);
+            metadata.Remove(State.RESERVE);
+            if (i.WebReserve is { } reserve) metadata[State.RESERVE] = reserve;
             PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
         }
-        var reserves = m.Items.Count(i => i.WebReserve is not null);
-        if (reserves > 0) dropped.Add($"web reserve of {reserves} placed item(s): the connect row has no such field");
 
         var skills = 0;
         void Skill(string kind, long key, double number)
