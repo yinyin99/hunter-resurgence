@@ -783,4 +783,17 @@ public class SkillTests : StateTestBase
         Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 8.5}}"""));
         Eq("""{"dog_name": "Rex", "experience": 8.5, "stamina": 1288.0}""", Items()["100"]!["metadata"]);
     }
+
+    [Fact]
+    public void TestDogLevelRewardPaidOnce()
+    {
+        Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 100}}"""));
+        var gm = Reply(state.ConnectReply(ME))["wallet"]!["gm"]!.GetValue<double>();
+        var paid = new JsonArray(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")).Where(u => (int?)u!["update"] == 15).Select(u => u!.DeepClone()).ToArray());
+        Eq(new JsonArray(new JsonObject { ["amount"] = gm + 100, ["type"] = "gm", ["update"] = 15 }), paid);
+        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")));
+        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 50}}""")));
+        Assert.Empty(Hb(O("""{"event": 23, "item": "100", "metadata": {"experience": 650.5}}""")));
+        Eq("650.5", Items()["100"]!["metadata"]!["experience"]);
+    }
 }
