@@ -42,7 +42,7 @@ public static class NewBuild
         var (path, query) = q < 0 ? (target, "") : (target[..q], target[q..]);
         if (Map(path, game.Gs, game.Api, p => Canonical(game, p)) is not { } mapped) return;
         var (host, to, form) = mapped;
-        if (form) await JsonBodyToForm(ctx.Request);
+        if (form && !HttpMethods.IsPut(ctx.Request.Method)) await JsonBodyToForm(ctx.Request);  // the forms are the old POSTs'; a PUT body (a lodge edit) stays JSON
         feature.RawTarget = to + query;
         ctx.Request.Path = to;
         ctx.Request.Host = new HostString(host);

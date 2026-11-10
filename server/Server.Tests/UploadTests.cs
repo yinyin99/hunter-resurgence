@@ -662,6 +662,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             con.Exec("DROP TABLE upload_results");
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
             con.Exec("DROP TABLE friends");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("PRAGMA user_version = 2");
         }
         var migrated = new Store(file);

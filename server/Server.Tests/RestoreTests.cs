@@ -315,13 +315,13 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
-    public void TestADatabaseOfSchema8GetsTheSavedColumnOfThePhotos()
+    public void TestADatabaseOfSchema9GetsTheSavedColumnOfThePhotos()
     {
         var file = Path.Combine(tmp, "old8.db");
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE photos DROP COLUMN saved");
-            con.Exec("PRAGMA user_version = 8");
+            con.Exec("PRAGMA user_version = 9");
         }
         using var migrated = new Store(file).Open();
         Assert.Equal(1L, migrated.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'"));

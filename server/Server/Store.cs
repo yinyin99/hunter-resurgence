@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 9;
+    public const int Version = 10;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -96,7 +96,7 @@ public sealed class Store
             PRIMARY KEY (account_id, kill_id));
         CREATE INDEX kills_individual ON kills (account_id, individual);
         CREATE TABLE harvests (
-            {A}, kill_id INTEGER NOT NULL, body TEXT NOT NULL,
+            {A}, kill_id INTEGER NOT NULL, body TEXT NOT NULL, hidden INTEGER NOT NULL DEFAULT 0,
             PRIMARY KEY (account_id, kill_id));
         CREATE TABLE expeditions (
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
@@ -198,7 +198,8 @@ public sealed class Store
                            + " AND (SELECT COUNT(*) FROM events f WHERE f.account_id = e.account_id AND f.event = 4 AND f.id < e.id)"
                            + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
             }
-            if (version < 9 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
+            if (version < 9) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
+            if (version < 10 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
                 con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
         }
         if (version < Version)

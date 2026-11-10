@@ -439,6 +439,7 @@ public class HunterscoreTests : StateTestBase
         {
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
             con.Exec("DROP TABLE friends");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("PRAGMA user_version = 4");
         }
         var migrated = new Store(file);
@@ -498,6 +499,7 @@ public class HunterscoreTests : StateTestBase
         {
             con.Exec("INSERT INTO expeditions (account_id, start_ts, end_ts, stats) VALUES ($a, 1, 2, '{}')");
             con.Exec("INSERT INTO expeditions (account_id, start_ts, stats) VALUES ($a, 3, '{}')");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("PRAGMA user_version = 6");
         }
         using var check = new Store(file).Open(5);
