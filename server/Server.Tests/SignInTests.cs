@@ -473,7 +473,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         const string Fern = """{"total": 2, "messages": [{"handle": "Fern", "user_id": 501, "content": "see you", "ts": 1700000200}, {"handle": "one", "user_id": 7, "content": "where?", "ts": 1700000150}]}""";
         using (var con = state.Store.Open(me))
         {
-            PlayerRows.SetExtra(con, "Chat_conversations.json", O(List));
+            PlayerRows.SetExtra(con, "Chat_conversations.json", JsonNode.Parse(List));
             PlayerRows.SetExtra(con, "Chat_conversation__user_id=501.json", O(Fern));
         }
         // the game's own replies: the restored conversations as saved, a thread as saved (reading marks nothing)
