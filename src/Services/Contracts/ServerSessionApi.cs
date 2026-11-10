@@ -118,6 +118,14 @@ public sealed record ServerFriends(ServerPlayer[] Friends, ServerPlayer[] Reques
 /// <summary>The players of <see cref="ServerAccountApi.FriendSearch"/>.</summary>
 public sealed record ServerPlayers(ServerPlayer[] Hunters);
 
+/// <summary>A row of <see cref="ServerAccountApi.Wallet"/>: <c>Created</c> is Unix seconds, <c>Amount</c> never negative (the balances show the direction).</summary>
+public sealed record ServerWalletRow(long Created, double Amount, double PreBalance, double PostBalance, string? Summary, ServerWalletItem[]? Items, int Qty);
+
+public sealed record ServerWalletItem(string? Name);
+
+/// <summary>The totals of <see cref="ServerAccountApi.Wallet"/>/spent: em$ and gm$ paid.</summary>
+public sealed record ServerSpent(double Spent, [property: System.Text.Json.Serialization.JsonPropertyName("silver_spent")] double SilverSpent);
+
 /// <summary>One page of a hunter's hunt history of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> is Unix seconds, <c>Lodge</c> the lodge's id as "#id" ("" without one).</summary>
 public sealed record ServerHunts(int Page, int Pages, int Total, ServerHuntRow[] Rows);
 
