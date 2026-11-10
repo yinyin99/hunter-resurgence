@@ -307,7 +307,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Begin();
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=0.json",
-                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}]}"""));
+                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}]}"""));  // the last row is odd: a backup holds whatever the player sent
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=3.json", O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(1, "1.0000", 1)}}, "distance": {{Best(1, "1.0000", 1)}}}]}"""));
             con.Commit();
         }
@@ -326,7 +326,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var all = await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=0");
         Eq("\"done\"", all["status"]);
         var row = all["data"]!.AsArray();
-        Eq("""[1, 77]""", T(row[0]!["specie"], row[1]!["specie"]));
+        Eq("""[1, 77, 78]""", T(row[0]!["specie"], row[1]!["specie"], row[2]!["specie"]));
         var score = row[0]!["score"]!;
         Eq("""["70.2500", 96140, 5, 1, 1]""", T(score["score"], score["distance"], score["weapon_id"], score["animal_id"], score["species"]));
         Assert.True((long)score["confirm_ts"]! > 1700000000);
@@ -342,6 +342,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("""["Test Deer", 70.25, 96.14, "Test Rifle", 1]""", T(page[0]!["species"], page[0]!["score"], page[0]!["range"], page[0]!["weapon"], page[0]!["kill"]));
         Eq("""["#77", 5.5, 1.0, "", 902]""", T(page[1]!["species"], page[1]!["score"], page[1]!["range"], page[1]!["weapon"], page[1]!["kill"]));
         Assert.Equal(1700000000L, (long)page[1]!["ts"]!);
+        Assert.Equal(2, page.Count);  // the odd row has no record to show
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/best", null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/hunter/best", null)).Status);  // the recorded player's account: no player here owns it
     }
