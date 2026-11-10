@@ -46,11 +46,11 @@ With the values the mock services give, the slots have 651 distinct keys; a patt
 | `logo-hero` | 485×120 | Feed | yes |
 | `logo-landing` | 1000×250 | AutoLogin | yes |
 | `logo-splash` | 483×65 | Splash | yes |
-| `logo-dev` | 200×71 | Footer | yes |
+| `logo-dev` | 220×72 | Footer | yes |
 | `logo-rating-<1-4>` | 62×82 | Footer | 4 of 4 |
 | `bg-hero` | 980×550 | Feed | yes: `bg-hero.webm`, the original landing page's background video (`landing_page_video.webm`, played muted and looping as there) |
 | `browser-bg` | 1280×760 | BrowserNotice | yes |
-| `page-bg` | behind the page, top centre, once, black below | ShellLayout (website only, as the original: its launcher had none) | yes: the original's `main_page_background2.jpg` (`body:not(.client)` in its stylesheet) |
+| `page-bg` | behind the page, top centre, once, black below | ShellLayout (website and launcher) | yes: the original's `main_page_background2.jpg` (`body:not(.client)` in its stylesheet) |
 | `frame-leather` | 1280×760 | SignupLayout | yes |
 | `signup-bg-<1-5>` | 1200×674 | SignupCard (signup pages) | 5 of 5 |
 | `gift-frame` | 561×288 | Signup Page2 to Page5 | yes |
@@ -64,15 +64,15 @@ With the values the mock services give, the slots have 651 distinct keys; a patt
 | `profile-banner` | 940×200 | HunterProfile | no: player content (the player's latest kill) |
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
-| `video-<id>` | 900×506 | VideoModal (Help) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
+| `video-<id>` | 900×506, 185×138 | VideoModal, Help (tutorial rows) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
 | `competition-hero-170031`, `competition-hero-170026` | 805×380, 175×95 | FeedCarousel | yes: the project's posts reuse two competition pictures (a deer each, `NewsPosts.cs`), cropped to fill the slide |
-| `help-banner`, `help-hero` | 940×245, 940×250 | Help | yes |
+| `help-banner`, `help-hero` | 940×250 | Help | yes: the visible crop of the original's tutorial cover |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |
 | `paw-badge-<easy, medium, hard>` | 80×80 | DailyMissions | 2 of 3: the original's `mission_icon_easy_02` and `mission_icon_medium_02` for 1 and 2 stars; no hard icon was saved |
 | `mission-giver-<day>` | 150×150 | DailyMissions | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
-| `mission-picture-<day>` | 250×250 | DailyMissions | 1 of 7: the original showed the male or female picture of the mission's species by the mission's gender; the mock's missions 2–7 state none |
+| `mission-picture-<day>` | 250×360 | DailyMissions | 1 of 7: the original showed the male or female picture of the mission's species by the mission's gender; the mock's missions 2–7 state none |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
 | `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |
@@ -88,8 +88,9 @@ With the values the mock services give, the slots have 651 distinct keys; a patt
 | `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border, scaled to 1500 px at most. The boxes of the join map (704×608) stretch it |
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
-| `rank-<animals, weapons, collectables>` | 110×110 | RanksTab | 3 of 3 |
-| `ach-<animals, weapons, exploration, day-mission>` | 100×100 | AchievementsTab | 3 of 4: the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
+| `rank-<animals, weapons, collectables>` | 110×110, 40×40 | RanksTab | 3 of 3 (the overview rows show them at 40×40) |
+| `rank-score` | 40×40 | RanksTab | no: the hunter score icon of the ranks overview |
+| `ach-<animals, weapons, exploration, day-mission>` | 100×100, 40×40 | AchievementsTab | 3 of 4 (the overview rows show the first three at 40×40): the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
 | `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: animal badges by the game's achievement table, challenge badges by the challenge's description (`Quick Draw` is the original's Assassin); `1 Rifle A (Standard)` is a stand-in for a weapon badge; `Early Bird` is not in the original |
 | `skill-<name>` | 80×90 | SkillsTab | 78 of 81: weapon skills by the weapon category in the name; `i1` (semi-automatic rifles), `k1` and `l1` (air rifles) stay empty, the original's only icon of that kind is already used by another skill or is of another category |
 | `trophy-<name>` | 150×150 | TrophiesTab | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
