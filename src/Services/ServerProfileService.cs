@@ -110,8 +110,8 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerSkills>() is { } s)
                 return kind == "weapons"
-                    ? [.. (s.Weapons ?? []).Select(w => new Skill(w.Name, w.Group, [Ring("Shooting", w.Value)]))]
-                    : [.. (s.Species ?? []).Select(x => new Skill(x.Name, null, [Ring("Spotting", x.Spotting), Ring("Tracking", x.Tracking ?? 1)]))];
+                    ? [.. (s.Weapons ?? []).Select(w => new Skill(w.Name, w.Group, [Ring("Shooting", w.Value)], null, w.Id))]
+                    : [.. (s.Species ?? []).Select(x => new Skill(x.Name, null, [Ring("Spotting", x.Spotting), Ring("Tracking", x.Tracking ?? 1)], x.Image))];
             log.LogWarning("The server answered {Path} with {Status}: no skills", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

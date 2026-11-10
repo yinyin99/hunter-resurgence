@@ -1,11 +1,12 @@
+@inject HostMode Mode
 <table class="tbl tbl-c">
     <thead><tr><th>@L["Stat.Weapon"]</th><th>@L["Stat.Ammo"]</th><th>@L["Stat.Shots"]</th><th>@L["Stat.Accuracy"]</th><th>@L["Stat.Kills"]</th><th>@L["Stat.PerHit"]</th><th>@L["Stat.Longest"]</th></tr></thead>
     <tbody>
         @foreach (var w in Weapons)
         {
             <tr>
-                <td><AssetSlot Name="@($"weapon-{w.Weapon}")" Width="150" Height="30" /><span class="n">@w.Weapon</span></td>
-                <td><AssetSlot Name="@($"ammo-{w.Ammo}")" Width="36" Height="36" /><span class="n">@w.Ammo</span></td>
+                <td><AssetSlot Name="@(w.WeaponId is { } wi ? Mode.ItemSlot((int)wi) : $"weapon-{w.Weapon}")" Width="150" Height="30" /><span class="n">@w.Weapon</span></td>
+                <td><AssetSlot Name="@(w.AmmoId is { } ai ? Mode.ItemSlot((int)ai) : $"ammo-{w.Ammo}")" Width="36" Height="36" /><span class="n">@w.Ammo</span></td>
                 <td>@w.Shots</td><td>@Fmt.Pct(w.Accuracy)</td><td>@w.Kills</td><td>@Fmt.Pct(w.KillsPerHit)</td>
                 <td>@(w.Longest is { } l ? Fmt.Metres(l) : "-- (--)")</td>
             </tr>

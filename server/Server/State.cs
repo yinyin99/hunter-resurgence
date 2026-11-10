@@ -780,8 +780,9 @@ public sealed partial class State
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
     }
 
-    /// <summary>What a profile page's skills tab shows of an account: `species` [{name, spotting, tracking}] (the numbers of
-    /// Skill/list, one per species of the connect's list) and `weapons` [{name, group, value}] (the item's name and its
+    /// <summary>What a profile page's skills tab shows of an account: `species` [{name, image, spotting, tracking}] (the numbers of
+    /// Skill/list, one per species of the connect's list; `image` is the species' define in lower case, null without one; the dog species
+    /// and species 56 are left out, as the original website did) and `weapons` [{id, name, group, value}] (the item's id, its name and its
     /// sub-category's name, null without one).</summary>
     public JsonObject PublicSkills(long account)
     {
@@ -790,12 +791,12 @@ public sealed partial class State
         var tracking = n["tracking"]!.AsArray();
         return new JsonObject
         {
-            ["species"] = new JsonArray([.. species.OrderBy(s => s.Key).Where(s => s.Key < spotting.Count).Select(s => (JsonNode?)new JsonObject
-                { ["name"] = C(s.Value["name"]), ["spotting"] = C(spotting[(int)s.Key]), ["tracking"] = s.Key < tracking.Count ? C(tracking[(int)s.Key]) : null })]),
+            ["species"] = new JsonArray([.. species.OrderBy(s => s.Key).Where(s => s.Key < spotting.Count && s.Key != 56 && !(Py.IsStr(s.Value["define"]) && (string)s.Value["define"]! is "DOG" or "DOG_02" or "DOG_03")).Select(s => (JsonNode?)new JsonObject
+                { ["name"] = C(s.Value["name"]), ["image"] = Py.IsStr(s.Value["define"]) ? ((string)s.Value["define"]!).ToLowerInvariant() : null, ["spotting"] = C(spotting[(int)s.Key]), ["tracking"] = s.Key < tracking.Count ? C(tracking[(int)s.Key]) : null })]),
             ["weapons"] = new JsonArray([.. n["weapon"]!.AsObject().Select(w =>
             {
                 var item = items.GetValueOrDefault(long.Parse(w.Key));
-                return (JsonNode?)new JsonObject { ["name"] = C(item?["name"]) ?? "#" + w.Key, ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
+                return (JsonNode?)new JsonObject { ["id"] = long.Parse(w.Key), ["name"] = C(item?["name"]) ?? "#" + w.Key, ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
             })]),
         };
     }
