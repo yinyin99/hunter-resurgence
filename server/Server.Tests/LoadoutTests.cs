@@ -207,6 +207,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
             con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE missions");
             con.Exec("DROP TABLE mission_prefs");
+            con.Exec("DROP TABLE daily_missions");
             con.Exec("PRAGMA user_version = 11");
         }
         var migrated = new Store(file);

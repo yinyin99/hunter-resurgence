@@ -54,6 +54,8 @@ public static class RestoredReads
             foreach (var kind in new[] { "collectables", "weapon", "animal", "daily_missions" })
                 data[kind] = new JsonObject();
         var (distance, duration) = AddHunts(con, data);
+        if (con.Scalar("SELECT json_extract(body, '$.days') FROM daily_missions WHERE account_id = $a") is string days && JsonNode.Parse(days) is JsonObject played)
+            Add(data, "daily_missions", new JsonObject(played.Select(kv => KeyValuePair.Create(kv.Key, (JsonNode?)new JsonObject { ["days"] = kv.Value?.DeepClone() }))));
         return (data, distance + (row is null ? 0 : Convert.ToDouble(row[1])), duration + (row is null ? 0 : Convert.ToDouble(row[2])),
                 BestScore(con, 0), BestScore(con, 1));
     }
