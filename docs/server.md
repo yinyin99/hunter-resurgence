@@ -111,6 +111,7 @@ The server's own answers for this build:
 | Kill page labels and texture names | the recorded locale and web scripts | - | `labels`, `textures` |
 | Item definitions of update 10 | the recorded connect's | `game/json_inventory.json`, then the catalogue above | - |
 | Discounts, the player's skill list | recorded only (without them: no discounts, fresh skills) | - | - |
+| The avatar list (`Avatar/getAvatars`) | recorded only: a restore picks the profile's avatar from it ([docs/restore.md](restore.md#storing-the-model)); without it every restored account has the default avatar, unreported | - | - |
 | Animal ids, score families | - | - | `animals`, `families` (always) |
 
 With recordings that cover every input, the replies are the ones the recordings gave, except that the connect reply always has `ingame_event` null (no seasonal event) and `species_ammo` from the `ethical` list. Without a recorded connect, `connect` is the install's sample made neutral: the account, `account_info`, `network`, `user_stats` and `boost` of the sample's test player are replaced (handle `hunter`, user id 1, no e-mail, Steam id, address or counters; `config.domains` names the settings' hosts), `spawn` and `competitions` are empty and everything that is game data (species, items text, locations, store, ethical ammo, achievements, ...) stays. `serve` says `player state: off` only when there is neither a recorded connect nor a connect sample in the install.
@@ -244,6 +245,12 @@ On a community server two players are friends when both have an account here and
 | `POST /v1/User/friendslist`, form `user_id`, `offset`, `limit`, no token | `{total, friends}`: every friend of the account in `total`, one page of the same entries in `friends`. `limit` 1 to 50 (above 50: 50; missing, empty or below 1: every friend); `offset` missing, empty or negative is 0, past the end an empty page. No `user_id`: `{"errorCode": 400}`; an empty, non-positive or unknown one: `null`; a non-numeric `user_id`, `offset` or `limit`: `{"error": 1, "code": "handlerError"}` |
 
 `Me/poll` and `Me/me` carry `friend_requests`, the number of `requests`. The current build's `/v1/friend/add?locale=<locale>`, `/v1/friend/remove`, `/v1/me/friends` and `/v1/me/poll` with a JSON body are the same calls ([The current build](#the-current-build)).
+
+## Messages
+
+The player's own inbox, on a community server. `Chat/conversations` lists the server's notice conversation (sender `Server`, user id 1024, the notices of [Upload a backup zip](#upload-a-backup-zip)) first, then the conversations a backup held (`Chat_conversations.json` in `extras`) exactly as saved, owner-only (the token's account). `Chat/conversation` with `user_id` answers the notice thread (and marks it read), or else the saved `Chat_conversation__user_id=<id>.json` of that partner as it is, or an empty thread; reading a restored thread marks nothing, so a restored conversation keeps the `read` it was saved with. Sending messages between players is not part of the server.
+
+The website reads the same through `GET /account/messages` and `GET /account/messages/thread` ([Upload a backup zip](#upload-a-backup-zip)), read only. A message is the player's own (`mine`) when its `user_id` is not the partner's.
 
 ## Gallery
 
@@ -389,6 +396,8 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | `GET /account/friends` | `{friends, requests, pending}`, each a list of `{handle, online}` sorted by handle: the player's friends, the players who asked it, the players it asked ([Friends](#friends)). 401 when signed out |
 | `GET /account/friends/search?text=<text>` | `{hunters: [{handle, online}]}`: up to 20 players whose handle contains the text (any case), sorted by handle, never the player itself or a banned account. 401 when signed out |
 | `POST /account/friends/add`, `POST /account/friends/remove` | Form `handle` (any case), same checks as buy: `add` accepts the other's open request, else asks them; `remove` declines, cancels or ends a friendship, as `Friend/add` and `Friend/remove`. `{status: ok}`; `404` `invalid` for the player's own handle, a banned one or one with no account here |
+| `GET /account/messages` | `{conversations: [{handle, preview, ts, unread}]}`: the server's notice conversation first, then the restored ones as saved ([Messages](#messages)). 401 when signed out |
+| `GET /account/messages/thread?handle=<handle>` | `{messages: [{mine, content, ts}]}`, newest first, of the conversation with that handle (any case); marks nothing read. `404` `invalid` for a handle that is none of the player's conversations; 401 when signed out |
 | `POST /account/gallery/delete` | Form `id`, same checks as buy: deletes the photo of the player's own gallery (its row and files, [Gallery](#gallery)). `{status: deleted}`; `404` `invalid` for an id that is none of the player's photos |
 | `GET /account/gallery/zip` | The player's own gallery as a zip of its pictures at full size (`application/zip`, each named as its link ends). 401 when signed out |
 

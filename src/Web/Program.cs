@@ -63,6 +63,8 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
     // the friends (the status bar's list, the profile tab and its buttons) are the account's on the server
     builder.Services.Replace(ServiceDescriptor.Scoped<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>())));
+    // the messages (the restored conversations and the server's notices) are the account's too, read only
+    builder.Services.Replace(ServiceDescriptor.Scoped<IMessagesService>(sp => new ServerMessagesService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMessagesService>>())));
     builder.Services.AddScoped<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
         new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()), sp.GetRequiredService<ILogger<ServerProfileService>>(), sp.GetRequiredService<IFriendsService>()));
     // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and the bank are hidden (HostMode.Live)

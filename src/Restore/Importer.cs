@@ -81,7 +81,7 @@ public static class Importer
             var achievements = Achievements();
             var (trophies, lodges) = TrophiesAndLodges();
             var account = new AccountDefaults(FacebookEnabled: false, ShareOnFacebook: 0, FacebookId: null, Email: null, EmailVerified: 0, HasPassword: 0,
-                AccountState: 0, FirstTime: 0, Face: 1000000, SteamId: identity.SteamId64, UseImperial: 0, UserGroup: 1);
+                AccountState: 0, FirstTime: 0, Face: Face(profile.AvatarUrl), SteamId: identity.SteamId64, UseImperial: 0, UserGroup: 1);
             foreach (var (part, endpoint, ownOnly) in new[]
             {
                 ("loadout", "/game/user/loadout", true), ("missions", "/v1/Mission/missions", true), ("messages", "/v1/Chat/conversations", true),
@@ -107,6 +107,20 @@ public static class Importer
             var report = new Report(own ? "my-account" : byHandle is not null ? "public by handle" : "public by id", restored, unsupported, missing, warnings,
                 c.Failed, c.Rejected, completed is not null ? "yes" : c.Format == 1 ? "unknown" : "no", catalogue is null ? "zero-only" : "catalogue", inferred);
             return new(model, report, c.Media);
+        }
+
+        /// <summary>The avatar the profile's picture address names in the catalogue's list, else the default (reported). No list (no catalogue): the default, unreported.</summary>
+        int Face(string? address)
+        {
+            const int Default = 1000000;
+            if (address is null || catalogue is not { HasAvatars: true }) return Default;
+            if (catalogue.AvatarId(address) is { } id)
+            {
+                restored.Add($"avatar {id} (from the avatar picture address)");
+                return id;
+            }
+            warnings.Add("the avatar picture address matches no avatar of the list: the default avatar is kept");
+            return Default;
         }
 
         Profile Profile(JsonObject? src, Identity id)

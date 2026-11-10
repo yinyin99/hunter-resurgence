@@ -14,8 +14,11 @@
 
 <div class="page-min">
     <h2 class="page-title">@(L["Msg.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
-    <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" disabled="@savingOnly" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
-    <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
+    @if (!Mode.Live)  @* the live site reads the messages only: nothing is sent, and the setting is the game's *@
+    {
+        <label class="check"><input class="tick" type="checkbox" id="receive-private-messages" checked="@onlyFriends" disabled="@savingOnly" @onchange="OnlyFriends" /> @L["Msg.OnlyFriends"]</label>
+        <a class="btn btn-primary new" href="/new-message">@L["Msg.New"]</a>
+    }
     <div class="cols">
         <aside>
             <h4>@L["Msg.Conversations"]</h4>
@@ -36,9 +39,12 @@
                 <input id="message-recipient" class="field-light to" list="friends" placeholder="@L["Msg.To"]" @bind="recipient" @bind:event="oninput" />
                 <datalist id="friends">@foreach (var f in friends) { <option value="@f.Handle"></option> }</datalist>
             }
-            <textarea class="field-light" id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
-            <button id="sendMessage" type="button" class="send" disabled="@(!canSend || sending)" @onclick="Send">@L["Msg.Send"]</button>
-            <span class="count">@text.Length / 1024</span>
+            @if (!Mode.Live)
+            {
+                <textarea class="field-light" id="message" placeholder="@L["Msg.Text"]" maxlength="2048" @bind="text" @bind:event="oninput"></textarea>
+                <button id="sendMessage" type="button" class="send" disabled="@(!canSend || sending)" @onclick="Send">@L["Msg.Send"]</button>
+                <span class="count">@text.Length / 1024</span>
+            }
             @if (!composing)
             {
                 <div class="thread">

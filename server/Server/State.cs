@@ -521,6 +521,7 @@ public sealed partial class State
 
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
     readonly JsonObject application;
+    readonly JsonArray avatars;  // the recorded Avatar/getAvatars list: [{id, url, ...}]
     readonly JsonNode? skillList;
     readonly bool offline;
     /// <summary>A community server: every request needs a token, and the sign-in, start page and issued tokens are on.</summary>
@@ -557,9 +558,10 @@ public sealed partial class State
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null)
     {
         this.facts = facts ?? Facts.Default;
+        this.avatars = avatars ?? [];
         this.skillList = skillList;
         this.offline = offline;
         Spawns = new Spawner(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "spawn.json"));
@@ -670,11 +672,23 @@ public sealed partial class State
         Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, con => Seed(con, start, ReferenceEquals(start, connect) ? skillList : null));
 
     /// <summary>The item catalogue a restore reads units by (the Application/application reply); null without one.</summary>
-    public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items);
+    public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items, avatars);
 
-    sealed class ItemCatalogue(Dictionary<long, JsonObject> items) : Restore.IItemCatalogue
+    sealed class ItemCatalogue(Dictionary<long, JsonObject> items, JsonArray avatars) : Restore.IItemCatalogue
     {
+        public bool HasAvatars => avatars.Count > 0;
+
         public bool HasUnits(int itemId) => items.TryGetValue(itemId, out var item) && item["units"] is JsonObject;
+
+        public int? AvatarId(string? address)
+        {
+            static string? PathOf(string? url) =>
+                Uri.TryCreate(url?.StartsWith("//") == true ? "https:" + url : url, UriKind.Absolute, out var u) && u.Scheme is "http" or "https" ? u.AbsolutePath : null;
+            var path = PathOf(address);
+            return path is null ? null
+                : avatars.OfType<JsonObject>().FirstOrDefault(a => a["url"] is JsonValue v && v.TryGetValue<string>(out var s) && PathOf(s) == path) is { } hit
+                  && hit["id"] is JsonValue id && id.TryGetValue<int>(out var n) ? n : null;
+        }
     }
 
     /// <summary>The account of a request: the first of its tokens that resolves. None does: the local account on a local
@@ -954,40 +968,47 @@ public sealed partial class State
         return (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE account_id = $a AND read = 0")!;
     }
 
-    /// <summary>Chat/conversations: the notice sender's thread (the only sender this server has), newest message as preview.</summary>
-    public byte[] ConversationsReply(long account)
+    /// <summary>The conversations of Chat/conversations: the notice sender's thread (newest message as preview) and the restored ones as saved, owner-only.</summary>
+    JsonArray Conversations(long account)
     {
         object[]? newest;
         long unread;
+        List<JsonNode?> restored;
         using (var con = Con(account))
         {
             newest = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
             unread = (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE account_id = $a AND read = 0")!;
+            restored = PlayerRows.RestoredConversations(con);
         }
-        // ponytail: empty inbox reply assumed to be []
-        if (newest is null)
-            return Py.DumpBytes(new JsonArray());
-        var thread = Sender();
-        thread["read"] = unread == 0 ? 1 : 0;
-        thread["ts"] = Py.FromSql(newest[1]);
-        thread["preview"] = Py.FromSql(newest[0]);
-        return Py.DumpBytes(new JsonArray(thread));
+        var all = new JsonArray();
+        if (newest is not null)
+        {
+            var thread = Sender();
+            thread["read"] = unread == 0 ? 1 : 0;
+            thread["ts"] = Py.FromSql(newest[1]);
+            thread["preview"] = Py.FromSql(newest[0]);
+            all.Add(thread);
+        }
+        foreach (var c in restored) all.Add(c?.DeepClone());
+        return all;
     }
 
-    /// <summary>Chat/conversation user_id=&lt;id&gt;: the thread, newest first; reading it marks it read.</summary>
-    public byte[] ConversationReply(long account, byte[] formBody)
+    public byte[] ConversationsReply(long account) => Py.DumpBytes(Conversations(account));
+
+    /// <summary>The thread with a user id, newest first: the notice sender's (reading it marks it read), else a restored one as saved (reading marks nothing).</summary>
+    JsonNode ThreadOf(long account, string userId, bool markRead)
     {
-        var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         var sender = Py.IsDigit(userId) ? long.Parse(userId) : -1;
         List<object[]> rows;
         using (var con = Con(account))
         {
+            if (sender != SYSTEM_SENDER && PlayerRows.RestoredThread(con, userId) is { } saved) return saved;
             con.Begin();
             rows = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a AND sender = ? ORDER BY id DESC", sender);
-            con.Exec("UPDATE messages SET read = 1 WHERE account_id = $a AND sender = ?", sender);
+            if (markRead) con.Exec("UPDATE messages SET read = 1 WHERE account_id = $a AND sender = ?", sender);
             con.Commit();
         }
-        return Py.DumpBytes(new JsonObject
+        return new JsonObject
         {
             ["total"] = rows.Count,
             ["messages"] = new JsonArray(rows.Select(r =>
@@ -997,7 +1018,34 @@ public sealed partial class State
                 m["ts"] = Py.FromSql(r[1]);
                 return (JsonNode?)m;
             }).ToArray()),
-        });
+        };
+    }
+
+    /// <summary>Chat/conversation user_id=&lt;id&gt;: the thread, newest first.</summary>
+    public byte[] ConversationReply(long account, byte[] formBody) =>
+        Py.DumpBytes(ThreadOf(account, Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id"), true));
+
+    static string Plain(JsonNode? n) => n is JsonValue v ? v.ToString() : "";
+    static long Time(JsonNode? n) => Py.IsNum(n) ? Py.L(n) : 0;
+
+    /// <summary>`GET /account/messages`: `{conversations: [{handle, preview, ts, unread}]}`, the notice sender's first, then the restored ones as saved.</summary>
+    public JsonObject WebConversations(long account) =>
+        new() { ["conversations"] = new JsonArray([.. Conversations(account).Select(c => (JsonNode?)new JsonObject
+        {
+            ["handle"] = Plain(c?["handle"]), ["preview"] = Plain(c?["preview"]), ["ts"] = Time(c?["ts"]), ["unread"] = !Py.Truthy(c?["read"]),
+        })]) };
+
+    /// <summary>`GET /account/messages/thread?handle=`: `{messages: [{mine, content, ts}]}` newest first, read only; null for a handle that is no conversation.
+    /// A message is the player's own when its author's user id is not the partner's.</summary>
+    public JsonObject? WebThread(long account, string handle)
+    {
+        if (Conversations(account).FirstOrDefault(c => string.Equals(Plain(c?["handle"]), handle, StringComparison.OrdinalIgnoreCase)) is not { } c) return null;
+        var partner = Plain(c["user_id"]);
+        var messages = (ThreadOf(account, partner, false) as JsonObject)?["messages"] as JsonArray ?? [];
+        return new() { ["messages"] = new JsonArray([.. messages.Select(m => (JsonNode?)new JsonObject
+        {
+            ["mine"] = m?["user_id"] is { } author && Plain(author) != partner, ["content"] = Plain(m?["content"]), ["ts"] = Time(m?["ts"]),
+        })]) };
     }
 
     Db Con(long account) => Store.Open(account);
