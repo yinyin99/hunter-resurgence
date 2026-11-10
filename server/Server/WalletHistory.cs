@@ -9,7 +9,7 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     public const int WalletPageSize = 50;
-    const string PAYMENT = "In-game payment.";
+    public const string PAYMENT = "In-game payment.";
 
     /// <summary>One page (<see cref="WalletPageSize"/> rows from `offset`) of the history of a currency (`em`, `gm`): this server's changes and the restored rows, newest first.
     /// A row is `{id, created, type: {id: C|D, name}, amount (never negative), preBalance, postBalance, summary, mission, items: [definition], qty}`.

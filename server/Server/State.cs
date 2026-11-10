@@ -259,7 +259,7 @@ public sealed partial class State
                 };
                 con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
                 if (Py.RoundInt(css) > 0)
-                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"Reward (Id: {killId})"), ["type"] = "gm", ["update"] = 15 });
+                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})"), ["type"] = "gm", ["update"] = 15 });
             }
             else if (Is(e["event"], 4))
             {
@@ -1210,7 +1210,7 @@ public sealed partial class State
         con.Begin();
         if (ids.GroupBy(i => i).Any(g => OverOwnLimit(con, g.Key, g.Count())))
             return null;
-        var balance = AddCurrency(con, currency, -price, "In-game payment.", ids);
+        var balance = AddCurrency(con, currency, -price, PAYMENT, ids);
         if (balance is null)
             return null;
         Deliver(con, ids, ItemInfo);

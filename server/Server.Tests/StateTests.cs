@@ -748,7 +748,7 @@ public class InventoryTests : StateTestBase
             .Select(r => (JsonNode?)$"{r!["type"]!["id"]} {r["summary"]} {Py.D(r["amount"])} {Py.D(r["preBalance"])}>{Py.D(r["postBalance"])}").ToArray());
         Eq("""["C Adjustment by the operator. 8 12>20", "D In-game payment. 170 182>12", "D In-game payment. 30 100>70", "D In-game payment. 40 140>100"]""", Rows("em"));
         Eq("""["D In-game payment. 40 140>100"]""", Rows("em", "offset=3&lang=en"));
-        Eq("""["C Reward (Id: 1) 66 33>99", "C Reward (Id: 99) 7 0>7"]""", Rows("gm"));
+        Eq("""["C CSS Reward (Animal Id: 1) 66 33>99", "C Reward (Id: 99) 7 0>7"]""", Rows("gm"));
         var bought = Reply(state.WalletListReply(ME, "em", ""u8.ToArray())!)[1]!;
         Eq("[19, 1]", T(bought["items"]![0]!["id"], bought["qty"]));
         Eq("""{"spent": 366.0, "silver_spent": 595.0}""", Reply(state.WalletSpentReply(ME, ""u8.ToArray())!));
