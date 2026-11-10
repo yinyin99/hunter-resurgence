@@ -449,7 +449,7 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
         Assert.Empty(migrated.FriendsOf(5, null).Friends);  // version 6: the friends table
-        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM wallet_log WHERE account_id = $a"));  // version 10: the wallet log
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM wallet_log WHERE account_id = $a"));  // version 11: the wallet log
     }
 
     [Fact]

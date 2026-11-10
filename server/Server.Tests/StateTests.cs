@@ -731,7 +731,7 @@ public class InventoryTests : StateTestBase
         {
             PlayerRows.SetExtra(con, "Wallet_transactions__lang=en__offset=0.json", JsonNode.Parse("""[{"id": 5, "created": 2000, "amount": 30.0, "preBalance": 100.0, "postBalance": 70.0, "summary": "In-game payment.", "type": {"id": "D", "name": "Debit"}, "items": [], "qty": 1, "mission": ""}]"""));
             PlayerRows.SetExtra(con, "Wallet_transactions__lang=en__offset=50.json", JsonNode.Parse("""[{"id": 4, "created": 1000, "amount": 40.0, "preBalance": 140.0, "postBalance": 100.0, "summary": "In-game payment.", "type": {"id": "D", "name": "Debit"}, "items": [], "qty": 1, "mission": ""}]"""));
-            PlayerRows.SetExtra(con, "Wallet_silver_transactions__lang=en__offset=0.json", JsonNode.Parse("""[{"id": 9, "created": 1500, "amount": 7.0, "preBalance": 0.0, "postBalance": 7.0, "summary": "Reward (Id: 99)", "type": {"id": "C", "name": "Credit"}, "items": [], "qty": 1, "mission": ""}]"""));
+            PlayerRows.SetExtra(con, "Wallet_silver_transactions__lang=en__offset=0.json", JsonNode.Parse("""[{"id": 9, "created": 1500, "amount": 7.0, "preBalance": 0.0, "postBalance": 7.0, "summary": "CSS Reward (Animal Id: 99)", "type": {"id": "C", "name": "Credit"}, "items": [], "qty": 1, "mission": ""}]"""));
             PlayerRows.SetExtra(con, "Wallet_spent.json", JsonNode.Parse("""{"spent": 196.0, "silver_spent": 595.0}"""));
         }
         Assert.Equal(2, Reply(state.WalletListReply(ME, "em", ""u8.ToArray())!).AsArray().Count);  // nothing of this server yet
@@ -748,7 +748,7 @@ public class InventoryTests : StateTestBase
             .Select(r => (JsonNode?)$"{r!["type"]!["id"]} {r["summary"]} {Py.D(r["amount"])} {Py.D(r["preBalance"])}>{Py.D(r["postBalance"])}").ToArray());
         Eq("""["C Adjustment by the operator. 8 12>20", "D In-game payment. 170 182>12", "D In-game payment. 30 100>70", "D In-game payment. 40 140>100"]""", Rows("em"));
         Eq("""["D In-game payment. 40 140>100"]""", Rows("em", "offset=3&lang=en"));
-        Eq("""["C CSS Reward (Animal Id: 1) 66 33>99", "C Reward (Id: 99) 7 0>7"]""", Rows("gm"));
+        Eq("""["C CSS Reward (Animal Id: 1) 66 33>99", "C CSS Reward (Animal Id: 99) 7 0>7"]""", Rows("gm"));
         var bought = Reply(state.WalletListReply(ME, "em", ""u8.ToArray())!)[1]!;
         Eq("[19, 1]", T(bought["items"]![0]!["id"], bought["qty"]));
         Eq("""{"spent": 366.0, "silver_spent": 595.0}""", Reply(state.WalletSpentReply(ME, ""u8.ToArray())!));
