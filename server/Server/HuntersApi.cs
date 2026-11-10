@@ -119,7 +119,7 @@ public static class HuntersApi
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {
-                if (!Store.GameColumns.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
+                if (!Store.GameIds.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
                 var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
                 var board = state.Store.GameBoard(kind, state.LocalAccount);
                 var total = board.Count;
@@ -133,7 +133,7 @@ public static class HuntersApi
                 });
             })
             .WithName("GameBoard").WithSummary("One page of a minigame's board: lanebandit or bustthrough")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores restored from the players' backups (statistics); an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
+            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }
