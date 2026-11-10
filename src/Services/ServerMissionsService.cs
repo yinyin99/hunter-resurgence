@@ -1,13 +1,12 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
-using Resurgence.Services.Mocks;
 
 namespace Resurgence.Services;
 
 /// <summary>The missions page of the signed-in player from the community server (<see cref="ServerAccountApi.Missions"/>): the active and available missions, the packs with their
-/// progress and the three switches, and every write of the page. A server that does not answer is an empty page, never the mock's. The daily missions have no server source: the
-/// website does not serve their page (<c>HostMode.Live</c>), so they stay the mock's.</summary>
-public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, MockMissionsService mock, ILogger<ServerMissionsService> log) : IMissionsService
+/// progress and the three switches, the daily missions page (<see cref="ServerAccountApi.DailyMissions"/>) and every write of the page. A server that does not answer is an empty page, never
+/// the mock's. The server has no item to resume a broken streak: it offers none, and resuming fails.</summary>
+public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, ILogger<ServerMissionsService> log) : IMissionsService
 {
     public async Task<IReadOnlyList<Mission>> ActiveAsync() => [.. (await RegularAsync()).Missions.Where(m => m.State == "active")];
 
@@ -26,7 +25,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
 
     public Task<Result> ActivateAsync(int id) => id switch
     {
-        -1 => Task.FromResult(Result.Fail("Mis.Failed")),  // the daily streak is not served
+        -1 => PostAsync("daily/activate"),  // the daily streak
         0 => PostAsync("activate_all_available"),
         _ => PostAsync("activate", ("mission_id", $"{id}")),
     };
@@ -45,8 +44,15 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
 
     public Task<Result> SetHideCompletedFavouriteAsync(bool hide) => PostAsync("update_hide_completed_favourite", ("hide_completed_favourite", Flag(hide)));
 
-    public Task<DailyCalendar> DailyAsync() => mock.DailyAsync();
-    public Task<Result> ResumeStreakAsync() => mock.ResumeStreakAsync();
+    /// <summary>A page that cannot be read is an empty calendar that asks again in a minute.</summary>
+    public async Task<DailyCalendar> DailyAsync()
+    {
+        if (await GetAsync<ServerDaily>(ServerAccountApi.DailyMissions) is not { Days: not null, Missions: not null } s) return new(1, [], [], 60, null);
+        return new(s.Today, [.. s.Days.Select(d => new DailyDay(d.Number, d.Stars, d.Gms))],
+            [.. s.Missions.Select((m, i) => new DailyMission(m.Title, m.Desc, m.Objectives, m.Reserve, m.Rewards, s.Frozen && i == s.Today - 1, m.Done))], s.EndsIn, null, s.Broken);
+    }
+
+    public Task<Result> ResumeStreakAsync() => Task.FromResult(Result.Fail("Mis.Failed"));
 
     static string Flag(bool on) => on ? "true" : "false";
 
@@ -69,19 +75,21 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
         return Result.Fail("Mis.Failed");
     }
 
-    async Task<ServerMissions?> GetAsync()
+    async Task<ServerMissions?> GetAsync() => await GetAsync<ServerMissions>(ServerAccountApi.Missions) is { Missions: not null, Groups: not null } s ? s : null;
+
+    async Task<T?> GetAsync<T>(string path) where T : class
     {
         if (cookie.Value is null) return null;
         try
         {
-            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.Missions);
+            using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
-            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerMissions>() is { Missions: not null, Groups: not null } s) return s;
-            log.LogWarning("The server answered {Path} with {Status}: no missions", ServerAccountApi.Missions, (int)response.StatusCode);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<T>() is { } s) return s;
+            log.LogWarning("The server answered {Path} with {Status}: no missions", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
-            log.LogWarning("The server did not answer {Path} ({Reason}): no missions", ServerAccountApi.Missions, e.Message);
+            log.LogWarning("The server did not answer {Path} ({Reason}): no missions", path, e.Message);
         }
         return null;
     }

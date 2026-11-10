@@ -71,8 +71,8 @@ With the values the mock services give, the slots have 652 distinct keys; a patt
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |
 | `paw-badge-<easy, medium, hard>` | 100×111 | DailyMissions | 2 of 3: the original's `mission_icon_easy_02` and `mission_icon_medium_02` for 1 and 2 stars; no hard icon was saved |
-| `mission-giver-<day>` | 150×150 | DailyMissions | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
-| `mission-picture-<day>` | 250×360 | DailyMissions | 1 of 7: the original showed the male or female picture of the mission's species by the mission's gender; the mock's missions 2–7 state none |
+| `mission-giver-<day>` | 150×150 | DailyMissions (not on the live site) | 1 of 7: `-1` is Vera Herzschlag, named in the original's day 1 mission text. The mock's other missions have no named giver (the original gives Angelica Rodriguez the bear missions), so they stay empty |
+| `mission-picture-<day>` | 250×360 | DailyMissions (not on the live site) | 1 of 7: the original showed the male or female picture of the mission's species by the mission's gender; the mock's missions 2–7 state none |
 | `competition-<icon>` | 45×45 | CompetitionTable | 2 of 2 |
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
 | `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |

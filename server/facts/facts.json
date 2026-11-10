@@ -576,5 +576,24 @@
    {"id":39,"title":"Common Mushrooms","category":"collectable","types":[3]},
    {"id":40,"title":"Treasures","category":"collectable","types":[5,6,1009,1010,1011,1016,1017,1018,1019,2000,2001,2003,2006,2008,2011,2012,2018,2026,2038,2039,2040,2041,2044,2045]}
   ]
+ },
+ "daily_missions": {
+  "cycle": [1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,3],
+  "difficulties": [
+   {"id":1,"title":"Easy","alias":"EASY","cooldown":30,"color":"green","reward_id":130,"reward":100},
+   {"id":2,"title":"Medium","alias":"MEDIUM","cooldown":20,"color":"blue","reward_id":131,"reward":500},
+   {"id":3,"title":"Hard","alias":"HARD","cooldown":10,"color":"red","reward_id":132,"reward":1000}
+  ],
+  "templates": [
+   {"id":174,"difficulty":1,"title":"ID tracks from a Grey Wolf","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["ID tracks from a Grey Wolf"]},
+   {"id":154,"difficulty":1,"title":"ID tracks from a male Black Bear","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ"},"objectives":["ID tracks from a male Black Bear"]},
+   {"id":245,"difficulty":1,"title":"ID tracks from a male Blacktail Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE"},"objectives":["ID tracks from a male Blacktail Deer"]},
+   {"id":113,"difficulty":1,"title":"Spot a male Rusa Deer","giver":{"id":15,"alias":"VERA_HERZSCHLAG"},"objectives":["Spot a male Rusa Deer"]},
+   {"id":301,"difficulty":2,"title":"Harvest a male Red Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE"},"objectives":["Harvest a male Red Deer"]},
+   {"id":302,"difficulty":2,"title":"ID 3 tracks from a Moose","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ"},"objectives":["ID 3 tracks from a Moose"]},
+   {"id":303,"difficulty":2,"title":"Harvest a female Blacktail Deer","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["Harvest a female Blacktail Deer"]},
+   {"id":401,"difficulty":3,"title":"Hunt a male Moose","giver":{"id":15,"alias":"VERA_HERZSCHLAG"},"objectives":["ID 5 tracks from a Moose","Then spot a Moose","Then harvest a male Moose"]},
+   {"id":402,"difficulty":3,"title":"Hunt a Black Bear","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["ID 4 tracks from a Black Bear","Then harvest a Black Bear"]}
+  ]
  }
 }

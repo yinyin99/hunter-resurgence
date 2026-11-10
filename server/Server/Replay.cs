@@ -61,6 +61,8 @@ public static class Replay
     public const string MISSION_ONLY_FAVOURITE = "/v1/Mission/update_activate_only_favourite";
     public const string MISSION_HIDE_COMPLETED = "/v1/Mission/update_hide_completed_favourite";
     public const string MISSION_FAVOURITE = "/v1/Mission/update_favourite";
+    public const string DAILY_CALENDAR = "/v1/Daily_Mission/get_daily_missions_calendar";
+    public const string DAILY_ACTIVATE = "/v1/Daily_Mission/activate_user_progress";
     // the current build's paths, lower case as it sends them (the old ones above are canonical in their own case; NewBuild.Canonical maps any case to them)
     public const string START_SINGLE_PLAYER = "/v1/session/start_single_player";
     public const string START_TUTORIAL = "/v1/session/start_tutorial";

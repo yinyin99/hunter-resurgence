@@ -28,6 +28,12 @@ public sealed class Facts
             "collectable" => new Rank(Py.L(r["id"]), (string?)r["title"] ?? "", "collectable", [.. r["types"]!.AsArray().Select(Py.L)]),
             var c => throw new InvalidDataException($"facts: unknown rank category {c}"),
         })];
+        var daily = Obj("daily_missions");
+        DailyCycle = [.. (daily["cycle"] as JsonArray ?? []).Select(Py.L)];
+        DailyDifficulties = [.. (daily["difficulties"] as JsonArray ?? []).Select(d => new DailyDifficulty(Py.L(d!["id"]), (string)d["title"]!, (string)d["alias"]!,
+            Py.L(d["cooldown"]), (string)d["color"]!, Py.L(d["reward_id"]), Py.L(d["reward"])))];
+        DailyTemplates = [.. (daily["templates"] as JsonArray ?? []).Select(t => new DailyTemplate(Py.L(t!["id"]), Py.L(t["difficulty"]), (string)t["title"]!,
+            Py.L(t["giver"]!["id"]), (string)t["giver"]!["alias"]!, [.. t["objectives"]!.AsArray().Select(o => (string)o!)]))];
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));
@@ -54,6 +60,19 @@ public sealed class Facts
     public readonly Rank[] Ranks;
     /// <summary>The most a rank row adds to the hunterscore (`ranks.cap`); 0 when the file has no table.</summary>
     public readonly long RankCap;
+
+    /// <summary>A difficulty of the daily missions (`daily_missions.difficulties`): its id, names, the cooldown and colour the calendar shows, the id of its reward row and its gm$ reward in the first 16-day cycle.</summary>
+    public sealed record DailyDifficulty(long Id, string Title, string Alias, long Cooldown, string Color, long RewardId, long Reward);
+    /// <summary>A daily mission template (`daily_missions.templates`): its id (a sequence of its own), difficulty id, title, the giver's character id and alias, and the English titles of its objectives.</summary>
+    public sealed record DailyTemplate(long Id, long Difficulty, string Title, long Giver, string GiverAlias, string[] Objectives);
+    /// <summary>The difficulty id of each day of the streak cycle (`daily_missions.cycle`); empty when the file has no daily missions.</summary>
+    public readonly long[] DailyCycle;
+    public readonly DailyDifficulty[] DailyDifficulties;
+    public readonly DailyTemplate[] DailyTemplates;
+
+    /// <summary>The names of the reserves (in id order, joined by ", ") whose `species` holds the species id.</summary>
+    public string ReserveNames(long species) => string.Join(", ", Arr("reserves").Where(r => (r!["species"] as JsonArray ?? []).Any(s => Py.L(s) == species))
+        .OrderBy(r => Py.L(r!["id"])).Select(r => (string)r!["name"]!));
 
     /// <summary>{texture id: name} of the kill page.</summary>
     public Dictionary<long, string> Textures => Obj("textures").ToDictionary(kv => long.Parse(kv.Key), kv => (string)kv.Value!);

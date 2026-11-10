@@ -254,6 +254,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             con.Exec("DROP TABLE wallet_log");
             con.Exec("DROP TABLE missions");
             con.Exec("DROP TABLE mission_prefs");
+            con.Exec("DROP TABLE daily_missions");
             con.Exec("PRAGMA user_version = 8");
         }
         var migrated = new Store(file);

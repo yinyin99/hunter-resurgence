@@ -301,6 +301,17 @@ public static class GameApi
                         ? new(200, JsonAnyOrigin(), ok ? "true"u8.ToArray() : "false"u8.ToArray(), "state") : null))
                    .WithName(name).WithSummary(summary).WithDescription(description)
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            // daily missions (community server only; without them the empty replies of ReplayScope): the player's own streak
+            api.MapExactPost(game, DAILY_CALENDAR, r => !s.Online ? null : Own(game, r, a => s.DailyCalendarReply(a) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+               .WithName("DailyMissionCalendar").WithSummary("The player's daily mission calendar and streak")
+               .WithDescription("`{is_frozen, mission_end, broken_streak_info: {has_broken_streak, streak_larger}, calendar}`: 7 days of the streak with their difficulty and reward, "
+                                + "today's holding the mission of the date (the same for every player) and the objectives finished; `is_frozen` until the player activates a streak.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, DAILY_ACTIVATE, r => !s.Online ? null : Own(game, r, a => s.DailyActivate(a) is { } ok
+                    ? new(200, JsonAnyOrigin(), Py.DumpBytes(new JsonObject { ["success"] = ok }), "state") : null))
+               .WithName("DailyMissionActivate").WithSummary("Start the daily mission streak")
+               .WithDescription("`{\"success\": true}`: a frozen account unfreezes and starts day 1 today; the streak of an active account is kept.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // challenges (community server only; a local server replays): any account's completed ones, from the challenges table
             Reply? userChallenges(Req r) => !s.Online ? null : new(200, JsonAnyOrigin(), s.ChallengesReply(FormValue(r, "user_id") ?? ""), "state");
             api.MapExactPost(game, USER_CHALLENGES, userChallenges)

@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Services;
-using Resurgence.Services.Mocks;
 
 namespace Resurgence.Tests.ServicesTests;
 
@@ -19,7 +18,7 @@ public class ServerMissionsServiceTests
     }
 
     static ServerMissionsService Make(HttpMessageHandler handler, string? cookie = "abc") =>
-        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = cookie, Host = "site.test" }, new MockMissionsService(), NullLogger<ServerMissionsService>.Instance);
+        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = cookie, Host = "site.test" }, NullLogger<ServerMissionsService>.Instance);
 
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
@@ -80,8 +79,41 @@ public class ServerMissionsServiceTests
         Assert.True((await missions.ActivateAsync(0)).Ok);
         Assert.Equal([("POST", "/account/missions/activate", "mission_id=2", true), ("POST", "/account/missions/activate_all_available", "", true)],
             fake.Seen.Select(s => (s.Method.Method, s.Path, s.Body, s.Ajax)));
-        Assert.False((await missions.ActivateAsync(-1)).Ok);  // the daily streak is not served
-        Assert.Equal(2, fake.Seen.Count);
+        Assert.True((await missions.ActivateAsync(-1)).Ok);  // the daily streak
+        Assert.Equal(("POST", "/account/missions/daily/activate", "", true), (fake.Seen[2].Method.Method, fake.Seen[2].Path, fake.Seen[2].Body, fake.Seen[2].Ajax));
+    }
+
+    // made-up: day 2 is today, frozen, and holds the only mission; the other days have none
+    const string Daily = """
+        {"today": 2, "ends_in": 4000, "frozen": true,
+         "days": [{"number": 1, "stars": 1, "gms": 100}, {"number": 2, "stars": 1, "gms": 100}, {"number": 3, "stars": 2, "gms": 500}],
+         "missions": [{"title": "", "desc": "", "objectives": [], "reserve": "", "rewards": [], "done": false},
+                      {"title": "Test Daily", "desc": "Do it.", "objectives": ["Spot a Test Deer"], "reserve": "Test Reserve", "rewards": ["100 gm$"], "done": true},
+                      {"title": "", "desc": "", "objectives": [], "reserve": "", "rewards": [], "done": false}]}
+        """;
+
+    [Fact]
+    public async Task TheDailyCalendarIsTheServersAndOnlyTodayIsFrozen()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Daily));
+        var d = await Make(fake).DailyAsync();
+        Assert.Equal(("GET", "/account/missions/daily"), (fake.Seen[0].Method.Method, fake.Seen[0].Path));
+        Assert.Equal((2, 4000, null), (d.Today, d.EndsIn, d.Resume));  // the server has no item to resume a streak
+        Assert.Equal([(1, 1, 100), (2, 1, 100), (3, 2, 500)], d.Days.Select(x => (x.Number, x.Stars, x.Gms)));
+        Assert.Equal([("", false, false), ("Test Daily", true, true), ("", false, false)], d.Missions.Select(m => (m.Title, m.Frozen, m.Done)));
+        Assert.Equal(("Do it.", "Test Reserve", "Spot a Test Deer", "100 gm$"), (d.Missions[1].Description, d.Missions[1].Reserve, d.Missions[1].Objectives.Single(), d.Missions[1].Rewards.Single()));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized, """{"status":"signed_out"}""")]
+    [InlineData(HttpStatusCode.NotFound, """{"status":"invalid"}""")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task NoDailyAnswerIsAnEmptyCalendarThatAsksAgainInAMinuteAndResumingFails(HttpStatusCode code, string body)
+    {
+        var missions = Make(new Fake(_ => Json(code, body)));
+        var d = await missions.DailyAsync();
+        Assert.Equal((0, 0, 60), (d.Days.Count, d.Missions.Count, d.EndsIn));
+        Assert.False((await missions.ResumeStreakAsync()).Ok);
     }
 
     [Fact]

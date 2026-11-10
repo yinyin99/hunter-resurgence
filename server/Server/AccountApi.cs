@@ -260,6 +260,21 @@ public static class AccountApi
             .WithName("AccountMissionCall").WithSummary("One of the missions page's writes: activate, activate_all_available, update_automatic_activation, update_activate_only_favourite, update_hide_completed_favourite, update_favourite")
             .WithDescription("The form is the one `POST /v1/Mission/<call>` takes without the token (`mission_id`, the switch's own name, `group_id` and `is_favourite`); `{status: ok}`, 409 `refused` for a mission that is not available or a group id that is no number.")
             .Produces(200, contentType: "application/json");
+
+        group.MapGet("/missions/daily", (HttpContext ctx) => Account(ctx) is not { } account
+                ? Refuse(401, "signed_out", "Sign in first.")
+                : state.WebDaily(account) is { } daily ? Json(200, daily) : Refuse(404, "invalid", "This server has no daily missions."))
+            .WithName("AccountDailyMissions").WithSummary("The player's own daily missions page")
+            .WithDescription("`{today, ends_in, frozen, broken, days: [{number, stars, gms}], missions: [{title, desc, objectives, reserve, rewards, done}]}`: the 7 days of the streak's block and the mission of each (empty for a day "
+                             + "without one); 404 `invalid` when the server has no daily missions.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/missions/daily/activate", (HttpContext ctx) => !OwnPost(ctx) ? Refuse(400, "invalid", "This request is not from a page of this server.")
+                : Account(ctx) is not { } account ? Refuse(401, "signed_out", "Sign in first.")
+                : state.DailyActivate(account) is true ? Json(200, new JsonObject { ["status"] = "ok" }) : Refuse(404, "invalid", "This server has no daily missions."))
+            .WithName("AccountDailyActivate").WithSummary("Start the daily mission streak, as Daily_Mission/activate_user_progress")
+            .WithDescription("`{status: ok}`: a frozen streak becomes active at day 1 today; 404 `invalid` when the server has no daily missions.")
+            .Produces(200, contentType: "application/json");
     }
 
     static readonly string[] MissionCalls = ["activate", "activate_all_available", "update_automatic_activation", "update_activate_only_favourite", "update_hide_completed_favourite", "update_favourite"];

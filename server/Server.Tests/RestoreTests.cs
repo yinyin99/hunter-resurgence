@@ -347,6 +347,7 @@ public class RestoreTests : StateTestBase
             con.Exec("DROP TABLE wallet_log");
             con.Exec("DROP TABLE missions");
             con.Exec("DROP TABLE mission_prefs");
+            con.Exec("DROP TABLE daily_missions");
             con.Exec("PRAGMA user_version = 9");
         }
         using var migrated = new Store(file).Open();

@@ -34,12 +34,12 @@ public class LauncherGuardTests
     [InlineData("bank/ems", true)]
     [InlineData("missions", false)]                  // the server's: the owner's missions
     [InlineData("/Missions/group/3", false)]
-    [InlineData("missions/daily", true)]             // no source on the live site
+    [InlineData("missions/daily", false)]            // the server's: the owner's streak
     [InlineData("competitions", true)]               // no source on the live site: the recorded ones ended weeks ago
     [InlineData("competitions/details/3/history", true)]
     [InlineData("restore", false)]
     [InlineData("store", false)]
     [InlineData("profile/x", false)]
     [InlineData("leaderboards", false)]
-    public void TheMockOnlyRoutesAreTheSignedInOnesExceptTheServersAndTheCompetitionsAndTheDailyMissions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
+    public void TheMockOnlyRoutesAreTheSignedInOnesExceptTheServersAndTheCompetitions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
 }

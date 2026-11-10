@@ -77,7 +77,7 @@
     [Parameter] public string? Tab { get; set; }
     [Parameter] public int? Section { get; set; }
     string requested => Section is not null ? "tutorials" : Tab is "guides" or "day-mission" or "tutorials" or "community" ? Tab! : "support";
-    string tab => Mode.Live ? "support" : requested;
+    string tab => Mode.Live && requested != "day-mission" ? "support" : requested;
     int section => Section ?? 1;
 
     RenderFragment Ext(string key, string text) => @<ExternalLink Key="@key">@text</ExternalLink>;
@@ -88,15 +88,15 @@
     protected override async Task OnInitializedAsync()
     {
         tabs = [(L["Help.Tabs.Support"], "/help"), (L["Mis.Daily"], "/help/day-mission"), (L["Help.Tabs.Guides"], "/help/guides"), (L["Help.Tabs.Video"], "/help/tutorials"), (L["Help.Tabs.Community"], "/help/community")];
-        // the live site keeps the support tab: the guides, tutorials and community sites are the mock's, and the daily missions are not offered there (#225)
-        if (Mode.Live) { tabs = tabs.Take(1).ToList(); return; }
+        // the live site keeps the support tab and the daily missions': the guides, tutorials and community sites are the mock's (#225)
+        if (Mode.Live) { tabs = tabs.Take(2).ToList(); return; }
         (guides, sections, communities) = (await Service.GuidesAsync(), await Service.TutorialsAsync(), await Service.CommunitiesAsync());
         pills = sections.Select(s => (s.Title, "/help/tutorials/" + s.Id)).ToList();
     }
 
     protected override void OnParametersSet()
     {
-        if (Mode.Live && requested != "support") Nav.NavigateTo("/help", replace: true);
+        if (Mode.Live && requested is not ("support" or "day-mission")) Nav.NavigateTo("/help", replace: true);
         current = sections.FirstOrDefault(s => s.Id == section);
     }
 }

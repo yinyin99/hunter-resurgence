@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "challenges"];
+         "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 14;
+    public const int Version = 15;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -55,6 +55,11 @@ public sealed class Store
             {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
             PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
         CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
+        """;
+
+    // the account's daily missions: one JSON row (frozen, the day of the streak and its date, the finished objectives, the broken streak, the days completed here)
+    const string DailyMissions = """
+        CREATE TABLE daily_missions (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
         """;
 
     // the account's completed challenges: a challenge without a row is not completed. `id` is the row number the reply shows; `objectives` is the definition's text
@@ -144,6 +149,7 @@ public sealed class Store
         {WalletLog}
         {Missions}
         {Challenges}
+        {DailyMissions}
         {Loadouts}
 
         CREATE TABLE items (
@@ -279,6 +285,7 @@ public sealed class Store
                 con.Script(Challenges);
                 con.Script(RestoredChallenges.Replace("$a", "e.account_id"));
             }
+            if (version < 15) con.Script(DailyMissions);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

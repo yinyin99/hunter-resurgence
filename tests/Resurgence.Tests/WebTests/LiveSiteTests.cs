@@ -308,13 +308,12 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(["/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
     }
 
-    // the live help keeps its support tab: the other tabs are the mock's (or explain a page the live site lacks), and their addresses go to /help
+    // the live help keeps its support tab and the daily missions': the other tabs are the mock's, and their addresses go to /help
     [Theory]
     [InlineData("guides", null, "/help")]
     [InlineData("tutorials", null, "/help")]
     [InlineData(null, 2, "/help")]
     [InlineData("community", null, "/help")]
-    [InlineData("day-mission", null, "/help")]
     [InlineData(null, null, "/")]
     public void TheLiveHelpIsItsSupportTab(string? tab, int? section, string landed)
     {
@@ -324,8 +323,20 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<Help>(p => p.Add(h => h.Tab, tab).Add(h => h.Section, section));
 
         Assert.Equal(landed, "/" + nav.ToBaseRelativePath(nav.Uri));
-        Assert.Equal(["/help"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["/help", "/help/day-mission"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
         Assert.Empty(cut.FindAll("a.banner"));
+    }
+
+    [Fact]
+    public void TheLiveHelpKeepsTheDailyMissionTab()
+    {
+        Live(true);
+        var nav = Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
+
+        var cut = Render<Help>(p => p.Add(h => h.Tab, "day-mission"));
+
+        Assert.Equal("/", "/" + nav.ToBaseRelativePath(nav.Uri));  // not sent to /help
+        Assert.NotEmpty(cut.FindAll(".dm"));
     }
 
     [Fact]

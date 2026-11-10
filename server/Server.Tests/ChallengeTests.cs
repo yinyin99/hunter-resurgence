@@ -289,6 +289,7 @@ public class ChallengeTests : StateTestBase
         using (var con = store.Open())
         {
             con.Exec("DROP TABLE challenges");
+            con.Exec("DROP TABLE daily_missions");
             con.Exec("ALTER TABLE events DROP COLUMN ts");
             con.Exec("PRAGMA user_version = 13");
         }

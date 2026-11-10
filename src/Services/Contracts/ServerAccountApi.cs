@@ -20,6 +20,9 @@ public static class ServerAccountApi
     /// (<c>activate</c> and <c>mission_id</c>, <c>activate_all_available</c>, <c>update_automatic_activation</c> and <c>auto_mission_activate</c>, <c>update_activate_only_favourite</c> and
     /// <c>activate_only_favourite</c>, <c>update_hide_completed_favourite</c> and <c>hide_completed_favourite</c> as <c>true</c> or <c>false</c>, <c>update_favourite</c> with <c>group_id</c> and <c>is_favourite</c>): 200, or 409 for a mission that is not available.</summary>
     public const string Missions = "/account/missions";
+    /// <summary>GET with the cookie: 200 the player's daily missions page (<see cref="ServerDaily"/>), or 404 for a server without daily missions; POST with <c>X-Requested-With</c> to <c>/activate</c>:
+    /// 200 once the streak is active (a frozen one starts at day 1).</summary>
+    public const string DailyMissions = "/account/missions/daily";
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>: deletes a photo of the player's own gallery; 200, or 404 for one that is not theirs.</summary>
     public const string GalleryDelete = "/account/gallery/delete";
     /// <summary>GET with the cookie: 200 with the player's own gallery as a zip of its pictures.</summary>
@@ -50,6 +53,16 @@ public sealed record ServerMission(int Id, string Title, string Desc, string Sta
 
 /// <summary>A pack of <see cref="ServerAccountApi.Missions"/>: <c>Missions</c> are mission ids in display order.</summary>
 public sealed record ServerMissionGroup(int Id, string Title, string Desc, bool Favourite, int[] Missions);
+
+/// <summary>A day of the daily calendar: its number (1 to 7), the difficulty id (1 easy, 2 medium, 3 hard) as <c>Stars</c> and its reward in gm$.</summary>
+public sealed record ServerDailyDay(int Number, int Stars, int Gms);
+
+/// <summary>The mission of a day of <see cref="ServerDaily"/>: empty (no <c>Title</c>) for a day that has none; <c>Done</c> once every objective is finished.</summary>
+public sealed record ServerDailyMission(string Title, string Desc, string[] Objectives, string Reserve, string[] Rewards, bool Done);
+
+/// <summary>The daily missions page: <c>Today</c> is the number of today's day, <c>EndsIn</c> the seconds until the day ends, <c>Frozen</c> true until the player activates the streak;
+/// <c>Missions</c> are in the order of <c>Days</c>; <c>Broken</c> is true when the frozen streak was broken.</summary>
+public sealed record ServerDaily(int Today, [property: System.Text.Json.Serialization.JsonPropertyName("ends_in")] int EndsIn, bool Frozen, bool Broken, ServerDailyDay[] Days, ServerDailyMission[] Missions);
 
 public sealed record ServerMissions(ServerMission[] Missions, ServerMissionGroup[] Groups, int Completed,
     [property: System.Text.Json.Serialization.JsonPropertyName("auto_mission_activate")] bool Auto,

@@ -102,6 +102,7 @@ public sealed partial class State
             missionGroups[Py.L(g["id"])] = Ids(g["missions"]);
         foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
             lodgeNames[Py.L(loc["id"])] = [.. new[] { loc["name"], loc["define"] }.Where(Py.IsStr).Select(n => Normalise((string)n!)).Where(n => n.Length > 0)];
+        LoadDailyMissions(RuleOf);
     }
 
     static long[] Ids(JsonNode? n) => [.. Arr(n).Where(x => TryKey(x, out _)).Select(Py.L).Distinct()];
@@ -281,7 +282,7 @@ public sealed partial class State
     void MissionEvent(Db con, JsonObject e, JsonArray updates)
     {
         var kind = Is(e["event"], 3) ? Kind.Harvest : Is(e["event"], 11) ? Kind.Spot : Is(e["event"], 12) ? Kind.Track : Is(e["event"], 101) ? Kind.Arrive : Kind.Other;
-        if (kind == Kind.Other || missions.Count == 0)
+        if (kind == Kind.Other || (missions.Count == 0 && dailies.Count == 0))
             return;
         EnsureMissions(con);
         long? animalSpecies = null, gender = null;
@@ -314,7 +315,7 @@ public sealed partial class State
     /// `Start at ...` objectives of the lodge are met. update 15 goes into `pending`.</summary>
     void MissionLaunch(Db con, long? lodge)
     {
-        if (missions.Count == 0)
+        if (missions.Count == 0 && dailies.Count == 0)
             return;
         EnsureMissions(con);
         foreach (var (id, (state, done)) in MissionRows(con))
@@ -324,30 +325,37 @@ public sealed partial class State
         Advance(con, Kind.Start, rule => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)));
     }
 
-    /// <summary>For each active mission, finish its first unfinished objective of this kind that `meets` accepts; an ordered objective only once every one
-    /// before it is finished.</summary>
+    /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (an ordered objective only once every one before it is finished):
+    /// its id is added to `done`, and it is returned; null when none is met.</summary>
+    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, bool> meets)
+    {
+        for (var i = 0; i < m.Objectives.Length; i++)
+        {
+            var o = m.Objectives[i];
+            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || !meets(o.Rule))
+                continue;
+            done.Add(o.Id);
+            return o;
+        }
+        return null;
+    }
+
+    /// <summary>For each active mission, finish its first unfinished objective of this kind that `meets` accepts; then the same for today's daily mission.</summary>
     void Advance(Db con, Kind kind, Func<Rule, bool> meets, Action<JsonObject> now)
     {
         foreach (var (id, (state, done)) in MissionRows(con))
         {
-            if (state != 2 || !missions.TryGetValue(id, out var m))
+            if (state != 2 || !missions.TryGetValue(id, out var m) || Meet(m, done, kind, meets) is not { } o)
                 continue;
-            for (var i = 0; i < m.Objectives.Length; i++)
+            if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
-                var o = m.Objectives[i];
-                if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || !meets(o.Rule))
-                    continue;
-                done.Add(o.Id);
-                if (m.Objectives.Any(x => !done.Contains(x.Id)))
-                {
-                    con.Exec("UPDATE missions SET objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(done)), m.Id);
-                    Toast(con, $"Mission \"{m.Title}\", objective \"{o.Title}\" completed.");
-                }
-                else
-                    Complete(con, m, now);
-                break;
+                con.Exec("UPDATE missions SET objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(done)), m.Id);
+                Toast(con, $"Mission \"{m.Title}\", objective \"{o.Title}\" completed.");
             }
+            else
+                Complete(con, m, now);
         }
+        DailyAdvance(con, kind, meets, now);
     }
 
     /// <summary>The last objective is finished: the mission is completed, its gm$ and em$ are paid (update 15 with the new balance, a wallet row each),

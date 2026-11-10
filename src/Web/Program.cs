@@ -70,9 +70,9 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the balances (status bar) are the account's (docs/website.md#sign-in); the wallet page and the bank are hidden (HostMode.Live)
     builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>())));
-    // the missions page is the account's too: the server's missions, their progress and the page's writes (the daily missions stay the mock's and are not served)
+    // the missions page is the account's too: the server's missions, their progress and the page's writes and the daily missions
     builder.Services.Replace(ServiceDescriptor.Scoped<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
-        new MockMissionsService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerMissionsService>>())));
+        sp.GetRequiredService<ILogger<ServerMissionsService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
