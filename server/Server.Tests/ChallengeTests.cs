@@ -16,7 +16,7 @@ public class ChallengeTests : StateTestBase
         (903, "KILL", "(e.animalCountWithFilters(c.species.TEST_HARE, same_shot=True) >= 2 or e.animalCountWithFilters(c.species.TEST_FOX, same_shot=True) >= 2) and a.wounds.state({c.state.FLYING, c.state.FLYING_NOT_SPOOKED})"),
         (904, "CONFIRMKILL", "a.ethical() and a.variant() == c.variant.TEST_HARE and a.range('maximum') >= 250000"),
         (905, "CONFIRMKILL", "a.ethical() and a.species() == c.species.TEST_FOX and e.animalCount(300) >= 2"),
-        (906, "SHOT_HIT", "a.wounds.count() >= 3 and a.wounds.ammo({TEST_ARROW_A, c.item.TEST_ARROW_B})"),
+        (906, "SHOT_HIT", "a.wounds.count() >= 3 and a.wounds.ammo(set([c.item.TEST_ARROW_A, c.item.TEST_ARROW_B]))"),
         (907, "CLUE", "e.trackType() == c.clue.BLOODTRAIL and e.individualCount() >= 3"),
         (908, "COLLECTABLE", "e.collectableCountWithFilters(collectable_category=c.collectableCategory.TEST_FUNGUS) >= 2"),
         (909, "CONFIRMKILL", "a.wounds.weapon({c.item.TEST_BOW}) and a.wounds.scope(False) and a.range('minimum') >= 150000 and a.wounds.organ([c.organ.HEART]) and not a.wounds.scope(True)"),
@@ -26,6 +26,7 @@ public class ChallengeTests : StateTestBase
         (913, "KILL", "True or a.nothing()"),  // a call that is not known: the objective is left out, though `True` would end it
     ];
 
+    const long P = 8;
     const double T0 = 1_800_000_000;  // 2027-01-15 08:00 UTC
     double now = T0;
 
@@ -59,17 +60,19 @@ public class ChallengeTests : StateTestBase
     public ChallengeTests()
     {
         state = New("state.db");
+        state.CreateAccount(P, "player");  // the recorded player's own account is never shown: a public read needs another one
         Scoring.StaticHost = "static.test";
         Scoring.OwnLogo = "testlogo";
         Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
     }
 
-    static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);
-
-    JsonObject Rows(long account = ME, string? userId = null) => (JsonObject)Reply(state.ChallengesReply(account, Q($"user_id={userId ?? account.ToString()}"))!);
+    JsonObject Rows(long account = P) => (JsonObject)Reply(state.ChallengesReply(account.ToString()));
 
     /// <summary>The ids of the account's completed challenges.</summary>
-    string Done(long account = ME) => string.Join(",", Rows(account).Select(kv => kv.Key).Order(StringComparer.Ordinal));
+    string Done(long account = P) => string.Join(",", Rows(account).Select(kv => kv.Key).Order(StringComparer.Ordinal));
+
+    /// <summary>A heartbeat of the player with these events; its updates.</summary>
+    new JsonArray Hb(params JsonNode[] events) => Reply(state.HeartbeatReply(P, Events(events)))["updates"]!.AsArray();
 
     static string Kinds(JsonArray updates) => string.Join(",", updates.Select(u => (long)u!["update"]!));
 
@@ -91,24 +94,24 @@ public class ChallengeTests : StateTestBase
     public void TestWithoutDefinitionsOrOnALocalServerNothingIsTracked()
     {
         var none = new State(Path.Combine(tmp, "none.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
-        Eq("{}", Reply(none.ChallengesReply(ME, Q($"user_id={ME}"))!));
-        none.HeartbeatReply(ME, Events(Spawn(1, 2, 2), Death(1)));
-        Eq("{}", Reply(none.ChallengesReply(ME, Q($"user_id={ME}"))!));
-        Assert.Null(New("local.db", offline: true).ChallengesReply(ME, Q($"user_id={ME}")));
+        none.CreateAccount(P, "player");
+        Eq("{}", Reply(none.ChallengesReply(P.ToString())));
+        none.HeartbeatReply(P, Events(Spawn(1, 2, 2), Death(1)));
+        Eq("{}", Reply(none.ChallengesReply(P.ToString())));
     }
 
     [Fact]
     public void TestAKillOfAnAlbinoCompletesTheChallengeWithABadgeAndNoPay()
     {
         Assert.Equal("", Done());
-        var (gm, em) = (state.Wallet(ME)["gm"]!.GetValue<double>(), state.Wallet(ME)["em"]!.GetValue<double>());
+        var (gm, em) = (state.Wallet(P)["gm"]!.GetValue<double>(), state.Wallet(P)["em"]!.GetValue<double>());
         Hb(Spawn(1, 2, texture: 1), Death(1));  // a common one
         Assert.Equal("", Done());
         Assert.Empty(Hb());
         Assert.Empty(Hb(Spawn(2, 2, texture: 2), Death(2)));  // nothing is paid: no update 15
         Assert.Equal("901", Done());
         var row = Rows()["901"]!;
-        Eq($$"""[901, {{ME}}, 1, "2027-01-15", "{{901.ToString("x32")}}"]""", T(row["challenge_id"], row["user_id"], row["completed"], row["challenge_date"], row["objectives_hash"]));
+        Eq($$"""[901, {{P}}, 1, "2027-01-15", "{{901.ToString("x32")}}"]""", T(row["challenge_id"], row["user_id"], row["completed"], row["challenge_date"], row["objectives_hash"]));
         Assert.True((long)row["id"]! > 0);
         var objectives = JsonNode.Parse((string)row["objectives"]!)!.AsArray();
         Eq("""{"id": 1, "conditions": "a.texture() == c.texture.ALBINO", "title": "Goal 901", "update_message": "Goal 901 done", "completed": true}""", objectives[0]!["objective_data"]);
@@ -118,8 +121,8 @@ public class ChallengeTests : StateTestBase
         Assert.Equal("Challenge: Test 901 completed", (string)toasts[0]!["text"]!);
         Eq("[100, -1, 4294967040]", T(toasts[0]!["type"], toasts[0]!["timer"], toasts[0]!["colour"]));
         Assert.Empty(Hb());
-        Eq($"[{gm}, {em}]", T(state.Wallet(ME)["gm"], state.Wallet(ME)["em"]));
-        Assert.Empty(state.WalletPage(ME, "gm", 0));
+        Eq($"[{gm}, {em}]", T(state.Wallet(P)["gm"], state.Wallet(P)["em"]));
+        Assert.Empty(state.WalletPage(P, "gm", 0));
         // a completed challenge stays: another kill changes neither the row nor the announcements
         var before = Rows();
         Hb(Spawn(3, 17, texture: 2), Death(3));
@@ -235,24 +238,25 @@ public class ChallengeTests : StateTestBase
     }
 
     [Fact]
-    public void TestAnyAccountsChallengesAreReadAndAnUnknownOneHasNone()
+    public void TestAnyAccountsChallengesAreReadAndAnUnknownBannedOrRecordedOneHasNone()
     {
-        state.CreateAccount(8, "other");
-        state.HeartbeatReply(8, Events(Spawn(1, 2, texture: 2), Death(1)));
-        Assert.Equal("901", Done(8));
-        Assert.Equal("", Done());
-        Assert.Equal("901", string.Join(",", Rows(ME, "8").Select(kv => kv.Key)));  // read through another account's token
-        Assert.Equal(8, (long)Rows(ME, "8")["901"]!["user_id"]!);
-        Assert.Null(state.ChallengesReply(ME, Q("user_id=999")));  // the empty reply of the replay stands
-        Assert.Null(state.ChallengesReply(ME, Q("")));
+        state.CreateAccount(9, "other");
+        Hb(Spawn(1, 2, texture: 2), Death(1));
+        Assert.Equal("901", Done(P));
+        Assert.Equal("", Done(9));
+        Assert.Equal(P, (long)Rows(P)["901"]!["user_id"]!);
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", P);
+        foreach (var none in new[] { "999", "", "x", ME.ToString(), P.ToString() })  // none, no number, the recorded player's, banned
+            Eq("{}", Reply(state.ChallengesReply(none)));
     }
 
     // ---- restored rows
 
     const string Saved = """
-        {"901": {"id": 5, "user_id": 1001, "challenge_id": 901, "objectives": "[{\"objective_data\": {\"id\": 1, \"completed\": true}, \"event_type\": \"KILL\"}]", "objectives_hash": "oldhash", "completed": true, "challenge_date": "2025-04-25"},
+        {"901": {"id": 5, "user_id": 1001, "challenge_id": 901, "objectives": "[{\"objective_data\": {\"id\": 1, \"completed\": true}, \"event_type\": \"KILL\"}]", "objectives_hash": "oldhash", "completed": true, "challenge_date": "2024-02-03"},
          "902": {"id": 6, "user_id": 1001, "challenge_id": 902, "objectives": "[]", "objectives_hash": "oldhash", "completed": 0, "challenge_date": null},
-         "903": {"id": 7, "user_id": 1001, "challenge_id": 903, "objectives": 5, "objectives_hash": null, "completed": 1, "challenge_date": 20250425},
+         "903": {"id": 7, "user_id": 1001, "challenge_id": 903, "objectives": 5, "objectives_hash": null, "completed": 1, "challenge_date": 20240203},
          "x": {"completed": 1}, "904": 7}
         """;
 
@@ -263,7 +267,7 @@ public class ChallengeTests : StateTestBase
         var account = Restorer.Import(state, saved.Write(tmp, "a.zip"), null, tmp).Account;
         Assert.Equal("901,903", Done(account));  // completed as true or 1; 902 was not, x is no challenge, 904 is no row
         var row = Rows(account)["901"]!;
-        Eq("""[1, "oldhash", "2025-04-25"]""", T(row["completed"], row["objectives_hash"], row["challenge_date"]));
+        Eq("""[1, "oldhash", "2024-02-03"]""", T(row["completed"], row["objectives_hash"], row["challenge_date"]));
         Eq("""[{"objective_data": {"id": 1, "completed": true}, "event_type": "KILL"}]""", JsonNode.Parse((string)row["objectives"]!));
         Eq("""["[]", "", null]""", T(Rows(account)["903"]!["objectives"], Rows(account)["903"]!["objectives_hash"], Rows(account)["903"]!["challenge_date"]));  // what is no text is kept as none
         // it stays completed: the same kill announces nothing and changes nothing
@@ -294,7 +298,7 @@ public class ChallengeTests : StateTestBase
             using var con = migrated.Open(account);
             return string.Join(";", con.Rows("SELECT challenge_id, objectives_hash, challenge_date FROM challenges WHERE account_id = $a ORDER BY challenge_id").Select(r => string.Join("|", r)));
         }
-        Assert.Equal("901|oldhash|2025-04-25;903||", Rows(5));
+        Assert.Equal("901|oldhash|2024-02-03;903||", Rows(5));
         Assert.Equal("", Rows(6));  // a file that is not an object
         using var check = migrated.Open(5);
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
@@ -307,31 +311,39 @@ public class ChallengeApiTests : StateTestBase, IAsyncLifetime
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
     Loopback server = null!;
-    string token = "";
 
     public async ValueTask InitializeAsync()
     {
         var list = JsonNode.Parse("""[{"id": 901, "update_message": "Challenge: Test completed", "objectives_hash": "h", "objectives": "[{\"objective_data\": {\"id\": 1, \"conditions\": \"a.texture() == c.texture.ALBINO\"}, \"event_type\": \"KILL\"}]"}]""")!.AsArray();
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, challenges: list);
-        token = state.Store.CreateToken(ME);
+        state.CreateAccount(8, "player");
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
 
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
-    async Task<JsonNode?> Post(string body)
+    async Task<JsonNode?> Call(string method, string body) => method == "GET"
+        ? JsonNode.Parse((await server.SendAsync("GET", "api.test", $"{Replay.USER_CHALLENGES}?{body}", [], [])).Body)
+        : JsonNode.Parse((await server.SendAsync("POST", "api.test", Replay.USER_CHALLENGES, [("Content-Type", "application/x-www-form-urlencoded")], Encoding.ASCII.GetBytes(body))).Body);
+
+    [Theory]
+    [InlineData("POST")]
+    [InlineData("GET")]
+    public async Task TestTheCallAnswersFromTheAccountsRowsWithoutATokenAndAnUnknownUserGetsAnEmptyReply(string method)
     {
-        var reply = await server.SendAsync("POST", "api.test", Replay.USER_CHALLENGES, [("Content-Type", "application/x-www-form-urlencoded")], Encoding.ASCII.GetBytes($"{body}&oauth_access_token={token}"));
-        return JsonNode.Parse(reply.Body);
+        Eq("{}", await Call(method, "user_id=8"));
+        state.HeartbeatReply(8, Events(O("""{"event": 7, "individual": 1, "species": 1, "gender": 0, "weight_grams": 50000, "texture": 2}"""), O("""{"event": 2, "individual": 1, "animal_state": 3}""")));
+        var reply = (await Call(method, "user_id=8"))!;
+        Eq("""[901, 8, 1, "h"]""", T(reply["901"]!["challenge_id"], reply["901"]!["user_id"], reply["901"]!["completed"], reply["901"]!["objectives_hash"]));
+        Eq("{}", await Call(method, "user_id=999"));
     }
 
     [Fact]
-    public async Task TestTheCallAnswersFromTheAccountsRowsAndTheEmptyReplyStandsForAnUnknownUser()
+    public async Task TestALocalServerTracksNothingAndLeavesTheCallToItsRecordings()
     {
-        Eq("{}", await Post($"user_id={ME}"));
-        Hb(O("""{"event": 7, "individual": 1, "species": 1, "gender": 0, "weight_grams": 50000, "texture": 2}"""), O("""{"event": 2, "individual": 1, "animal_state": 3}"""));
-        var reply = (await Post($"user_id={ME}"))!;
-        Eq($$"""[901, {{ME}}, 1, "h"]""", T(reply["901"]!["challenge_id"], reply["901"]!["user_id"], reply["901"]!["completed"], reply["901"]!["objectives_hash"]));
-        Eq("{}", await Post("user_id=999"));
+        var local = new State(Path.Combine(tmp, "local.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        await using var other = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, local, tmp), tmp);
+        var reply = await other.SendAsync("POST", "api.test", Replay.USER_CHALLENGES, [("Content-Type", "application/x-www-form-urlencoded")], Encoding.ASCII.GetBytes("user_id=8"));
+        Assert.Null(JsonNode.Parse(reply.Body));  // a miss: no recording here
     }
 }

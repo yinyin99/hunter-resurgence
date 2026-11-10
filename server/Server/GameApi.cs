@@ -302,11 +302,14 @@ public static class GameApi
                    .WithName(name).WithSummary(summary).WithDescription(description)
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // challenges (community server only; a local server replays): any account's completed ones, from the challenges table
-            api.MapExactPost(game, USER_CHALLENGES, r => !s.Online ? null : Own(game, r, a => s.ChallengesReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+            Reply? userChallenges(Req r) => !s.Online ? null : new(200, JsonAnyOrigin(), s.ChallengesReply(FormValue(r, "user_id") ?? ""), "state");
+            api.MapExactPost(game, USER_CHALLENGES, userChallenges)
                .WithName("UserChallenges").WithSummary("A player's completed challenges")
-               .WithDescription("`{<challenge id>: {id, user_id, challenge_id, objectives, objectives_hash, completed, challenge_date}}` of the `user_id`, one entry for each challenge it completed "
-                                + "(the restored ones and those this server tracked from the hunt's events); a challenge never completed has no entry. Any account's here; the empty reply for an unknown or banned one.")
+               .WithDescription("`{<challenge id>: {id, user_id, challenge_id, objectives, objectives_hash, completed, challenge_date}}` of the `user_id` (form), one entry for each challenge it completed "
+                                + "(the restored ones and those this server tracked from the hunt's events); a challenge never completed has no entry. Any account's here, without a token; `{}` for an unknown or banned one.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            api.MapGet(USER_CHALLENGES, Handle(game, r => r.Method == "GET" && r.Path == USER_CHALLENGES ? userChallenges(r) : null)).WithName("UserChallengesGet")
+               .WithSummary("A player's completed challenges, read with GET and the `user_id` in the query").Produces(200, contentType: "application/json");
             // friends (community server only): the Friends table of the Store; a friend counts while both accounts exist here
             api.MapExactPost(game, ME_FRIENDS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MeFriendsReply(a), "state"), WithJsonToken(r)))
                .WithName("MeFriends").WithSummary("The account's friends, incoming requests and the user ids it asked")
