@@ -75,7 +75,7 @@ public static class ReplayScope
         Own("Gallery/delete", "false"),
         Own("Chat/get_message_settings", """{"receive_private_messages": 0}"""),
         Own("Chat/message", HandlerError),
-        Own("Launch/tutorial", HandlerError),  // the tutorial's tokens are the recorded player's: none is handed out
+        Own("Launch/tutorial", HandlerError),  // the launcher starts a tutorial with session/start_tutorial; this old path hands out no tokens
         Own("Wallet/(bank_transactions|silver_transactions|transactions)", "[]"),
         Own("Wallet/spent", """{"spent": 0.0, "silver_spent": 0.0}"""),
         Own("Mission/missions", """{"active": [], "completed": [], "available": [], "states": {}}"""),  // missions are the operator's to decide: none yet
