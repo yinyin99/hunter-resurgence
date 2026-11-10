@@ -61,8 +61,8 @@ public sealed record ServerDailyDay(int Number, int Stars, int Gms);
 public sealed record ServerDailyMission(string Title, string Desc, string[] Objectives, string Reserve, string[] Rewards, bool Done);
 
 /// <summary>The daily missions page: <c>Today</c> is the number of today's day, <c>EndsIn</c> the seconds until the day ends, <c>Frozen</c> true until the player activates the streak;
-/// <c>Missions</c> are in the order of <c>Days</c>.</summary>
-public sealed record ServerDaily(int Today, [property: System.Text.Json.Serialization.JsonPropertyName("ends_in")] int EndsIn, bool Frozen, ServerDailyDay[] Days, ServerDailyMission[] Missions);
+/// <c>Missions</c> are in the order of <c>Days</c>; <c>Broken</c> is true when the frozen streak was broken.</summary>
+public sealed record ServerDaily(int Today, [property: System.Text.Json.Serialization.JsonPropertyName("ends_in")] int EndsIn, bool Frozen, bool Broken, ServerDailyDay[] Days, ServerDailyMission[] Missions);
 
 public sealed record ServerMissions(ServerMission[] Missions, ServerMissionGroup[] Groups, int Completed,
     [property: System.Text.Json.Serialization.JsonPropertyName("auto_mission_activate")] bool Auto,

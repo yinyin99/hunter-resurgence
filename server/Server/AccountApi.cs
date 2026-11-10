@@ -265,7 +265,7 @@ public static class AccountApi
                 ? Refuse(401, "signed_out", "Sign in first.")
                 : state.WebDaily(account) is { } daily ? Json(200, daily) : Refuse(404, "invalid", "This server has no daily missions."))
             .WithName("AccountDailyMissions").WithSummary("The player's own daily missions page")
-            .WithDescription("`{today, ends_in, frozen, days: [{number, stars, gms}], missions: [{title, desc, objectives, reserve, rewards, done}]}`: the 7 days of the streak's block and the mission of each (empty for a day "
+            .WithDescription("`{today, ends_in, frozen, broken, days: [{number, stars, gms}], missions: [{title, desc, objectives, reserve, rewards, done}]}`: the 7 days of the streak's block and the mission of each (empty for a day "
                              + "without one); 404 `invalid` when the server has no daily missions.")
             .Produces(200, contentType: "application/json");
 

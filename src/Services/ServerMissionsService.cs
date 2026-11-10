@@ -49,7 +49,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
     {
         if (await GetAsync<ServerDaily>(ServerAccountApi.DailyMissions) is not { Days: not null, Missions: not null } s) return new(1, [], [], 60, null);
         return new(s.Today, [.. s.Days.Select(d => new DailyDay(d.Number, d.Stars, d.Gms))],
-            [.. s.Missions.Select((m, i) => new DailyMission(m.Title, m.Desc, m.Objectives, m.Reserve, m.Rewards, s.Frozen && i == s.Today - 1, m.Done))], s.EndsIn, null);
+            [.. s.Missions.Select((m, i) => new DailyMission(m.Title, m.Desc, m.Objectives, m.Reserve, m.Rewards, s.Frozen && i == s.Today - 1, m.Done))], s.EndsIn, null, s.Broken);
     }
 
     public Task<Result> ResumeStreakAsync() => Task.FromResult(Result.Fail("Mis.Failed"));

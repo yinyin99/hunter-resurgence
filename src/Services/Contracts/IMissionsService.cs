@@ -21,7 +21,8 @@ public sealed record ResumeItem(int Id, string Name, int Owned);
 /// <param name="Missions">The mission of each day, in the order of <paramref name="Days"/>.</param>
 /// <param name="EndsIn">Seconds until the day ends; the page is read again at 0.</param>
 /// <param name="Resume">Null when the player has no resume item to offer (the frozen streak then shows only ACTIVATE).</param>
-public sealed record DailyCalendar(int Today, IReadOnlyList<DailyDay> Days, IReadOnlyList<DailyMission> Missions, int EndsIn, ResumeItem? Resume);
+/// <param name="Broken">The frozen streak was broken (a new player's was never started): the page says so.</param>
+public sealed record DailyCalendar(int Today, IReadOnlyList<DailyDay> Days, IReadOnlyList<DailyMission> Missions, int EndsIn, ResumeItem? Resume, bool Broken = true);
 
 public interface IMissionsService
 {

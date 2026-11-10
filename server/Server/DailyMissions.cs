@@ -255,7 +255,7 @@ public sealed partial class State
         };
     }
 
-    /// <summary>The website's daily missions page (GET /account/missions/daily): `today` (the day number), `ends_in` (seconds until the UTC day ends), `frozen`, `days`
+    /// <summary>The website's daily missions page (GET /account/missions/daily): `today` (the day number), `ends_in` (seconds until the UTC day ends), `frozen`, `broken` (the frozen streak was broken), `days`
     /// (`number`, `stars` the difficulty id, `gms`) and `missions` in the order of the days (`title`, `desc`, `objectives` titles, `reserve`, `rewards` texts, `done`; empty
     /// for a day without a mission). Null when the server has no daily missions.</summary>
     public JsonObject? WebDaily(long account)
@@ -267,7 +267,7 @@ public sealed partial class State
         var objectives = today["objectives"] is { } text ? JsonNode.Parse((string)text!)!.AsArray().OfType<JsonObject>().ToList() : [];
         return new JsonObject
         {
-            ["today"] = today["day_number"]!.DeepClone(), ["ends_in"] = Math.Max(0, (long)(Py.D(c["mission_end"]) + 1 - Clock())), ["frozen"] = Py.Truthy(c["is_frozen"]),
+            ["today"] = today["day_number"]!.DeepClone(), ["ends_in"] = Math.Max(0, (long)(Py.D(c["mission_end"]) + 1 - Clock())), ["frozen"] = Py.Truthy(c["is_frozen"]), ["broken"] = Py.Truthy(c["broken_streak_info"]!["has_broken_streak"]),
             ["days"] = new JsonArray([.. days.Select(d => (JsonNode?)new JsonObject
             {
                 ["number"] = d["day_number"]!.DeepClone(), ["stars"] = d["difficulty"]!["id"]!.DeepClone(), ["gms"] = d["rewards"]![0]!["amount"]!.DeepClone(),

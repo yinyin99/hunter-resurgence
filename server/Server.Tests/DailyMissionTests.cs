@@ -330,7 +330,7 @@ public class DailyMissionTests : StateTestBase
 
         async Task<JsonNode> Page() => JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions/daily", [cookie])).Body)!;
         var page = await Page();
-        Eq("[1, 43200, true]", T(page["today"], page["ends_in"], page["frozen"]));
+        Eq("[1, 43200, true, false]", T(page["today"], page["ends_in"], page["frozen"], page["broken"]));
         Eq("[[1, 1, 100], [2, 1, 100], [3, 1, 100], [4, 2, 500], [5, 1, 100], [6, 1, 100], [7, 1, 100]]",
            new JsonArray(page["days"]!.AsArray().Select(d => (JsonNode?)new JsonArray((long)d!["number"]!, (long)d["stars"]!, (long)d["gms"]!)).ToArray()));
         var missions = page["missions"]!.AsArray();
