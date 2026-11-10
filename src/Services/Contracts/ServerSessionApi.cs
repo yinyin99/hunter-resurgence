@@ -24,6 +24,8 @@ public static class ServerSessionApi
     public const string RanksSuffix = "/ranks";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
     public const string FriendsSuffix = "/friends";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. Public: no cookie needed.</summary>
+    public const string BestSuffix = "/best";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. Public: no cookie needed.</summary>
     public const string HuntsSuffix = "/hunts";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. Public: no cookie needed.</summary>
@@ -96,6 +98,12 @@ public sealed record ServerFriendsPage(int Page, int Pages, int Total, ServerFri
 
 public sealed record ServerFriendRow(string Handle, int Hunterscore);
 
+/// <summary>A hunter's all-time personal bests of <see cref="ServerSessionApi.BestSuffix"/>, one row per species.</summary>
+public sealed record ServerBest(ServerBestRow[] Rows);
+
+/// <param name="Range">In metres.</param>
+/// <param name="Ts">When the kill was made, Unix seconds.</param>
+public sealed record ServerBestRow(string Species, double Score, double Range, string Weapon, long Ts, long Kill);
 /// <summary>One page of a hunter's gallery of <see cref="ServerSessionApi.GallerySuffix"/>: <c>Label</c> is the score of the kill the photo shows ("" without one).</summary>
 public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPhoto[] Rows);
 

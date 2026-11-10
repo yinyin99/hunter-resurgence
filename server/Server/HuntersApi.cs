@@ -99,6 +99,14 @@ public static class HuntersApi
                              + "have an earn time, `unlocked` counts them all, `recent` the last ten by earn time (`date` UTC, yyyy-MM-dd); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/best", (string handle) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicBest(id))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterBest").WithSummary("A hunter's all-time personal bests, one per species")
+            .WithDescription("`{rows: [{species, score, range, weapon, ts, kill}]}`, one per species with a best score: the restored bests (`Leaderboard/personal`, season 0) and this server's scored kills where they beat them; "
+                             + "`range` in metres, `ts` Unix seconds, `weapon` the item's name (\"\" when unknown); 404 for a handle that is unknown or banned.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
                 ? Json(200, state.PublicFriends(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
