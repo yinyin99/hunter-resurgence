@@ -18,10 +18,13 @@ public sealed record Limits(int Entries = 100_000, long TotalBytes = 1L << 30, i
 /// <summary>A saved JSON reply that passed the checks. Endpoint: from the manifest, else mapped back from the file name ("" when unknown).</summary>
 sealed record SavedFile(string Path, string Endpoint, IReadOnlyDictionary<string, string> Params, int? Status, JsonNode? Json);
 
-sealed record BackupContent(JsonObject Manifest, string Uid, int Format, IReadOnlyList<SavedFile> Files, int OtherFiles,
+/// <summary>A saved file that is no JSON reply (a picture, a score sheet page) and passed the checks: Path as the manifest lists it, Entry its name in the zip. The bytes stay in the zip: the server reads them when it stores them.</summary>
+public sealed record MediaFile(string Path, string Entry);
+
+sealed record BackupContent(JsonObject Manifest, string Uid, int Format, IReadOnlyList<SavedFile> Files, IReadOnlyList<MediaFile> Media,
     IReadOnlyList<string> Failed, IReadOnlyList<string> Rejected, IReadOnlyList<string> Missing);
 
-/// <summary>Reads a backup zip once, in memory (nothing is extracted), and checks it in this order: caps and entry names, manifest, uid, claim key,
+/// <summary>Reads a backup zip once, in memory (nothing is extracted; the pictures are checked and their names kept), and checks it in this order: caps and entry names, manifest, uid, claim key,
 /// then each listed file's SHA-256. A bad file is rejected and reported; a bad zip throws <see cref="RestoreException"/>.</summary>
 static class BackupReader
 {
@@ -123,7 +126,7 @@ static class BackupReader
         var files = new List<SavedFile>();
         var listed = new HashSet<string>(StringComparer.Ordinal) { mEntry.FullName, kEntry.FullName };
         var byName = entries.GroupBy(e => e.FullName, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-        int other = 0;
+        var media = new List<MediaFile>();
         foreach (var fe in (m["files"] as JsonArray ?? []).OfType<JsonObject>().OrderBy(x => Text(x["path"]), StringComparer.Ordinal))
         {
             if (Text(fe["path"]) is not { Length: > 0 } path) continue;
@@ -138,7 +141,7 @@ static class BackupReader
             if (json && (jsonTotal += bytes.Length) > lim.JsonTotalBytes) throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
             if (!Convert.ToHexStringLower(h.GetHashAndReset()).Equals(sha, StringComparison.OrdinalIgnoreCase)) { rejected.Add($"{path}: sha256 does not match the manifest"); continue; }
             if (fe["derived"] is JsonValue d && d.TryGetValue<bool>(out var isDerived) && isDerived) continue; // made by the tool: the raw replies decide
-            if (!json) { other++; continue; }
+            if (!json) { media.Add(new(path, ze.FullName)); continue; }
             JsonNode? node;
             try { node = JsonNode.Parse(bytes, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false }); }
             catch (JsonException) { rejected.Add($"{path}: not JSON, nested deeper than {lim.JsonDepth} or with a duplicate key"); continue; }
@@ -149,7 +152,7 @@ static class BackupReader
         }
         foreach (var e in entries.Where(e => !listed.Contains(e.FullName)).OrderBy(e => e.FullName, StringComparer.Ordinal))
             rejected.Add($"{e.FullName}: not listed in the manifest");
-        return new(m, uid, format, files, other, failed, rejected, missing);
+        return new(m, uid, format, files, media, failed, rejected, missing);
     }
 
     /// <summary>Zip-slip: no "..", no rooted path, no drive letter, no backslash.</summary>

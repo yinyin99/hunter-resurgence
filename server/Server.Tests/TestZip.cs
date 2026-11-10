@@ -24,6 +24,42 @@ sealed class TestZip
         return this;
     }
 
+    readonly List<(string Path, byte[] Body)> media = [];
+
+    /// <summary>A saved picture or page (no JSON reply), listed in the manifest with its hash.</summary>
+    public TestZip Media(string path, byte[] body)
+    {
+        media.Add((path, body));
+        return this;
+    }
+
+    /// <summary>A few bytes that start like a JPEG: a made-up picture.</summary>
+    public static byte[] Jpeg(string tag) => [0xff, 0xd8, 0xff, 0xe0, .. Encoding.ASCII.GetBytes(tag)];
+
+    /// <summary>The saved `Gallery/list` page of the account: the entries as JSON, newest first.</summary>
+    public TestZip Gallery(string photos) =>
+        Reply($"Gallery_list__user_id={Uid}__offset=0__limit=24.json", "/v1/Gallery/list", $$"""{"total":3,"photos":{{photos}}}""", ("user_id", Uid), ("offset", "0"), ("limit", "24"));
+
+    /// <summary>Gallery pictures a and b (b with its kill's score and species) and c whose picture is not in the zip; a hunt of two kills, the first with its photo and its score sheet page, the second with neither;
+    /// an avatar. Every link is a made-up one.</summary>
+    public TestZip Pictures() =>
+        Gallery("""
+                [{"id":53,"type":2,"url":"https://photos.example/p/c.jpg","thumbnail":"https://photos.example/p/c-t.jpg","label":"","animal":""},
+                 {"id":52,"type":2,"url":"https://photos.example/p/b.jpg","thumbnail":"https://photos.example/p/b-t.jpg","label":"120.5","animal":"Test Deer"},
+                 {"id":51,"type":3,"url":"https://photos.example/p/a.jpg","thumbnail":"https://photos.example/p/a-t.jpg","label":"","animal":""}]
+                """)
+        .Reply($"Public_user_expedition__user_id={Uid}__expedition_id=9100.json", "/v1/Public_user/expedition", """
+            {"stats":null,
+             "kills":[{"id":777,"speciesName":"Test Deer","weight":64350,"gender":0,"texture":0,
+                       "kill":{"score":120.5,"confirmTs":1700000500,"photo":"https://photos.example/k/777.jpg","pos":{"x":10,"y":2,"z":30},"wound_time":1.5,"trophy_integrity":87.5},
+                       "hits":[{"distance":82000,"weapon_id":5,"ammo_id":10,"organ":1}],"expedition":[{"id":9100,"reserve":2}]},
+                      {"id":778,"speciesName":"Test Deer","weight":50000,"kill":{"score":80,"confirmTs":1700000600,"photo":"https://photos.example/k/778.jpg"},"hits":[]}],
+             "expedition":{"id":9100,"reserve":2,"location_id":101,"start_ts":1700000100,"end_ts":1700003700}}
+            """, ("user_id", Uid), ("expedition_id", "9100"))
+        .Media("photos/photos.example_p_a.jpg", Jpeg("a")).Media("photos/photos.example_p_b.jpg", Jpeg("b"))
+        .Media("kills/photos.example_k_777.jpg", Jpeg("kill")).Media("kills/score_777.html", "<div>saved sheet</div>"u8.ToArray())
+        .Media("images/avatars.example_a_1.png", [0x89, 0x50, 0x4e, 0x47, 1]);
+
     public static string Zeros(int n, string v) => string.Join(',', Enumerable.Repeat(v, n));
 
     /// <summary>My-account zip: the profile (with an e-mail, a name and an address that must not be stored), a wallet, items
@@ -76,7 +112,7 @@ sealed class TestZip
             {
                 ["path"] = f.Path, ["endpoint"] = f.Endpoint, ["params"] = new JsonObject([.. f.Params.Select(p => KeyValuePair.Create(p.Key, (JsonNode?)p.Value))]),
                 ["status"] = 200, ["sha256"] = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(f.Json))),
-            })]),
+            }).Concat(media.Select(m => (JsonNode?)new JsonObject { ["path"] = m.Path, ["status"] = 200, ["sha256"] = Convert.ToHexStringLower(SHA256.HashData(m.Body)) }))]),
         };
         if (own)
         {
@@ -94,6 +130,8 @@ sealed class TestZip
         Put("claim.key", key);
         foreach (var f in files)
             Put(f.Path, Encoding.UTF8.GetBytes(f.Json));
+        foreach (var m in media)
+            Put(m.Path, m.Body);
         return path;
     }
 }
