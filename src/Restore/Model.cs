@@ -66,8 +66,8 @@ public sealed record Report(string Mode, IReadOnlyList<string> Restored, IReadOn
     }
 }
 
-/// <summary>Restore result: the model and the report. The same zip always gives the same of both.</summary>
-public sealed record Restored(PlayerModel Model, Report Report);
+/// <summary>Restore result: the model, the report and the saved pictures and score pages (<see cref="MediaFile"/>, by path in the zip; the zip holds their bytes). The same zip always gives the same of all three.</summary>
+public sealed record Restored(PlayerModel Model, Report Report, IReadOnlyList<MediaFile> Media);
 
 /// <summary>The zip is refused as a whole; the message says why.</summary>
 public sealed class RestoreException(string message) : Exception(message);

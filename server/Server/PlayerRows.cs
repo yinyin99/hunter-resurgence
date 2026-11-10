@@ -71,6 +71,12 @@ public static class PlayerRows
         return hit.Select(p => JsonNode.Parse(p.Body)).FirstOrDefault();
     }
 
+    /// <summary>The kill `killId` as a saved hunt (`Public_user/expedition`) lists it; null when no saved hunt has it.</summary>
+    public static JsonObject? RestoredKill(Db con, long killId) =>
+        con.Rows("SELECT body FROM extras WHERE account_id = $a AND path LIKE 'Public!_user!_expedition%' ESCAPE '!'")
+            .Select(r => (JsonNode.Parse((string)r[0]) as JsonObject)?["kills"] as JsonArray).OfType<JsonArray>().SelectMany(k => k).OfType<JsonObject>()
+            .FirstOrDefault(k => Py.IsNum(k["id"]) && Py.L(k["id"]) == killId);
+
     /// <summary>One row per restore of a zip (its SHA-256, hex), kept when the profile rows are replaced.</summary>
     public static void AddAudit(Db con, string zipSha256, string mode, string report) =>
         con.Exec("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, ?, ?, ?, ?)",

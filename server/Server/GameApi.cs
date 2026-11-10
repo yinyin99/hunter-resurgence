@@ -362,8 +362,11 @@ public static class GameApi
                         return null;
                     var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
-                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) && s.PublicAccount(handle) is { } account
-                        ? s.ScorePageReply(account, kid) : null;
+                    if (!Py.IsDigit(killId) || !long.TryParse(killId, out var kid) || s.PublicAccount(handle) is not { } account)
+                        return null;
+                    if (s.SavedScorePage(account, kid) is { } saved)  // a restored kill's page comes from a backup zip: nothing in it may run on this host
+                        return new(200, [("Content-Type", "text/html"), ("Content-Security-Policy", "sandbox")], saved, "state");
+                    var page = s.ScorePageReply(account, kid);
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
                .WithName("ScorePage").WithSummary("Kill details page of a server kill")

@@ -581,7 +581,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestDeletingRemovesTheAccountAndEverythingOfIt()
     {
-        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(), "mine.zip", player, cookie)).Kind);
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie)).Kind);
+        Assert.Equal(5, Directory.GetFiles(Path.Combine(tmp, "photos", "1001")).Length);  // the pictures went to the adopted user id's folder
         var (other, otherCookie) = SignedIn("other", "76561190000000002");
         var token = state.Store.CreateToken(1001, TimeSpan.FromHours(1));
         Directory.CreateDirectory(Path.Combine(tmp, "photos", "1001"));

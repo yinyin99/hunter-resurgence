@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 8;
+    public const int Version = 9;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -112,7 +112,8 @@ public sealed class Store
         CREATE INDEX pending_account ON pending (account_id, id);
         CREATE TABLE photos (
             id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT,
-            spawn INTEGER);  -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
+            spawn INTEGER,   -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
+            saved TEXT);     -- a picture a restore unpacked: JSON with the label and animal of its saved gallery entry; NULL for a photo taken here
         CREATE INDEX photos_account ON photos (account_id);
         CREATE TABLE messages (   -- account_id is the recipient
             id INTEGER PRIMARY KEY, {A}, sender INTEGER NOT NULL, content TEXT NOT NULL, ts INTEGER NOT NULL,
@@ -197,6 +198,7 @@ public sealed class Store
                            + " AND (SELECT COUNT(*) FROM events f WHERE f.account_id = e.account_id AND f.event = 4 AND f.id < e.id)"
                            + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
             }
+            if (version < 9) con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
