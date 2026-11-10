@@ -307,7 +307,8 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Begin();
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=0.json",
-                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}]}"""));  // the last row is odd: a backup holds whatever the player sent
+                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}, {"specie": {"x": 1}, "score": {"score": "NaN", "distance": "Infinity"} }]}"""));
+            PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=1.json", JsonNode.Parse("[1]"));  // a reply that is no object: a backup holds whatever the player sent, like the last row above
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=3.json", O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(1, "1.0000", 1)}}, "distance": {{Best(1, "1.0000", 1)}}}]}"""));
             con.Commit();
         }
@@ -316,6 +317,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("\"60.0000\"", before["data"]![0]!["score"]!["score"]);
         Eq("\"1.0000\"", (await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=3"))["data"]![0]!["score"]!["score"]);
         Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=2"));
+        Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=1"));
 
         state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
         state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 50000)));  // a kill 96.14 m away with the rifle 5

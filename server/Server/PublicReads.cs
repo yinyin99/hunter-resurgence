@@ -202,7 +202,7 @@ public sealed partial class State
         };
     }
 
-    static double Num(JsonNode? n) => n is JsonValue v && double.TryParse(v.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : 0;
+    static double Num(JsonNode? n) => n is JsonValue v && double.TryParse(v.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : 0;
 
     /// <summary>`Leaderboard/personal` of an account for a season: `{status: "done", data: [{specie, score, distance}]}`, one row per species whose `score` and `distance`
     /// are the record kills (`{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score` as text, `species}`). A season is the restored reply as saved
@@ -214,7 +214,7 @@ public sealed partial class State
             .Where(r => Regex.Match((string)r[0], @"__season_no=(\d+)\.json$") is { Success: true } m && m.Groups[1].Value == season.ToString(System.Globalization.CultureInfo.InvariantCulture))
             .Select(r => JsonNode.Parse((string)r[1])).FirstOrDefault();
         var data = new JsonArray();
-        foreach (var row in (saved?["data"] as JsonArray ?? []).OfType<JsonObject>())
+        foreach (var row in ((saved as JsonObject)?["data"] as JsonArray ?? []).OfType<JsonObject>())
             data.Add(row.DeepClone());
         if (season == 0)
             // ponytail: every view reads the hit events of each scored kill (a scan of the account's events each); store the last hit on the harvest when that gets slow
@@ -267,7 +267,7 @@ public sealed partial class State
             all = PersonalBest(con, 0);
         return new JsonObject
         {
-            ["rows"] = new JsonArray([.. all["data"]!.AsArray().OfType<JsonObject>().Where(r => r["score"] is JsonObject).Select(r =>
+            ["rows"] = new JsonArray([.. all["data"]!.AsArray().OfType<JsonObject>().Where(r => r["score"] is JsonObject && Py.IsNum(r["specie"])).Select(r =>
             {
                 var s = r["score"]!;
                 return (JsonNode?)new JsonObject
