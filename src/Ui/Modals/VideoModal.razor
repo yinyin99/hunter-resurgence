@@ -2,7 +2,10 @@
 
 <div class="video" role="dialog" aria-modal="true" tabindex="0" @onkeydown="Key" @ref="box">
     <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
-    <div class="frame"><AssetSlot Name="@(Index < Slots.Count ? Slots[Index] : Slot)" Width="900" Height="506" /></div>
+    <div class="frame">
+        @if (Index < Urls.Count) { <img class="asset-slot has-image" src="@Urls[Index]" style="width:900px;height:506px" width="900" height="506" alt="" /> }
+        else { <AssetSlot Name="@(Index < Slots.Count ? Slots[Index] : Slot)" Width="900" Height="506" /> }
+    </div>
     @if (Titles.Count > 1)
     {
         <button type="button" class="nav prev" aria-label="@L["Pager.Prev"]" @onclick="Prev"><Icon Name="chevron-left" /></button>
@@ -21,6 +24,8 @@
     [Parameter] public IReadOnlyList<string> Titles { get; set; } = [];
     /// <summary>The picture slot of each of <see cref="Titles"/>.</summary>
     [Parameter] public IReadOnlyList<string> Slots { get; set; } = [];
+    /// <summary>The address of each of <see cref="Titles"/>' pictures when they are not the old interface's: they take the place of <see cref="Slots"/>.</summary>
+    [Parameter] public IReadOnlyList<string> Urls { get; set; } = [];
     [Parameter] public int Index { get; set; }
 
     void Prev() => Index = (Index + Titles.Count - 1) % Titles.Count;

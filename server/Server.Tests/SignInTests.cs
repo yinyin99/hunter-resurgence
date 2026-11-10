@@ -515,6 +515,48 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestThePlayerDeletesAndDownloadsItsOwnGalleryOnTheWebsite()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        state.CreateAccount(9, "Third");
+        var me = state.Store.Listed("one", null)!.Value;
+        long Add(long account, string file)
+        {
+            Directory.CreateDirectory(Path.Combine(tmp, "photos", account.ToString()));
+            File.WriteAllText(Path.Combine(tmp, "photos", account.ToString(), file), "jpeg " + file);
+            using var con = state.Store.Open(account);
+            con.Begin();
+            var id = con.Insert("INSERT INTO photos (account_id, hash, photo_type, file) VALUES ($a, 1, 2, ?)", file);
+            con.Commit();
+            return id;
+        }
+        var (first, second, foreign) = (Add(me, "1-2.jpg"), Add(me, "2-2.jpg"), Add(9, "3-2.jpg"));
+        Task<Reply> Delete(long id, params (string, string)[] headers) => server.SendAsync("POST", "web.test", "/account/gallery/delete",
+            [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes("id=" + id));
+        var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
+
+        // the zip holds the player's pictures at full size, no one else's
+        var zip = await Get("web.test", "/account/gallery/zip", ck);
+        Assert.Equal(("application/zip", 200), (zip.Headers.Single(h => h.Name == "Content-Type").Value, zip.Status));
+        using (var archive = new System.IO.Compression.ZipArchive(new MemoryStream(zip.Body)))
+            Assert.Equal(["1-2.jpg", "2-2.jpg"], archive.Entries.Select(e => e.FullName).Order());
+
+        Assert.Equal(404, (await Delete(foreign, xhr)).Status);  // another player's photo
+        Assert.Equal(404, (await Delete(99999, xhr)).Status);
+        Assert.True(File.Exists(Path.Combine(tmp, "photos", "9", "3-2.jpg")));
+        Assert.Equal(200, (await Delete(first, xhr)).Status);
+        Assert.False(File.Exists(Path.Combine(tmp, "photos", me.ToString(), "1-2.jpg")));
+        Assert.Equal(404, (await Delete(first, xhr)).Status);
+        Assert.Equal([second], JsonNode.Parse((await Get("web.test", "/hunters/one/gallery")).Body)!["rows"]!.AsArray().Select(r => (long)r!["id"]!));
+
+        // signed out, or not from a page of this server
+        Assert.Equal(401, (await Get("web.test", "/account/gallery/zip")).Status);
+        Assert.Equal(401, (await Delete(second, ("X-Requested-With", "XMLHttpRequest"))).Status);
+        Assert.Equal(400, (await Delete(second, ck)).Status);
+        Assert.Equal(1, (int)JsonNode.Parse((await Get("web.test", "/hunters/one/gallery")).Body)!["total"]!);
+    }
+
+    [Fact]
     public async Task TestTheMinigameBoardsListTheBestScores()
     {
         state.CreateAccount(9, "third");

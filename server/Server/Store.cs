@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 8;
+    public const int Version = 9;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -111,7 +111,8 @@ public sealed class Store
         CREATE TABLE pending (id INTEGER PRIMARY KEY, {A}, body TEXT NOT NULL);
         CREATE INDEX pending_account ON pending (account_id, id);
         CREATE TABLE photos (
-            id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT);
+            id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT,
+            spawn INTEGER);  -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
         CREATE INDEX photos_account ON photos (account_id);
         CREATE TABLE messages (   -- account_id is the recipient
             id INTEGER PRIMARY KEY, {A}, sender INTEGER NOT NULL, content TEXT NOT NULL, ts INTEGER NOT NULL,
@@ -187,7 +188,16 @@ public sealed class Store
             if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
             if (version < 6) con.Script(Friends);
             if (version < 7) con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL");  // closed hunts count their pickups: stored again at the start
-            if (version < 8) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
+            if (version < 8 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'spawn'")! == 0)
+            {
+                // the n-th photo of an account came with its n-th event 4 (no photo was deleted before this version)
+                con.Script("ALTER TABLE photos ADD COLUMN spawn INTEGER");
+                con.Script("UPDATE photos SET spawn = (SELECT MAX(s.id) FROM events s WHERE s.account_id = photos.account_id AND s.event = 7 AND s.individual = photos.individual"
+                           + " AND s.id < (SELECT e.id FROM events e WHERE e.account_id = photos.account_id AND e.event = 4"
+                           + " AND (SELECT COUNT(*) FROM events f WHERE f.account_id = e.account_id AND f.event = 4 AND f.id < e.id)"
+                           + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
+            }
+            if (version < 9) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

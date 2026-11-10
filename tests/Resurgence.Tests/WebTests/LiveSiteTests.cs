@@ -104,7 +104,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
     }
@@ -386,6 +386,23 @@ public sealed class LiveSiteTests : UiContext
         Assert.Empty(cut.FindAll("a[href^='/messages']"));  // the messages are the mock's
         Assert.Equal(2, cut.FindAll("button.btn-inverse").Count);  // the remove buttons of the own list
         Assert.Equal("/profile/Fox/friends/2", cut.Find("p.pager a").GetAttribute("href"));  // 21 friends: a second page
+    }
+
+    // the gallery is the server's pictures by their links; the owner can delete and download, a visitor only looks
+    [Theory]
+    [InlineData(true, 2, 1)]
+    [InlineData(false, 0, 0)]
+    public void TheGalleryTabShowsTheServersPicturesAndTheOwnerDeletesAndDownloads(bool own, int deletes, int downloads)
+    {
+        const string page = """{"page":1,"pages":1,"total":2,"rows":[{"id":7,"animal":"Red Deer","label":"88.5","url":"https://game.test/a.jpg","thumbnail":"https://game.test/a-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/b.jpg","thumbnail":"https://game.test/b.jpg"}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, page)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<GalleryTab>(p => p.Add(t => t.Handle, "Fox").Add(t => t.Own, own));
+        cut.WaitForAssertion(() => Assert.Equal(["https://game.test/a-thumb.jpg", "https://game.test/b.jpg"], cut.FindAll("ul.grid img").Select(i => i.GetAttribute("src"))));
+        Assert.StartsWith("Red Deer", cut.FindAll("ul.grid li > span")[0].TextContent);
+        Assert.Equal("", cut.FindAll("ul.grid li > span")[1].TextContent);  // no kill, no score
+        Assert.Equal((deletes, downloads), (cut.FindAll("button.del").Count, cut.FindAll("p.dl a").Count));
     }
 
     [Fact]

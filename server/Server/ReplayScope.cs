@@ -72,6 +72,7 @@ public static class ReplayScope
         Own("Achievement/stats", "[]"),
         Own("Trophy/list", """{"total": 0, "trophies": []}"""),
         Own("Gallery/list", """{"photos": [], "total": 0}"""),
+        Own("Gallery/delete", "false"),
         Own("Chat/get_message_settings", """{"receive_private_messages": 0}"""),
         Own("Chat/message", HandlerError),
         Own("Launch/tutorial", HandlerError),  // the tutorial's tokens are the recorded player's: none is handed out

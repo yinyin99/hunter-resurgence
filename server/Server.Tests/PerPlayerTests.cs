@@ -216,6 +216,128 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnyAccountsGalleryIsListedItsOwnerDeletesAPhotoAndAKillLinksItsPhoto()
+    {
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 72270)));
+        void Photo(long account, string json, bool upload = true, bool thumb = false)
+        {
+            var update = Reply(state.HeartbeatReply(account, Events(O(json))))["updates"]!.AsArray().Single(u => (int)u!["update"]! == 11)!;  // the trophy score of the harvest may come first
+            if (upload) Assert.Equal(200, state.UploadReply(account, new Uri((string)update["url"]!).Query.TrimStart('?'), [1, 2]).Status);
+            if (thumb) Assert.Equal(200, state.UploadReply(account, new Uri((string)update["thumb_url"]!).Query.TrimStart('?'), [3]).Status);
+        }
+        Photo(8, """{"event": 4, "hash": 1, "photo_type": 2, "individual": 71}""", thumb: true);    // 1: the kill's trophy photo
+        Photo(8, """{"event": 4, "hash": 2, "photo_type": 14, "individual": 71}""");                // 2: the shot's screenshot, no gallery picture
+        Photo(8, """{"event": 4, "hash": 3, "photo_type": 3, "individual": 99}""");                 // 3: no kill of this individual
+        Photo(8, """{"event": 4, "hash": 4, "photo_type": 2, "individual": 71}""", upload: false);  // 4: asked, never sent
+        Photo(ME, """{"event": 4, "hash": 5, "photo_type": 2}""");                                   // 5: the other player's
+        var photos = $"{BASE}/photos/8/";
+
+        // Gallery/list: any account's, newest first, paged; no user_id is the player's own; a banned or unknown id is the empty reply
+        var other = await Api(Replay.GALLERY_LIST, tokenA, "user_id=8");
+        Eq("[2, [3, 1]]", T(other["total"], Ids(other["photos"]!)));
+        Eq($$"""{"id": 3, "type": 3, "url": "{{photos}}3-3.jpg", "thumbnail": "{{photos}}3-3.jpg", "label": "", "animal": ""}""", other["photos"]![0]);  // no thumbnail sent: the picture itself
+        Eq($$"""[1, 2, "Test Deer", "{{photos}}1-2.jpg", "{{photos}}1-2-thumb.jpg"]""",
+           T(other["photos"]![1]!["id"], other["photos"]![1]!["type"], other["photos"]![1]!["animal"], other["photos"]![1]!["url"], other["photos"]![1]!["thumbnail"]));
+        Assert.False(string.IsNullOrEmpty((string?)other["photos"]![1]!["label"]));  // the kill's score
+        Eq("[1]", Ids((await Api(Replay.GALLERY_LIST, tokenA, "user_id=8&offset=1&limit=1"))["photos"]!));
+        Eq("[2, 2, 1]", T((await Api(Replay.GALLERY_LIST, tokenB, ""))["total"], (await Api(Replay.GALLERY_LIST, tokenB, "user_id=8"))["total"], (await Api(Replay.GALLERY_LIST, tokenA, ""))["total"]));
+        Eq("[5]", Ids((await Api(Replay.GALLERY_LIST, tokenA, ""))["photos"]!));
+        foreach (var id in new[] { 9, 99 })
+            Eq("0", (await Api(Replay.GALLERY_LIST, tokenA, $"user_id={id}"))["total"]);
+
+        // a kill's photo is its shot's screenshot, else its other photo
+        JsonNode? KillPhoto() => Reply(state.ExpeditionReply(8, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"];
+        Eq($"\"{photos}2-14.jpg\"", KillPhoto());
+
+        // the website's page: 24 a page, a page past the end is the last, no banned or unknown hunter
+        async Task<JsonNode> Page(string query) => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery" + query, null)).Body)!;
+        var first = await Page("?page=1");
+        Eq("[1, 1, 2, [3, 1]]", T(first["page"], first["pages"], first["total"], Ids(first["rows"]!)));
+        Eq($"\"https://web.test/photos/8/3-3.jpg\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
+        Eq("[3, 1]", Ids(first["rows"]!));
+        Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/3-3.jpg", null)).Status);
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/photos/8/nothing.jpg", null)).Status);
+        using (var con = state.Store.Open(8))
+        {
+            con.Begin();
+            for (var n = 0; n < 24; n++)
+                con.Exec("INSERT INTO photos (account_id, hash, photo_type, file) VALUES ($a, 9, 2, 'x.jpg')");
+            con.Commit();
+        }
+        Eq("[2, 2, 26, 2]", T((await Page("?page=9"))["page"], (await Page("?page=9"))["pages"], (await Page("?page=1"))["total"], (await Page("?page=2"))["rows"]!.AsArray().Count));
+        using (var con = state.Store.Open(8))
+        {
+            con.Begin();
+            con.Exec("DELETE FROM photos WHERE account_id = $a AND file = 'x.jpg'");
+            con.Commit();
+        }
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/banned/gallery", null)).Status);
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/gallery", null)).Status);
+
+        // Gallery/delete: an own photo only, its row and files
+        Eq("false", await Api(Replay.GALLERY_DELETE, tokenA, "photo_id=3"));  // another player's
+        Assert.NotNull(state.PhotoFile("/photos/8/3-3.jpg"));
+        Eq("true", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=1"));
+        Assert.Null(state.PhotoFile("/photos/8/1-2.jpg"));
+        Assert.Null(state.PhotoFile("/photos/8/1-2-thumb.jpg"));
+        Eq("false", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=1"));
+        Eq("false", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=nope"));
+        Eq("[3]", Ids((await Api(Replay.GALLERY_LIST, tokenB, "limit=1"))["photos"]!));
+        Assert.True(state.DeletePhoto(8, 2));
+        Assert.Null(KillPhoto());  // the kill's photos are gone
+    }
+
+    [Fact]
+    public void TestAnIndividualIdThatComesBackShowsNoEarlierKillAndAnOldPhotoIsLinkedByItsPosition()
+    {
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(ME, Events(AccountIsolationTests.Harvest(71, 72270)));
+        void Photo(string json) => state.UploadReply(ME, new Uri((string)Reply(state.HeartbeatReply(ME, Events(O(json))))["updates"]!.AsArray().Single(u => (int)u!["update"]! == 11)!["url"]!).Query.TrimStart('?'), [1]);
+        Photo("""{"event": 4, "hash": 1, "photo_type": 2, "individual": 71}""");  // the first animal's
+        Hb(O("""{"event": 7, "individual": 71, "species": 1, "gender": 0, "weight_grams": 5000, "texture": 0}"""));  // the id is used again
+        Photo("""{"event": 4, "hash": 2, "photo_type": 2, "individual": 71}""");  // the second animal's: no kill
+        var photos = state.GalleryListReply(ME, ""u8.ToArray())!;
+        Eq("""[2, ["", "Test Deer"]]""", T(Reply(photos)["total"], new JsonArray(Reply(photos)["photos"]!.AsArray().Select(p => (JsonNode?)p!["animal"]!.DeepClone()).ToArray())));
+        Assert.Contains("1-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+        Assert.DoesNotContain("2-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+    }
+
+    [Fact]
+    public void TestAPhotoOfAnOlderDatabaseGetsItsSpawnFromItsPositionAmongTheEvents()
+    {
+        var file = Path.Combine(tmp, "old.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
+            con.Exec("PRAGMA user_version = 7");
+        }
+        var old = new Store(file);
+        old.CreateAccount(5, "five", new JsonObject());
+        using (var con = old.Open(5))
+        {
+            foreach (var (ev, n) in new[] { (7, 1), (4, 2), (7, 3), (4, 4) })  // the events' ids are 1 to 4: the photos are the 2nd and the 4th
+                con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, ?, '{\"individual\": 3}')", ev);
+            con.Exec("INSERT INTO photos (account_id, individual) VALUES ($a, 3)");
+            con.Exec("INSERT INTO photos (account_id, individual) VALUES ($a, 3)");
+        }
+        using (var con = old.Open())  // as it was before the column: the rows above are all there is
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
+            con.Exec("PRAGMA user_version = 7");
+        }
+        using (var con = new Store(file).Open(5))
+        {
+            Eq("[1, 3]", T(con.Rows("SELECT spawn FROM photos WHERE account_id = $a ORDER BY id").Select(r => (JsonNode?)Py.FromSql(r[0])).ToArray()));
+        }
+    }
+
+    [Fact]
     public async Task TestAServerHarvestIsInTheOwnTrophiesAboveEveryRestoredIdAndEachCanBeTaxidermized()
     {
         using (var con = state.Store.Open(ME))

@@ -153,6 +153,26 @@ public static class AccountApi
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/gallery/delete", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                return form.TryGetValue("id", out var id) && long.TryParse(id[0], NumberStyles.None, CultureInfo.InvariantCulture, out var photo) && state.DeletePhoto(account, photo)
+                    ? Json(200, new JsonObject { ["status"] = "deleted" })
+                    : Refuse(404, "invalid", "This is not a photo of yours.");
+            })
+            .WithName("AccountGalleryDelete").WithSummary("Delete a photo of the player's own gallery (form `id`)")
+            .WithDescription("Deletes the photo's row and files: `{status: deleted}`; 404 `invalid` for an id that is none of the player's photos.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/gallery/zip", (HttpContext ctx) => Account(ctx) is { } account
+                ? new Reply(200, [("Content-Type", "application/zip"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], state.GalleryZip(account), "account")
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountGalleryZip").WithSummary("The player's own gallery as a zip of its pictures")
+            .WithDescription("The pictures of `Gallery/list` (full size, one JPEG each, named by their link).")
+            .Produces(200, contentType: "application/zip");
+
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebFriends(account))
                 : Refuse(401, "signed_out", "Sign in first."))

@@ -244,13 +244,13 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public void TestTheSchemaOfVersion7IsMigratedToTheHiddenHarvests()
+    public void TestTheSchemaOfVersion8IsMigratedToTheHiddenHarvests()
     {
-        var file = Path.Combine(tmp, "v7.db");
+        var file = Path.Combine(tmp, "v8.db");
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
-            con.Exec("PRAGMA user_version = 7");
+            con.Exec("PRAGMA user_version = 8");
         }
         var migrated = new Store(file);
         migrated.CreateAccount(5, "five", new JsonObject());

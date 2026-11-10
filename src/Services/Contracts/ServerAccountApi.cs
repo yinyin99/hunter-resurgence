@@ -16,6 +16,10 @@ public static class ServerAccountApi
     public const string Friends = "/account/friends";
     /// <summary>GET with the cookie and <c>?text=</c>: 200 <see cref="ServerPlayers"/>, the players whose handle contains the text.</summary>
     public const string FriendSearch = "/account/friends/search";
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>: deletes a photo of the player's own gallery; 200, or 404 for one that is not theirs.</summary>
+    public const string GalleryDelete = "/account/gallery/delete";
+    /// <summary>GET with the cookie: 200 with the player's own gallery as a zip of its pictures.</summary>
+    public const string GalleryZip = "/account/gallery/zip";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
