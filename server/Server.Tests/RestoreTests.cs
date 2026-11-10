@@ -251,6 +251,83 @@ public class RestoreTests : StateTestBase
         Assert.Null(state.PublicHunt(1001, 9101));
     }
 
+    JsonArray Gallery(long account) => JsonNode.Parse(state.GalleryListReply(account, []))!["photos"]!.AsArray();
+
+    static string Link(JsonNode? url) => new Uri((string)url!).AbsolutePath;
+
+    [Fact]
+    public void TestTheGalleryPicturesOfAZipAreListedAtTheServersLinksWithTheirSavedLabels()
+    {
+        var result = Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);
+        Assert.Contains("pictures stored: gallery 2, kill photos and score pages 2, avatar and background pictures 1; 1 gallery entry without a picture in the zip", result.Report);
+        var gallery = Gallery(1001);
+        Eq("""[2, 2, "120.5", "Test Deer", 3, "", ""]""", T(JsonNode.Parse(state.GalleryListReply(1001, []))!["total"], gallery[0]!["type"], gallery[0]!["label"], gallery[0]!["animal"],
+            gallery[1]!["type"], gallery[1]!["label"], gallery[1]!["animal"]));  // newest first, as saved
+        Assert.Matches(@"^/photos/1001/\d+-2\.jpg$", Link(gallery[0]!["url"]));
+        Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
+        Assert.Equal(TestZip.Jpeg("a"), File.ReadAllBytes(state.PhotoFile(Link(gallery[1]!["url"]))!));
+        Assert.Equal(gallery[0]!["url"]!.ToString(), gallery[0]!["thumbnail"]!.ToString());  // the tool saved no thumbnail
+        Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(state.PublicGallery(1001, 1, "https://web.test")["rows"]![0]!["url"]))!));
+        using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(1001)));
+        Assert.Equal(2, zip.Entries.Count);
+    }
+
+    [Fact]
+    public void TestARestoredKillIsLinkedToItsSavedPictureAndScoreSheetPage()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);
+        var kills = JsonNode.Parse(state.ExpeditionReply(1001, "null"u8.ToArray(), "expedition_id=9100"u8.ToArray()))!["kills"]!.AsArray();
+        Assert.Equal("/photos/1001/kills_photos.example_k_777.jpg", Link(kills[0]!["kill"]!["photo"]));
+        Assert.Equal(TestZip.Jpeg("kill"), File.ReadAllBytes(state.PhotoFile(Link(kills[0]!["kill"]!["photo"]))!));
+        Assert.Equal("https://photos.example/k/778.jpg", (string)kills[1]!["kill"]!["photo"]!);  // its picture is not in the zip: as saved
+        var hunt = state.PublicHunt(1001, 9100)!["kills"]!.AsArray();
+        Eq("[true, false]", T(hunt[0]!["sheet"], hunt[1]!["sheet"]));
+        Assert.Equal("<div>saved sheet</div>", Encoding.UTF8.GetString(state.SavedScorePage(1001, 777)!));
+        Assert.Null(state.SavedScorePage(1001, 778));
+        Assert.Null(state.ScorePageReply(1001, 777));  // no kill made here: the game route answers with the saved page
+        var sheet = state.PublicSheet(1001, 777)!;
+        Eq("""["antler", "Test Deer", "Test Rifle", 82.0, 1, 120.5, 64.35, 1.5, 88, "Test Reserve (10, 30)", 9100]""",
+           T(sheet["kind"], sheet["species"], sheet["weapon"], sheet["distanceM"], sheet["shots"], sheet["score"], sheet["weightKg"], sheet["woundTime"], sheet["integrity"], sheet["shotLocation"], sheet["expeditionId"]));
+        Assert.Empty(sheet["rows"]!.AsArray());
+        Assert.Null(state.PublicSheet(1001, 778));
+    }
+
+    [Fact]
+    public void TestRestoringAgainReplacesTheUnpackedPicturesAndKeepsThePhotosTakenHere()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);
+        var dir = Path.Combine(tmp, "photos", "1001");
+        Assert.Equal(5, Directory.GetFiles(dir).Length);  // two gallery pictures, a kill photo, a score page, an avatar
+        using (var con = state.Store.Open(1001))
+            con.Exec("INSERT INTO photos (id, account_id, photo_type, file) VALUES (900, $a, 2, '900-2.jpg')");  // a photo taken here
+        File.WriteAllBytes(Path.Combine(dir, "900-2.jpg"), TestZip.Jpeg("mine"));
+        var other = TestZip.Own("\"ems\":1.0,\"gms\":2.0")
+            .Gallery("""[{"id":60,"type":2,"url":"https://photos.example/p/d.jpg","thumbnail":"","label":"","animal":""}]""").Media("photos/photos.example_p_d.jpg", TestZip.Jpeg("d"));
+        Restorer.Import(state, Zip(other, "again.zip"), null, tmp);
+        var gallery = Gallery(1001);
+        Assert.Equal(2, gallery.Count);  // the new picture, then the one taken here
+        Assert.Equal(TestZip.Jpeg("d"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
+        Assert.Equal(TestZip.Jpeg("mine"), File.ReadAllBytes(state.PhotoFile("/photos/1001/900-2.jpg")!));
+        Assert.Equal(gallery.Select(g => Path.GetFileName(Link(g!["url"]))).Order(), Directory.GetFiles(dir).Select(Path.GetFileName).Order());  // no file of the first zip is left
+        Assert.Null(state.SavedScorePage(1001, 777));
+        using var check = state.Store.Open(1001);
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND saved IS NOT NULL"));
+    }
+
+    [Fact]
+    public void TestADatabaseOfSchema9GetsTheSavedColumnOfThePhotos()
+    {
+        var file = Path.Combine(tmp, "old9.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN saved");
+            con.Exec("PRAGMA user_version = 9");
+        }
+        using var migrated = new Store(file).Open();
+        Assert.Equal(1L, migrated.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'"));
+        Assert.Equal((long)Store.Version, migrated.Scalar("PRAGMA user_version"));
+    }
+
     [Fact]
     public void TestWithoutAServerHuntTheNewestRestoredHuntIsTheLatest()
     {
