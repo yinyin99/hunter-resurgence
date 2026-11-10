@@ -492,10 +492,19 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         }
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        // event 17 scores: higher than the restored one wins (third, Lane Bandit 500), lower does not (fourth, Bust Through 10), and a
+        // player who never restored is listed (nogame's Bust Through 70); the connect reply's best follows
+        foreach (var (id, game, score) in new (long, int, int)[] { (9, 1, 500), (9, 1, 20), (10, 0, 10), (11, 0, 70) })
+        {
+            using var con = state.Store.Open(id);
+            con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, 17, ?)", $$"""{"event": 17, "game_id": {{game}}, "score": {{score}}}""");
+        }
+        using (var con = state.Store.Open(11))
+            Assert.Equal(70, RestoredReads.BestScore(con, 0));
         // equal scores: the lower account id first; a 0, no score and a banned account are not on it
-        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "third", "value": 300}, {"rank": 2, "handle": "fourth", "value": 300}]}""",
+        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "third", "value": 500}, {"rank": 2, "handle": "fourth", "value": 300}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
-        Eq("""{"page": 1, "pages": 1, "total": 1, "rows": [{"rank": 1, "handle": "fourth", "value": 40}]}""",
+        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70}, {"rank": 2, "handle": "fourth", "value": 40}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
         Assert.Equal(404, (await Get("web.test", "/leaderboards/score")).Status);
     }
