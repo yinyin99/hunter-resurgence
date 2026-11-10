@@ -200,7 +200,24 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     }
     public Task<Expedition?> ExpeditionAsync(string handle, long? id) => mock.ExpeditionAsync(handle, id);
     public Task<Page<HistoryRow>> HistoryAsync(string handle, int page) => mock.HistoryAsync(handle, page);
-    public Task<PersonalBest> BestAsync(string handle, int season) => mock.BestAsync(handle, season);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/best</c>: the best score of each species, all time (the server has no seasons, so <paramref name="season"/> is not read). No rows, or a failed answer, is "empty".</summary>
+    public async Task<PersonalBest> BestAsync(string handle, int season)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.BestSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerBest>() is { Rows.Length: > 0 } b)
+                return new("done", [.. b.Rows.Select(r => new BestRow(r.Species, r.Score, r.Range, r.Weapon, DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(r.Ts, 0, 253402300799)).UtcDateTime, r.Kill))]);
+            if (!response.IsSuccessStatusCode) log.LogWarning("The server answered {Path} with {Status}: no personal bests", ServerSessionApi.Hunters + "/<handle>" + ServerSessionApi.BestSuffix, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no personal bests", ServerSessionApi.Hunters + "/<handle>" + ServerSessionApi.BestSuffix, e.Message);
+        }
+        return new("empty", []);
+    }
     public Task<Progress> ProgressAsync() => mock.ProgressAsync();
     public Task<int> ExpeditionCountAsync() => mock.ExpeditionCountAsync();
 }

@@ -36,10 +36,13 @@
         }
         break;
     default:
-        <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
-            <option value="0">@L["Stat.AllTime"]</option>
-            @foreach (var n in Enumerable.Range(1, seasons)) { <option value="@n">@L["Stat.Season", n]</option> }
-        </select>
+        @if (!Mode.Live)
+        {
+            <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
+                <option value="0">@L["Stat.AllTime"]</option>
+                @foreach (var n in Enumerable.Range(1, seasons)) { <option value="@n">@L["Stat.Season", n]</option> }
+            </select>
+        }
         @if (best is not null) { @Best() }
         break;
 }
@@ -56,19 +59,19 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    // the live site has a server source for the lifetime statistics only: the last hunt, the history and the bests are the mock's
-    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[1..2] : subs;
-    string sub => Mode.Live ? "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+    // the live site has a server source for the lifetime statistics and the all-time personal bests only: the last hunt and the history are the mock's, and the server has no seasons
+    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? [subs[1], subs[3]] : subs;
+    string sub => Mode.Live ? Sub == "best" ? "best" : "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
 
     protected override async Task OnParametersSetAsync()
     {
-        season = Arg ?? 0;
+        season = Mode.Live ? 0 : Arg ?? 0;
         switch (sub)
         {
             case "": last = await Service.ExpeditionAsync(Handle, null); break;
             case "lifetime": totals = await Service.TotalsAsync(Handle); break;
             case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
-            default: (best, seasons) = (await Service.BestAsync(Handle, season), await Seasons.SeasonAsync()); break;
+            default: (best, seasons) = (await Service.BestAsync(Handle, season), Mode.Live ? 0 : await Seasons.SeasonAsync()); break;
         }
     }
 
@@ -90,7 +93,7 @@
             default:
                 <table class="hist tbl">
                     <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.TimeOfHarvest"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@r.Weapon</td><td>@r.When.ToString("yyyy-MM-dd HH:mm")</td><td><a href="/profile/@Handle/score/@r.Kill">@Fmt.Score(r.Score)</a></td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
+                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@r.Weapon</td><td>@r.When.ToString("yyyy-MM-dd HH:mm")</td><td>@if (Mode.Live) { @Fmt.Score(r.Score) } else { <a href="/profile/@Handle/score/@r.Kill">@Fmt.Score(r.Score)</a> }</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
                 </table>
                 break;
         }

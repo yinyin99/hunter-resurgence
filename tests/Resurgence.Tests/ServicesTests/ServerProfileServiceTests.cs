@@ -158,6 +158,26 @@ public class ServerProfileServiceTests
     [Fact]
     public void TheTrophiesTabHasAServerSource() => Assert.Contains("trophies", ServerProfileService.Tabs);
 
+    [Fact]
+    public async Task PersonalBestsAreTheServersRowsOfTheHandleForAnySeason()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"rows":[{"species":"Red Fox","score":82.5588,"range":74.77,"weapon":"Test Rifle","ts":1790887016,"kill":9}]}"""));
+        var best = await Make(fake).BestAsync("fox", 3);
+        Assert.Equal("/hunters/fox/best", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal("done", best.Status);
+        Assert.Equal(new BestRow("Red Fox", 82.5588, 74.77, "Test Rifle", new DateTime(2026, 10, 1, 20, 36, 56, DateTimeKind.Utc), 9), Assert.Single(best.Rows));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, """{"rows":[]}""")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task NoPersonalBestsOrAFailedAnswerIsEmpty(HttpStatusCode code, string body)
+    {
+        var best = await Make(new Fake(_ => Json(code, body))).BestAsync("fox", 0);
+        Assert.Equal(("empty", 0), (best.Status, best.Rows.Count));
+    }
+
     const string Ranks = """
         {"cap":1000,"ranks":[{"id":1,"category":"animals","name":"Red Fox","value":1500},{"id":2,"category":"animals","name":"Alpine Ibex","value":25},
                              {"id":41,"category":"weapons","name":"Rifles","value":3},{"id":38,"category":"collectables","name":"Mushrooms","value":0}],
