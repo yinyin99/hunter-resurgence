@@ -39,6 +39,9 @@ public static class GameApi
                            + "balances, toasts); photo requests get their upload URL at once. Without player state: always "
                            + "`{\"updates\": [], \"err\": 0}`.")
           .Body<HeartbeatRequest>("application/json").Produces<HeartbeatReply>();
+        gs.MapExactPost(game, HEARTBEAT_SCENARIO, _ => new(200, Json(), NoError, "state"))
+          .WithName("HeartbeatScenario").WithSummary("A tutorial's event (the scenario finished or quit)")
+          .WithDescription("Always `{\"err\": 0}`; nothing is stored.").Produces<ErrReply>();
         gs.MapExactPost(game, DISCONNECT, r => s is null ? new(200, Json(), NoError, "stub") : Own(game, r, a =>
             {
                 s.Disconnect(a, r.Body);
@@ -50,7 +53,7 @@ public static class GameApi
         if (s != null)
         {
             gs.MapExactPost(game, CONNECT, r => Own(game, r, a =>
-                    new(200, game.Table.Entries.TryGetValue(new("POST", game.Gs, CONNECT, null), out var recorded) ? recorded.Headers : Json(), s.ConnectReply(a), "state")))
+                    new(200, game.Table.Entries.TryGetValue(new("POST", game.Gs, CONNECT, null), out var recorded) ? recorded.Headers : Json(), s.ConnectReply(a, r.Header("X-Hun-Session")), "state")))
               .WithName("Connect").WithSummary("Start a hunt session")
               .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
@@ -105,17 +108,21 @@ public static class GameApi
             api.MapExactPost(game, START_SINGLE_PLAYER, r => Own(game, r, a =>
                 {
                     s.NoteLaunch(a, r.Body);
-                    var (session, network) = (s.Store.CreateToken(a, Lifetimes.Session), 7_000_000_000L + RandomNumberGenerator.GetInt32(1_000_000_000));
-                    List<(string, string)> headers = [.. JsonAnyOrigin()];
-                    foreach (var path in new[] { "/", START_SINGLE_PLAYER[..(START_SINGLE_PLAYER.LastIndexOf('/') + 1)] })  // the launcher reads them from either path
-                        headers.AddRange([("Set-Cookie", $"{ProtocolLiterals.LaunchSessionCookie}={session}; Path={path}; SameSite=lax; Secure"),
-                                          ("Set-Cookie", $"{ProtocolLiterals.LaunchNetworkCookie}={network}; Path={path}; SameSite=lax; Secure")]);
-                    return new(200, headers, Py.DumpBytes(new JsonObject { ["session_id"] = session, ["network_id"] = network }), "state");
+                    return LaunchSession(s, a, null);
                 }))
                .WithName("StartSinglePlayer").WithSummary("Start a single-player session in a reserve")
                .WithDescription("Opens a new expedition at `lodge_id` in `reserve` (closing any open one). Reply `{session_id, network_id}`: the session is the "
                                 + "first segment of the launch URL (and the game's `X-Hun-Session`), and it is set as cookies too.")
                .Body<StartSinglePlayerForm>("application/json").Produces(200, contentType: "application/json");
+            api.MapExactPost(game, START_TUTORIAL, r => Own(game, r, a =>
+                {
+                    var id = long.TryParse(FormValue(r, "tutorial_id"), out var n) ? (n == 0 ? 1 : n) : 0;  // 0 is the first tutorial
+                    return s.Tutorial(id) is null ? new Reply(400, JsonAnyOrigin(), Py.DumpBytes(new JsonObject { ["err"] = "unknown tutorial" }), "state") : LaunchSession(s, a, id);
+                }))
+               .WithName("StartTutorial").WithSummary("Start a tutorial")
+               .WithDescription("Like StartSinglePlayer, for the catalogue's tutorial `tutorial_id` (0 is 1; 400 for any other). Opens no expedition: the session's connect "
+                                + "carries the tutorial (`mode` 1) and, until the next hunt starts, Inventory/move_multiple2 is ignored.")
+               .Body<StartTutorialForm>("application/json").Produces(200, contentType: "application/json");
             api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(), "state"))
                .WithName("ClientApplication").WithSummary("The catalogue the in-game pages read")
                .WithDescription("The recorded reply when the operator has one, else the species, items, reserves and locations of the player state (missions only in a recording).")
@@ -456,6 +463,18 @@ public static class GameApi
         return handle(r) ?? game.Fallback(r);
     };
 
+    /// <summary>The reply of a session start: `{session_id, network_id}` and the two launch cookies, which the launcher reads from either path.</summary>
+    static Reply LaunchSession(State s, long account, long? tutorial)
+    {
+        var (session, network) = (s.Store.CreateToken(account, Lifetimes.Session), 7_000_000_000L + RandomNumberGenerator.GetInt32(1_000_000_000));
+        if (tutorial is { } id) s.NoteTutorial(account, session, id);
+        List<(string, string)> headers = [.. JsonAnyOrigin()];
+        foreach (var path in new[] { "/", START_SINGLE_PLAYER[..(START_SINGLE_PLAYER.LastIndexOf('/') + 1)] })
+            headers.AddRange([("Set-Cookie", $"{ProtocolLiterals.LaunchSessionCookie}={session}; Path={path}; SameSite=lax; Secure"),
+                              ("Set-Cookie", $"{ProtocolLiterals.LaunchNetworkCookie}={network}; Path={path}; SameSite=lax; Secure")]);
+        return new(200, headers, Py.DumpBytes(new JsonObject { ["session_id"] = session, ["network_id"] = network }), "state");
+    }
+
     /// <summary>A POST endpoint that answers only exactly this raw path: routing alone also matches other cases, a
     /// trailing slash, percent-encodings and dot segments.</summary>
     static RouteHandlerBuilder MapExactPost(this RouteGroupBuilder group, Game game, string path, Func<Req, Reply?> handle) =>
@@ -603,6 +622,8 @@ public static class GameApi
     public sealed record StartSinglePlayerForm(
         [property: Description("Start time of day, minutes")] long time, long loadout_id,
         [property: Description("Start location id (a lodge)")] long lodge_id, long reserve, string? oauth_access_token);
+
+    public sealed record StartTutorialForm(long tutorial_id, long loadout_id, string? oauth_access_token);
 
     public sealed record LangForm(string lang);
 

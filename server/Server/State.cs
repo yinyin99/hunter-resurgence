@@ -1007,8 +1007,9 @@ public sealed partial class State
 
     /// <summary>Connect: the recorded reply with the current inventory and the open expedition (opened here if no
     /// Launch/start came first, e.g. a direct launch), starting at its location.</summary>
-    public byte[] ConnectReply(long account)
+    public byte[] ConnectReply(long account, string? session = null)
     {
+        var tutorial = session is not null && latestTutorial.TryGetValue(account, out var latest) && latest.Session == session ? Tutorial(latest.Id) : null;
         var inventory = connect["inventory"]!.AsObject();
         JsonArray rows;
         JsonNode? expeditionId, locationId, reserve;
@@ -1038,7 +1039,9 @@ public sealed partial class State
             con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
             var row = con.Rows("SELECT id, location_id, reserve FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
                                + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
-            if (row is not null)
+            if (tutorial is not null)  // a tutorial opens no expedition
+                (expeditionId, locationId, reserve) = (0L, (Py.L(tutorial["reserve_id"]) - 1) * 100, C(tutorial["reserve_id"]));
+            else if (row is not null)
                 (expeditionId, locationId, reserve) = (Py.FromSql(row[0]), Py.FromSql(row[1]), Py.FromSql(row[2]));
             else
             {
@@ -1061,6 +1064,15 @@ public sealed partial class State
         expedition["y"] = y;
         expedition["z"] = z;
         expedition["lodge"] = lodgeOut;
+        if (tutorial is not null)
+        {
+            expedition["mode"] = 1;
+            expedition["tutorial"] = C(tutorial["id"]);
+            expedition["tutorial_data"] = C(G(application, "tutorials", null));
+            (expedition["lodge"], expedition["x"], expedition["y"], expedition["z"]) = (locationId, C(tutorial["x"]), C(tutorial["y"]), C(tutorial["z"]));
+            (expedition["dir_x"], expedition["dir_y"], expedition["dir_z"], expedition["start_time"], expedition["weather"], expedition["end_time"], expedition["disruptive"]) =
+                (1000, 0, 0, 720, 0.1, 0, 0);
+        }
         // direct launch (no Launch/start, so no reserve): the newest recorded connect's reserve data
         var reply = (JsonObject)connect.DeepClone();
         if (TryKey(reserve, out var r) && reserveData.TryGetValue((int)r, out var data))
@@ -1357,8 +1369,22 @@ public sealed partial class State
             UpdateHunterscore(con, account);
     }
 
+    // ponytail: in memory, a restart forgets it (the next connect is a normal hunt); a table if that matters
+    readonly System.Collections.Concurrent.ConcurrentDictionary<long, (string Session, long Id)> latestTutorial = new();
+
+    /// <summary>The catalogue's tutorial with this id, else null.</summary>
+    public JsonObject? Tutorial(long id) => Arr(G(application, "tutorials", null)).OfType<JsonObject>().FirstOrDefault(t => TryKey(t["id"], out var k) && k == id);
+
+    /// <summary>start_tutorial: the session opens that tutorial, and the account's latest launch is a tutorial until the next hunt starts.</summary>
+    public void NoteTutorial(long account, string session, long tutorialId)
+    {
+        latestTutorial[account] = (session, tutorialId);
+    }
+
     public byte[] MoveMultiple2Reply(long account, byte[] formBody)
     {
+        if (latestTutorial.ContainsKey(account))
+            return "null"u8.ToArray();  // the tutorial's own item numbers are not the account's
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
         var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
@@ -1390,6 +1416,7 @@ public sealed partial class State
     public void NoteLaunch(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        latestTutorial.TryRemove(account, out _);
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
         using var con = Con(account);
         con.Begin();
