@@ -4,7 +4,7 @@ Status: accepted
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 
-A **profile page** (in the game and on the website) exists for an account of the community server and for nothing else. Every public read finds its account with `State.PublicAccount`: an account of this server, not banned, and never the recorded player's account ([docs/server.md](../server.md#public-reads)). A backup that nobody restored onto their own account is never shown, whoever holds the zip. A handle the server does not know is "Page not found" (HTTP 404) on the live site: it never shows a mock hunter. The fictional hunters stay only in the mock website (it runs without `SERVER_URL`, [docs/website.md](../website.md)) and in the launcher, whose screens are all sample data ([docs/launcher.md](../launcher.md)).
+A **profile page** (in the game and on the website) exists for an account of the community server and for nothing else. Every public read finds its account with `State.PublicAccount`: an account of this server, not banned, and never the recorded player's account ([docs/server.md](../server.md#public-reads)). A backup that nobody restored onto their own account is never shown, whoever holds the zip. A handle the server does not know is "Page not found" (HTTP 404) on the live site: it never shows a mock hunter. The fictional hunters stay only in the mock website (it runs without `SERVER_URL`, [docs/website.md](../website.md)) and in the launcher, whose profiles are sample data ([docs/launcher.md](../launcher.md)).
 
 ## Considered options
 

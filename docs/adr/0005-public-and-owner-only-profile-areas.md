@@ -13,7 +13,7 @@ Each public area has one read in the server, built once and served two ways: as 
 - **Header only, everything else owner-only.** The least shown. Rejected: the spec's goal is that a player sees their progress, and any other player's, on the profile page in the game and on the website; a page with no content shows nothing.
 - **A setting per area that each player chooses.** Rejected for now: it needs a settings page and a default for every area, and the spec fixes the split. A setting takes a new ADR.
 - **Separate code for the game and for the website.** Rejected: two reads of one area would drift, and the game and the website would show different numbers for the same player. One read per area has two outputs.
-- **Public only to signed-in players.** Rejected: the website's server shows a profile to a visitor who is signed in nowhere. (The game's public reads still ask for some player's token, as the game always sends one; the token only says who is asking, never what they may see.)
+- **Public only to signed-in players.** Rejected: the website's server shows a profile to a visitor who is signed in nowhere. (Some of the game's public reads still take a player's token, but only to know who asks.)
 
 ## Consequences
 
