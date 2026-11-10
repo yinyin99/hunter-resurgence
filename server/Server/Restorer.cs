@@ -108,6 +108,8 @@ public static class Restorer
                 File.Move(file, Path.Combine(Path.GetDirectoryName(kept)!, Path.GetFileName(file)), overwrite: true);
             Directory.Delete(before);
         }
+        if (finalId != current)  // the photos taken here follow the account; a name clash keeps the account's own photo
+            state.MovePhotos(current, finalId);
         state.Unpack(finalId, kept, pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
     }
