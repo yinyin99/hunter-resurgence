@@ -16,8 +16,8 @@
             <button type="button" class="card hover-tint @(n == sel ? "active" : "") @(day.Stars > 1 ? "big" : "")" aria-pressed="@(n == sel ? "true" : "false")" @onclick="() => sel = n">
                 <h6>@Label(n)</h6>
                 <div class="body">
-                    <AssetSlot Name="@($"paw-badge-{(day.Stars switch { 1 => "easy", 2 => "medium", _ => "hard" })}")" Width="80" Height="80" Class="badge" />
-                    <div class="stars" aria-label="@day.Stars">@string.Concat(Enumerable.Repeat("★", day.Stars))</div>
+                    <AssetSlot Name="@($"paw-badge-{(day.Stars switch { 1 => "easy", 2 => "medium", _ => "hard" })}")" Width="100" Height="111" Class="badge" />
+                    <div class="stars">@day.Stars</div>
                     <div class="gms">@day.Gms gm$</div>
                 </div>
             </button>

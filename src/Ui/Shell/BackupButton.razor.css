@@ -1,4 +1,4 @@
-/* fixed just under the top bar's logo (launcher: logo at 8px; website: 8px into the centred column);
+/* launcher: fixed just under the top bar's logo (logo at 8px); website: see below;
    on a website window wide enough, in the margin left of the column, 36px clear so the quick-nav strip (left -27px, 25px wide) stays free.
    z-index above the public bar (9001) and the banner (9000); open dialogs and popovers are in the top layer, above it */
 .backup-btn { position: fixed; z-index: 9002; top: calc(var(--h-statusbar) + 6px); left: 8px; box-sizing: border-box; width: 280px; background-color: var(--accent); color: #fff; }
