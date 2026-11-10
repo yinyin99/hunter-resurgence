@@ -512,6 +512,7 @@ public sealed partial class State
 
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
     readonly JsonObject application;
+    readonly JsonArray avatars;  // the recorded Avatar/getAvatars list: [{id, url, ...}]
     readonly JsonNode? skillList;
     readonly bool offline;
     /// <summary>A community server: every request needs a token, and the sign-in, start page and issued tokens are on.</summary>
@@ -548,9 +549,10 @@ public sealed partial class State
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null)
     {
         this.facts = facts ?? Facts.Default;
+        this.avatars = avatars ?? [];
         this.skillList = skillList;
         this.offline = offline;
         Spawns = new Spawner(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "spawn.json"));
@@ -659,11 +661,21 @@ public sealed partial class State
         Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, con => Seed(con, start, ReferenceEquals(start, connect) ? skillList : null));
 
     /// <summary>The item catalogue a restore reads units by (the Application/application reply); null without one.</summary>
-    public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items);
+    public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items, avatars);
 
-    sealed class ItemCatalogue(Dictionary<long, JsonObject> items) : Restore.IItemCatalogue
+    sealed class ItemCatalogue(Dictionary<long, JsonObject> items, JsonArray avatars) : Restore.IItemCatalogue
     {
         public bool HasUnits(int itemId) => items.TryGetValue(itemId, out var item) && item["units"] is JsonObject;
+
+        public int? AvatarId(string? address)
+        {
+            static string? PathOf(string? url) =>
+                Uri.TryCreate(url?.StartsWith("//") == true ? "https:" + url : url, UriKind.Absolute, out var u) ? u.AbsolutePath : null;
+            var path = PathOf(address);
+            return path is null ? null
+                : avatars.OfType<JsonObject>().FirstOrDefault(a => a["url"] is JsonValue v && v.TryGetValue<string>(out var s) && PathOf(s) == path) is { } hit
+                  && hit["id"] is JsonValue id && id.TryGetValue<int>(out var n) ? n : null;
+        }
     }
 
     /// <summary>The account of a request: the first of its tokens that resolves. None does: the local account on a local

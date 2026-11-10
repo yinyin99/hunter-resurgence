@@ -46,6 +46,21 @@ public class RestoreTests : StateTestBase
     static JsonNode? At(JsonNode? n, string key) => n![key]?.DeepClone();
 
     [Fact]
+    public void TheChosenAvatarIsRestoredFromTheRecordedList()
+    {
+        var list = (JsonArray)JsonNode.Parse("""[{"id": 1000001, "url": "https://pics.test/avatar/256/b.png"}, {"id": 1000042, "url": "https://pics.test/media/a.png"}]""")!;
+        state = new State(Path.Combine(tmp, "avatars.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: list);
+        var result = Restorer.Import(state, Zip(TestZip.Own()), null, tmp);  // the zip's picture is /a.png: no entry has that path
+        Assert.Equal(1000000, (int)Connect(1001)["account"]!["face"]!);
+        Assert.Contains("matches no avatar", result.Report);
+
+        list[1]!["url"] = "https://other.test/a.png";  // another host, the same path
+        result = Restorer.Import(state, Zip(TestZip.Own(), "again.zip"), null, tmp);
+        Assert.Equal(1000042, (int)Connect(1001)["account"]!["face"]!);
+        Assert.Contains("avatar 1000042", result.Report);
+    }
+
+    [Fact]
     public void TestALocalServerKeepsTheRankOfTheRestoredProfile()
     {
         var local = new State(Path.Combine(tmp, "local.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: true);

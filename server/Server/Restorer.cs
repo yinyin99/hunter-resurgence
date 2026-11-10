@@ -156,6 +156,8 @@ public static class Restorer
         a["gender"] = p.Gender;
         a["hunterscore"] = p.Hunterscore;
         a["face"] = m.Account.Face;
+        foreach (var key in new[] { "avatar", "avatar_id" })  // the account's own copies of the chosen avatar
+            if (a.ContainsKey(key)) a[key] = m.Account.Face;
         a["facebook_enabled"] = m.Account.FacebookEnabled;
         a["share_on_facebook"] = m.Account.ShareOnFacebook != 0;
         Put(a, "hostname", p.Hostname);

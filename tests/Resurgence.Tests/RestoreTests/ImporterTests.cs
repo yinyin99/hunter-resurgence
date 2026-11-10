@@ -14,6 +14,13 @@ public class ImporterTests
         public bool HasUnits(int itemId) => withUnits.Contains(itemId);
     }
 
+    /// <summary>A one-entry avatar list: the entry's picture path and id.</summary>
+    sealed class Avatars(string path, int id) : IItemCatalogue
+    {
+        public bool HasUnits(int itemId) => false;
+        public int? AvatarId(string? address) => address is not null && address.EndsWith(path, StringComparison.Ordinal) ? id : null;
+    }
+
     static string ModelJson(Restored r) => JsonSerializer.Serialize(r.Model, Importer.Json);
 
     [Fact]
@@ -251,6 +258,22 @@ public class ImporterTests
         Assert.Equal(["collectables", "weapon", "animal", "daily_missions"], m.Stats.UserStats.Select(p => p.Key));
         Assert.Equal(["/game/user/harvest", "/game/user/trophies", "/v1/Trophy/list"], m.Trophies.Select(t => t.Source));
         Assert.Equal(["/game/user/lodge", "/game/user/lodges"], m.Lodges.Select(t => t.Source));
+    }
+
+    [Fact]
+    public void TheAvatarIsTheListEntryOfTheProfilePictureAddress()
+    {
+        var hit = SyntheticZip.Own().Read(new Avatars("/a.png", 1000042));
+        Assert.Equal(1000042, hit.Model.Account.Face);
+        Assert.Contains("avatar 1000042 (from the avatar picture address)", hit.Report.Restored);
+
+        var miss = SyntheticZip.Own().Read(new Avatars("/other.png", 1000042));
+        Assert.Equal(1000000, miss.Model.Account.Face);
+        Assert.Contains("the avatar picture address matches no avatar of the list: the default avatar is kept", miss.Report.Warnings);
+
+        var none = SyntheticZip.Own().Read();  // no list: the default, nothing to report
+        Assert.Equal(1000000, none.Model.Account.Face);
+        Assert.DoesNotContain(none.Report.Warnings, w => w.Contains("avatar"));
     }
 
     [Fact]

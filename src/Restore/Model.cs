@@ -2,10 +2,13 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Restore;
 
-/// <summary>The server's own item catalogue (never one taken from an upload): true when the item has units, a count.</summary>
+/// <summary>The server's own catalogues (never one taken from an upload): true when an item has units, a count; the id of the avatar whose picture is at an address.</summary>
 public interface IItemCatalogue
 {
     bool HasUnits(int itemId);
+
+    /// <summary>The id of the avatar of the list whose picture address is <paramref name="address"/> (the same path, any host); null for no match or no list.</summary>
+    int? AvatarId(string? address) => null;
 }
 
 /// <summary>A player as read from a backup zip, free of any storage or server type.
