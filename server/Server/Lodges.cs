@@ -8,23 +8,24 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     const string LodgeList = "/game/user/lodges", LodgeOne = "/game/user/lodge";
-    const int MaxNameLength = 100, MaxSlots = 100;  // generous: a lodge has a few dozen slots; other players download the whole lodge
+    const int MaxText = 100, MaxSlots = 200;  // generous (the largest lodge has 163 animal slots): other players download the whole lodge
     static readonly string[] AnimalSlotKeys = ["slot_id", "trophy_id", "pose_id", "rotation", "base_texture", "is_skull"];
     static readonly string[] WeaponSlotKeys = ["slot_id", "weapon_id", "rotation"];
 
     static readonly (string Key, Func<JsonNode?, JsonNode?> Check)[] SlotFields =
-        [("name", Name), ("animal_slots", v => Slots(v, AnimalSlotKeys)), ("weapon_slots", v => Slots(v, WeaponSlotKeys))];
+        [("name", Text), ("animal_slots", v => Slots(v, AnimalSlotKeys)), ("weapon_slots", v => Slots(v, WeaponSlotKeys))];
 
     static readonly (string Key, Func<JsonNode?, JsonNode?> Check)[] SettingFields =
-        [("name", Name), ("locked", v => Is(v, JsonValueKind.True, JsonValueKind.False)), ("style_id", v => v is null ? null : Is(v, JsonValueKind.Number))];  // no style: null
+        [("name", Text), ("locked", v => Is(v, JsonValueKind.True, JsonValueKind.False)), ("style_id", v => v is null ? null : Is(v, JsonValueKind.Number))];  // no style: null
 
     /// <summary>A copy of a value of one of these kinds; anything else (null too) is a bad request.</summary>
     static JsonNode Is(JsonNode? v, params JsonValueKind[] kinds) =>
         v is JsonValue j && kinds.Contains(j.GetValueKind()) ? v.DeepClone() : throw new FormatException();
 
-    static JsonNode Name(JsonNode? v) => Is(v, JsonValueKind.String) is var name && name.GetValue<string>().Length <= MaxNameLength ? name : throw new FormatException();
+    static JsonNode Text(JsonNode? v) => Is(v, JsonValueKind.String) is var text && text.GetValue<string>().Length <= MaxText ? text : throw new FormatException();
 
-    /// <summary>The slots of a lodge: at most MaxSlots objects with a numeric `slot_id`, each reduced to the slot's own keys with plain values.</summary>
+    /// <summary>The slots of a lodge: at most MaxSlots objects with a numeric `slot_id`, each reduced to the slot's own keys; a value is a number, true or false
+    /// (`base_texture` also a short text, the name of its texture).</summary>
     static JsonNode Slots(JsonNode? v, string[] keys)
     {
         var list = v as JsonArray ?? throw new FormatException();
@@ -36,10 +37,22 @@ public sealed partial class State
             var kept = new JsonObject();
             foreach (var key in keys)
                 if (slot.TryGetPropertyValue(key, out var value))
-                    kept[key] = value is null ? null : Is(value, JsonValueKind.Number, JsonValueKind.True, JsonValueKind.False);
+                    kept[key] = value is null ? null : key == "base_texture" && value is JsonValue { } t && t.GetValueKind() == JsonValueKind.String ? Text(value)
+                        : Is(value, JsonValueKind.Number, JsonValueKind.True, JsonValueKind.False);
             copy.Add(kept);
         }
         return copy;
+    }
+
+    /// <summary>Give each new slot the stored keys it lacks (`is_full_body`, `trophy_details`) when the stored slot of the same `slot_id` holds the same
+    /// trophy or weapon: the game saves a lodge without them, whenever the player leaves it.</summary>
+    static void Carry(JsonArray slots, JsonArray stored)
+    {
+        foreach (var slot in slots.OfType<JsonObject>())
+            if (stored.OfType<JsonObject>().FirstOrDefault(s => Py.Eq(s["slot_id"], slot["slot_id"]) && Py.Eq(s["trophy_id"], slot["trophy_id"]) && Py.Eq(s["weapon_id"], slot["weapon_id"])) is { } same)
+                foreach (var (key, value) in same)
+                    if (!slot.ContainsKey(key))
+                        slot[key] = value?.DeepClone();
     }
 
     /// <summary>`/game/user/<id>/lodges` of an account: its lodges, each animal slot with its `trophy_details`.</summary>
@@ -96,7 +109,12 @@ public sealed partial class State
             if (JsonNode.Parse((string)r[1]) is JsonObject node)
             {
                 foreach (var (key, value) in edits)
-                    node[key] = value?.DeepClone();
+                {
+                    var fresh = value?.DeepClone();
+                    if (fresh is JsonArray slots && node[key] is JsonArray stored)
+                        Carry(slots, stored);
+                    node[key] = fresh;
+                }
                 con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(node), r[0]);
             }
         con.Commit();

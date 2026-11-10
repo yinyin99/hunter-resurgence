@@ -233,7 +233,7 @@ A lodge is the rows a restore stored for it (`lodges`, one row of `/game/user/lo
 
 | Call | Effect |
 |---|---|
-| `PUT /game/user/lodges/<id>`, `{name, animal_slots: [{slot_id, trophy_id, pose_id, rotation, base_texture, is_skull}], weapon_slots: [{slot_id, weapon_id, rotation}]}` | Sets `name` (at most 100 characters) and the two slot lists (at most 100 slots each) on the lodge's stored rows (a key the body lacks stays; a slot keeps only the keys shown, each a number, true, false or null; a slot needs a numeric `slot_id`) |
+| `PUT /game/user/lodges/<id>`, `{name, animal_slots: [{slot_id, trophy_id, pose_id, rotation, base_texture, is_skull}], weapon_slots: [{slot_id, weapon_id, rotation}]}` | Sets `name` (at most 100 characters) and the two slot lists (at most 200 slots each; the largest lodge has 163) on the lodge's stored rows (a key the body lacks stays). A slot needs a numeric `slot_id` and keeps only the keys shown, each a number, true, false or null (`base_texture` also a text of at most 100 characters, the texture's name). A slot that holds the same trophy or weapon as the stored slot of its `slot_id` keeps the stored keys the body lacks (`is_full_body`, `trophy_details`): the game sends a save whenever the player leaves the lodge |
 | `PUT /game/user/lodges/<id>/settings`, `{name, locked, style_id}` | Sets the keys the body has (`name` a string of at most 100 characters, `locked` true or false, `style_id` a number or null) |
 | `PUT /game/user/trophies/<id>`, `{hidden}` | Sets `hidden` (true or false) of the trophy: on the restored rows of `/game/user/trophies` and of `Trophy/list`, and, for a harvest made here (a kill id), in the `hidden` column of `harvests` (schema 8) |
 
