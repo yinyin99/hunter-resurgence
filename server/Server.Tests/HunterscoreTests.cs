@@ -441,6 +441,7 @@ public class HunterscoreTests : StateTestBase
             con.Exec("DROP TABLE friends");
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("DROP TABLE loadouts");
+            con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 4");
         }
         var migrated = new Store(file);
@@ -449,6 +450,7 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND stats IS NULL"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
         Assert.Empty(migrated.FriendsOf(5, null).Friends);  // version 6: the friends table
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM wallet_log WHERE account_id = $a"));  // version 11: the wallet log
     }
 
     [Fact]
@@ -502,6 +504,7 @@ public class HunterscoreTests : StateTestBase
             con.Exec("INSERT INTO expeditions (account_id, start_ts, stats) VALUES ($a, 3, '{}')");
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("DROP TABLE loadouts");
+            con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 6");
         }
         using var check = new Store(file).Open(5);

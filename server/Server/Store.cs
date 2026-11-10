@@ -13,10 +13,10 @@ public sealed class Store
     /// <summary>Tables with an `account_id` column: Db refuses SQL on them that does not bind the account.</summary>
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
-         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results"];
+         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 11;
+    public const int Version = 12;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -76,6 +76,13 @@ public sealed class Store
         CREATE INDEX friends_other ON friends (other_id);
         """;
 
+    // one row per change of a wallet balance made here: `amount` is signed, `after` the balance after it, `item_ids` the item ids bought (JSON array)
+    const string WalletLog = $"""
+        CREATE TABLE wallet_log (
+            n INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, currency TEXT NOT NULL, amount REAL NOT NULL, after REAL NOT NULL, summary TEXT NOT NULL, item_ids TEXT NOT NULL);
+        CREATE INDEX wallet_log_account ON wallet_log (account_id, currency, n);
+        """;
+
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
     /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
     public const long FirstServerId = 2_000_000_000;
@@ -101,6 +108,7 @@ public sealed class Store
         {WebSessions}
         {Uploads}
         {UploadResults}
+        {WalletLog}
         {Loadouts}
 
         CREATE TABLE items (
@@ -222,7 +230,8 @@ public sealed class Store
             if (version < 9) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
             if (version < 10 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
                 con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
-            if (version < 11)
+            if (version < 11) con.Script(WalletLog);
+            if (version < 12)
             {
                 con.Script(Loadouts);
                 con.Script(RestoredLoadouts.Replace("$a", "e.account_id"));

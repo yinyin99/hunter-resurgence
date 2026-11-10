@@ -194,9 +194,9 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public void TestTheSchemaOfVersion10ReadsTheRestoredLoadoutsOfEveryAccount()
+    public void TestTheSchemaOfVersion11ReadsTheRestoredLoadoutsOfEveryAccount()
     {
-        var file = Path.Combine(tmp, "v10.db");
+        var file = Path.Combine(tmp, "v11.db");
         var store = new Store(file);
         foreach (var (id, name) in new[] { (5L, "Kit A"), (6L, "Kit B") })
             store.CreateAccount(id, "h" + id, new JsonObject(), seed: con =>
@@ -205,7 +205,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         using (var con = store.Open())
         {
             con.Exec("DROP TABLE loadouts");
-            con.Exec("PRAGMA user_version = 10");
+            con.Exec("PRAGMA user_version = 11");
         }
         var migrated = new Store(file);
         string Rows(long account)
