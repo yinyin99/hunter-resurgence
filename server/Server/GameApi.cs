@@ -376,8 +376,8 @@ public static class GameApi
                     var page = s.ScorePageReply(account, kid);
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
-               .WithName("ScorePage").WithSummary("Kill details page of a server kill")
-               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page.")
+               .WithName("ScorePage").WithSummary("Kill details page of a kill")
+               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page; for a kill a restore brought, the page its backup saved (sent with a sandbox policy).")
                .PathParams(("handle", "player handle (any)")).QueryParams(("id", "kill id"))
                .Produces(200, contentType: "text/html");
         }

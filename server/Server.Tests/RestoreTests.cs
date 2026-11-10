@@ -315,6 +315,20 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestADatabaseOfSchema8GetsTheSavedColumnOfThePhotos()
+    {
+        var file = Path.Combine(tmp, "old8.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN saved");
+            con.Exec("PRAGMA user_version = 8");
+        }
+        using var migrated = new Store(file).Open();
+        Assert.Equal(1L, migrated.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'"));
+        Assert.Equal((long)Store.Version, migrated.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
     public void TestWithoutAServerHuntTheNewestRestoredHuntIsTheLatest()
     {
         Restorer.Import(state, Zip(TestZip.Own().Hunts()), null, tmp);

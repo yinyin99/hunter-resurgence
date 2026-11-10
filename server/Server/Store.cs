@@ -198,7 +198,8 @@ public sealed class Store
                            + " AND (SELECT COUNT(*) FROM events f WHERE f.account_id = e.account_id AND f.event = 4 AND f.id < e.id)"
                            + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
             }
-            if (version < 9) con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
+            if (version < 9 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
+                con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
