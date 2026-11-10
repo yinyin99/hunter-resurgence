@@ -130,13 +130,13 @@ public sealed class LiveSiteTests : UiContext
     public void TheBestPillShowsTheServersPersonalBestsWithoutSeasonsOrSheetLinks()
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":null}""";
-        const string best = """{"rows":[{"species":"Fox Deer","score":82.5588,"range":74.77,"weapon":"Fox Rifle","ts":1790887016,"kill":9}]}""";
+        const string best = """{"rows":[{"species":"Fox Deer","score":50.5,"range":60.25,"weapon":"Fox Rifle","ts":1700000500,"kill":9}]}""";
         Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", best: best)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics").Add(h => h.Sub, "best"));
         cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
-        Assert.Equal(["Fox Deer", "Fox Rifle", "2026-10-01 20:36"], cut.FindAll("table.hist tbody td").Take(3).Select(td => td.TextContent));
+        Assert.Equal(["Fox Deer", "Fox Rifle", "2023-11-14 22:21"], cut.FindAll("table.hist tbody td").Take(3).Select(td => td.TextContent));
         Assert.Empty(cut.FindAll("select#season"));
         Assert.Empty(cut.FindAll("table.hist a"));
     }
