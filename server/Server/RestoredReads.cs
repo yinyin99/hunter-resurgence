@@ -48,7 +48,7 @@ public static class RestoredReads
     /// them: the restored ones (the base, which play never changes) plus the account's closed hunts (<see cref="AddHunts"/>).</summary>
     static (JsonObject Data, double Distance, double Duration, long? Bust, long? Lane) Statistics(Db con)
     {
-        var row = con.Rows("SELECT user_stats, distance, duration, bust_through_score, lane_bandit_score FROM statistics WHERE account_id = $a").FirstOrDefault();
+        var row = con.Rows("SELECT user_stats, distance, duration FROM statistics WHERE account_id = $a").FirstOrDefault();
         var data = row is null ? new JsonObject() : JsonNode.Parse((string)row[0])!.AsObject();
         if (row is null)  // nothing restored: the empty statistics of a new player; a restored `data` stays as saved (an older reply has no daily_missions)
             foreach (var kind in new[] { "collectables", "weapon", "animal", "daily_missions" })

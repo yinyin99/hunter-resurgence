@@ -343,7 +343,7 @@ public sealed class Store
         System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, long> { ["lanebandit"] = 1, ["bustthrough"] = 0 });
 
     /// <summary>A minigame's whole board (a kind of <see cref="GameIds"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
-    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); one query per account
+    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); two queries per account
     /// on every page view, fine for the restored accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
     public List<(string Handle, long Score)> GameBoard(string kind, long? excluded)
     {

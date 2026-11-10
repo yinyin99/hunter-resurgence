@@ -479,13 +479,14 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTheMinigameBoardsListTheRestoredBestScores()
+    public async Task TestTheMinigameBoardsListTheBestScores()
     {
         state.CreateAccount(9, "third");
         state.CreateAccount(10, "fourth");
         state.CreateAccount(11, "nogame");
+        state.CreateAccount(13, "fifth");
         state.CreateAccount(12, "banned");
-        foreach (var (id, lane, bust) in new (long, long?, long?)[] { (9, 300, null), (10, 300, 40), (11, 0, null), (12, 900, 900) })
+        foreach (var (id, lane, bust) in new (long, long?, long?)[] { (9, 300, null), (10, 300, 40), (12, 900, 900) })
         {
             using var con = state.Store.Open(id);
             PlayerRows.SetStatistics(con, new JsonObject(), 0, 0, bust, lane);
@@ -494,15 +495,17 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         // event 17 scores: higher than the restored one wins (third, Lane Bandit 500), lower does not (fourth, Bust Through 10), and a
         // player who never restored is listed (nogame's Bust Through 70); the connect reply's best follows
-        foreach (var (id, game, score) in new (long, int, int)[] { (9, 1, 500), (9, 1, 20), (10, 0, 10), (11, 0, 70) })
+        foreach (var (id, game, score) in new (long, int, int)[] { (9, 1, 500), (9, 1, 20), (10, 0, 10), (11, 0, 70), (13, 1, 300) })
         {
             using var con = state.Store.Open(id);
             con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, 17, ?)", $$"""{"event": 17, "game_id": {{game}}, "score": {{score}}}""");
         }
+        var reply = new JsonObject();
         using (var con = state.Store.Open(11))
-            Assert.Equal(70, RestoredReads.BestScore(con, 0));
-        // equal scores: the lower account id first; a 0, no score and a banned account are not on it
-        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "third", "value": 500}, {"rank": 2, "handle": "fourth", "value": 300}]}""",
+            RestoredReads.Connect(con, reply, new JsonObject(), null);
+        Eq("[70, null]", T(reply["user_stats"]!["bust_through_score"], reply["user_stats"]!["lane_bandit_score"]));
+        // equal scores: the lower account id first (fourth restored 300, fifth played 300); a 0, no score and a banned account are not on it
+        Eq("""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500}, {"rank": 2, "handle": "fourth", "value": 300}, {"rank": 3, "handle": "fifth", "value": 300}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
         Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70}, {"rank": 2, "handle": "fourth", "value": 40}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
