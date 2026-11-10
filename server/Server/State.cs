@@ -1475,6 +1475,19 @@ public sealed partial class State
     /// <summary>GET &lt;web-host&gt;/user/&lt;handle&gt;/score/?id=&lt;kill_id&gt;: kill details HTML, or null for an unknown kill.</summary>
     public byte[]? ScorePageReply(long account, long killId)
     {
+        if (LoadKill(account, killId) is not { } k)
+            return null;
+        var sheet = k.Features is not null ? Scoring.SheetHtml((int)Py.L(k.Sp), k.Define, k.SpeciesName, k.Features, k.Weight, k.Gender) : null;
+        return Encoding.UTF8.GetBytes(ScorePage.Render(k.Kill, k.Handle, k.SpeciesName, k.Define.ToLowerInvariant(), k.ReserveName, items, locale, textures, sheet));
+    }
+
+    /// <summary>What a kill's score sheet (the page and the website's JSON) is made of: the page's `killData`, the owner's handle, the species' name and define, the reserve's name,
+    /// the species id, the antler features (null without), and the weight (grams) and gender of the spawn.</summary>
+    sealed record KillSheet(JsonObject Kill, string Handle, string SpeciesName, string Define, string ReserveName, JsonNode? Sp, JsonNode? Features, JsonNode? Weight, JsonNode? Gender);
+
+    /// <summary>The kill of an account that has a harvest on this server; null for an unknown kill.</summary>
+    KillSheet? LoadKill(long account, long killId)
+    {
         object[] row;
         List<JsonObject> hits;
         JsonObject page, e7, e22;
@@ -1536,13 +1549,9 @@ public sealed partial class State
         };
         var define = Lookup(species, entry["species"]) is { } s ? Py.Str(G(s, "define", "")) : "";
         var speciesName = (string?)entry["speciesName"] ?? "";
-        var sheet = f is not null
-            ? Scoring.SheetHtml((int)Py.L(sp), define, speciesName, f, G(e7, "weight_grams", 0), entry["gender"])
-            : null;
         var reserveName = expedition is not null && TryKey(Py.FromSql(expedition[1]), out var rid)
                           && reserves.TryGetValue(rid, out var rn) ? rn ?? "" : "";
-        return Encoding.UTF8.GetBytes(ScorePage.Render(kill, handle, speciesName, define.ToLowerInvariant(), reserveName, items,
-                                                       locale, textures, sheet));
+        return new(kill, handle, speciesName, define, reserveName, sp, f, G(e7, "weight_grams", 0), entry["gender"]);
     }
 
     /// <summary>Expedition/list: the server expeditions (newest first), then the hunts a restore saved, else the recorded ones, paged by offset and limit.</summary>

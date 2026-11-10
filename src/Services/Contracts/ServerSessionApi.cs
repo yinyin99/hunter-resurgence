@@ -24,6 +24,10 @@ public static class ServerSessionApi
     public const string RanksSuffix = "/ranks";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
     public const string FriendsSuffix = "/friends";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. Public: no cookie needed.</summary>
+    public const string HuntsSuffix = "/hunts";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. Public: no cookie needed.</summary>
+    public const string ScoreSuffix = "/score";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
     public const string Leaderboards = "/leaderboards";
 }
@@ -98,3 +102,21 @@ public sealed record ServerFriends(ServerPlayer[] Friends, ServerPlayer[] Reques
 
 /// <summary>The players of <see cref="ServerAccountApi.FriendSearch"/>.</summary>
 public sealed record ServerPlayers(ServerPlayer[] Hunters);
+
+/// <summary>One page of a hunter's hunt history of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> is Unix seconds, <c>Lodge</c> the lodge's id as "#id" ("" without one).</summary>
+public sealed record ServerHunts(int Page, int Pages, int Total, ServerHuntRow[] Rows);
+
+public sealed record ServerHuntRow(long Id, long Start, long Seconds, string Reserve, string Lodge, int Collectables, int Kills);
+
+/// <summary>One hunt of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> and <c>End</c> are Unix seconds (<c>End</c> null while it is open); the weapons and species rows are the statistics tab's.</summary>
+public sealed record ServerHunt(long Id, string Reserve, string Lodge, long Start, long? End, WeaponStat[] Weapons, SpeciesStat[] Animals, double DistanceKm, long Seconds, ServerKill[] Kills);
+
+/// <param name="When">The harvest time, Unix seconds.</param>
+/// <param name="Sheet">Whether the kill has a score sheet to open.</param>
+public sealed record ServerKill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, long When, bool Sheet);
+
+/// <summary>A kill's score sheet of <see cref="ServerSessionApi.ScoreSuffix"/>, <see cref="ScoreSheet"/> on the wire; <c>When</c> is Unix seconds.</summary>
+public sealed record ServerSheet(string Kind, string Species, SheetFact[] Facts, SheetRow[] Rows, ServerAbnormal[] Abnormal, SheetFact[] Sums, string Weapon, bool Scope, string Ammo, double DistanceM,
+    string State, string BodyPart, string Stance, string Platform, double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, long When, long ExpeditionId, double Score, double HarvestValue);
+
+public sealed record ServerAbnormal(double Right, double Left);

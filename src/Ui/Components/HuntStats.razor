@@ -35,7 +35,7 @@ else
 {
     <table class="kills tbl">
         <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th>@if (Hunt.Kills.Any(k => k.Taxidermy is not null)) { <th></th> }</tr></thead>
-        <tbody>@foreach (var k in Hunt.Kills) { <tr><td><a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a></td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td>@if (k.Taxidermy is { } t) { <td><TaxidermyButton Kill="k" Offer="t" /></td> }</tr> }</tbody>
+        <tbody>@foreach (var k in Hunt.Kills) { <tr><td>@if (k.Sheet) { <a href="/profile/@Handle/score/@k.Id">@L.Term(k.Species)</a> } else { @L.Term(k.Species) }</td><td>@k.Weapon (@k.Ammo)</td><td>@Fmt.Score(k.Score)</td><td>@Fmt.Metres(k.DistanceM)</td>@if (k.Taxidermy is { } t) { <td><TaxidermyButton Kill="k" Offer="t" /></td> }</tr> }</tbody>
     </table>
 }
 

@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "achievements", "ranks" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "achievements", "ranks", "expedition", "score", "antler" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -140,7 +140,12 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return new([], [], [], 0, 0);
     }
-    public Task<ScoreSheet?> SheetAsync(string handle, string kind, long id) => mock.SheetAsync(handle, kind, id);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: the score sheet of a kill (the server decides its <paramref name="kind"/>, score or antler); null when the kill has none or the server does not answer.</summary>
+    public async Task<ScoreSheet?> SheetAsync(string handle, string kind, long id) =>
+        await GetAsync<ServerSheet>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.ScoreSuffix}/{id}", "score sheet") is { } s
+            ? new(s.Kind, s.Species, s.Facts ?? [], s.Rows ?? [], [.. (s.Abnormal ?? []).Select(a => (a.Right, a.Left))], s.Sums ?? [], s.Weapon, s.Scope, s.Ammo, s.DistanceM, s.State, s.BodyPart, s.Stance, s.Platform,
+                s.WeightKg, s.Type, s.WoundTime, s.Integrity, s.ShotLocation, s.Shots, Utc(s.When), s.ExpeditionId, s.Score, s.HarvestValue)
+            : null;
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => mock.GalleryAsync(handle, page);
     public Task<Result> DeleteGalleryImageAsync(long id) => mock.DeleteGalleryImageAsync(id);
     public Task<byte[]> GalleryZipAsync(string handle) => mock.GalleryZipAsync(handle);
@@ -198,8 +203,36 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return new([], 1, 1);
     }
-    public Task<Expedition?> ExpeditionAsync(string handle, long? id) => mock.ExpeditionAsync(handle, id);
-    public Task<Page<HistoryRow>> HistoryAsync(string handle, int page) => mock.HistoryAsync(handle, page);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: a hunt with its statistics and kills; null when the server does not know it or does not answer. A hunt that is open has no statistics yet.</summary>
+    public async Task<Expedition?> ExpeditionAsync(string handle, long? id) =>
+        await GetAsync<ServerHunt>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.HuntsSuffix}/{(id?.ToString() ?? "latest")}", "hunt") is { } h
+            ? new(h.Id, h.Reserve, h.Lodge, Utc(h.Start), h.End is { } end ? Utc(end) : null, h.Weapons ?? [], h.Animals ?? [], [], [], h.DistanceKm, (int)Math.Clamp(h.Seconds, 0, int.MaxValue), [],
+                [.. (h.Kills ?? []).Select(k => new Kill(k.Id, k.Species, k.Weapon, k.Ammo, k.DistanceM, k.Score, k.WeightKg, Utc(k.When), null, k.Sheet))])
+            : null;
+    /// <summary><c>GET /hunters/&lt;handle&gt;/hunts?page=n</c>: one page of 40. A failed answer is an empty page.</summary>
+    public async Task<Page<HistoryRow>> HistoryAsync(string handle, int page) =>
+        await GetAsync<ServerHunts>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.HuntsSuffix}?page={page}", "hunts") is { } h
+            ? new([.. (h.Rows ?? []).Select(r => new HistoryRow(r.Id, Utc(r.Start), (int)Math.Clamp(r.Seconds, 0, int.MaxValue), r.Reserve, r.Lodge, r.Collectables, r.Kills))], h.Page, h.Pages, h.Total)
+            : new([], 1, 1);
+
+    static DateTime Utc(long seconds) => DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(seconds, -62135596800, 253402300799)).UtcDateTime;
+
+    /// <summary>One answer of the server as its JSON, null when it is not a 200 with a body or does not come; the reason is logged.</summary>
+    async Task<T?> GetAsync<T>(string path, string what) where T : class
+    {
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<T>() is { } body) return body;
+            log.LogWarning("The server answered {Path} with {Status}: no {What}", path, (int)response.StatusCode, what);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no {What}", path, e.Message, what);
+        }
+        return null;
+    }
     public Task<PersonalBest> BestAsync(string handle, int season) => mock.BestAsync(handle, season);
     public Task<Progress> ProgressAsync() => mock.ProgressAsync();
     public Task<int> ExpeditionCountAsync() => mock.ExpeditionCountAsync();

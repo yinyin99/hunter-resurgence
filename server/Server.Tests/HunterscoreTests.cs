@@ -356,6 +356,54 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAnyAccountsHuntsAreReadByAnotherUserIdAndShownAsAHistory()
+    {
+        state = Online();
+        state.CreateAccount(B, "second");
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        Kill(B, 81, 1, 10);
+        state.Disconnect(B, """{"distance_travelled": 466}"""u8.ToArray());
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());  // the second hunt is still open
+
+        // the player's own account without a user id or with its own, another player's by user id; a banned, an unknown and the recorded player's are nobody's
+        Assert.Equal(B, state.HuntsOf(B, []));
+        Assert.Equal(B, state.HuntsOf(B, "user_id=8"u8.ToArray()));
+        Assert.Equal(B, state.HuntsOf(ME, "user_id=8"u8.ToArray()));
+        foreach (var id in new[] { 9, 99, 7 })
+            Assert.Null(state.HuntsOf(B, Encoding.UTF8.GetBytes($"user_id={id}")));
+
+        var page = state.PublicHunts(B, 1);
+        Eq("[1, 1, 2]", T(page["page"], page["pages"], page["total"]));
+        var (open, closed) = (page["rows"]![0]!, page["rows"]![1]!);
+        Eq("""[0, "Test Reserve", "#101", 0, 0]""", T(open["seconds"], open["reserve"], open["lodge"], open["collectables"], open["kills"]));
+        Eq("""["Test Reserve", "#101", 1]""", T(closed["reserve"], closed["lodge"], closed["kills"]));
+        Assert.True((long)open["id"]! > (long)closed["id"]!);
+        Assert.Equal(page["rows"]!.ToJsonString(), state.PublicHunts(B, 9)["rows"]!.ToJsonString());  // a page past the last is the last
+
+        var hunt = state.PublicHunt(B, (long)closed["id"]!)!;
+        Assert.NotNull(hunt["end"]);
+        var w = hunt["weapons"]!.AsArray().Single()!;
+        Eq("""["Test Rifle", "Test Bullet", 1]""", T(w["weapon"], w["ammo"], w["kills"]));
+        Eq("""["Test Deer", 1]""", T(hunt["animals"]![0]!["name"], hunt["animals"]![0]!["harvested"]));
+        Assert.Equal(0.466, (double)hunt["distanceKm"]!, 6);
+        var kill = hunt["kills"]!.AsArray().Single()!;
+        Eq("""["Test Deer", "Test Rifle", "Test Bullet", true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["sheet"]));
+        // without an id the newest hunt, which is open: no end, no statistics
+        var latest = state.PublicHunt(B, null)!;
+        Eq("[null, 0, 0]", T(latest["end"], latest["weapons"]!.AsArray().Count, latest["kills"]!.AsArray().Count));
+        Assert.Null(state.PublicHunt(B, 999));
+
+        // the score sheet of the kill: no antler features, so a sheet without rows; an unknown kill has none
+        var sheet = state.PublicSheet(B, (long)kill["id"]!)!;
+        Eq("""["antler", "Test Deer", "Test Rifle", "Test Bullet", false, 1, "None"]""", T(sheet["kind"], sheet["species"], sheet["weapon"], sheet["ammo"], sheet["scope"], sheet["shots"], sheet["platform"]));
+        Assert.Empty(sheet["rows"]!.AsArray());
+        Assert.Null(state.PublicSheet(B, 999));
+    }
+
+    [Fact]
     public void TestAHarvestAfterItsHuntClosedStillCounts()
     {
         state = Online();

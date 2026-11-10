@@ -108,6 +108,33 @@ public static class HuntersApi
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/hunts", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicHunts(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterHunts").WithSummary("One page of a hunter's hunt history")
+            .WithDescription($"`{{page, pages, total, rows: [{{id, start, seconds, reserve, lodge, collectables, kills}}]}}`, {State.HuntsPageSize} rows a page, newest first: the hunts made here, then the restored ones "
+                             + "(as `Expedition/list`); `start` is Unix seconds, `seconds` 0 for a hunt that is open, `lodge` \"#id\" (the catalogue has no lodge names). 404 for a handle that is unknown or banned.")
+            .QueryParams(("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        group.MapGet("/{handle}/hunts/{id}", (string handle, string id) => state.PublicAccount(handle) is { } account && (id == "latest" ? state.PublicHunt(account, null) : long.TryParse(id, out var n) ? state.PublicHunt(account, n) : null) is { } hunt
+                ? Json(200, hunt)
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterHunt").WithSummary("One hunt of a hunter: its statistics and its kills")
+            .WithDescription("`{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}` of `Public_user/expedition` (`id` a hunt id, or `latest`): `weapons` and `animals` are the "
+                             + "rows of `/hunters/<handle>/statistics` for the hunt (empty while it is open, `end` null), `collectables`, `achievements` and `antlers` are empty, `kills` are `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` "
+                             + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). 404 for a handle that is unknown or banned, and for a hunt that is unknown.")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        group.MapGet("/{handle}/score/{kill}", (string handle, string kill) => state.PublicAccount(handle) is { } id && long.TryParse(kill, out var killId) && state.PublicSheet(id, killId) is { } sheet
+                ? Json(200, sheet)
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterScore").WithSummary("The score sheet of a kill, as data")
+            .WithDescription("The sheet of `/user/<handle>/score/` (the website's page) as JSON: `kind` (`score` for a typical antler sheet, `antler` for the others), `facts`, `rows` (`{label, a, b, c}`), `abnormal` (`{right, left}`), "
+                             + "`sums`, then the kill's `species`, `weapon`, `scope`, `ammo`, `distanceM`, `state`, `bodyPart`, `stance`, `platform`, `weightKg`, `type`, `woundTime`, `integrity`, `shotLocation`, `shots`, `when` (Unix seconds), "
+                             + "`expeditionId`, `score` and `harvestValue`. 404 for a handle that is unknown or banned, and for a kill without a harvest here (a restored one).")
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {
