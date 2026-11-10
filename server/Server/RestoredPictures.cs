@@ -77,6 +77,19 @@ public sealed partial class State
         }
     }
 
+    /// <summary>A restore that adopted another user id: move the files of `photos/<from>/` into `photos/<to>/`, replacing a file of the same name there, and remove the old folder.
+    /// The rows hold file names only, so the links (built from the account id) follow.</summary>
+    public void MovePhotos(long from, long to)
+    {
+        var old = AccountPhotos(from);
+        if (!Directory.Exists(old)) return;
+        var dir = AccountPhotos(to);
+        Directory.CreateDirectory(dir);
+        foreach (var file in Directory.GetFiles(old))
+            File.Move(file, Path.Combine(dir, Path.GetFileName(file)), overwrite: true);
+        Directory.Delete(old);
+    }
+
     /// <summary>The saved score sheet page of a restored kill (`kills/score_&lt;id&gt;.html` of the zip) in the account's folder; null without one.</summary>
     string? SavedPage(long account, long killId)
     {
