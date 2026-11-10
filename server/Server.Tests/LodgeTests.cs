@@ -39,10 +39,10 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
-    /// <summary>A request as the game sends an edit: JSON as text/plain, the JWT as a Bearer token.</summary>
-    async Task<(int Status, string Body)> Call(string method, string host, string path, string? token, string body = "")
+    /// <summary>A request as the game sends an edit: JSON as text/plain (or the type given), the JWT as a Bearer token.</summary>
+    async Task<(int Status, string Body)> Call(string method, string host, string path, string? token, string body = "", string type = "text/plain")
     {
-        var reply = await server.SendAsync(method, host, path, [("Content-Type", "text/plain"), .. token is null ? [] : new[] { ("Authorization", "Bearer " + token) }],
+        var reply = await server.SendAsync(method, host, path, [("Content-Type", type), .. token is null ? [] : new[] { ("Authorization", "Bearer " + token) }],
                                            Encoding.UTF8.GetBytes(body));
         return (reply.Status, Encoding.UTF8.GetString(reply.Body));
     }
@@ -137,6 +137,9 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     [InlineData("/game/user/lodges/3", """{"animal_slots": [{"trophy_id": 1}]}""")]
     [InlineData("/game/user/lodges/3", """{"weapon_slots": [{"slot_id": 0, "rotation": {"x": 1}}]}""")]
     [InlineData("/game/user/lodges/3/settings", """{"locked": "yes"}""")]
+    [InlineData("/game/user/lodges/3", """{"name": null}""")]
+    [InlineData("/game/user/lodges/3/settings", """{"locked": null}""")]
+    [InlineData("/game/user/lodges/3", """{"animal_slots": [{"slot_id": 0, "trophy_id": "7"}]}""")]
     [InlineData("/game/user/lodges/3/settings", """{"style_id": "1"}""")]
     [InlineData("/game/user/trophies/21", """{}""")]
     [InlineData("/game/user/trophies/21", """{"hidden": 1}""")]
@@ -150,6 +153,28 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, """{"errorCode": 400}"""), await Call("PUT", Web, "/v1" + path, owner, body));  // the web API's shape of the same refusal
         Eq(before, await Read(V2, $"/game/user/{OWNER}/lodges", viewer));
         Assert.Equal(2, (int)state.PublicTrophies(OWNER, 1)["total"]!);
+    }
+
+    [Fact]
+    public async Task TestALodgeHasLimitsOnItsNameAndSlots()
+    {
+        var before = await Read(V2, $"/game/user/{OWNER}/lodges", viewer);
+        string Slots(int n) => "[" + string.Join(",", Enumerable.Range(0, n).Select(i => $$"""{"slot_id": {{i}}, "trophy_id": null}""")) + "]";
+        foreach (var body in new[] { $$"""{"name": "{{new string('x', 101)}}"}""", $$"""{"animal_slots": {{Slots(101)}}}""", $$"""{"weapon_slots": {{Slots(101)}}}""" })
+            Assert.Equal(400, (await Call("PUT", V2, "/game/user/lodges/3", owner, body)).Status);
+        Eq(before, await Read(V2, $"/game/user/{OWNER}/lodges", viewer));
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/3", owner, $$"""{"name": "{{new string('x', 100)}}", "animal_slots": {{Slots(100)}}}"""));
+        Assert.Equal(100, (await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer))["animal_slots"]!.AsArray().Count);
+    }
+
+    [Fact]
+    public async Task TestAJsonContentTypeIsNotTurnedIntoAFormOnTheGameWebHost()
+    {
+        Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/lodges/3/settings", owner, """{"name": "json", "locked": true, "style_id": null}""", "application/json; charset=UTF-8"));
+        Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/trophies/21", owner, """{"hidden": true}""", "application/json"));
+        var lodge = await Read(Web, $"/v1/game/user/{OWNER}/lodges/3", viewer);
+        Eq("""["json", true, null]""", T(lodge["name"], lodge["locked"], lodge["style_id"]));
+        Assert.Equal(1, (int)state.PublicTrophies(OWNER, 1)["total"]!);
     }
 
     [Fact]

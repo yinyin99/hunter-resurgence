@@ -8,30 +8,35 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     const string LodgeList = "/game/user/lodges", LodgeOne = "/game/user/lodge";
+    const int MaxNameLength = 100, MaxSlots = 100;  // generous: a lodge has a few dozen slots; other players download the whole lodge
     static readonly string[] AnimalSlotKeys = ["slot_id", "trophy_id", "pose_id", "rotation", "base_texture", "is_skull"];
     static readonly string[] WeaponSlotKeys = ["slot_id", "weapon_id", "rotation"];
 
     static readonly (string Key, Func<JsonNode?, JsonNode?> Check)[] SlotFields =
-        [("name", v => Is(v, JsonValueKind.String)), ("animal_slots", v => Slots(v, AnimalSlotKeys)), ("weapon_slots", v => Slots(v, WeaponSlotKeys))];
+        [("name", Name), ("animal_slots", v => Slots(v, AnimalSlotKeys)), ("weapon_slots", v => Slots(v, WeaponSlotKeys))];
 
     static readonly (string Key, Func<JsonNode?, JsonNode?> Check)[] SettingFields =
-        [("name", v => Is(v, JsonValueKind.String)), ("locked", v => Is(v, JsonValueKind.True, JsonValueKind.False)), ("style_id", v => Is(v, JsonValueKind.Number))];
+        [("name", Name), ("locked", v => Is(v, JsonValueKind.True, JsonValueKind.False)), ("style_id", v => v is null ? null : Is(v, JsonValueKind.Number))];  // no style: null
 
-    /// <summary>A copy of a value of one of these kinds (null stays null); anything else is a bad request.</summary>
-    static JsonNode? Is(JsonNode? v, params JsonValueKind[] kinds) =>
-        v is null ? null : v is JsonValue j && kinds.Contains(j.GetValueKind()) ? v.DeepClone() : throw new FormatException();
+    /// <summary>A copy of a value of one of these kinds; anything else (null too) is a bad request.</summary>
+    static JsonNode Is(JsonNode? v, params JsonValueKind[] kinds) =>
+        v is JsonValue j && kinds.Contains(j.GetValueKind()) ? v.DeepClone() : throw new FormatException();
 
-    /// <summary>The slots of a lodge: objects with a numeric `slot_id`, each reduced to the slot's own keys with plain values.</summary>
+    static JsonNode Name(JsonNode? v) => Is(v, JsonValueKind.String) is var name && name.GetValue<string>().Length <= MaxNameLength ? name : throw new FormatException();
+
+    /// <summary>The slots of a lodge: at most MaxSlots objects with a numeric `slot_id`, each reduced to the slot's own keys with plain values.</summary>
     static JsonNode Slots(JsonNode? v, string[] keys)
     {
+        var list = v as JsonArray ?? throw new FormatException();
+        if (list.Count > MaxSlots) throw new FormatException();
         var copy = new JsonArray();
-        foreach (var item in v as JsonArray ?? throw new FormatException())
+        foreach (var item in list)
         {
             if (item is not JsonObject slot || !Py.IsNum(slot["slot_id"])) throw new FormatException();
             var kept = new JsonObject();
             foreach (var key in keys)
                 if (slot.TryGetPropertyValue(key, out var value))
-                    kept[key] = (value is null or JsonValue) ? value?.DeepClone() : throw new FormatException();
+                    kept[key] = value is null ? null : Is(value, JsonValueKind.Number, JsonValueKind.True, JsonValueKind.False);
             copy.Add(kept);
         }
         return copy;
