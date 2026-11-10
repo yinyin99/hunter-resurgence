@@ -7,8 +7,8 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     /// <summary>The store item "Inventory Loadout": every unit an account owns is one loadout, so a delivery adds a default loadout per unit.
-    /// A placed item (slot 23) is no part of a loadout; ammunition is the catalogue's category 3.</summary>
-    const long LoadoutItem = 811, PlacedSlot = 23, AmmoCategory = 3;
+    /// A placed item is no part of a loadout (<see cref="PLACED_SLOT"/>); ammunition is the catalogue's category 3.</summary>
+    const long LoadoutItem = 811, AmmoCategory = 3;
     const int MinName = 2, MaxName = 50, MaxColor = 11, MaxItems = 200;  // the limits of the page's rename box, its 12 colours, and a loadout's items
 
     static JsonObject Loadout(long id, string name, JsonNode? color, JsonNode items) => new() { ["name"] = name, ["color"] = color, ["items"] = items, ["id"] = id };
@@ -20,6 +20,9 @@ public sealed partial class State
     }
 
     static long Int(JsonNode? v, long min, long max = long.MaxValue) => IntOf(v, out var l) && l >= min && l <= max ? l : throw new FormatException();
+
+    /// <summary>A slot a loadout may name: a whole number from 1, never the placed items' slot.</summary>
+    static long Slot(JsonNode? v) => Int(v, 1) is var slot && slot != PLACED_SLOT ? slot : throw new FormatException();
 
     /// <summary>`GET /game/user/loadout`: the account's loadouts, ascending by id.</summary>
     public byte[] LoadoutsReply(long account)
@@ -48,7 +51,7 @@ public sealed partial class State
                 if (entry is not JsonObject e) return (400, []);
                 items.Add(new JsonObject
                 {
-                    ["slot_id"] = Int(e["slot_id"], 1), ["item_id"] = Int(e["item_id"], 1),
+                    ["slot_id"] = Slot(e["slot_id"]), ["item_id"] = Int(e["item_id"], 1),
                     ["item_guid"] = e["item_guid"] is null ? null : Int(e["item_guid"], 1),
                 });
             }
@@ -79,11 +82,11 @@ public sealed partial class State
     {
         if (!long.TryParse(loadoutId, out var id) || con.Scalar("SELECT entries FROM loadouts WHERE account_id = $a AND id = ?", id) is not string list)
             return;
-        con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND slot <> ?", PlacedSlot);
+        con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND slot <> ?", PLACED_SLOT);
         var unlimited = Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
         foreach (var entry in JsonNode.Parse(list) as JsonArray ?? [])
         {
-            if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId)) continue;
+            if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;
             long? guid = IntOf(e["item_guid"], out var g) ? g : null;
             if (con.Scalar("SELECT guid FROM items WHERE account_id = $a AND slot = 0 AND item_id = ?1 AND (?2 IS NULL OR guid = ?2) ORDER BY guid LIMIT 1", itemId, guid) is long free)
                 con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", slot, free);

@@ -156,7 +156,8 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
             """{"name": "ok", "color": 1}""", """{"name": "ok", "color": 1, "items": {}}""", """{"name": "ok", "color": 1, "items": [5]}""",
             """{"name": "ok", "color": 1, "items": [{"slot_id": "3", "item_id": 5}]}""", """{"name": "ok", "color": 1, "items": [{"slot_id": 3}]}""",
             """{"name": "ok", "color": 1, "items": [{"slot_id": 3, "item_id": 5, "item_guid": "x"}]}""",
-            """{"name": "ok", "color": 1, "items": [{"slot_id": 0, "item_id": 5}]}""", $$"""{"name": "ok", "color": 1, "items": [{{many}}]}""",
+            """{"name": "ok", "color": 1, "items": [{"slot_id": 0, "item_id": 5}]}""", """{"name": "ok", "color": 1, "items": [{"slot_id": -1, "item_id": 5}]}""",
+            """{"name": "ok", "color": 1, "items": [{"slot_id": 23, "item_id": 5}]}""", $$"""{"name": "ok", "color": 1, "items": [{{many}}]}""",
         ];
         var before = await Read(V2, "/game/user/loadout", owner);
         foreach (var body in bodies)
@@ -276,6 +277,18 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         var started = await Launch(Web, "/v1/session/start_tutorial?locale=en_US", "application/json", $$"""{"oauth_access_token": "{{owner}}", "tutorial_id": 0, "loadout_id": {{id}}}""", owner);
         Assert.Equal(("state", 200), (started.Source, started.Status));
         Assert.Equal(before, Slots());
+    }
+
+    [Fact]
+    public void TestARestoredEntryOfAPlacedItemsSlotOrBelowOneIsSkipped()
+    {
+        state.GrantItems(OWNER, 811);
+        var id = Ids(OWNER)[0];
+        using (var con = state.Store.Open(OWNER))  // a restore keeps the entries as they were saved
+            con.Exec("UPDATE loadouts SET entries = ? WHERE account_id = $a AND id = ?",
+                     """[{"slot_id": 23, "item_id": 5}, {"slot_id": 0, "item_id": 5}, {"slot_id": -2, "item_id": 5}, {"slot_id": 4, "item_id": 5}]""", id);
+        state.NoteLaunch(OWNER, Encoding.ASCII.GetBytes($"start=100&reserve=2&loadout_id={id}"));
+        Eq("""{"100": 0, "200": 0, "301": 4, "302": 0, "303": 0, "304": 0, "305": 0, "306": 23, "307": 0}""", JsonNode.Parse(Slots()));  // only the placed item is in slot 23
     }
 
     [Fact]
