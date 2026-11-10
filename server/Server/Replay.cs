@@ -24,6 +24,8 @@ public static class Replay
     public const string BUY = "/v1/Inventory/buy";
     public const string DISCOUNTS = "/v1/Application/discounts";
     public const string AVATARS = "/v1/Avatar/getAvatars";
+    public const string CHALLENGES = "/v1/Challenge/get_challenges";
+    public const string USER_CHALLENGES = "/v1/Challenge/get_user_challenges";
     public const string SPLASH = "/v1/Splash/list_active";
     public const string LAUNCH_START = "/v1/Launch/start";
     public const string JWT = "/v1/User/jwt";
@@ -313,6 +315,7 @@ public static class Replay
         var web = Script(p => p.EndsWith(WEB_SCRIPT_SUFFIX, StringComparison.Ordinal));
         e.TryGetValue(new("GET", apiHost, DISCOUNTS, null), out var discounts);
         var avatars = e.FirstOrDefault(kv => kv.Key.Params is null && kv.Key.Host == apiHost && string.Equals(kv.Key.Path, AVATARS, StringComparison.OrdinalIgnoreCase)).Value;
+        var challenges = e.FirstOrDefault(kv => kv.Key.Host == apiHost && string.Equals(kv.Key.Path, CHALLENGES, StringComparison.OrdinalIgnoreCase)).Value;
         var sample = System.IO.Path.Combine(S(cfg, "install_dir"), "game", "json_inventory.json");  // item definitions update 10 sends
         var uid = ((JsonObject?)JsonNode.Parse(connect)!["account"])?["user_id"];
         e.TryGetValue(new("POST", apiHost, SKILL_LIST, ParamsKey([("user_id", [Py.Str(uid)])])), out var skillList);
@@ -334,7 +337,8 @@ public static class Replay
             item,
             offline: offline,  // a request no token resolves is the local account's; false on a community server
             startBody: recorded ? neutral : null,
-            avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null);
+            avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null,
+            challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null);
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)

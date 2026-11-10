@@ -55,6 +55,8 @@ An account with a `profile` row is a restored account. For it the server answers
 
 **Missions.** The saved `Mission_missions.json` stays in `extras` and is copied into the account's mission rows at the restore (and, for an account restored before, on its first mission call): completed and active missions with their finished objectives, the switches and the favourite groups ([docs/server.md](server.md#missions)).
 
+**Challenges.** The saved `Challenge_get_user_challenges...json` stays in `extras` and its completed challenges are copied into the account's `challenges` rows at the restore, as saved ([docs/server.md](server.md#challenges)).
+
 **Hunt history.** The hunts of the backup zip are read from the saved replies in `extras` when asked, with no table of their own: `Expedition/list` lists the server hunts first and then the saved hunts as saved (every saved `Expedition/list` page joined by its `offset`, each hunt once) as one paged list whose `total` counts both, and `Public_user/expedition` with a saved hunt's id answers the saved reply. Without `expedition_id` it answers the account's latest server hunt, else the newest saved one. A zip that saved no hunt keeps the recorded answers. A hunt list saved short (`checks.hunts`) lists what it holds. Saved hunts are shown only: the statistics and the hunterscore already hold them ([docs/server.md](server.md#the-statistics)). A saved kill whose picture or score sheet page the zip holds is linked to them ([Pictures](#pictures)).
 
 ## Pictures
