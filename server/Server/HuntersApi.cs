@@ -134,6 +134,22 @@ public static class HuntersApi
                              + "`sums`, then the kill's `species`, `weapon`, `scope`, `ammo`, `distanceM`, `state`, `bodyPart`, `stance`, `platform`, `weightKg`, `type`, `woundTime`, `integrity`, `shotLocation`, `shots`, `when` (Unix seconds), "
                              + "`expeditionId`, `score` and `harvestValue`. 404 for a handle that is unknown or banned, and for a kill without a harvest here (a restored one).")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}"))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
+            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
+                             + "(`url` the full picture, `thumbnail` its small one, `animal` the species of the kill it shows, `label` that kill's score). 404 for a handle that is unknown or banned.")
+            .QueryParams(("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        // the photos of the gallery tab are on the website's own domain: the game's host is not one a browser can reach
+        app.MapGet(State.PHOTO_PREFIX + "{**name}", (string name) => state.PhotoFile(State.PHOTO_PREFIX + name) is { } file
+                ? new Reply(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(file), "state") : new Reply(404, [], [], "state"))
+            .RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
+            .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")
+            .Produces(200, contentType: "image/jpeg").Produces(404);
 
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
