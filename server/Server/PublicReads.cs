@@ -294,9 +294,6 @@ public sealed partial class State
                             id is null ? [source] : [source, id]).Select(r => JsonNode.Parse((string)r[0]))];
     }
 
-    /// <summary>A restored list reply as a JSON array: `[]` when the account has none.</summary>
-    public byte[] RowsReply(long account, string table, string source) => Py.DumpBytes(new JsonArray(Restored(account, table, source).ToArray()));
-
     /// <summary>One restored record as the reply it was read from; null when the account has none with this id.</summary>
     public byte[]? RowReply(long account, string table, string source, string id) =>
         Restored(account, table, source, id).FirstOrDefault() is { } node ? Py.DumpBytes(node) : null;
@@ -305,20 +302,21 @@ public sealed partial class State
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
     /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
-    /// server in the restored shape. ponytail: a server harvest is never mounted, so no lodge_id, slot_id or pose_id until lodge edits are saved.
+    /// server in the restored shape (`hidden` as the player set it), each with the lodge slot that holds it now (<see cref="Mount"/>).
     /// A new kill id is above every restored id (see Heartbeat). Another player's view (`own` false) leaves out the hidden ones.</summary>
     List<JsonNode?> TrophyRows(long account, bool own = true)
     {
         var rows = Restored(account, "trophies", "/game/user/trophies");
         using var con = Con(account);
-        foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a ORDER BY kill_id"))
+        foreach (var r in con.Rows("SELECT kill_id, body, hidden FROM harvests WHERE account_id = $a ORDER BY kill_id"))
         {
             var body = JsonNode.Parse((string)r[1])!;
-            var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = false };
+            var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = (long)r[2] != 0 };
             foreach (var field in TrophyFields)
                 row[field] = C(body[field]);
             rows.Add(row);
         }
+        Mount(account, rows);
         return own ? rows : [.. rows.Where(NotHidden)];
     }
 

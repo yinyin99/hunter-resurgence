@@ -55,13 +55,13 @@ Released today: the backup tool, and the player kit, which lets you play on the 
 2. **Community server, accounts and restore** (online now, early: play on it with the [player kit](#for-players-the-player-kit); see [docs/server.md](docs/server.md)).
    - Sign in with a Steam account (email sign-in may follow).
    - Restore: upload your backup zip on the website. Once the operator (the person who runs the server) approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically.
-   - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions, leaderboards and the trophy-lodge pages may be missing at first, and there is no seasonal event by default.
+   - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions and leaderboards may be missing at first, and there is no seasonal event by default.
    - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The [claim key](docs/backup.md#claim-key) in a backup is a hint that it is yours, not proof.
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
 5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
 6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards, every player's profile header (its tabs come one by one); missions and friends are not offered yet.
-7. **Later**: the trophy lodge and bait-site pages inside the game, multiplayer, competitions.
+7. **Later**: the bait-site pages inside the game, multiplayer, competitions.
 
 ### Website
 

@@ -313,6 +313,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("PRAGMA user_version = 7");
         }
         var old = new Store(file);
@@ -327,6 +328,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         using (var con = old.Open())  // as it was before the column: the rows above are all there is
         {
             con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("PRAGMA user_version = 7");
         }
         using (var con = new Store(file).Open(5))
