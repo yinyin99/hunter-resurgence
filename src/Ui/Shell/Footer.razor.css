@@ -2,6 +2,7 @@
 .columns { display: flex; padding-top: 30px; border-top: 1px solid var(--line); }
 section { width: 393px; }
 h4 { margin: 0 0 10px; font-size: 17.5px; line-height: 20px; text-transform: uppercase; }
+.columns ::deep .dev { opacity: .6; }
 .follow { display: flex; gap: 19px; font-size: 36px; color: var(--fg-muted-2); }
 .follow ::deep a { transition: color var(--t-base) var(--ease), transform var(--t-base) var(--ease); }
 .follow ::deep a:hover { color: #fff; transform: translateY(-2px); }

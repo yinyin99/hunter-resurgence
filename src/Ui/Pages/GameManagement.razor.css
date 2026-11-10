@@ -1,13 +1,13 @@
 .tabs { display: flex; gap: 2px; margin: 0 0 0 20px; padding-top: 0; }
 .tabs a { display: block; width: 150px; padding: 0; background: var(--surface-4); font-size: 14px; line-height: 28px; text-align: center; color: #fff; }
 .tabs a.on { background: var(--surface-6); }
-.screen { position: relative; height: 570px; margin: 0 20px; background: #000; }
+.screen { position: relative; height: 800px; margin: 0 20px; background: #000; }
 .card { position: absolute; left: 74px; box-sizing: border-box; width: 792px; padding: 20px; background: var(--surface-5); color: #8c8c8c; }
 .card h4 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; color: #8c8c8c; }
 .card p { margin: 0; font-size: 14px; line-height: 20px; }
-.home { top: 270px; height: 100px; }
+.home { top: 350px; height: 100px; }
 .home p { margin-top: 20px; }
-.lodge { top: 108px; height: 440px; }
+.lodge { top: 108px; height: 580px; }
 .lodge p { margin-top: 20px; }
 .bait { top: 267px; padding-bottom: 20px; }
 .head { display: flex; justify-content: space-between; align-items: flex-start; margin: 4px 0 40px; }

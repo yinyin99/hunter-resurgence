@@ -26,7 +26,7 @@
                     <li><ExternalLink Key="support_connections">@L["Help.Support.Connections"]</ExternalLink></li>
                 </ul>
                 @* the video tutorials are the mock's on the live site (#225) *@
-                @if (!Mode.Live) { <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="245" /><b>@L["Help.Support.NewTo"]</b><span>@L["Help.Support.Videos"]</span></a> }
+                @if (!Mode.Live) { <a class="banner" href="/help/tutorials"><AssetSlot Name="help-banner" Width="940" Height="250" /><b>@L["Help.Support.NewTo"]</b><span>@L["Help.Support.Videos"]</span></a> }
                 break;
             case "guides":
                 <h3>@L["Help.Guides.Title"]</h3>
@@ -50,8 +50,8 @@
                         @foreach (var v in current.Videos)
                         {
                             <li>
-                                @if (Mode.Launcher) { <ExternalLink Key="@("video_" + v.Id)" Class="vt">@v.Title</ExternalLink> }
-                                else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title, ["Slot"] = $"video-{v.Id}" })' @onclick:preventDefault>@v.Title</a> }
+                                @if (Mode.Launcher) { <ExternalLink Key="@("video_" + v.Id)" Class="vt"><AssetSlot Name="@($"video-{v.Id}")" Width="185" Height="138" />@v.Title</ExternalLink> }
+                                else { <a href="#" class="vt" @onclick='() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = v.Title, ["Slot"] = $"video-{v.Id}" })' @onclick:preventDefault><AssetSlot Name="@($"video-{v.Id}")" Width="185" Height="138" />@v.Title</a> }
                                 <span>@L.Frag("Help.Tut.By", Author(v.Author))</span>
                             </li>
                         }

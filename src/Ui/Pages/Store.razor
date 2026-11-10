@@ -29,7 +29,7 @@
                     @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
                     else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
                 }
-                @if (!signedIn) { <button class="btn btn-primary" disabled>@L["Store.Login"]</button> }
+                @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
             </div>

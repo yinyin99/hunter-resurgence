@@ -13,8 +13,10 @@ h4 { margin: 40px 0 8px; font-size: 17.5px; line-height: 24px; font-weight: 400;
 .hero h1 { position: absolute; left: 18px; bottom: 100px; margin: 0; font-size: 36px; line-height: 44px; font-weight: 400; color: #fff; }
 .hero p { position: absolute; left: 18px; right: 18px; bottom: 24px; margin: 0; font-size: 22px; line-height: 28px; color: #fff; }
 .videos { margin: 0; padding: 0; list-style: none; font-size: 16px; line-height: 28px; color: var(--text-2); }
-.videos span { color: var(--fg-muted-2); }
+.videos span { margin-left: .3em; color: var(--fg-muted-2); }
 .videos span b { font-weight: 400; color: var(--text-2); }
 .videos ::deep .vt { color: var(--text-2); }
+.videos li { margin: 0 0 14px; }
+.videos ::deep .vt .asset-slot { display: block; margin: 0 0 6px; }
 .panel.bare { padding: 0; background: none; }
 .bare ::deep .tabs { margin: 12px 0 14px; }

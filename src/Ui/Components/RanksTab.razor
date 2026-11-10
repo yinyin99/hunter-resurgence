@@ -5,9 +5,9 @@
 {
     <h4>@L["Prof.Progress"]</h4>
     <h5>@L["Prof.HunterScore"]</h5>
-    @if (bars.Count > 0) { @Overview(bars[0], "paw") }
+    @if (bars.Count > 0) { @Overview(bars[0], "rank-score", true) }
     <h5>@L["Prof.Categories"]</h5>
-    @foreach (var b in bars.Skip(1)) { @Overview(b, b.Name == "Animals" ? "dog" : b.Name == "Weapons" ? "bullseye" : "bucket") }
+    @foreach (var b in bars.Skip(1)) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", false) }
 }
 else
 {
@@ -32,8 +32,8 @@ else
 
     int Pct(RankBar b) => b.Total == 0 ? 0 : 100 * b.Done / b.Total;
 
-    RenderFragment Overview(RankBar b, string icon) => @<div class="ov">
-        <Icon Name="@icon" />
-        <div class="bar big"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @b.Done / @b.Total (@Pct(b)%)</b> }</div>
+    RenderFragment Overview(RankBar b, string slot, bool big) => @<div class="ov">
+        <AssetSlot Name="@slot" Width="40" Height="40" />
+        <div class="bar @(big ? "big" : "")"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @b.Done / @b.Total (@Pct(b)%)</b> }</div>
     </div>;
 }

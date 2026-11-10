@@ -1,5 +1,5 @@
-.menu { position: relative; z-index: 2; display: flex; align-items: flex-start; height: 51px; margin-top: 10px; border-radius: var(--r-3); background: var(--bg-menu); font-size: var(--fs-menu); }
-.menu-space { height: 61px; }
+.menu { position: relative; z-index: 2; display: flex; align-items: flex-start; height: 51px; margin-top: 20px; border-radius: var(--r-3); background: var(--bg-menu); font-size: var(--fs-menu); }
+.menu-space { height: 71px; }
 .hunt-now { position: relative; margin: 9px 0 0 15px; }
 .hunt-now > a, .menu ::deep .hunt { display: block; box-sizing: border-box; padding: 6px 17px; border-radius: var(--r-2); background-color: var(--primary); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
 .menu ::deep .hunt { margin: 9px 0 0 15px; }
