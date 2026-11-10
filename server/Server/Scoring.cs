@@ -483,7 +483,11 @@ public static class Scoring
             $"\t\t<div class=\"infoimage\">\n" +
             $"\t\t\t<img class=\"score-info-image\" src=\"//{StaticHost}/static/img/scoring/{image}.png\" alt=\"\">\n";
 
-    static string BcSheet(int species, JsonNode? f, string cssClass, string name)
+    /// <summary>What a B&amp;C typical sheet is worked from: the row labels, the right and left values of each row (inches), the abnormal points of each side, the spread credit, the sum
+    /// of the differences, E, and the number of points of each side.</summary>
+    sealed record Bc(List<string> Labels, List<double> Right, List<double> Left, List<double> Er, List<double> El, double Spread, double Diff, double E, int[] Points);
+
+    static Bc BcCalc(int species, JsonNode? f)
     {
         var (gLabels, hLabels) = BC_LABELS[species];
         var (spread, right, left, diff, e) = BcSides(f);
@@ -496,6 +500,48 @@ public static class Scoring
         labels.AddRange(hLabels);
         var er = Arr(Side(f, "right"), "e").Select(x => Inch(Py.D(x))).ToList();
         var el = Arr(Side(f, "left"), "e").Select(x => Inch(Py.D(x))).ToList();
+        var points = new[] { "right", "left" }.Select(side => 1 + Arr(Side(f, side), "g").Count + Arr(Side(f, side), "e").Count).ToArray();
+        return new(labels, right, left, er, el, spread, diff, e, points);
+    }
+
+    /// <summary>The worked sheet as data, for the website: <c>kind</c> "score" (a B&amp;C typical sheet: <c>facts</c>, <c>rows</c> as right, left and difference, <c>abnormal</c> pairs, <c>sums</c>),
+    /// "antler" (a tines sheet: <c>rows</c> as left, right and points) or "antler" without rows (a species whose sheet is no table here). Numbers are inches, as the HTML sheet prints them.</summary>
+    public static JsonObject SheetData(int species, JsonNode? features)
+    {
+        static JsonObject Row(string label, double? a, double? b, double? c) => new() { ["label"] = label, ["a"] = a, ["b"] = b, ["c"] = c };
+        static JsonObject Fact(string label, double value) => new() { ["label"] = label, ["value"] = value };
+        FAMILY.TryGetValue(species, out var fam);
+        var data = new JsonObject { ["kind"] = "antler", ["facts"] = new JsonArray(), ["rows"] = new JsonArray(), ["abnormal"] = new JsonArray(), ["sums"] = new JsonArray() };
+        if (fam == "bc_deer" && BC_LABELS.ContainsKey(species))
+        {
+            var bc = BcCalc(species, features);
+            double c2 = Sum(bc.Right), c3 = Sum(bc.Left), subtract = bc.Diff + bc.E;
+            data["kind"] = "score";
+            data["facts"] = new JsonArray(Fact("A. Points, right antler", bc.Points[0]), Fact("Points, left antler", bc.Points[1]), Fact("B. Tip-to-tip spread", Inch(Get(features, "b"))),
+                Fact("C. Greatest spread", Inch(Get(features, "c"))), Fact("D. Inside spread of main beams", Inch(Get(features, "d"))));
+            var rows = new JsonArray([.. Enumerable.Range(0, Math.Min(bc.Labels.Count, Math.Min(bc.Right.Count, bc.Left.Count)))
+                .Select(i => (JsonNode?)Row(bc.Labels[i], bc.Right[i], bc.Left[i], R4(Math.Abs(bc.Right[i] - bc.Left[i]))))]);
+            rows.Add(Row("Total", c2, c3, subtract));
+            data["rows"] = rows;
+            data["abnormal"] = new JsonArray([.. Enumerable.Range(0, Math.Max(ABNORMAL_ROWS, Math.Max(bc.Er.Count, bc.El.Count)))
+                .Select(i => (JsonNode?)new JsonObject { ["right"] = i < bc.Er.Count ? bc.Er[i] : 0, ["left"] = i < bc.El.Count ? bc.El[i] : 0 })]);
+            data["sums"] = new JsonArray(Fact("Column 1", bc.Spread), Fact("Column 2", c2), Fact("Column 3", c3), Fact("Subtotal", R4(bc.Spread + c2 + c3)),
+                Fact("Subtract Column 4", subtract), Fact("Total", R4(bc.Spread + c2 + c3 - bc.Diff - bc.E)));
+        }
+        else if (fam == "tines" && features is JsonObject tf && TINES_SHEET.ContainsKey(species))
+        {
+            var (labels, mm, span) = TinesCalc(species, tf);
+            var rows = new JsonArray([.. mm.Select((m, i) => (JsonNode?)Row(labels[i], Inch(m.L), Inch(m.R), Inch(m.L + m.R)))]);
+            rows.Add(Row(labels[^1], null, null, Inch(span)));
+            data["rows"] = rows;
+        }
+        return data;
+    }
+
+    static string BcSheet(int species, JsonNode? f, string cssClass, string name)
+    {
+        var bc = BcCalc(species, f);
+        var (spread, right, left, diff, e, labels, er, el) = (bc.Spread, bc.Right, bc.Left, bc.Diff, bc.E, bc.Labels, bc.Er, bc.El);
         var nE = Math.Max(ABNORMAL_ROWS, Math.Max(er.Count, el.Count));
         var abnormal = new StringBuilder();
         for (var i = 0; i < nE; i++)
@@ -524,7 +570,7 @@ public static class Scoring
         }
         double c2 = Sum(right), c3 = Sum(left);
         var sub = R4(spread + c2 + c3);
-        var points = new[] { "right", "left" }.Select(side => 1 + Arr(Side(f, side), "g").Count + Arr(Side(f, side), "e").Count).ToArray();
+        var points = bc.Points;
         return SheetHead(cssClass, "boonelogo", name, BC_IMAGE[species]) + $"\t\t\t<div>\n" +
             $"\t<table>\n" +
             $"\t\t<tr class=\"scoresheet-row\">\n" +
@@ -653,10 +699,10 @@ public static class Scoring
         $"                <td class=\"value\">{points}</td>\n" +
         $"            </tr>\n";
 
-    /// <summary>Left / Right / Points table (no total). Points are the two sides' millimetres added, then converted.</summary>
-    static string TinesSheet(int species, JsonObject f, string cssClass, string name)
+    /// <summary>The rows of a tines sheet: labels ("1.1 Length of Main Beam"…, the last one the inside span), the (left, right) millimetres of every row but the last, and the inside span in millimetres.</summary>
+    static (List<string> Labels, List<(double L, double R)> Mm, double Span) TinesCalc(int species, JsonObject f)
     {
-        var (image, nums) = TINES_SHEET[species];
+        var nums = TINES_SHEET[species].Nums;
         var (a, b) = (f["left"]!, f["right"]!);
         var n = nums.Length - 4;  // tine rows
         var rows = new List<string> { "Length of Main Beam" };
@@ -667,10 +713,18 @@ public static class Scoring
         for (var i = 0; i < n; i++) mm.Add((Tine(a, i), Tine(b, i)));
         mm.Add((N(a, "circumference_burr"), N(b, "circumference_burr")));
         mm.Add((N(a, "circumference_main_beam"), N(b, "circumference_main_beam")));
+        return ([.. rows.Select((r, i) => $"{nums[i]} {r}")], mm, N(f, "inside_span_main_beam"));
+    }
+
+    /// <summary>Left / Right / Points table (no total). Points are the two sides' millimetres added, then converted.</summary>
+    static string TinesSheet(int species, JsonObject f, string cssClass, string name)
+    {
+        var image = TINES_SHEET[species].Image;
+        var (labels, mm, span) = TinesCalc(species, f);
         var sb = new StringBuilder();
         for (var i = 0; i < mm.Count; i++)
-            sb.Append(TinesRow($"{nums[i]} {rows[i]}", Py.Fixed(Inch(mm[i].L), 4), Py.Fixed(Inch(mm[i].R), 4), Py.Fixed(Inch(mm[i].L + mm[i].R), 4)));
-        sb.Append(TinesRow($"{nums[^1]} {rows[^1]}", "", "", Py.Fixed(Inch(N(f, "inside_span_main_beam")), 4)));
+            sb.Append(TinesRow(labels[i], Py.Fixed(Inch(mm[i].L), 4), Py.Fixed(Inch(mm[i].R), 4), Py.Fixed(Inch(mm[i].L + mm[i].R), 4)));
+        sb.Append(TinesRow(labels[^1], "", "", Py.Fixed(Inch(span), 4)));
         return SheetHead(cssClass, OwnLogo, name, image) + $"\t\t\t\n" +
             $"\t\t\t<div class=\"clear\"></div>\n" +
             $"\t\t</div>\n" +
