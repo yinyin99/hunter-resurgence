@@ -1,6 +1,7 @@
 @page "/wallet"
 @page "/wallet/{Kind}"
 @inject IWalletService Service
+@inject HostMode Mode
 
 <PageTitle>@L["Wal.MyWallet"]</PageTitle>
 
@@ -68,12 +69,14 @@
     DateTime lastMore;
 
     [Parameter] public string? Kind { get; set; }
-    string kind => Kind is "ems" or "gms" ? Kind : "bank";
+    // the live site has no bank: its wallet opens on the em$ history
+    string kind => Kind is "ems" or "gms" ? Kind : Mode.Live ? "ems" : "bank";
     string currency => kind == "gms" ? "gm$" : kind == "ems" ? "em$" : "";
 
     protected override async Task OnInitializedAsync()
     {
-        tabs = [(L["Wal.TabBank"], "/wallet/bank"), (L["Wal.TabEms"], "/wallet/ems"), (L["Wal.TabGms"], "/wallet/gms")];
+        (string, string)[] virtualTabs = [(L["Wal.TabEms"], "/wallet/ems"), (L["Wal.TabGms"], "/wallet/gms")];
+        tabs = Mode.Live ? virtualTabs : [(L["Wal.TabBank"], "/wallet/bank"), .. virtualTabs];
         summary = await Service.SummaryAsync();
     }
 

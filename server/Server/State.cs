@@ -74,12 +74,16 @@ public sealed partial class State
     }).ToArray());
 
     /// <summary>Add amount (negative: spend) to a wallet currency (call inside a transaction); return the new balance, or
-    /// null when the currency is missing or the balance would drop below 0.</summary>
-    public static JsonNode? AddCurrency(Db con, string currency, object amount)
+    /// null when the currency is missing or the balance would drop below 0. A change is logged (`wallet_log`, the wallet history) with its
+    /// summary and the item ids it bought.</summary>
+    public static JsonNode? AddCurrency(Db con, string currency, object amount, string summary, IReadOnlyCollection<long>? itemIds = null)
     {
         if (con.Exec("UPDATE wallet SET amount = amount + ?1 WHERE account_id = $a AND currency = ?2 AND amount + ?1 >= 0", amount, currency) == 0)
             return null;
-        return Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency)[0][0]);
+        var balance = Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency)[0][0]);
+        con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids) VALUES ($a, ?, ?, ?, ?, ?, ?)",
+                 (long)Py.Now(), currency, Convert.ToDouble(amount), Py.D(balance), summary, Py.Dumps(new JsonArray([.. (itemIds ?? []).Select(i => (JsonNode?)i)])));
+        return balance;
     }
 
     /// <summary>Add a slot-0 row with a full stack per item id and queue their update 10 (call inside a transaction).
@@ -202,7 +206,7 @@ public sealed partial class State
                             .SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>().Where(u => (string?)u["type"] == "rewards"))
                             .SelectMany(u => Arr(u["data"]).OfType<JsonObject>().Where(x => (string?)x["type"] == "SILVER" && Py.IsNum(x["amount"])))
                             .Sum(x => Py.L(x["amount"]));
-                        if (paid > 0 && AddCurrency(con, "gm", paid) is { } balance)
+                        if (paid > 0 && AddCurrency(con, "gm", paid, "Dog level reward.") is { } balance)
                             updates.Add(new JsonObject { ["amount"] = balance, ["type"] = "gm", ["update"] = 15 });
                         if (Py.D(xp) < old) metadata["experience"] = old;
                     }
@@ -255,7 +259,7 @@ public sealed partial class State
                 };
                 con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
                 if (Py.RoundInt(css) > 0)
-                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css)), ["type"] = "gm", ["update"] = 15 });
+                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})"), ["type"] = "gm", ["update"] = 15 });
             }
             else if (Is(e["event"], 4))
             {
@@ -1247,14 +1251,15 @@ public sealed partial class State
     /// or the player would own more of an item than the catalogue allows (<see cref="OverOwnLimit"/>).</summary>
     JsonNode? Charge(long account, string currency, long price, IEnumerable<long> itemIds)
     {
+        long[] ids = [.. itemIds];
         using var con = Con(account);
         con.Begin();
-        if (itemIds.GroupBy(i => i).Any(g => OverOwnLimit(con, g.Key, g.Count())))
+        if (ids.GroupBy(i => i).Any(g => OverOwnLimit(con, g.Key, g.Count())))
             return null;
-        var balance = AddCurrency(con, currency, -price);
+        var balance = AddCurrency(con, currency, -price, PAYMENT, ids);
         if (balance is null)
             return null;
-        Deliver(con, itemIds, ItemInfo);
+        Deliver(con, ids, ItemInfo);
         con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return balance;
@@ -1322,7 +1327,7 @@ public sealed partial class State
     {
         using var con = Con(account);
         con.Begin();
-        var balance = AddCurrency(con, currency, amount);
+        var balance = AddCurrency(con, currency, amount, "Adjustment by the operator.");
         if (balance is not null)
             con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
         con.Commit();

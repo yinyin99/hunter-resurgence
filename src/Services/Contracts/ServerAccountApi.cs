@@ -24,6 +24,8 @@ public static class ServerAccountApi
     public const string Messages = "/account/messages";
     /// <summary>GET with the cookie and <c>?handle=</c>: 200 <see cref="ServerThread"/>, one of the conversations newest first, or 404 for a handle that is none of them.</summary>
     public const string MessagesThread = "/account/messages/thread";
+    /// <summary>GET with the cookie: <c>/ems</c> and <c>/gms</c> (query <c>offset</c>) 200 a page of <see cref="ServerWalletRow"/>, newest first, 50 at most; <c>/spent</c> 200 <see cref="ServerSpent"/>.</summary>
+    public const string Wallet = "/account/wallet";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
