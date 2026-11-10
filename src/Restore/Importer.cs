@@ -20,6 +20,17 @@ public static class Importer
     public static Restored Read(Stream zip, IItemCatalogue? catalogue = null, Limits? limits = null) =>
         new Mapper(BackupReader.Read(zip, limits ?? Limits.Default), catalogue).Map();
 
+    /// <summary>Every character a backup file name may not hold becomes `_` (the backup tool's rule); the restored files are named the same way.</summary>
+    public static string CleanName(string name) => System.Text.RegularExpressions.Regex.Replace(name, "[^A-Za-z0-9._=-]", "_");
+
+    /// <summary>The path in a backup zip of the picture the backup tool saved for <paramref name="url"/>: `folder/` and the host and path (no query) as <see cref="CleanName"/>;
+    /// null for a link it does not fetch (not https).</summary>
+    public static string? MediaPath(string folder, string? url)
+    {
+        if (url?.StartsWith("//") == true) url = "https:" + url;
+        return Uri.TryCreate(url, UriKind.Absolute, out var u) && u.Scheme == "https" ? $"{folder}/{CleanName(u.Host + u.AbsolutePath)}" : null;
+    }
+
     sealed class Mapper(BackupContent c, IItemCatalogue? catalogue)
     {
         readonly List<string> restored = [], warnings = [], missing = [.. c.Missing];
@@ -90,12 +101,12 @@ public static class Importer
             var unsupported = unused.Where(f => f.Status != 404).GroupBy(f => Pattern(f.Endpoint)).OrderBy(g => g.Key, StringComparer.Ordinal)
                 .Select(g => $"{(g.Key.Length == 0 ? "unknown endpoint" : g.Key)}: {g.Count()} file(s), kept in Extras").ToList();
             if (unused.Count(f => f.Status == 404) is > 0 and var none) unsupported.Add($"\"no entry\" answers (status 404): {none} file(s), kept in Extras");
-            if (c.OtherFiles > 0) unsupported.Add($"pictures and score pages: {c.OtherFiles} file(s), not read");
+            if (c.Media.Count > 0) unsupported.Add($"pictures and score pages: {c.Media.Count} file(s), not read here (the server stores them)");
 
             var model = new PlayerModel(identity, profile, account, wallet, items, skills, stats, achievements, trophies, lodges, extras);
             var report = new Report(own ? "my-account" : byHandle is not null ? "public by handle" : "public by id", restored, unsupported, missing, warnings,
                 c.Failed, c.Rejected, completed is not null ? "yes" : c.Format == 1 ? "unknown" : "no", catalogue is null ? "zero-only" : "catalogue", inferred);
-            return new(model, report);
+            return new(model, report, c.Media);
         }
 
         Profile Profile(JsonObject? src, Identity id)

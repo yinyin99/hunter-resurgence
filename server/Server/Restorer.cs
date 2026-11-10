@@ -72,9 +72,11 @@ public static class Restorer
             File.Copy(zipPath, kept);
         }
         var report = "";
+        State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup);
+            pictures = state.PreparePictures(con, read);
+            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report);
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, model.Extras);
@@ -106,6 +108,7 @@ public static class Restorer
                 File.Move(file, Path.Combine(Path.GetDirectoryName(kept)!, Path.GetFileName(file)), overwrite: true);
             Directory.Delete(before);
         }
+        state.Unpack(finalId, kept, pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
     }
 
@@ -190,7 +193,7 @@ public static class Restorer
 
     /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row;
     /// returns the report.</summary>
-    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup)
+    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures)
     {
         PlayerRows.ClearModel(con);
         var lines = new List<string>();
@@ -281,6 +284,7 @@ public static class Restorer
 
         lines.Add($"stored: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "
                   + $"trophies {m.Trophies.Count}, lodges {m.Lodges.Count}, extras {m.Extras.Count}");
+        lines.Add(pictures);
         if (personal > 0) dropped.Add($"{personal} personal field(s) (e-mail, real name, address, phone) in the saved replies");
         dropped.Add("e-mail, Facebook id and the other login-only fields of the account: this server's accounts keep none");
         if (m.Identity.SteamId64 is not null) dropped.Add("the zip's Steam id: a claim, not proof; the account's Steam id is only the one the server verified");

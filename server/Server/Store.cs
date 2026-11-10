@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 10;
+    public const int Version = 11;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -129,7 +129,8 @@ public sealed class Store
         CREATE INDEX pending_account ON pending (account_id, id);
         CREATE TABLE photos (
             id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT,
-            spawn INTEGER);  -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
+            spawn INTEGER,   -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
+            saved TEXT);     -- a picture a restore unpacked: JSON with the label and animal of its saved gallery entry; NULL for a photo taken here
         CREATE INDEX photos_account ON photos (account_id);
         CREATE TABLE messages (   -- account_id is the recipient
             id INTEGER PRIMARY KEY, {A}, sender INTEGER NOT NULL, content TEXT NOT NULL, ts INTEGER NOT NULL,
@@ -215,7 +216,9 @@ public sealed class Store
                            + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
             }
             if (version < 9) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
-            if (version < 10)
+            if (version < 10 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
+                con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
+            if (version < 11)
             {
                 con.Script(Loadouts);
                 con.Script(RestoredLoadouts.Replace("$a", "e.account_id"));
