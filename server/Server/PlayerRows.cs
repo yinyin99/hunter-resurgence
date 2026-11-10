@@ -8,11 +8,11 @@ namespace Resurgence.Server;
 public static class PlayerRows
 {
     /// <summary>Delete the account's profile rows (items, wallet, skills, profile, statistics, achievements, trophies,
-    /// lodges, extras) before a restore writes them again. Hunt history (events, expeditions, kills, harvests, photos,
+    /// lodges, extras, loadouts) before a restore writes them again. Hunt history (events, expeditions, kills, harvests, photos,
     /// messages, pending) and restore_audit stay.</summary>
     public static void ClearModel(Db con)
     {
-        foreach (var table in new[] { "items", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras" })
+        foreach (var table in new[] { "items", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts" })
             con.Exec($"DELETE FROM {table} WHERE account_id = $a");
     }
 

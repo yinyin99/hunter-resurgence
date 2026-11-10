@@ -314,6 +314,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Exec("ALTER TABLE photos DROP COLUMN spawn");
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
+            con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 7");
         }
@@ -330,6 +331,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Exec("ALTER TABLE photos DROP COLUMN spawn");
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
+            con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 7");
         }
