@@ -67,7 +67,7 @@ public static class GameApi
             var photo = Handle(game, r =>
                 r.Method is "GET" or "HEAD" && r.Path.StartsWith(State.PHOTO_PREFIX, StringComparison.Ordinal)
                 && s.PhotoFile(r.Path) is { Length: > 0 } f
-                    ? new(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(f), "state")
+                    ? new(200, [("Content-Type", "image/jpeg"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(f), "state")  // a restored file is whatever its zip held: never run as a page
                     : null);
             gs.MapGet(State.PHOTO_PREFIX + "{**name}", photo)
               .WithName("Photo").WithSummary("A stored photo")

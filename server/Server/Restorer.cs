@@ -99,7 +99,6 @@ public static class Restorer
             if (copied) File.Delete(kept);
             throw;
         }
-        state.Unpack(finalId, zipPath, pictures!);  // the files follow the committed rows: a restore that failed above wrote none
         using (var con = store.Open(finalId))  // a community server's value is computed from the restored statistics
             state.UpdateHunterscore(con, finalId);
         var before = Path.Combine(dataDir, "restores", current.ToString());
@@ -109,6 +108,7 @@ public static class Restorer
                 File.Move(file, Path.Combine(Path.GetDirectoryName(kept)!, Path.GetFileName(file)), overwrite: true);
             Directory.Delete(before);
         }
+        state.Unpack(finalId, kept, pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
     }
 

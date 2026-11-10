@@ -13,8 +13,7 @@ public sealed partial class State
     /// <summary>What a restore puts on disk once its rows are committed: Files (stored name, entry of the zip), Stale (the gallery files of the pictures an earlier restore unpacked) and the report line.</summary>
     internal sealed record Unpacking(List<(string Name, string Entry)> Files, List<string> Stale, string Report);
 
-    /// <summary>The file name a saved file is stored under: its path in the zip with every `/` and other odd character as `_` (`kills/score_5.html` is `kills_score_5.html`).</summary>
-    static string StoredName(string zipPath) => Importer.CleanName(zipPath);
+    // a saved file is stored under its path in the zip with every `/` and other odd character as `_` (`kills/score_5.html` is `kills_score_5.html`): Importer.CleanName
 
     static readonly string[] StoredFolders = ["kills", "images"];
 
@@ -47,7 +46,7 @@ public sealed partial class State
             gallery++;
         }
         var others = media.Values.Where(m => StoredFolders.Any(f => m.Path.StartsWith(f + "/", StringComparison.Ordinal))).ToList();
-        files.AddRange(others.Select(m => (StoredName(m.Path), m.Entry)));
+        files.AddRange(others.Select(m => (Importer.CleanName(m.Path), m.Entry)));
         var report = $"pictures stored: gallery {gallery}, kill photos and score pages {others.Count(m => m.Path.StartsWith("kills/", StringComparison.Ordinal))}, "
                      + $"avatar and background pictures {others.Count(m => m.Path.StartsWith("images/", StringComparison.Ordinal))}"
                      + (listed > gallery ? $"; {listed - gallery} gallery entr{(listed - gallery == 1 ? "y" : "ies")} without a picture in the zip" : "");
@@ -81,7 +80,7 @@ public sealed partial class State
     /// <summary>The saved score sheet page of a restored kill (`kills/score_&lt;id&gt;.html` of the zip) in the account's folder; null without one.</summary>
     string? SavedPage(long account, long killId)
     {
-        var file = Path.Combine(AccountPhotos(account), StoredName($"kills/score_{killId}.html"));
+        var file = Path.Combine(AccountPhotos(account), Importer.CleanName($"kills/score_{killId}.html"));
         return File.Exists(file) ? file : null;
     }
 
@@ -95,8 +94,8 @@ public sealed partial class State
     {
         foreach (var info in ((hunt as JsonObject)?["kills"] as JsonArray ?? []).OfType<JsonObject>().Select(k => k["kill"] as JsonObject))
             if (info is not null && Py.IsStr(info["photo"]) && Importer.MediaPath("kills", (string)info["photo"]!) is { } path
-                && File.Exists(Path.Combine(AccountPhotos(account), StoredName(path))))
-                info["photo"] = PhotoUrl(account, StoredName(path));
+                && File.Exists(Path.Combine(AccountPhotos(account), Importer.CleanName(path))))
+                info["photo"] = PhotoUrl(account, Importer.CleanName(path));
         return hunt;
     }
 
