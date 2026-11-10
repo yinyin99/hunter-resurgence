@@ -285,6 +285,7 @@ public static class Restorer
             PlayerRows.SetExtra(con, path, body);
         }
         State.EnsureMissions(con);  // the saved mission states become the account's rows
+        con.Exec(Store.RestoredChallenges);  // the saved completed challenges too
         var loadouts = con.Exec(Store.RestoredLoadouts);  // the saved loadouts, now under this server's ids
 
         lines.Add($"stored: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "

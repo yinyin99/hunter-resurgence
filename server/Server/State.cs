@@ -175,7 +175,7 @@ public sealed partial class State
         {
             if (node is not JsonObject e) continue;
             JsonNode? species = null;
-            con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, ?, ?)", e["event"], Py.Dumps(e));
+            con.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, ?, ?, ?)", e["event"], Py.Dumps(e), now);
             if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
             {
                 var row = con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ?"
@@ -558,7 +558,7 @@ public sealed partial class State
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null)
     {
         this.facts = facts ?? Facts.Default;
         this.avatars = avatars ?? [];
@@ -582,7 +582,10 @@ public sealed partial class State
         foreach (var loc in Arr(G(application, "locations", null)))
             locations[Py.L(loc!["id"])] = loc["pos"];
         if (!offline)
+        {
             LoadMissions();
+            LoadChallenges(challenges);
+        }
         this.locale = locale;
         this.textures = textures;
         connect = JsonNode.Parse(connectBody)!.AsObject();
@@ -1461,7 +1464,8 @@ public sealed partial class State
         }
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
-                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType), MissionEvent);
+                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
+                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); });
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
