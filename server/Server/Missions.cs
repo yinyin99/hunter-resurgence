@@ -3,6 +3,7 @@
 // replies of Mission/*, and the progress the hunt's events make. The game keeps no mission state: an objective's only definition is its
 // English title, which <see cref="RuleOf"/> turns into a rule over the events (docs/server.md, "Missions").
 using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -229,7 +230,7 @@ public sealed partial class State
 
     static readonly Regex Tag = new("<[^>]*>", RegexOptions.CultureInvariant), Spaces = new(@"\s+", RegexOptions.CultureInvariant);
 
-    static string Plain(string html) => Spaces.Replace(Tag.Replace(html, " "), " ").Trim();
+    static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
     /// objective titles, reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
@@ -253,7 +254,7 @@ public sealed partial class State
             var id = Py.L(d["id"]);
             return (JsonNode?)new JsonObject
             {
-                ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Plain(Py.Str(G(d, "desc", ""))),
+                ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Unmarked(Py.Str(G(d, "desc", ""))),
                 ["state"] = rows.TryGetValue(id, out var r) ? r.State == 3 ? "completed" : "active" : available.Contains(id) ? "available" : "locked",
                 ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
@@ -263,7 +264,7 @@ public sealed partial class State
         })]);
         var groups = new JsonArray([.. Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)).Select(g => (JsonNode?)new JsonObject
         {
-            ["id"] = Py.L(g["id"]), ["title"] = Py.Str(G(g, "title", "")), ["desc"] = Plain(Py.Str(G(g, "desc", ""))),
+            ["id"] = Py.L(g["id"]), ["title"] = Py.Str(G(g, "title", "")), ["desc"] = Unmarked(Py.Str(G(g, "desc", ""))),
             ["favourite"] = favourites.Contains(Py.L(g["id"])), ["missions"] = List(Ids(g["missions"])),
         })]);
         var reply = new JsonObject { ["missions"] = list, ["groups"] = groups, ["completed"] = rows.Count(r => r.Value.State == 3 && missions.ContainsKey(r.Key)) };

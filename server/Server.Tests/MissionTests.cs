@@ -306,7 +306,7 @@ public class MissionTests : StateTestBase
             app[key] = value!.DeepClone();
         app["locations"]![0]!["name"] = "Test Lodge";
         var first = app["missions"]![0]!.AsObject();
-        first["desc"] = "Hello,<br/><br/>take <b>your</b> time.";
+        first["desc"] = "Hello,<br/><br/>take <b>your</b> time &amp; care.";
         first["reserves"] = JsonNode.Parse("[7, 2]");
         first["species"] = JsonNode.Parse("[1]");
         first["weapons"] = JsonNode.Parse("[5]");
@@ -328,7 +328,7 @@ public class MissionTests : StateTestBase
 
         var page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
         var one = page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!;
-        Eq("""["Hello, take your time.", "available", ["Harvest a Test Deer"], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
+        Eq("""["Hello, take your time & care.", "available", ["Harvest a Test Deer"], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
         Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
             page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["reserve"]));
         Eq("""[{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [4]}, {"id": 11, "title": "", "desc": "", "favourite": false, "missions": [10]}]""", page["groups"]);
@@ -366,7 +366,7 @@ public class MissionApiTests : StateTestBase, IAsyncLifetime
     {
         var app = APP;
         app["missions"] = JsonNode.Parse("""[{"id": 1, "title": "Harvest a Test Deer", "dependencies": [], "rewards": [{"text": "100 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}]""");
-        state = new State(Path.Combine(tmp, "web.db"), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
         token = state.Store.CreateToken(ME);
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
