@@ -83,12 +83,12 @@ public class ServerProfileServiceTests
     public async Task TheStatisticsAreTheServersTotals()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, """
-            {"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":null}],
+            {"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":4,"accuracy":75.0,"kills":1,"killsPerHit":33.3,"longest":null,"weaponId":5,"ammoId":10}],
              "animals":[{"name":"Deer","spotted":3,"tracked":2,"harvested":1}],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}
             """));
         var t = await Make(fake).TotalsAsync("a b");
         Assert.EndsWith("/hunters/a%20b/statistics", Assert.Single(fake.Seen).RequestUri!.OriginalString);
-        Assert.Equal(new WeaponStat("Rifle", "Bullet", 4, 75.0, 1, 33.3, null), Assert.Single(t.Weapons));
+        Assert.Equal(new WeaponStat("Rifle", "Bullet", 4, 75.0, 1, 33.3, null, 5, 10), Assert.Single(t.Weapons));
         Assert.Equal(new SpeciesStat("Deer", 3, 2, 1), Assert.Single(t.Animals));
         Assert.Equal((0, 5.0, 7200), (t.Collectables.Count, t.DistanceKm, t.HuntSeconds));
     }
@@ -108,7 +108,7 @@ public class ServerProfileServiceTests
     [InlineData(HttpStatusCode.OK, "<html>")]
     public async Task AFailedOrGarbledAnswerIsNoProfile(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).ProfileAsync("Owl"));
 
-    const string Skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[{"name":"Rifle","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
+    const string Skills = """{"species":[{"name":"Red Fox","image":"red_fox","spotting":2.5,"tracking":1.007}],"weapons":[{"id":7,"name":"Rifle","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
 
     [Fact]
     public async Task SpeciesSkillsAreRingsOfLevelAndPercent()
@@ -116,7 +116,7 @@ public class ServerProfileServiceTests
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Skills));
         var skill = Assert.Single(await Make(fake).SkillsAsync("fox", "species"));
         Assert.Equal("/hunters/fox/skills", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal(("Red Fox", null), (skill.Name, skill.Group));
+        Assert.Equal(("Red Fox", null, "red_fox"), (skill.Name, skill.Group, skill.Image));
         Assert.Equal([("Spotting", 2, 50), ("Tracking", 1, 0)], skill.Rings.Select(r => (r.Label, r.Level, r.Percent)));
     }
 
@@ -124,7 +124,7 @@ public class ServerProfileServiceTests
     public async Task WeaponSkillsAreGroupedWithAShootingRing()
     {
         var skills = await Make(new Fake(_ => Json(HttpStatusCode.OK, Skills))).SkillsAsync("fox", "weapons");
-        Assert.Equal([("Rifle", "Rifles", 3, 0), ("Bow", null, 1, 14)], skills.Select(s => (s.Name, s.Group, s.Rings[0].Level, s.Rings[0].Percent)));
+        Assert.Equal([("Rifle", "Rifles", 3, 0, 7L), ("Bow", null, 1, 14, null)], skills.Select(s => (s.Name, s.Group, s.Rings[0].Level, s.Rings[0].Percent, s.Id)));
     }
 
     [Theory]

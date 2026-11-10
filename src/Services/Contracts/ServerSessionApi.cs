@@ -49,9 +49,9 @@ public sealed record ServerGameBoard(int Page, int Pages, int Total, ServerGameR
 /// <summary>A hunter's skills of <see cref="ServerSessionApi.SkillsSuffix"/>: every number is a level plus the fraction of its span (2.5: level 2, 50%).</summary>
 public sealed record ServerSkills(ServerSpeciesSkill[] Species, ServerWeaponSkill[] Weapons);
 
-public sealed record ServerSpeciesSkill(string Name, double Spotting, double? Tracking);
+public sealed record ServerSpeciesSkill(string Name, double Spotting, double? Tracking, string? Image = null);
 
-public sealed record ServerWeaponSkill(string Name, string? Group, double Value);
+public sealed record ServerWeaponSkill(string Name, string? Group, double Value, long? Id = null);
 
 /// <summary>One page of a hunter's trophies of <see cref="ServerSessionApi.TrophiesSuffix"/>.</summary>
 public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy[] Rows);

@@ -163,7 +163,7 @@ public sealed partial class State
         });
     }
 
-    /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: shots,
+    /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: their item ids `weaponId` and `ammoId`, null when the key is not a number, shots,
     /// accuracy % of shots, kills, kills per hit %, longest hit in metres or null), `animals` (spotted, tracked, harvested per species),
     /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue,
     /// the id where it has none. Restored base plus closed server hunts, like Statistics/total.</summary>
@@ -183,7 +183,7 @@ public sealed partial class State
                 double hits = N(c, "hits"), shots = hits + N(c, "misses"), mm = N(c, "distance");
                 weapons.Add((Weapon(w), new JsonObject
                 {
-                    ["weapon"] = Weapon(w), ["ammo"] = Weapon(a), ["shots"] = Count(shots), ["accuracy"] = shots > 0 ? Math.Round(hits / shots * 100, 1) : 0,
+                    ["weapon"] = Weapon(w), ["weaponId"] = Key(w), ["ammo"] = Weapon(a), ["ammoId"] = Key(a), ["shots"] = Count(shots), ["accuracy"] = shots > 0 ? Math.Round(hits / shots * 100, 1) : 0,
                     ["kills"] = Count(N(c, "kills")), ["killsPerHit"] = hits > 0 ? Math.Round(N(c, "kills") / hits * 100, 1) : 0, ["longest"] = mm > 0 ? mm / 1000 : null,
                 }));
             }

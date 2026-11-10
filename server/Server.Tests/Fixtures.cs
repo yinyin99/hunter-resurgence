@@ -32,7 +32,7 @@ public static class Fixtures
         get
         {
             var app = O("""
-                {"species": [{"id": 1, "name": "Test Deer (Typical)", "define": "MULE_DEER"},
+                {"species": [{"id": 0, "name": "Test Dog", "define": "DOG"}, {"id": 58, "name": "Test Dog 2", "define": "DOG_02"}, {"id": 59, "name": "Test Dog 3", "define": "DOG_03"}, {"id": 56, "name": "Test Wolf", "define": "WOLF"}, {"id": 1, "name": "Test Deer (Typical)", "define": "MULE_DEER"},
                              {"id": 17, "name": "Test Rabbit", "define": "COTTONTAIL_RABBIT"}],
                  "items": [{"id": 5, "name": "Test Rifle"}, {"id": 2, "name": "Test Scope"},
                            {"id": 10, "name": "Test Bullet", "sponsor_image": "testbrand_logo.jpg"},

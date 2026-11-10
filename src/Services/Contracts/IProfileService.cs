@@ -17,10 +17,10 @@ public sealed record Milestone(string Title, int Done, IReadOnlyList<int> Steps,
 /// <summary>A round gauge: Spotting, Tracking or Shooting, its level and the percent to the next level.</summary>
 public sealed record SkillRing(string Label, int Level, int Percent);
 /// <summary>A skill card; weapon skills have a <see cref="Group"/> (the weapon category).</summary>
-public sealed record Skill(string Name, string? Group, IReadOnlyList<SkillRing> Rings);
+public sealed record Skill(string Name, string? Group, IReadOnlyList<SkillRing> Rings, string? Image = null, long? Id = null);
 
 /// <param name="Longest">The longest shot in metres, null when nothing was hit.</param>
-public sealed record WeaponStat(string Weapon, string Ammo, int Shots, double Accuracy, int Kills, double KillsPerHit, double? Longest);
+public sealed record WeaponStat(string Weapon, string Ammo, int Shots, double Accuracy, int Kills, double KillsPerHit, double? Longest, long? WeaponId = null, long? AmmoId = null);
 public sealed record SpeciesStat(string Name, int Spotted, int Tracked, int Harvested);
 public sealed record CollectableStat(string Name, int Collected, int Total, int Max);
 public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds);

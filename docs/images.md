@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-108 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
+109 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
@@ -77,7 +77,7 @@ With the values the mock services give, the slots have 652 distinct keys; a patt
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
 | `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |
 | `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the mock) | 2 of 2 |
-| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the live site: the server's items, with the original's ids) | 1,003 of 1,003: the item's `image` in the original's item table, `items/256/<image>.png` as the original store showed it |
+| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail, the weapons of SkillsTab and WeaponTable (the live site: the server's items, with the original's ids; 30×30 in the skills, 150×30 and 36×36 in the statistics) | 1,003 of 1,003: the item's `image` in the original's item table, `items/256/<image>.png` as the original store showed it |
 | `store-bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the live site) | 129 of 129: as the original store, the bundle's own `image`, else its first item's |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
@@ -93,6 +93,7 @@ With the values the mock services give, the slots have 652 distinct keys; a patt
 | `ach-<animals, weapons, exploration, day-mission>` | 100×100, 40×40 | AchievementsTab | 3 of 4 (the overview rows show the first three at 40×40): the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
 | `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: animal badges by the game's achievement table, challenge badges by the challenge's description (`Quick Draw` is the original's Assassin); `1 Rifle A (Standard)` is a stand-in for a weapon badge; `Early Bird` is not in the original |
 | `skill-<name>` | 80×90 | SkillsTab | 78 of 81: weapon skills by the weapon category in the name; `i1` (semi-automatic rifles), `k1` and `l1` (air rifles) stay empty, the original's only icon of that kind is already used by another skill or is of another category |
+| `statistics-<define>` | 80×90 | SkillsTab (the live site: the species' skill pictures) | `statistics/<define in lower case>.png` as the original showed it, 54 of the 55 species shown (`sasquatch` has none); the live weapon skills and the statistics' weapons and ammo use `store-item-<id>` |
 | `trophy-<name>` | 150×150 | TrophiesTab | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
 | `dog-<type>` | 120×120 | DogsTab | 2 of 2 |
 | `weapon-<name>`, `ammo-<name>` | 150×30, 36×36 | WeaponTable | 5 of 5, 5 of 5: the mock weapons are fictional (stand-in pictures of the same kind); each ammo is the one the game's item table lists as fitting that weapon's picture (.243, .30-06, .340 Weatherby, 7.62x54R, 12 GA birdshot) |
