@@ -455,8 +455,8 @@ public static class GameApi
                     .WithDescription("Statuses as LodgeSave. Also at `/v1/game/user/lodges/<id>/settings` (the current build).")
                     .PathParams(("id", "lodge id")).Body<LodgeSettingsBody>("text/plain").Produces(200, contentType: "text/plain");
                 hide.WithName("TrophyHide").WithSummary("Show or hide one of the own trophies")
-                    .WithDescription("`{hidden}`: a hidden trophy is left out of the public views (Trophy/list of another player, the profile page); the player's own lists keep it. "
-                                     + "Restored rows and harvests made here alike; 404 for a trophy the account has not. Also at `/v1/game/user/trophies/<id>` (the current build).")
+                    .WithDescription("`{hidden}`: a hidden trophy is left out of the public views that list restored `Trophy/list` rows (Trophy/list of another player, the profile page's trophies); the player's own lists keep it. "
+                                     + "Restored rows and harvests made here alike (a harvest's flag is kept, though no public view lists the harvests); 404 for a trophy the account has not. Also at `/v1/game/user/trophies/<id>` (the current build).")
                     .PathParams(("id", "trophy id")).Body<TrophyHiddenBody>("text/plain").Produces(200, contentType: "text/plain");
             }
             // the account's own loadouts (community server only): the game's page sends the save as JSON whatever its content type says; the new build reads the list as plain JSON
