@@ -9,7 +9,7 @@ public sealed partial class State
     /// <summary>The store item "Inventory Loadout": every unit an account owns is one loadout, so a delivery adds a default loadout per unit.
     /// A placed item (slot 23) is no part of a loadout; ammunition is the catalogue's category 3.</summary>
     const long LoadoutItem = 811, PlacedSlot = 23, AmmoCategory = 3;
-    const int MinName = 2, MaxName = 50, MaxColor = 11;  // the limits of the page's rename box and its 12 colours
+    const int MinName = 2, MaxName = 50, MaxColor = 11, MaxItems = 200;  // the limits of the page's rename box, its 12 colours, and a loadout's items
 
     static JsonObject Loadout(long id, string name, JsonNode? color, JsonNode items) => new() { ["name"] = name, ["color"] = color, ["items"] = items, ["id"] = id };
 
@@ -30,7 +30,7 @@ public sealed partial class State
     }
 
     /// <summary>`PUT loadout/<id>` `{name, color, items}`: replaces all three of the account's loadout; the inventory is not touched. 200 with the saved loadout;
-    /// 400 for a body that is not as sent (a name of 2 to 50 characters, a color 0 to 11, at most MaxSlots items of whole numbers, `item_guid` absent or a number);
+    /// 400 for a body that is not as sent (a name of 2 to 50 characters, a color 0 to 11, at most MaxItems items of whole numbers, `item_guid` absent or a number);
     /// 404 for a loadout the account has not.</summary>
     public (int Status, byte[] Body) SaveLoadout(long account, long id, byte[] body)
     {
@@ -42,7 +42,7 @@ public sealed partial class State
             if (JsonNode.Parse(body) is not JsonObject sent) return (400, []);
             name = sent["name"] is JsonValue n && n.TryGetValue<string>(out var text) && text.Length is >= MinName and <= MaxName ? text : throw new FormatException();
             color = Int(sent["color"], 0, MaxColor);
-            if (sent["items"] is not JsonArray list || list.Count > MaxSlots) return (400, []);
+            if (sent["items"] is not JsonArray list || list.Count > MaxItems) return (400, []);
             foreach (var entry in list)
             {
                 if (entry is not JsonObject e) return (400, []);

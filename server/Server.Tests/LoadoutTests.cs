@@ -172,13 +172,13 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
     {
         const string saved = """
             [{"name": "Kit A", "color": 3, "items": [{"slot_id": 3, "item_id": 5, "item_guid": null}, {"slot_id": 29, "item_id": 700, "item_guid": 304}], "id": 4242},
-             7, {"name": "Kit B", "color": 11, "items": [], "id": 4243}]
+             7, {"name": "Kit B", "color": 11, "items": [], "id": 4243}, {"name": 5, "color": 1.5, "items": "x", "id": 4244}]
             """;
         var path = TestZip.Own().Reply("game_user_loadout.json", "/game/user/loadout", saved).Write(tmp);
         var account = Restorer.Import(state, path, null, tmp).Account;
         var token = state.Store.CreateToken(account);
         var list = await Read(V2, "/game/user/loadout", token);
-        Eq("""[["Kit A", 3], ["Kit B", 11]]""", new JsonArray(list.Select(l => (JsonNode?)T(l!["name"], l["color"])).ToArray()));
+        Eq("""[["Kit A", 3], ["Kit B", 11], ["", 0]]""", new JsonArray(list.Select(l => (JsonNode?)T(l!["name"], l["color"])).ToArray()));  // a name, color or items of the wrong kind is read as none
         Eq("""[{"slot_id": 3, "item_id": 5, "item_guid": null}, {"slot_id": 29, "item_id": 700, "item_guid": 304}]""", list[0]!["items"]);
         var ids = list.Select(l => (long)l!["id"]!).ToList();
         Assert.True(ids[0] < ids[1] && !ids.Contains(4242) && !ids.Contains(4243), "new ids");
@@ -187,9 +187,9 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         // the saved loadouts are the restore's: an edit and a loadout bought since go with the next restore
         Assert.Equal(200, (await Call("PUT", V2, $"/game/user/loadout/{ids[0]}", token, Items())).Status);
         state.GrantItems(account, 811);
-        Assert.Equal(3, (await Read(V2, "/game/user/loadout", token)).Count);
+        Assert.Equal(4, (await Read(V2, "/game/user/loadout", token)).Count);
         Restorer.Import(state, path, account, tmp);
-        Eq("""["Kit A", "Kit B"]""", new JsonArray((await Read(V2, "/game/user/loadout", token)).Select(l => l!["name"]!.DeepClone()).ToArray()));
+        Eq("""["Kit A", "Kit B", ""]""", new JsonArray((await Read(V2, "/game/user/loadout", token)).Select(l => l!["name"]!.DeepClone()).ToArray()));
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         var store = new Store(file);
         foreach (var (id, name) in new[] { (5L, "Kit A"), (6L, "Kit B") })
             store.CreateAccount(id, "h" + id, new JsonObject(), seed: con =>
-                PlayerRows.SetExtra(con, "game_user_loadout.json", JsonNode.Parse($$"""[{"name": "{{name}}", "color": 2, "items": [{"slot_id": 3, "item_id": 5, "item_guid": null}]}, {"id": 9}, 4]""")));
+                PlayerRows.SetExtra(con, "game_user_loadout.json", JsonNode.Parse($$"""[{"name": "{{name}}", "color": 2, "items": [{"slot_id": 3, "item_id": 5, "item_guid": null}]}, {"name": 5, "color": "x", "items": 3}, 4]""")));
         store.CreateAccount(7, "h7", new JsonObject(), seed: con => PlayerRows.SetExtra(con, "game_user_loadout.json", JsonNode.Parse("""{"slots": [1, 2]}""")));
         using (var con = store.Open())
         {
