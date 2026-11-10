@@ -18,6 +18,7 @@ public class ImporterTests
     sealed class Avatars(string path, int id) : IItemCatalogue
     {
         public bool HasUnits(int itemId) => false;
+        public bool HasAvatars => true;
         public int? AvatarId(string? address) => address is not null && address.EndsWith(path, StringComparison.Ordinal) ? id : null;
     }
 

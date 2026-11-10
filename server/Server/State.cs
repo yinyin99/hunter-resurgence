@@ -669,12 +669,14 @@ public sealed partial class State
 
     sealed class ItemCatalogue(Dictionary<long, JsonObject> items, JsonArray avatars) : Restore.IItemCatalogue
     {
+        public bool HasAvatars => avatars.Count > 0;
+
         public bool HasUnits(int itemId) => items.TryGetValue(itemId, out var item) && item["units"] is JsonObject;
 
         public int? AvatarId(string? address)
         {
             static string? PathOf(string? url) =>
-                Uri.TryCreate(url?.StartsWith("//") == true ? "https:" + url : url, UriKind.Absolute, out var u) ? u.AbsolutePath : null;
+                Uri.TryCreate(url?.StartsWith("//") == true ? "https:" + url : url, UriKind.Absolute, out var u) && u.Scheme is "http" or "https" ? u.AbsolutePath : null;
             var path = PathOf(address);
             return path is null ? null
                 : avatars.OfType<JsonObject>().FirstOrDefault(a => a["url"] is JsonValue v && v.TryGetValue<string>(out var s) && PathOf(s) == path) is { } hit

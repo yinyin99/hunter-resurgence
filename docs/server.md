@@ -111,6 +111,7 @@ The server's own answers for this build:
 | Kill page labels and texture names | the recorded locale and web scripts | - | `labels`, `textures` |
 | Item definitions of update 10 | the recorded connect's | `game/json_inventory.json`, then the catalogue above | - |
 | Discounts, the player's skill list | recorded only (without them: no discounts, fresh skills) | - | - |
+| The avatar list (`Avatar/getAvatars`) | recorded only: a restore picks the profile's avatar from it ([docs/restore.md](restore.md#storing-the-model)); without it every restored account has the default avatar, unreported | - | - |
 | Animal ids, score families | - | - | `animals`, `families` (always) |
 
 With recordings that cover every input, the replies are the ones the recordings gave, except that the connect reply always has `ingame_event` null (no seasonal event) and `species_ammo` from the `ethical` list. Without a recorded connect, `connect` is the install's sample made neutral: the account, `account_info`, `network`, `user_stats` and `boost` of the sample's test player are replaced (handle `hunter`, user id 1, no e-mail, Steam id, address or counters; `config.domains` names the settings' hosts), `spawn` and `competitions` are empty and everything that is game data (species, items text, locations, store, ethical ammo, achievements, ...) stays. `serve` says `player state: off` only when there is neither a recorded connect nor a connect sample in the install.

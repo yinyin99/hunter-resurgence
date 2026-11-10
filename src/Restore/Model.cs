@@ -9,6 +9,9 @@ public interface IItemCatalogue
 
     /// <summary>The id of the avatar of the list whose picture address is <paramref name="address"/> (the same path, any host); null for no match or no list.</summary>
     int? AvatarId(string? address) => null;
+
+    /// <summary>True when the catalogue holds an avatar list (without one, no address is reported as unmatched).</summary>
+    bool HasAvatars => false;
 }
 
 /// <summary>A player as read from a backup zip, free of any storage or server type.

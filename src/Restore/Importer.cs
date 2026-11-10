@@ -113,7 +113,7 @@ public static class Importer
         int Face(string? address)
         {
             const int Default = 1000000;
-            if (address is null || catalogue is null) return Default;
+            if (address is null || catalogue is not { HasAvatars: true }) return Default;
             if (catalogue.AvatarId(address) is { } id)
             {
                 restored.Add($"avatar {id} (from the avatar picture address)");

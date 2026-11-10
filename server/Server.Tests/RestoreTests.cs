@@ -48,9 +48,14 @@ public class RestoreTests : StateTestBase
     [Fact]
     public void TheChosenAvatarIsRestoredFromTheRecordedList()
     {
+        var none = Restorer.Import(state, Zip(TestZip.Own()), null, tmp);  // no list recorded: the default, no line about it
+        Assert.DoesNotContain("avatar", none.Report.Replace("avatar and background pictures", ""));
         var list = (JsonArray)JsonNode.Parse("""[{"id": 1000001, "url": "https://pics.test/avatar/256/b.png"}, {"id": 1000042, "url": "https://pics.test/media/a.png"}]""")!;
-        state = new State(Path.Combine(tmp, "avatars.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: list);
-        var result = Restorer.Import(state, Zip(TestZip.Own()), null, tmp);  // the zip's picture is /a.png: no entry has that path
+        var connect = CONNECT;
+        connect["account"]!["avatar"] = 5;  // the account's own copies of the avatar follow `face`
+        connect["account"]!["avatar_id"] = 5;
+        state = new State(Path.Combine(tmp, "avatars.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: list);  // the state keeps this list: the test edits it below
+        var result = Restorer.Import(state, Zip(TestZip.Own(), "list.zip"), null, tmp);  // the zip's picture is /a.png: no entry has that path
         Assert.Equal(1000000, (int)Connect(1001)["account"]!["face"]!);
         Assert.Contains("matches no avatar", result.Report);
 
@@ -58,6 +63,8 @@ public class RestoreTests : StateTestBase
         result = Restorer.Import(state, Zip(TestZip.Own(), "again.zip"), null, tmp);
         Assert.Equal(1000042, (int)Connect(1001)["account"]!["face"]!);
         Assert.Contains("avatar 1000042", result.Report);
+        var account = state.Store.AccountJson(1001);
+        Assert.Equal((1000042, 1000042), ((int)account["avatar"]!, (int)account["avatar_id"]!));
     }
 
     [Fact]

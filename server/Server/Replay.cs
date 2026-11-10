@@ -271,7 +271,7 @@ public static class Replay
 
     /// <summary>Player state on workDir/state.db. Each input is the operator's recording when there is one, else what the
     /// install and the facts file give (Install, Facts): the connect reply, the application catalogue, the locale
-    /// labels, the texture names and the populations of every reserve. Discounts and the player's skill list come from
+    /// labels, the texture names and the populations of every reserve. Discounts, the avatar list and the player's skill list come from
     /// recordings only (without them: no discounts, fresh skills). Null when there is neither a recorded connect nor a
     /// connect sample in the install.</summary>
     public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
