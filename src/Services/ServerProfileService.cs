@@ -12,7 +12,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     ILogger<ServerProfileService> log, IFriendsService? friends = null) : IProfileService
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
-    /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
+    /// for the hunt and score sheet pages). A tab left out of this set stays hidden on the live site; today every tab has a source.</summary>
     public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "achievements", "ranks", "gallery", "expedition", "score", "antler" };
 
     public async Task<Profile?> ProfileAsync(string handle)

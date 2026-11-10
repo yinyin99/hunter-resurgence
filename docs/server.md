@@ -503,4 +503,4 @@ A proxy in front of the server speaks plain HTTP to it (a listener without `cert
 
 ## Tests
 
-`dotnet test --project server/Server.Tests -c Release`: xUnit v3, no network and nothing outside a temporary folder. Fixtures are built in code. CI runs them on `windows-latest` (with the rest of the solution) and on `ubuntu-latest` ([CONTRIBUTING.md](../CONTRIBUTING.md#ci-and-updates)).
+`dotnet test --project server/Server.Tests -c Release`: xUnit v3, no network and nothing outside a temporary folder. Fixtures are built in code. CI runs them on `windows-latest` (with the rest of the solution) and on `ubuntu-latest` ([CONTRIBUTING.md](../CONTRIBUTING.md#ci-and-updates)). `EndToEndTests` plays the whole journey over HTTP: a made-up backup is uploaded and approved, the account launches, connects, harvests an animal and disconnects, and the new kill is read in the hunterscore, the statistics, the trophies and the hunt history by the player and by a second account (the second account reads the trophies on the website and, in the game, in the lodge the harvest is mounted in).
