@@ -579,26 +579,41 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAnApproveThatAdoptsAnotherUserIdMovesThePhotosTakenHere()
+    public async Task TestASecondApproveThatAdoptsAnotherUserIdMovesThePhotosAndDeleteLeavesNoFolder()
     {
-        long photo;
-        using (var con = state.Store.Open(player))
-            photo = con.Insert("INSERT INTO photos (account_id, photo_type, file) VALUES ($a, 2, '7-2.jpg')");
-        var old = Path.Combine(tmp, "photos", player.ToString());
-        Directory.CreateDirectory(old);
-        File.WriteAllText(Path.Combine(old, "7-2.jpg"), "mine");
-        var id = await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie);
-        Assert.Equal("restored", Operator.Approve(id).Kind);
-        Assert.False(Directory.Exists(old));
-        var moved = Path.Combine(tmp, "photos", "1001");
-        Assert.Equal("mine", File.ReadAllText(Path.Combine(moved, "7-2.jpg")));
-        Assert.Equal(6, Directory.GetFiles(moved).Length);  // the five restored pictures and the one taken here
-        Assert.Equal(1L, (long)state.Store.Open(1001).Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '7-2.jpg'")!);
-        Assert.NotNull(state.PhotoFile("/photos/1001/7-2.jpg"));
-        Assert.Null(state.PhotoFile($"/photos/{player}/7-2.jpg"));
-        Operator.Delete(1001);
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own().Pictures(), "a.zip", player, cookie)).Kind);  // the account is 1001, its pictures in photos/1001
+        var first = Path.Combine(tmp, "photos", "1001");
+        Assert.Equal(5, Directory.GetFiles(first).Length);
+        File.WriteAllText(Path.Combine(first, "9-2.jpg"), "mine");  // a photo taken here
+        using (var con = state.Store.Open(1001))
+            con.Exec("INSERT INTO photos (account_id, photo_type, file) VALUES ($a, 2, '9-2.jpg')");
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(uid: "1002").Pictures(), "b.zip", 1001, cookie)).Kind);
+        var moved = Path.Combine(tmp, "photos", "1002");
+        Assert.False(Directory.Exists(first));
+        Assert.Equal("mine", File.ReadAllText(Path.Combine(moved, "9-2.jpg")));
+        Assert.Equal(6, Directory.GetFiles(moved).Length);  // the second backup's five pictures (the first's were replaced) and the photo taken here
+        Assert.Equal(1L, (long)state.Store.Open(1002).Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '9-2.jpg'")!);
+        Assert.NotNull(state.PhotoFile("/photos/1002/9-2.jpg"));
+        Assert.Null(state.PhotoFile("/photos/1001/9-2.jpg"));
+        Operator.Delete(1002);
         Assert.False(Directory.Exists(moved));
-        Assert.False(Directory.Exists(old));
+        Assert.False(Directory.Exists(first));
+    }
+
+    [Fact]
+    public void TestMovingPhotosMergesAndTheAccountsOwnPhotoWinsAClash()
+    {
+        var from = Path.Combine(tmp, "photos", "5");
+        var to = Path.Combine(tmp, "photos", "6");
+        Directory.CreateDirectory(from);
+        Directory.CreateDirectory(to);
+        File.WriteAllText(Path.Combine(from, "1-2.jpg"), "own");
+        File.WriteAllText(Path.Combine(to, "1-2.jpg"), "other");
+        File.WriteAllText(Path.Combine(to, "2-2.jpg"), "kept");
+        state.MovePhotos(5, 6);
+        Assert.False(Directory.Exists(from));
+        Assert.Equal("own", File.ReadAllText(Path.Combine(to, "1-2.jpg")));
+        Assert.Equal("kept", File.ReadAllText(Path.Combine(to, "2-2.jpg")));
     }
 
     [Fact]

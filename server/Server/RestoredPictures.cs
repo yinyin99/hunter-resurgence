@@ -71,17 +71,15 @@ public sealed partial class State
         using var zip = ZipFile.OpenRead(zipPath);
         foreach (var (name, entry) in u.Files)
         {
-            var target = Path.Combine(dir, name);
-            if (File.Exists(target)) continue;  // what is left after the deletions above is a photo taken here: it stays
             using var from = (zip.GetEntry(entry) ?? throw new InvalidDataException($"{entry} is not in the zip")).Open();
-            using var to = File.Create(target);
+            using var to = File.Create(Path.Combine(dir, name));
             from.CopyTo(to);
         }
     }
 
     /// <summary>A restore that adopted another user id: move the files of `photos/<from>/` into `photos/<to>/`, replacing a file of the same name there, and remove the old folder.
     /// The rows hold file names only, so the links (built from the account id) follow.</summary>
-    internal void MovePhotos(long from, long to)
+    public void MovePhotos(long from, long to)
     {
         var old = AccountPhotos(from);
         if (!Directory.Exists(old)) return;
