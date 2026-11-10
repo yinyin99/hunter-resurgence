@@ -73,11 +73,12 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             var one = await Read(host, $"{prefix}/game/user/{OWNER}/lodges/3", viewer);  // another player reads it
             Eq("""[3, "my cabin", 1]""", T(one["id"], one["name"], one["style_id"]));
             Eq("""
-                [{"slot_id": 0, "trophy_id": 21, "pose_id": 2, "rotation": 90, "base_texture": "", "is_skull": false, "trophy_details": {"id": 21, "species": 1, "hidden": false}},
+                [{"slot_id": 0, "trophy_id": 21, "pose_id": 2, "rotation": 90, "base_texture": "", "is_skull": false,
+                  "trophy_details": {"id": 21, "species": 1, "hidden": false, "lodge_id": 3, "slot_id": 0, "pose_id": 2}},
                  {"slot_id": 1, "trophy_id": 30, "pose_id": 1, "rotation": 0, "base_texture": "skull_01", "is_skull": true,
                   "trophy_details": {"id": 30, "hidden": false, "species": 2, "score": 5, "species_define": null, "score_type": null, "is_skull": null, "gender": null, "weight": null,
                                      "scale": null, "reserve_id": null, "timestamp": null, "texture_id": null, "base_texture": null, "fur_texture": null, "antlers_seed": null,
-                                     "antlers_score_percentage": null, "holed": null}},
+                                     "antlers_score_percentage": null, "holed": null, "lodge_id": 3, "slot_id": 1, "pose_id": 1}},
                  {"slot_id": 2, "trophy_id": null, "pose_id": null, "rotation": 0, "base_texture": null, "is_skull": false}]
                 """, one["animal_slots"]);
             Eq("""[{"slot_id": 0, "weapon_id": 5, "rotation": 1.5}]""", one["weapon_slots"]);
@@ -169,26 +170,51 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestASlotThatKeepsItsTrophyKeepsWhatTheGameDoesNotSend()
+    public async Task TestASaveKeepsWhatTheGameDoesNotSendOfTheStoredSlots()
     {
         using (var con = state.Store.Open(OWNER))
         {
             con.Begin();
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "22", O("""{"id": 22, "species": 3, "hidden": false}"""));
             var lodge = O("""
                 {"id": 5, "name": "five", "animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 21, "own": "restored"}},
-                                                          {"slot_id": 1, "trophy_id": 21, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 21, "own": "restored"}}], "weapon_slots": []}
+                                                          {"slot_id": 1, "trophy_id": 30, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 30, "own": "restored"}}], "weapon_slots": []}
                 """);
             PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
             PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
             con.Commit();
         }
-        // the game saves a lodge as it was when the player leaves it: slot 0 keeps its trophy, slot 1 gets another, slot 2 is new
+        // the game saves a lodge when the player leaves it: slot 0 as it was, slot 1 with another trophy, slot 2 is new
         Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/5", owner,
-            """{"animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 3}, {"slot_id": 1, "trophy_id": 30, "pose_id": 1}, {"slot_id": 2, "trophy_id": 21, "pose_id": 1}]}"""));
+            """{"animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 3}, {"slot_id": 1, "trophy_id": 22, "pose_id": 1}, {"slot_id": 2, "trophy_id": 30, "pose_id": 1}]}"""));
         var slots = (await Read(V2, $"/game/user/{OWNER}/lodges/5", viewer))["animal_slots"]!;
         Eq("""[3, true, "restored"]""", T(slots[0]!["pose_id"], slots[0]!["is_full_body"], slots[0]!["trophy_details"]!["own"]));
-        Eq("""[null, 30]""", T(slots[1]!["is_full_body"], slots[1]!["trophy_details"]!["id"]));  // another trophy: its own details, no stored key
-        Eq("""[null, {"id": 21, "species": 1, "hidden": false}]""", T(slots[2]!["is_full_body"], slots[2]!["trophy_details"]));  // a new slot: none stored
+        Eq("""[true, 22]""", T(slots[1]!["is_full_body"], slots[1]!["trophy_details"]!["id"]));  // another trophy: the platform's flag, the new trophy's details
+        Eq("""[null, 30]""", T(slots[2]!["is_full_body"], slots[2]!["trophy_details"]!["id"]));  // a new slot: nothing stored
+    }
+
+    JsonArray Mounts() => new(Reply(state.TrophiesReply(OWNER)).AsArray().OrderBy(t => (long)t!["id"]!)
+        .Select(t => (JsonNode?)T(t!["lodge_id"], t["slot_id"], t["pose_id"])).ToArray());
+
+    [Fact]
+    public async Task TestTrophyRowsSayWhereTheyAreMountedNow()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "22", O("""{"id": 22, "species": 3, "hidden": false, "lodge_id": 5, "slot_id": 1, "pose_id": 1}"""));
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "23", O("""{"id": 23, "species": 3, "hidden": false, "lodge_id": 99, "slot_id": 4, "pose_id": 2}"""));  // a lodge the account has not
+            var lodge = O("""{"id": 5, "name": "five", "animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 1}, {"slot_id": 1, "trophy_id": 22, "pose_id": 1}], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
+            con.Commit();
+        }
+        Eq("""[[5, 0, 1], [5, 1, 1], [99, 4, 2], [null, null, null]]""", Mounts());  // trophies 21, 22, 23 and the harvest 30
+        // 22 is taken down, the harvest is mounted in its slot and 21 turns
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/5", owner, """{"animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 3}, {"slot_id": 1, "trophy_id": 30, "pose_id": 1}]}"""));
+        Eq("""[[5, 0, 3], [null, null, null], [99, 4, 2], [5, 1, 1]]""", Mounts());
+        var listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
+        Eq("""[5, 1, 1]""", T(listed[3]!["lodge_id"], listed[3]!["slot_id"], listed[3]!["pose_id"]));  // `/game/user/trophies` sends them
     }
 
     [Fact]

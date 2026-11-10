@@ -224,7 +224,7 @@ public sealed partial class State
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
     /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
-    /// server in the restored shape (`hidden` as the player set it). ponytail: such a row has no lodge_id, slot_id or pose_id; a lodge slot names its trophy.
+    /// server in the restored shape (`hidden` as the player set it), each with the lodge slot that holds it now (<see cref="Mount"/>).
     /// A new kill id is above every restored id (see Heartbeat). Another player's view (`own` false) leaves out the hidden ones.</summary>
     List<JsonNode?> TrophyRows(long account, bool own = true)
     {
@@ -238,6 +238,7 @@ public sealed partial class State
                 row[field] = C(body[field]);
             rows.Add(row);
         }
+        Mount(account, rows);
         return own ? rows : [.. rows.Where(NotHidden)];
     }
 

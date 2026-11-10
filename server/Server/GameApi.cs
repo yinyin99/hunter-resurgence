@@ -556,7 +556,7 @@ public static class GameApi
     public sealed record FriendForm(long friend_user_id, string? oauth_access_token);
     public sealed record FriendsListForm(long user_id, long? offset, long? limit);
 
-    public sealed record AnimalSlot(long slot_id, long? trophy_id, long? pose_id, double rotation, long? base_texture, bool is_skull);
+    public sealed record AnimalSlot(long slot_id, long? trophy_id, long? pose_id, double rotation, [property: Description("The texture's name, \"\" for none")] string? base_texture, bool is_skull);
     public sealed record WeaponSlot(long slot_id, long? weapon_id, double rotation);
     public sealed record LodgeSlotsBody(string name, AnimalSlot[] animal_slots, WeaponSlot[] weapon_slots);
     public sealed record LodgeSettingsBody(string name, bool locked, long? style_id);

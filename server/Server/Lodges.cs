@@ -44,15 +44,35 @@ public sealed partial class State
         return copy;
     }
 
-    /// <summary>Give each new slot the stored keys it lacks (`is_full_body`, `trophy_details`) when the stored slot of the same `slot_id` holds the same
-    /// trophy or weapon: the game saves a lodge without them, whenever the player leaves it.</summary>
+    /// <summary>Give each new slot the keys it lacks from the stored slot of the same `slot_id`: all of them when it holds the same trophy or weapon
+    /// (`trophy_details`), `is_full_body` (a property of the platform) always. The game saves a lodge without them whenever the player leaves it.</summary>
     static void Carry(JsonArray slots, JsonArray stored)
     {
         foreach (var slot in slots.OfType<JsonObject>())
-            if (stored.OfType<JsonObject>().FirstOrDefault(s => Py.Eq(s["slot_id"], slot["slot_id"]) && Py.Eq(s["trophy_id"], slot["trophy_id"]) && Py.Eq(s["weapon_id"], slot["weapon_id"])) is { } same)
-                foreach (var (key, value) in same)
-                    if (!slot.ContainsKey(key))
+            if (stored.OfType<JsonObject>().FirstOrDefault(s => Py.Eq(s["slot_id"], slot["slot_id"])) is { } old)
+            {
+                var same = Py.Eq(old["trophy_id"], slot["trophy_id"]) && Py.Eq(old["weapon_id"], slot["weapon_id"]);
+                foreach (var (key, value) in old)
+                    if (!slot.ContainsKey(key) && (same || key == "is_full_body"))
                         slot[key] = value?.DeepClone();
+            }
+    }
+
+    /// <summary>Set `lodge_id`, `slot_id` and `pose_id` of each trophy row from the account's lodges: the slot that holds the trophy now, else (a row
+    /// that named a lodge the account has) none, so a trophy taken down or moved shows where it is. A row of no lodge stays as it is.</summary>
+    void Mount(long account, List<JsonNode?> trophies)
+    {
+        var lodges = Restored(account, "lodges", LodgeOne).Concat(Restored(account, "lodges", LodgeList)).OfType<JsonObject>().ToList();
+        var mounts = new Dictionary<string, JsonObject>();
+        foreach (var lodge in lodges)
+            foreach (var slot in (lodge["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+                if (slot["trophy_id"] is { } id)
+                    mounts.TryAdd(Py.Str(id), new JsonObject { ["lodge_id"] = C(lodge["id"]), ["slot_id"] = C(slot["slot_id"]), ["pose_id"] = C(slot["pose_id"]) });
+        var known = lodges.Select(l => Py.Str(l["id"])).ToHashSet();
+        foreach (var row in trophies.OfType<JsonObject>())
+            if (mounts.TryGetValue(Py.Str(row["id"]), out var at) || row["lodge_id"] is { } held && known.Contains(Py.Str(held)))
+                foreach (var key in new[] { "lodge_id", "slot_id", "pose_id" })
+                    row[key] = C(at?[key]);
     }
 
     /// <summary>`/game/user/<id>/lodges` of an account: its lodges, each animal slot with its `trophy_details`.</summary>
