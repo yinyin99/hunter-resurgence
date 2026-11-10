@@ -42,8 +42,6 @@ public static class GameApi
         gs.MapExactPost(game, HEARTBEAT_SCENARIO, _ => new(200, Json(), NoError, "state"))
           .WithName("HeartbeatScenario").WithSummary("A tutorial's event (the scenario finished or quit)")
           .WithDescription("Always `{\"err\": 0}`; nothing is stored.").Produces<ErrReply>();
-        gs.MapGet(PING, Handle(game, r => r.Method == "GET" && r.Path == PING ? new(200, Json(), NoError, "state") : null))
-          .WithName("Ping").WithSummary("Keep-alive of a tutorial").WithDescription("Always `{\"err\": 0}`.").Produces<ErrReply>();
         gs.MapExactPost(game, DISCONNECT, r => s is null ? new(200, Json(), NoError, "stub") : Own(game, r, a =>
             {
                 s.Disconnect(a, r.Body);

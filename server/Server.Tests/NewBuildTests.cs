@@ -217,7 +217,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
 
         Assert.Equal("{\"err\": 0}", Encoding.UTF8.GetString((await Get(ProtocolLiterals.WebRpcBase + "/ping")).Body));
         var scenario = await Post(ProtocolLiterals.WebRpcBase + "/heartbeatScenario", new JsonObject { ["events"] = new JsonArray(new JsonObject { ["event"] = 26, ["id"] = "basic_tutorial", ["score"] = 0 }) });
-        Assert.Equal((200, "{\"err\": 0}"), (scenario.Status, Encoding.UTF8.GetString(scenario.Body)));
+        Assert.Equal((200, "{\"err\": 0}", "state"), (scenario.Status, Encoding.UTF8.GetString(scenario.Body), scenario.Source));
         Assert.Equal(0, Expeditions());
 
         // the scenario's own item numbers are not the account's

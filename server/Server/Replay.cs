@@ -18,7 +18,6 @@ public static class Replay
 
     public const string HEARTBEAT = ProtocolLiterals.RpcBase + "/heartbeat";
     public const string HEARTBEAT_SCENARIO = ProtocolLiterals.RpcBase + "/heartbeatscenario";  // lower case: NewBuild.Rewrite lower-cases the method
-    public const string PING = ProtocolLiterals.RpcBase + "/ping";
     public const string DISCONNECT = ProtocolLiterals.RpcBase + "/disconnect";
     public const string CONNECT = ProtocolLiterals.RpcBase + "/connect";
     public const string MOVE_MULTIPLE2 = "/v1/Inventory/move_multiple2";

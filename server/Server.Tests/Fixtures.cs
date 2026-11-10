@@ -42,11 +42,11 @@ public static class Fixtures
                  "locations": [{"id": 101, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": 2}]}
                 """);
             app["tutorials"] = JsonNode.Parse("""
-                [{"id": 1, "name": "Test One", "reserve_id": 2, "url": "https://files.test/basic_tutorial.scn", "crc32": 1, "x": -10410, "y": 213, "z": 7962, "is_demo": 0},
-                 {"id": 2, "name": "Test Two", "reserve_id": 4, "url": "https://files.test/moose_tutorial.scn", "crc32": 2, "x": -12020, "y": 210, "z": -1977, "is_demo": 0},
-                 {"id": 3, "name": "Test Three", "reserve_id": 1, "url": "https://files.test/goldentreestand.scn", "crc32": 3, "x": -14150.1, "y": 213.08, "z": 5547.75, "is_demo": 0},
-                 {"id": 4, "name": "Test Four", "reserve_id": 10, "url": "https://files.test/snow_goose_tutorial.scn", "crc32": 4, "x": -5064.27, "y": 225.37, "z": -9501.08, "is_demo": 0},
-                 {"id": 5, "name": "Test Five", "reserve_id": 2, "url": "https://files.test/dogs_pointer.scn", "crc32": 5, "x": -10047.95, "y": 282.31, "z": 6811.21, "is_demo": 0}]
+                [{"id": 1, "name": "Test One", "reserve_id": 2, "url": "https://files.test/one.scn", "crc32": 1, "x": -1010, "y": 11, "z": 1020, "is_demo": 0},
+                 {"id": 2, "name": "Test Two", "reserve_id": 4, "url": "https://files.test/two.scn", "crc32": 2, "x": -2020, "y": 12, "z": -2030, "is_demo": 0},
+                 {"id": 3, "name": "Test Three", "reserve_id": 1, "url": "https://files.test/three.scn", "crc32": 3, "x": -3030.5, "y": 13.25, "z": 3040.75, "is_demo": 0},
+                 {"id": 4, "name": "Test Four", "reserve_id": 10, "url": "https://files.test/four.scn", "crc32": 4, "x": -4040.5, "y": 14.5, "z": -4050.25, "is_demo": 0},
+                 {"id": 5, "name": "Test Five", "reserve_id": 2, "url": "https://files.test/five.scn", "crc32": 5, "x": -5050.75, "y": 15.5, "z": 5060.5, "is_demo": 0}]
                 """);
             app["items"]!.AsArray().Add(TEST_LURE);
             return app;
