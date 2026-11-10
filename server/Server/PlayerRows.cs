@@ -64,11 +64,11 @@ public static class PlayerRows
     /// <summary>The saved `Public_user/expedition` reply of hunt `id`, else (null) of the newest one; null when none was saved.</summary>
     public static JsonNode? RestoredHunt(Db con, long? id)
     {
-        var saved = con.Rows("SELECT path, body FROM extras WHERE account_id = $a AND path LIKE 'Public!_user!_expedition%' ESCAPE '!'")
-            .Select(r => (Id: Regex.Match((string)r[0], @"__expedition_id=(\d+)\.json$").Groups[1].Value, Body: (string)r[1]))
-            .Where(p => p.Id.Length > 0 && long.TryParse(p.Id, out _));
-        var hit = id is { } want ? saved.Where(p => long.Parse(p.Id) == want) : saved.OrderByDescending(p => long.Parse(p.Id));
-        return hit.Select(p => JsonNode.Parse(p.Body)).FirstOrDefault();
+        var row = id is { } want
+            ? con.Rows("SELECT body FROM extras WHERE account_id = $a AND path LIKE 'Public!_user!_expedition%!_!_expedition!_id=' || ? || '.json' ESCAPE '!' LIMIT 1", want.ToString()).FirstOrDefault()
+            : con.Rows("SELECT body FROM extras WHERE account_id = $a AND path GLOB 'Public_user_expedition*__expedition_id=[0-9]*.json' " +
+                       "ORDER BY CAST(substr(path, instr(path, '__expedition_id=') + 16) AS INTEGER) DESC LIMIT 1").FirstOrDefault();
+        return row is null ? null : JsonNode.Parse((string)row[0]);
     }
 
     /// <summary>One row per restore of a zip (its SHA-256, hex), kept when the profile rows are replaced.</summary>
