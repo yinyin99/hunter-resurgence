@@ -234,7 +234,35 @@ public static class AccountApi
                 .WithName(name).WithSummary(add ? "Ask a player to be friends, or accept their request (form `handle`)" : "Decline or cancel a request, or remove a friend (form `handle`)")
                 .WithDescription("`{status: ok}`; 404 `invalid` for the player's own handle or one that has no account here.")
                 .Produces(200, contentType: "application/json");
+
+        group.MapGet("/missions", (HttpContext ctx) => Account(ctx) is not { } account
+                ? Refuse(401, "signed_out", "Sign in first.")
+                : state.WebMissions(account) is { } missions ? Json(200, missions) : Refuse(404, "invalid", "This server has no missions."))
+            .WithName("AccountMissions").WithSummary("The player's own missions page")
+            .WithDescription("`{missions: [{id, title, desc, state: active|available|completed|locked, objectives, reward, reserve, species, weapon}], groups: [{id, title, desc, favourite, missions}], completed, "
+                             + "auto_mission_activate, activate_only_favourite, hide_completed_favourite}`; 404 `invalid` when the catalogue has no missions.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/missions/{call}", async (HttpContext ctx, string call) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                if (!MissionCalls.Contains(call)) return Refuse(404, "invalid", "This is not a missions call.");
+                using var body = new MemoryStream();
+                await ctx.Request.Body.CopyToAsync(body);
+                return state.MissionCall(account, call, body.ToArray()) switch
+                {
+                    true => Json(200, new JsonObject { ["status"] = "ok" }),
+                    false => Refuse(409, "refused", "This mission is not available, or this is not a group."),
+                    null => Refuse(404, "invalid", "This server has no missions."),
+                };
+            })
+            .WithName("AccountMissionCall").WithSummary("One of the missions page's writes: activate, activate_all_available, update_automatic_activation, update_activate_only_favourite, update_hide_completed_favourite, update_favourite")
+            .WithDescription("The form is the one `POST /v1/Mission/<call>` takes without the token (`mission_id`, the switch's own name, `group_id` and `is_favourite`); `{status: ok}`, 409 `refused` for a mission that is not available or a group id that is no number.")
+            .Produces(200, contentType: "application/json");
     }
+
+    static readonly string[] MissionCalls = ["activate", "activate_all_available", "update_automatic_activation", "update_activate_only_favourite", "update_hide_completed_favourite", "update_favourite"];
 
     const string TooLarge = "This request is too large: a request is at most 90 MiB, and a larger zip is sent in parts.";
     const string Busy = "An upload of yours is still being processed, or the server is busy. Try again in a minute.";

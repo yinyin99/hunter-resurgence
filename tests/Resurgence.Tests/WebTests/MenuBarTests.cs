@@ -60,12 +60,12 @@ public sealed class MenuBarTests : UiContext
     }
 
     [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 0)]
-    public void TheMissionsItemShowsOnlyOffTheLiveSite(bool live, int items)
+    [InlineData(false, "/missions/daily")]
+    [InlineData(true, "/missions")]  // the live site has no daily page
+    public void TheMissionsItemOpensTheDailyPageOrOnTheLiveSiteTheRegularOne(bool live, string href)
     {
         Services.GetRequiredService<HostMode>().Live = live;
         var cut = Render<MenuBar>();
-        Assert.Equal(items, cut.FindAll("ul.items a[href='/missions/daily']").Count);
+        Assert.Equal(href, cut.Find("ul.items a.active, ul.items a[href^='/missions']").GetAttribute("href"));
     }
 }
