@@ -280,6 +280,26 @@ public static class GameApi
                .WithName("WalletSpent").WithSummary("The player's totals spent")
                .WithDescription("`{spent, silver_spent}`: em$ and gm$ paid, restored plus this server's purchases; the empty totals for another player's `user_id`.")
                .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            // missions (community server only; without a catalogue of missions the empty replies of ReplayScope): the player's own, from the missions tables
+            api.MapExactPost(game, MISSIONS, r => !s.Online ? null : Own(game, r, a => s.MissionsReply(a) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+               .WithName("Missions").WithSummary("The player's missions")
+               .WithDescription("`{active, completed, available, states, auto_mission_activate, activate_only_favourite, hide_completed_favourite, favourites}` from the catalogue's missions and "
+                                + "the account's states (`states` has an entry for every id listed: 1 available, 2 active with the ids of its finished `objectives`, 3 completed). `available` is derived: "
+                                + "every dependency completed, not active, not completed. A restored backup's mission page is copied into the account the first time it is read.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            foreach (var (path, name, summary, description) in new[]
+            {
+                (MISSION_ACTIVATE, "MissionActivate", "Activate an available mission", "Form `mission_id`: `true`, `false` for a mission that is unknown or not available."),
+                (MISSION_ACTIVATE_ALL, "MissionActivateAll", "Activate every available mission", "`true`."),
+                (MISSION_AUTO, "MissionAuto", "Switch the automatic activation of unlocked missions", "Form `auto_mission_activate` (`true`/`false`): `true`."),
+                (MISSION_ONLY_FAVOURITE, "MissionOnlyFavourite", "Limit the automatic activation to favourite groups", "Form `activate_only_favourite` (`true`/`false`): `true`."),
+                (MISSION_HIDE_COMPLETED, "MissionHideCompleted", "Hide the completed missions of favourite groups", "Form `hide_completed_favourite` (`true`/`false`): `true`."),
+                (MISSION_FAVOURITE, "MissionFavourite", "Add or remove a favourite mission group", "Form `group_id`, `is_favourite` (`true`/`false`): `true`, `false` for a group id that is not a number."),
+            })
+                api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => s.MissionCall(a, path[(path.LastIndexOf('/') + 1)..], r.Body) is { } ok
+                        ? new(200, JsonAnyOrigin(), ok ? "true"u8.ToArray() : "false"u8.ToArray(), "state") : null))
+                   .WithName(name).WithSummary(summary).WithDescription(description)
+                   .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // friends (community server only): the Friends table of the Store; a friend counts while both accounts exist here
             api.MapExactPost(game, ME_FRIENDS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MeFriendsReply(a), "state"), WithJsonToken(r)))
                .WithName("MeFriends").WithSummary("The account's friends, incoming requests and the user ids it asked")

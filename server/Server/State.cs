@@ -152,12 +152,14 @@ public sealed partial class State
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
     /// stamina) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
-    /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>.</summary>
+    /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
+    /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
-                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog)
+                                      Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
+                                      Action<Db, JsonObject, JsonArray> mission)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -283,6 +285,7 @@ public sealed partial class State
                 // ponytail: the score is always 0, no rule for a collectable's score is known; Expedition/list counts the pickups of every hunt on each call
                 updates.Add(new JsonObject { ["collectable_id"] = C(e["collectable_id"]), ["score"] = 0, ["update"] = 7 });
             }
+            mission(con, e, updates);
         }
         con.Commit();
         return updates;
@@ -574,6 +577,8 @@ public sealed partial class State
             reserves[Py.L(r!["id"])] = (string?)r["name"];
         foreach (var loc in Arr(G(application, "locations", null)))
             locations[Py.L(loc!["id"])] = loc["pos"];
+        if (!offline)
+            LoadMissions();
         this.locale = locale;
         this.textures = textures;
         connect = JsonNode.Parse(connectBody)!.AsObject();
@@ -1406,7 +1411,7 @@ public sealed partial class State
         }
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
-                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType));
+                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType), MissionEvent);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
@@ -1424,6 +1429,7 @@ public sealed partial class State
         var closed = con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
         con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?, ?)",
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
+        MissionLaunch(con, Py.IsDigit(start) && long.TryParse(start, out var lodge) ? lodge : null);
         con.Commit();
         if (closed)
             UpdateHunterscore(con, account);

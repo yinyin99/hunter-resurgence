@@ -282,6 +282,7 @@ public static class Restorer
             personal += Strip(body);
             PlayerRows.SetExtra(con, path, body);
         }
+        State.EnsureMissions(con);  // the saved mission states become the account's rows
 
         lines.Add($"stored: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "
                   + $"trophies {m.Trophies.Count}, lodges {m.Lodges.Count}, extras {m.Extras.Count}");

@@ -78,9 +78,9 @@ public static class ReplayScope
         Own("Launch/tutorial", HandlerError),  // the launcher starts a tutorial with session/start_tutorial; this old path hands out no tokens
         Own("Wallet/(bank_transactions|silver_transactions|transactions)", "[]"),
         Own("Wallet/spent", """{"spent": 0.0, "silver_spent": 0.0}"""),
-        Own("Mission/missions", """{"active": [], "completed": [], "available": [], "states": {}}"""),  // missions are the operator's to decide: none yet
+        Own("Mission/missions", """{"active": [], "completed": [], "available": [], "states": {}}"""),  // without a recorded catalogue there are no missions
         Own("Game/user/loadout", "[]"),  // the loadouts: none stored
-        Own("Mission/activate", "false"),
+        Own("Mission/(activate|activate_all_available|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite|update_favourite)", "false"),
         Own("Daily_Mission/get_daily_missions_calendar",
             """{"is_frozen": 1, "broken_streak_info": {"has_broken_streak": false, "streak_larger": 0}, "calendar": []}"""),
         Own("Daily_Mission/activate_user_progress", """{"success": false}"""),
