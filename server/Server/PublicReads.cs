@@ -169,9 +169,16 @@ public sealed partial class State
     /// the id where it has none. Restored base plus closed server hunts, like Statistics/total.</summary>
     public JsonObject StatisticsPage(long account)
     {
-        JsonObject total;
+        JsonNode stats;
         using (var con = Con(account))
-            total = RestoredReads.StatisticsTotal(con).AsObject();
+            stats = RestoredReads.StatisticsTotal(con);
+        return StatisticsView(stats);
+    }
+
+    /// <summary>The tab's rows of a Statistics/total shaped node (<c>data</c> an object): a hunt's stats are one too.</summary>
+    JsonObject StatisticsView(JsonNode stats)
+    {
+        var total = stats.AsObject();
         static double N(JsonNode? o, string key) => o is JsonObject x && x[key] is { } n && Py.IsNum(n) ? Py.D(n) : 0;  // a restored backup is the player's: any member can be of another type
         static int Count(double d) => (int)Math.Clamp(d, 0, int.MaxValue);  // and a counter any size: the website holds ints
         static JsonNode? Key(string id) => long.TryParse(id, out var n) ? JsonValue.Create(n) : null;  // the catalogues are keyed by number

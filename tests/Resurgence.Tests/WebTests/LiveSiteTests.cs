@@ -84,11 +84,11 @@ public sealed class LiveSiteTests : UiContext
     }
 
     /// <summary>Answers the skills, statistics, dogs, ranks and achievements paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}") : HttpMessageHandler
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}", string hunts = "{}", string hunt = "{}", string score = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, var p when p.EndsWith("/hunts") => hunts, var p when p.Contains("/hunts/") => hunt, var p when p.Contains("/score/") => score, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -123,7 +123,59 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics"));
         cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
         Assert.Contains("Fox Deer", cut.Markup);
-        Assert.Equal(["/profile/Fox/statistics/lifetime"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's pills are hidden
+        Assert.Equal(["/profile/Fox/statistics/lifetime", "/profile/Fox/statistics/history"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the last hunt and the bests are the mock's: their pills are hidden
+    }
+
+    const string Hunter = """{"handle":"Fox","hunterscore":5,"rank":3}""";
+
+    ServerProfileService Real(Server server) => new(new HttpClient(server) { BaseAddress = new Uri("http://server.test") },
+        new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
+
+    [Fact]
+    public void TheHistoryTabListsTheServersHuntsAndLinksEachToItsPage()
+    {
+        const string hunts = """{"page":1,"pages":1,"total":2,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Fox Reserve","lodge":"#101","collectables":0,"kills":2},{"id":11,"start":1699990000,"seconds":0,"reserve":"Fox Reserve","lodge":"","collectables":1,"kills":0}]}""";
+        Services.AddSingleton<IProfileService>(Real(new Server(Hunter, "{}", hunts: hunts)));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics").Add(h => h.Sub, "history"));
+        cut.WaitForAssertion(() => Assert.Equal(["/profile/Fox/expedition/12", "/profile/Fox/expedition/11"], cut.FindAll("table.hist a").Select(a => a.GetAttribute("href"))));
+        Assert.Equal("2023-11-14 22:15", cut.Find("table.hist a").TextContent);
+        Assert.Contains("Fox Reserve", cut.Markup);
+    }
+
+    [Fact]
+    public void TheHuntPageShowsTheServersHuntAndLinksOnlyTheKillsWithASheet()
+    {
+        const string hunt = """
+            {"id":12,"reserve":"Fox Reserve","lodge":"#101","start":1700000100,"end":1700003700,"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
+             "animals":[{"name":"Fox Deer","spotted":0,"tracked":0,"harvested":2}],"collectables":[],"achievements":[],"distanceKm":4.0,"seconds":3600,"antlers":[],
+             "kills":[{"id":5,"species":"Fox Deer","weapon":"Fox Rifle","ammo":"Fox Bullet","distanceM":82.0,"score":120.5,"weightKg":64.35,"when":1700000500,"sheet":true},
+                      {"id":777,"species":"Restored Deer","weapon":"Fox Rifle","ammo":"Fox Bullet","distanceM":60.0,"score":99.0,"weightKg":50.0,"when":1700000600,"sheet":false}]}
+            """;
+        Services.AddSingleton<IProfileService>(Real(new Server(Hunter, "{}", hunt: hunt)));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "expedition").Add(h => h.Sub, "12"));
+        cut.WaitForAssertion(() => Assert.Contains("Fox Reserve", cut.Markup));
+        Assert.Contains("Fox Rifle", cut.Markup);
+        Assert.Equal(["/profile/Fox/score/5"], cut.FindAll("table.kills a").Select(a => a.GetAttribute("href")));  // the restored kill has no sheet yet
+        Assert.Contains("Restored Deer", cut.Find("table.kills").TextContent);
+    }
+
+    [Fact]
+    public void TheScoreSheetPageShowsTheServersSheet()
+    {
+        const string score = """
+            {"kind":"antler","species":"Fox Deer","facts":[],"rows":[{"label":"1. Length of Main Beam","a":40.0,"b":40.0,"c":80.0},{"label":"5. Inside Span of Main Beams","a":null,"b":null,"c":45.0}],"abnormal":[],"sums":[],
+             "weapon":"Fox Rifle","scope":true,"ammo":"Fox Bullet","distanceM":82.0,"state":"Idle","bodyPart":"Neck","stance":"Prone","platform":"None","weightKg":64.35,"type":"Common (M)","woundTime":4.5,"integrity":97,
+             "shotLocation":"Fox Reserve (-9593, 8198)","shots":1,"when":1700000500,"expeditionId":12,"score":120.5,"harvestValue":70.25}
+            """;
+        Services.AddSingleton<IProfileService>(Real(new Server(Hunter, "{}", score: score)));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "score").Add(h => h.Sub, "5"));
+        cut.WaitForAssertion(() => Assert.Contains("1. Length of Main Beam", cut.Markup));
+        Assert.Contains("Fox Reserve (-9593, 8198)", cut.Markup);
+        Assert.Equal("/profile/Fox/expedition/12", cut.Find("div.info a").GetAttribute("href"));
+        Assert.Contains("Fox Rifle", cut.Find("table.shot").TextContent);
     }
 
     [Fact]

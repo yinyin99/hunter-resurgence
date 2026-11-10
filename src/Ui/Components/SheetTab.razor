@@ -15,8 +15,8 @@
                     <thead><tr><th colspan="2">Abnormal Points</th></tr><tr><th>Right Antler</th><th>Left Antler</th></tr></thead>
                     <tbody>
                         @foreach (var a in sheet.Abnormal) { <tr><td>@Fmt.Score(a.Right)</td><td>@Fmt.Score(a.Left)</td></tr> }
-                        <tr class="sub"><td>Subtotals</td><td>0</td></tr>
-                        <tr class="sub"><td>Total E</td><td><b>0.0000</b></td></tr>
+                        <tr class="sub"><td>@Fmt.Score(sheet.Abnormal.Sum(a => a.Right))</td><td>@Fmt.Score(sheet.Abnormal.Sum(a => a.Left))</td></tr>
+                        <tr class="sub"><td>Total E</td><td><b>@Fmt.Score(sheet.Abnormal.Sum(a => a.Right + a.Left))</b></td></tr>
                     </tbody>
                 </table>
             }
@@ -35,6 +35,8 @@
                 }
             </tbody></table>
         }
+        @if (sheet.Rows.Count > 0)
+        {
         <table class="rows">
             <thead>
                 @if (typical) { <tr><th></th><th>Column 2</th><th>Column 3</th><th>Column 4</th></tr><tr><th></th><th>Right Antler</th><th>Left Antler</th><th>Difference</th></tr> }
@@ -44,6 +46,7 @@
                 @foreach (var r in sheet.Rows) { <tr><th>@r.Label</th><td>@Cell(r.A)</td><td>@Cell(r.B)</td><td>@Cell(r.C)</td></tr> }
             </tbody>
         </table>
+        }
         @if (typical)
         {
             <table class="sums"><tbody>

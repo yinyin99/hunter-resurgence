@@ -327,6 +327,42 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheHuntsTabsAreAnyAccountsHuntsAndScoreSheetsByHandle()
+    {
+        state.CreateAccount(9, "third");
+        state.CreateAccount(10, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
+        state.NoteLaunch(9, "start=101&reserve=2"u8.ToArray());
+        state.HeartbeatReply(9, Events(AccountIsolationTests.Harvest(81, 72270)));
+        state.Disconnect(9, """{"distance_travelled": 466}"""u8.ToArray());
+
+        var list = await Get("web.test", "/hunters/THIRD/hunts");
+        Assert.Equal(200, list.Status);
+        var page = JsonNode.Parse(list.Body)!;
+        var row = page["rows"]!.AsArray().Single()!;
+        Eq("""[1, 1, 1, "Test Reserve", "#101", 1]""", T(page["page"], page["pages"], page["total"], row["reserve"], row["lodge"], row["kills"]));
+        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters/third/hunts?page=7")).Body)!["page"]);  // a page past the last is the last
+
+        var id = (long)row["id"]!;
+        var hunt = JsonNode.Parse((await Get("web.test", $"/hunters/third/hunts/{id}")).Body)!;
+        Assert.Equal(id, (long)hunt["id"]!);
+        var kill = hunt["kills"]!.AsArray().Single()!;
+        Eq("""["Test Deer", "Test Rifle", "Test Bullet", 96.14, 72.27, true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["distanceM"], kill["weightKg"], kill["sheet"]));
+        Assert.Equal(id, (long)JsonNode.Parse((await Get("web.test", "/hunters/third/hunts/latest")).Body)!["id"]!);
+
+        var sheet = await Get("web.test", $"/hunters/THIRD/score/{(long)kill["id"]!}");
+        Assert.Equal(200, sheet.Status);
+        var s = JsonNode.Parse(sheet.Body)!;
+        Eq("""["Test Deer", "Test Rifle", true, "Idle", "Prone", 1]""", T(s["species"], s["weapon"], s["scope"], s["state"], s["stance"], s["shots"]));
+        Eq("""[96.14, 72.27, 97, "Test Reserve (-9593, 8198)"]""", T(s["distanceM"], s["weightKg"], s["integrity"], s["shotLocation"]));
+
+        foreach (var path in new[] { "/hunters/nobody/hunts", "/hunters/banned/hunts", "/hunters/third/hunts/999", "/hunters/third/hunts/x", "/hunters/banned/hunts/1", "/hunters/nobody/score/1",
+                                     "/hunters/banned/score/1", "/hunters/third/score/999", "/hunters/third/score/x" })
+            Assert.Equal((404, path), ((await Get("web.test", path)).Status, path));
+    }
+
+    [Fact]
     public async Task TestAnyAccountsSkillsAreServedToEveryone()
     {
         await SignIn("99999999999999991", "one");
