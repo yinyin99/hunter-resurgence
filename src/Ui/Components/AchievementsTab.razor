@@ -51,7 +51,7 @@ else
 
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
-    // the live site has a server source for the overview only: the categories' pages and the challenges are the mock's
+    // the live site offers the overview only: the categories' pages and the challenges are not shown
     IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[..1] : subs;
     // the old addresses write the daily missions as day_mission as well
     string sub => Mode.Live || Sub == "summary" ? "" : Sub?.Replace('_', '-') is { } s && subs.Any(x => x.Key == s) ? s : "";
