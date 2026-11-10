@@ -69,6 +69,24 @@ Said of a whole backup zip that a restore does not read.
 **Rejected**:
 Said of a single entry a restore skips while reading the rest.
 
+## Profile pages
+
+**Profile page**:
+The website's or the game's view of one profile on the community server: its header and its areas. Not the backup tool's Public profile mode.
+_Avoid_: public profile
+
+**Owner-only**:
+Said of a profile area that only its player sees; every other area of a profile page is shown to anyone.
+
+**Server hunt**:
+A hunt played on the community server; its statistics are stored when it closes.
+
+**Restored hunt**:
+A hunt that came from a backup zip; it is shown in the hunt history only and never counted again.
+
+**Base statistics**:
+The restored statistics of a profile, which play never changes; the statistics shown are these plus the closed server hunts.
+
 ## Launcher
 
 **Launcher**:
