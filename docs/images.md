@@ -1,6 +1,6 @@
 # Pictures
 
-The website and the launcher draw every picture of the original screens in a *slot*: `<AssetSlot Name=… Width=… Height=…>` (`src/Ui/Components/AssetSlot.razor`), the map of `MapPlaceholder` (`src/Ui/Components/MapPlaceholder.razor`) and the website's page background `page-bg` (`src/Ui/Layouts/ShellLayout.razor`). The repository holds no pictures: a slot is a labelled box unless the operator supplies its file; without `page-bg` the page is plain black.
+The website and the launcher draw every picture of the original screens in a *slot*: `<AssetSlot Name=… Width=… Height=…>` (`src/Ui/Components/AssetSlot.razor`), the map of `MapPlaceholder` (`src/Ui/Components/MapPlaceholder.razor`) and the page background `page-bg` (`src/Ui/Layouts/ShellLayout.razor`, website and launcher). The repository holds no pictures: a slot is a labelled box unless the operator supplies its file; without `page-bg` the page is plain black.
 
 ## How it works
 
@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-104 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
+108 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 651 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 652 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
@@ -89,7 +89,7 @@ With the values the mock services give, the slots have 651 distinct keys; a patt
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
 | `rank-<animals, weapons, collectables>` | 110×110, 40×40 | RanksTab | 3 of 3 (the overview rows show them at 40×40) |
-| `rank-score` | 40×40 | RanksTab | no: the hunter score icon of the ranks overview |
+| `rank-score` | 40×40 | RanksTab | yes: the hunter score icon of the ranks overview |
 | `ach-<animals, weapons, exploration, day-mission>` | 100×100, 40×40 | AchievementsTab | 3 of 4 (the overview rows show the first three at 40×40): the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
 | `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: animal badges by the game's achievement table, challenge badges by the challenge's description (`Quick Draw` is the original's Assassin); `1 Rifle A (Standard)` is a stand-in for a weapon badge; `Early Bird` is not in the original |
 | `skill-<name>` | 80×90 | SkillsTab | 78 of 81: weapon skills by the weapon category in the name; `i1` (semi-automatic rifles), `k1` and `l1` (air rifles) stay empty, the original's only icon of that kind is already used by another skill or is of another category |
