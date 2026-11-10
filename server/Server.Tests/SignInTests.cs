@@ -1001,6 +1001,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             con.Exec("ALTER TABLE expeditions DROP COLUMN stats");
             con.Exec("DROP TABLE friends");
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
+            con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 1");
         }

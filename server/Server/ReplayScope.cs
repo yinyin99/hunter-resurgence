@@ -79,7 +79,7 @@ public static class ReplayScope
         Own("Wallet/(bank_transactions|silver_transactions|transactions)", "[]"),
         Own("Wallet/spent", """{"spent": 0.0, "silver_spent": 0.0}"""),
         Own("Mission/missions", """{"active": [], "completed": [], "available": [], "states": {}}"""),  // without a recorded catalogue there are no missions
-        Own("Game/user/loadout", "[]"),  // the loadouts: none stored
+        Own("Game/user/loadout", "[]"),  // the loadouts: none here; a community server answers its own (State.LoadoutsReply, GameApi)
         Own("Mission/(activate|activate_all_available|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite|update_favourite)", "false"),
         Own("Daily_Mission/get_daily_missions_calendar",
             """{"is_frozen": 1, "broken_streak_info": {"has_broken_streak": false, "streak_larger": 0}, "calendar": []}"""),

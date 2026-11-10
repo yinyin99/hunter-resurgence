@@ -42,7 +42,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | `Stats` | `statistics` |
 | `Achievements` | `achievements` (earn times in `triggers`). On a community server the check right after it adds the earn time of each threshold the account's statistics reach that has none, and a larger counter as `value` ([docs/server.md](server.md#achievements)) |
 | `Trophies`, `Lodges` | `trophies`, `lodges` as read |
-| `Extras` | `extras`, keyed by the path in the zip |
+| `Extras` | `extras`, keyed by the path in the zip; the saved loadouts (`game_user_loadout.json`) are also read into `loadouts`, one row each under a new id ([docs/server.md](server.md#loadouts)) |
 | `Account`, `Profile` | the account's `account` object (the connect reply's): handle, `user_id`, `account_id` (= the user id), hostname, gender, hunterscore, membership, avatar URL, the importer's defaults for `face` and the Facebook fields. On a community server the hunterscore is then the one the server computes from the restored statistics ([docs/server.md](server.md#the-hunterscore)), in `account` and in the profile |
 
 What is dropped, and the report says so: the e-mail, Facebook id and other login-only fields (accounts keep none); keys named `email`, `first_name`, `last_name`, `real_name`, `address` and `phone`, anywhere in a stored reply (counted in the report); the zip's Steam id and claim hash (a Steam id match is shown to the operator as information, is not proof of ownership, and an account's `steam_id64` is only one the server verified).

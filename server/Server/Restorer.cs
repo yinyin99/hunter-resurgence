@@ -283,9 +283,10 @@ public static class Restorer
             PlayerRows.SetExtra(con, path, body);
         }
         State.EnsureMissions(con);  // the saved mission states become the account's rows
+        var loadouts = con.Exec(Store.RestoredLoadouts);  // the saved loadouts, now under this server's ids
 
         lines.Add($"stored: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "
-                  + $"trophies {m.Trophies.Count}, lodges {m.Lodges.Count}, extras {m.Extras.Count}");
+                  + $"trophies {m.Trophies.Count}, lodges {m.Lodges.Count}, extras {m.Extras.Count}, loadouts {loadouts}");
         lines.Add(pictures);
         if (personal > 0) dropped.Add($"{personal} personal field(s) (e-mail, real name, address, phone) in the saved replies");
         dropped.Add("e-mail, Facebook id and the other login-only fields of the account: this server's accounts keep none");

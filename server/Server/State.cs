@@ -100,6 +100,8 @@ public sealed partial class State
             units = units is null || Is(units, -2) ? null : units;
             var guid = NextId(con, "items", "guid");
             con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", guid, itemId, units);
+            if (itemId == LoadoutItem)
+                AddLoadout(con);
             rows.Add(new JsonObject
             {
                 ["item_id"] = itemId, ["slot"] = 0, ["guid"] = guid.ToString(), ["metadata"] = new JsonObject(), ["units"] = C(units),
@@ -1430,6 +1432,7 @@ public sealed partial class State
         con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?, ?)",
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
         MissionLaunch(con, Py.IsDigit(start) && long.TryParse(start, out var lodge) ? lodge : null);
+        ApplyLoadout(con, Form1(form, "loadout_id"));
         con.Commit();
         if (closed)
             UpdateHunterscore(con, account);
