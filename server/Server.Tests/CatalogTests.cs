@@ -186,4 +186,19 @@ public class CatalogTests : StateTestBase
 
     [Fact]
     public async Task ALocalServerDoesNotServeIt() => Assert.Equal("miss", (await Get(Store, offline: true)).Source);
+
+    /// <summary>The website's wallet history: after a purchase, the player's own rows and totals; a signed-out request is refused.</summary>
+    [Fact]
+    public async Task TheWalletRoutesAnswerTheSignedInPlayerOnly()
+    {
+        await using var server = await Start(Store);
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/wallet/ems", [])).Status);
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/wallet/spent", [])).Status);
+        Assert.NotNull(state.WebBuy(ME, 1, false, 2));  // 2 x 50 em$
+        var ems = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/wallet/ems?offset=0", [cookie])).Body)!.AsArray();
+        Assert.Equal("D 100 182 82 2", $"{ems[0]!["type"]!["id"]} {(double)ems[0]!["amount"]!} {(double)ems[0]!["preBalance"]!} {(double)ems[0]!["postBalance"]!} {ems[0]!["qty"]}");
+        Assert.Empty(JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/wallet/gms", [cookie])).Body)!.AsArray());
+        Assert.Equal(100.0, (double)JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/wallet/spent", [cookie])).Body)!["spent"]!);
+    }
 }

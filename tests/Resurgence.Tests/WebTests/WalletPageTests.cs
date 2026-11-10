@@ -2,6 +2,7 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
+using Resurgence.Ui;
 using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
@@ -22,5 +23,15 @@ public sealed class WalletPageTests : UiContext
         more.Click();
 
         Assert.Equal(2 * IWalletService.PageSize, rows());
+    }
+
+    [Fact]
+    public void TheLiveSiteOpensOnTheEmsHistoryWithNoBankTab()
+    {
+        Services.GetRequiredService<HostMode>().Live = true;
+        var cut = Render<Wallet>();
+        Assert.Equal(["/wallet/ems", "/wallet/gms"], cut.FindAll("ul.tabs li > a").Select(a => a.GetAttribute("href")));
+        Assert.Empty(cut.FindAll("table.bank"));
+        Assert.NotEmpty(cut.FindAll("table.entries"));
     }
 }

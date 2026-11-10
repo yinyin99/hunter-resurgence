@@ -20,6 +20,8 @@ public static class ServerAccountApi
     public const string GalleryDelete = "/account/gallery/delete";
     /// <summary>GET with the cookie: 200 with the player's own gallery as a zip of its pictures.</summary>
     public const string GalleryZip = "/account/gallery/zip";
+    /// <summary>GET with the cookie: <c>/ems</c> and <c>/gms</c> (query <c>offset</c>) 200 a page of <see cref="ServerWalletRow"/>, newest first, 50 at most; <c>/spent</c> 200 <see cref="ServerSpent"/>.</summary>
+    public const string Wallet = "/account/wallet";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;

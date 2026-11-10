@@ -28,7 +28,7 @@ public class LauncherGuardTests
     [InlineData("community_league", true)]
     [InlineData("community_league/details/3", true)]
     [InlineData("steam_callback/abc", true)]
-    [InlineData("wallet/ems", true)]
+    [InlineData("wallet/ems", false)]                // the server's: the owner's history
     [InlineData("/Messages", true)]
     [InlineData("bank/ems", true)]
     [InlineData("competitions", true)]               // no source on the live site: the recorded ones ended weeks ago
@@ -37,5 +37,5 @@ public class LauncherGuardTests
     [InlineData("store", false)]
     [InlineData("profile/x", false)]
     [InlineData("leaderboards", false)]
-    public void TheMockOnlyRoutesAreTheSignedInOnesExceptRestoreAndTheCompetitions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
+    public void TheMockOnlyRoutesAreTheSignedInOnesExceptRestoreAndTheWalletAndTheCompetitions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
 }
