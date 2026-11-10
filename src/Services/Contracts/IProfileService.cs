@@ -27,7 +27,8 @@ public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<Spe
 /// <summary>A confirmed kill of an expedition; <see cref="Id"/> opens its score sheet.</summary>
 /// <summary>The taxidermy of a kill of the first 24 hours: until when it can be bought and the prices.</summary>
 public sealed record TaxidermyOffer(DateTime End, int Ems, int Gms);
-public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When, TaxidermyOffer? Taxidermy = null);
+/// <param name="Sheet">Whether the kill has a score sheet to open (a restored kill has none yet).</param>
+public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When, TaxidermyOffer? Taxidermy = null, bool Sheet = true);
 /// <param name="End">Null while the expedition is not over.</param>
 public sealed record Expedition(long Id, string Reserve, string Lodge, DateTime Start, DateTime? End, IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals,
     IReadOnlyList<CollectableStat> Collectables, IReadOnlyList<string> Achievements, double DistanceKm, int Seconds, IReadOnlyList<string> Antlers, IReadOnlyList<Kill> Kills);
