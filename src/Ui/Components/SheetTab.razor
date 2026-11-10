@@ -15,6 +15,7 @@
                     <thead><tr><th colspan="2">Abnormal Points</th></tr><tr><th>Right Antler</th><th>Left Antler</th></tr></thead>
                     <tbody>
                         @foreach (var a in sheet.Abnormal) { <tr><td>@Fmt.Score(a.Right)</td><td>@Fmt.Score(a.Left)</td></tr> }
+                        <tr class="sub"><td colspan="2">Subtotals</td></tr>
                         <tr class="sub"><td>@Fmt.Score(sheet.Abnormal.Sum(a => a.Right))</td><td>@Fmt.Score(sheet.Abnormal.Sum(a => a.Left))</td></tr>
                         <tr class="sub"><td>Total E</td><td><b>@Fmt.Score(sheet.Abnormal.Sum(a => a.Right + a.Left))</b></td></tr>
                     </tbody>
