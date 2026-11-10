@@ -269,6 +269,17 @@ public static class GameApi
                .WithName("GalleryDelete").WithSummary("Delete a photo of the player's own gallery")
                .WithDescription("Form `oauth_access_token`, `photo_id`: `true`, or `false` for an id that is not one of the player's own photos.")
                .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            // the wallet history (community server only): the restored pages and this server's changes, newest first; another player's `user_id` is the empty reply
+            foreach (var (path, name, currency) in new[] { (WALLET_TRANSACTIONS, "WalletTransactions", "em"), (WALLET_SILVER_TRANSACTIONS, "WalletSilverTransactions", "gm") })
+                api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => s.WalletListReply(a, currency, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+                   .WithName(name).WithSummary($"The player's {(currency == "em" ? "em$" : "gm$")} history, one page")
+                   .WithDescription($"`[{{id, created, type: {{id: C|D, name}}, amount, preBalance, postBalance, summary, mission, items, qty}}]`: {State.WalletPageSize} rows from `offset`, newest first, "
+                                    + "the rows a restored backup brought and this server's purchases and rewards; the empty reply for another player's `user_id`.")
+                   .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, WALLET_SPENT, r => !s.Online ? null : Own(game, r, a => s.WalletSpentReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+               .WithName("WalletSpent").WithSummary("The player's totals spent")
+               .WithDescription("`{spent, silver_spent}`: em$ and gm$ paid, restored plus this server's purchases; the empty totals for another player's `user_id`.")
+               .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // friends (community server only): the Friends table of the Store; a friend counts while both accounts exist here
             api.MapExactPost(game, ME_FRIENDS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MeFriendsReply(a), "state"), WithJsonToken(r)))
                .WithName("MeFriends").WithSummary("The account's friends, incoming requests and the user ids it asked")
