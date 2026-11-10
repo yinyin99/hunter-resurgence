@@ -509,7 +509,7 @@ public class InventoryTests : StateTestBase
     public void TestBuyAmountIsOneToAThousand()
     {
         var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
-        using (var con = s.Store.Open(ME)) State.AddCurrency(con, "em", 100000);
+        using (var con = s.Store.Open(ME)) State.AddCurrency(con, "em", 100000, "test");
         var wallet = s.Wallet(ME)["em"]!.DeepClone();
         var count = Items(s).Count;
         foreach (var amount in new[] { "0", "-1", "1e3", "", "1001", "72057594037927937", "99999999999999999999" })
@@ -724,6 +724,40 @@ public class InventoryTests : StateTestBase
         Assert.False(Py.Eq(Reply(state.ConnectReply(ME))["expedition"]!["expedition_id"], reply["expedition"]!["id"]));  // a later connect opens a new one
     }
 
+    [Fact]
+    public void TestWalletHistoryJoinsTheRestoredPagesAndThisServersChangesNewestFirst()
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            PlayerRows.SetExtra(con, "Wallet_transactions__lang=en__offset=0.json", JsonNode.Parse("""[{"id": 5, "created": 2000, "amount": 30.0, "preBalance": 100.0, "postBalance": 70.0, "summary": "In-game payment.", "type": {"id": "D", "name": "Debit"}, "items": [], "qty": 1, "mission": ""}]"""));
+            PlayerRows.SetExtra(con, "Wallet_transactions__lang=en__offset=50.json", JsonNode.Parse("""[{"id": 4, "created": 1000, "amount": 40.0, "preBalance": 140.0, "postBalance": 100.0, "summary": "In-game payment.", "type": {"id": "D", "name": "Debit"}, "items": [], "qty": 1, "mission": ""}]"""));
+            PlayerRows.SetExtra(con, "Wallet_silver_transactions__lang=en__offset=0.json", JsonNode.Parse("""[{"id": 9, "created": 1500, "amount": 7.0, "preBalance": 0.0, "postBalance": 7.0, "summary": "Reward (Id: 99)", "type": {"id": "C", "name": "Credit"}, "items": [], "qty": 1, "mission": ""}]"""));
+            PlayerRows.SetExtra(con, "Wallet_spent.json", JsonNode.Parse("""{"spent": 196.0, "silver_spent": 595.0}"""));
+        }
+        Assert.Equal(2, Reply(state.WalletListReply(ME, "em", ""u8.ToArray())!).AsArray().Count);  // nothing of this server yet
+        Eq("""{"spent": 196.0, "silver_spent": 595.0}""", Reply(state.WalletSpentReply(ME, ""u8.ToArray())!));
+        Eq("""{"price": 170.0, "success": true}""", Reply(state.BuyReply(ME, "item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
+        var e22 = O("""{"event": 22, "individual": 460, "greatest_spread": 640, "tip_to_tip_spread": 600, "inside_spread_of_main_beams": 560}""");
+        e22["right_antler"] = MuleAntler(750, [125, 125, 100, 100], [125, 500, 375, 250]);
+        e22["left_antler"] = MuleAntler(800, [150, 125, 125, 100], [125, 450, 375, 250]);
+        Hb(O("""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 1}"""), e22, O("""{"event": 3, "individual": 460, "extended_species": 1, "trophy_integrity": 100000}"""));
+        Eq("20.0", state.Give(ME, "em", 8));
+        Assert.Null(state.Give(ME, "em", -1000));  // refused: no row
+
+        JsonArray Rows(string currency, string form = "") => new(Reply(state.WalletListReply(ME, currency, Encoding.ASCII.GetBytes(form))!).AsArray()
+            .Select(r => (JsonNode?)$"{r!["type"]!["id"]} {r["summary"]} {Py.D(r["amount"])} {Py.D(r["preBalance"])}>{Py.D(r["postBalance"])}").ToArray());
+        Eq("""["C Adjustment by the operator. 8 12>20", "D In-game payment. 170 182>12", "D In-game payment. 30 100>70", "D In-game payment. 40 140>100"]""", Rows("em"));
+        Eq("""["D In-game payment. 40 140>100"]""", Rows("em", "offset=3&lang=en"));
+        Eq("""["C Reward (Id: 1) 66 33>99", "C Reward (Id: 99) 7 0>7"]""", Rows("gm"));
+        var bought = Reply(state.WalletListReply(ME, "em", ""u8.ToArray())!)[1]!;
+        Eq("[19, 1]", T(bought["items"]![0]!["id"], bought["qty"]));
+        Eq("""{"spent": 366.0, "silver_spent": 595.0}""", Reply(state.WalletSpentReply(ME, ""u8.ToArray())!));
+        var community = new State(Path.Combine(tmp, "community.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);  // a local server has one player: every request is the own
+        Assert.Null(community.WalletListReply(ME, "em", "user_id=999"u8.ToArray()));  // another player's: not served
+        Assert.Null(community.WalletSpentReply(ME, "user_id=999"u8.ToArray()));
+        Assert.NotNull(community.WalletListReply(ME, "em", ""u8.ToArray()));
+    }
+
     static JsonNode? C(JsonNode? n) => n?.DeepClone();
 }
 
@@ -822,6 +856,7 @@ public class SkillTests : StateTestBase
         JsonArray Gm(string xp) => new(Hb(O("{\"event\": 23, \"item\": \"300\", \"metadata\": {\"dog_name\": \"Rex\", \"experience\": " + xp + "}}"))
             .Where(u => (int?)u!["update"] == 15).Select(u => u!.DeepClone()).ToArray());
         Eq(new JsonArray(new JsonObject { ["amount"] = gm + 400, ["type"] = "gm", ["update"] = 15 }), Gm("650.5"));  // levels at 300 and 600 in one event
+        Eq("""["Dog level reward.", 400.0]""", T(state.WalletPage(ME, "gm", 0)[0]!["summary"], state.WalletPage(ME, "gm", 0)[0]!["amount"]));
         Assert.Empty(Gm("650.5"));
         Assert.Empty(Gm("50"));
         Assert.Empty(Gm("650"));

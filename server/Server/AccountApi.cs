@@ -153,6 +153,22 @@ public static class AccountApi
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/wallet/spent", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WalletSpent(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountWalletSpent").WithSummary("The player's totals spent")
+            .WithDescription("`{spent, silver_spent}` as `Wallet/spent` answers it: em$ and gm$ paid, restored plus this server's purchases.")
+            .Produces(200, contentType: "application/json");
+
+        foreach (var (kind, currency) in new[] { ("ems", "em"), ("gms", "gm") })
+            group.MapGet($"/wallet/{kind}", (HttpContext ctx) => Account(ctx) is { } account
+                    ? Json(200, state.WalletPage(account, currency, long.TryParse(ctx.Request.Query["offset"], NumberStyles.None, CultureInfo.InvariantCulture, out var offset) ? offset : 0))
+                    : Refuse(401, "signed_out", "Sign in first."))
+                .WithName($"AccountWallet{char.ToUpperInvariant(kind[0])}{kind[1..]}").WithSummary($"The player's {currency}$ history, one page (query `offset`)")
+                .WithDescription($"The rows of `Wallet/{(currency == "em" ? "transactions" : "silver_transactions")}`: {State.WalletPageSize} rows from `offset`, newest first.")
+                .QueryParams(("offset", "Rows to skip"))
+                .Produces(200, contentType: "application/json");
+
         group.MapPost("/gallery/delete", async (HttpContext ctx) =>
             {
                 if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
