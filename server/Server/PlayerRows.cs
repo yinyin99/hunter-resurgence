@@ -66,8 +66,8 @@ public static class PlayerRows
     {
         var row = id is { } want
             ? con.Rows("SELECT body FROM extras WHERE account_id = $a AND path LIKE 'Public!_user!_expedition%!_!_expedition!_id=' || ? || '.json' ESCAPE '!' LIMIT 1", want.ToString()).FirstOrDefault()
-            : con.Rows("SELECT body FROM extras WHERE account_id = $a AND path GLOB 'Public_user_expedition*__expedition_id=[0-9]*.json' " +
-                       "ORDER BY CAST(substr(path, instr(path, '__expedition_id=') + 16) AS INTEGER) DESC LIMIT 1").FirstOrDefault();
+            : con.Rows("SELECT body FROM extras WHERE account_id = $a AND path = (SELECT path FROM extras WHERE account_id = $a AND path GLOB 'Public_user_expedition*__expedition_id=[0-9]*.json' " +
+                       "AND path NOT GLOB '*__expedition_id=*[^0-9]*.json' ORDER BY CAST(substr(path, instr(path, '__expedition_id=') + 16) AS INTEGER) DESC LIMIT 1)").FirstOrDefault();
         return row is null ? null : JsonNode.Parse((string)row[0]);
     }
 

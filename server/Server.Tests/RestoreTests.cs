@@ -257,6 +257,16 @@ public class RestoreTests : StateTestBase
         Restorer.Import(state, Zip(TestZip.Own().Hunts()), null, tmp);
         Eq("9003", JsonNode.Parse(state.ExpeditionReply(1001, "{}"u8.ToArray()))!["expedition"]!["id"]);
     }
+
+    [Fact]
+    public void TestTheNewestRestoredHuntIsTheHighestIdNotTheLastInText()
+    {
+        var zip = TestZip.Own()
+            .Reply("Public_user_expedition__user_id=1001__expedition_id=999.json", "/v1/Public_user/expedition", """{"stats":null,"kills":[],"expedition":{"id":999}}""", ("user_id", "1001"), ("expedition_id", "999"))
+            .Reply("Public_user_expedition__user_id=1001__expedition_id=1000.json", "/v1/Public_user/expedition", """{"stats":null,"kills":[],"expedition":{"id":1000}}""", ("user_id", "1001"), ("expedition_id", "1000"));
+        Restorer.Import(state, Zip(zip), null, tmp);
+        Eq("1000", JsonNode.Parse(state.ExpeditionReply(1001, "{}"u8.ToArray()))!["expedition"]!["id"]);
+    }
 }
 
 /// <summary>The restored account's profile reads over HTTP: Me/me, Statistics/total and Achievement/stats, with the tokens of two accounts.</summary>
