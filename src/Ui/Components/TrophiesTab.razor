@@ -8,11 +8,12 @@
         @foreach (var t in page.Rows)
         {
             <li>
-                <AssetSlot Name="@($"trophy-{t.Name}")" Width="150" Height="150" />
-                @if (t.CompetitionId is { } id && !Mode.Live) { <a href="/competitions/details/@id">@t.Competition</a> }
-                else if (t.CompetitionId is not null) { <span>@t.Competition</span> }  @* the live site has no competition pages *@
-                <b>@t.Name</b>
-                <span>@t.Date.ToString("yyyy-MM-dd")</span>
+                @* the live site has no competition pages *@
+                @if (t.CompetitionId is { } id && !Mode.Live) { <a href="/competitions/details/@id"><h4>@t.Competition</h4></a> }
+                else { <h4>@t.Competition</h4> }
+                <AssetSlot Name="@(t.Image is { } image ? $"trophy-{image}" : $"trophy-{t.Name}")" Width="147" Height="147" />
+                <p>@t.Name</p>
+                @if (t.Date != default) { <h5>@t.Date.ToString("yyyy-MM-dd")</h5> }
             </li>
         }
     </ul>

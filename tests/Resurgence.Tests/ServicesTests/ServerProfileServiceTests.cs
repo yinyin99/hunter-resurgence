@@ -42,12 +42,19 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task ARealPlayersHeaderIsTheServers()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 1234, "rank": 2, "membership": "Hunter", "avatar": "https://web.test/media/avatar/256/1000000.png"}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"handle": "Fox", "hunterscore": 1234, "rank": 2, "membership": "Hunter", "avatar": "https://web.test/media/avatar/256/1000000.png", "background": "exploration_3.png"}"""));
         var p = await Make(fake).ProfileAsync("fox");
-        Assert.Equal(("Fox", 1234, 2, true, "Hunter", "avatar-1000000"), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Membership, p.Avatar));
+        Assert.Equal(("Fox", 1234, 2, true, "Hunter", "avatar-1000000", "exploration_3"), (p!.Handle, p.HunterScore, p.Rank, p.Own, p.Membership, p.Avatar, p.Background));
         Assert.Same(ServerProfileService.Tabs, p.Tabs);
         Assert.Equal("/hunters/fox", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
     }
+
+    [Theory]
+    [InlineData(", \"background\": null")]
+    [InlineData("")]
+    [InlineData(", \"background\": \"\"")]
+    public async Task AHeaderWithoutABackgroundHasNone(string member) =>
+        Assert.Null((await Make(new Fake(_ => Json(HttpStatusCode.OK, "{\"handle\": \"Fox\", \"hunterscore\": 1, \"rank\": 2" + member + "}"))).ProfileAsync("fox"))!.Background);
 
     // the live site never shows the mock: a handle the server does not know is no profile, not a fictional hunter
     [Theory]
@@ -204,12 +211,12 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task TrophiesAreTheServersPageOfTheHandle()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"name":"Red Fox","date":"2026-09-13"}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"name":"Red Fox","date":"2026-09-13","competitionId":null,"competition":null,"image":null},{"name":"Elk Gold","date":"2026-09-14","competitionId":12,"competition":"Test Cup","image":"elk_gold"}]}"""));
         var page = await Make(fake).TrophiesAsync("fox", 2);
         Assert.Equal("/hunters/fox/trophies?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
         Assert.Equal((2, 3, 50), (page.Number, page.Pages, page.Total));
-        var t = Assert.Single(page.Rows);
-        Assert.Equal(("Red Fox", new DateOnly(2026, 9, 13), null, null), (t.Name, t.Date, t.CompetitionId, t.Competition));
+        Assert.Equal(new (string, DateOnly, long?, string?, string?)[] { ("Red Fox", new DateOnly(2026, 9, 13), null, null, null), ("Elk Gold", new DateOnly(2026, 9, 14), 12, "Test Cup", "elk_gold") },
+            page.Rows.Select(t => (t.Name, t.Date, t.CompetitionId, t.Competition, t.Image)));
     }
 
     [Theory]
@@ -257,7 +264,7 @@ public class ServerProfileServiceTests
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Ranks));
         var bars = await Make(fake).RanksAsync("fox", "animals");
         Assert.Equal("/hunters/fox/ranks", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal([("Alpine Ibex", 25, 25, 1000), ("Red Fox", 1000, 1000, 1000)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total)));
+        Assert.Equal([("Alpine Ibex", 25, 25, 1000, 2L), ("Red Fox", 1000, 1000, 1000, 1L)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total, b.Id)));  // the id of the rank's picture
     }
 
     [Fact]

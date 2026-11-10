@@ -42,8 +42,9 @@ public sealed record ServerAccount(long UserId, string Handle, int Hunterscore =
 /// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
 public sealed record ServerHunter(int Rank, string Handle, int Hunterscore);
 
-/// <summary>A hunter's profile header of <see cref="ServerSessionApi.Hunters"/>: <c>membership</c> is its title ("" without one), <c>avatar</c> the URL of its picture.</summary>
-public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, string? Membership, string? Avatar);
+/// <summary>A hunter's profile header of <see cref="ServerSessionApi.Hunters"/>: <c>membership</c> is its title ("" without one), <c>avatar</c> the URL of its picture,
+/// <c>background</c> the file name of the header picture the player chose (null without one).</summary>
+public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, string? Membership, string? Avatar, string? Background = null);
 
 /// <summary>One page of the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
 public sealed record ServerBoard(int Page, int Pages, int Total, ServerHunter[] Rows);
@@ -65,7 +66,8 @@ public sealed record ServerWeaponSkill(string Name, string? Group, double Value,
 public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy[] Rows);
 
 /// <param name="Date">The day, yyyy-MM-dd; empty when the trophy has none.</param>
-public sealed record ServerTrophy(string Name, string Date);
+/// <param name="Image">The picture's file name without its extension (null without one).</param>
+public sealed record ServerTrophy(string Name, string Date, long? CompetitionId = null, string? Competition = null, string? Image = null);
 
 /// <summary>A hunter's dogs of <see cref="ServerSessionApi.DogsSuffix"/>: <c>Percent</c> is the way to the next level.</summary>
 public sealed record ServerDogs(ServerDog[] Dogs);

@@ -1,11 +1,13 @@
 namespace Resurgence.Services;
 
 /// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs, <see cref="RequestPending"/> a friend request of the signed-in player that is not answered yet.
-/// <see cref="Tabs"/> are the tabs the page shows (null: all of them, the mock's); <see cref="Avatar"/> is the slot of the player's picture (null: the default one).</summary>
+/// <see cref="Tabs"/> are the tabs the page shows (null: all of them, the mock's); <see cref="Avatar"/> is the slot of the player's picture (null: the default one);
+/// <see cref="Background"/> is the header picture the player chose on the live site, without its extension (null: none).</summary>
 public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false,
-    IReadOnlySet<string>? Tabs = null, string? Avatar = null);
-/// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one.</summary>
-public sealed record RankBar(string Name, int Level, int Done, int Total);
+    IReadOnlySet<string>? Tabs = null, string? Avatar = null, string? Background = null);
+/// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one;
+/// <see cref="Id"/> is the rank's game id, which names its picture (0: none, the mock's).</summary>
+public sealed record RankBar(string Name, int Level, int Done, int Total, long Id = 0);
 public sealed record Achievement(string Title, string Description, DateOnly Date);
 /// <summary>The "Your progress" widget: score out of the next goal, rank and the newest achievement (null when none).</summary>
 public sealed record Progress(int Score, int Max, int Rank, Achievement? Latest);
@@ -42,7 +44,8 @@ public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 /// <param name="Thumbnail">The address of the small picture the gallery shows; without one the picture is the old interface's slot <c>photo-&lt;id&gt;</c>.</param>
 public sealed record Photo(long Id, string Animal, double Score, string Url, string? Thumbnail = null);
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
-public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition);
+/// <param name="Image">The picture's file name without its extension, which names the slot <c>trophy-&lt;image&gt;</c> (null: the mock's, by <see cref="Name"/>).</param>
+public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition, string? Image = null);
 /// <summary>A skill the dog has unlocked; <see cref="Description"/> shows when the pointer rests on it.</summary>
 public sealed record DogSkill(string Title, string Description, int Level);
 /// <param name="Percent">Experience on the way to the next level.</param>

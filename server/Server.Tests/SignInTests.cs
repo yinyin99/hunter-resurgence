@@ -279,6 +279,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
         Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
         Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)two["avatar"]!);  // a new account's picture
+        Assert.True(two.AsObject().ContainsKey("background") && two["background"] is null);  // and no header picture
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody")).Status);
         Assert.Equal(404, (await Get("web.test", "/hunters/banned")).Status);
     }

@@ -1,7 +1,9 @@
 .head { position: relative; height: 218px; margin: 0 0 4px; }
 .head ::deep .banner { position: absolute; left: 0; top: 0; display: block; }
-.polaroid { position: absolute; left: -10px; top: 30px; box-sizing: border-box; width: 202px; height: 250px; padding: 16px; background: #e9e5d9; box-shadow: 0 2px 8px rgba(0, 0, 0, .6); transform: rotate(-3deg); z-index: 2; }
-.polaroid ::deep .icon { position: absolute; right: 14px; bottom: 50px; width: 40px; height: 40px; color: #c98a4a; }
+.polaroid { position: absolute; left: -20px; top: 20px; width: 239px; height: 288px; z-index: 2; }
+.polaroid ::deep .asset-slot { position: absolute; left: 0; top: 0; }
+.polaroid ::deep .avatar { left: 32px; top: 34px; transform: rotate(-5deg); }
+.polaroid ::deep .front:not(.has-image) { display: none; }  /* a missing tape would hide the avatar behind its box */
 .head h1 { position: absolute; left: 220px; top: 62px; margin: 0; font-size: 44px; line-height: 56px; font-weight: 300; color: #fff; z-index: 3; }
 .sub { position: absolute; left: 0; right: 0; top: 140px; height: 42px; margin: 0; padding: 0 0 0 220px; background: rgba(0, 0, 0, .45); font-size: 22px; line-height: 42px; font-weight: 300; color: var(--text-3); z-index: 1; }
 .sub > * { display: inline-block; margin-right: 12px; padding-right: 14px; border-right: 1px solid #555; color: var(--text-3); }

@@ -101,7 +101,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     public async Task TestAHiddenTrophyIsLeftOutOfThePublicViewsAndStaysMounted()
     {
         await Call("PUT", V2, "/game/user/lodges/3", owner, Slots);
-        Assert.Equal(2, (int)state.PublicTrophies(OWNER, 1)["total"]!);
+        Assert.Equal(1, (int)state.PublicTrophies(OWNER, 1)["total"]!);  // the restored Trophy/list row; the harvest made here is not a competition trophy
         foreach (var (host, path) in new[] { (V2, "/game/user/trophies/21"), (Web, "/v1/game/user/trophies/30") })  // a restored trophy and a harvest made here
             Assert.Equal((200, ""), await Call("PUT", host, path, owner, """{"hidden": true}"""));
         Assert.Equal(0, (int)state.PublicTrophies(OWNER, 1)["total"]!);
@@ -127,7 +127,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Equal(404, (await Call("PUT", V2, "/game/user/trophies/99", owner, """{"hidden": true}""")).Status);
         Assert.Equal(404, (await Call("PUT", V2, "/game/user/trophies/30", viewer, """{"hidden": true}""")).Status);
         Eq(before, await Read(V2, $"/game/user/{OWNER}/lodges", viewer));
-        Assert.Equal(2, (int)state.PublicTrophies(OWNER, 1)["total"]!);
+        Assert.Equal(1, (int)state.PublicTrophies(OWNER, 1)["total"]!);
     }
 
     [Theory]
@@ -153,7 +153,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Contains("bad_request", reply);
         Assert.Equal((200, """{"errorCode": 400}"""), await Call("PUT", Web, "/v1" + path, owner, body));  // the web API's shape of the same refusal
         Eq(before, await Read(V2, $"/game/user/{OWNER}/lodges", viewer));
-        Assert.Equal(2, (int)state.PublicTrophies(OWNER, 1)["total"]!);
+        Assert.Equal(1, (int)state.PublicTrophies(OWNER, 1)["total"]!);
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/trophies/21", owner, """{"hidden": true}""", "application/json"));
         var lodge = await Read(Web, $"/v1/game/user/{OWNER}/lodges/3", viewer);
         Eq("""["json", true, null]""", T(lodge["name"], lodge["locked"], lodge["style_id"]));
-        Assert.Equal(1, (int)state.PublicTrophies(OWNER, 1)["total"]!);
+        Assert.Equal(0, (int)state.PublicTrophies(OWNER, 1)["total"]!);
     }
 
     [Fact]
