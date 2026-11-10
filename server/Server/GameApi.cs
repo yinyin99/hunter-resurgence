@@ -185,20 +185,21 @@ public static class GameApi
         if (s != null)
         {
             // Base: the recorded reply on a local server, the endpoint's empty shape on a community server (ReplayScope).
-            // Another player's user_id is the empty reply there. ponytail: no other player's data is served yet.
+            // `user_id` of another player is that player's hunts, see State.HuntsOf; anyone else's is the base.
             api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Base(r) is { } hit
-                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionReply(a, hit.Body, r.Body), "state") : null)
+                    ? Own(game, r, a => s.HuntsOf(a, r.Body) is { } who ? new(hit.Status, hit.Headers, s.ExpeditionReply(who, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
                .WithDescription("`stats` stays null while the hunt is open; `expedition_id` picks an older hunt (an unknown id and the "
-                                + "time before the first server hunt: a hunt a restore saved, else the recorded reply, a community server: `null`).")
+                                + "time before the first server hunt: a hunt a restore saved, else the recorded reply, a community server: `null`). "
+                                + "`user_id` of another player here is that player's hunt (no token of theirs); an unknown or banned one is the base reply.")
                .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
-                    ? Own(game, r, a => s.IsOwn(a, r.Body) ? new(hit.Status, hit.Headers, s.ExpeditionListReply(a, hit.Body, r.Body), "state") : null)
+                    ? Own(game, r, a => s.HuntsOf(a, r.Body) is { } who ? new(hit.Status, hit.Headers, s.ExpeditionListReply(who, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
                .WithDescription("Server expeditions ahead of the hunts a restore saved, else the recorded ones, paged by `offset` and `limit` "
-                                + "(a community server: empty).")
+                                + "(a community server: empty). `user_id` of another player here is that player's list; an unknown or banned one is the base reply.")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
             {

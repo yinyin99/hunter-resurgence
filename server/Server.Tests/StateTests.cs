@@ -245,6 +245,10 @@ public class InventoryTests : StateTestBase
         var page = Encoding.UTF8.GetString(state.ScorePageReply(ME, 1)!);
         Assert.Contains("Trophy score: 168.8186", page);
         Assert.Contains("scoring/antlers_mule.png", page);  // the worked B&C sheet, not the "no data" block
+        // and as data: the typical sheet with its five facts, the rows with their total, six abnormal rows and the sums that end in the score
+        var sheet = state.PublicSheet(ME, 1)!;
+        Eq("""["score", "Test Deer", 5, 10, "Total", 6, "Total", 168.8186, "Common (M)", 100]""", T(sheet["kind"], sheet["species"], sheet["facts"]![0]!["value"], sheet["rows"]!.AsArray().Count, sheet["rows"]![9]!["label"],
+            sheet["abnormal"]!.AsArray().Count, sheet["sums"]![5]!["label"], sheet["sums"]![5]!["value"], sheet["type"], sheet["integrity"]));
     }
 
     static JsonObject Antler(int[] h, (int Type, int Length)[] points)  // event 22 antler: circumferences h1..h4, points
@@ -282,6 +286,11 @@ public class InventoryTests : StateTestBase
         Assert.Contains("Length of Typical Tines T-3", axisPage);
         Assert.Contains("Common (M)", axisPage);  // these spawns carry no texture
         Assert.Contains("Length of horn, left", Encoding.UTF8.GetString(state.ScorePageReply(ME, 2)!));
+        // the same sheets as data: the tines sheet is the left, right and points rows (the last one the inside span), the horn sheet is no table
+        var tines = state.PublicSheet(ME, 1)!;
+        var rows = tines["rows"]!.AsArray();
+        Eq("""["antler", 7, "1. Length of Main Beam", "5. Inside Span of Main Beams", null]""", T(tines["kind"], rows.Count, rows[0]!["label"], rows[^1]!["label"], rows[^1]!["a"]));
+        Eq("""["antler", 0]""", T(state.PublicSheet(ME, 2)!["kind"], state.PublicSheet(ME, 2)!["rows"]!.AsArray().Count));
     }
 
     [Fact]

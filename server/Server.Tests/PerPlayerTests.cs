@@ -123,7 +123,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTwoAccountsSeeOnlyTheirOwnItemsAndHunts()
+    public async Task TestTwoAccountsSeeOnlyTheirOwnItemsButReadEachOthersHunts()
     {
         state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
         IEnumerable<long> Ids(JsonNode list) => list.AsArray().Select(row => (long)row!["item"]!["id"]!);
@@ -138,10 +138,11 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Empty((await Api(Replay.INVENTORY_DICT, tokenA, "user_id=8")).AsObject());
         Assert.Equal(1, (int)(await Api(Replay.EXPEDITION_LIST, tokenB, "user_id=8&limit=10&offset=0"))["total"]!);
         Assert.Equal(0, (int)(await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=7&limit=10&offset=0"))["total"]!);
-        Assert.Equal(0, (int)(await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=8&limit=10&offset=0"))["total"]!);
+        Assert.Equal(1, (int)(await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=8&limit=10&offset=0"))["total"]!);
         Assert.Null(await Api(Replay.PUBLIC_EXPEDITION, tokenA, "user_id=7"));
         Assert.NotNull(await Api(Replay.PUBLIC_EXPEDITION, tokenB, "user_id=8"));
-        Assert.Null(await Api(Replay.PUBLIC_EXPEDITION, tokenA, "user_id=8"));
+        Assert.NotNull(await Api(Replay.PUBLIC_EXPEDITION, tokenA, "user_id=8"));  // a hunt is public: any player reads another's (the hunts of another id)
+        Assert.Null(await Api(Replay.PUBLIC_EXPEDITION, tokenB, "user_id=7"));  // the recorded player's is nobody's
     }
 
     [Fact]
@@ -307,7 +308,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         {
             con.Begin();
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=0.json",
-                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}, {"specie": {"x": 1}, "score": {"score": "NaN", "distance": "Infinity"} }]}"""));
+                O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}, {"specie": {"x": 1}, "score": {"score": "9"} }, {"specie": 79, "score": {"score": "NaN", "distance": "Infinity"} }]}"""));
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=1.json", JsonNode.Parse("[1]"));  // a reply that is no object: a backup holds whatever the player sent, like the last row above
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=3.json", O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(1, "1.0000", 1)}}, "distance": {{Best(1, "1.0000", 1)}}}]}"""));
             con.Commit();
@@ -344,9 +345,36 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("""["Test Deer", 70.25, 96.14, "Test Rifle", 1]""", T(page[0]!["species"], page[0]!["score"], page[0]!["range"], page[0]!["weapon"], page[0]!["kill"]));
         Eq("""["#77", 5.5, 1.0, "", 902]""", T(page[1]!["species"], page[1]!["score"], page[1]!["range"], page[1]!["weapon"], page[1]!["kill"]));
         Assert.Equal(1700000000L, (long)page[1]!["ts"]!);
-        Assert.Equal(2, page.Count);  // the odd row has no record to show
+        Eq("""["#79", 0.0, 0.0]""", T(page[2]!["species"], page[2]!["score"], page[2]!["range"]));  // numbers that are not finite count 0
+        Assert.Equal(3, page.Count);  // the rows with no record, and the one whose species is no number, are left out
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/best", null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/hunter/best", null)).Status);  // the recorded player's account: no player here owns it
+    }
+
+    [Fact]
+    public async Task TestAnyAccountsHuntsAreReadWithAnotherPlayersToken()
+    {
+        state.CreateAccount(9, "banned");
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 9");
+        state.NoteLaunch(8, "start=101&reserve=2"u8.ToArray());
+        state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(81, 72270)));
+        state.Disconnect(8, """{"distance_travelled": 466}"""u8.ToArray());
+        const string page = "&limit=10&offset=0";
+        // another player's list and hunt by user id (the token is any player's), the player's own as before
+        var list = await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=8" + page);
+        var id = list["expeditions"]!.AsArray().Single()!["id"]!;
+        var hunt = await Api(Replay.PUBLIC_EXPEDITION, tokenA, "user_id=8");
+        Assert.Single(hunt["kills"]!.AsArray());
+        Eq(id, hunt["expedition"]!["id"]);
+        Eq(id, (await Api(Replay.PUBLIC_EXPEDITION, tokenB, "user_id=8&expedition_id=" + Py.Str(id)))["expedition"]!["id"]);
+        Assert.Empty((await Api(Replay.EXPEDITION_LIST, tokenA, "user_id=7" + page))["expeditions"]!.AsArray());
+        // a banned, an unknown and the recorded player's user id are the empty replies, never the own hunts
+        foreach (var other in new[] { 9, 99, 7 })
+        {
+            Assert.Empty((await Api(Replay.EXPEDITION_LIST, tokenB, $"user_id={other}" + page))["expeditions"]!.AsArray());
+            Assert.Equal("empty", (await Send(community, "POST", "api.test", Replay.PUBLIC_EXPEDITION, tokenB, $"user_id={other}")).Source);
+        }
     }
 
     [Fact]

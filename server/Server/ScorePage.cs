@@ -60,7 +60,7 @@ public static class ScorePage
         return names;
     }
 
-    static string Loc(JsonObject locale, string key, string fallback) => locale[key] is JsonValue v ? v.GetValue<string>() : fallback;  // locale.get(key, fallback)
+    public static string Loc(JsonObject locale, string key, string fallback) => locale[key] is JsonValue v ? v.GetValue<string>() : fallback;  // locale.get(key, fallback)
 
     /// <summary>The Body Part cell: the parts or "-", a space, then the organs in parentheses if any
     /// ("Body ", "- (Right Lung, Left Lung)").</summary>
@@ -72,17 +72,27 @@ public static class ScorePage
         return (parts.Count > 0 ? string.Join(", ", parts) : "-") + " " + (organs.Count > 0 ? $"({string.Join(", ", organs)})" : "");
     }
 
+    static string LabelOf(JsonObject locale, string[] table, long i) => i >= 0 && i < table.Length ? Loc(locale, table[i], "") : "";
+
+    /// <summary>The label of a hit's stance index.</summary>
+    public static string Pose(JsonObject locale, long pose) => LabelOf(locale, POSES, pose);
+
+    /// <summary>The label of a hit's `animal_state`.</summary>
+    public static string AnimalState(JsonObject locale, long state) => LabelOf(locale, ANIMAL_STATES, state - 1);
+
+    /// <summary>The texture name of a spawn's texture id (ids 0, 1 and unknown ones are "common", as on the site; a spawn without texture (null) is "common" too, as Python's textures.get(None, "common")).</summary>
+    public static string Texture(JsonNode? tex, Dictionary<long, string> textures) =>
+        Py.IsNum(tex) && Py.D(tex) is var t && t != 0 && t != 1 && t == Math.Floor(t) && textures.TryGetValue((long)t, out var tn) ? tn : "common";
+
     /// <summary>kill: the page's killData object; items: {item id: Application item}; locale: English label strings;
     /// textures: TextureNames() of the web script (ids 0, 1 and unknown ones are "common", as on the site);
     /// sheet: the worked score sheet markup (Scoring.SheetHtml), null for the "no data" block.</summary>
     public static string Render(JsonObject kill, string handle, string speciesName, string cssClass, string reserveName,
                                 Dictionary<long, JsonObject> items, JsonObject locale, Dictionary<long, string> textures, string? sheet)
     {
-        var tex = kill["texture"];  // a spawn without texture (null) is "common", as Python's textures.get(None, "common")
-        var texture = Py.IsNum(tex) && Py.D(tex) is var t && t != 0 && t != 1 && t == Math.Floor(t) && textures.TryGetValue((long)t, out var tn)
-            ? tn : "common";
+        var texture = Texture(kill["texture"], textures);
 
-        string Label(string[] table, long i) => i >= 0 && i < table.Length ? Loc(locale, table[i], "") : "";
+        string Label(string[] table, long i) => LabelOf(locale, table, i);
         string Text(string s) => Escape(s, false);  // text nodes keep quotes as-is ("Fox's Hollow")
         JsonObject? Item(JsonNode? id) => Py.IsNum(id) && Py.D(id) is var d && d == Math.Floor(d) ? items.GetValueOrDefault((long)d) : null;
         string Name(JsonNode? id) => Item(id)?["name"] is { } n && Py.Truthy(n) ? n.GetValue<string>() : "";

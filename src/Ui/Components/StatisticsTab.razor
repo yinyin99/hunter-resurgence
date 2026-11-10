@@ -59,9 +59,9 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    // the live site has a server source for the lifetime statistics and the all-time personal bests only: the last hunt and the history are the mock's, and the server has no seasons
-    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? [subs[1], subs[3]] : subs;
-    string sub => Mode.Live ? Sub == "best" ? "best" : "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
+    // the live site has a server source for the lifetime statistics, the history and the all-time personal bests: the last hunt is the mock's (a hunt of the history opens as its own page), and the server has no seasons
+    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[1..] : subs;
+    string sub => Mode.Live ? Sub is "history" or "best" ? Sub : "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
 
     protected override async Task OnParametersSetAsync()
     {

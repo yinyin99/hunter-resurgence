@@ -228,6 +228,30 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestARestoredHuntIsAPublicHuntAndItsKillHasNoSheet()
+    {
+        var zip = TestZip.Own()
+            .Reply("Expedition_list__user_id=1001__offset=0__limit=2.json", "/v1/Expedition/list",
+                   """{"total":1,"expeditions":[{"id":9100,"kills":1,"collectables":2,"start_ts":1700000100,"end_ts":1700003700,"reserve":2,"location_id":101}]}""", ("offset", "0"), ("limit", "2"))
+            .Reply("Public_user_expedition__user_id=1001__expedition_id=9100.json", "/v1/Public_user/expedition", """
+                {"stats":{"duration":3600,"distance":4000,"data":{"achievements":[],"weapon":{"5":{"10":{"hits":1,"misses":0,"kills":1,"distance":82000}}},"animal":{"1":{"kills":1}}}},
+                 "kills":[{"id":777,"speciesName":"Test Deer","weight":64350,"kill":{"score":120.5,"confirmTs":1700000500},"hits":[{"distance":82000,"weapon_id":5,"ammo_id":10,"organ":1}]}],
+                 "expedition":{"id":9100,"reserve":2,"location_id":101,"start_ts":1700000100,"end_ts":1700003700}}
+                """, ("user_id", "1001"), ("expedition_id", "9100"));
+        Restorer.Import(state, Zip(zip), null, tmp);
+
+        var row = state.PublicHunts(1001, 1)["rows"]!.AsArray().Single()!;
+        Eq("""[9100, 1700000100, 3600, "Test Reserve", "#101", 2, 1]""", T(row["id"], row["start"], row["seconds"], row["reserve"], row["lodge"], row["collectables"], row["kills"]));
+        var hunt = state.PublicHunt(1001, 9100)!;
+        Eq("""[1700003700, 4.0, 3600, "Test Rifle", "Test Bullet", 1, "Test Deer", 1]""", T(hunt["end"], hunt["distanceKm"], hunt["seconds"], hunt["weapons"]![0]!["weapon"], hunt["weapons"]![0]!["ammo"],
+            hunt["weapons"]![0]!["shots"], hunt["animals"]![0]!["name"], hunt["animals"]![0]!["harvested"]));
+        var kill = hunt["kills"]!.AsArray().Single()!;
+        Eq("""[777, "Test Deer", "Test Rifle", "Test Bullet", 82.0, 120.5, 64.35, 1700000500, false]""", T(kill["id"], kill["species"], kill["weapon"], kill["ammo"], kill["distanceM"], kill["score"], kill["weightKg"], kill["when"], kill["sheet"]));
+        Assert.Null(state.PublicSheet(1001, 777));  // until the saved kill page is unpacked
+        Assert.Null(state.PublicHunt(1001, 9101));
+    }
+
+    [Fact]
     public void TestWithoutAServerHuntTheNewestRestoredHuntIsTheLatest()
     {
         Restorer.Import(state, Zip(TestZip.Own().Hunts()), null, tmp);

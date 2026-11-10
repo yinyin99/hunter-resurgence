@@ -103,6 +103,72 @@ public class ServerProfileServiceTests
         Assert.Equal((0, 0, 0, 0.0, 0), (t.Weapons.Count, t.Animals.Count, t.Collectables.Count, t.DistanceKm, t.HuntSeconds));
     }
 
+    [Fact]
+    public async Task TheHistoryIsThePageOfTheServersHunts()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":90,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Reserve","lodge":"#101","collectables":2,"kills":1}]}"""));
+        var page = await Make(fake).HistoryAsync("a b", 2);
+        Assert.EndsWith("/hunters/a%20b/hunts?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
+        Assert.Equal((2, 3, 90), (page.Number, page.Pages, page.Total));
+        Assert.Equal(new HistoryRow(12, new DateTime(2023, 11, 14, 22, 15, 0, DateTimeKind.Utc), 3600, "Reserve", "#101", 2, 1), Assert.Single(page.Rows));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedHistoryAnswerIsAnEmptyPage(HttpStatusCode code, string body)
+    {
+        var page = await Make(new Fake(_ => Json(code, body))).HistoryAsync("fox", 1);
+        Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
+    }
+
+    const string Hunt = """
+        {"id":12,"reserve":"Reserve","lodge":"#101","start":1700000100,"end":null,"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
+         "animals":[{"name":"Deer","spotted":0,"tracked":0,"harvested":1}],"collectables":[],"achievements":[],"distanceKm":4.0,"seconds":3600,"antlers":[],
+         "kills":[{"id":5,"species":"Deer","weapon":"Rifle","ammo":"Bullet","distanceM":82.0,"score":120.5,"weightKg":64.35,"when":1700000500,"sheet":false}]}
+        """;
+
+    [Fact]
+    public async Task AHuntIsTheServersHuntWithItsStatisticsAndKills()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Hunt));
+        var service = Make(fake);
+        var hunt = await service.ExpeditionAsync("fox", 12);
+        Assert.Equal("/hunters/fox/hunts/12", fake.Seen[0].RequestUri!.AbsolutePath);
+        Assert.Equal((12L, "Reserve", "#101", null, 4.0, 3600), (hunt!.Id, hunt.Reserve, hunt.Lodge, hunt.End, hunt.DistanceKm, hunt.Seconds));
+        Assert.Equal(new WeaponStat("Rifle", "Bullet", 1, 100.0, 1, 100.0, 82.0), Assert.Single(hunt.Weapons));
+        Assert.Equal(new SpeciesStat("Deer", 0, 0, 1), Assert.Single(hunt.Animals));
+        Assert.Equal(new Kill(5, "Deer", "Rifle", "Bullet", 82.0, 120.5, 64.35, new DateTime(2023, 11, 14, 22, 21, 40, DateTimeKind.Utc), null, false), Assert.Single(hunt.Kills));  // no sheet to open
+        await service.ExpeditionAsync("fox", null);
+        Assert.Equal("/hunters/fox/hunts/latest", fake.Seen[1].RequestUri!.AbsolutePath);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AnUnknownOrFailedHuntIsNoHunt(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).ExpeditionAsync("fox", 12));
+
+    [Fact]
+    public async Task TheScoreSheetIsTheServersSheet()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """
+            {"kind":"score","species":"Deer","facts":[{"label":"B. Tip-to-tip spread","value":20.0}],"rows":[{"label":"F. Main beam length","a":22.0,"b":24.0,"c":2.0}],"abnormal":[{"right":1.5,"left":0.0}],
+             "sums":[{"label":"Total","value":195.0}],"weapon":"Rifle","scope":true,"ammo":"Bullet","distanceM":60.0,"state":"Idle","bodyPart":"Body","stance":"Prone","platform":"None","weightKg":130.0,
+             "type":"Common (M)","woundTime":6.0,"integrity":100,"shotLocation":"Place (1, 2)","shots":1,"when":1700000500,"expeditionId":12,"score":195.0,"harvestValue":90.0}
+            """));
+        var sheet = await Make(fake).SheetAsync("fox", "antler", 5);  // the server decides the kind, not the address
+        Assert.Equal("/hunters/fox/score/5", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal(("score", "Deer", 195.0, 12L, 100), (sheet!.Kind, sheet.Species, sheet.Score, sheet.ExpeditionId, sheet.Integrity));
+        Assert.Equal(new SheetRow("F. Main beam length", 22.0, 24.0, 2.0), Assert.Single(sheet.Rows));
+        Assert.Equal((1.5, 0.0), Assert.Single(sheet.Abnormal));
+        Assert.Equal(new DateTime(2023, 11, 14, 22, 21, 40, DateTimeKind.Utc), sheet.When);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AKillWithoutASheetIsNoSheet(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).SheetAsync("fox", "score", 5));
+
     [Theory]
     [InlineData(HttpStatusCode.InternalServerError, "{}")]
     [InlineData(HttpStatusCode.OK, "<html>")]
