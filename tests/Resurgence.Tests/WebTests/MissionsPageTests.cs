@@ -53,16 +53,16 @@ public sealed class MissionsPageTests : UiContext
         """;
 
     [Fact]
-    public void TheLiveSiteHasNoDailyTabNorHelpAndNoFilterOptionForNone()
+    public void TheLiveSiteHasTheDailyTabAndHelpAndNoFilterOptionForNone()
     {
         Services.AddSingleton(new HostMode { Live = true });
         Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
-            new ServerCookie { Value = "abc" }, new MockMissionsService(), NullLogger<ServerMissionsService>.Instance));
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
 
         var cut = Render<Missions>();
 
-        Assert.Empty(cut.FindAll("a[href='/missions/daily']"));
-        Assert.Empty(cut.FindAll("a.help"));
+        Assert.NotEmpty(cut.FindAll("a[href='/missions/daily']"));
+        Assert.Equal("/help/day-mission", cut.Find("a.help").GetAttribute("href"));
         // the select-all entry and the one name each of the three filters has
         Assert.Equal([2, 2, 2], cut.FindAll("ul.pop").Select(u => u.QuerySelectorAll("li").Length));
     }

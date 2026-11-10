@@ -194,7 +194,9 @@ public sealed partial class State
     /// <summary>Daily_Mission/get_daily_missions_calendar: `{is_frozen, mission_end, broken_streak_info, calendar}`. The calendar is the 7 days of the streak's
     /// block (day 1 to 7, the block after the 7th day and so on) with each day's difficulty and reward; only today's entry holds a mission. Null when the server
     /// has no daily missions (the empty reply of ReplayScope stands).</summary>
-    public byte[]? DailyCalendarReply(long account)
+    public byte[]? DailyCalendarReply(long account) => Calendar(account) is { } calendar ? Py.DumpBytes(calendar) : null;
+
+    JsonObject? Calendar(long account)
     {
         if (dailies.Count == 0)
             return null;
@@ -244,12 +246,39 @@ public sealed partial class State
             }
             calendar.Add(entry);
         }
-        return Py.DumpBytes(new JsonObject
+        return new JsonObject
         {
             ["is_frozen"] = Py.Truthy(s["frozen"]) ? 1 : 0,
             ["mission_end"] = (Today().DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber + 1L) * 86400 - 1,
             ["broken_streak_info"] = new JsonObject { ["has_broken_streak"] = Py.Truthy(s["has_broken"]), ["streak_larger"] = s["larger"]!.DeepClone() },
             ["calendar"] = calendar,
-        });
+        };
+    }
+
+    /// <summary>The website's daily missions page (GET /account/missions/daily): `today` (the day number), `ends_in` (seconds until the UTC day ends), `frozen`, `days`
+    /// (`number`, `stars` the difficulty id, `gms`) and `missions` in the order of the days (`title`, `desc`, `objectives` titles, `reserve`, `rewards` texts, `done`; empty
+    /// for a day without a mission). Null when the server has no daily missions.</summary>
+    public JsonObject? WebDaily(long account)
+    {
+        if (Calendar(account) is not { } c)
+            return null;
+        var days = c["calendar"]!.AsArray().OfType<JsonObject>().ToList();
+        var today = days.Single(d => (bool)d["today"]!);
+        var objectives = today["objectives"] is { } text ? JsonNode.Parse((string)text!)!.AsArray().OfType<JsonObject>().ToList() : [];
+        return new JsonObject
+        {
+            ["today"] = today["day_number"]!.DeepClone(), ["ends_in"] = Math.Max(0, (long)(Py.D(c["mission_end"]) + 1 - Clock())), ["frozen"] = Py.Truthy(c["is_frozen"]),
+            ["days"] = new JsonArray([.. days.Select(d => (JsonNode?)new JsonObject
+            {
+                ["number"] = d["day_number"]!.DeepClone(), ["stars"] = d["difficulty"]!["id"]!.DeepClone(), ["gms"] = d["rewards"]![0]!["amount"]!.DeepClone(),
+            })]),
+            ["missions"] = new JsonArray([.. days.Select(d => (JsonNode?)(d["mission"] is JsonObject m ? new JsonObject
+            {
+                ["title"] = m["title"]!.DeepClone(), ["desc"] = m["description"]!.DeepClone(),
+                ["objectives"] = new JsonArray([.. objectives.Select(o => (JsonNode?)Py.Str(o["objective_data"]!["title"]))]),
+                ["reserve"] = m["reserves"]!.DeepClone(), ["rewards"] = new JsonArray([.. d["rewards_translations"]!.AsArray().Select(t => (JsonNode?)Py.Str(t!["text"]))]),
+                ["done"] = objectives.Count > 0 && objectives.All(o => o["objective_data"]!["completed"] is not null),
+            } : new JsonObject { ["title"] = "", ["desc"] = "", ["objectives"] = new JsonArray(), ["reserve"] = "", ["rewards"] = new JsonArray(), ["done"] = false }))]),
+        };
     }
 }

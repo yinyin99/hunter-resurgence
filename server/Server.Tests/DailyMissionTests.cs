@@ -317,6 +317,45 @@ public class DailyMissionTests : StateTestBase
         Assert.Null(none.DailyCalendarReply(ME));
     }
 
+    static readonly JsonObject WebCfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+
+    [Fact]
+    public async Task TestTheWebsiteReadsAndActivatesTheOwnersStreak()
+    {
+        await using var server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), WebCfg, state, tmp), tmp);
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/missions/daily", [])).Status);
+        Assert.Equal(401, (await server.SendAsync("POST", "web.test", "/account/missions/daily/activate", [("X-Requested-With", "x")])).Status);
+        Assert.Equal(400, (await server.SendAsync("POST", "web.test", "/account/missions/daily/activate", [cookie])).Status);  // not from our page
+
+        async Task<JsonNode> Page() => JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions/daily", [cookie])).Body)!;
+        var page = await Page();
+        Eq("[1, 43200, true]", T(page["today"], page["ends_in"], page["frozen"]));
+        Eq("[[1, 1, 100], [2, 1, 100], [3, 1, 100], [4, 2, 500], [5, 1, 100], [6, 1, 100], [7, 1, 100]]",
+           new JsonArray(page["days"]!.AsArray().Select(d => (JsonNode?)new JsonArray((long)d!["number"]!, (long)d["stars"]!, (long)d["gms"]!)).ToArray()));
+        var missions = page["missions"]!.AsArray();
+        Assert.Equal(7, missions.Count);
+        Assert.Equal(1, missions.Count(m => (string)m!["title"]! != ""));  // only today's
+        var today = missions[0]!;
+        Assert.Equal(1, today["objectives"]!.AsArray().Count);
+        Eq("""["Alpha Reserve, Test Reserve", ["100 gm$"], false]""", T(today["reserve"], today["rewards"], today["done"]));
+
+        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/daily/activate", [cookie, ("X-Requested-With", "x")])).Status);
+        Assert.False((bool)(await Page())["frozen"]!);
+        Hb(Easy());
+        Assert.True((bool)(await Page())["missions"]![0]!["done"]!);
+    }
+
+    [Fact]
+    public async Task TestWithoutDailyMissionsTheWebsiteGetsNone()
+    {
+        var none = new State(Path.Combine(tmp, "web-none.db"), Py.DumpBytes(CONNECT), BASE, ICON, Application(), LOCALE, TEXTURES, offline: false, facts: Facts.Parse("""{"format": 1}"""));
+        await using var server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), WebCfg, none, tmp), tmp);
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={none.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(404, (await server.SendAsync("GET", "web.test", "/account/missions/daily", [cookie])).Status);
+        Assert.Equal(404, (await server.SendAsync("POST", "web.test", "/account/missions/daily/activate", [cookie, ("X-Requested-With", "x")])).Status);
+    }
+
     [Fact]
     public void TestTheSchemaOfVersion13GetsTheDailyMissionsTable()
     {

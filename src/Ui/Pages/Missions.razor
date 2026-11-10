@@ -8,7 +8,7 @@
 <PageTitle>@L["Mis.Regular"]</PageTitle>
 
 <div class="page-min">
-<Tabs Items="tabs" Active="/missions" HelpHref="@(Mode.Live ? null : "/help/day-mission")" />
+<Tabs Items="tabs" Active="/missions" HelpHref="/help/day-mission" />
 @if (data is not null)
 {
     <button type="button" class="btn btn-primary all" @onclick="ActivateAll">@L["Mis.ActivateAll"]</button>
@@ -95,7 +95,7 @@ else { <div class="skeleton skeleton-page"></div> }
 
     protected override async Task OnInitializedAsync()
     {
-        tabs = Mode.Live ? [(L["Mis.Regular"], "/missions")] : [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];  // the live site has no daily page
+        tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
         data = await Service.RegularAsync();
         Options();
         Apply();

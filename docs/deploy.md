@@ -267,8 +267,8 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
 - **Hidden for a signed-in player** (no source on the server): the store has no "you own" lines, and the minigame boards show no "your rank".
 - **Not offered** (the address goes to the feed, the hunterscore board or `/help`):
   - the competitions and the community league, the season boards (species score and range, hall of fame) and the antler boards: the server has no seasons, competitions or antler measurements ([#222](https://github.com/yinyin99/hunter-resurgence/issues/222));
-  - help's guides, video tutorials, community sites and daily mission tabs: their content is the mock's; help keeps its support tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
-  - daily missions (the page and its help tab: the server has no daily missions yet), bank, settings and game management: the website reads no such data from the server yet, and the bank would take real money. The wallet shows the player's own history only (restored and made on the server), without a bank tab.
+  - help's guides, video tutorials and community sites tabs: their content is the mock's; help keeps its support tab and its daily missions tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
+  - bank, settings and game management: the website reads no such data from the server yet, and the bank would take real money. The wallet shows the player's own history only (restored and made on the server), without a bank tab.
 - **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A sale shows only when the recording holds one. Without a recording that matches the settings' host names, the server falls back to the install's items, with no categories or bundles ([server.md](server.md#the-store-catalogue)).
   - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)).
   - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).

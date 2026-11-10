@@ -23,11 +23,13 @@
             </button>
         }
     </div>
+    if (sel >= 1 && sel <= d.Missions.Count && d.Missions[sel - 1].Title.Length > 0)  // a day without a mission shows only its card
+    {
     var m = d.Missions[sel - 1];
     var frozen = m.Frozen;
     <section class="detail">
         @if (frozen) { <span class="ribbon">@L["Mis.Inactive"]</span> }
-        else if (sel < d.Today) { <span class="ribbon">@L["Mis.Completed"]</span> }
+        else if (sel < d.Today || m.Done) { <span class="ribbon">@L["Mis.Completed"]</span> }
         <h2>@m.Title</h2>
         <div class="who"><AssetSlot Name="@($"mission-giver-{sel}")" Width="150" Height="150" /><div><h3>@L["Mis.Description"]</h3><p>@m.Description</p></div></div>
         <AssetSlot Name="@($"mission-picture-{sel}")" Width="250" Height="360" Class="pic" />
@@ -55,6 +57,7 @@
             <p class="timer">@L[left > 0 ? "Mis.EndsIn" : "Mis.Ended"] <b>@Fmt.Elapsed(L, Math.Max(left, 0))</b></p>
         }
     </section>
+    }
 }
 else { <div class="skeleton skeleton-page"></div> }
 </div>
