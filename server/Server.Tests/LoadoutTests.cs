@@ -267,6 +267,18 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestATutorialLaunchDoesNotPutTheLoadoutOn()
+    {
+        state.GrantItems(OWNER, 811);
+        var id = Ids(OWNER)[0];
+        Assert.Equal(200, (await Call("PUT", V2, $"/game/user/loadout/{id}", owner, Items("""{"slot_id": 2, "item_id": 5}"""))).Status);
+        var before = Slots();
+        var started = await Launch(Web, "/v1/session/start_tutorial?locale=en_US", "application/json", $$"""{"oauth_access_token": "{{owner}}", "tutorial_id": 0, "loadout_id": {{id}}}""", owner);
+        Assert.Equal(("state", 200), (started.Source, started.Status));
+        Assert.Equal(before, Slots());
+    }
+
+    [Fact]
     public void TestAnEntryWithNoFreeItemIsSkipped()
     {
         state.GrantItems(OWNER, 811);
