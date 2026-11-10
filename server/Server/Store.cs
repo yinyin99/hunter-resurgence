@@ -339,16 +339,16 @@ public sealed class Store
         return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
     }
 
-    /// <summary>The minigames' best scores of the restored accounts (statistics, from a backup), by kind.</summary>
-    public static readonly IReadOnlyDictionary<string, string> GameColumns =
-        System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, string> { ["lanebandit"] = "lane_bandit_score", ["bustthrough"] = "bust_through_score" });
+    /// <summary>The minigames' boards by kind: the game id of heartbeat event 17 (<see cref="RestoredReads.BestScore"/>).</summary>
+    public static readonly IReadOnlyDictionary<string, long> GameIds =
+        System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, long> { ["lanebandit"] = 1, ["bustthrough"] = 0 });
 
-    /// <summary>A minigame's whole board (a kind of <see cref="GameColumns"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
-    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); one query per account
-    /// on every page view, fine for the restored accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
+    /// <summary>A minigame's whole board (a kind of <see cref="GameIds"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
+    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); two queries per account
+    /// on every page view, fine for the accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
     public List<(string Handle, long Score)> GameBoard(string kind, long? excluded)
     {
-        var column = GameColumns[kind];  // a fixed name, never the request's
+        var game = GameIds[kind];
         List<(long Id, string Handle)> accounts;
         using (var con = Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", excluded).Select(r => ((long)r[0], (string)r[1]))];
@@ -356,7 +356,7 @@ public sealed class Store
         foreach (var (id, handle) in accounts)
         {
             using var con = Open(id);
-            if (con.Scalar($"SELECT {column} FROM statistics WHERE account_id = $a") is long score && score > 0)
+            if (RestoredReads.BestScore(con, game) is { } score and > 0)
                 scored.Add((handle, score));
         }
         return [.. scored.OrderByDescending(s => s.Score)];  // a stable sort: equal scores keep the account id order

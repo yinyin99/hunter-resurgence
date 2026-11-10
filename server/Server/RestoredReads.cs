@@ -46,16 +46,26 @@ public static class RestoredReads
 
     /// <summary>The four per-kind statistic objects plus the distance and duration, as the connect reply and Statistics/total carry
     /// them: the restored ones (the base, which play never changes) plus the account's closed hunts (<see cref="AddHunts"/>).</summary>
-    static (JsonObject Data, double Distance, double Duration, JsonNode? Bust, JsonNode? Lane) Statistics(Db con)
+    static (JsonObject Data, double Distance, double Duration, long? Bust, long? Lane) Statistics(Db con)
     {
-        var row = con.Rows("SELECT user_stats, distance, duration, bust_through_score, lane_bandit_score FROM statistics WHERE account_id = $a").FirstOrDefault();
+        var row = con.Rows("SELECT user_stats, distance, duration FROM statistics WHERE account_id = $a").FirstOrDefault();
         var data = row is null ? new JsonObject() : JsonNode.Parse((string)row[0])!.AsObject();
         if (row is null)  // nothing restored: the empty statistics of a new player; a restored `data` stays as saved (an older reply has no daily_missions)
             foreach (var kind in new[] { "collectables", "weapon", "animal", "daily_missions" })
                 data[kind] = new JsonObject();
         var (distance, duration) = AddHunts(con, data);
         return (data, distance + (row is null ? 0 : Convert.ToDouble(row[1])), duration + (row is null ? 0 : Convert.ToDouble(row[2])),
-                row is null ? null : Py.FromSql(row[3]), row is null ? null : Py.FromSql(row[4]));
+                BestScore(con, 0), BestScore(con, 1));
+    }
+
+    /// <summary>A minigame's best score (game 0 Bust Through, 1 Lane Bandit): the higher of the restored one (statistics) and the best
+    /// event 17 `{game_id, score}` of the account's hunts; null when it has neither.</summary>
+    public static long? BestScore(Db con, long game)
+    {
+        var restored = con.Scalar($"SELECT {(game == 0 ? "bust_through_score" : "lane_bandit_score")} FROM statistics WHERE account_id = $a") as long?;
+        var played = con.Scalar("SELECT MAX(json_extract(body, '$.score')) FROM events WHERE account_id = $a AND event = 17"
+                                + " AND json_extract(body, '$.game_id') = ? AND typeof(json_extract(body, '$.score')) = 'integer'", game) as long?;
+        return restored is null ? played : played is null ? restored : Math.Max(restored.Value, played.Value);
     }
 
     /// <summary>Add the stored statistics of the account's closed hunts (State.HuntStats) to data's `animal`, `weapon` and `collectables`: counters
@@ -118,8 +128,8 @@ public static class RestoredReads
         s.Data["duration"] = Number(s.Duration);
         reply["user_stats"] = new JsonObject
         {
-            ["achievement_stats"] = AchievementStats(con), ["bust_through_score"] = s.Bust?.DeepClone(), ["first_time"] = 0,
-            ["lane_bandit_score"] = s.Lane?.DeepClone(), ["user_stats"] = s.Data,
+            ["achievement_stats"] = AchievementStats(con), ["bust_through_score"] = s.Bust, ["first_time"] = 0,
+            ["lane_bandit_score"] = s.Lane, ["user_stats"] = s.Data,
         };
         var id = (JsonNode?)me["id"]?.DeepClone();
         reply["account_info"] = new JsonObject
