@@ -7,7 +7,8 @@ namespace Resurgence.Server.Tests;
 
 /// <summary>Spec #244 end to end, over HTTP: a player restores a made-up backup (upload, then the operator's approve), launches, connects,
 /// hunts and harvests an animal, disconnects; the new kill then shows in the hunterscore, the statistics, the trophies and the hunt history,
-/// on the game's replies and on the website's `/hunters/&lt;handle&gt;` reads, for the player's own user id and read by a second account.</summary>
+/// on the game's replies and on the website's `/hunters/&lt;handle&gt;` reads, for the player's own user id and read by a second account.
+/// In the game another player's trophies are the ones mounted in their lodges: the harvest is mounted and read by the second account.</summary>
 public class EndToEndTests : StateTestBase, IAsyncLifetime
 {
     const string Steam = "76561190000000000";  // the one TestZip.Own claims
@@ -89,8 +90,6 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
         {
             // the hunterscore: the species row and the weapon row
             Eq("2", (await Hunters("", viewer))["hunterscore"]);
-            var user = await server.SendAsync("POST", "api.test", Replay.PUBLIC_USER, FormHeader, Encoding.ASCII.GetBytes($"hostname={Handle}"));
-            Eq("2", JsonNode.Parse(user.Body)!["hunterscore"]);
 
             // the statistics: the backup's base and the new kill on top
             var total = (await Api(Replay.STATISTICS_TOTAL, viewerToken, $"user_id={Restored}"))["data"]!;
@@ -104,13 +103,23 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
             var hunts = await Hunters("/hunts", viewer);
             Eq("""[4, 1, 9003]""", T(hunts["total"], hunts["rows"]![0]!["kills"], hunts["rows"]![1]!["id"]));
 
-            // the trophies: the restored one, then the harvest (Trophy/list of the game lists the restored rows only: the harvest is not in it)
+            // the trophies of the profile page: the restored one, then the harvest
             var trophies = await Hunters("/trophies", viewer);
             Eq("""[2, "Test Deer", "Test Deer"]""", T(trophies["total"], trophies["rows"]![0]!["name"], trophies["rows"]![1]!["name"]));
         }
 
-        // the game's own list is the caller's: the player's two, the second account's none
+        // the game's public read of a player's hunterscore carries no token
+        var user = await server.SendAsync("POST", "api.test", Replay.PUBLIC_USER, FormHeader, Encoding.ASCII.GetBytes($"hostname={Handle}"));
+        Eq("2", JsonNode.Parse(user.Body)!["hunterscore"]);
+
+        // the game's own trophy list is the caller's: the player's two, the second account's none (Trophy/list rows are of their own kind: the restored ones)
         Eq("[50, 51]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
         Assert.Empty(await OwnTrophies(otherToken));
+
+        // another player's trophies in the game are the ones mounted in the player's lodges: the harvest goes in a slot of the restored lodge
+        Assert.Equal(200, (await server.SendAsync("PUT", "apiv2.test", "/game/user/lodges/61", [("Content-Type", "text/plain"), ("Authorization", "Bearer " + token)],
+            """{"animal_slots": [{"slot_id": 0, "trophy_id": 51, "pose_id": 1, "rotation": 0, "base_texture": "", "is_skull": false}]}"""u8.ToArray())).Status);
+        var lodge = JsonNode.Parse((await server.SendAsync("GET", "apiv2.test", $"/game/user/{Restored}/lodges", [("Authorization", "Bearer " + otherToken)])).Body)![0]!;
+        Eq("""[61, 51, 1]""", T(lodge["id"], lodge["animal_slots"]![0]!["trophy_details"]!["id"], lodge["animal_slots"]![0]!["trophy_details"]!["species"]));
     }
 }
