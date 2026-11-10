@@ -16,6 +16,10 @@ public static class ServerAccountApi
     public const string Friends = "/account/friends";
     /// <summary>GET with the cookie and <c>?text=</c>: 200 <see cref="ServerPlayers"/>, the players whose handle contains the text.</summary>
     public const string FriendSearch = "/account/friends/search";
+    /// <summary>GET with the cookie: 200 the player's missions (<see cref="ServerMissions"/>), or 404 for a server without missions; POST with <c>X-Requested-With</c> to <c>/&lt;call&gt;</c>
+    /// (<c>activate</c> and <c>mission_id</c>, <c>activate_all_available</c>, <c>update_automatic_activation</c> and <c>auto_mission_activate</c>, <c>update_activate_only_favourite</c> and
+    /// <c>activate_only_favourite</c>, <c>update_hide_completed_favourite</c> and <c>hide_completed_favourite</c> as <c>true</c> or <c>false</c>, <c>update_favourite</c> with <c>group_id</c> and <c>is_favourite</c>): 200, or 409 for a mission that is not available.</summary>
+    public const string Missions = "/account/missions";
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>: deletes a photo of the player's own gallery; 200, or 404 for one that is not theirs.</summary>
     public const string GalleryDelete = "/account/gallery/delete";
     /// <summary>GET with the cookie: 200 with the player's own gallery as a zip of its pictures.</summary>
@@ -40,3 +44,14 @@ public sealed record ServerConversations(ServerConversation[] Conversations);
 public sealed record ServerMessage(bool Mine, string Content, long Ts);
 
 public sealed record ServerThread(ServerMessage[] Messages);
+
+/// <summary>A mission of <see cref="ServerAccountApi.Missions"/>: <c>State</c> is active, available, completed or locked; <c>Reserve</c>, <c>Species</c> and <c>Weapon</c> are "" for none.</summary>
+public sealed record ServerMission(int Id, string Title, string Desc, string State, string[] Objectives, string Reward, string Reserve, string Species, string Weapon);
+
+/// <summary>A pack of <see cref="ServerAccountApi.Missions"/>: <c>Missions</c> are mission ids in display order.</summary>
+public sealed record ServerMissionGroup(int Id, string Title, string Desc, bool Favourite, int[] Missions);
+
+public sealed record ServerMissions(ServerMission[] Missions, ServerMissionGroup[] Groups, int Completed,
+    [property: System.Text.Json.Serialization.JsonPropertyName("auto_mission_activate")] bool Auto,
+    [property: System.Text.Json.Serialization.JsonPropertyName("activate_only_favourite")] bool OnlyFavourite,
+    [property: System.Text.Json.Serialization.JsonPropertyName("hide_completed_favourite")] bool HideCompletedFavourite);
