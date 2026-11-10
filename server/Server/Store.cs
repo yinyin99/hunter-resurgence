@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "daily_missions"];
+         "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 14;
+    public const int Version = 15;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -60,6 +60,28 @@ public sealed class Store
     // the account's daily missions: one JSON row (frozen, the day of the streak and its date, the finished objectives, the broken streak, the days completed here)
     const string DailyMissions = """
         CREATE TABLE daily_missions (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
+        """;
+
+    // the account's completed challenges: a challenge without a row is not completed. `id` is the row number the reply shows; `objectives` is the definition's text
+    // as it was when the challenge was completed, with `completed` added; the hash is the definition's.
+    const string Challenges = $"""
+        CREATE TABLE IF NOT EXISTS challenges (
+            id INTEGER PRIMARY KEY, {A}, challenge_id INTEGER NOT NULL, objectives TEXT NOT NULL, objectives_hash TEXT NOT NULL, challenge_date TEXT,
+            UNIQUE (account_id, challenge_id));
+        """;
+
+    /// <summary>The completed challenges of a restored zip: its saved reply of `Challenge/get_user_challenges` (the extras file of that name; `completed` 0 or 1, false or true),
+    /// each completed row as saved. `$a` is the account; the migration reads every account and replaces it with the column.</summary>
+    internal const string RestoredChallenges = """
+        INSERT OR IGNORE INTO challenges (account_id, challenge_id, objectives, objectives_hash, challenge_date)
+        SELECT $a, CAST(j.key AS INTEGER),
+               CASE WHEN json_type(j.value, '$.objectives') = 'text' THEN json_extract(j.value, '$.objectives') ELSE '[]' END,
+               CASE WHEN json_type(j.value, '$.objectives_hash') = 'text' THEN json_extract(j.value, '$.objectives_hash') ELSE '' END,
+               CASE WHEN json_type(j.value, '$.challenge_date') = 'text' THEN json_extract(j.value, '$.challenge_date') END
+        FROM extras e, json_each(e.body) j
+        WHERE e.account_id = $a AND e.path GLOB 'Challenge_get_user_challenges*.json' AND json_type(e.body) = 'object' AND json_type(j.value) = 'object'
+          AND j.key NOT GLOB '*[^0-9]*' AND json_extract(j.value, '$.completed') = 1
+        ORDER BY e.path, CAST(j.key AS INTEGER)
         """;
 
     // an account's loadouts: the id is global (the key of the page's PUT), so it is the table's own rowid; entries is the JSON list of items the page reads
@@ -126,6 +148,7 @@ public sealed class Store
         {UploadResults}
         {WalletLog}
         {Missions}
+        {Challenges}
         {DailyMissions}
         {Loadouts}
 
@@ -151,7 +174,7 @@ public sealed class Store
             stats TEXT);  -- a closed hunt's statistics (State.HuntStats), stored at its close
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
-            id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL,
+            id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
             individual GENERATED ALWAYS AS (json_extract(body, '$.individual')) VIRTUAL);
         CREATE INDEX events_account ON events (account_id, id);
         CREATE INDEX events_individual ON events (account_id, event, individual, id);
@@ -255,7 +278,14 @@ public sealed class Store
                 con.Script(RestoredLoadouts.Replace("$a", "e.account_id"));
             }
             if (version < 13) con.Script(Missions);
-            if (version < 14) con.Script(DailyMissions);
+            if (version < 14)
+            {
+                if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('events') WHERE name = 'ts'")! == 0)
+                    con.Script("ALTER TABLE events ADD COLUMN ts REAL");
+                con.Script(Challenges);
+                con.Script(RestoredChallenges.Replace("$a", "e.account_id"));
+            }
+            if (version < 15) con.Script(DailyMissions);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

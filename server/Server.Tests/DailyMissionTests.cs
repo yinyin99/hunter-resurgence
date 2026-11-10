@@ -357,14 +357,14 @@ public class DailyMissionTests : StateTestBase
     }
 
     [Fact]
-    public void TestTheSchemaOfVersion13GetsTheDailyMissionsTable()
+    public void TestTheSchemaOfVersion14GetsTheDailyMissionsTable()
     {
-        var file = Path.Combine(tmp, "v13.db");
+        var file = Path.Combine(tmp, "v14.db");
         var store = new Store(file);
         using (var con = store.Open())
         {
             con.Exec("DROP TABLE daily_missions");
-            con.Exec("PRAGMA user_version = 13");
+            con.Exec("PRAGMA user_version = 14");
         }
         using var migrated = new Store(file).Open();
         Assert.Equal(1L, migrated.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'daily_missions'"));
