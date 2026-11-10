@@ -317,7 +317,7 @@ public class RestoreTests : StateTestBase
     [Fact]
     public void TestADatabaseOfSchema9GetsTheSavedColumnOfThePhotos()
     {
-        var file = Path.Combine(tmp, "old8.db");
+        var file = Path.Combine(tmp, "old9.db");
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE photos DROP COLUMN saved");
