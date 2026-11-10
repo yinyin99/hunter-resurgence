@@ -20,7 +20,21 @@ public static class ServerAccountApi
     public const string GalleryDelete = "/account/gallery/delete";
     /// <summary>GET with the cookie: 200 with the player's own gallery as a zip of its pictures.</summary>
     public const string GalleryZip = "/account/gallery/zip";
+    /// <summary>GET with the cookie: 200 <see cref="ServerConversations"/>, the player's own conversations (the server's notices and the restored ones), read only.</summary>
+    public const string Messages = "/account/messages";
+    /// <summary>GET with the cookie and <c>?handle=</c>: 200 <see cref="ServerThread"/>, one of the conversations newest first, or 404 for a handle that is none of them.</summary>
+    public const string MessagesThread = "/account/messages/thread";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
 }
+
+/// <summary>A conversation of <see cref="ServerAccountApi.Messages"/>: <c>Ts</c> is unix seconds.</summary>
+public sealed record ServerConversation(string Handle, string Preview, long Ts, bool Unread);
+
+public sealed record ServerConversations(ServerConversation[] Conversations);
+
+/// <summary>A message of <see cref="ServerAccountApi.MessagesThread"/>: <c>Mine</c> when the player wrote it.</summary>
+public sealed record ServerMessage(bool Mine, string Content, long Ts);
+
+public sealed record ServerThread(ServerMessage[] Messages);

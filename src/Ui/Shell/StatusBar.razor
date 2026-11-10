@@ -20,9 +20,10 @@
             <div class="left">
                 @* the friends are the account's on the server too *@
                 <button class="section friends" popovertarget="friends" data-tip="@FriendsTip" aria-label="@FriendsTip" @onclick="() => friendsKey++"><Icon Name="user" />@if (requests > 0) { <span class="count">@requests</span> }</button>
+                @* the messages are the account's too, read only: no unread count, which the website cannot clear *@
+                <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
                 @if (!Mode.Live)
                 {
-                    <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
                     <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
                     <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
                     <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
@@ -102,7 +103,7 @@
     {
         balances = await Wallet.BalancesAsync();
         requests = (await Friends.RequestsAsync()).Count;
-        if (Mode.Live) return;  // the messages are the mock's
+        if (Mode.Live) return;  // read only: an unread conversation could never be marked read
         unread = (await Messages.ConversationsAsync()).Count(c => c.Unread);
     }
 

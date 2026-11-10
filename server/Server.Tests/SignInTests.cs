@@ -464,6 +464,38 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheRestoredMessagesAreReadOnlyByTheirOwner()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        var me = state.Store.Listed("one", null)!.Value;
+        state.CreateAccount(9, "Other");
+        const string List = """[{"handle": "Fern", "user_id": 501, "read": 0, "ts": 1700000200, "preview": "see you"}, {"handle": "Moss", "user_id": "502", "read": 1, "ts": 1700000100, "preview": "hello"}]""";
+        const string Fern = """{"total": 2, "messages": [{"handle": "Fern", "user_id": 501, "content": "see you", "ts": 1700000200}, {"handle": "one", "user_id": 7, "content": "where?", "ts": 1700000150}]}""";
+        using (var con = state.Store.Open(me))
+        {
+            PlayerRows.SetExtra(con, "Chat_conversations.json", O(List));
+            PlayerRows.SetExtra(con, "Chat_conversation__user_id=501.json", O(Fern));
+        }
+        // the game's own replies: the restored conversations as saved, a thread as saved (reading marks nothing)
+        static JsonNode Parse(byte[] body) => JsonNode.Parse(body)!;
+        Eq("""["Fern", "Moss"]""", T(Parse(state.ConversationsReply(me))[0]!["handle"], Parse(state.ConversationsReply(me))[1]!["handle"]));
+        Eq(Fern, Parse(state.ConversationReply(me, "user_id=501"u8.ToArray())));
+        Eq("""{"total": 0, "messages": []}""", Parse(state.ConversationReply(me, "user_id=502"u8.ToArray())));  // a conversation whose thread was not saved
+        Eq("[]", Parse(state.ConversationsReply(9)));  // another account sees none of them
+        Eq("""{"total": 0, "messages": []}""", Parse(state.ConversationReply(9, "user_id=501"u8.ToArray())));
+
+        var all = JsonNode.Parse((await Get("web.test", "/account/messages", ck)).Body)!["conversations"]!.AsArray();
+        Eq("""[["Fern", "see you", 1700000200, true], ["Moss", "hello", 1700000100, false]]""", new JsonArray([.. all.Select(c => (JsonNode?)new JsonArray(c!["handle"]!.DeepClone(), c["preview"]!.DeepClone(), c["ts"]!.DeepClone(), c["unread"]!.DeepClone()))]));
+        var thread = await Get("web.test", "/account/messages/thread?handle=fern", ck);
+        Assert.Equal(200, thread.Status);
+        Eq("""{"messages": [{"mine": false, "content": "see you", "ts": 1700000200}, {"mine": true, "content": "where?", "ts": 1700000150}]}""", JsonNode.Parse(thread.Body));
+        Assert.Equal(200, (await Get("web.test", "/account/messages/thread?handle=Moss", ck)).Status);
+        Assert.Equal(404, (await Get("web.test", "/account/messages/thread?handle=nobody", ck)).Status);
+        Assert.Equal(401, (await Get("web.test", "/account/messages")).Status);
+        Assert.Equal(401, (await Get("web.test", "/account/messages/thread?handle=Fern")).Status);
+    }
+
+    [Fact]
     public async Task TestTheWebsitesFriendsAreReadAndChangedByTheSignedInPlayer()
     {
         var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
