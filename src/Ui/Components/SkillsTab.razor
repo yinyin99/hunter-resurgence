@@ -22,7 +22,7 @@ else
         <h4 class="group">@L.Term(g.Key ?? "")</h4>
         @foreach (var s in g)
         {
-            <div class="item"><span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>
+            <div class="item">@if (Mode.Live && s.Id is { } id) { <AssetSlot Name="@Mode.ItemSlot((int)id)" Width="30" Height="30" /> }<span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>
         }
     }
 }

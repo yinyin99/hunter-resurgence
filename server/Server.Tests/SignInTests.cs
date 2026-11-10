@@ -337,14 +337,14 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             foreach (var weapon in new[] { 5, 99 })
                 con.Exec("INSERT OR REPLACE INTO skills (account_id, kind, key, xp) VALUES ($a, 'weapon', ?, ?)", weapon, Skills.Xp(1.14));
             foreach (var kind in new[] { "spotting", "tracking" })
-                for (var key = 0; key < 2; key++)
+                for (var key = 0; key < 60; key++)
                     con.Exec("INSERT OR REPLACE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", kind, key, kind == "spotting" && key == 1 ? Skills.Threshold(3) : Skills.FRESH_XP);
         }
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         var third = JsonNode.Parse((await Get("web.test", "/hunters/third/skills")).Body)!;
         Assert.Contains(third["species"]!.AsArray(), s => (double)s!["spotting"]! == 3 && (double)s["tracking"]! > 1);
-        Assert.Equal("mule_deer", (string)Assert.Single(third["species"]!.AsArray())!["image"]!);  // the dog species is left out
+        Assert.Equal(["mule_deer", "cottontail_rabbit"], third["species"]!.AsArray().Select(s => (string)s!["image"]!));  // the dog species and species 56 are left out
         Assert.Equal("""[{"id": 5, "name": "Test Rifle", "group": null, "value": 1.14}, {"id": 99, "name": "#99", "group": null, "value": 1.14}]""", Py.Dumps(third["weapons"]));  // an item the catalogue lacks is named by its id
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/skills")).Status);
         Assert.Equal(404, (await Get("web.test", "/hunters/banned/skills")).Status);
