@@ -23,6 +23,7 @@ public static class Replay
     public const string MOVE_MULTIPLE2 = "/v1/Inventory/move_multiple2";
     public const string BUY = "/v1/Inventory/buy";
     public const string DISCOUNTS = "/v1/Application/discounts";
+    public const string AVATARS = "/v1/Avatar/getAvatars";
     public const string SPLASH = "/v1/Splash/list_active";
     public const string LAUNCH_START = "/v1/Launch/start";
     public const string JWT = "/v1/User/jwt";
@@ -270,7 +271,7 @@ public static class Replay
 
     /// <summary>Player state on workDir/state.db. Each input is the operator's recording when there is one, else what the
     /// install and the facts file give (Install, Facts): the connect reply, the application catalogue, the locale
-    /// labels, the texture names and the populations of every reserve. Discounts and the player's skill list come from
+    /// labels, the texture names and the populations of every reserve. Discounts, the avatar list and the player's skill list come from
     /// recordings only (without them: no discounts, fresh skills). Null when there is neither a recorded connect nor a
     /// connect sample in the install.</summary>
     public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
@@ -304,6 +305,7 @@ public static class Replay
         }
         var web = Script(p => p.EndsWith(WEB_SCRIPT_SUFFIX, StringComparison.Ordinal));
         e.TryGetValue(new("GET", apiHost, DISCOUNTS, null), out var discounts);
+        var avatars = e.FirstOrDefault(kv => kv.Key.Params is null && kv.Key.Host == apiHost && string.Equals(kv.Key.Path, AVATARS, StringComparison.OrdinalIgnoreCase)).Value;
         var sample = System.IO.Path.Combine(S(cfg, "install_dir"), "game", "json_inventory.json");  // item definitions update 10 sends
         var uid = ((JsonObject?)JsonNode.Parse(connect)!["account"])?["user_id"];
         e.TryGetValue(new("POST", apiHost, SKILL_LIST, ParamsKey([("user_id", [Py.Str(uid)])])), out var skillList);
@@ -324,7 +326,8 @@ public static class Replay
             skillList != null ? JsonNode.Parse(skillList.Body) : null,
             item,
             offline: offline,  // a request no token resolves is the local account's; false on a community server
-            startBody: recorded ? neutral : null);
+            startBody: recorded ? neutral : null,
+            avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null);
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)

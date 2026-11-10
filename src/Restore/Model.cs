@@ -2,10 +2,16 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Restore;
 
-/// <summary>The server's own item catalogue (never one taken from an upload): true when the item has units, a count.</summary>
+/// <summary>The server's own catalogues (never one taken from an upload): true when an item has units, a count; the id of the avatar whose picture is at an address.</summary>
 public interface IItemCatalogue
 {
     bool HasUnits(int itemId);
+
+    /// <summary>The id of the avatar of the list whose picture address is <paramref name="address"/> (the same path, any host); null for no match or no list.</summary>
+    int? AvatarId(string? address) => null;
+
+    /// <summary>True when the catalogue holds an avatar list (without one, no address is reported as unmatched).</summary>
+    bool HasAvatars => false;
 }
 
 /// <summary>A player as read from a backup zip, free of any storage or server type.
@@ -20,7 +26,7 @@ public sealed record Identity(string Uid, string? Handle, string? SteamId64, str
 public sealed record Profile(long Id, string? Handle, string? Hostname, int Gender, int Hunterscore, string? AvatarUrl, string? MembershipType, int MembershipInt,
     string? Uuid, string? Locale, string? Timezone, string? Country, long? MemberSince, int UserGroup, int? Rank);
 
-/// <summary>Fields of the game's login reply that no web reply holds: the importer's defaults. Avatar ids and the account id are assigned by the server.</summary>
+/// <summary>Fields of the game's login reply that no web reply holds: the importer's defaults. `Face` is the avatar the catalogue's list gives the profile's picture address (the default without a match); the account id is assigned by the server.</summary>
 public sealed record AccountDefaults(bool FacebookEnabled, int ShareOnFacebook, string? FacebookId, string? Email, int EmailVerified, int HasPassword,
     int AccountState, int FirstTime, int Face, string? SteamId, int UseImperial, int UserGroup);
 
