@@ -13,10 +13,10 @@ Each public area has one read in the server, built once and served two ways: as 
 - **Header only, everything else owner-only.** The least shown. Rejected: the spec's goal is that a player sees their progress, and any other player's, on the profile page in the game and on the website; a page with no content shows nothing.
 - **A setting per area that each player chooses.** Rejected for now: it needs a settings page and a default for every area, and the spec fixes the split. A setting takes a new ADR.
 - **Separate code for the game and for the website.** Rejected: two reads of one area would drift, and the game and the website would show different numbers for the same player. One read per area has two outputs.
-- **Public only to signed-in players.** Rejected: the website's server shows a profile to a visitor who has no game token or session.
+- **Public only to signed-in players.** Rejected: the website's server shows a profile to a visitor who is signed in nowhere. (The game's public reads still ask for some player's token, as the game always sends one; the token only says who is asking, never what they may see.)
 
 ## Consequences
 
-- A public area is a new read with both outputs and a test that an unknown, banned or recorded player's user id gets the empty reply; an owner-only area is a new read with a token check. Which of the two it is gets decided here first.
+- A public area is a new read with both outputs and a test that an unknown, banned or recorded player's user id gets the answer for "no such profile" (the empty reply of the area's shape, or 404 where the area has one); an owner-only area is a new read with a token check. A new area is placed in this split by amending this ADR before it is built, or by a new ADR if it moves an area between the two.
 - A player's own trophy visibility and lodge edits still apply inside a public area ([Lodges and trophy visibility](../server.md#lodges-and-trophy-visibility)): the hidden trophies are left out of the website's list.
 - The website's server reads the public areas over `SERVER_URL`; a browser never calls them, so the reverse proxy does not route `/hunters`.

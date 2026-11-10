@@ -16,7 +16,7 @@ The server is the authority: a server hunt's statistics come from the hunt's own
 
 ## Consequences
 
-- A read sums the base and the closed hunts' stored statistics; a hunt that is still open is not in the sum until it closes (the client's disconnect, the next launch after a quit, or a timeout without a heartbeat). The player sees the new value at the next connect.
+- A read sums the base and the closed hunts' stored statistics; a hunt that is still open is not in the sum until it closes (the client's disconnect, the next launch after a quit, or a timeout without a heartbeat). The game shows the new value at its next connect, the website at its next read.
 - Every surface uses one sum, so the game and the website cannot disagree, and the hunterscore needs no counter of its own.
 - A new restore changes the base only; the account's server hunts, and the kills and trophies they made, stay.
 - Revisit with a new ADR that supersedes this one if a closed hunt's statistics must be edited, or if the sum becomes slow to read.

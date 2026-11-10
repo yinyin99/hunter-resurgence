@@ -82,7 +82,7 @@ Said of a profile area that only its player sees; every other area of a profile 
 A hunt played on the community server; its statistics are stored when it closes.
 
 **Restored hunt**:
-A hunt that came from a backup zip; it is shown in the hunt history only and never counted again.
+A hunt that came from a backup zip (the docs also say saved hunt); it is shown in the hunt history only and never counted again.
 
 **Base statistics**:
 The restored statistics of a profile, which play never changes; the statistics shown are these plus the closed server hunts.
