@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services;
 
-/// <summary>The boards of the community server: the hunterscore and the two minigames' (the best scores restored from backups). It has no seasons, so the
+/// <summary>The boards of the community server: the hunterscore and the two minigames' (the best scores, restored or played). It has no seasons, so the
 /// species, antler and hall of fame boards are none (the live site does not offer them), and the player has a place on the hunterscore board only.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off; a failure of the network is an empty board.</param>
 public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cookie, ILogger<ServerLeaderboardsService> log) : ILeaderboardsService
