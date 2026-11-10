@@ -284,7 +284,11 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return null;
     }
-    public Task<PersonalBest> BestAsync(string handle, int season) => mock.BestAsync(handle, season);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/best</c>: the best score of each species, all time (the server has no seasons, so <paramref name="season"/> is not read). No rows, or a failed answer, is "empty".</summary>
+    public async Task<PersonalBest> BestAsync(string handle, int season) =>
+        await GetAsync<ServerBest>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.BestSuffix}", "personal bests") is { Rows.Length: > 0 } b
+            ? new("done", [.. b.Rows.Select(r => new BestRow(r.Species, r.Score, r.Range, r.Weapon, Utc(r.Ts), r.Kill))])
+            : new("empty", []);
     public Task<Progress> ProgressAsync() => mock.ProgressAsync();
     public Task<int> ExpeditionCountAsync() => mock.ExpeditionCountAsync();
 }
