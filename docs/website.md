@@ -96,7 +96,7 @@ HSTS is sent over http too (`dotnet run`, the CI smoke test): browsers ignore it
 
 The website is signed-in or public:
 
-- **Signed out**: the public top bar (`Already a hunter? Sign in`), the news with a play button, the store and its items, leaderboards, competitions, help, download, and hunter profiles and score sheets. Pages that need an account (missions, wallet, bank, messages, settings, game management, invite, welcome, community league) go back to the news.
+- **Signed out**: the public top bar (`Already a hunter? Sign in`) and the menu bar, the news with a play button, the store and its items, leaderboards, competitions, help, download, and hunter profiles and score sheets. Pages that need an account (missions, wallet, bank, messages, settings, game management, invite, welcome, community league) go back to the news.
 - **Signed in**: the same menu as the launcher without the launcher-only items. The pages that only the launcher has (`/dashboard`, `/servers`, `/launch-map/...`, `/tutorials` and the sign-up screens) go back to the news. With `SERVER_URL` the pages of mock account data go back to the news too, see [the live site](#sign-in).
 
 Four plain pages are meant for the browser the old launcher opened: `/auto-login`, `/email/verify` (also `/email/confirm`, `/email/change`), `/thank-you` and `/logout`. They have no menu.
