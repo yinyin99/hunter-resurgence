@@ -13,10 +13,11 @@ public sealed class Store
     /// <summary>Tables with an `account_id` column: Db refuses SQL on them that does not bind the account.</summary>
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
-         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log"];
+         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
+         "missions", "mission_prefs"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 12;
+    public const int Version = 13;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -44,6 +45,16 @@ public sealed class Store
         CREATE TABLE upload_results (
             id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, kind TEXT NOT NULL, user_id INTEGER, handle TEXT, handle_kept INTEGER NOT NULL, reason TEXT NOT NULL);
         CREATE INDEX upload_results_account ON upload_results (account_id, id);
+        """;
+
+    // the account's missions: a row per active (state 2) or completed (3) mission, with the ids of its finished objectives in the
+    // order they were finished (JSON); a mission without a row is not started. Ids may have no definition (a restored account's).
+    // mission_prefs is the page's switches and favourite groups (JSON), one row per account once it has used missions.
+    const string Missions = $"""
+        CREATE TABLE missions (
+            {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
+            PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
+        CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
         """;
 
     // an account's loadouts: the id is global (the key of the page's PUT), so it is the table's own rowid; entries is the JSON list of items the page reads
@@ -109,6 +120,7 @@ public sealed class Store
         {Uploads}
         {UploadResults}
         {WalletLog}
+        {Missions}
         {Loadouts}
 
         CREATE TABLE items (
@@ -236,6 +248,7 @@ public sealed class Store
                 con.Script(Loadouts);
                 con.Script(RestoredLoadouts.Replace("$a", "e.account_id"));
             }
+            if (version < 13) con.Script(Missions);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
