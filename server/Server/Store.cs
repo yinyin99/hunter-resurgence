@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 7;
+    public const int Version = 8;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -96,7 +96,7 @@ public sealed class Store
             PRIMARY KEY (account_id, kill_id));
         CREATE INDEX kills_individual ON kills (account_id, individual);
         CREATE TABLE harvests (
-            {A}, kill_id INTEGER NOT NULL, body TEXT NOT NULL,
+            {A}, kill_id INTEGER NOT NULL, body TEXT NOT NULL, hidden INTEGER NOT NULL DEFAULT 0,
             PRIMARY KEY (account_id, kill_id));
         CREATE TABLE expeditions (
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
@@ -187,6 +187,7 @@ public sealed class Store
             if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
             if (version < 6) con.Script(Friends);
             if (version < 7) con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL");  // closed hunts count their pickups: stored again at the start
+            if (version < 8) con.Script("ALTER TABLE harvests ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

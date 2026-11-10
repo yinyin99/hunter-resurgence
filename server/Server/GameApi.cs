@@ -16,7 +16,9 @@ public static class GameApi
 {
     static readonly Regex Harvest = new(@"\A/game/user/harvest/(\d+)(/taxidermize)?\z", RegexOptions.ECMAScript);
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
-    static readonly Regex Lodges = new(@"\A/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript);
+    static readonly Regex Lodges = new(@"\A(?:/v1)?/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex LodgeEdit = new(@"\A(?:/v1)?/game/user/lodges/(\d+)(/settings)?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex TrophyEdit = new(@"\A(?:/v1)?/game/user/trophies/(\d+)\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex UserProfile = new(@"\A(?:/v1)?/game/user/(\d+)/profile\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex UserRanks = new(@"\A(?:/v1)?/game/user/(\d+)/ranks\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
@@ -314,7 +316,7 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
-            // the account's trophies and restored lodges (community server only); the lodges of another user id are the empty reply
+            // the account's trophies and the lodges of any account here (community server only); a locked lodge is sent too: the game hides it
             var restored = Handle(game, r =>
             {
                 var lodges = Lodges.Match(r.Path);
@@ -322,18 +324,64 @@ public static class GameApi
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
+                long? owner = !lodges.Success ? null : s.IsUser(a, lodges.Groups[1].Value) ? a
+                    : long.TryParse(lodges.Groups[1].Value, out var userId) ? s.PublicAccount(userId) : null;  // the player's own lodges, else a public account's
                 var (body, type) = r.Path == "/game/user/trophies" ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
-                    : !s.IsUser(a, lodges.Groups[1].Value) ? (null, "")
-                    : lodges.Groups[2].Success ? (s.RowReply(a, "lodges", "/game/user/lodge", lodges.Groups[2].Value), "application/vnd.game.user.trophy_lodge.lodge+json")
-                    : (s.RowsReply(a, "lodges", "/game/user/lodges"), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
+                    : owner is not { } o ? (null, "")
+                    : !lodges.Groups[2].Success ? (s.LodgesReply(o), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection")
+                    : (long.TryParse(lodges.Groups[2].Value, out var lodge) ? s.LodgeReply(o, lodge) : null, "application/vnd.game.user.trophy_lodge.lodge+json");
                 return Has(body) ? new(200, [("Content-Type", type), .. Cors(r.Header)], body!, "state") : null;
             });
             apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's trophies: restored, then harvested here")
                  .Produces(200, contentType: "application/json");
-            apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The account's restored lodges")
+            apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The lodges of any account here, with their slots' trophies")
+                 .WithDescription("The lodge rows of a restore, as edited since; each animal slot with a `trophy_id` also has its `trophy_details` (the trophy's row of "
+                                  + "`/game/user/trophies`). `locked` is kept: the game hides those lodges from other players. Needs any player's token; an unknown or "
+                                  + "banned user id gets the empty reply. Also at `/v1/game/user/<id>/lodges` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
-            apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One restored lodge")
+            apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One lodge of any account here")
+                 .WithDescription("As Lodges; 404 for a lodge the account has not. Also at `/v1/game/user/<id>/lodges/<lodge>` (the current build).")
                  .PathParams(("id", "user id"), ("lodge", "lodge id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json");
+            api.MapGet("/v1/game/user/{id}/lodges", restored).ExcludeFromDescription();  // the current build's paths of the same pages
+            api.MapGet("/v1/game/user/{id}/lodges/{lodge}", restored).ExcludeFromDescription();
+            // the account's own edits (community server only): the game sends JSON as text/plain and does not read the answer
+            var edit = Handle(game, r =>
+            {
+                var (lodge, trophy) = (LodgeEdit.Match(r.Path), TrophyEdit.Match(r.Path));
+                if (!s.Online || r.Method != "PUT" || !(lodge.Success || trophy.Success))
+                    return null;
+                if (s.Authenticate(r.Tokens()) is not { } a)
+                    return Denied(game, r);
+                var status = !long.TryParse((lodge.Success ? lodge : trophy).Groups[1].Value, out var id) ? 404
+                    : trophy.Success ? s.HideTrophy(a, id, r.Body)
+                    : lodge.Groups[2].Success ? s.SaveLodgeSettings(a, id, r.Body) : s.SaveLodge(a, id, r.Body);
+                return status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state") : Rejected(game, r, status);
+            });
+            foreach (var (router, prefix) in new[] { (apiv2, ""), (api, "/v1") })
+            {
+                var current = prefix.Length > 0;  // the current build's paths are not documented twice
+                var save = router.MapPut(prefix + "/game/user/lodges/{id}", edit);
+                var settings = router.MapPut(prefix + "/game/user/lodges/{id}/settings", edit);
+                var hide = router.MapPut(prefix + "/game/user/trophies/{id}", edit);
+                if (current)
+                {
+                    save.ExcludeFromDescription();
+                    settings.ExcludeFromDescription();
+                    hide.ExcludeFromDescription();
+                    continue;
+                }
+                save.WithName("LodgeSave").WithSummary("Save the own lodge's slots")
+                    .WithDescription("Sets the lodge's `name`, `animal_slots` and `weapon_slots` on its stored rows (a key the body lacks stays); the answer is 200 with no body. "
+                                     + "400 for a body that is not as shown, 404 for a lodge the account has not. Also at `/v1/game/user/lodges/<id>` (the current build).")
+                    .PathParams(("id", "lodge id")).Body<LodgeSlotsBody>("text/plain").Produces(200, contentType: "text/plain");
+                settings.WithName("LodgeSettings").WithSummary("Save the own lodge's name, lock and style")
+                    .WithDescription("Statuses as LodgeSave. Also at `/v1/game/user/lodges/<id>/settings` (the current build).")
+                    .PathParams(("id", "lodge id")).Body<LodgeSettingsBody>("text/plain").Produces(200, contentType: "text/plain");
+                hide.WithName("TrophyHide").WithSummary("Show or hide one of the own trophies")
+                    .WithDescription("`{hidden}`: a hidden trophy is left out of the public views (Trophy/list of another player, the profile page); the player's own lists keep it. "
+                                     + "Restored rows and harvests made here alike; 404 for a trophy the account has not. Also at `/v1/game/user/trophies/<id>` (the current build).")
+                    .PathParams(("id", "trophy id")).Body<TrophyHiddenBody>("text/plain").Produces(200, contentType: "text/plain");
+            }
             apiv2.MapGet("/game/user/{id}/profile", userProfile).WithName("UserProfile").WithSummary("A player's profile page header, by user id")
                  .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of any account here, without a token (`background` and `ribbon` "
                                   + "as its backup had them, else null); 404 for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
@@ -444,6 +492,13 @@ public static class GameApi
             "{\"id\":\"server\",\"code\":\"unauthorized\",\"status\":401,\"detail\":\"token expired\"}"u8.ToArray(), "denied")
         : new(401, Json(), "{\"err\": 1}"u8.ToArray(), "denied");
 
+    /// <summary>An edit the state refused (400: the body is not as expected, 404: no such record), in the shape of its host: the web API's
+    /// error code (HTTP 200) or a goa error on the game API v2.</summary>
+    static Reply Rejected(Game game, Req r, int status) =>
+        r.Host == game.Api ? new(200, JsonAnyOrigin(), Encoding.UTF8.GetBytes($"{{\"errorCode\": {status}}}"), "state")
+        : new(status, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)],
+            Encoding.UTF8.GetBytes(status == 404 ? ReplayScope.Missing : """{"id":"server","code":"bad_request","status":400,"detail":"bad request"}"""), "state");
+
     // ---- OpenAPI documentation (metadata only: requests are parsed by the handlers, never bound or content-type matched)
 
     /// <summary>Request body schema of an endpoint, for the OpenAPI document only.</summary>
@@ -499,6 +554,12 @@ public static class GameApi
     public sealed record UserForm(long user_id, string? oauth_access_token);
     public sealed record FriendForm(long friend_user_id, string? oauth_access_token);
     public sealed record FriendsListForm(long user_id, long? offset, long? limit);
+
+    public sealed record AnimalSlot(long slot_id, long? trophy_id, long? pose_id, double rotation, long? base_texture, bool is_skull);
+    public sealed record WeaponSlot(long slot_id, long? weapon_id, double rotation);
+    public sealed record LodgeSlotsBody(string name, AnimalSlot[] animal_slots, WeaponSlot[] weapon_slots);
+    public sealed record LodgeSettingsBody(string name, bool locked, long? style_id);
+    public sealed record TrophyHiddenBody(bool hidden);
 
     public sealed record HostnameForm([property: Description("The player's handle (any case)")] string hostname);
 
