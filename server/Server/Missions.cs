@@ -44,7 +44,7 @@ public sealed partial class State
     }
 
     /// <summary>Does the title name the place (both <see cref="Normalise"/>d)? A define carries its reserve in front and a number behind
-    /// (`FRENCH_ALPS_CALM_POND`): the place's own words match, then without leading ones, down to two words (one for a one-word place).
+    /// (`REGION_CALM_POND`): the place's own words match, then without leading ones, down to two words (one for a one-word place).
     /// ponytail: a title that names only the place's tail matches any place with that tail (two hunting towers); the title's coordinates are not used.</summary>
     static bool PlaceIn(string title, string place)
     {
@@ -254,7 +254,14 @@ public sealed partial class State
               && (kind != Kind.Track || rule.Count <= 1 || (long)con.Scalar(
                     "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ? AND id > COALESCE("
                     + "(SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)", e["individual"])! >= rule.Count),
-            u => updates.Add(u));
+            u =>
+            {
+                // one update 15 per currency in a reply, as the game's server sends: a kill's css and a mission's reward add into the last balance
+                if (updates.OfType<JsonObject>().LastOrDefault(x => Is(x["update"], 15) && Py.Str(x["type"]) == Py.Str(u["type"])) is { } same)
+                    same["amount"] = u["amount"]!.DeepClone();
+                else
+                    updates.Add(u);
+            });
     }
 
     /// <summary>A hunt starts at location `lodge` (Launch/start, inside its transaction): what a single-hunt mission had done is forgotten, then the

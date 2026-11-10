@@ -122,6 +122,7 @@ public class MissionTests : StateTestBase
         var before = Gm();
         var now = Hb(Kill(71));
         var paid = Update(now, 15)!;
+        Assert.Single(now, u => (long)u!["update"]! == 15);  // the kill's css and the reward add into one
         Assert.Equal("gm", (string)paid["type"]!);
         Eq(state.Wallet(ME)["gm"], paid["amount"]);  // the new balance, the kill's own css reward included
         var row = state.WalletPage(ME, "gm", 0).Single(r => (string)r!["summary"]! == "gm$ reward")!;
