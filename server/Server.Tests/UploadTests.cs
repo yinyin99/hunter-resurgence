@@ -579,6 +579,29 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnApproveThatAdoptsAnotherUserIdMovesThePhotosTakenHere()
+    {
+        long photo;
+        using (var con = state.Store.Open(player))
+            photo = con.Insert("INSERT INTO photos (account_id, photo_type, file) VALUES ($a, 2, '7-2.jpg')");
+        var old = Path.Combine(tmp, "photos", player.ToString());
+        Directory.CreateDirectory(old);
+        File.WriteAllText(Path.Combine(old, "7-2.jpg"), "mine");
+        var id = await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        Assert.False(Directory.Exists(old));
+        var moved = Path.Combine(tmp, "photos", "1001");
+        Assert.Equal("mine", File.ReadAllText(Path.Combine(moved, "7-2.jpg")));
+        Assert.Equal(6, Directory.GetFiles(moved).Length);  // the five restored pictures and the one taken here
+        Assert.Equal(1L, (long)state.Store.Open(1001).Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '7-2.jpg'")!);
+        Assert.NotNull(state.PhotoFile("/photos/1001/7-2.jpg"));
+        Assert.Null(state.PhotoFile($"/photos/{player}/7-2.jpg"));
+        Operator.Delete(1001);
+        Assert.False(Directory.Exists(moved));
+        Assert.False(Directory.Exists(old));
+    }
+
+    [Fact]
     public async Task TestDeletingRemovesTheAccountAndEverythingOfIt()
     {
         Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie)).Kind);
