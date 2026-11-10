@@ -104,7 +104,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
-        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
     }
