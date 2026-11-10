@@ -358,6 +358,50 @@ public class ServerProfileServiceTests
     [Fact]
     public void TheFriendsTabHasAServerSource() => Assert.Contains("friends", ServerProfileService.Tabs);
 
+    [Fact]
+    public async Task TheGalleryIsTheServersPageOfTheHandleWithEachPhotosScoreAndSmallPicture()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"id":7,"type":2,"animal":"Red Deer","label":"88.5","url":"https://game.test/photos/1/7-2.jpg","thumbnail":"https://game.test/photos/1/7-2-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/photos/1/6-3.jpg","thumbnail":"https://game.test/photos/1/6-3.jpg"}]}"""));
+        var page = await Make(fake).GalleryAsync("fox", 2);
+        Assert.Equal("/hunters/fox/gallery", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal("page=2", fake.Seen[0].RequestUri!.Query.TrimStart('?'));
+        Assert.Equal((2, 3), (page.Number, page.Pages));
+        Assert.Equal([new Photo(7, "Red Deer", 88.5, "https://game.test/photos/1/7-2.jpg", "https://game.test/photos/1/7-2-thumb.jpg"),
+                      new Photo(6, "", 0, "https://game.test/photos/1/6-3.jpg", "https://game.test/photos/1/6-3.jpg")], page.Rows);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, """{"error": "not found"}""")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task AFailedGalleryAnswerIsNoPhotos(HttpStatusCode code, string body) => Assert.Empty((await Make(new Fake(_ => Json(code, body))).GalleryAsync("fox", 1)).Rows);
+
+    [Fact]
+    public void TheGalleryTabHasAServerSource() => Assert.Contains("gallery", ServerProfileService.Tabs);
+
+    [Fact]
+    public async Task APhotoIsDeletedByIdAsThePlayerOfTheCookie()
+    {
+        var form = "";
+        var fake = new Fake(r => { form = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"status":"deleted"}"""); });
+        Assert.True((await Make(fake).DeleteGalleryImageAsync(7)).Ok);
+        var request = Assert.Single(fake.Seen);
+        Assert.Equal((HttpMethod.Post, "/account/gallery/delete", "abc"), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.GetValues("Cookie").Single().Split('=')[1]));
+        Assert.Equal("id=7", form);
+        Assert.True(request.Headers.Contains("X-Requested-With"));
+        Assert.False((await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"status":"invalid"}"""))).DeleteGalleryImageAsync(7)).Ok);
+        Assert.False((await new ServerProfileService(new HttpClient(new Fake(_ => throw new InvalidOperationException("no request"))) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new Fox(), new MockProfileService(), NullLogger<ServerProfileService>.Instance).DeleteGalleryImageAsync(7)).Ok);  // signed out
+    }
+
+    [Fact]
+    public async Task TheGalleryZipIsTheServersFileOfTheCookiesPlayerAndEmptyWhenItFails()
+    {
+        var fake = new Fake(_ => new(HttpStatusCode.OK) { Content = new ByteArrayContent([1, 2, 3]) });
+        Assert.Equal([1, 2, 3], await Make(fake).GalleryZipAsync("fox"));
+        Assert.Equal("/account/gallery/zip", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Empty(await Make(new Fake(_ => Json(HttpStatusCode.Unauthorized, "{}"))).GalleryZipAsync("fox"));
+    }
+
     sealed class Friends(string[] friends, string[] pending) : IFriendsService
     {
         public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult<IReadOnlyList<Friend>>([.. friends.Select(h => new Friend(h, false))]);

@@ -45,6 +45,8 @@ public static class Replay
     public const string INVENTORY_DICT = "/v1/Inventory/dict";
     public const string TROPHY_LIST = "/v1/Trophy/list";
     public const string LEADERBOARD_PERSONAL = "/v1/Leaderboard/personal";
+    public const string GALLERY_LIST = "/v1/Gallery/list";
+    public const string GALLERY_DELETE = "/v1/Gallery/delete";
     // the current build's paths, lower case as it sends them (the old ones above are canonical in their own case; NewBuild.Canonical maps any case to them)
     public const string START_SINGLE_PLAYER = "/v1/session/start_single_player";
     public const string CLIENT_APPLICATION = "/v1/application/client_application";

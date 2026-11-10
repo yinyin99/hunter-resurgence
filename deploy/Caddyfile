@@ -11,8 +11,8 @@
 	encode zstd gzip
 	header -Server
 
-	# the server's own paths on the website's domain: sign-in and what goes with it, and the backup tool's upload. The one place to change them.
-	@server_paths path /auth/* /account/restore/*
+	# the server's own paths on the website's domain: sign-in and what goes with it, the backup tool's upload and the gallery photos. The one place to change them.
+	@server_paths path /auth/* /account/restore/* /photos/*
 	# every game request of a player's local forwarder: the hostname the game asked for is in X-Game-Host
 	@game header X-Game-Host *
 

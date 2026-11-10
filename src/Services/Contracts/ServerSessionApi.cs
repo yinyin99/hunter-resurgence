@@ -30,6 +30,8 @@ public static class ServerSessionApi
     public const string HuntsSuffix = "/hunts";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. Public: no cookie needed.</summary>
     public const string ScoreSuffix = "/score";
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. Public: no cookie needed.</summary>
+    public const string GallerySuffix = "/gallery";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
     public const string Leaderboards = "/leaderboards";
 }
@@ -102,6 +104,10 @@ public sealed record ServerBest(ServerBestRow[] Rows);
 /// <param name="Range">In metres.</param>
 /// <param name="Ts">When the kill was made, Unix seconds.</param>
 public sealed record ServerBestRow(string Species, double Score, double Range, string Weapon, long Ts, long Kill);
+/// <summary>One page of a hunter's gallery of <see cref="ServerSessionApi.GallerySuffix"/>: <c>Label</c> is the score of the kill the photo shows ("" without one).</summary>
+public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPhoto[] Rows);
+
+public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail);
 
 /// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open.</summary>
 public sealed record ServerPlayer(string Handle, bool Online);

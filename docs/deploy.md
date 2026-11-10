@@ -164,7 +164,7 @@ The next deploy sets the tag again.
 | Request | Goes to |
 |---|---|
 | carries the header `X-Game-Host` (every request of a player's local forwarder, for every game host name, the signup host included) | `server:8080`, header kept |
-| path `/auth/*` or `/account/restore/*` (the `@server_paths` matcher, the one place to change the server's website-facing paths; the backup tool uploads to the second) | `server:8080`, `X-Game-Host` removed |
+| path `/auth/*`, `/account/restore/*` or `/photos/*` (the `@server_paths` matcher, the one place to change the server's website-facing paths; the backup tool uploads to the second, the browser loads the gallery's pictures from the third) | `server:8080`, `X-Game-Host` removed |
 | anything else | `web:8080`, `X-Game-Host` removed |
 
 The server believes `X-Game-Host` only from `trusted_proxies`, so a client cannot choose a game host except through Caddy, and Caddy's address is the only one listed. The server builds its sign-in links as `https://` plus the request's `Host`, which Caddy passes on unchanged, and the website forwards the browser's `Host` in its server-side calls (`SERVER_URL=http://server:8080`, set in compose).

@@ -19,8 +19,11 @@ else if (photos is not null)
         @foreach (var (ph, at) in photos.Rows.Select((x, i) => (x, i)))
         {
             <li>
-                <a href="#" title="@ph.Animal: @Fmt.Score(ph.Score)" @onclick="() => Open(at)" @onclick:preventDefault><AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /></a>
-                <span>@ph.Animal @Fmt.Score(ph.Score)</span>
+                <a href="#" title="@Name(ph)" @onclick="() => Open(at)" @onclick:preventDefault>
+                    @if (ph.Thumbnail is not null) { <img class="asset-slot has-image" src="@ph.Thumbnail" style="width:210px;height:118px" width="210" height="118" alt="@Name(ph)" /> }
+                    else { <AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /> }
+                </a>
+                <span>@Caption(ph, " ")</span>
                 <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Url })">@L["Prof.Share"]</button>
                 @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
             </li>
@@ -43,7 +46,7 @@ else if (photos is not null)
     {
         if (Sub == "download")
         {
-            // the gallery file is not made in the mock: the progress runs through and the button stays off
+            // the progress is only shown: the file is made by the server when the button is pressed
             done = false;
             for (progress = 0; progress < 100; progress += 20) { StateHasChanged(); await Task.Delay(300); }
             done = true;
@@ -54,8 +57,14 @@ else if (photos is not null)
     // the lightbox goes through the pictures of the page
     void Open(int at) => Modal.Show<VideoModal>(new Dictionary<string, object?>
     {
-        ["Title"] = "", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => $"{L.Term(p.Animal)}: {Fmt.Score(p.Score)}").ToList(), ["Slots"] = photos!.Rows.Select(p => $"photo-{p.Id}").ToList()
+        ["Title"] = "", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => Caption(p, ": ", true)).ToList(), ["Slots"] = photos!.Rows.Select(p => $"photo-{p.Id}").ToList(),
+        ["Urls"] = photos!.Rows.All(p => p.Thumbnail is not null) ? photos.Rows.Select(p => p.Url).ToList() : new List<string>()
     });
+
+    string Name(Photo p) => Caption(p, ": ") is { Length: > 0 } c ? c : "#" + p.Id;
+
+    // a photo of a kill shows the animal and its score; one without a kill, nothing but the picture
+    string Caption(Photo p, string separator, bool term = false) => (term ? L.Term(p.Animal) : p.Animal) + (p.Score > 0 ? separator + Fmt.Score(p.Score) : "");
 
     // the page goes on from the list the service has left; a page that is now empty gives way to the one before
     async Task Delete(Photo p)
@@ -70,7 +79,9 @@ else if (photos is not null)
 
     async Task Save()
     {
-        using var file = new MemoryStream(await Service.GalleryZipAsync(Handle));
+        var zip = await Service.GalleryZipAsync(Handle);
+        if (zip.Length == 0) { Modal.Alert(L["Mis.Failed"]); return; }
+        using var file = new MemoryStream(zip);
         using var stream = new DotNetStreamReference(file);
         await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
         await shell.InvokeVoidAsync("save", $"{Handle}-gallery.zip", stream);
