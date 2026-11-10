@@ -52,7 +52,7 @@ public static class PlayerRows
 
     /// <summary>The conversations a backup zip held (`Chat/conversations`), as saved; none without one.</summary>
     public static List<JsonNode?> RestoredConversations(Db con) =>
-        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = 'Chat_conversations.json'") is string s && JsonNode.Parse(s) is JsonArray a ? [.. a] : [];
+        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = 'Chat_conversations.json'") is string s && JsonNode.Parse(s) is JsonArray a ? [.. a.Where(c => c is JsonObject)] : [];
 
     /// <summary>The saved reply of `Chat/conversation` for a partner's user id (`{total, messages}`), or null.</summary>
     public static JsonNode? RestoredThread(Db con, string userId) =>

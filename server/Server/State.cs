@@ -1022,7 +1022,7 @@ public sealed partial class State
     {
         if (Conversations(account).FirstOrDefault(c => string.Equals(Plain(c?["handle"]), handle, StringComparison.OrdinalIgnoreCase)) is not { } c) return null;
         var partner = Plain(c["user_id"]);
-        var messages = ThreadOf(account, partner, false)["messages"] as JsonArray ?? [];
+        var messages = (ThreadOf(account, partner, false) as JsonObject)?["messages"] as JsonArray ?? [];
         return new() { ["messages"] = new JsonArray([.. messages.Select(m => (JsonNode?)new JsonObject
         {
             ["mine"] = m?["user_id"] is { } author && Plain(author) != partner, ["content"] = Plain(m?["content"]), ["ts"] = Time(m?["ts"]),

@@ -25,7 +25,7 @@ public sealed class StatusBarTests : UiContext
     [Theory]
     [InlineData(false, 1, 3)]
     [InlineData(true, 1, 3)]
-    public void OnTheLiveSiteTheWalletAndMessagesLinksAndTheFriendsAndBalancesAndBalancesStay(bool live, int links, int walletLinks)
+    public void OnTheLiveSiteTheWalletAndMessagesLinksAndTheFriendsAndBalancesStay(bool live, int links, int walletLinks)
     {
         Services.GetRequiredService<HostMode>().Live = live;
         var cut = Render<StatusBar>(p => p.Add(b => b.Session, new Resurgence.Services.Session("Fox", 5)));
