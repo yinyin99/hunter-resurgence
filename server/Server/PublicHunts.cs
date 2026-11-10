@@ -55,7 +55,7 @@ public sealed partial class State
     /// <summary>What a profile page's hunt page shows, `GET /hunters/&lt;handle&gt;/hunts/&lt;id&gt;` (`latest` for the newest): `{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}`
     /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats (none while the hunt is open);
     /// `end` is null for an open hunt; `collectables`, `achievements` and `antlers` are empty (the server has no names for them). `kills` are
-    /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`), which a restored kill has not. Null for an unknown hunt.</summary>
+    /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. Null for an unknown hunt.</summary>
     public JsonObject? PublicHunt(long account, long? id)
     {
         if (JsonNode.Parse(ExpeditionReply(account, "null"u8.ToArray(), id is { } i ? Encoding.UTF8.GetBytes($"expedition_id={i}") : null)) is not JsonObject reply || reply["expedition"] is not JsonObject e)
@@ -75,7 +75,7 @@ public sealed partial class State
             return new JsonObject
             {
                 ["id"] = killId, ["species"] = Py.IsStr(k["speciesName"]) ? Py.Str(k["speciesName"]) : "#" + Py.Str(k["species"]), ["weapon"] = ItemOf(hit, "weapon_id"), ["ammo"] = ItemOf(hit, "ammo_id"),
-                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId),
+                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null,
             };
         }
         return new JsonObject
@@ -90,20 +90,32 @@ public sealed partial class State
 
     /// <summary>What a profile page's score sheet shows, `GET /hunters/&lt;handle&gt;/score/&lt;kill&gt;`: the worked sheet of <see cref="Scoring.SheetData"/> (`kind`, `facts`, `rows`, `abnormal`, `sums`) and the facts
     /// the score page prints (species, the last hit's weapon, scope, ammo, distance in metres, animal state, body part and stance, the platform, weight in kilograms, type, wound time, trophy integrity,
-    /// the shot location, the number of shots, the harvest time in Unix seconds, the expedition, the score and the harvest value); null for a kill without a harvest on this server (a restored kill).</summary>
+    /// the shot location, the number of shots, the harvest time in Unix seconds, the expedition, the score and the harvest value). A restored kill whose backup saved its page has the facts of the saved hunt and no
+    /// worked sheet (`kind` "antler" without rows: the saved page, which the game shows, holds it as markup); null for any other kill that was not made here.</summary>
     public JsonObject? PublicSheet(long account, long killId)
     {
-        if (LoadKill(account, killId) is not { } k)
+        JsonObject sheet, kill;
+        string species, reserve;
+        if (LoadKill(account, killId) is { } k)
+        {
+            sheet = Scoring.SheetData(k.Features is null ? -1 : (int)Py.L(k.Sp), k.Features);
+            (kill, species, reserve) = (k.Kill, k.SpeciesName, k.ReserveName);
+        }
+        else if (SavedPage(account, killId) is not null && RestoredKill(account, killId) is { } saved)
+        {
+            sheet = Scoring.SheetData(-1, null);
+            (kill, species) = (saved, Py.IsStr(saved["speciesName"]) ? (string)saved["speciesName"]! : "");
+            reserve = ReserveName(saved["expedition"] is JsonArray { Count: > 0 } e && e[0] is JsonObject first ? first["reserve"] : null);
+        }
+        else
             return null;
-        var sheet = Scoring.SheetData(k.Features is null ? -1 : (int)Py.L(k.Sp), k.Features);
-        var kill = k.Kill;
-        var hits = (JsonArray)kill["hits"]!;
-        var info = (JsonObject)kill["kill"]!;
-        var shot = hits.Count > 0 ? (JsonObject)hits[^1]! : null;
+        var hits = kill["hits"] as JsonArray ?? [];
+        var shot = hits.Count > 0 ? hits[^1] as JsonObject : null;
+        var info = kill["kill"] as JsonObject ?? [];
         long L(JsonNode? n) => Integer(n);
+        string At(string axis) => info["pos"] is JsonObject pos && pos[axis] is JsonValue ? Py.Str(pos[axis]) : "";
         var texture = ScorePage.Texture(kill["texture"], textures);
-        var pos = info["pos"]!;
-        sheet["species"] = k.SpeciesName;
+        sheet["species"] = species;
         sheet["weapon"] = ItemName(shot?["weapon_id"]);
         sheet["scope"] = ItemName(shot?["scope_id"]) != "";
         sheet["ammo"] = ItemName(shot?["ammo_id"]);
@@ -116,10 +128,10 @@ public sealed partial class State
         sheet["type"] = $"{ScorePage.Loc(locale, "animal_texture_" + texture, texture)} ({(Real(kill["gender"]) == 0 ? "M" : "F")})";
         sheet["woundTime"] = Real(info["wound_time"]);
         sheet["integrity"] = (int)Math.Round(Real(info["trophy_integrity"]));
-        sheet["shotLocation"] = $"{k.ReserveName} ({Py.Str(pos["x"])}, {Py.Str(pos["z"])})";
+        sheet["shotLocation"] = $"{reserve} ({At("x")}, {At("z")})";
         sheet["shots"] = hits.Count;
         sheet["when"] = L(info["confirmTs"]);
-        sheet["expeditionId"] = kill["expedition"] is JsonArray { Count: > 0 } expedition ? L(expedition[0]!["id"]) : 0;
+        sheet["expeditionId"] = kill["expedition"] is JsonArray { Count: > 0 } expedition && expedition[0] is JsonObject x ? L(x["id"]) : 0;
         sheet["score"] = Real(info["score"]);
         sheet["harvestValue"] = Real(info["harvest_value"]);
         return sheet;

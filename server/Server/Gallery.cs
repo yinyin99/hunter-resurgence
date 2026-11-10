@@ -20,7 +20,7 @@ public sealed partial class State
     List<JsonObject> GalleryRows(long account, string? site = null)
     {
         using var con = Con(account);
-        return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score') FROM photos p"
+        return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score'), p.saved FROM photos p"
                             + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest")
                             + " LEFT JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                             + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND p.photo_type IS NOT {SHOT_EVIDENCE} GROUP BY p.id ORDER BY p.id DESC")
@@ -28,11 +28,13 @@ public sealed partial class State
             {
                 var file = (string)r[2];
                 var url = PhotoUrl(account, file, site);
+                var saved = r[5] is string s ? JsonNode.Parse(s) : null;  // a restored picture has no kill here: its saved label and animal
                 return new JsonObject
                 {
                     ["id"] = (long)r[0], ["type"] = Py.FromSql(r[1]), ["url"] = url,
                     ["thumbnail"] = File.Exists(Path.Combine(AccountPhotos(account), ThumbName(file))) ? PhotoUrl(account, ThumbName(file), site) : url,
-                    ["label"] = r[4] is DBNull ? "" : Py.Str(Py.FromSql(r[4])), ["animal"] = r[3] is DBNull ? "" : SpeciesName(Py.FromSql(r[3])) ?? "",
+                    ["label"] = r[4] is DBNull ? C(saved?["label"]) ?? "" : Py.Str(Py.FromSql(r[4])),
+                    ["animal"] = r[3] is DBNull ? C(saved?["animal"]) ?? "" : SpeciesName(Py.FromSql(r[3])) ?? "",
                 };
             })];
     }

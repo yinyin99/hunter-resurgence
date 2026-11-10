@@ -72,7 +72,7 @@ public static class GameApi
             var photo = Handle(game, r =>
                 r.Method is "GET" or "HEAD" && r.Path.StartsWith(State.PHOTO_PREFIX, StringComparison.Ordinal)
                 && s.PhotoFile(r.Path) is { Length: > 0 } f
-                    ? new(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(f), "state")
+                    ? new(200, [("Content-Type", "image/jpeg"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(f), "state")  // a restored file is whatever its zip held: never run as a page
                     : null);
             gs.MapGet(State.PHOTO_PREFIX + "{**name}", photo)
               .WithName("Photo").WithSummary("A stored photo")
@@ -424,12 +424,15 @@ public static class GameApi
                         return null;
                     var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
-                    var page = Py.IsDigit(killId) && long.TryParse(killId, out var kid) && s.PublicAccount(handle) is { } account
-                        ? s.ScorePageReply(account, kid) : null;
+                    if (!Py.IsDigit(killId) || !long.TryParse(killId, out var kid) || s.PublicAccount(handle) is not { } account)
+                        return null;
+                    if (s.SavedScorePage(account, kid) is { } saved)  // a restored kill's page comes from a backup zip: nothing in it may run on this host
+                        return new(200, [("Content-Type", "text/html"), ("Content-Security-Policy", "sandbox")], saved, "state");
+                    var page = s.ScorePageReply(account, kid);
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
-               .WithName("ScorePage").WithSummary("Kill details page of a server kill")
-               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page.")
+               .WithName("ScorePage").WithSummary("Kill details page of a kill")
+               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page; for a kill a restore brought, the page its backup saved (sent with a sandbox policy).")
                .PathParams(("handle", "player handle (any)")).QueryParams(("id", "kill id"))
                .Produces(200, contentType: "text/html");
         }
