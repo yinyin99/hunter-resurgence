@@ -11,7 +11,8 @@
         @foreach (var b in summary.Categories)
         {
             <div class="ov">
-                <Icon Name="@(b.Name == "Animals" ? "dog" : b.Name == "Weapons" ? "bullseye" : "location-dot")" />
+                @if (b.Name is "Animals" or "Weapons" or "Exploration") { <AssetSlot Name="@("ach-" + b.Name.ToLowerInvariant())" Width="40" Height="40" /> }
+                else { <Icon Name="location-dot" /> }
                 <div class="bar"><i style="width:@(100 * b.Done / b.Total)%"></i></div>
             </div>
         }
