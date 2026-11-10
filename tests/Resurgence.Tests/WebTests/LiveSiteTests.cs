@@ -83,12 +83,12 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills, statistics, dogs, ranks and achievements paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}", string hunts = "{}", string hunt = "{}", string score = "{}") : HttpMessageHandler
+    /// <summary>Answers the skills, statistics, dogs, ranks, achievements, hunts, score and best paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}", string hunts = "{}", string hunt = "{}", string score = "{}", string best = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, var p when p.EndsWith("/hunts") => hunts, var p when p.Contains("/hunts/") => hunt, var p when p.Contains("/score/") => score, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, var p when p.EndsWith("/best") => best, var p when p.EndsWith("/hunts") => hunts, var p when p.Contains("/hunts/") => hunt, var p when p.Contains("/score/") => score, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
@@ -123,7 +123,22 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics"));
         cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
         Assert.Contains("Fox Deer", cut.Markup);
-        Assert.Equal(["/profile/Fox/statistics/lifetime", "/profile/Fox/statistics/history"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the last hunt and the bests are the mock's: their pills are hidden
+        Assert.Equal(["/profile/Fox/statistics/lifetime", "/profile/Fox/statistics/history", "/profile/Fox/statistics/best"], cut.FindAll("ul.pills a").Select(a => a.GetAttribute("href")));  // the mock's last hunt is hidden
+    }
+
+    [Fact]
+    public void TheBestPillShowsTheServersPersonalBestsWithoutSeasonsOrSheetLinks()
+    {
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":null}""";
+        const string best = """{"rows":[{"species":"Fox Deer","score":50.5,"range":60.25,"weapon":"Fox Rifle","ts":1700000500,"kill":9}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", best: best)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics").Add(h => h.Sub, "best"));
+        cut.WaitForAssertion(() => Assert.Contains("Fox Rifle", cut.Markup));
+        Assert.Equal(["Fox Deer", "Fox Rifle", "2023-11-14 22:21"], cut.FindAll("table.hist tbody td").Take(3).Select(td => td.TextContent));
+        Assert.Empty(cut.FindAll("select#season"));
+        Assert.Empty(cut.FindAll("table.hist a"));
     }
 
     const string Hunter = """{"handle":"Fox","hunterscore":5,"rank":3}""";
