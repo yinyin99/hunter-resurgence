@@ -35,7 +35,7 @@ else
             }
             @if (!Mode.Live) { <li><a href="/competitions" class="@Active("competitions")">@L["Menu.Competitions"]</a></li> }
             <li><a href="/leaderboards" class="@Active("leaderboards")">@L["Menu.Leaderboards"]</a></li>
-            @if (!Mode.Live) { <li><a href="/missions/daily" class="@Active("missions")">@L["Menu.Missions"]</a></li> }
+            <li><a href="@(Mode.Live ? "/missions" : "/missions/daily")" class="@Active("missions")">@L["Menu.Missions"]</a></li>  @* the live site has no daily page *@
             @if (!Mode.Launcher)
             {
                 <li><a href="/download" class="@Active("download")">@L["Menu.Downloads"]</a></li>

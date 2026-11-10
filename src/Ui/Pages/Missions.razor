@@ -1,13 +1,14 @@
 @page "/missions"
 @page "/missions/group/{Group:int}"
 @inject IMissionsService Service
+@inject HostMode Mode
 @inject ModalService Modal
 @inject IJSRuntime JS
 
 <PageTitle>@L["Mis.Regular"]</PageTitle>
 
 <div class="page-min">
-<Tabs Items="tabs" Active="/missions" HelpHref="/help/day-mission" />
+<Tabs Items="tabs" Active="/missions" HelpHref="@(Mode.Live ? null : "/help/day-mission")" />
 @if (data is not null)
 {
     <button type="button" class="btn btn-primary all" @onclick="ActivateAll">@L["Mis.ActivateAll"]</button>
@@ -94,7 +95,7 @@ else { <div class="skeleton skeleton-page"></div> }
 
     protected override async Task OnInitializedAsync()
     {
-        tabs = [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];
+        tabs = Mode.Live ? [(L["Mis.Regular"], "/missions")] : [(L["Mis.Daily"], "/missions/daily"), (L["Mis.Regular"], "/missions")];  // the live site has no daily page
         data = await Service.RegularAsync();
         Options();
         Apply();
@@ -118,7 +119,8 @@ else { <div class="skeleton skeleton-page"></div> }
     {
         var ms = data!.Missions.Where(m => m.State == "active" && Block("active") || m.State == "available" && Block("available"))
             .Concat(data.Packs.Where(p => p.Favourite && Block("favourite") || Block("packs")).SelectMany(p => p.Missions)).ToList();
-        (reserves, species, weapons) = (ms.Select(m => m.Reserve).Distinct().Order().ToList(), ms.Select(m => m.Species).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), ms.Select(m => m.Weapon).Distinct().Order().ToList());
+        // a mission may name no reserve, species or weapon (the server's): no option for none
+        (reserves, species, weapons) = (ms.Select(m => m.Reserve).Where(r => r.Length > 0).Distinct().Order().ToList(), ms.Select(m => m.Species).Where(s => s.Length > 0).Distinct().OrderBy(s => L.Term(s), StringComparer.CurrentCulture).ToList(), ms.Select(m => m.Weapon).Where(w => w.Length > 0).Distinct().Order().ToList());
     }
 
     bool Block(string box) => filterIn == "all" || filterIn == box;

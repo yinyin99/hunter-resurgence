@@ -297,6 +297,62 @@ public class MissionTests : StateTestBase
         Restorer.Import(state, TestZip.Own().Write(tmp, "b.zip"), result.Account, tmp);  // a zip without a mission page
         Assert.Equal("", Ids(Missions(result.Account)["completed"]));
     }
+
+    // the website's missions page: mission 1 names a reserve, a species and a weapon (and has markup in its text), mission 3 none
+    async Task<(Loopback Server, (string, string)[] Headers)> WebServer()
+    {
+        var app = APP;
+        foreach (var (key, value) in O(Definitions))
+            app[key] = value!.DeepClone();
+        app["locations"]![0]!["name"] = "Test Lodge";
+        var first = app["missions"]![0]!.AsObject();
+        first["desc"] = "Hello,<br/><br/>take <b>your</b> time.";
+        first["reserves"] = JsonNode.Parse("[7, 2]");
+        first["species"] = JsonNode.Parse("[1]");
+        first["weapons"] = JsonNode.Parse("[5]");
+        app["mission_groups"]![0]!["title"] = "Test Pack";
+        state = new State(Path.Combine(tmp, "web.db"), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
+        var server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), WebCfg, state, tmp), tmp);
+        return (server, [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}"), ("X-Requested-With", "XMLHttpRequest"), ("Content-Type", "application/x-www-form-urlencoded")]);
+    }
+
+    [Fact]
+    public async Task TestTheWebsiteReadsAndActivatesTheOwnersMissions()
+    {
+        var (server, headers) = await WebServer();
+        await using var _ = server;
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/missions", [])).Status);
+        Assert.Equal(401, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers[1..], Q("mission_id=1"))).Status);
+        Assert.Equal(400, (await server.SendAsync("POST", "web.test", "/account/missions/activate", [headers[0]], Q("mission_id=1"))).Status);  // not from our page
+        Assert.Equal(404, (await server.SendAsync("POST", "web.test", "/account/missions/nope", headers, Q(""))).Status);
+
+        var page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
+        var one = page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!;
+        Eq("""["Hello, take your time.", "available", ["Harvest a Test Deer"], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
+        Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
+            page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["reserve"]));
+        Eq("""[{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [4]}, {"id": 11, "title": "", "desc": "", "favourite": false, "missions": [10]}]""", page["groups"]);
+
+        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=1"))).Status);
+        Assert.Equal(409, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=2"))).Status);  // a dependency is open
+        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/update_favourite", headers, Q("group_id=10&is_favourite=true"))).Status);
+        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/update_automatic_activation", headers, Q("auto_mission_activate=true"))).Status);
+        page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
+        Eq("""["active", true, true, false]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!["state"], page["groups"]![0]!["favourite"], page["auto_mission_activate"], page["hide_completed_favourite"]));
+        Assert.Equal("1", Ids(Missions()["active"]));  // the game sees the same rows
+    }
+
+    [Fact]
+    public async Task TestWithoutMissionsTheWebsiteGetsNone()
+    {
+        var empty = new State(Path.Combine(tmp, "web-empty.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        await using var server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), WebCfg, empty, tmp), tmp);
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={empty.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(404, (await server.SendAsync("GET", "web.test", "/account/missions", [cookie])).Status);
+        Assert.Equal(404, (await server.SendAsync("POST", "web.test", "/account/missions/activate_all_available", [cookie, ("X-Requested-With", "x")], Q(""))).Status);
+    }
+
+    static readonly JsonObject WebCfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
 }
 
 /// <summary>The Mission/* calls over HTTP on a community server.</summary>
@@ -310,7 +366,7 @@ public class MissionApiTests : StateTestBase, IAsyncLifetime
     {
         var app = APP;
         app["missions"] = JsonNode.Parse("""[{"id": 1, "title": "Harvest a Test Deer", "dependencies": [], "rewards": [{"text": "100 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}]""");
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
+        state = new State(Path.Combine(tmp, "web.db"), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
         token = state.Store.CreateToken(ME);
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
