@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-104 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
+105 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
