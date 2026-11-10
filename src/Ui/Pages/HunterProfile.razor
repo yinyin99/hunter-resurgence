@@ -15,9 +15,9 @@
 @if (profile is not null)
 {
     <header class="head">
-        @* the header picture the player chose in the settings: none, the most recent kill or a picture *@
-        @if (header != "none") { <AssetSlot Name="@(header is "recent" ? "profile-banner" : header)" Width="940" Height="200" Class="banner" /> }
-        <div class="polaroid"><AssetSlot Name="@avatar" Width="170" Height="185" /><Icon Name="paw" /></div>
+        @* the header picture: on the live site the one the player chose (none without one); on the mock the one of the settings: none, the most recent kill or a picture *@
+        @if (banner is not null) { <AssetSlot Name="@banner" Width="940" Height="200" Class="banner" /> }
+        <div class="polaroid"><AssetSlot Name="polaroid-back" Width="239" Height="288" /><AssetSlot Name="@avatar" Width="171" Height="171" Class="avatar" /><AssetSlot Name="polaroid-front" Width="239" Height="288" Class="front" /></div>
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend)
         {
@@ -69,6 +69,7 @@
     Profile? profile;
     bool signedIn;
     string header = "recent", avatar = "avatar-default";
+    string? banner;
 
     [Parameter] public string Handle { get; set; } = "";
     [Parameter] public string? Tab { get; set; }
@@ -90,6 +91,7 @@
         // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here); a player of the server has their own avatar
         if (profile is { Own: true, Tabs: null }) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
         else (header, avatar) = ("recent", profile.Avatar ?? "avatar-default");
+        banner = Mode.Live ? (profile.Background is { } background ? "profile-bg-" + background : null) : header == "none" ? null : header == "recent" ? "profile-banner" : header;
     }
 
     // the request goes to the friends service; the profile then says it is pending, also when the page is opened again

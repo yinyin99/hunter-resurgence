@@ -1,8 +1,8 @@
-.grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 0; padding: 0; list-style: none; }
-.grid li { width: 150px; font-size: 13px; line-height: 18px; color: var(--text-2); }
-.grid li > * { display: block; }
-.grid li a { margin-top: 6px; color: var(--primary); }
-.grid li b { font-weight: 400; color: #fff; }
-.grid li span { color: var(--fg-muted-2); }
-.grid ::deep .asset-slot { display: block; }
+.grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.grid li { box-sizing: border-box; width: 157px; height: 280px; padding: 5px; background: #222; text-align: center; }
+.grid h4 { height: 50px; margin: 0 0 10px; overflow: hidden; font-size: 14px; line-height: 20px; font-weight: 400; color: #ccc; }
+.grid a h4 { color: var(--primary); }
+.grid p { margin: 0; font-size: 12px; line-height: 18px; color: #fff; }
+.grid h5 { margin: 0; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--fg-muted-2); }
+.grid ::deep .asset-slot { display: block; margin: 0 auto; }
 .empty { margin: 80px 0; text-align: center; font-size: 22px; font-weight: 300; color: var(--text-3); }

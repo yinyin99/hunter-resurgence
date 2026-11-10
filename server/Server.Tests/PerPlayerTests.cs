@@ -190,16 +190,17 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             con.Begin();
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "1", O("""{"id": 1, "name": "shown"}"""));
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "2", O("""{"id": 2, "name": "secret", "hidden": true}"""));
-            for (var id = 1; id <= 26; id++)
-                PlayerRows.AddTrophy(con, "/game/user/trophies", id.ToString(), O($$"""{"id": {{id}}, "hidden": {{(id == 5 ? "true" : "false")}}, "species": 1, "timestamp": {{(id == 1 ? "\"2020-09-13T10:00:00Z\"" : "1600000000")}}}"""));
+            for (var id = 3; id <= 27; id++)
+                PlayerRows.AddTrophy(con, "/v1/Trophy/list", id.ToString(), O($$"""{"id": {{id}}, "name": "cup {{id}}", "competition_name": "Open {{id}}", "competition_id": {{1000 + id}}, "image": "https://static.test/img/trophies/cup_{{id}}.png", "ts": 1600000000, "hidden": false}"""));
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "5", O("""{"id": 5, "hidden": false, "species": 1, "timestamp": 1600000000}"""));  // a kill of the lodges: not a competition trophy
             con.Commit();
         }
         state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
-        state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 72270)));  // a harvest made here: its timestamp is an ISO time
+        state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 72270)));  // a harvest made here: not a competition trophy either
         // Trophy/list of another account's user id: its rows without the hidden ones; its own owner sees all; a banned or unknown id is the empty reply
-        var other = await Api(Replay.TROPHY_LIST, tokenA, "user_id=8");
-        Eq("""[1, [{"id": 1, "name": "shown"}]]""", T(other["total"], other["trophies"]));
-        Eq("2", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=8"))["total"]);
+        var other = await Api(Replay.TROPHY_LIST, tokenA, "user_id=8&limit=1");
+        Eq("""[26, [{"id": 1, "name": "shown"}]]""", T(other["total"], other["trophies"]));
+        Eq("27", (await Api(Replay.TROPHY_LIST, tokenB, "user_id=8"))["total"]);
         foreach (var id in new[] { 9, 99 })
             Eq("0", (await Api(Replay.TROPHY_LIST, tokenA, $"user_id={id}"))["total"]);
 
@@ -207,12 +208,27 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var first = await Page("?page=1");
         Eq("""[1, 2, 26]""", T(first["page"], first["pages"], first["total"]));
         Assert.Equal(24, first["rows"]!.AsArray().Count);
-        Eq("""{"name": "Test Deer", "date": "2020-09-13"}""", first["rows"]![0]);
-        var last = await Page("?page=3");  // past the end: the last page, the harvest made here after the restored rows
+        Eq("""{"name": "shown", "date": "", "competitionId": null, "competition": null, "image": null}""", first["rows"]![0]);  // a row without a competition, a date or a picture
+        Eq("""{"name": "cup 3", "date": "2020-09-13", "competitionId": 1003, "competition": "Open 3", "image": "cup_3"}""", first["rows"]![1]);
+        var last = await Page("?page=3");  // past the end: the last page
         Eq("""[2, 2]""", T(last["page"], last["rows"]!.AsArray().Count));
-        Eq($$"""{"name": "Test Deer", "date": "{{DateTime.UtcNow:yyyy-MM-dd}}"}""", last["rows"]![1]);
+        Eq("""{"name": "cup 27", "date": "2020-09-13", "competitionId": 1027, "competition": "Open 27", "image": "cup_27"}""", last["rows"]![1]);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/banned/trophies", null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/trophies", null)).Status);
+    }
+
+    [Fact]
+    public async Task TestTheProfileHeaderCarriesTheRestoredBackground()
+    {
+        async Task<JsonNode?> Background() => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second", null)).Body)!["background"];
+        Assert.Null(await Background());  // no restored profile
+        using (var con = state.Store.Open(8))
+        {
+            con.Begin();
+            PlayerRows.SetExtra(con, "game_user_8_profile.json", O("""{"background": "exploration_3.png", "ribbon": "moose.png"}"""));
+            con.Commit();
+        }
+        Assert.Equal("exploration_3.png", (string?)await Background());
     }
 
     [Fact]
@@ -408,6 +424,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, "state"), (v2.Status, v2.Source));
         Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 2}""", JsonNode.Parse(v2.Body));
         Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", null)).Body);  // the current build's path
+        Assert.Null(JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second", null)).Body)!["background"]);  // the header sends a name only: not this 3
         var ranks = await Send(community, "GET", "apiv2.test", "/game/user/8/ranks", null);
         Assert.Equal((200, "state"), (ranks.Status, ranks.Source));
         Assert.Equal(ranks.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/ranks", null)).Body);  // the current build's path

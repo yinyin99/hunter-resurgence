@@ -83,18 +83,18 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(href, cut.Find("div.settings > a").GetAttribute("href"));
     }
 
-    /// <summary>Answers the skills, statistics, dogs, ranks, achievements, hunts, score and best paths with theirs and every other with the profile header.</summary>
-    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}", string hunts = "{}", string hunt = "{}", string score = "{}", string best = "{}") : HttpMessageHandler
+    /// <summary>Answers the skills, statistics, dogs, ranks, achievements, trophies, hunts, score and best paths with theirs and every other with the profile header.</summary>
+    sealed class Server(string header, string skills, string statistics = "{}", string dogs = "{}", string ranks = "{}", string achievements = "{}", string hunts = "{}", string hunt = "{}", string score = "{}", string best = "{}", string trophies = "{}") : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
             Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, var p when p.EndsWith("/best") => best, var p when p.EndsWith("/hunts") => hunts, var p when p.Contains("/hunts/") => hunt, var p when p.Contains("/score/") => score, _ => header }, System.Text.Encoding.UTF8, "application/json") });
+            { Content = new StringContent(request.RequestUri!.AbsolutePath switch { var p when p.EndsWith("/skills") => skills, var p when p.EndsWith("/statistics") => statistics, var p when p.EndsWith("/dogs") => dogs, var p when p.EndsWith("/ranks") => ranks, var p when p.EndsWith("/achievements") => achievements, var p when p.EndsWith("/trophies") => trophies, var p when p.EndsWith("/best") => best, var p when p.EndsWith("/hunts") => hunts, var p when p.Contains("/hunts/") => hunt, var p when p.Contains("/score/") => score, _ => header }, System.Text.Encoding.UTF8, "application/json") });
     }
 
     [Fact]
     public void ARealPlayersProfileIsTheServersHeaderWithTheTabsOfAServerSource()
     {
-        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png"}""";
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png","background":"exploration_3.png"}""";
         const string skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[]}""";
         var real = new ServerProfileService(new HttpClient(new Server(header, skills)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
@@ -103,10 +103,22 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "skills"));
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Equal("Hunter", cut.Find("p.sub span").TextContent);
-        Assert.Equal("avatar-1000000", cut.Find(".polaroid .asset-slot").GetAttribute("aria-label"));
+        Assert.Equal("avatar-1000000", cut.Find(".polaroid .avatar").GetAttribute("aria-label"));
+        Assert.Equal(["polaroid-back", "avatar-1000000", "polaroid-front"], cut.FindAll(".polaroid .asset-slot").Select(s => s.GetAttribute("aria-label")));  // the avatar between the two pictures
+        Assert.Equal("profile-bg-exploration_3", cut.Find(".head .banner").GetAttribute("aria-label"));  // the live site draws the header picture the player chose
         Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
+    }
+
+    [Fact]
+    public void ARealPlayerWithoutABackgroundHasNoBanner()
+    {
+        Services.AddSingleton<IProfileService>(Real(new Server("""{"handle":"Fox","hunterscore":5,"rank":3,"background":null}""", "{}")));
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "skills"));
+        cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
+        Assert.Empty(cut.FindAll(".banner"));  // not the mock's "profile-banner" box
     }
 
     [Fact]
@@ -225,6 +237,22 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal(["Alpine Ibex", "Red Fox"], cut.FindAll("div.what h4").Select(h => h.TextContent)));
         Assert.Equal(["7", "1000"], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // a count counts to the cap
         Assert.Equal(["width:0%", "width:100%"], cut.FindAll("div.what .bar i").Select(i => i.GetAttribute("style")));
+        Assert.Equal(["rank-1", "rank-2"], cut.FindAll("div.row .asset-slot").Select(s => s.GetAttribute("aria-label")));  // each rank's own picture, by its game id
+    }
+
+    [Fact]
+    public void TheTrophiesTabDrawsTheCompetitionPictureByItsFileName()
+    {
+        const string trophies = """
+            {"page":1,"pages":1,"total":2,"rows":[{"name":"Elk Gold","date":"2026-09-14","competitionId":12,"competition":"Test Cup","image":"elk_gold"},
+                                                   {"name":"No Picture","date":"","competitionId":null,"competition":null,"image":null}]}
+            """;
+        Services.AddSingleton<IProfileService>(Real(new Server(Hunter, "{}", trophies: trophies)));
+        Live(true);
+        var cut = Render<TrophiesTab>(p => p.Add(t => t.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal(["trophy-elk_gold", "trophy-No Picture"], cut.FindAll("ul.grid .asset-slot").Select(s => s.GetAttribute("aria-label"))));
+        Assert.Equal(["Test Cup", ""], cut.FindAll("ul.grid h4").Select(h => h.TextContent));
+        Assert.Empty(cut.FindAll("ul.grid a"));  // the live site has no competition pages
     }
 
     [Fact]

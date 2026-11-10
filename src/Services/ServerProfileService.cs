@@ -30,7 +30,8 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                 var (friend, pending) = !own && cookie.Value is not null && friends is not null
                     ? ((await friends.FriendsAsync()).Any(f => string.Equals(f.Handle, h.Handle, StringComparison.OrdinalIgnoreCase)), (await friends.PendingAsync()).Contains(h.Handle, StringComparer.OrdinalIgnoreCase))
                     : (false, false);
-                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar));
+                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar),
+                    Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null);
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }
@@ -53,7 +54,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
         if (kind != "overview")
             return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
-                .Select(x => new RankBar(x.Name, Count(Math.Min(x.Value, r.Cap)), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap)))];
+                .Select(x => new RankBar(x.Name, Count(Math.Min(x.Value, r.Cap)), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
         return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
                 Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
     }
@@ -209,7 +210,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerTrophies>() is { } t)
-                return new([.. (t.Rows ?? []).Select(r => new Trophy(r.Name, DateOnly.TryParse(r.Date, out var day) ? day : default, null, null))], t.Page, t.Pages, t.Total);
+                return new([.. (t.Rows ?? []).Select(r => new Trophy(r.Name, DateOnly.TryParse(r.Date, out var day) ? day : default, r.CompetitionId, r.Competition, r.Image))], t.Page, t.Pages, t.Total);
             log.LogWarning("The server answered {Path} with {Status}: no trophies", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

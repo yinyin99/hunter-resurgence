@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-109 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
+111 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 652 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 654 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
@@ -58,10 +58,12 @@ With the values the mock services give, the slots have 652 distinct keys; a patt
 | `paper-notice` | set by the page | Paper | yes |
 | `coin-ems`, `icon-store` | 46×46 | MenuBar | yes |
 | `avatar-default` | 24 to 160 square | MapPlaceholder, RankRow, JoinMapModal, Dashboard, Leaderboards, Messages, Servers, StatusBar, FriendsTab, FriendsDropdown, HunterProfile, Settings, Welcome | yes |
-| `avatar-<NN>`, `avatar-locked` | 34 to 170 | Settings, StatusBar, Welcome, HunterProfile, Signup Page1 | 55 of 55 |
-| `avatar-<id>` | 170×185 | HunterProfile (the live site: a player's avatar, by the id in its picture's file name, `…/256/<id>.png`; another URL shows `avatar-default`) | no: the game's avatar list |
+| `avatar-<NN>`, `avatar-locked` | 34 to 171 | Settings, StatusBar, Welcome, HunterProfile, Signup Page1 | 55 of 55 |
+| `avatar-<id>` | 171×171 | HunterProfile (the live site: a player's avatar, by the id in its picture's file name, `…/256/<id>.png`; another URL shows `avatar-default`) | no: the game's avatar list |
 | `avatar-discord` | 18×18 | DiscordWidget | no: player content |
-| `profile-banner` | 940×200 | HunterProfile | no: player content (the player's latest kill) |
+| `profile-banner` | 940×200 | HunterProfile (the mock) | no: player content (the player's latest kill) |
+| `profile-bg-<name>` | 940×200 | HunterProfile (the live site: the header picture the player chose, the restored profile's `background` without its extension, `profile-bg-exploration_3` for `exploration_3.png`; no slot without one) | 19 files: `exploration_1` to `6`, `species_1` to `6`, `weapons_1` to `6` and a holiday banner |
+| `polaroid-back`, `polaroid-front` | 239×288 | HunterProfile (the avatar is drawn between them, turned -5°, as the original's `#profile-image-container`; a missing `polaroid-front` is not drawn, so its box does not cover the avatar) | yes |
 | `animals-<n>`, `weapons-<n>`, `exploration-<n>`, `events-<n>` (profile headers) | 940×200, 240×50 | HunterProfile, Settings | 20 of 20 |
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
 | `video-<id>` | 900×506, 185×138 | VideoModal, Help (tutorial rows) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
@@ -88,13 +90,15 @@ With the values the mock services give, the slots have 652 distinct keys; a patt
 | `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border, scaled to 1500 px at most. The boxes of the join map (704×608) stretch it |
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
-| `rank-<animals, weapons, collectables>` | 110×110, 40×40 | RanksTab | 3 of 3 (the overview rows show them at 40×40) |
+| `rank-<animals, weapons, collectables>` | 114×114, 40×40 | RanksTab (the mock; the live site draws `rank-<id>` in the rows) | 3 of 3 (the overview rows show them at 40×40) |
+| `rank-<id>` | 114×114 | RanksTab (the live site: a row of animals, weapons or collectables, `<id>` the rank's game id, the same ids as the game's rank table) | 115 files in the operator's folder |
 | `rank-score` | 40×40 | RanksTab | yes: the hunter score icon of the ranks overview |
 | `ach-<animals, weapons, exploration, day-mission>` | 100×100, 40×40 | AchievementsTab | 3 of 4 (the overview rows show the first three at 40×40): the original's `cat0` (animals) is the stag of its icon sprite, `cat1` the bullets, `cat2` the compass; `ach-day-mission`: the sprite has no day-mission icon (its paw cell is used by none of the original's templates) |
 | `ach-badge-<title>` | 90×90 | AchievementsTab | 13 of 14: animal badges by the game's achievement table, challenge badges by the challenge's description (`Quick Draw` is the original's Assassin); `1 Rifle A (Standard)` is a stand-in for a weapon badge; `Early Bird` is not in the original |
 | `skill-<name>` | 80×90 | SkillsTab | 78 of 81: weapon skills by the weapon category in the name; `i1` (semi-automatic rifles), `k1` and `l1` (air rifles) stay empty, the original's only icon of that kind is already used by another skill or is of another category |
 | `statistics-<define>` | 80×90 | SkillsTab (the live site: the species' skill pictures) | `statistics/<define in lower case>.png` as the original showed it, 54 of the 55 species shown (`sasquatch` has none); the live weapon skills and the statistics' weapons and ammo use `store-item-<id>` |
-| `trophy-<name>` | 150×150 | TrophiesTab | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
+| `trophy-<name>` | 147×147 | TrophiesTab (the mock) | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
+| `trophy-<image>` | 147×147 | TrophiesTab (the live site: a competition trophy, `<image>` the file name of its picture without the extension, `trophy-elk_gold` for `…/elk_gold.png`; a trophy with no picture is drawn as `trophy-<name>`) | 1320 files in the operator's folder |
 | `dog-<type>` | 120×120 | DogsTab | 2 of 2 |
 | `weapon-<name>`, `ammo-<name>` | 150×30, 36×36 | WeaponTable | 5 of 5, 5 of 5: the mock weapons are fictional (stand-in pictures of the same kind); each ammo is the one the game's item table lists as fitting that weapon's picture (.243, .30-06, .340 Weatherby, 7.62x54R, 12 GA birdshot) |
 | `collectable-<name>` | 24×24 | CollectableTable | 1 of 1 |

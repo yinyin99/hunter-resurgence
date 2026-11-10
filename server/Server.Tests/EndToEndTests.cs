@@ -103,9 +103,9 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
             var hunts = await Hunters("/hunts", viewer);
             Eq("""[4, 1, 9003]""", T(hunts["total"], hunts["rows"]![0]!["kills"], hunts["rows"]![1]!["id"]));
 
-            // the trophies of the profile page: the restored one, then the harvest
+            // the trophies of the profile page: the zip's one Trophy/list row (a name-less one), not the kills
             var trophies = await Hunters("/trophies", viewer);
-            Eq("""[2, "Test Deer", "Test Deer"]""", T(trophies["total"], trophies["rows"]![0]!["name"], trophies["rows"]![1]!["name"]));
+            Eq("""[1, "", "2020-09-13", null]""", T(trophies["total"], trophies["rows"]![0]!["name"], trophies["rows"]![0]!["date"], trophies["rows"]![0]!["image"]));
         }
 
         // the game's public read of a player's hunterscore carries no token

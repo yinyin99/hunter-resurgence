@@ -40,12 +40,12 @@ public static class HuntersApi
                 ? Json(200, new JsonObject
                 {
                     ["handle"] = p["handle"]?.DeepClone(), ["hunterscore"] = p["hunterscore"]?.DeepClone(), ["rank"] = p["rank"]?.DeepClone(),
-                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = p["avatar"]?.DeepClone(),
+                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = p["avatar"]?.DeepClone(), ["background"] = state.ProfileBackground(id),
                 })
                 : Json(404, new JsonObject { ["error"] = "not found" }))
-            .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership and avatar")
-            .WithDescription("`{handle, hunterscore, rank, membership, avatar}` (the handle as the account spells it, the membership's title, \"\" without one, "
-                             + "the avatar's picture URL); 404 for a handle that is unknown or banned.")
+            .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership, avatar and header picture")
+            .WithDescription("`{handle, hunterscore, rank, membership, avatar, background}` (the handle as the account spells it, the membership's title, \"\" without one, "
+                             + "the avatar's picture URL, the header picture the player chose as the restored profile names it, null without one); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/statistics", (string handle) => state.PublicAccount(handle) is { } id
@@ -68,8 +68,9 @@ public static class HuntersApi
                 ? Json(200, state.PublicTrophies(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterTrophies").WithSummary("One page of a hunter's trophies")
-            .WithDescription($"`{{page, pages, total, rows: [{{name, date}}]}}`, {State.TrophiesPageSize} rows a page: the restored trophies, then the harvests made here (as `/game/user/trophies`), "
-                             + "the hidden ones left out; `name` is the species' name, `date` the day of the harvest (UTC, yyyy-MM-dd). 404 for a handle that is unknown or banned.")
+            .WithDescription($"`{{page, pages, total, rows: [{{name, date, competitionId, competition, image}}]}}`, {State.TrophiesPageSize} rows a page: the restored competition trophies (`Trophy/list`), "
+                             + "the hidden ones left out; `name` is the trophy's name, `date` the day it was won (UTC, yyyy-MM-dd), `competitionId` and `competition` the competition's id and name (null without them), "
+                             + "`image` the picture's file name without the extension (null without one). 404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
