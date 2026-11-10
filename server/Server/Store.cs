@@ -13,10 +13,10 @@ public sealed class Store
     /// <summary>Tables with an `account_id` column: Db refuses SQL on them that does not bind the account.</summary>
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
-         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results", "wallet_log"];
+         "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 11;
+    public const int Version = 12;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -44,6 +44,26 @@ public sealed class Store
         CREATE TABLE upload_results (
             id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, kind TEXT NOT NULL, user_id INTEGER, handle TEXT, handle_kept INTEGER NOT NULL, reason TEXT NOT NULL);
         CREATE INDEX upload_results_account ON upload_results (account_id, id);
+        """;
+
+    // an account's loadouts: the id is global (the key of the page's PUT), so it is the table's own rowid; entries is the JSON list of items the page reads
+    const string Loadouts = $"""
+        CREATE TABLE loadouts (
+            id INTEGER PRIMARY KEY, {A}, name TEXT NOT NULL, color INTEGER NOT NULL, entries TEXT NOT NULL);
+        CREATE INDEX loadouts_account ON loadouts (account_id, id);
+        """;
+
+    /// <summary>The loadouts of a restored zip: its saved reply of `/game/user/loadout` (the extras file `game_user_loadout.json`), in order, under new ids
+    /// (the saved ids are global to the game's accounts). A name that is no text, a color that is no whole number and items that are no list are read as
+    /// "", 0 and []. `$a` is the account; the migration reads every account and replaces it with the column.</summary>
+    internal const string RestoredLoadouts = """
+        INSERT INTO loadouts (account_id, name, color, entries)
+        SELECT $a,
+               CASE WHEN json_type(j.value, '$.name') = 'text' THEN json_extract(j.value, '$.name') ELSE '' END,
+               CASE WHEN json_type(j.value, '$.color') = 'integer' THEN json_extract(j.value, '$.color') ELSE 0 END,
+               CASE WHEN json_type(j.value, '$.items') = 'array' THEN json_extract(j.value, '$.items') ELSE '[]' END
+        FROM extras e, json_each(e.body) j
+        WHERE e.account_id = $a AND e.path = 'game_user_loadout.json' AND json_type(e.body) = 'array' AND json_type(j.value) = 'object'
         """;
 
     // friend edges: account_id asked other_id (`request`), or the two are friends (`friend`: accepted here, or one's restored list
@@ -89,6 +109,7 @@ public sealed class Store
         {Uploads}
         {UploadResults}
         {WalletLog}
+        {Loadouts}
 
         CREATE TABLE items (
             {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER,
@@ -210,6 +231,11 @@ public sealed class Store
             if (version < 10 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'saved'")! == 0)
                 con.Script("ALTER TABLE photos ADD COLUMN saved TEXT");
             if (version < 11) con.Script(WalletLog);
+            if (version < 12)
+            {
+                con.Script(Loadouts);
+                con.Script(RestoredLoadouts.Replace("$a", "e.account_id"));
+            }
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

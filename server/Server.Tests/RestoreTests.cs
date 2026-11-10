@@ -343,6 +343,7 @@ public class RestoreTests : StateTestBase
         using (var con = new Store(file).Open())
         {
             con.Exec("ALTER TABLE photos DROP COLUMN saved");
+            con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
             con.Exec("PRAGMA user_version = 9");
         }
