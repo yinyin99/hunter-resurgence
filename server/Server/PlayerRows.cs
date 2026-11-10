@@ -50,6 +50,14 @@ public static class PlayerRows
     public static void SetExtra(Db con, string path, JsonNode? body) =>
         con.Exec("INSERT OR REPLACE INTO extras (account_id, path, body) VALUES ($a, ?, ?)", path, Py.Dumps(body));
 
+    /// <summary>The conversations a backup zip held (`Chat/conversations`), as saved; none without one.</summary>
+    public static List<JsonNode?> RestoredConversations(Db con) =>
+        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = 'Chat_conversations.json'") is string s && JsonNode.Parse(s) is JsonArray a ? [.. a.Where(c => c is JsonObject)] : [];
+
+    /// <summary>The saved reply of `Chat/conversation` for a partner's user id (`{total, messages}`), or null.</summary>
+    public static JsonNode? RestoredThread(Db con, string userId) =>
+        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", $"Chat_conversation__user_id={userId}.json") is string s ? JsonNode.Parse(s) : null;
+
     /// <summary>The hunts a backup zip held, as saved: every `Expedition/list` page (by offset) joined, newest first as saved, each hunt once.</summary>
     public static List<JsonNode?> RestoredHunts(Db con)
     {

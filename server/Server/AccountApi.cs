@@ -204,6 +204,23 @@ public static class AccountApi
             .QueryParams(("text", "A part of the handle, any case"))
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/messages", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WebConversations(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountMessages").WithSummary("The player's own conversations: the server's notices and the restored ones")
+            .WithDescription("`{conversations: [{handle, preview, ts, unread}]}`, read only; `ts` is unix seconds.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/messages/thread", (HttpContext ctx) => Account(ctx) is not { } account
+                ? Refuse(401, "signed_out", "Sign in first.")
+                : state.WebThread(account, ctx.Request.Query["handle"].ToString()) is { } thread
+                    ? Json(200, thread)
+                    : Refuse(404, "invalid", "This is none of your conversations."))
+            .WithName("AccountMessagesThread").WithSummary("One of the player's conversations, newest message first (query `handle`)")
+            .WithDescription("`{messages: [{mine, content, ts}]}`, read only (nothing is marked read); 404 `invalid` for a handle that is none of the conversations.")
+            .QueryParams(("handle", "The conversation's handle, any case"))
+            .Produces(200, contentType: "application/json");
+
         foreach (var (path, name, add) in new[] { ("/friends/add", "AccountFriendAdd", true), ("/friends/remove", "AccountFriendRemove", false) })
             group.MapPost(path, async (HttpContext ctx) =>
                 {
