@@ -19,6 +19,7 @@ public static class GameApi
     static readonly Regex Lodges = new(@"\A(?:/v1)?/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex LodgeEdit = new(@"\A(?:/v1)?/game/user/lodges/(\d+)(/settings)?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex TrophyEdit = new(@"\A(?:/v1)?/game/user/trophies/(\d+)\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex Loadouts = new(@"\A(?:/v1)?/game/user/loadout(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex UserProfile = new(@"\A(?:/v1)?/game/user/(\d+)/profile\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex UserRanks = new(@"\A(?:/v1)?/game/user/(\d+)/ranks\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly byte[] IdleHeartbeat = "{\"updates\": [], \"err\": 0}"u8.ToArray();
@@ -100,7 +101,7 @@ public static class GameApi
                 }))
                .WithName("LaunchStart").WithSummary("Launch a hunt in a reserve")
                .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one). Reply: `{access_token, refresh_token, "
-                                + "session, status}` with fresh tokens of the player; a local server replays the recorded one.")
+                                + "session, status}` with fresh tokens of the player; a local server replays the recorded one. A non-zero `loadout_id` of one of the account's loadouts sets its item slots first.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, START_SINGLE_PLAYER, r => Own(game, r, a =>
                 {
@@ -114,7 +115,7 @@ public static class GameApi
                 }))
                .WithName("StartSinglePlayer").WithSummary("Start a single-player session in a reserve")
                .WithDescription("Opens a new expedition at `lodge_id` in `reserve` (closing any open one). Reply `{session_id, network_id}`: the session is the "
-                                + "first segment of the launch URL (and the game's `X-Hun-Session`), and it is set as cookies too.")
+                                + "first segment of the launch URL (and the game's `X-Hun-Session`), and it is set as cookies too. `loadout_id` as at LaunchStart.")
                .Body<StartSinglePlayerForm>("application/json").Produces(200, contentType: "application/json");
             api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(), "state"))
                .WithName("ClientApplication").WithSummary("The catalogue the in-game pages read")
@@ -400,6 +401,30 @@ public static class GameApi
                                      + "Restored rows and harvests made here alike; 404 for a trophy the account has not. Also at `/v1/game/user/trophies/<id>` (the current build).")
                     .PathParams(("id", "trophy id")).Body<TrophyHiddenBody>("text/plain").Produces(200, contentType: "text/plain");
             }
+            // the account's own loadouts (community server only): the game's page sends the save as JSON whatever its content type says; the new build reads the list as plain JSON
+            var loadouts = Handle(game, r =>
+            {
+                var m = Loadouts.Match(r.Path);
+                if (!s.Online || !m.Success || r.Method != (m.Groups[1].Success ? "PUT" : "GET"))
+                    return null;
+                if (s.Authenticate(r.Tokens()) is not { } a)
+                    return Denied(game, r);
+                List<(string, string)> type = [("Content-Type", r.Host == game.Apiv2 ? "application/vnd.game_data.user.loadout+json; type=collection" : "application/json"), .. Cors(r.Header)];
+                if (!m.Groups[1].Success)
+                    return new(200, type, s.LoadoutsReply(a), "state");
+                var (status, body) = long.TryParse(m.Groups[1].Value, out var id) ? s.SaveLoadout(a, id, r.Body) : (404, []);
+                return status == 200 ? new(200, type, body, "state") : Rejected(game, r, status);
+            });
+            apiv2.MapGet("/game/user/loadout", loadouts).WithName("Loadouts").WithSummary("The own loadouts, ascending by id")
+                 .WithDescription("`[{name, color, items: [{slot_id, item_id, item_guid}], id}]`: the loadouts of a restore (under new ids) and those bought here, as saved since. "
+                                  + "`item_guid` is set for the dog only. Needs the player's token (401 without). Also at `/v1/game/user/loadout` (the current build, plain `application/json`).")
+                 .Produces(200, contentType: "application/vnd.game_data.user.loadout+json; type=collection");
+            apiv2.MapPut("/game/user/loadout/{id}", loadouts).WithName("LoadoutSave").WithSummary("Save one of the own loadouts")
+                 .WithDescription("Replaces `name` (2 to 50 characters), `color` (0 to 11) and `items` of the loadout; the body is read as JSON whatever its content type. The answer is 200 with the saved loadout; "
+                                  + "400 for a body that is not as shown, 404 for a loadout the account has not. The inventory is not touched. Also at `/v1/game/user/loadout/<id>` (the current build).")
+                 .PathParams(("id", "loadout id")).Body<LoadoutBody>("text/plain").Produces(200, contentType: "application/vnd.game_data.user.loadout+json; type=collection");
+            api.MapGet("/v1/game/user/loadout", loadouts).ExcludeFromDescription();  // the current build's paths of the same calls
+            api.MapPut("/v1/game/user/loadout/{id}", loadouts).ExcludeFromDescription();
             apiv2.MapGet("/game/user/{id}/profile", userProfile).WithName("UserProfile").WithSummary("A player's profile page header, by user id")
                  .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of any account here, without a token (`background` and `ribbon` "
                                   + "as its backup had them, else null); 404 for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
@@ -567,7 +592,8 @@ public static class GameApi
     public sealed record LaunchStartForm(
         [property: Description("Start location id (a lodge)")] long start,
         [property: Description("`LODGE`")] string loctype, long reserve,
-        [property: Description("Start time of day, minutes")] long time, long loadout_id, string? oauth_access_token);
+        [property: Description("Start time of day, minutes")] long time,
+        [property: Description("One of the account's loadouts, put on before the connect; 0: the equipment last saved")] long loadout_id, string? oauth_access_token);
 
     public sealed record UserForm(long user_id, string? oauth_access_token);
     public sealed record PersonalForm(long user_id, long season_no, string? oauth_access_token);
@@ -579,6 +605,8 @@ public static class GameApi
     public sealed record LodgeSlotsBody(string name, AnimalSlot[] animal_slots, WeaponSlot[] weapon_slots);
     public sealed record LodgeSettingsBody(string name, bool locked, long? style_id);
     public sealed record TrophyHiddenBody(bool hidden);
+    public sealed record LoadoutItemBody(long slot_id, long item_id, [property: Description("The dog's guid (slot 29) only, else absent or null")] long? item_guid);
+    public sealed record LoadoutBody(string name, long color, LoadoutItemBody[] items);
 
     public sealed record HostnameForm([property: Description("The player's handle (any case)")] string hostname);
 
@@ -587,7 +615,8 @@ public static class GameApi
     public sealed record ExpeditionForm(long user_id, string? oauth_access_token, long? expedition_id);
 
     public sealed record StartSinglePlayerForm(
-        [property: Description("Start time of day, minutes")] long time, long loadout_id,
+        [property: Description("Start time of day, minutes")] long time,
+        [property: Description("One of the account's loadouts, put on before the connect; 0: the equipment last saved")] long loadout_id,
         [property: Description("Start location id (a lodge)")] long lodge_id, long reserve, string? oauth_access_token);
 
     public sealed record LangForm(string lang);
