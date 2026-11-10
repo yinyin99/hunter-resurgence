@@ -38,7 +38,8 @@ public sealed record BestRow(string Species, double Score, double Range, string 
 public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 
 /// <param name="Url">The address of the picture, for the share window.</param>
-public sealed record Photo(long Id, string Animal, double Score, string Url);
+/// <param name="Thumbnail">The address of the small picture the gallery shows; without one the picture is the old interface's slot <c>photo-&lt;id&gt;</c>.</param>
+public sealed record Photo(long Id, string Animal, double Score, string Url, string? Thumbnail = null);
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
 public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition);
 /// <summary>A skill the dog has unlocked; <see cref="Description"/> shows when the pointer rests on it.</summary>

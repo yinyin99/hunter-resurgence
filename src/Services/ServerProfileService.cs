@@ -13,7 +13,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
 {
     /// <summary>The profile tabs that have a server source (the keys of <c>HunterProfile</c>'s tabs, and <c>expedition</c>, <c>score</c> and <c>antler</c>
     /// for the hunt and score sheet pages). The ticket that gives a tab its source reads it from the server below and adds its key here; the others stay hidden.</summary>
-    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "achievements", "ranks" };
+    public static readonly IReadOnlySet<string> Tabs = new HashSet<string> { "skills", "statistics", "trophies", "dogs", "friends", "achievements", "ranks", "gallery" };
 
     public async Task<Profile?> ProfileAsync(string handle)
     {
@@ -141,9 +141,60 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         return new([], [], [], 0, 0);
     }
     public Task<ScoreSheet?> SheetAsync(string handle, string kind, long id) => mock.SheetAsync(handle, kind, id);
-    public Task<Page<Photo>> GalleryAsync(string handle, int page) => mock.GalleryAsync(handle, page);
-    public Task<Result> DeleteGalleryImageAsync(long id) => mock.DeleteGalleryImageAsync(id);
-    public Task<byte[]> GalleryZipAsync(string handle) => mock.GalleryZipAsync(handle);
+    /// <summary><c>GET /hunters/&lt;handle&gt;/gallery?page=n</c>: one page of 24 photos, each with its small picture. A failed answer is an empty page.</summary>
+    public async Task<Page<Photo>> GalleryAsync(string handle, int page)
+    {
+        var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.GallerySuffix}?page={page}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGalleryPage>() is { } g)
+                return new([.. (g.Rows ?? []).Select(r => new Photo(r.Id, r.Animal, double.TryParse(r.Label, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var score) ? score : 0, r.Url, r.Thumbnail))], g.Page, g.Pages, g.Total);
+            log.LogWarning("The server answered {Path} with {Status}: no photos", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no photos", path, e.Message);
+        }
+        return new([], 1, 1);
+    }
+    /// <summary><c>POST /account/gallery/delete</c> as the signed-in player: a photo of their own gallery. Fails without a session or for a photo that is not theirs.</summary>
+    public async Task<Result> DeleteGalleryImageAsync(long id)
+    {
+        if (cookie.Value is null) return Result.Fail("Mis.Failed");
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Post, ServerAccountApi.GalleryDelete);
+            request.Headers.Add("X-Requested-With", "XMLHttpRequest");
+            request.Content = new FormUrlEncodedContent([KeyValuePair.Create("id", id.ToString(System.Globalization.CultureInfo.InvariantCulture))]);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode) return Result.Success;
+            log.LogWarning("The server refused {Path} ({Status})", ServerAccountApi.GalleryDelete, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.GalleryDelete, e.Message);
+        }
+        return Result.Fail("Mis.Failed");
+    }
+    /// <summary><c>GET /account/gallery/zip</c> as the signed-in player: their own gallery as a zip. Empty when the server does not answer (the handle is not asked: only the own gallery is downloaded).</summary>
+    public async Task<byte[]> GalleryZipAsync(string handle)
+    {
+        if (cookie.Value is null) return [];
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.GalleryZip);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode) return await response.Content.ReadAsByteArrayAsync();
+            log.LogWarning("The server answered {Path} with {Status}: no gallery file", ServerAccountApi.GalleryZip, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no gallery file", ServerAccountApi.GalleryZip, e.Message);
+        }
+        return [];
+    }
     /// <summary><c>GET /hunters/&lt;handle&gt;/trophies?page=n</c>: one page of 24. A failed answer is an empty page.</summary>
     public async Task<Page<Trophy>> TrophiesAsync(string handle, int page)
     {

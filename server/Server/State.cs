@@ -1451,7 +1451,7 @@ public sealed partial class State
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId)).ToArray());
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, KillPhoto(con, account, r[1]))).ToArray());
             // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
                 stats = Parse(s);
@@ -1479,6 +1479,7 @@ public sealed partial class State
         List<JsonObject> hits;
         JsonObject page, e7, e22;
         object[]? expedition;
+        string? photo;
         using (var con = Con(account))
         {
             var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
@@ -1489,6 +1490,7 @@ public sealed partial class State
             var individual = Py.FromSql(row[0]);
             var harvest = (string)row[1];
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
+            photo = KillPhoto(con, account, row[0]);
             (e7, e22) = KillEvents(con, individual, harvest);
             expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
                                   page["expedition_id"]).FirstOrDefault();
@@ -1497,7 +1499,7 @@ public sealed partial class State
         var sp = G(e3, "extended_species", -1);
         var f = Features(e3, e7, e22);
         var owner = Account(account);
-        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"]);
+        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"], photo);
         var handle = Py.Str(G(owner, "handle", ""));
         var last = hits.Count > 0 ? hits[^1] : e3;
         var (x, y, z) = StartPosition(expedition is null ? null : Py.FromSql(expedition[2]));
@@ -1607,7 +1609,7 @@ public sealed partial class State
     }
 
     /// <summary>One Public_user/expedition kill.</summary>
-    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId)
+    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId, string? photo)
     {
         var confirm = DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
                                           DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
@@ -1628,7 +1630,7 @@ public sealed partial class State
                 ["score"] = Py.Truthy(page["score"]) ? C(page["score"]) : null,
                 ["wound_time"] = Py.D(G(e3, "wound_time", 0)) / 1000,
                 ["confirmTs"] = new DateTimeOffset(confirm).ToUnixTimeSeconds(),
-                ["photo"] = null, ["harvest_value"] = Py.D(G(e3, "harvest_value", 0)) / 1000,
+                ["photo"] = photo, ["harvest_value"] = Py.D(G(e3, "harvest_value", 0)) / 1000,
                 ["scoreType"] = Py.Truthy(page["score_type"]) ? C(page["score_type"]) : null,
             },
             ["userId"] = C(userId), ["species"] = C(page["species"]),

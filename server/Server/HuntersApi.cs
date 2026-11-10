@@ -108,6 +108,15 @@ public static class HuntersApi
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+                ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                : Json(404, new JsonObject { ["error"] = "not found" }))
+            .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
+            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
+                             + "(`url` the full picture, `thumbnail` its small one, `animal` the species of the kill it shows, `label` that kill's score). 404 for a handle that is unknown or banned.")
+            .QueryParams(("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {
