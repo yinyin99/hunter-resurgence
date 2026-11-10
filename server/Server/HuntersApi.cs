@@ -153,7 +153,7 @@ public static class HuntersApi
 
         // the photos of the gallery tab are on the website's own domain: the game's host is not one a browser can reach
         app.MapGet(State.PHOTO_PREFIX + "{**name}", (string name) => state.PhotoFile(State.PHOTO_PREFIX + name) is { } file
-                ? new Reply(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(file), "state") : new Reply(404, [], [], "state"))
+                ? new Reply(200, [("Content-Type", "image/jpeg"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(file), "state") : new Reply(404, [], [], "state"))
             .RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
             .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")

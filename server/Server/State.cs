@@ -1442,7 +1442,7 @@ public sealed partial class State
                                  + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
                                  wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
-                return (wanted == "" ? PlayerRows.RestoredHunt(con, null) : PlayerRows.RestoredHunt(con, wantedId)) is { } saved ? Py.DumpBytes(saved) : recorded;
+                return (wanted == "" ? PlayerRows.RestoredHunt(con, null) : PlayerRows.RestoredHunt(con, wantedId)) is { } saved ? Py.DumpBytes(LinkPhotos(account, saved)) : recorded;
             row = found;
             var expeditionId = Py.FromSql(row[0]);
             var rows = con.Rows(

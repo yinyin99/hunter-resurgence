@@ -371,7 +371,7 @@ public class ImporterTests
         var z = SyntheticZip.PublicZip(byHandle: false);
         z.File("images/avatar.png", "/a.png", [.. Enumerable.Range(0, 5000).Select(i => (byte)(i * 7))]);
         var biggestJson = 600; // the largest reply of PublicZip is the skill list, under 600 bytes
-        Assert.Contains("pictures and score pages: 1 file(s), not read", z.Read(limits: new Limits(JsonEntryBytes: biggestJson)).Report.Unsupported); // a 5000-byte picture is no JSON entry
+        Assert.Contains("pictures and score pages: 1 file(s), not read here (the server stores them)", z.Read(limits: new Limits(JsonEntryBytes: biggestJson)).Report.Unsupported); // a 5000-byte picture is no JSON entry
         Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(JsonEntryBytes: 100)));
         Assert.Equal("JSON entry over 100 bytes: Achievement_stats__user_id=1001.json", z.Refused(new Limits(EntryBytes: 100, JsonEntryBytes: 1000))); // the smaller cap applies
         Assert.Equal("JSON content over 1000 bytes", z.Refused(new Limits(JsonTotalBytes: 1000)));
@@ -381,6 +381,26 @@ public class ImporterTests
         Assert.Equal($"JSON content over {all - 1} bytes", z.Refused(new Limits(JsonTotalBytes: all - 1))); // the replies alone fit: the manifest counts too
         Assert.Null(Record.Exception(() => z.Read(limits: new Limits(JsonTotalBytes: all))));
         Assert.Equal($"JSON content over {Json(true) - 1} bytes", z.Refused(new Limits(JsonTotalBytes: Json(true) - 1))); // the manifest alone is over
+    }
+
+    [Fact]
+    public void PicturesAndScorePagesAreNamedByTheirPathAndEntryAndOnlyWhenTheirHashMatches()
+    {
+        var z = SyntheticZip.Own();
+        z.Prefix = "backup/";  // a zip made by hand keeps the folder as one level
+        z.File("kills/score_5.html", "/user/x/score/", "<div>page</div>"u8.ToArray());
+        z.File("photos/photos.example_p_a.jpg", "/p/a.jpg", [0xff, 0xd8, 0xff, 0xe0, 1]);
+        z.File("images/bad.png", "/bad.png", [1, 2, 3]);
+        z.Entry("images/bad.png")["sha256"] = new string('0', 64);  // a picture that does not match its hash is rejected, not named
+        var r = z.Read();
+        Assert.Equal([("kills/score_5.html", "backup/kills/score_5.html"), ("photos/photos.example_p_a.jpg", "backup/photos/photos.example_p_a.jpg")], r.Media.Select(m => (m.Path, m.Entry)));
+        Assert.Contains("images/bad.png: sha256 does not match the manifest", r.Report.Rejected);
+        Assert.Contains("pictures and score pages: 2 file(s), not read here (the server stores them)", r.Report.Unsupported);
+        // the path of the saved picture of a link: the folder, then the host and path with every odd character as `_`; none for a link the tool does not fetch
+        Assert.Equal("kills/photos.example_k_7.jpg", Importer.MediaPath("kills", "https://photos.example/k/7.jpg?size=big"));
+        Assert.Equal("photos/photos.example_p_a.jpg", Importer.MediaPath("photos", "//photos.example/p/a.jpg"));
+        Assert.Null(Importer.MediaPath("kills", "http://photos.example/k/7.jpg"));
+        Assert.Null(Importer.MediaPath("kills", null));
     }
 
     [Fact]
