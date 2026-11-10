@@ -3,8 +3,9 @@
    z-index above the public bar (9001) and the banner (9000); open dialogs and popovers are in the top layer, above it */
 .backup-btn { position: fixed; z-index: 9002; top: calc(var(--h-statusbar) + 6px); left: 8px; box-sizing: border-box; width: 280px; background-color: var(--accent); color: #fff; }
 .backup-btn:hover { background-color: var(--accent-hover); color: #fff; }
-.web { left: max(8px, calc(50% - var(--w-container) / 2 + 8px)); }
+/* website, narrow: a slim pill centred in the 20px gap between the top bar and the menu bar, so it never covers a menu control */
+.web { top: calc(var(--h-statusbar) + 1px); left: 50%; transform: translateX(-50%); width: auto; height: 18px; padding: 0 14px; font-size: 13px; line-height: 18px; white-space: nowrap; }
 /* 1220 + 2 x (280 + 36 + 8) = 1868 */
 @media (min-width: 1880px) {
-    .web { top: 4px; left: auto; right: calc(50% + var(--w-container) / 2 + 36px); }
+    .web { top: 4px; left: auto; transform: none; width: 280px; height: auto; padding: 4px 12px; font-size: 14px; line-height: 20px; white-space: normal; right: calc(50% + var(--w-container) / 2 + 36px); }
 }

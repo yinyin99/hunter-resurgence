@@ -8,7 +8,7 @@
 @inject ILauncherBridge Bridge
 @inject AssetImages Images
 
-@* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher had none *@
+@* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher shows it too *@
 <div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
     <WipBanner />
     <BackupButton />
@@ -21,7 +21,7 @@
         <StatusBar @key="eula" Session="session" Quick="quick" Minimal="eula" />
     }
     <div class="page @(isPublic ? "public" : "")">
-        @if (!isPublic && !eula) { <MenuBar Hidden="quick && Mode.Launcher" /> }
+        @if (!eula) { <MenuBar Hidden="quick && Mode.Launcher" /> }
         <div class="body">
             <main @key="isPublic">@Body</main>
             @if (!eula) { <aside class="sidebar"></aside> }
@@ -40,7 +40,7 @@
     Action? changed;
     string? pageBg;
 
-    /// <summary>The website without a session shows the public top bar and no menu.</summary>
+    /// <summary>The website without a session shows the public top bar (and the menu, as the original).</summary>
     bool isPublic => !Mode.Launcher && session is null;
 
     [SupplyParameterFromQuery(Name = "alert")] public string? DevAlert { get; set; }
@@ -50,7 +50,7 @@
     protected override async Task OnInitializedAsync()
     {
         session = await Sessions.CurrentAsync();
-        if (!Mode.Launcher && (pageBg = Images.Url("page-bg")) is null) Images.NoteMissing("page-bg", new Uri(Nav.Uri).AbsolutePath);
+        if ((pageBg = Images.Url("page-bg")) is null) Images.NoteMissing("page-bg", new Uri(Nav.Uri).AbsolutePath);
         Sessions.Changed += changed = async () => await InvokeAsync(async () =>
         {
             session = await Sessions.CurrentAsync();
