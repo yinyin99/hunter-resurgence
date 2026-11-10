@@ -217,31 +217,37 @@ public sealed partial class State
         foreach (var row in (saved?["data"] as JsonArray ?? []).OfType<JsonObject>())
             data.Add(row.DeepClone());
         if (season == 0)
+            // ponytail: every view reads the hit events of each scored kill (a scan of the account's events each); store the last hit on the harvest when that gets slow
             foreach (var r in con.Rows("SELECT k.individual, k.harvest, h.body, k.kill_id FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                                        + " WHERE k.account_id = $a ORDER BY k.kill_id"))
-            {
-                var page = Parse(r[2]);
-                if (Num(page["score"]) <= 0 || !Py.IsNum(page["species"])) continue;
-                var hits = KillHits(con, Py.FromSql(r[0]), (string)r[1]);
-                var last = hits.Count > 0 ? hits[^1] : null;
-                JsonObject Entry() => new()
+                try
                 {
-                    ["distance"] = Times10(G(last ?? new JsonObject(), "distance_cms", 0)), ["confirm_ts"] = new DateTimeOffset(DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
-                        System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds(),
-                    ["weapon_id"] = C(last?["weapon_id"]), ["animal_id"] = (long)r[3], ["gender"] = C(page["gender"]), ["texture"] = C(page["texture_id"]),
-                    ["score"] = Py.Fixed(Num(page["score"]), 4), ["species"] = C(page["species"]),
-                };
-                var kill = Entry();
-                var specie = Py.L(page["species"]);
-                var best = data.OfType<JsonObject>().FirstOrDefault(b => Py.IsNum(b["specie"]) && Py.L(b["specie"]) == specie);
-                if (best is null)
-                    data.Add(new JsonObject { ["distance"] = Entry(), ["score"] = kill, ["specie"] = specie });
-                else
-                {
-                    if (Num(kill["score"]) > Num(best["score"]?["score"])) best["score"] = Entry();
-                    if (Num(kill["distance"]) > Num(best["distance"]?["distance"])) best["distance"] = Entry();
+                    var page = Parse(r[2]);
+                    if (Num(page["score"]) <= 0 || !Py.IsNum(page["species"])) continue;
+                    var hits = KillHits(con, Py.FromSql(r[0]), (string)r[1]);
+                    var last = hits.Count > 0 ? hits[^1] : null;
+                    JsonObject Entry() => new()
+                    {
+                        ["distance"] = Times10(G(last ?? new JsonObject(), "distance_cms", 0)), ["confirm_ts"] = new DateTimeOffset(DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
+                            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds(),
+                        ["weapon_id"] = C(last?["weapon_id"]), ["animal_id"] = (long)r[3], ["gender"] = C(page["gender"]), ["texture"] = C(page["texture_id"]),
+                        ["score"] = Py.Fixed(Num(page["score"]), 4), ["species"] = C(page["species"]),
+                    };
+                    var kill = Entry();
+                    var specie = Py.L(page["species"]);
+                    var best = data.OfType<JsonObject>().FirstOrDefault(b => Py.IsNum(b["specie"]) && Py.L(b["specie"]) == specie);
+                    if (best is null)
+                        data.Add(new JsonObject { ["distance"] = Entry(), ["score"] = kill, ["specie"] = specie });
+                    else
+                    {
+                        if (Num(kill["score"]) > Num((best["score"] as JsonObject)?["score"])) best["score"] = Entry();
+                        if (Num(kill["distance"]) > Num((best["distance"] as JsonObject)?["distance"])) best["distance"] = Entry();
+                    }
                 }
-            }
+                catch (Exception ex) when (ex is not Microsoft.Data.Sqlite.SqliteException)  // a value a player sent, of any kind: the kill is not counted
+                {
+                    Console.WriteLine($"personal bests: a kill is not counted: {ex.Message}");
+                }
         return new JsonObject { ["status"] = "done", ["data"] = data };
     }
 

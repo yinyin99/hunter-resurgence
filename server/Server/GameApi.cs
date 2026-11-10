@@ -172,7 +172,7 @@ public static class GameApi
                .WithName("LeaderboardPersonal").WithSummary("A player's personal bests of a season")
                .WithDescription("`{status, data: [{specie, score, distance}]}` of the `user_id` and `season_no`: the restored reply as saved, and for season 0 (all time) with the best score and the longest range of this server's scored kills "
                                 + "where they beat it (any account's on a community server, `{status: done, data: []}` for an unknown, banned or recorded user id); a local server replays the recording for other players.")
-               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+               .Body<PersonalForm>(Form).Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
                 ? new(hit.Status, hit.Headers, SplashWithNotice(hit.Body), "patch")
@@ -504,6 +504,7 @@ public static class GameApi
         [property: Description("Start time of day, minutes")] long time, long loadout_id, string? oauth_access_token);
 
     public sealed record UserForm(long user_id, string? oauth_access_token);
+    public sealed record PersonalForm(long user_id, long season_no, string? oauth_access_token);
     public sealed record FriendForm(long friend_user_id, string? oauth_access_token);
     public sealed record FriendsListForm(long user_id, long? offset, long? limit);
 
