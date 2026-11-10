@@ -442,6 +442,8 @@ public class HunterscoreTests : StateTestBase
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
+            con.Exec("DROP TABLE missions");
+            con.Exec("DROP TABLE mission_prefs");
             con.Exec("PRAGMA user_version = 4");
         }
         var migrated = new Store(file);
@@ -505,6 +507,8 @@ public class HunterscoreTests : StateTestBase
             con.Exec("ALTER TABLE harvests DROP COLUMN hidden");
             con.Exec("DROP TABLE loadouts");
             con.Exec("DROP TABLE wallet_log");
+            con.Exec("DROP TABLE missions");
+            con.Exec("DROP TABLE mission_prefs");
             con.Exec("PRAGMA user_version = 6");
         }
         using var check = new Store(file).Open(5);
