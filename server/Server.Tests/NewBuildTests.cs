@@ -185,6 +185,56 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestATutorialSessionConnectsToTheTutorialAndLeavesTheAccountAlone()
+    {
+        var (access, _) = await Tokens();
+        var client = (string session) => new[] { Bearer(access), ("X-Hun-Session", session) };
+        var connectBody = new JsonObject { ["client_version"] = 1, ["g_data"] = new JsonObject(), ["suspicious_dll"] = 0 };
+        long Expeditions() { using var con = state.Store.Open(Account); return (long)con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a")!; }
+        long Guid1Slot() { using var con = state.Store.Open(Account); return (long)con.Scalar("SELECT slot FROM items WHERE account_id = $a AND guid = 1")!; }
+
+        foreach (var bad in new[] { 6, -1, 99 })
+            Assert.Equal(400, (await Post("/v1/session/start_tutorial", new JsonObject { ["oauth_access_token"] = access, ["tutorial_id"] = bad, ["loadout_id"] = 0 })).Status);
+        Assert.Equal(0, Expeditions());
+
+        foreach (var (id, reserve, tutorial) in new[] { (0, 2, 1), (1, 2, 1), (2, 4, 2), (3, 1, 3), (4, 10, 4), (5, 2, 5) })
+        {
+            var started = await Post("/v1/session/start_tutorial?locale=en_US", new JsonObject { ["oauth_access_token"] = access, ["tutorial_id"] = id, ["loadout_id"] = 0 }, Bearer(access));
+            Assert.Equal(200, started.Status);
+            var session = (string)Body(started)["session_id"]!;
+            Assert.Matches("^[0-9a-f]{40}$", session);
+            Assert.Equal(2, started.Headers.Count(h => h.Value.StartsWith(ProtocolLiterals.LaunchSessionCookie + "=" + session)));
+            Assert.Contains(started.Headers, h => h.Value.StartsWith(ProtocolLiterals.LaunchNetworkCookie + "="));
+
+            var expedition = Body(await Post(ProtocolLiterals.WebRpcBase + "/connect", connectBody, client(session)))["expedition"]!;
+            Assert.Equal((1, tutorial, 0, (reserve - 1) * 100), ((int)expedition["mode"]!, (int)expedition["tutorial"]!, (int)expedition["expedition_id"]!, (int)expedition["lodge"]!));
+            var entry = APP["tutorials"]!.AsArray().Single(t => (int)t!["id"]! == tutorial)!;
+            Assert.Equal((entry["x"]!.ToJsonString(), entry["y"]!.ToJsonString(), entry["z"]!.ToJsonString()), (expedition["x"]!.ToJsonString(), expedition["y"]!.ToJsonString(), expedition["z"]!.ToJsonString()));
+            Assert.Equal(APP["tutorials"]!.ToJsonString(), expedition["tutorial_data"]!.ToJsonString());
+            Assert.Equal("[1000,0,0,720,0.1,0,0]", $"[{expedition["dir_x"]},{expedition["dir_y"]},{expedition["dir_z"]},{expedition["start_time"]},{expedition["weather"]},{expedition["end_time"]},{expedition["disruptive"]}]");
+        }
+        Assert.Equal(0, Expeditions());  // none opened
+
+        Assert.Equal("{\"err\": 0}", Encoding.UTF8.GetString((await Get(ProtocolLiterals.WebRpcBase + "/ping")).Body));
+        var scenario = await Post(ProtocolLiterals.WebRpcBase + "/heartbeatScenario", new JsonObject { ["events"] = new JsonArray(new JsonObject { ["event"] = 26, ["id"] = "basic_tutorial", ["score"] = 0 }) });
+        Assert.Equal((200, "{\"err\": 0}"), (scenario.Status, Encoding.UTF8.GetString(scenario.Body)));
+        Assert.Equal(0, Expeditions());
+
+        // the scenario's own item numbers are not the account's
+        using (var seed = state.Store.Open(Account)) seed.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, 1, 5, 0, '{}', NULL)");
+        var before = Guid1Slot();
+        var move = await Post("/v1/inventory/move_multiple2", new JsonObject { ["mapping"] = new JsonArray(new JsonObject { ["item_guid"] = 1, ["slot_id"] = before + 5 }), ["clonedItems"] = new JsonArray() }, Bearer(access));
+        Assert.Equal("null", Encoding.UTF8.GetString(move.Body));
+        Assert.Equal(before, Guid1Slot());
+
+        // the next hunt is as before
+        await Post("/v1/session/start_single_player", new JsonObject { ["oauth_access_token"] = access, ["lodge_id"] = 101, ["reserve"] = 2 }, Bearer(access));
+        await Post("/v1/inventory/move_multiple2", new JsonObject { ["mapping"] = new JsonArray(new JsonObject { ["item_guid"] = 1, ["slot_id"] = before + 5 }), ["clonedItems"] = new JsonArray() }, Bearer(access));
+        Assert.Equal(before + 5, Guid1Slot());
+        Assert.Equal(1, Expeditions());
+    }
+
+    [Fact]
     public async Task TestConnectAndHeartbeatTakeTheBearerAndTheSessionOnTheWebHost()
     {
         var session = state.Store.CreateToken(Account, Lifetimes.Session);
