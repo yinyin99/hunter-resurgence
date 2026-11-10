@@ -20,13 +20,23 @@ public sealed partial class State
 
     static DateOnly DateOf(JsonObject state) => DateOnly.ParseExact(Py.Str(state["date"]), DateFormat, CultureInfo.InvariantCulture);
 
-    /// <summary>The facts file's templates as missions whose objectives are read by the same rules as the catalogue's (their ids are 1, 2, ... in order).</summary>
+    /// <summary>The facts file's templates as missions whose objectives are read by the same rules as the catalogue's (their ids are 1, 2, ... in order). A template
+    /// with an objective that is no harvest, spot or clue, or that names no species of the catalogue, would never complete or accept any animal: it is left out and logged.</summary>
     void LoadDailyMissions(Func<string, Rule> ruleOf)
     {
         if (facts.DailyCycle.Length == 0)
             return;
+        List<long> skipped = [];
         foreach (var t in facts.DailyTemplates)
-            dailies.Add(new(t, new MissionDef(t.Id, t.Title, false, [], 0, 0, [.. t.Objectives.Select((title, i) => new Objective(i + 1, title, ruleOf(title)))])));
+        {
+            var objectives = t.Objectives.Select((title, i) => new Objective(i + 1, title, ruleOf(title))).ToArray();
+            if (objectives.Length > 0 && objectives.All(o => o.Rule.Kind is Kind.Harvest or Kind.Spot or Kind.Track && o.Rule.Species is not null))
+                dailies.Add(new(t, new MissionDef(t.Id, t.Title, false, [], 0, 0, objectives)));
+            else
+                skipped.Add(t.Id);
+        }
+        if (skipped.Count > 0)
+            Console.WriteLine($"daily missions: templates {string.Join(", ", skipped)} are left out: an objective is no harvest, spot or clue, or names no species of the catalogue");
     }
 
     /// <summary>The difficulty of the streak's day (0 is the first), by the cycle.</summary>
@@ -42,10 +52,13 @@ public sealed partial class State
         return pool.Count == 0 ? null : pool[date.DayNumber % pool.Count];
     }
 
+    /// <summary>The template the state's `mission` names; null when there is none.</summary>
+    Daily? MissionOf(JsonObject state) => state["mission"] is { } id ? dailies.FirstOrDefault(d => d.Template.Id == Py.L(id)) : null;
+
     /// <summary>A new account's row, or a restored one's: `is_frozen` and `broken_streak_info` of the saved calendar (`extras`) as they were, and while frozen the
     /// date it showed (so the mission stays the one shown); a streak's length is not in a backup, so it starts at the first day, and without a saved calendar the
-    /// account is frozen until it activates.</summary>
-    static JsonObject NewDaily(Db con, DateOnly today)
+    /// account is frozen until it activates. `days` are the days already counted here (a restore keeps them).</summary>
+    static JsonObject NewDaily(Db con, DateOnly today, JsonNode? days)
     {
         var saved = con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", DailyPath) is string text ? JsonNode.Parse(text) as JsonObject : null;
         var info = saved?["broken_streak_info"] as JsonObject;
@@ -56,7 +69,7 @@ public sealed partial class State
         {
             ["frozen"] = frozen, ["day"] = 0, ["date"] = date.ToString(DateFormat), ["done"] = false, ["objectives"] = new JsonArray(),
             ["has_broken"] = Py.Truthy(info?["has_broken_streak"]), ["larger"] = Py.IsNum(info?["streak_larger"]) ? Math.Max(0, Py.L(info!["streak_larger"])) : 0,
-            ["days"] = new JsonObject(),
+            ["days"] = days?.DeepClone() ?? new JsonObject(),
         };
     }
 
@@ -64,14 +77,17 @@ public sealed partial class State
         con.Exec("INSERT INTO daily_missions (account_id, body) VALUES ($a, ?1) ON CONFLICT (account_id) DO UPDATE SET body = ?1", Py.Dumps(state));
 
     /// <summary>The account's daily state, brought to today and saved when that changed it: `frozen`, `day` (the streak's day today's mission belongs to, 0 first),
-    /// `date` (that day's date; a frozen account's is the stale one), `done` and the finished `objectives`, `has_broken` and `larger` (the broken streak),
-    /// `days` (the days completed here by difficulty id). A completed day is followed by the next one on the next date; a day that ends without its mission
-    /// completed, or a date skipped, freezes the account, breaks the streak (its length is kept when it had a day) and ends the day count. Call inside a transaction.</summary>
+    /// `date` (that day's date; a frozen account's is the stale one), `mission` (the template of the day: picked by the date when the day begins, and kept while the
+    /// account is frozen and when it activates), `done` and the finished `objectives`, `has_broken` and `larger` (the broken streak), `days` (the days completed
+    /// here by difficulty id). A completed day is followed by the next one on the next date; a day that ends without its mission completed, or a date skipped,
+    /// freezes the account, breaks the streak (its length is kept when it had a day) and ends the day count. A row without `frozen` (a restore keeps only `days`)
+    /// is made again. Call inside a transaction.</summary>
     JsonObject DailyState(Db con)
     {
         var today = Today();
         var text = con.Scalar("SELECT body FROM daily_missions WHERE account_id = $a") as string;
-        var s = text is null ? NewDaily(con, today) : Parse(text);
+        var kept = text is null ? null : Parse(text);
+        var s = kept?["frozen"] is null ? NewDaily(con, today, kept?["days"]) : kept;
         if (!Py.Truthy(s["frozen"]) && DateOf(s) is var date && date < today)
         {
             var done = Py.Truthy(s["done"]);
@@ -92,9 +108,12 @@ public sealed partial class State
                 s["frozen"] = true;
                 s["day"] = 0;
             }
+            s["mission"] = null;
             s["done"] = false;
             s["objectives"] = new JsonArray();
         }
+        if (MissionOf(s) is null)
+            s["mission"] = DailyOf(DateOf(s), DifficultyAt(Py.L(s["day"])).Id)?.Template.Id;
         if (Py.Dumps(s) != text)
             SaveDaily(con, s);
         return s;
@@ -109,7 +128,7 @@ public sealed partial class State
         var s = DailyState(con);
         var day = Py.L(s["day"]);
         var difficulty = DifficultyAt(day);
-        if (Py.Truthy(s["frozen"]) || Py.Truthy(s["done"]) || DailyOf(DateOf(s), difficulty.Id) is not { } d)
+        if (Py.Truthy(s["frozen"]) || Py.Truthy(s["done"]) || MissionOf(s) is not { } d)
             return;
         var finished = Ids(s["objectives"]).ToList();
         if (Meet(d.Def, finished, kind, meets) is null)
@@ -204,7 +223,7 @@ public sealed partial class State
                 }),
                 ["rewards_translations"] = new JsonArray(), ["character"] = null, ["mission"] = null, ["objectives"] = null,
             };
-            if (index == day && DailyOf(DateOf(s), difficulty.Id) is { } d)
+            if (index == day && MissionOf(s) is { } d)
             {
                 var objectives = Py.Dumps(new JsonArray([.. d.Def.Objectives.Select(o => (JsonNode?)DailyObjective(o, finished.Contains(o.Id)))]), compact: true);
                 var animal = d.Def.Objectives[0].Rule.Species is { } id ? species.GetValueOrDefault(id) : null;

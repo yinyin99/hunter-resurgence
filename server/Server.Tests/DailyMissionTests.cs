@@ -38,8 +38,8 @@ public class DailyMissionTests : StateTestBase
         On(D0);
     }
 
-    State New(string name, bool offline = false, JsonObject? connect = null) =>
-        new(Path.Combine(tmp, name), Py.DumpBytes(connect ?? CONNECT), BASE, ICON, Application(), LOCALE, TEXTURES, offline: offline, facts: DailyFacts);
+    State New(string name, bool offline = false, JsonObject? connect = null, Facts? facts = null) =>
+        new(Path.Combine(tmp, name), Py.DumpBytes(connect ?? CONNECT), BASE, ICON, Application(), LOCALE, TEXTURES, offline: offline, facts: facts ?? DailyFacts);
 
     static JsonObject Application()
     {
@@ -283,6 +283,7 @@ public class DailyMissionTests : StateTestBase
         Assert.Equal(2, Days("1"));  // frozen: nothing counted
         state.DailyActivate(ME);
         calendar = Calendar();
+        Assert.Equal(kept, MissionOf(calendar));  // the mission the page showed next to "Activate" is the first day's
         Eq("[0, false, 0, 1, \"2031-03-19\"]", T(calendar["is_frozen"], calendar["broken_streak_info"]!["has_broken_streak"], calendar["broken_streak_info"]!["streak_larger"],
                                                   TodayOf(calendar)["day_number"], TodayOf(calendar)["date"]));
     }
@@ -294,6 +295,26 @@ public class DailyMissionTests : StateTestBase
         On(D0.AddDays(1));  // day 1 was never done
         var calendar = Calendar();
         Eq("[1, false, 0]", T(calendar["is_frozen"], calendar["broken_streak_info"]!["has_broken_streak"], calendar["broken_streak_info"]!["streak_larger"]));
+    }
+
+    [Fact]
+    public void TestATemplateThatNamesNoSpeciesOrKindIsLeftOut()
+    {
+        var facts = Facts.Parse("""
+            {"format": 1, "daily_missions": {
+              "cycle": [1],
+              "difficulties": [{"id": 1, "title": "Easy", "alias": "EASY", "cooldown": 30, "color": "green", "reward_id": 130, "reward": 100}],
+              "templates": [
+               {"id": 21, "difficulty": 1, "title": "Spot a male Unknown Beast", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Spot a male Unknown Beast"]},
+               {"id": 22, "difficulty": 1, "title": "Wander", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Wander about"]},
+               {"id": 23, "difficulty": 1, "title": "Spot a Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Spot a Test Deer"]}]}}
+            """);
+        Assert.Equal(23, MissionOf(Calendar(s: New("only.db", facts: facts))));  // the unreadable ones are never the day's
+        var none = New("none.db", facts: Facts.Parse("""
+            {"format": 1, "daily_missions": {"cycle": [1], "difficulties": [{"id": 1, "title": "Easy", "alias": "EASY", "cooldown": 30, "color": "green", "reward_id": 130, "reward": 100}],
+              "templates": [{"id": 21, "difficulty": 1, "title": "Spot an Unknown Beast", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Spot an Unknown Beast"]}]}}
+            """));
+        Assert.Null(none.DailyCalendarReply(ME));
     }
 
     [Fact]
@@ -315,21 +336,21 @@ public class DailyMissionTests : StateTestBase
     public void TestTheDaysCountedHereAddToTheRestoredBaseAndAwardTheAchievements()
     {
         var connect = CONNECT;
-        connect["achievements"] = JsonNode.Parse("""[{"id": 169, "category": 4, "group": 127, "group_title": "Easy", "value": "daily_missions.EASY.days", "triggers": [1, 12, 25]}]""");
+        connect["achievements"] = JsonNode.Parse("""[{"id": 169, "category": 4, "group": 127, "group_title": "Easy", "value": "daily_missions.EASY.days", "triggers": [1, 7, 25]}]""");
         state = New("achievements.db", connect: connect);
         On(D0);
         state.CreateAccount(8, "second");
         using (var con = state.Store.Open(8))
         {
-            PlayerRows.SetStatistics(con, O("""{"daily_missions": {"1": {"days": 11}, "3": {"days": 2}}}"""), 0, 0, null, null);
+            PlayerRows.SetStatistics(con, O("""{"daily_missions": {"1": {"days": 6}, "3": {"days": 3}}}"""), 0, 0, null, null);
         }
         state.DailyActivate(8);
         state.HeartbeatReply(8, Events(Easy()));
-        Eq("""{"1": {"days": 12}, "3": {"days": 2}}""", Reply(state.StatisticsReply(8, "user_id=8"u8.ToArray())!)["data"]!["daily_missions"]);
+        Eq("""{"1": {"days": 7}, "3": {"days": 3}}""", Reply(state.StatisticsReply(8, "user_id=8"u8.ToArray())!)["data"]!["daily_missions"]);
         using var db = state.Store.Open(8);
         state.UpdateHunterscore(db, 8);
         var row = RestoredReads.AchievementStats(db).AsArray().Single(a => (long)a!["id"]! == 169)!;
-        Eq("[169, 12, [\"1\", \"12\"]]", T(row["id"], row["value"], new JsonArray(row["triggers"]!.AsObject().Select(t => (JsonNode?)t.Key).ToArray())));
+        Eq("[169, 7, [\"1\", \"7\"]]", T(row["id"], row["value"], new JsonArray(row["triggers"]!.AsObject().Select(t => (JsonNode?)t.Key).ToArray())));
     }
 
     [Fact]
@@ -361,6 +382,12 @@ public class DailyMissionTests : StateTestBase
         var before = Gm(result.Account);
         state.HeartbeatReply(result.Account, Events(Easy()));
         Assert.Equal(before + 100, Gm(result.Account));
+        Restorer.Import(state, TestZip.Own().Write(tmp, "b.zip"), result.Account, tmp);  // the calendar is made again, the days counted here stay
+        Assert.Equal(1, (long)Calendar(result.Account)["is_frozen"]!);
+        Assert.Equal(1, Days("1", result.Account));
+        state.DailyActivate(result.Account);
+        state.HeartbeatReply(result.Account, Events(Easy()));
+        Assert.Equal(2, Days("1", result.Account));
     }
 }
 

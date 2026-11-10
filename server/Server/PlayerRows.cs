@@ -8,12 +8,13 @@ namespace Resurgence.Server;
 public static class PlayerRows
 {
     /// <summary>Delete the account's profile rows (items, wallet, skills, profile, statistics, achievements, trophies,
-    /// lodges, extras, loadouts, missions, daily missions) before a restore writes them again. Hunt history (events, expeditions, kills, harvests, photos,
-    /// messages, pending) and restore_audit stay.</summary>
+    /// lodges, extras, loadouts, missions) before a restore writes them again. Hunt history (events, expeditions, kills, harvests, photos,
+    /// messages, pending) and restore_audit stay, and so do the days of daily missions completed here (the calendar and streak are made again).</summary>
     public static void ClearModel(Db con)
     {
-        foreach (var table in new[] { "items", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "missions", "mission_prefs", "daily_missions" })
+        foreach (var table in new[] { "items", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "missions", "mission_prefs" })
             con.Exec($"DELETE FROM {table} WHERE account_id = $a");
+        con.Exec("UPDATE daily_missions SET body = json_object('days', json_extract(body, '$.days')) WHERE account_id = $a");
     }
 
     /// <summary>guid comes from the zip; the client sees it as is. metadata carries anything else the item row has.</summary>
