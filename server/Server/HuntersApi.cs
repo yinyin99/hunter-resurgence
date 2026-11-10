@@ -109,7 +109,7 @@ public static class HuntersApi
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
-                ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}"))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
             .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
@@ -117,10 +117,18 @@ public static class HuntersApi
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
+        // the photos of the gallery tab are on the website's own domain: the game's host is not one a browser can reach
+        app.MapGet(State.PHOTO_PREFIX + "{**name}", (string name) => state.PhotoFile(State.PHOTO_PREFIX + name) is { } file
+                ? new Reply(200, [("Content-Type", "image/jpeg")], File.ReadAllBytes(file), "state") : new Reply(404, [], [], "state"))
+            .RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
+            .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")
+            .Produces(200, contentType: "image/jpeg").Produces(404);
+
         app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .MapGet("/{kind}", (string kind, HttpContext ctx) =>
             {
-                if (!Store.GameColumns.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
+                if (!Store.GameIds.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
                 var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
                 var board = state.Store.GameBoard(kind, state.LocalAccount);
                 var total = board.Count;
@@ -134,7 +142,7 @@ public static class HuntersApi
                 });
             })
             .WithName("GameBoard").WithSummary("One page of a minigame's board: lanebandit or bustthrough")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores restored from the players' backups (statistics); an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
+            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }

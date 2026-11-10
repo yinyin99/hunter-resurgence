@@ -10,28 +10,28 @@ public sealed partial class State
 {
     public const int GalleryPageSize = 24;
 
-    string PhotoUrl(long account, string file) => $"{baseUrl}{PHOTO_PREFIX}{account}/{file}";
+    string PhotoUrl(long account, string file, string? site = null) => $"{site ?? baseUrl}{PHOTO_PREFIX}{account}/{file}";
 
     static string ThumbName(string file) => file[..^".jpg".Length] + "-thumb.jpg";
 
     /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded photo that is not a shot screenshot;
     /// `animal` is the species of the kill with the photo's individual ("" without one), `label` that kill's score ("" without one); `thumbnail` is the
-    /// picture's own link when the game sent no thumbnail.</summary>
-    List<JsonObject> GalleryRows(long account)
+    /// picture's own link when the game sent no thumbnail. The links are on the game's host, or on `site` (the website's) when given. ponytail: the whole gallery is read and each thumbnail looked up on disk per request; page it in SQL if galleries grow past a few hundred photos.</summary>
+    List<JsonObject> GalleryRows(long account, string? site = null)
     {
         using var con = Con(account);
         return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score') FROM photos p"
-                            + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual"
+                            + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest")
                             + " LEFT JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                             + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND p.photo_type IS NOT {SHOT_EVIDENCE} GROUP BY p.id ORDER BY p.id DESC")
             .Select(r =>
             {
                 var file = (string)r[2];
-                var url = PhotoUrl(account, file);
+                var url = PhotoUrl(account, file, site);
                 return new JsonObject
                 {
                     ["id"] = (long)r[0], ["type"] = Py.FromSql(r[1]), ["url"] = url,
-                    ["thumbnail"] = File.Exists(Path.Combine(AccountPhotos(account), ThumbName(file))) ? PhotoUrl(account, ThumbName(file)) : url,
+                    ["thumbnail"] = File.Exists(Path.Combine(AccountPhotos(account), ThumbName(file))) ? PhotoUrl(account, ThumbName(file), site) : url,
                     ["label"] = r[4] is DBNull ? "" : Py.Str(Py.FromSql(r[4])), ["animal"] = r[3] is DBNull ? "" : SpeciesName(Py.FromSql(r[3])) ?? "",
                 };
             })];
@@ -56,9 +56,9 @@ public sealed partial class State
     }
 
     /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal}]}`.</summary>
-    public JsonObject PublicGallery(long account, int page)
+    public JsonObject PublicGallery(long account, int page, string site)
     {
-        var all = GalleryRows(account);
+        var all = GalleryRows(account, site);
         var pages = Math.Max(1, (all.Count + GalleryPageSize - 1) / GalleryPageSize);
         page = Math.Clamp(page, 1, pages);
         return new JsonObject
@@ -96,8 +96,14 @@ public sealed partial class State
         return ms.ToArray();
     }
 
-    /// <summary>The link of the picture of a kill, by its individual: its shot screenshot, else the newest other photo of it; null without one.</summary>
-    string? KillPhoto(Db con, long account, object? individual) =>
-        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND individual = ? ORDER BY photo_type IS {SHOT_EVIDENCE} DESC, id DESC LIMIT 1", individual) is string file
+    /// <summary>SQL of the spawn (event 7) of a kill's animal: the latest of its individual before the kill's event 3, as <see cref="KillHits"/> bounds its hits.</summary>
+    static string KillSpawn(string individual, string harvest) =>
+        $"(SELECT MAX(s.id) FROM events s WHERE s.account_id = $a AND s.event = 7 AND s.individual = {individual}"
+        + $" AND s.id < (SELECT MAX(t.id) FROM events t WHERE t.account_id = $a AND t.event = 3 AND t.body = {harvest}))";
+
+    /// <summary>The link of the picture of a kill, among the photos asked for while its animal was the individual: its shot screenshot, else the newest other photo; null without one.</summary>
+    string? KillPhoto(Db con, long account, object? individual, string harvest) =>
+        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
+                   + $" ORDER BY photo_type IS {SHOT_EVIDENCE} DESC, id DESC LIMIT 1", individual, harvest) is string file
             ? PhotoUrl(account, file) : null;
 }

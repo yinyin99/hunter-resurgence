@@ -16,7 +16,7 @@ public sealed class Store
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "restore_audit", "uploads", "upload_results"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 7;
+    public const int Version = 8;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -111,7 +111,8 @@ public sealed class Store
         CREATE TABLE pending (id INTEGER PRIMARY KEY, {A}, body TEXT NOT NULL);
         CREATE INDEX pending_account ON pending (account_id, id);
         CREATE TABLE photos (
-            id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT);
+            id INTEGER PRIMARY KEY, {A}, hash INTEGER, photo_type INTEGER, shot_id INTEGER, individual INTEGER, file TEXT,
+            spawn INTEGER);  -- the event 7 of the animal when the photo was asked for: the kill of that animal is the one the photo shows
         CREATE INDEX photos_account ON photos (account_id);
         CREATE TABLE messages (   -- account_id is the recipient
             id INTEGER PRIMARY KEY, {A}, sender INTEGER NOT NULL, content TEXT NOT NULL, ts INTEGER NOT NULL,
@@ -187,6 +188,15 @@ public sealed class Store
             if (version < 5) con.Script("ALTER TABLE expeditions ADD COLUMN stats TEXT");
             if (version < 6) con.Script(Friends);
             if (version < 7) con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL");  // closed hunts count their pickups: stored again at the start
+            if (version < 8 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = 'spawn'")! == 0)
+            {
+                // the n-th photo of an account came with its n-th event 4 (no photo was deleted before this version)
+                con.Script("ALTER TABLE photos ADD COLUMN spawn INTEGER");
+                con.Script("UPDATE photos SET spawn = (SELECT MAX(s.id) FROM events s WHERE s.account_id = photos.account_id AND s.event = 7 AND s.individual = photos.individual"
+                           + " AND s.id < (SELECT e.id FROM events e WHERE e.account_id = photos.account_id AND e.event = 4"
+                           + " AND (SELECT COUNT(*) FROM events f WHERE f.account_id = e.account_id AND f.event = 4 AND f.id < e.id)"
+                           + " = (SELECT COUNT(*) FROM photos q WHERE q.account_id = photos.account_id AND q.id < photos.id)))");
+            }
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -338,16 +348,16 @@ public sealed class Store
         return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
     }
 
-    /// <summary>The minigames' best scores of the restored accounts (statistics, from a backup), by kind.</summary>
-    public static readonly IReadOnlyDictionary<string, string> GameColumns =
-        System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, string> { ["lanebandit"] = "lane_bandit_score", ["bustthrough"] = "bust_through_score" });
+    /// <summary>The minigames' boards by kind: the game id of heartbeat event 17 (<see cref="RestoredReads.BestScore"/>).</summary>
+    public static readonly IReadOnlyDictionary<string, long> GameIds =
+        System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(new Dictionary<string, long> { ["lanebandit"] = 1, ["bustthrough"] = 0 });
 
-    /// <summary>A minigame's whole board (a kind of <see cref="GameColumns"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
-    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); one query per account
-    /// on every page view, fine for the restored accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
+    /// <summary>A minigame's whole board (a kind of <see cref="GameIds"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
+    /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); two queries per account
+    /// on every page view, fine for the accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
     public List<(string Handle, long Score)> GameBoard(string kind, long? excluded)
     {
-        var column = GameColumns[kind];  // a fixed name, never the request's
+        var game = GameIds[kind];
         List<(long Id, string Handle)> accounts;
         using (var con = Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", excluded).Select(r => ((long)r[0], (string)r[1]))];
@@ -355,7 +365,7 @@ public sealed class Store
         foreach (var (id, handle) in accounts)
         {
             using var con = Open(id);
-            if (con.Scalar($"SELECT {column} FROM statistics WHERE account_id = $a") is long score && score > 0)
+            if (RestoredReads.BestScore(con, game) is { } score and > 0)
                 scored.Add((handle, score));
         }
         return [.. scored.OrderByDescending(s => s.Score)];  // a stable sort: equal scores keep the account id order

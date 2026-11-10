@@ -259,8 +259,9 @@ public sealed partial class State
             }
             else if (Is(e["event"], 4))
             {
-                var photoId = con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual) VALUES ($a, ?, ?, ?, ?)",
-                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"]);
+                var photoId = con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, spawn)"
+                                         + " VALUES ($a, ?, ?, ?, ?, (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?5))",
+                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"], e["individual"]);
                 var update = new JsonObject
                 {
                     ["url"] = uploadUrl(photoId, ""), ["photo_type"] = C(e["photo_type"]), ["hash"] = C(e["hash"]), ["update"] = 11,
@@ -1451,7 +1452,7 @@ public sealed partial class State
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, KillPhoto(con, account, r[1]))).ToArray());
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
             // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
                 stats = Parse(s);
@@ -1490,7 +1491,7 @@ public sealed partial class State
             var individual = Py.FromSql(row[0]);
             var harvest = (string)row[1];
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
-            photo = KillPhoto(con, account, row[0]);
+            photo = KillPhoto(con, account, row[0], harvest);
             (e7, e22) = KillEvents(con, individual, harvest);
             expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
                                   page["expedition_id"]).FirstOrDefault();

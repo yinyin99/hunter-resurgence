@@ -256,7 +256,10 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         async Task<JsonNode> Page(string query) => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery" + query, null)).Body)!;
         var first = await Page("?page=1");
         Eq("[1, 1, 2, [3, 1]]", T(first["page"], first["pages"], first["total"], Ids(first["rows"]!)));
-        Eq(other["photos"]![0], first["rows"]![0]);
+        Eq($"\"https://web.test/photos/8/3-3.jpg\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
+        Eq("[3, 1]", Ids(first["rows"]!));
+        Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/3-3.jpg", null)).Status);
+        Assert.Equal(404, (await Send(community, "GET", "web.test", "/photos/8/nothing.jpg", null)).Status);
         using (var con = state.Store.Open(8))
         {
             con.Begin();
@@ -285,6 +288,50 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("[3]", Ids((await Api(Replay.GALLERY_LIST, tokenB, "limit=1"))["photos"]!));
         Assert.True(state.DeletePhoto(8, 2));
         Assert.Null(KillPhoto());  // the kill's photos are gone
+    }
+
+    [Fact]
+    public void TestAnIndividualIdThatComesBackShowsNoEarlierKillAndAnOldPhotoIsLinkedByItsPosition()
+    {
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(ME, Events(AccountIsolationTests.Harvest(71, 72270)));
+        void Photo(string json) => state.UploadReply(ME, new Uri((string)Reply(state.HeartbeatReply(ME, Events(O(json))))["updates"]!.AsArray().Single(u => (int)u!["update"]! == 11)!["url"]!).Query.TrimStart('?'), [1]);
+        Photo("""{"event": 4, "hash": 1, "photo_type": 2, "individual": 71}""");  // the first animal's
+        Hb(O("""{"event": 7, "individual": 71, "species": 1, "gender": 0, "weight_grams": 5000, "texture": 0}"""));  // the id is used again
+        Photo("""{"event": 4, "hash": 2, "photo_type": 2, "individual": 71}""");  // the second animal's: no kill
+        var photos = state.GalleryListReply(ME, ""u8.ToArray())!;
+        Eq("""[2, ["", "Test Deer"]]""", T(Reply(photos)["total"], new JsonArray(Reply(photos)["photos"]!.AsArray().Select(p => (JsonNode?)p!["animal"]!.DeepClone()).ToArray())));
+        Assert.Contains("1-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+        Assert.DoesNotContain("2-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+    }
+
+    [Fact]
+    public void TestAPhotoOfAnOlderDatabaseGetsItsSpawnFromItsPositionAmongTheEvents()
+    {
+        var file = Path.Combine(tmp, "old.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("PRAGMA user_version = 7");
+        }
+        var old = new Store(file);
+        old.CreateAccount(5, "five", new JsonObject());
+        using (var con = old.Open(5))
+        {
+            foreach (var (ev, n) in new[] { (7, 1), (4, 2), (7, 3), (4, 4) })  // the events' ids are 1 to 4: the photos are the 2nd and the 4th
+                con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, ?, '{\"individual\": 3}')", ev);
+            con.Exec("INSERT INTO photos (account_id, individual) VALUES ($a, 3)");
+            con.Exec("INSERT INTO photos (account_id, individual) VALUES ($a, 3)");
+        }
+        using (var con = old.Open())  // as it was before the column: the rows above are all there is
+        {
+            con.Exec("ALTER TABLE photos DROP COLUMN spawn");
+            con.Exec("PRAGMA user_version = 7");
+        }
+        using (var con = new Store(file).Open(5))
+        {
+            Eq("[1, 3]", T(con.Rows("SELECT spawn FROM photos WHERE account_id = $a ORDER BY id").Select(r => (JsonNode?)Py.FromSql(r[0])).ToArray()));
+        }
     }
 
     [Fact]

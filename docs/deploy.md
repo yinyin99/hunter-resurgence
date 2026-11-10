@@ -164,7 +164,7 @@ The next deploy sets the tag again.
 | Request | Goes to |
 |---|---|
 | carries the header `X-Game-Host` (every request of a player's local forwarder, for every game host name, the signup host included) | `server:8080`, header kept |
-| path `/auth/*` or `/account/restore/*` (the `@server_paths` matcher, the one place to change the server's website-facing paths; the backup tool uploads to the second) | `server:8080`, `X-Game-Host` removed |
+| path `/auth/*`, `/account/restore/*` or `/photos/*` (the `@server_paths` matcher, the one place to change the server's website-facing paths; the backup tool uploads to the second, the browser loads the gallery's pictures from the third) | `server:8080`, `X-Game-Host` removed |
 | anything else | `web:8080`, `X-Game-Host` removed |
 
 The server believes `X-Game-Host` only from `trusted_proxies`, so a client cannot choose a game host except through Caddy, and Caddy's address is the only one listed. The server builds its sign-in links as `https://` plus the request's `Host`, which Caddy passes on unchanged, and the website forwards the browser's `Host` in its server-side calls (`SERVER_URL=http://server:8080`, set in compose).
@@ -274,5 +274,5 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
   - After a purchase the status bar shows the new balance at its next 30 second refresh.
 - **The news** is the project's two posts (the backup tool and the project in development), the same as on the mock website; there is no Discord widget: the server has no source for it. The posts' slides show two of the operator's competition pictures (`competition-hero-170031`, `competition-hero-170026`).
-- **The Lane Bandit and Bust Through boards** list only the scores restored from backups: the server records no minigame score played on it ([#223](https://github.com/yinyin99/hunter-resurgence/issues/223)). Each page view reads every account once.
+- **The Lane Bandit and Bust Through boards** list each account's best: the higher of the score restored from a backup and the best the server's hunts reported (heartbeat event 17). Each page view reads every account.
 - **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), and an older green commit still queued skips too, since it is no longer `main`'s head ([Deploys](#deploys)). A flaky test there holds the live site back until `ci` is run again or the test is fixed ([#213](https://github.com/yinyin99/hunter-resurgence/issues/213); [#219](https://github.com/yinyin99/hunter-resurgence/issues/219) is flaky locally).
