@@ -29,7 +29,8 @@ public class LauncherGuardTests
     [InlineData("community_league/details/3", true)]
     [InlineData("steam_callback/abc", true)]
     [InlineData("wallet/ems", false)]                // the server's: the owner's history
-    [InlineData("/Messages", true)]
+    [InlineData("/Messages", false)]                 // the server's: the restored messages, read only
+    [InlineData("new-message", true)]
     [InlineData("bank/ems", true)]
     [InlineData("competitions", true)]               // no source on the live site: the recorded ones ended weeks ago
     [InlineData("competitions/details/3/history", true)]

@@ -438,6 +438,34 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal(["/account/friends/add?handle=Oak", "/account/friends/remove?handle=Oak"], server.Posts));
     }
 
+    /// <summary>Answers the signed-in player's conversations and the thread of one.</summary>
+    sealed class MessagesServer : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var body = request.RequestUri!.AbsolutePath switch
+            {
+                "/account/messages" => """{"conversations":[{"handle":"Fern","preview":"see you","ts":1700000200,"unread":true},{"handle":"Moss","preview":"hello","ts":1700000100,"unread":false}]}""",
+                "/account/messages/thread" when request.RequestUri.Query == "?handle=Fern" => """{"messages":[{"mine":false,"content":"see you","ts":1700000200},{"mine":true,"content":"where?","ts":1700000150}]}""",
+                _ => """{"messages":[]}""",
+            };
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+        }
+    }
+
+    [Fact]
+    public void TheMessagesPageShowsTheRestoredConversationsReadOnly()
+    {
+        Services.AddSingleton<IMessagesService>(new ServerMessagesService(new HttpClient(new MessagesServer()) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMessagesService>.Instance));
+        Live(true);
+        var cut = Render<Messages>(p => p.Add(m => m.Handle, "Fern"));
+        cut.WaitForAssertion(() => Assert.Equal(["Fern", "Moss"], cut.FindAll("aside .who").Select(e => e.TextContent)));
+        Assert.Equal(["see you", "where?"], cut.FindAll("div.thread .msg p").Select(e => e.TextContent));
+        Assert.Equal(1, cut.FindAll("div.thread div.me").Count);
+        Assert.Empty(cut.FindAll("textarea, #sendMessage, a[href='/new-message'], #receive-private-messages"));  // nothing is sent
+    }
+
     // the community server has no Discord widget: a signed-in player sees it on the launcher and the development website only
     [Theory]
     [InlineData(false, 1)]

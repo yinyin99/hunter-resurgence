@@ -227,6 +227,12 @@ On a community server two players are friends when both have an account here and
 
 `Me/poll` and `Me/me` carry `friend_requests`, the number of `requests`. The current build's `/v1/friend/add?locale=<locale>`, `/v1/friend/remove`, `/v1/me/friends` and `/v1/me/poll` with a JSON body are the same calls ([The current build](#the-current-build)).
 
+## Messages
+
+The player's own inbox, on a community server. `Chat/conversations` lists the server's notice conversation (sender `Server`, user id 1024, the notices of [Upload a backup zip](#upload-a-backup-zip)) first, then the conversations a backup held (`Chat_conversations.json` in `extras`) exactly as saved, owner-only (the token's account). `Chat/conversation` with `user_id` answers the notice thread (and marks it read), or else the saved `Chat_conversation__user_id=<id>.json` of that partner as it is, or an empty thread; reading a restored thread marks nothing, so a restored conversation keeps the `read` it was saved with. Sending messages between players is not part of the server.
+
+The website reads the same through `GET /account/messages` and `GET /account/messages/thread` ([Upload a backup zip](#upload-a-backup-zip)), read only. A message is the player's own (`mine`) when its `user_id` is not the partner's.
+
 ## Gallery
 
 A photo the game asks for (heartbeat event 4) gets a row in `photos` and an upload link; the file it sends is stored as `photos/<account id>/<id>-<photo_type>.jpg`, the thumbnail as `<id>-<photo_type>-thumb.jpg` (none for the automatic shot screenshot, `photo_type` 14). A requested photo that was never sent is no photo. The gallery of an account is its uploaded photos that are not shot screenshots, newest first; a photo shows the kill of the animal it was asked for while (the same `individual` and the same latest event 7 as the kill's hits; `photos.spawn` holds that event, as the schema of version 8 added): `animal` is that kill's species name and `label` its score (both `""` without a kill), `thumbnail` the link of the small picture (the picture's own link when the game sent none), `url` the full picture. `Gallery/list` links the game's host; the website's `GET /hunters/<handle>/gallery` links `https://<web_host>/photos/<account id>/<file>`, which the server serves on `web_host` too (the reverse proxy routes `/photos/*`, [Behind a reverse proxy](#behind-a-reverse-proxy)).
@@ -371,6 +377,8 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | `GET /account/friends` | `{friends, requests, pending}`, each a list of `{handle, online}` sorted by handle: the player's friends, the players who asked it, the players it asked ([Friends](#friends)). 401 when signed out |
 | `GET /account/friends/search?text=<text>` | `{hunters: [{handle, online}]}`: up to 20 players whose handle contains the text (any case), sorted by handle, never the player itself or a banned account. 401 when signed out |
 | `POST /account/friends/add`, `POST /account/friends/remove` | Form `handle` (any case), same checks as buy: `add` accepts the other's open request, else asks them; `remove` declines, cancels or ends a friendship, as `Friend/add` and `Friend/remove`. `{status: ok}`; `404` `invalid` for the player's own handle, a banned one or one with no account here |
+| `GET /account/messages` | `{conversations: [{handle, preview, ts, unread}]}`: the server's notice conversation first, then the restored ones as saved ([Messages](#messages)). 401 when signed out |
+| `GET /account/messages/thread?handle=<handle>` | `{messages: [{mine, content, ts}]}`, newest first, of the conversation with that handle (any case); marks nothing read. `404` `invalid` for a handle that is none of the player's conversations; 401 when signed out |
 | `POST /account/gallery/delete` | Form `id`, same checks as buy: deletes the photo of the player's own gallery (its row and files, [Gallery](#gallery)). `{status: deleted}`; `404` `invalid` for an id that is none of the player's photos |
 | `GET /account/gallery/zip` | The player's own gallery as a zip of its pictures at full size (`application/zip`, each named as its link ends). 401 when signed out |
 
