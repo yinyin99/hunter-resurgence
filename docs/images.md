@@ -29,7 +29,7 @@ curl -s https://<site>/images-missing.json
 
 ## Inventory
 
-111 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
+113 `<AssetSlot>` in 53 `.razor` files, 3 `<MapPlaceholder>` (`LaunchMap`, `JoinMapModal`, `SheetTab`) and `page-bg` in `ShellLayout`. Recount:
 
 ```
 grep -rho '<AssetSlot' src/Ui --include=*.razor | wc -l
@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 654 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 661 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
@@ -79,7 +79,7 @@ With the values the mock services give, the slots have 654 distinct keys; a patt
 | `competition-hero-<id>` | 980×340 | CompetitionView | 160 of 171 (one picture per species id, as the game's species table). 11 competitions for Axis Deer, Fallow Deer and Wood Grouse (species 54, 55, 57) stay empty: the original had no picture for those species |
 | `item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail (the mock, without `SERVER_URL`) | 47 of 47, stand-ins: the mock items are fictional ("Blind C"), so each has a real picture of the same kind (hat, scope, tent, …), not of one particular item. Their ids are the mock's, and 40 of them are ids of the original's catalogue, so the live site never looks for them |
 | `bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the mock) | 2 of 2 |
-| `store-item-<id>` | 150×110, 270×197, 30×30 | Store, ItemDetail, BundleDetail, the weapons of SkillsTab and WeaponTable (the live site: the server's items, with the original's ids; 30×30 in the skills, 150×30 and 36×36 in the statistics) | 1,003 of 1,003: the item's `image` in the original's item table, `items/256/<image>.png` as the original store showed it |
+| `store-item-<id>` | 150×110, 270×197, 230×50, 256×187, 30×30 | Store, ItemDetail, BundleDetail, the weapons of SkillsTab and WeaponTable, the dogs of DogsTab (the live site: the server's items, with the original's ids; 230×50 in the skills, 150×30 and 36×36 in the statistics; the dogs use it on the mock too, with the dog item's own id: 256 wide as the original's, drawn whole) | 1,003 of 1,003: the item's `image` in the original's item table, `items/256/<image>.png` as the original store showed it |
 | `store-bundle-<id>` | 150×110, 190×207 | Store, BundleDetail (the live site) | 129 of 129: as the original store, the bundle's own `image`, else its first item's |
 | `em-pack` | 100×80 | BankModal (redeemed code) | yes |
 | `em-pack-<ems>` | 100×80 | BankModal | 5 of 5 |
@@ -99,7 +99,8 @@ With the values the mock services give, the slots have 654 distinct keys; a patt
 | `statistics-<define>` | 80×90 | SkillsTab (the live site: the species' skill pictures) | `statistics/<define in lower case>.png` as the original showed it, 54 of the 55 species shown (`sasquatch` has none); the live weapon skills and the statistics' weapons and ammo use `store-item-<id>` |
 | `trophy-<name>` | 147×147 | TrophiesTab (the mock) | 9 of 26: the 9 `Competition Trophy` slots are stand-ins (a real competition trophy each); the 17 plain `Trophy <n>` slots stay empty, nothing says which trophy they are |
 | `trophy-<image>` | 147×147 | TrophiesTab (the live site: a competition trophy, `<image>` the file name of its picture without the extension, `trophy-elk_gold` for `…/elk_gold.png`; a trophy with no picture is drawn as `trophy-<name>`) | 1320 files in the operator's folder |
-| `dog-<type>` | 120×120 | DogsTab | 2 of 2 |
+| `dog-skill-<skill>-<level>` | 40×40 | DogsTab (a breed skill of a dog: `<skill>` the skill's define without `DOG_SKILL_`, in lower case with `-` for `_`, `dog-skill-loyalty-stamina-1`; `<level>` its value, 1 and one more for each unlock reached) | the original's `dogskills/<define>_<value>.png`: 85 files in the operator's folder |
+| `dog-trophy-ribbon-<n>` | 64×64 | DogsTab (one slot for the dog's `<n>` ribbons, as many as the unlocks reached; no slot without one) | no: the original's ribbon picture is not in the operator's files |
 | `weapon-<name>`, `ammo-<name>` | 150×30, 36×36 | WeaponTable | 5 of 5, 5 of 5: the mock weapons are fictional (stand-in pictures of the same kind); each ammo is the one the game's item table lists as fitting that weapon's picture (.243, .30-06, .340 Weatherby, 7.62x54R, 12 GA birdshot) |
 | `collectable-<name>` | 24×24 | CollectableTable | 1 of 1 |
 | `sheet-logo` | 460×64 | SheetTab | yes |

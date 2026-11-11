@@ -90,8 +90,9 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
         handle == Own ? [] : Enumerable.Range(0, 26).Select(i => i % 3 == 0 ? new Trophy($"Competition Trophy {i}", new(2026, 9, 1 + i), 100 + i, $"Competition {i}") : new Trophy($"Trophy {i}", new(2026, 9, 1 + i), null, null)).ToList(), page, 24));
 
     public Task<IReadOnlyList<Dog>> DogsAsync(string handle) => Task.FromResult<IReadOnlyList<Dog>>(handle == Own ? []
-        : [new("Rex", "Hound (Brown)", 3, 64, [new("Blood Tracking", "This skill governs how well a dog can find blood tracks.", 2), new("Detection", "This skill governs how well a dog can detect different species of animals.", 1)], ["Competition Trophy 3", "Trophy 1"]),
-           new("", "Retriever (Golden)", 1, 10, [], [])]);
+        : [new(622, "Rex", "Hound", "Brown", 3, 64, [new("LOYALTY_STAMINA", "Loyalty Stamina", "loyalty", 2), new("TRACK_BLOOD", "Track Blood", "scent", 2), new("TRACK_SPEED", "Track Speed", "scent", 1)], 2),
+           new(501, "", "Retriever", "Golden", 1, 10, [new("LOYALTY_STAMINA", "Loyalty Stamina", "loyalty", 1), new("RETRIEVE_RABBIT", "Retrieve Rabbit", "retrieving", 1)], 0),
+           new(842, "Pip", "Pointer", "Orange", 1, 0, [], 0)]);
 
     public async Task<Page<ProfileFriend>> FriendsAsync(string handle, int page) => Slice<ProfileFriend>(handle == Own
         ? (friends is null ? ["Ranger_Test", "Moss_Walker", "Hunter02"] : (await friends.FriendsAsync()).Select(f => f.Handle)).Select(h => new ProfileFriend(h, h switch { "Ranger_Test" => 100, "Moss_Walker" => 115000, "Hunter02" => 7000, _ => h.Length * 311 })).ToList()

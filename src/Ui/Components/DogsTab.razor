@@ -6,19 +6,26 @@
     <ul class="dogs">
         @foreach (var d in dogs)
         {
-            <li>
-                <AssetSlot Name="@($"dog-{d.Type}")" Width="120" Height="120" />
-                <div class="dial" style="--p:@(d.Percent)%" data-tip="@d.Percent%"><div><small>@L["Prof.DogLvl"]</small><b>@d.Level</b></div></div>
-                <div>
-                    <b>@(d.Name.Length > 0 ? d.Name : L["Prof.DogUnnamed"])</b>
-                    <span>@d.Type</span>
-                    <span>
-                        @L["Prof.DogSkills"]:
+            <li style="border-bottom-color:@Colour(d.Id)">
+                <AssetSlot Name="@($"store-item-{d.Id}")" Width="256" Height="187" />
+                <div class="body">
+                    <div class="head">
+                        <div>
+                            <h2>@(d.Name.Length > 0 ? d.Name : L["Prof.DogUnnamed"])</h2>
+                            <span class="breed">@d.Type@if (d.Variation is { Length: > 0 } v) { <text> (@v)</text> }</span>
+                        </div>
+                        <div class="dial" style="--p:@(d.Percent)%" data-tip="@d.Percent%"><div><small>@L["Prof.DogLvl"]</small><b>@d.Level</b></div></div>
+                    </div>
+                    <h4>@L["Prof.DogSkills"]:</h4>
+                    <div class="skills">
                         @if (d.Skills.Count == 0) { @L["Prof.DogNoSkills"] }
-                        @foreach (var s in d.Skills) { <em data-tip="@(L.Term(s.Description)) (@L["Prof.DogLvl"] @s.Level)">@L.Term(s.Title)</em> }
-                    </span>
-                    @if (d.Trophies.Count > 0) { <span>@L["Prof.TabTrophies"]: @string.Join(", ", d.Trophies)</span> }
+                        @foreach (var s in d.Skills)
+                        {
+                            <span class="@s.Type" data-tip="@(L.Term(s.Title)) (@L["Prof.DogLvl"] @s.Level)"><AssetSlot Name="@($"dog-skill-{s.Skill.ToLowerInvariant().Replace('_', '-')}-{s.Level}")" Width="40" Height="40" /></span>
+                        }
+                    </div>
                 </div>
+                @if (d.Ribbons > 0) { <span class="ribbon"><AssetSlot Name="@($"dog-trophy-ribbon-{d.Ribbons}")" Width="64" Height="64" /></span> }
             </li>
         }
     </ul>
@@ -30,4 +37,7 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
 
     protected override async Task OnParametersSetAsync() => dogs = await Service.DogsAsync(Handle);
+
+    /// <summary>The line under a dog: black retrievers, chocolate retrievers, the rest, as the original website drew it.</summary>
+    static string Colour(int itemId) => itemId is 505 or 506 ? "#282d35" : itemId is 503 or 504 ? "#3f2f24" : "#756348";
 }

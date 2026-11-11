@@ -37,7 +37,8 @@ public static class Fixtures
                  "items": [{"id": 5, "name": "Test Rifle"}, {"id": 2, "name": "Test Scope"},
                            {"id": 10, "name": "Test Bullet", "sponsor_image": "testbrand_logo.jpg"},
                            {"id": 14, "name": "Test Shot A"}, {"id": 241, "name": "Test Shot B"},
-                           {"id": 700, "name": "Test Hound", "cat": 12, "type": 25}, {"id": 701, "name": "Test Collar", "cat": 12, "type": 26}],
+                           {"id": 700, "name": "Test Hound", "cat": 12, "type": 25}, {"id": 701, "name": "Test Collar", "cat": 12, "type": 26},
+                           {"id": 501, "name": "Test Retriever", "variationname": "Black", "cat": 12, "type": 25}],
                  "reserves": [{"id": 2, "name": "Test Reserve"}],
                  "locations": [{"id": 101, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": 2}]}
                 """);

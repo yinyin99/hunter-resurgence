@@ -181,7 +181,7 @@ public class ServerProfileServiceTests
     [InlineData(HttpStatusCode.OK, "<html>")]
     public async Task AFailedOrGarbledAnswerIsNoProfile(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).ProfileAsync("Owl"));
 
-    const string Skills = """{"species":[{"name":"Red Fox","image":"red_fox","spotting":2.5,"tracking":1.007}],"weapons":[{"id":7,"name":"Rifle","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
+    const string Skills = """{"species":[{"name":"Red Fox","image":"red_fox","spotting":2.5,"tracking":1.007}],"weapons":[{"id":7,"name":"Rifle","variation":"Blue","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
 
     [Fact]
     public async Task SpeciesSkillsAreRingsOfLevelAndPercent()
@@ -197,7 +197,7 @@ public class ServerProfileServiceTests
     public async Task WeaponSkillsAreGroupedWithAShootingRing()
     {
         var skills = await Make(new Fake(_ => Json(HttpStatusCode.OK, Skills))).SkillsAsync("fox", "weapons");
-        Assert.Equal([("Rifle", "Rifles", 3, 0, 7L), ("Bow", null, 1, 14, null)], skills.Select(s => (s.Name, s.Group, s.Rings[0].Level, s.Rings[0].Percent, s.Id)));
+        Assert.Equal([("Rifle", "Blue", "Rifles", 3, 0, 7L), ("Bow", null, null, 1, 14, null)], skills.Select(s => (s.Name, s.Variation, s.Group, s.Rings[0].Level, s.Rings[0].Percent, s.Id)));
     }
 
     [Theory]
@@ -298,17 +298,16 @@ public class ServerProfileServiceTests
     [Fact]
     public void TheRanksTabHasAServerSource() => Assert.Contains("ranks", ServerProfileService.Tabs);
 
-    const string Dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+    const string Dogs = """{"dogs":[{"id":501,"name":"Rex","type":"Test Hound","variation":"Black","level":2,"percent":25,"skills":[{"skill":"LOYALTY_ONE","title":"Loyalty One","type":"loyalty","level":2}],"ribbons":3}]}""";
 
     [Fact]
-    public async Task DogsCarryTheirLevelSkillsAndTrophies()
+    public async Task DogsCarryTheirItemLevelSkillsAndRibbons()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Dogs));
         var dog = Assert.Single(await Make(fake).DogsAsync("fox"));
         Assert.Equal("/hunters/fox/dogs", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal(("Rex", "Test Hound", 2, 25), (dog.Name, dog.Type, dog.Level, dog.Percent));
-        Assert.Equal(["Ribbon"], dog.Trophies);
-        Assert.Equal([("Loyalty One", 1)], dog.Skills.Select(s => (s.Title, s.Level)));
+        Assert.Equal((501, "Rex", "Test Hound", "Black", 2, 25, 3), (dog.Id, dog.Name, dog.Type, dog.Variation, dog.Level, dog.Percent, dog.Ribbons));
+        Assert.Equal([("LOYALTY_ONE", "Loyalty One", "loyalty", 2)], dog.Skills.Select(s => (s.Skill, s.Title, s.Type, s.Level)));
     }
 
     [Theory]

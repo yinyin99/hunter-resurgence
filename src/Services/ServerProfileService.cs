@@ -111,7 +111,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerSkills>() is { } s)
                 return kind == "weapons"
-                    ? [.. (s.Weapons ?? []).Select(w => new Skill(w.Name, w.Group, [Ring("Shooting", w.Value)], null, w.Id))]
+                    ? [.. (s.Weapons ?? []).Select(w => new Skill(w.Name, w.Group, [Ring("Shooting", w.Value)], null, w.Id, w.Variation))]
                     : [.. (s.Species ?? []).Select(x => new Skill(x.Name, null, [Ring("Spotting", x.Spotting), Ring("Tracking", x.Tracking ?? 1)], x.Image))];
             log.LogWarning("The server answered {Path} with {Status}: no skills", path, (int)response.StatusCode);
         }
@@ -228,7 +228,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerDogs>() is { } d)
-                return [.. (d.Dogs ?? []).Select(x => new Dog(x.Name, x.Type, x.Level, x.Percent, [.. (x.Skills ?? []).Select(s => new DogSkill(s.Title, "", s.Level))], x.Trophies ?? []))];
+                return [.. (d.Dogs ?? []).Select(x => new Dog(x.Id, x.Name, x.Type, x.Variation, x.Level, x.Percent, [.. (x.Skills ?? []).Select(s => new DogSkill(s.Skill, s.Title, s.Type, s.Level))], x.Ribbons))];
             log.LogWarning("The server answered {Path} with {Status}: no dogs", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

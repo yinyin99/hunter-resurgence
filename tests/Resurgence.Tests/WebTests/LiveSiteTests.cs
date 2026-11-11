@@ -209,14 +209,16 @@ public sealed class LiveSiteTests : UiContext
     public void TheDogsTabShowsTheServersDogs()
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
-        const string dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+        const string dogs = """{"dogs":[{"id":503,"name":"Rex","type":"Test Hound","variation":"Chocolate","level":2,"percent":25,"skills":[{"skill":"LOYALTY_STAMINA","title":"Loyalty Stamina","type":"loyalty","level":2},{"skill":"RETRIEVE_SOFT_MOUTH","title":"Retrieve Soft Mouth","type":"retrieving","level":1}],"ribbons":9}]}""";
         Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", dogs: dogs)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
         var cut = Render<DogsTab>(p => p.Add(d => d.Handle, "Fox"));
-        cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li > div:last-child > b").TextContent));
-        Assert.Contains("Loyalty One", cut.Find("ul.dogs li em").TextContent);
-        Assert.Contains("Ribbon", cut.Markup);
+        cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li h2").TextContent));
+        Assert.Equal("Test Hound (Chocolate)", cut.Find("ul.dogs li .breed").TextContent);
+        Assert.Equal(["store-item-503", "dog-skill-loyalty-stamina-2", "dog-skill-retrieve-soft-mouth-1", "dog-trophy-ribbon-9"], cut.FindAll(".asset-slot").Select(s => s.GetAttribute("aria-label")));
+        Assert.Equal("Loyalty Stamina (Lvl: 2)", cut.Find("ul.dogs .skills span.loyalty").GetAttribute("data-tip"));
+        Assert.Contains("border-bottom-color:#3f2f24", cut.Find("ul.dogs li").GetAttribute("style"));
     }
 
     const string Ranks = """
