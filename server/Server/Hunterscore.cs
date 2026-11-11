@@ -210,6 +210,7 @@ public sealed partial class State
                 milestones.Add(new JsonObject
                 {
                     ["category"] = kind, ["title"] = C(def["group_title"]) ?? "",
+                    ["icon"] = Py.IsStr(def["icon_url"]) ? System.IO.Path.ChangeExtension((string)def["icon_url"]!, null) : null,
                     ["steps"] = new JsonArray([.. Arr(def["triggers"]).Where(Py.IsNum).Select(t => (JsonNode?)Py.L(t))]),
                     ["value"] = (long)Math.Clamp(Math.Floor(AchievementValue(stats, (string)def["value"]!)), 0, 1e15),
                 });

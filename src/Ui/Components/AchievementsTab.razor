@@ -28,7 +28,8 @@ else
     @foreach (var m in milestones)
     {
         <div class="row">
-            <AssetSlot Name="@("ach-" + sub)" Width="100" Height="100" Class="badge" />
+            @if (m.Icon is { } icon) { <AssetSlot Name="@("ach-icon-" + icon)" Width="150" Height="150" Class="badge" /> }
+            else { <AssetSlot Name="@("ach-" + sub)" Width="100" Height="100" Class="badge" /> }
             <div class="what">
                 <h4>@L.Term(m.Title) (@m.Done/@m.Steps.Count)</h4>
                 <div class="steps">
@@ -51,10 +52,10 @@ else
 
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
-    // the live site offers the overview only: the categories' pages and the challenges are not shown
-    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[..1] : subs;
+    // the live site has no challenges (no server source); the categories' pages come from the ranks reply's milestones
+    IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[..^1] : subs;
     // the old addresses write the daily missions as day_mission as well
-    string sub => Mode.Live || Sub == "summary" ? "" : Sub?.Replace('_', '-') is { } s && subs.Any(x => x.Key == s) ? s : "";
+    string sub => Sub == "summary" ? "" : Sub?.Replace('_', '-') is { } s && pills.Any(x => x.Key == s) ? s : "";
 
     protected override async Task OnParametersSetAsync()
     {
