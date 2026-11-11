@@ -49,8 +49,8 @@ public class LauncherServicesTests
     [Theory]
     [InlineData("/competitions", true)]
     [InlineData("/bank", true)]
-    [InlineData("/settings", false)]
-    [InlineData("/game-management", false)]
+    [InlineData("/settings", true)]
+    [InlineData("/game-management", true)]
     [InlineData("/feed", false)]
-    public void LiveLauncherHidesTheMockOnlyPagesButKeepsItsOwn(string path, bool hidden) => Assert.Equal(hidden, Resurgence.Ui.LauncherGuard.MockOnlyInLauncher(path));
+    public void LiveLauncherHidesTheMockOnlyPages(string path, bool hidden) => Assert.Equal(hidden, Resurgence.Ui.LauncherGuard.MockOnly(path));
 }

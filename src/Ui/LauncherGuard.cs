@@ -11,12 +11,6 @@ public static class LauncherGuard
     // (the wallet's bank tab is the page's to hide)
     static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions"]), "competitions"];
 
-    // the launcher is where these two are managed: they stay reachable in live mode
-    static readonly string[] LauncherKeeps = ["settings", "game-management"];
-
-    /// <summary>MockOnly, except the launcher's own pages.</summary>
-    public static bool MockOnlyInLauncher(string path) => MockOnly(path) && !Starts(path, LauncherKeeps);
-
     public static bool Blocks(string path) => Starts(path, LauncherOnly);
 
     public static bool NeedsSession(string path) => Starts(path, SignedIn);
