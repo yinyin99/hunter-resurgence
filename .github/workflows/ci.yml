@@ -100,7 +100,18 @@ jobs:
           check server -X POST https://site.test/account/restore/up1/finish
           check server -H 'X-Game-Host: game.test' https://site.test/anything
           check web https://site.test/restore
-          check web -X POST https://site.test/account/delete
+          # the account's own data, the public profiles, boards and catalogue are the server's on the public domain (the launcher calls them)
+          check server https://site.test/account/friends
+          check server -X POST https://site.test/account/delete
+          check server https://site.test/hunters
+          check server https://site.test/hunters/someone/statistics
+          check server https://site.test/catalog/store
+          # a minigame board: the launcher (no Accept) reaches the server, a page load of the same path (Accept: text/html) the website
+          check server https://site.test/leaderboards/lanebandit
+          check web -H 'Accept: text/html,application/xhtml+xml' https://site.test/leaderboards/lanebandit
+          check web https://site.test/leaderboards
+          check web -H 'Accept: text/html' https://site.test/leaderboards/hunterscore
+          check web https://site.test/profile/someone
           check web https://site.test/
           echo routes ok
   # the website's container image (deploy/): builds, starts, serves the banner, the import map of shell.js and the search engine tags, lists Linux time zones, serves robots.txt, sends the security headers, and shows the operator's pictures from IMAGES_DIR

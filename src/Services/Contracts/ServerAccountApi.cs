@@ -1,6 +1,6 @@
 namespace Resurgence.Services;
 
-/// <summary>What the community server serves under <c>/account/</c> to the website's own server (the reverse proxy routes only <c>/account/restore/*</c>, for the backup tool): the session cookie of <see cref="ServerSessionApi"/> authenticates all of them.</summary>
+/// <summary>What the community server serves under <c>/account/</c> to the website's own server and, on the public domain, to the launcher and the backup tool: the session cookie of <see cref="ServerSessionApi"/> authenticates all of them.</summary>
 public static class ServerAccountApi
 {
     /// <summary>GET: <c>{restoredUserId, review: [{ts, note}]}</c>. POST with <c>X-Requested-With</c> to <c>/start</c>: <c>{status: started, id}</c>, then each part of at most
