@@ -1,5 +1,5 @@
-// The store's catalogue on the website's host: public, no cookie, the same for everyone. The website's server calls
-// it over SERVER_URL; a browser never does, so the reverse proxy does not have to route /catalog/. Online only.
+// The store's catalogue on the website's host: public, no cookie, the same for everyone. The website's server calls it over SERVER_URL,
+// the launcher on the public domain, so the reverse proxy routes /catalog/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 

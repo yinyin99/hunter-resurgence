@@ -19,4 +19,4 @@ Each public area has one read in the server, built once and served two ways: as 
 
 - A public area is a new read with both outputs and a test that an unknown, banned or recorded player's user id gets the answer for "no such profile" (the empty reply of the area's shape, or 404 where the area has one); an owner-only area is a new read with a token check. A new area is placed in this split by amending this ADR before it is built, or by a new ADR if it moves an area between the two.
 - A player's own trophy visibility and lodge edits still apply inside a public area ([Lodges and trophy visibility](../server.md#lodges-and-trophy-visibility)): the hidden trophies are left out of the website's list.
-- The website's server reads the public areas over `SERVER_URL`; a browser never calls them, so the reverse proxy does not route `/hunters`.
+- The website's server reads the public areas over `SERVER_URL`, and the launcher on the public domain: the reverse proxy routes `/hunters` to the server.

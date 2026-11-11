@@ -1,5 +1,5 @@
 // The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public, no cookie. The website's
-// server calls them over SERVER_URL; a browser never does, so the reverse proxy does not have to route /hunters/ or /leaderboards/. Online only.
+// server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
