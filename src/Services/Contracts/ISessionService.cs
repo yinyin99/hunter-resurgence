@@ -14,6 +14,10 @@ public interface ISessionService
     event Action? Changed;
     /// <summary>Set when signing in is a page load of the community server (the website with SERVER_URL): where to go, to come back to the local path <paramref name="next"/>. Null: sign in with the e-mail methods below.</summary>
     string? SignInUrl(string next) => null;
+    /// <summary>True when signing in is the server's code link (<see cref="SignInWithLinkAsync"/>) and not the e-mail methods below.</summary>
+    bool CodeLink => false;
+    /// <summary>Signs in through the player's browser: <paramref name="showCode"/> gets the code to compare there, the call ends when the player has confirmed (a session now exists), or fails.</summary>
+    Task<Result> SignInWithLinkAsync(Action<string> showCode) => Task.FromResult(Result.Fail("Validation.Code.Invalid"));
     Task<Result> RequestCodeAsync(string email);
     /// <param name="register">The account is new: the session has no handle yet.</param>
     Task<Result> SignInAsync(string email, string code, bool register = false);

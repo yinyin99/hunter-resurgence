@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -30,6 +31,16 @@ static class LauncherServices
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
+        if (Settings.Load().ServerUrl is { } server)
+        {
+            // the community server's session: the cookie it gives is the other Server* services' too
+            var cookie = new ServerCookie();
+            services.AddSingleton(cookie);
+            services.AddSingleton<ISessionService>(sp => new LauncherSessionService(
+                new HttpClient(new HttpClientHandler { UseCookies = false }) { BaseAddress = server }, cookie,
+                Path.Combine(Path.GetDirectoryName(Prefs.DefaultPath)!, "session.dat"),
+                url => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }), sp.GetRequiredService<ILogger<ServerSessionService>>()));
+        }
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<INewsService>(new MockNewsService());
