@@ -33,6 +33,8 @@ public static class ServerAccountApi
     public const string MessagesThread = "/account/messages/thread";
     /// <summary>GET with the cookie: <c>/ems</c> and <c>/gms</c> (query <c>offset</c>) 200 a page of <see cref="ServerWalletRow"/>, newest first, 50 at most; <c>/spent</c> 200 <see cref="ServerSpent"/>.</summary>
     public const string Wallet = "/account/wallet";
+    /// <summary>GET with the cookie: 200 the player's saved loadouts, <see cref="ServerLoadout"/>, ascending by id.</summary>
+    public const string Loadouts = "/account/loadouts";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
@@ -47,6 +49,9 @@ public sealed record ServerConversations(ServerConversation[] Conversations);
 public sealed record ServerMessage(bool Mine, string Content, long Ts);
 
 public sealed record ServerThread(ServerMessage[] Messages);
+
+/// <summary>A saved loadout of <see cref="ServerAccountApi.Loadouts"/>; its <c>Id</c> is what <see cref="ServerLaunchApi.Launch"/> takes as <c>loadout</c>.</summary>
+public sealed record ServerLoadout(int Id, string Name);
 
 /// <summary>A mission of <see cref="ServerAccountApi.Missions"/>: <c>State</c> is active, available, completed or locked; <c>Reserve</c>, <c>Species</c> and <c>Weapon</c> are "" for none.</summary>
 public sealed record ServerMission(int Id, string Title, string Desc, string State, string[] Objectives, string Reward, string Reserve, string Species, string Weapon);

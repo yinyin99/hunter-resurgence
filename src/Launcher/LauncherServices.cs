@@ -70,6 +70,10 @@ static class LauncherServices
             new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>()));
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
+        // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL
+        services.AddSingleton<ServerCache<ServerLaunchCatalogue>>();
+        services.AddSingleton<IServersService>(sp => new ServerServersService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
+            sp.GetRequiredService<ServerCache<ServerLaunchCatalogue>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<ILogger<ServerServersService>>()));
         // a player's backup upload takes longer than the 5 s of the other calls
         services.AddSingleton<IRestoreService>(sp => new ServerRestoreService(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(10) },
             sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreService>>()));
