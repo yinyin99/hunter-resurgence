@@ -1452,6 +1452,48 @@ public sealed partial class State
     /// <summary>The catalogue's tutorial with this id, else null.</summary>
     public JsonObject? Tutorial(long id) => Arr(G(application, "tutorials", null)).OfType<JsonObject>().FirstOrDefault(t => TryKey(t["id"], out var k) && k == id);
 
+    /// <summary>The catalogue's start types the launcher shows, with the word a start without its own `name` is called by (and its number in the reserve).</summary>
+    static readonly Dictionary<string, (string Kind, string Word)> StartKinds = new()
+    {
+        ["LODGE"] = ("lodge", "Lodge"), ["CAMPSITE"] = ("campsite", "Campsite"), ["HUNTING_TOWER"] = ("tower", "Tower"), ["INTEREST"] = ("interest", "Point of interest"),
+    };
+
+    /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are
+    /// percent of the reserve's map: the catalogue has no map bounds, so the map is the square around the reserve's starts with 10% left free on each side, world x to
+    /// the right and z down. ponytail: bounds of the starts only; per-reserve map bounds (facts file) when the launcher draws the real maps.</summary>
+    public JsonObject LaunchCatalogue()
+    {
+        var starts = Arr(G(application, "locations", null)).OfType<JsonObject>()
+            .Where(l => TryKey(l["id"], out _) && TryKey(l["reserve"], out _) && Py.IsStr(l["type"]) && StartKinds.ContainsKey((string)l["type"]!)
+                        && l["pos"] is JsonObject p && Py.IsNum(p["x"]) && Py.IsNum(p["z"]))
+            .GroupBy(l => Py.L(l["reserve"])).ToDictionary(g => g.Key, g => g.OrderBy(l => Py.L(l["id"])).ToList());
+        JsonArray Starts(long reserve)
+        {
+            var list = starts.GetValueOrDefault(reserve) ?? [];
+            var (xs, zs) = (list.Select(l => Py.D(l["pos"]!["x"])).ToList(), list.Select(l => Py.D(l["pos"]!["z"])).ToList());
+            var size = list.Count == 0 ? 0 : Math.Max(xs.Max() - xs.Min(), zs.Max() - zs.Min());
+            long Percent(double v, List<double> all) => size == 0 ? 50 : (long)Math.Round(50 + (v - (all.Min() + all.Max()) / 2) / size * 80);
+            var seen = new Dictionary<string, int>();
+            return new(list.Select(l =>
+            {
+                var (kind, word) = StartKinds[(string)l["type"]!];
+                seen[kind] = seen.GetValueOrDefault(kind) + 1;
+                return (JsonNode?)new JsonObject
+                {
+                    ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0 ? (string)l["name"]! : $"{word} {seen[kind]}",
+                    ["x"] = Percent(Py.D(l["pos"]!["x"]), xs), ["y"] = Percent(Py.D(l["pos"]!["z"]), zs),
+                };
+            }).ToArray());
+        }
+        return new JsonObject
+        {
+            ["reserves"] = new JsonArray([.. Arr(G(application, "reserves", null)).OfType<JsonObject>().Where(r => TryKey(r["id"], out _))
+                .Select(r => (JsonNode?)new JsonObject { ["id"] = Py.L(r["id"]), ["name"] = Py.IsStr(r["name"]) ? (string)r["name"]! : "", ["starts"] = Starts(Py.L(r["id"])) })]),
+            ["tutorials"] = new JsonArray([.. Arr(G(application, "tutorials", null)).OfType<JsonObject>().Where(t => TryKey(t["id"], out _) && TryKey(t["reserve_id"], out _))
+                .Select(t => (JsonNode?)new JsonObject { ["id"] = Py.L(t["id"]), ["name"] = Py.IsStr(t["name"]) ? (string)t["name"]! : "", ["reserve"] = Py.L(t["reserve_id"]) })]),
+        };
+    }
+
     /// <summary>start_tutorial: the session opens that tutorial, and the account's latest launch is a tutorial until the next hunt starts.</summary>
     public void NoteTutorial(long account, string session, long tutorialId)
     {

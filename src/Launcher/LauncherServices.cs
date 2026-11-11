@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
@@ -37,6 +38,15 @@ static class LauncherServices
         services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
         services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
         services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>()));
+        if (Settings.Load().ServerUrl is { } server)
+        {
+            // the launch map is the community server's: its reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its address
+            services.TryAddSingleton<ServerCookie>();
+            services.TryAddSingleton(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) });
+            services.AddSingleton<ServerCache<ServerLaunchCatalogue>>();
+            services.AddSingleton<IServersService>(sp => new ServerServersService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
+                sp.GetRequiredService<ServerCache<ServerLaunchCatalogue>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<ILogger<ServerServersService>>()));
+        }
         services.AddScoped<ModalService>();
         services.AddScoped<ILanguageSwitcher, LauncherLanguageSwitcher>();
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });

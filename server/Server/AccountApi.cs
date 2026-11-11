@@ -189,6 +189,13 @@ public static class AccountApi
             .WithDescription("The pictures of `Gallery/list` (full size, one JPEG each, named by their link).")
             .Produces(200, contentType: "application/zip");
 
+        group.MapGet("/loadouts", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, JsonNode.Parse(state.LoadoutsReply(account))!)
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountLoadouts").WithSummary("The player's saved loadouts, for the launcher's start picker")
+            .WithDescription("What `GET /game/user/loadout` answers for the player: `[{name, color, items, id}]` ascending by id; `id` is the number `POST /auth/launch` takes as `loadout`.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebFriends(account))
                 : Refuse(401, "signed_out", "Sign in first."))
