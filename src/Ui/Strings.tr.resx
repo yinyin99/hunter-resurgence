@@ -1291,4 +1291,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>{0} kodunu tarayıcında onayla.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>Giriş zamanında onaylanmadı. Lütfen tekrar dene.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Sunucuya ulaşılamadı. Lütfen tekrar dene.</value></data>
 </root>

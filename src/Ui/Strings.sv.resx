@@ -1291,4 +1291,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort; att logga in igen skapar ett nytt konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatören för den här servern kan se allt ovan.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Bekräfta koden {0} i din webbläsare.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Det gick inte att nå servern. Försök igen.</value></data>
 </root>

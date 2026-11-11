@@ -1291,4 +1291,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Удаление ваших данных</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Войдите, откройте «Восстановить резервную копию» и нажмите «Удалить мои данные». Это удалит аккаунт, его игровые данные, сохранённые zip-архивы и фотографии, а вы выйдете из аккаунта. После этого ваш Steam ID забывается; повторный вход создаст новый аккаунт.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Оператор этого сервера видит всё перечисленное выше.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Подтвердите код {0} в браузере.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>Вход не был подтверждён вовремя. Попробуйте ещё раз.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Не удалось связаться с сервером. Попробуйте ещё раз.</value></data>
 </root>

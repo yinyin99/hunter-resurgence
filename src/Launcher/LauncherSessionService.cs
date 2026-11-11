@@ -48,10 +48,13 @@ public sealed class LauncherSessionService : ISessionService
         await inner.SignOutAsync();
     }
 
+    public void CancelLink() => running?.Cancel();
+
     public async Task<Result> SignInWithLinkAsync(Action<string> showCode)
     {
         running?.Cancel();
         var ct = (running = new CancellationTokenSource()).Token; // no timer: nothing to dispose
+        const string Failed = "Signin.LinkFailed", Expired = "Signin.LinkExpired";
         try
         {
             using var start = new HttpRequestMessage(HttpMethod.Post, "/auth/link");
@@ -59,7 +62,7 @@ public sealed class LauncherSessionService : ISessionService
             using var started = await http.SendAsync(start, ct);
             var link = await started.Content.ReadFromJsonAsync<Link>(new JsonSerializerOptions(JsonSerializerDefaults.Web), ct);
             // the address to open must be the server's own
-            if (link is not { Code.Length: > 0 } || !Uri.TryCreate(link.Url, UriKind.Absolute, out var url) || url.Host != http.BaseAddress!.Host) return Result.Fail("Validation.Code.Invalid");
+            if (link is not { Code.Length: > 0 } || !Uri.TryCreate(link.Url, UriKind.Absolute, out var url) || url.Scheme != http.BaseAddress!.Scheme || url.Authority != http.BaseAddress.Authority) return Result.Fail(Failed);
             showCode(link.UserCode);
             open(link.Url);
 
@@ -68,25 +71,29 @@ public sealed class LauncherSessionService : ISessionService
                 await Task.Delay(interval, ct);
                 using var poll = await http.GetAsync("/auth/link/" + Uri.EscapeDataString(link.Code), ct);
                 if ((int)poll.StatusCode == 404) break; // the code ran out on the server
-                var body = await poll.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(ct);
+                Dictionary<string, JsonElement>? body;
+                try { body = await poll.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(ct); }
+                catch (JsonException) { continue; } // a proxy's page: ask again
                 if (body is null || !body.TryGetValue("status", out var status) || status.ValueKind != JsonValueKind.String || status.GetString() != "ok") continue;
                 var prefix = ServerSessionApi.Cookie + "=";
                 var set = poll.Headers.TryGetValues("Set-Cookie", out var all) ? all.FirstOrDefault(c => c.StartsWith(prefix, StringComparison.Ordinal)) : null;
-                if (set is null) break;
-                cookie.Value = set.Split(';')[0][prefix.Length..];
-                Save();
+                if (set is null) return Result.Fail(Failed);
+                var value = set.Split(';')[0][prefix.Length..];
+                Save(value);
+                cookie.Value = value; // only a kept session counts as signed in
                 Changed?.Invoke();
                 return Result.Success;
             }
+            return Result.Fail(Expired);
         }
-        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException or NotSupportedException or IOException or UnauthorizedAccessException) { }
-        return Result.Fail("Validation.Code.Invalid");
+        catch (OperationCanceledException) { return Result.Fail(Expired); }
+        catch (Exception e) when (e is HttpRequestException or JsonException or NotSupportedException or IOException or UnauthorizedAccessException) { return Result.Fail(Failed); }
     }
 
-    void Save()
+    void Save(string value)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(file)!);
-        File.WriteAllBytes(file, ProtectedData.Protect(Encoding.UTF8.GetBytes(cookie.Value!), null, DataProtectionScope.CurrentUser));
+        File.WriteAllBytes(file, ProtectedData.Protect(Encoding.UTF8.GetBytes(value), null, DataProtectionScope.CurrentUser));
     }
 
     public Task<Result> RequestCodeAsync(string email) => inner.RequestCodeAsync(email);

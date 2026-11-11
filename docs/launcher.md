@@ -8,7 +8,7 @@ It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 contr
 
 The screens follow the old launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
 
-Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. The launcher is not usable for playing yet.
+Everything behind the screens is a **mock** for now, except what [the list below](#what-is-real-and-what-is-mock) names as real: fixed, fictional data and fake actions, until the community server exists. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. The launcher is not usable for playing yet.
 
 Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
 
@@ -88,7 +88,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |
 | `options_key_prefix` | The text that precedes each key name in the options file. |
-| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
+| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. It is also the server the launcher signs in to ([What is real](#what-is-real-and-what-is-mock)). Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
 | `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip, linked from the news), `source` (the project's repository: "Follow the project on GitHub" in the news), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
@@ -115,6 +115,7 @@ Mock: sign-in without `server_url` (the code step accepts any six digits), sign-
 | `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, and whether game settings were saved once (`game_settings_saved`: the first game start no longer asks). A missing or damaged file means the defaults. |
 | the game's graphics file | Game settings, on Save | fullscreen, resolution and refresh rate, scene complexity, texture, shadow, anti-aliasing, anisotropic filtering, vertical sync |
 | the game's options file | Game settings, on Save | volume, gamma, mouse and controller options, speeds, interface switches, scope quality |
+| `%APPDATA%\hunter-resurgence\session.dat` | Sign-in, with `server_url` | the community server's session cookie, protected by Windows DPAPI for this Windows user; deleted by Sign out |
 | `<file>.resurgence-backup` | Game settings, once | settings copy of each of those two files made before the first write; never overwritten |
 
 Game settings changes only the values you edit. Every other byte of both files stays as it was, and no line is ever added. A file with an unknown format is left alone. The game reads both files once at start and rewrites them itself, so Save is refused while the game runs. A missing file shows "Start the game once so it creates this file" and is read-only.

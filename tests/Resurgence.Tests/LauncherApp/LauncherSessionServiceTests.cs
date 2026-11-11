@@ -17,6 +17,8 @@ public sealed class LauncherSessionServiceTests : IDisposable
     int polls;
     /// <summary>After this many pending polls the sign-in is confirmed; never when negative.</summary>
     int confirmAfter = 1;
+    /// <summary>The poll answers 404 (the code ran out); the link request answers a proxy's page.</summary>
+    bool pollGone, linkBroken;
 
     public LauncherSessionServiceTests()
     {
@@ -44,9 +46,10 @@ public sealed class LauncherSessionServiceTests : IDisposable
             var path = req.Url!.AbsolutePath;
             lock (seen) seen.Add($"{req.HttpMethod} {path}{(req.Headers["X-Requested-With"] is { } x ? " " + x : "")}");
             (int, string) reply = (404, "{}");
-            if (req.HttpMethod == "POST" && path == "/auth/link")
+            if (req.HttpMethod == "POST" && path == "/auth/link" && linkBroken) reply = (502, "<html>");
+            else if (req.HttpMethod == "POST" && path == "/auth/link")
                 reply = (200, $$"""{"code":"abcd1234abcd1234","userCode":"ABCD-1234","url":"{{root}}/auth/steam/login?link=abcd1234abcd1234","expires":300}""");
-            else if (req.HttpMethod == "GET" && path == "/auth/link/abcd1234abcd1234")
+            else if (req.HttpMethod == "GET" && path == "/auth/link/abcd1234abcd1234" && !pollGone)
             {
                 if (confirmAfter >= 0 && polls++ >= confirmAfter)
                 {
@@ -109,7 +112,20 @@ public sealed class LauncherSessionServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task ADamagedFileIsSignedOutAndANotConfirmedLinkFails()
+    public async Task ACodeThatRanOutOrARefusedLinkFailsAndKeepsNoCookie()
+    {
+        var cookie = new ServerCookie();
+        var service = Make(cookie);
+        pollGone = true;
+        Assert.Equal(Result.Fail("Signin.LinkExpired"), await service.SignInWithLinkAsync(_ => { }));
+        linkBroken = true;
+        Assert.Equal(Result.Fail("Signin.LinkFailed"), await service.SignInWithLinkAsync(_ => { }));
+        Assert.Null(cookie.Value);
+        Assert.False(File.Exists(File_));
+    }
+
+    [Fact]
+    public async Task ADamagedFileIsSignedOutAndALeftSignInEndsTheWait()
     {
         File.WriteAllText(File_, "not protected");
         var cookie = new ServerCookie();
@@ -117,11 +133,10 @@ public sealed class LauncherSessionServiceTests : IDisposable
         Assert.Null(cookie.Value);
 
         confirmAfter = -1;
-       
         var wait = service.SignInWithLinkAsync(_ => { });
-        await Task.Delay(200);
-        await service.SignOutAsync(); // ends the wait
-        Assert.False((await wait).Ok);
+        await Task.Delay(200, TestContext.Current.CancellationToken);
+        service.CancelLink();
+        Assert.Equal(Result.Fail("Signin.LinkExpired"), await wait);
         Assert.Null(cookie.Value);
     }
 }

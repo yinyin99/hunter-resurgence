@@ -39,7 +39,7 @@ static class LauncherServices
             services.AddSingleton<ISessionService>(sp => new LauncherSessionService(
                 new HttpClient(new HttpClientHandler { UseCookies = false }) { BaseAddress = server }, cookie,
                 Path.Combine(Path.GetDirectoryName(Prefs.DefaultPath)!, "session.dat"),
-                url => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }), sp.GetRequiredService<ILogger<ServerSessionService>>()));
+                OpenBrowser, sp.GetRequiredService<ILogger<ServerSessionService>>()));
         }
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
@@ -51,6 +51,13 @@ static class LauncherServices
         services.AddScoped<ModalService>();
         services.AddScoped<ILanguageSwitcher, LauncherLanguageSwitcher>();
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
+    }
+
+    /// <summary>Opens the server's sign-in in the player's browser; without a browser the player still has the code on screen.</summary>
+    static void OpenBrowser(string url)
+    {
+        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
+        catch (System.ComponentModel.Win32Exception) { }
     }
 
     /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after 5 s.</summary>

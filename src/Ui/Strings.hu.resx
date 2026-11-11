@@ -1291,4 +1291,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Adataid törlése</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Jelentkezz be, nyisd meg a Mentés visszaállítása oldalt, és használd az Adataim törlése gombot. Ez törli a fiókot, a játékadatait, a megőrzött zipeket és a fotókat, és kijelentkeztet. A Steam-azonosítód ezután feledésbe merül; újbóli bejelentkezéskor új fiók jön létre.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>A szerver üzemeltetője mindezt láthatja.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Erősítsd meg a(z) {0} kódot a böngésződben.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>A bejelentkezést nem erősítették meg időben. Próbáld újra.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>A szerver nem érhető el. Próbáld újra.</value></data>
 </root>
