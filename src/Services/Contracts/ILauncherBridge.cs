@@ -9,7 +9,8 @@ public interface ILauncherBridge
     /// <param name="kind">launcher or game</param>
     void ClearCache(string kind);
     void OpenExternal(string url);
-    void StartGame(string url);
+    /// <summary>Starts the game client; a failure is a <see cref="Result"/> whose Error is a text key.</summary>
+    Result StartGame(string url);
     /// <summary>Ctrl+D in the launcher window.</summary>
     void ToggleDevTools();
     /// <summary>The launcher has updated itself: start the new one.</summary>

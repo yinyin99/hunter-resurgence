@@ -25,7 +25,8 @@ public class ServerServersServiceTests
         public void OpenFolder(string kind) { }
         public void ClearCache(string kind) { }
         public void OpenExternal(string url) { }
-        public void StartGame(string url) => Started.Add(url);
+        public Result Next = Result.Success;
+        public Result StartGame(string url) { Started.Add(url); return Next; }
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
     }
@@ -101,6 +102,14 @@ public class ServerServersServiceTests
         Assert.Equal(["game://play.test/session"], bridge.Started);
         var post = Assert.Single(fake.Seen);
         Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret", "reserve=2&lodge=101&time=480&loadout=4"), (post.Method, post.Path, post.Cookie, post.Body));
+    }
+
+    [Fact]
+    public async Task AGameThatDoesNotStartFailsTheStartWithTheBridgesError()
+    {
+        var bridge = new Bridge { Next = Result.Fail("Launch.NoGame") };
+        var result = await Make(new Fake(Answer), bridge).StartSingleAsync(2, 101, 480, 0);
+        Assert.Equal((false, "Launch.NoGame"), (result.Ok, result.Error));
     }
 
     [Fact]

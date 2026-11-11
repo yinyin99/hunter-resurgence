@@ -67,10 +67,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
             request.Content = new FormUrlEncodedContent(form.Select(f => KeyValuePair.Create(f.Item1, f.Item2)));
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerLaunch>() is { Url.Length: > 0 } launch)
-            {
-                bridge.StartGame(launch.Url);
-                return Result.Success;
-            }
+                return bridge.StartGame(launch.Url);
             log.LogWarning("The server refused {Path} ({Status})", ServerLaunchApi.Launch, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

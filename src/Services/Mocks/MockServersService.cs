@@ -63,7 +63,6 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     {
         log.LogInformation("start {What}", what);
         await Task.Delay(300);
-        bridge.StartGame("hunt://mock/" + Uri.EscapeDataString(what));
-        return Result.Success;
+        return bridge.StartGame("hunt://mock/" + Uri.EscapeDataString(what));
     }
 }
