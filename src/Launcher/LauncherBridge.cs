@@ -27,7 +27,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (install() is not { } g || !File.Exists(g.ClientExe)) return Result.Fail("Launch.NoGame");
         if (url.Any(c => char.IsWhiteSpace(c) || c == '"')) return Result.Fail("Launch.Failed");
         if (isRunning(g.ClientExe)) return Result.Fail("Launch.AlreadyRunning");
-        return start(new(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = g.Folder }) ? Result.Success : Result.Fail("Launch.StartFailed");
+        // the exe's own folder: the client finds its data and writes its logs relative to the working folder
+        return start(new(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) }) ? Result.Success : Result.Fail("Launch.StartFailed");
     }
 
     static bool Start(ProcessStartInfo i)

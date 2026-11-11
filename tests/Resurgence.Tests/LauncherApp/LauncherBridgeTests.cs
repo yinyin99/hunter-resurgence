@@ -21,7 +21,8 @@ public class LauncherBridgeTests
     public void StartsTheExeInItsFolderUnlessItAlreadyRuns()
     {
         var dir = Directory.CreateTempSubdirectory().FullName;
-        var exe = Path.Combine(dir, "client.exe");
+        // the exe sits in a subfolder of the game folder, as `client_exe` allows: it must start in its own folder
+        var exe = Path.Combine(Directory.CreateDirectory(Path.Combine(dir, "bin")).FullName, "client.exe");
         File.WriteAllText(exe, "");
         try
         {
@@ -32,7 +33,7 @@ public class LauncherBridgeTests
             Assert.True(b.StartGame("srv://x").Ok);
             var i = Assert.Single(started);
             Assert.Equal(exe, i.FileName);
-            Assert.Equal(dir, i.WorkingDirectory);
+            Assert.Equal(Path.GetDirectoryName(exe), i.WorkingDirectory);
             Assert.StartsWith("/connect:srv://x /param:", i.Arguments);
 
             running = true;
