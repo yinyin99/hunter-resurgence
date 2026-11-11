@@ -20,10 +20,16 @@ else
     @foreach (var g in skills.GroupBy(s => s.Group))
     {
         <h4 class="group">@L.Term(g.Key ?? "")</h4>
-        @foreach (var s in g)
-        {
-            <div class="item">@if (Mode.Live && s.Id is { } id) { <AssetSlot Name="@Mode.ItemSlot((int)id)" Width="30" Height="30" /> }<span>@s.Name</span>@foreach (var r in s.Rings) { @Ring(r) }</div>
-        }
+        <div class="weapons">
+            @foreach (var s in g)
+            {
+                <div class="weapon">
+                    <div class="name">@s.Name</div>
+                    <div class="pic">@if (s.Id is { } id) { <AssetSlot Name="@Mode.ItemSlot((int)id)" Width="230" Height="50" /> }</div>
+                    @foreach (var r in s.Rings) { @Ring(r) }
+                </div>
+            }
+        </div>
     }
 }
 

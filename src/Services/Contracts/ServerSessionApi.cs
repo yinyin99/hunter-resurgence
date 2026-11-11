@@ -72,9 +72,9 @@ public sealed record ServerTrophy(string Name, string Date, long? CompetitionId 
 /// <summary>A hunter's dogs of <see cref="ServerSessionApi.DogsSuffix"/>: <c>Percent</c> is the way to the next level.</summary>
 public sealed record ServerDogs(ServerDog[] Dogs);
 
-public sealed record ServerDog(string Name, string Type, int Level, int Percent, ServerDogSkill[] Skills, string[] Trophies);
+public sealed record ServerDog(int Id, string Name, string Type, string? Variation, int Level, int Percent, ServerDogSkill[] Skills, int Ribbons);
 
-public sealed record ServerDogSkill(string Title, int Level);
+public sealed record ServerDogSkill(string Skill, string Title, string Type, int Level);
 
 /// <summary>A hunter's ranks and milestones of <see cref="ServerSessionApi.RanksSuffix"/>: <c>Cap</c> is the most a rank row adds to the hunterscore.</summary>
 public sealed record ServerRanks(long Cap, ServerRank[] Ranks, ServerMilestone[] Milestones);

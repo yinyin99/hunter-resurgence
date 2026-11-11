@@ -78,8 +78,8 @@ public static class HuntersApi
                 ? Json(200, state.PublicDogs(id))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterDogs").WithSummary("A hunter's dogs: name, level and skills")
-            .WithDescription("`{dogs: [{name, type, level, percent, skills: [{title, level}], trophies: [string]}]}`, one per owned dog (`type` is the item's name, `level` from its experience "
-                             + "and the connect's `dog_skills`, `percent` the way to the next level); 404 for a handle that is unknown or banned.")
+            .WithDescription("`{dogs: [{id, name, type, variation, level, percent, skills: [{skill, title, type, level}], ribbons}]}`, one per owned dog (`id` is the item's id, `type` the item's name, `variation` its variation name "
+                             + "or null, `level` from its experience and the connect's `dog_skills`, `percent` the way to the next level, `ribbons` the ribbon trophies reached, `skills` the breed skills once each); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/ranks", (string handle) => state.PublicAccount(handle) is { } id

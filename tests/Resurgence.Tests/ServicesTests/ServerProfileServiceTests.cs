@@ -298,17 +298,16 @@ public class ServerProfileServiceTests
     [Fact]
     public void TheRanksTabHasAServerSource() => Assert.Contains("ranks", ServerProfileService.Tabs);
 
-    const string Dogs = """{"dogs":[{"name":"Rex","type":"Test Hound","level":2,"percent":25,"skills":[{"title":"Loyalty One","level":1}],"trophies":["Ribbon"]}]}""";
+    const string Dogs = """{"dogs":[{"id":501,"name":"Rex","type":"Test Hound","variation":"Black","level":2,"percent":25,"skills":[{"skill":"LOYALTY_ONE","title":"Loyalty One","type":"loyalty","level":2}],"ribbons":3}]}""";
 
     [Fact]
-    public async Task DogsCarryTheirLevelSkillsAndTrophies()
+    public async Task DogsCarryTheirItemLevelSkillsAndRibbons()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Dogs));
         var dog = Assert.Single(await Make(fake).DogsAsync("fox"));
         Assert.Equal("/hunters/fox/dogs", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal(("Rex", "Test Hound", 2, 25), (dog.Name, dog.Type, dog.Level, dog.Percent));
-        Assert.Equal(["Ribbon"], dog.Trophies);
-        Assert.Equal([("Loyalty One", 1)], dog.Skills.Select(s => (s.Title, s.Level)));
+        Assert.Equal((501, "Rex", "Test Hound", "Black", 2, 25, 3), (dog.Id, dog.Name, dog.Type, dog.Variation, dog.Level, dog.Percent, dog.Ribbons));
+        Assert.Equal([("LOYALTY_ONE", "Loyalty One", "loyalty", 2)], dog.Skills.Select(s => (s.Skill, s.Title, s.Type, s.Level)));
     }
 
     [Theory]

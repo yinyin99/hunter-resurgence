@@ -46,10 +46,13 @@ public sealed record Photo(long Id, string Animal, double Score, string Url, str
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
 /// <param name="Image">The picture's file name without its extension, which names the slot <c>trophy-&lt;image&gt;</c> (null: the mock's, by <see cref="Name"/>).</param>
 public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition, string? Image = null);
-/// <summary>A skill the dog has unlocked; <see cref="Description"/> shows when the pointer rests on it.</summary>
-public sealed record DogSkill(string Title, string Description, int Level);
+/// <summary>A breed skill of a dog: <see cref="Skill"/> is its define without the prefix (<c>LOYALTY_STAMINA</c>, which names the picture), <see cref="Title"/> shows when the pointer rests on it.</summary>
+public sealed record DogSkill(string Skill, string Title, string Type, int Level);
+/// <param name="Id">The dog item's id, which names its picture.</param>
+/// <param name="Type">The dog item's name, <see cref="Variation"/> its variation.</param>
 /// <param name="Percent">Experience on the way to the next level.</param>
-public sealed record Dog(string Name, string Type, int Level, int Percent, IReadOnlyList<DogSkill> Skills, IReadOnlyList<string> Trophies);
+/// <param name="Ribbons">The ribbon trophies reached.</param>
+public sealed record Dog(int Id, string Name, string Type, string? Variation, int Level, int Percent, IReadOnlyList<DogSkill> Skills, int Ribbons);
 public sealed record ProfileFriend(string Handle, int HunterScore);
 
 /// <summary>A line of a scoring sheet; the three values sit in the columns of the sheet kind (null stays empty).</summary>

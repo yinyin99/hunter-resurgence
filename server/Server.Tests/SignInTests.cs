@@ -411,11 +411,15 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         var dogs = JsonNode.Parse((await Get("web.test", "/hunters/third/dogs")).Body)!;
         // 150.5 of 100..300: level 2 and a quarter of the way; no experience: level 1; 300 starts the span to the row that is level 5 (its lvl, not the fourth row's number)
+        // 700 is in no breed group: its unlocked skills, each once at the number of unlocks
         Eq("""
-            {"dogs": [{"name": "Rex", "type": "Test Hound", "level": 2, "percent": 25, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]},
-                      {"name": "", "type": "Test Hound", "level": 1, "percent": 0, "skills": [{"title": "Loyalty One", "level": 1}], "trophies": []},
-                      {"name": "Old", "type": "Test Hound", "level": 3, "percent": 0, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]},
-                      {"name": "Max", "type": "Test Hound", "level": 5, "percent": 100, "skills": [{"title": "Loyalty One", "level": 1}, {"title": "Point Two", "level": 2}], "trophies": ["Ribbon"]}]}
+            {"dogs": [{"id": 700, "name": "Rex", "type": "Test Hound", "variation": null, "level": 2, "percent": 25, "ribbons": 1,
+                       "skills": [{"skill": "LOYALTY_ONE", "title": "Loyalty One", "type": "loyalty", "level": 1}, {"skill": "POINT_TWO", "title": "Point Two", "type": "pointing", "level": 1}]},
+                      {"id": 700, "name": "", "type": "Test Hound", "variation": null, "level": 1, "percent": 0, "ribbons": 0, "skills": [{"skill": "LOYALTY_ONE", "title": "Loyalty One", "type": "loyalty", "level": 1}]},
+                      {"id": 700, "name": "Old", "type": "Test Hound", "variation": null, "level": 3, "percent": 0, "ribbons": 1,
+                       "skills": [{"skill": "LOYALTY_ONE", "title": "Loyalty One", "type": "loyalty", "level": 1}, {"skill": "POINT_TWO", "title": "Point Two", "type": "pointing", "level": 1}]},
+                      {"id": 700, "name": "Max", "type": "Test Hound", "variation": null, "level": 5, "percent": 100, "ribbons": 1,
+                       "skills": [{"skill": "LOYALTY_ONE", "title": "Loyalty One", "type": "loyalty", "level": 1}, {"skill": "POINT_TWO", "title": "Point Two", "type": "pointing", "level": 1}]}]}
             """, dogs);
         Eq("""{"dogs": []}""", JsonNode.Parse((await Get("web.test", "/hunters/one/dogs")).Body));  // an account without a dog
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/dogs")).Status);
@@ -1155,6 +1159,36 @@ public class DogsWithoutATableTests : StateTestBase
         state.CreateAccount(9, "third");
         using (var con = state.Store.Open(9))
             PlayerRows.AddItem(con, 1, 700, 0, null, O("""{"dog_name": "Rex", "experience": 150}"""));
-        Eq("""{"dogs": [{"name": "Rex", "type": "Test Hound", "level": 0, "percent": 0, "skills": [], "trophies": []}]}""", state.PublicDogs(9));
+        Eq("""{"dogs": [{"id": 700, "name": "Rex", "type": "Test Hound", "variation": null, "level": 0, "percent": 0, "skills": [], "ribbons": 0}]}""", state.PublicDogs(9));
+    }
+
+    [Fact]
+    public void TestABreedGroupDogListsItsTwelveSkillsOnceEachAtOnePlusItsUnlocks()
+    {
+        var connect = Fixtures.CONNECT;
+        connect["dog_skills"] = JsonNode.Parse("""
+            [{"lvl": 1, "xp": 0, "unlocks": [{"type": "loyalty", "skill": "DOG_SKILL_LOYALTY_STAMINA"}, {"type": "retrieving", "skill": "DOG_SKILL_RETRIEVE_RABBIT"}, {"type": "trophy", "define": "RIBBON"}]},
+             {"lvl": 2, "xp": 100, "unlocks": [{"type": "retrieving", "skill": "DOG_SKILL_RETRIEVE_RABBIT"}, {"type": "pointing", "skill": "DOG_SKILL_DETECTION"}, {"type": "trophy", "define": "RIBBON"}]},
+             {"lvl": 3, "xp": 200, "unlocks": [{"type": "retrieving", "skill": "DOG_SKILL_RETRIEVE_RABBIT"}, {"type": "trophy", "define": "RIBBON"}]}]
+            """);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS);
+        state.CreateAccount(9, "third");
+        using (var con = state.Store.Open(9))
+            PlayerRows.AddItem(con, 1, 501, 0, null, O("""{"dog_name": "Bo", "experience": 150}"""));
+        // 150 reaches two rows: stamina 1 + 1, rabbit 1 + 2, the pointing skill and the third row's unlocks do not count, two ribbons
+        var skills = new (string Type, string Skill, int Level)[]
+        {
+            ("loyalty", "LOYALTY_STAMINA", 2), ("loyalty", "LOYALTY_FOLLOW_OWNER", 1), ("loyalty", "LOYALTY_CMD", 1), ("loyalty", "LOYALTY_FOLLOW_STANCE", 1), ("loyalty", "LOYALTY_FOCUS", 1), ("loyalty", "LOYALTY_STOICISM", 1),
+            ("retrieving", "RETRIEVE_RABBIT", 3), ("retrieving", "RETRIEVE_WATERFOWL", 1), ("retrieving", "RETRIEVE_BLIND", 1), ("retrieving", "RETRIEVE_SOFT_MOUTH", 1), ("retrieving", "RETRIEVE_MARK_BIRD", 1), ("retrieving", "RETRIEVE_HONORING", 1),
+        };
+        var title = (string s) => string.Join(' ', s.Split('_').Select(w => w[0] + w[1..].ToLowerInvariant()));
+        Eq(new JsonObject
+        {
+            ["dogs"] = new JsonArray(new JsonObject
+            {
+                ["id"] = 501, ["name"] = "Bo", ["type"] = "Test Retriever", ["variation"] = "Black", ["level"] = 2, ["percent"] = 50, ["ribbons"] = 2,
+                ["skills"] = new JsonArray([.. skills.Select(x => (JsonNode?)new JsonObject { ["skill"] = x.Skill, ["title"] = title(x.Skill), ["type"] = x.Type, ["level"] = x.Level })]),
+            }),
+        }, state.PublicDogs(9));
     }
 }

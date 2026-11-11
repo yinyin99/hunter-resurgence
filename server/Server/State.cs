@@ -836,10 +836,22 @@ public sealed partial class State
         string.Join(' ', (define.StartsWith(prefix) ? define[prefix.Length..] : define).Split('_', StringSplitOptions.RemoveEmptyEntries)
             .Select(w => char.ToUpperInvariant(w[0]) + w[1..].ToLowerInvariant()));
 
-    /// <summary>What a profile page's dogs tab shows of an account: `dogs` [{name, type, level, percent, skills: [{title, level}], trophies}], one per
-    /// owned dog (an inventory row of the dog category and type): the name and the experience are its metadata's. The connect's `dog_skills` rows
-    /// (cumulative `xp`, `lvl`, `unlocks`) the experience has reached give the level (the last one's `lvl`, 0 without any), the skills (a define as
-    /// words, at its row's `lvl`) and the trophies; `percent` is the way to the next row (100 at the last, 0 without a table).</summary>
+    const string DogSkillPrefix = "DOG_SKILL_";
+    static readonly string[] DogLoyalty = ["LOYALTY_STAMINA", "LOYALTY_FOLLOW_OWNER", "LOYALTY_CMD", "LOYALTY_FOLLOW_STANCE", "LOYALTY_FOCUS", "LOYALTY_STOICISM"];
+
+    /// <summary>The dog items of a breed group, as the original website grouped them by item id, with the group's unlock type and skills.</summary>
+    static readonly (long[] Items, string Type, string[] Skills)[] DogGroups =
+    [
+        ([501, 502, 503, 504, 505, 506, 469, 470, 473, 474], "retrieving", ["RETRIEVE_RABBIT", "RETRIEVE_WATERFOWL", "RETRIEVE_BLIND", "RETRIEVE_SOFT_MOUTH", "RETRIEVE_MARK_BIRD", "RETRIEVE_HONORING"]),
+        ([622, 623, 624, 625], "scent", ["TRACK_BLOOD", "TRACK_HEELING", "TRACK_FOOTPRINT", "TRACK_FOCUS", "TRACK_SPEED", "TRACK_DISTANCE"]),
+        ([842, 843, 844, 845, 887, 888], "pointing", ["DETECTION", "AWARENESS", "DETECTION_RANGE", "DETECTION_RECOVERY", "CRITICAL_POSITION", "DETECTION_ACCURACY"]),
+    ];
+
+    /// <summary>What a profile page's dogs tab shows of an account: `dogs` [{id, name, type, variation, level, percent, skills: [{skill, title, type, level}], ribbons}], one per
+    /// owned dog (an inventory row of the dog category and type): `id` is the item's, the name and the experience are its metadata's. The connect's `dog_skills` rows
+    /// (cumulative `xp`, `lvl`, `unlocks`) the experience has reached give the level (the last one's `lvl`, 0 without any), the skills and the `ribbons` (the RIBBON trophy
+    /// unlocks); `percent` is the way to the next row (100 at the last, 0 without a table). A dog of a breed group (<see cref="DogGroups"/>) lists the six loyalty skills and its
+    /// group's six, each at 1 and one more per unlock reached, as the original website did; any other dog lists the skills it has unlocked, at the number of unlocks.</summary>
     public JsonObject PublicDogs(long account)
     {
         var table = Arr(G(connect, "dog_skills", null)).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.IsNum(r["lvl"])).OrderBy(r => Py.D(r["xp"])).ToList();
@@ -855,18 +867,25 @@ public sealed partial class State
             var level = reached.Count > 0 ? Py.L(reached[^1]["lvl"]) : 0;
             var from = reached.Count > 0 ? Py.D(reached[^1]["xp"]) : 0;
             var percent = reached.Count < table.Count ? (int)Math.Floor((experience - from) / (Py.D(table[reached.Count]["xp"]) - from) * 100) : table.Count > 0 ? 100 : 0;
-            var skills = new JsonArray();
-            var trophies = new JsonArray();
-            foreach (var r in reached)
-                foreach (var u in Arr(r["unlocks"]).OfType<JsonObject>())
-                    if (u["skill"] is { } skill)
-                        skills.Add(new JsonObject { ["title"] = Words((string)skill!, "DOG_SKILL_"), ["level"] = C(r["lvl"]) });
-                    else if ((string?)u["type"] == "trophy" && u["define"] is { } define)
-                        trophies.Add(Words((string)define!, ""));
+            var unlocks = reached.SelectMany(r => Arr(r["unlocks"]).OfType<JsonObject>()).ToList();
+            var ribbons = unlocks.Count(u => (string?)u["type"] == "trophy" && (string?)u["define"] == "RIBBON");
+            var group = DogGroups.FirstOrDefault(g => g.Items.Contains(Py.L(row["item_id"])));
+            List<(string Type, string Skill, int Level)> listed = group.Items is null ? []
+                : [.. DogLoyalty.Select(s => ("loyalty", s, 1)), .. group.Skills.Select(s => (group.Type, s, 1))];
+            foreach (var u in unlocks.Where(u => u["skill"] is not null))
+            {
+                var type = (string?)u["type"] ?? "";
+                var skill = (string)u["skill"]!;
+                skill = skill.StartsWith(DogSkillPrefix) ? skill[DogSkillPrefix.Length..] : skill;
+                var at = listed.FindIndex(x => x.Type == type && x.Skill == skill);
+                if (at < 0 && group.Items is null) { listed.Add((type, skill, 0)); at = listed.Count - 1; }
+                if (at >= 0) listed[at] = listed[at] with { Level = listed[at].Level + 1 };
+            }
+            var skills = new JsonArray([.. listed.Select(x => (JsonNode?)new JsonObject { ["skill"] = x.Skill, ["title"] = Words(x.Skill, ""), ["type"] = x.Type, ["level"] = x.Level })]);
             dogs.Add(new JsonObject
             {
-                ["name"] = C(G(metadata, "dog_name", null)) ?? "", ["type"] = C(item["name"]), ["level"] = level, ["percent"] = percent,
-                ["skills"] = skills, ["trophies"] = trophies,
+                ["id"] = Py.L(row["item_id"]), ["name"] = C(G(metadata, "dog_name", null)) ?? "", ["type"] = C(item["name"]), ["variation"] = C(G(item, "variationname", null)),
+                ["level"] = level, ["percent"] = percent, ["skills"] = skills, ["ribbons"] = ribbons,
             });
         }
         return new JsonObject { ["dogs"] = dogs };
