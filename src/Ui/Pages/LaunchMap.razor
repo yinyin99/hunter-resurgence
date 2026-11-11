@@ -134,6 +134,8 @@ else
         name = L["Launch.GameOf", session?.Handle ?? "Hunter01"];
         reserves = await Service.ReservesAsync();
         markers = await Service.MarkersAsync(reserve);
+        // the start ids are the server's: begin at the first lodge of the reserve, not at a number of the mock
+        if (markers.FirstOrDefault(m => m.Kind == MarkerKind.Lodge) is { } lodge) marker = lodge.Id;
         loadouts = await Service.LoadoutsAsync();
     }
 
