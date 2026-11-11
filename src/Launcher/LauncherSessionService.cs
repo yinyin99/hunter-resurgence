@@ -86,8 +86,8 @@ public sealed class LauncherSessionService : ISessionService
             }
             return Result.Fail(Expired);
         }
-        catch (OperationCanceledException) { return Result.Fail(Expired); }
-        catch (Exception e) when (e is HttpRequestException or JsonException or NotSupportedException or IOException or UnauthorizedAccessException) { return Result.Fail(Failed); }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) { return Result.Fail(Expired); } // the player left
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException or NotSupportedException or IOException or UnauthorizedAccessException) { return Result.Fail(Failed); }
     }
 
     void Save(string value)

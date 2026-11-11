@@ -18,7 +18,7 @@ public sealed class LauncherSessionServiceTests : IDisposable
     /// <summary>After this many pending polls the sign-in is confirmed; never when negative.</summary>
     int confirmAfter = 1;
     /// <summary>The poll answers 404 (the code ran out); the link request answers a proxy's page.</summary>
-    bool pollGone, linkBroken;
+    bool pollGone, linkBroken, slow;
 
     public LauncherSessionServiceTests()
     {
@@ -46,6 +46,7 @@ public sealed class LauncherSessionServiceTests : IDisposable
             var path = req.Url!.AbsolutePath;
             lock (seen) seen.Add($"{req.HttpMethod} {path}{(req.Headers["X-Requested-With"] is { } x ? " " + x : "")}");
             (int, string) reply = (404, "{}");
+            if (slow) await Task.Delay(500);
             if (req.HttpMethod == "POST" && path == "/auth/link" && linkBroken) reply = (502, "<html>");
             else if (req.HttpMethod == "POST" && path == "/auth/link")
                 reply = (200, $$"""{"code":"abcd1234abcd1234","userCode":"ABCD-1234","url":"{{root}}/auth/steam/login?link=abcd1234abcd1234","expires":300}""");
@@ -122,6 +123,14 @@ public sealed class LauncherSessionServiceTests : IDisposable
         Assert.Equal(Result.Fail("Signin.LinkFailed"), await service.SignInWithLinkAsync(_ => { }));
         Assert.Null(cookie.Value);
         Assert.False(File.Exists(File_));
+    }
+
+    [Fact]
+    public async Task AServerThatAnswersTooSlowlyFailsAsUnreachable()
+    {
+        slow = true;
+        var service = new LauncherSessionService(new HttpClient { BaseAddress = new Uri(root), Timeout = TimeSpan.FromMilliseconds(100) }, new ServerCookie(), File_, _ => { }, NullLogger<ServerSessionService>.Instance);
+        Assert.Equal(Result.Fail("Signin.LinkFailed"), await service.SignInWithLinkAsync(_ => { }));
     }
 
     [Fact]
