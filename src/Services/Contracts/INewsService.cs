@@ -1,6 +1,7 @@
 namespace Resurgence.Services;
 
-public sealed record DiscordMember(string Name, string? Playing);
+/// <param name="Avatar">The picture's address, null for the <c>avatar-discord</c> slot.</param>
+public sealed record DiscordMember(string Name, string? Playing, string? Avatar = null);
 public sealed record DiscordInfo(int Online, IReadOnlyList<DiscordMember> Members);
 
 public interface INewsService

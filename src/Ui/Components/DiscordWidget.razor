@@ -9,7 +9,7 @@
             <ul>
                 @foreach (var m in widget.Members)
                 {
-                    <li><AssetSlot Name="avatar-discord" Width="18" Height="18" Class="dot" /> <span>@m.Name</span> @if (m.Playing is not null) { <em>@m.Playing</em> }</li>
+                    <li>@if (m.Avatar is not null) { <img src="@m.Avatar" width="18" height="18" alt="" class="dot" /> } else { <AssetSlot Name="avatar-discord" Width="18" Height="18" Class="dot" /> } <span>@m.Name</span> @if (m.Playing is not null) { <em>@m.Playing</em> }</li>
                 }
             </ul>
         </div>

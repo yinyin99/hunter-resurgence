@@ -10,7 +10,7 @@ public sealed record DiscordInvite(DiscordInvite.Ref? Guild)
 
 public sealed record DiscordWidget([property: JsonPropertyName("presence_count")] int PresenceCount, DiscordWidget.Member[]? Members)
 {
-    public sealed record Member(string Username, Game? Game);
+    public sealed record Member(string Username, Game? Game, [property: JsonPropertyName("avatar_url")] string? AvatarUrl);
     public sealed record Game(string? Name);
 }
 
@@ -28,6 +28,6 @@ public sealed class DiscordNewsService(HttpClient http, string? invite, ServerCa
         if (code is null) return null;
         if (await invites.LoadAsync(http, null, $"https://discord.com/api/v10/invites/{code}", i => i.Guild?.Id is { Length: > 0 }, log) is not { Guild.Id: { } guild }) return null;
         var w = await widgets.LoadAsync(http, null, $"https://discord.com/api/v10/guilds/{Uri.EscapeDataString(guild)}/widget.json", w => w.Members is not null, log);
-        return w is null ? null : new(w.PresenceCount, [.. w.Members!.Select(m => new DiscordMember(m.Username, m.Game?.Name))]);
+        return w is null ? null : new(w.PresenceCount, [.. w.Members!.Select(m => new DiscordMember(m.Username, m.Game?.Name, m.AvatarUrl))]);
     }
 }

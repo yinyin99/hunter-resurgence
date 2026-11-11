@@ -23,7 +23,7 @@ public class DiscordNewsServiceTests
     static HttpResponseMessage Discord(HttpRequestMessage r, bool widgetOn) => r.RequestUri!.AbsolutePath switch
     {
         "/api/v10/invites/abc" => Json(HttpStatusCode.OK, """{"code": "abc", "guild": {"id": "42", "name": "Test"}}"""),
-        "/api/v10/guilds/42/widget.json" when widgetOn => Json(HttpStatusCode.OK, """{"id": "42", "presence_count": 3, "members": [{"username": "Ann", "game": {"name": "A game"}}, {"username": "Bob"}]}"""),
+        "/api/v10/guilds/42/widget.json" when widgetOn => Json(HttpStatusCode.OK, """{"id": "42", "presence_count": 3, "members": [{"username": "Ann", "game": {"name": "A game"}, "avatar_url": "https://cdn.test/a.png"}, {"username": "Bob"}]}"""),
         "/api/v10/guilds/42/widget.json" => Json(HttpStatusCode.Forbidden, """{"message": "Widget Disabled", "code": 50004}"""),
         _ => new(HttpStatusCode.NotFound),
     };
@@ -37,7 +37,7 @@ public class DiscordNewsServiceTests
         var info = await Make(new Fake(r => Discord(r, true)), "https://discord.gg/abc").DiscordAsync();
         Assert.NotNull(info);
         Assert.Equal(3, info.Online);
-        Assert.Equal([new DiscordMember("Ann", "A game"), new DiscordMember("Bob", null)], info.Members);
+        Assert.Equal([new DiscordMember("Ann", "A game", "https://cdn.test/a.png"), new DiscordMember("Bob", null)], info.Members);
     }
 
     [Fact]
