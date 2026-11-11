@@ -172,6 +172,9 @@
   <data name="Launch.Loadout" xml:space="preserve"><value>Startutrustning</value></data>
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Sist brukte utrustning</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Noe gikk galt under opprettelsen av spilløkten. Last serverlisten på nytt og prøv å bli med i et annet spill.</value></data>
+  <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kjører allerede.</value></data>
+  <data name="Launch.NoGame" xml:space="preserve"><value>Fant ikke spillet. Sjekk mappen i innstillingene.</value></data>
+  <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FINN ET FLERSPILLERSPILL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Finn et spill eller en vert...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Tøm</value></data>

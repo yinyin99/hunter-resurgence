@@ -67,7 +67,8 @@
 
     async Task Launch()
     {
-        await Servers.StartTutorialAsync(1);
+        var r = await Servers.StartTutorialAsync(1);
+        if (!r.Ok) { Modal.Alert(L[r.Error ?? "Launch.Failed"]); return; }
         Nav.NavigateTo("/signup/page5");
     }
 

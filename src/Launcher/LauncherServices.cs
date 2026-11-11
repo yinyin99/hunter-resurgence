@@ -24,6 +24,7 @@ static class LauncherServices
         services.AddSingleton(_ => images.Result);
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
+        services.AddSingleton<ILauncherBridge, LauncherBridge>();
         services.AddSingleton(new HostMode { Launcher = true, Mock = mock, Live = server is not null });
         // live: the launcher has no patch source yet, so the panel always reports ready
         services.AddSingleton<IPatchService>(new MockPatchService(server is null ? mock : null));

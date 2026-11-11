@@ -172,6 +172,9 @@
   <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Er is iets misgegaan bij het maken van je spelsessie. Laad de serverlijst opnieuw en probeer deel te nemen aan een ander spel.</value></data>
+  <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Het spel draait al.</value></data>
+  <data name="Launch.NoGame" xml:space="preserve"><value>Het spel is niet gevonden. Controleer de map in de instellingen.</value></data>
+  <data name="Launch.StartFailed" xml:space="preserve"><value>Het spel kon niet worden gestart.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>EEN MULTIPLAYERSPEL ZOEKEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Zoek een spel of host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Wissen</value></data>

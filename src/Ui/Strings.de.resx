@@ -172,6 +172,9 @@
   <data name="Launch.Loadout" xml:space="preserve"><value>Start-Ausrüstung</value></data>
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Letzte benutzte Ausrüstung</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Beim Erstellen Ihrer Spielsitzung ist ein Fehler aufgetreten. Bitte laden Sie die Serverliste neu und versuchen Sie, einem anderen Spiel beizutreten.</value></data>
+  <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Das Spiel läuft bereits.</value></data>
+  <data name="Launch.NoGame" xml:space="preserve"><value>Das Spiel wurde nicht gefunden. Prüfen Sie seinen Ordner in den Einstellungen.</value></data>
+  <data name="Launch.StartFailed" xml:space="preserve"><value>Das Spiel konnte nicht gestartet werden.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>MULTIPLAYER-SPIEL FINDEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Spiel oder Host finden...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Löschen</value></data>
