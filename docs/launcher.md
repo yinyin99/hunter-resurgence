@@ -102,10 +102,11 @@ Real today:
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
 - **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so is whether game settings were saved once (the next game start no longer asks). The game folder chosen by hand is saved there too and used from the next start.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
+- **Starting the game**: `LauncherBridge.StartGame` runs `<game folder>\<client_exe> /connect:<url> /param:<n> /steam` in the game folder; `<n>` is a random non-negative number with bit 128 clear. While that exe already runs, or when it is missing or fails to start, a message box says so and the launcher keeps running.
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
 - **The news**: the project's own posts and their carousel, the same as on the website (`src/Ui/NewsPosts.cs`, [website.md](website.md#sign-in)).
 
-Mock: sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
+Mock: sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders (they only log).
 
 ## Files on the PC
 

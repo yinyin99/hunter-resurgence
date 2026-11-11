@@ -23,6 +23,7 @@ static class LauncherServices
         services.AddSingleton(_ => images.Result);
         services.AddMockServices();
         services.AddSingleton<LauncherEnv>();
+        services.AddSingleton<ILauncherBridge, LauncherBridge>();
         services.AddSingleton(new HostMode { Launcher = true, Mock = mock });
         services.AddSingleton<IPatchService>(new MockPatchService(mock));
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
