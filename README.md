@@ -59,7 +59,7 @@ This project and the community server run by its maintainer take no donations (n
 
 ## Roadmap
 
-Released today: the backup tool, and the player kit, which lets you play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
+Released today: the backup tool, the launcher, and the player kit, which lets you play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
 
 1. **Profile backup** (available now; run it before 2026-11-11): the [backup tool](#for-players-the-backup-tool).
 2. **Community server, accounts and restore** (online now, early: play on it with the [player kit](#for-players-the-player-kit); see [docs/server.md](docs/server.md)).
