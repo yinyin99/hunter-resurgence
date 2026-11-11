@@ -372,13 +372,30 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return new(204, [("Cache-Control", "no-store"), ("Set-Cookie", Clear(SessionCookie, "/"))], [], "auth");
     }
 
-    /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page.</summary>
+    /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` (and `time` in minutes,
+    /// `loadout`, a number each) first opens the hunt there as start_single_player does; a form with `tutorial` opens that tutorial's session instead; 400 for anything else.</summary>
     public Reply Launch(Req r, GameTokens tokens)
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
-        return Account(r) is { } account
-            ? Json(200, new JsonObject { ["url"] = tokens.LaunchUrl(account) })
-            : Json(401, new JsonObject { ["error"] = "signed out" });
+        if (Account(r) is not { } account) return Json(401, new JsonObject { ["error"] = "signed out" });
+        var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
+        string F(string key) => form.TryGetValue(key, out var v) ? v[0] : "";
+        Reply Url(string? session = null) => Json(200, new JsonObject { ["url"] = tokens.LaunchUrl(account, session) });
+        if (F("tutorial") is { Length: > 0 } tutorial)
+        {
+            var id = Py.IsDigit(tutorial) && long.TryParse(tutorial, out var n) ? (n == 0 ? 1 : n) : 0;  // 0 is the first tutorial, as at start_tutorial
+            if (state.Tutorial(id) is null) return Json(400, new JsonObject { ["error"] = "unknown tutorial" });
+            var session = Store.CreateToken(account, Lifetimes.Session);
+            state.NoteTutorial(account, session, id);
+            return Url(session);
+        }
+        var (reserve, lodge, time, loadout) = (F("reserve"), F("lodge"), F("time"), F("loadout"));
+        if (reserve + lodge + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
+        static bool Whole(string s, bool optional = false) => s == "" ? optional : long.TryParse(s, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _);  // digits that fit a long
+        if (!Whole(reserve) || !Whole(lodge) || !Whole(time, true) || !Whole(loadout, true))
+            return Json(400, new JsonObject { ["error"] = "reserve and lodge are needed, time and loadout are numbers" });
+        state.NoteLaunch(account, Encoding.UTF8.GetBytes($"reserve={reserve}&lodge_id={lodge}&time={time}&loadout_id={loadout}"));
+        return Url();
     }
 
     /// <summary>GET / on the signup host: the launcher's start page.</summary>
