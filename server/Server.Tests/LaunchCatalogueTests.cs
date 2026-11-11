@@ -145,10 +145,28 @@ public class LaunchCatalogueTests : StateTestBase
     [InlineData("reserve=1&lodge=11&time=soon")]
     [InlineData("reserve=1&lodge=11&loadout=-1")]
     [InlineData("reserve=x&lodge=11")]
+    [InlineData("reserve=99999999999999999999&lodge=11")]  // more digits than a whole number holds
+    [InlineData("reserve=1&lodge=11&loadout=99999999999999999999")]
     public async Task AnIncompleteOrMalformedStartIsRefusedAndOpensNothing(string form)
     {
         Assert.Equal(400, (await Launch(form)).Status);
         Assert.Equal("", Open());
+    }
+
+    [Fact]
+    public async Task TheLoadoutsOfThePlayerAreListedForTheSignedInPlayerOnly()
+    {
+        await using var server = await Start();
+        state.GrantItems(ME, 811);  // one loadout per unit
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/loadouts", [])).Status);
+        var reply = await server.SendAsync("GET", "web.test", "/account/loadouts", [cookie]);
+        Assert.Equal(200, reply.Status);
+        var loadouts = JsonNode.Parse(reply.Body)!.AsArray();
+        using var con = state.Store.Open(ME);
+        Assert.Equal(con.Rows("SELECT id FROM loadouts WHERE account_id = $a ORDER BY id").Select(r => (long)r[0]), loadouts.Select(l => (long)l!["id"]!));
+        Assert.NotEmpty(loadouts);
+        Assert.All(loadouts, l => Assert.False(string.IsNullOrEmpty((string)l!["name"]!)));
     }
 
     [Fact]

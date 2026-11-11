@@ -145,7 +145,7 @@ else
     {
         (reserve, hover, centre) = (id, null, null);
         markers = await Service.MarkersAsync(id);
-        marker = markers.First(m => m.Kind == MarkerKind.Lodge).Id;
+        if (markers.FirstOrDefault(m => m.Kind == MarkerKind.Lodge) is { } lodge) marker = lodge.Id;
     }
 
     /// <summary>The old blur handler: only the first run of digits stays, empty falls back.</summary>

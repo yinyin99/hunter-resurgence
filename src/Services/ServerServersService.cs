@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace Resurgence.Services;
 
 /// <summary>The launch map of the community server: the reserves, their starts and the tutorials are its catalogue (<see cref="ServerCatalogApi.Reserves"/>), the loadouts are the player's
-/// (<see cref="ServerAccountApi.Loadouts"/>), and a start asks the server to open the hunt (<see cref="ServerLaunchApi.Launch"/>) and hands the launch address it answers to
+/// (<see cref="ServerAccountApi.Loadouts"/>), and a start asks the server to open the hunt (<see cref="ServerLaunchApi.Launch"/>) and hands the launch URL it answers to
 /// <see cref="ILauncherBridge.StartGame"/>. The server has no multiplayer: no game is listed and creating or joining one fails. A server that does not answer is an empty map, never the mock's.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The catalogue is the same for everyone and is asked without the session cookie; the loadouts and a start carry it.</param>

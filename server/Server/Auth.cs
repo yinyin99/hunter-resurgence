@@ -391,7 +391,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         }
         var (reserve, lodge, time, loadout) = (F("reserve"), F("lodge"), F("time"), F("loadout"));
         if (reserve + lodge + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
-        if (!Py.IsDigit(reserve) || !Py.IsDigit(lodge) || !(time == "" || Py.IsDigit(time)) || !(loadout == "" || Py.IsDigit(loadout)))
+        static bool Whole(string s, bool optional = false) => s == "" ? optional : long.TryParse(s, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _);  // digits that fit a long
+        if (!Whole(reserve) || !Whole(lodge) || !Whole(time, true) || !Whole(loadout, true))
             return Json(400, new JsonObject { ["error"] = "reserve and lodge are needed, time and loadout are numbers" });
         state.NoteLaunch(account, Encoding.UTF8.GetBytes($"reserve={reserve}&lodge_id={lodge}&time={time}&loadout_id={loadout}"));
         return Url();
