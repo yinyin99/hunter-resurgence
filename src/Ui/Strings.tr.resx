@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Sorularınızın cevabını forumda veya wikide bulamazsanız destek sistemimizde bir talep oluşturabilirsiniz; size olabildiğince çabuk yardımcı olmaya çalışacağız!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Desteği</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forumu</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Yedeğin veya hesabın hakkında sorun mu var? Discord'da sor</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (ayrıca {1}, {2} ve {3} dillerinde)</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>Almanca</value></data>

@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Jos et löydä vastausta kysymyksiisi foorumilta tai wikistä, voit avata tukipyynnön tukijärjestelmässämme, niin yritämme auttaa sinua mahdollisimman pian!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-tuki</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-foorumi</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Kysyttävää varmuuskopiosta tai tilistä? Kysy Discordissa</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (myös kielillä: {1}, {2} ja {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>saksa</value></data>

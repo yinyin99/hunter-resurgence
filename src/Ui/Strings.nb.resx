@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Hvis du ikke finner svar på spørsmålene dine i forumet eller wikien, kan du opprette en sak i støttesystemet vårt, så prøver vi å hjelpe deg så raskt som mulig!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-støtte</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Spørsmål om sikkerhetskopien eller kontoen din? Spør på Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (også på {1}, {2} og {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>tysk</value></data>

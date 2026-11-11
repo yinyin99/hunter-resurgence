@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Pokud odpověď na své otázky nenajdete na fóru ani na wiki, můžete založit tiket v našem systému podpory a my se vám pokusíme pomoci co nejrychleji!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Podpora {game}</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>Fórum {game}</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Dotazy k záloze nebo účtu? Zeptejte se na Discordu</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (také {1}, {2} a {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>německy</value></data>
