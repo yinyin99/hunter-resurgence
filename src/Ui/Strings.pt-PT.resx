@@ -1294,4 +1294,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar os seus dados</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Inicie sessão, abra Restaurar a cópia de segurança e utilize Eliminar os meus dados. Elimina a conta, os respetivos dados de jogo, os zips guardados e as fotografias, e termina a sua sessão. O seu ID Steam é então esquecido; iniciar sessão novamente cria uma conta nova.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>O operador deste servidor pode ver tudo o que foi indicado acima.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Confirme o código {0} no seu navegador.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>O início de sessão não foi confirmado a tempo. Tente novamente.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Não foi possível contactar o servidor. Tente novamente.</value></data>
 </root>

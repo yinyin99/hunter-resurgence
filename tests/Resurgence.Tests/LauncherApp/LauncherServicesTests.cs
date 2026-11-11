@@ -44,6 +44,7 @@ public class LauncherServicesTests
         Assert.True(live.GetRequiredService<Resurgence.Ui.HostMode>().Live);
         Assert.Equal(Resurgence.Services.PatchState.Ready, live.GetRequiredService<Resurgence.Services.IPatchService>().StatusAsync().Result.State);
         Assert.Same(live.GetRequiredService<Resurgence.Services.ServerCookie>(), live.GetRequiredService<Resurgence.Services.ServerCookie>());
+        Assert.IsType<Resurgence.Launcher.LauncherSessionService>(live.GetRequiredService<Resurgence.Services.ISessionService>()); // the profile service reads this one
     }
 
     [Theory]
