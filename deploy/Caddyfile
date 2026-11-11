@@ -6,13 +6,27 @@
 	header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 }
 
+# the server on the website's domain: the browser's Host decides here, never a header a visitor set
+(to_server) {
+	reverse_proxy server:8080 {
+		import client_ip
+		header_up -X-Game-Host
+	}
+}
+
 {$SITE_DOMAIN} {
 	tls /certs/origin.pem /certs/origin.key
 	encode zstd gzip
 	header -Server
 
-	# the server's own paths on the website's domain: sign-in and what goes with it, the backup tool's upload and the gallery photos. The one place to change them.
-	@server_paths path /auth/* /account/restore/* /photos/*
+	# the server's own paths on the website's domain: sign-in and what goes with it, the account's own data (the backup tool's upload too), the public profiles and
+	# boards, the store's catalogue, the gallery photos. The launcher on a player's PC calls them here, the website's server over SERVER_URL. The one place to change them.
+	@server_paths path /auth/* /account/* /hunters /hunters/* /catalog/* /photos/*
+	# the minigames' boards share their paths with the website's leaderboard pages: a page load asks for HTML and stays the website's
+	@server_boards {
+		path /leaderboards/*
+		not header Accept *text/html*
+	}
 	# every game request of a player's local forwarder: the hostname the game asked for is in X-Game-Host
 	@game header X-Game-Host *
 
@@ -22,11 +36,10 @@
 		}
 	}
 	handle @server_paths {
-		reverse_proxy server:8080 {
-			import client_ip
-			# the browser's Host decides here, never a header a visitor set
-			header_up -X-Game-Host
-		}
+		import to_server
+	}
+	handle @server_boards {
+		import to_server
 	}
 	handle {
 		reverse_proxy web:8080 {
