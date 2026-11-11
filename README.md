@@ -43,6 +43,16 @@ The player kit connects your game to the community server over the internet. Dow
 
 Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md). The whole way from backup to playing: [the player guide](docs/guide.md).
 
+## For players: the launcher
+
+Download `launcher-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest), unpack it (keep `resurgence-launcher.exe`, `settings.json` and `wwwroot` together) and start `resurgence-launcher.exe`. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
+
+1. In Steam, right-click the game, choose Properties, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into Launch options, with the real path. Steam's Play button then opens the launcher.
+2. Sign in with the code link the sign-in page shows (the same account as on the website).
+3. The launcher starts the game for you. **You still need the [player kit](#for-players-the-player-kit)**: it is what points the game at the community server.
+
+Details and the files it writes: [docs/launcher.md](docs/launcher.md).
+
 ## No money, ever
 
 This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
@@ -59,7 +69,7 @@ Released today: the backup tool, and the player kit, which lets you play on the 
    - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The [claim key](docs/backup.md#claim-key) in a backup is a hint that it is yours, not proof.
 3. **Offline play** (planned): the same server on your own PC or local network.
 4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
-5. **New launcher** (in development, no download yet; the game settings editor works, the rest shows sample data; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. Steam's Play button opens it once you set a [Steam launch option](docs/launcher.md#start-it-from-steam).
+5. **New launcher** (download in the release, early; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. See [For players: the launcher](#for-players-the-launcher).
 6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards, every player's profile with all its tabs, and, for the signed-in player, the wallet history, the missions (the daily ones too), the friends and the messages (read only); competitions, seasons and the bank are not offered.
 7. **Later**: the bait-site pages inside the game, multiplayer, competitions.
 

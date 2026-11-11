@@ -24,7 +24,7 @@ dotnet run --project src/Launcher -c Release
 dotnet test tests/Resurgence.Tests -c Release
 ```
 
-The exe is `resurgence-launcher.exe`. There is no distributable build yet.
+The exe is `resurgence-launcher.exe`. To make the release zip: `src\Launcher\publish.cmd <your settings.json> [version]` publishes the self-contained exe, copies your `settings.json` next to it and zips `resurgence-launcher.exe`, `settings.json` and `wwwroot` (the page the exe shows; the exe does not start without it) to `src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\launcher-win-x64.zip`. The release workflow does this for a tag when the repository secret `PLAY_SERVER_URL` is set, with the example `settings.json` and that value as `server_url` (the other keys stay placeholders, i.e. not configured), attests the zip and puts its SHA-256 in the release notes; CI builds the zip with the example settings and checks its content.
 
 The launcher's tests (folder `LauncherApp` of `tests/Resurgence.Tests`) use a temporary Steam folder tree, temporary settings files, temporary backup zips and a test website on 127.0.0.1 (the list of pictures). They read and change nothing else on the PC, with one exception: `LauncherServicesTests` and `LanguageSwitcherTests` build the launcher's real services, so they read `launcher.json` (the second test points it at a temporary file), the Steam registry keys and the game search the way a start does (missing sources give the defaults); they write nothing but that temporary file. `dotnet test` exits 0 when every test passes.
 
@@ -128,7 +128,7 @@ Nothing else is read from or written to the game's folders. Steam's registry key
 
 ## Start it from Steam
 
-Install the launcher anywhere. In Steam, right-click the game, choose Properties, and paste this into Launch options with the real path:
+Download `launcher-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and unpack it anywhere, keeping `resurgence-launcher.exe`, `settings.json` and the `wwwroot` folder together. Windows may warn that the exe is not code-signed: choose **More info**, then **Run anyway**. In Steam, right-click the game, choose Properties, and paste this into Launch options with the real path:
 
 ```
 "C:\path\to\resurgence-launcher.exe" %command%
