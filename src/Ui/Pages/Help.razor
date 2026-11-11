@@ -22,6 +22,7 @@
                 <ul class="links">
                     <li><ExternalLink Key="support">@L["Help.Support.LinkSupport"]</ExternalLink></li>
                     <li><ExternalLink Key="forum">@L["Help.Support.LinkForum"]</ExternalLink></li>
+                    @if (Brand.Link("discord") is not null) { <li><ExternalLink Key="discord">@L["Help.Support.LinkDiscord"]</ExternalLink></li> }
                     <li>@L.Frag("Help.Support.Wiki", Ext("wiki", L["Help.Support.LinkWiki"]), Ext("wiki_de", L["Help.Lang.German"]), Ext("wiki_fr", L["Help.Lang.French"]), Ext("wiki_es", L["Help.Lang.Spanish"]))</li>
                     <li><ExternalLink Key="support_connections">@L["Help.Support.Connections"]</ExternalLink></li>
                 </ul>

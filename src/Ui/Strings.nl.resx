@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Als je in het forum of de wiki geen antwoord op je vragen vindt, kun je een ticket openen in ons supportsysteem. Dan proberen we je zo snel mogelijk te helpen!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-support</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Vragen over je back-up of account? Vraag het op Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (ook in het {1}, {2} en {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>Duits</value></data>

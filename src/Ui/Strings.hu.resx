@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Ha a fórumon vagy a wikiben nem találod meg a kérdéseidre a választ, nyithatsz egy jegyet a támogatási rendszerünkben, és igyekszünk a lehető leggyorsabban segíteni!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} ügyfélszolgálat</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} fórum</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Kérdésed van a mentéseddel vagy a fiókoddal kapcsolatban? Kérdezz a Discordon</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (további nyelvek: {1}, {2} és {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>német</value></data>

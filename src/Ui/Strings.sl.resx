@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Če odgovora na svoja vprašanja ne najdeš na forumu ali wikiju, lahko v našem sistemu za podporo odpreš zahtevek in poskusili ti bomo pomagati čim prej!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Podpora {game}</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>Forum {game}</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Vprašanja o varnostni kopiji ali računu? Vprašajte na Discordu</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (tudi v jezikih: {1}, {2} in {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>nemščina</value></data>

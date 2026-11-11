@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Se você não encontrar resposta para suas dúvidas no fórum ou na wiki, abra um ticket no nosso sistema de suporte e tentaremos ajudar o mais rápido possível!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Suporte de {game}</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>Fórum de {game}</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Dúvidas sobre seu backup ou sua conta? Pergunte no Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki de {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (também em {1}, {2} e {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>alemão</value></data>

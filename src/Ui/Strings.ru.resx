@@ -1122,6 +1122,7 @@
   <data name="Help.Support.Ticket" xml:space="preserve"><value>Если вы не нашли ответ на свои вопросы на форуме или в вики, можете создать обращение в нашей системе поддержки, и мы постараемся помочь вам как можно быстрее!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Поддержка {game}</value></data>
   <data name="Help.Support.LinkForum" xml:space="preserve"><value>Форум {game}</value></data>
+  <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Вопросы о резервной копии или аккаунте? Спросите в Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Вики {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (также на {1}, {2} и {3})</value></data>
   <data name="Help.Lang.German" xml:space="preserve"><value>немецком</value></data>
