@@ -329,7 +329,7 @@ public class HunterscoreTests : StateTestBase
             [{"id": 0, "category": 0, "group": 0, "group_title": "Total", "icon_url": "0/1_90.png", "value": "animal.*.ethical_kills", "triggers": [1, 2, 50]},
              {"id": 1, "category": 0, "group": 1, "group_title": "Mule Deer", "icon_url": "0/2_90.png", "value": "animal.MULE_DEER.ethical_kills", "triggers": [1, 25]},
              {"id": 13, "category": 1, "group": 0, "group_title": "Test Rifle", "icon_url": "1/3_90.png", "value": "weapon.TEST_RIFLE.*.ethical_kills", "triggers": [1, 25]},
-             {"id": 25, "category": 2, "group": 0, "group_title": "Distance", "icon_url": "2/4_90.png", "value": "distance", "triggers": [10, 42]},
+             {"id": 25, "category": 2, "group": 0, "group_title": "Distance", "icon_url": "", "value": "distance", "triggers": [10, 42]},
              {"id": 90, "category": 3, "group_title": "No such tab", "value": "distance", "triggers": [1]},
              {"id": 91, "category": 0, "group_title": "No path", "value": null, "triggers": [1]}]
             """);
@@ -349,7 +349,7 @@ public class HunterscoreTests : StateTestBase
              "ranks": [{"id": 1, "category": "animals", "name": "One", "value": 1501}, {"id": 2, "category": "animals", "name": "Rabbit", "value": 0},
                        {"id": 3, "category": "weapons", "name": "Five", "value": 1501}],
              "milestones": [{"category": "animals", "title": "Total", "icon": "0/1_90", "steps": [1, 2, 50], "value": 1501}, {"category": "animals", "title": "Mule Deer", "icon": "0/2_90", "steps": [1, 25], "value": 1501},
-                            {"category": "weapons", "title": "Test Rifle", "icon": "1/3_90", "steps": [1, 25], "value": 1501}, {"category": "exploration", "title": "Distance", "icon": "2/4_90", "steps": [10, 42], "value": 12}]}
+                            {"category": "weapons", "title": "Test Rifle", "icon": "1/3_90", "steps": [1, 25], "value": 1501}, {"category": "exploration", "title": "Distance", "icon": null, "steps": [10, 42], "value": 12}]}
             """, state.PublicRanks(B));
         state.CreateAccount(9, "third");
         Eq("""[{"id": 1, "category_id": 1, "value": 0}, {"id": 2, "category_id": 1, "value": 0}, {"id": 3, "category_id": 2, "value": 0}]""", JsonNode.Parse(state.RanksReply(9)));  // an account without a count
