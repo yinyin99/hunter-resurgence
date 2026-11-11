@@ -195,8 +195,8 @@ public sealed partial class State
 
     /// <summary>What a profile page's ranks tab and milestones show of an account, `GET /hunters/&lt;handle&gt;/ranks`: `cap` (what a rank row adds to the
     /// hunterscore at most), `ranks` [{id, category: animals|weapons|collectables, name, value}] (the rows of <see cref="RanksReply"/> with their titles) and
-    /// `milestones` [{category: animals|weapons|exploration|day-mission, title, steps, value}], one per connect `achievements` definition: its
-    /// group's title, its `triggers` thresholds and the counter its `value` path names (<see cref="AchievementValue"/>, whole).</summary>
+    /// `milestones` [{category: animals|weapons|exploration|day-mission, title, icon, steps, value}], one per connect `achievements` definition: its
+    /// group's title, its `icon_url` without the extension (null without one), its `triggers` thresholds and the counter its `value` path names (<see cref="AchievementValue"/>, whole).</summary>
     public JsonObject PublicRanks(long account)
     {
         var stats = StatisticsOf(account);
@@ -210,6 +210,7 @@ public sealed partial class State
                 milestones.Add(new JsonObject
                 {
                     ["category"] = kind, ["title"] = C(def["group_title"]) ?? "",
+                    ["icon"] = Py.IsStr(def["icon_url"]) && (string)def["icon_url"]! is { Length: > 0 } icon ? System.IO.Path.ChangeExtension(icon, null) : null,
                     ["steps"] = new JsonArray([.. Arr(def["triggers"]).Where(Py.IsNum).Select(t => (JsonNode?)Py.L(t))]),
                     ["value"] = (long)Math.Clamp(Math.Floor(AchievementValue(stats, (string)def["value"]!)), 0, 1e15),
                 });

@@ -98,7 +98,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     }
     /// <summary>The milestones of a kind (animals, weapons, exploration or day-mission) from <c>GET /hunters/&lt;handle&gt;/ranks</c>: the steps reached of each row's thresholds. A failed answer is none.</summary>
     public async Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind) => await GetRanksAsync(handle) is { } r
-        ? [.. r.Milestones.Where(m => m.Category == kind).Select(m => new Milestone(m.Title, m.Steps.Count(s => m.Value >= s), [.. m.Steps.Select(Count)], Count(m.Value)))]
+        ? [.. r.Milestones.Where(m => m.Category == kind).Select(m => new Milestone(m.Title, m.Steps.Count(s => m.Value >= s), [.. m.Steps.Select(Count)], Count(m.Value), m.Icon))]
         : [];
     public Task<IReadOnlyList<Challenge>> ChallengesAsync(string handle) => mock.ChallengesAsync(handle);
     /// <summary><c>GET /hunters/&lt;handle&gt;/skills</c>: the species with their spotting and tracking rings, or the weapons grouped by their category with a shooting ring. A failed answer is no skills.</summary>

@@ -269,18 +269,22 @@ public sealed class LiveSiteTests : UiContext
 
 
     [Fact]
-    public void TheAchievementsTabShowsTheServersOverviewOnly()
+    public void TheAchievementsTabShowsTheServersOverviewAndMilestonePagesButNoChallenges()
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
         const string achievements = """{"categories":[{"name":"Animals","level":1,"done":4,"total":5}],"unlocked":4,"recent":[{"title":"25 Mule Deer","description":"25 Mule Deer harvested.","date":"2023-11-15"}]}""";
-        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", achievements: achievements)) { BaseAddress = new Uri("http://server.test") },
+        const string ranks = """{"cap":1000,"ranks":[],"milestones":[{"category":"weapons","title":"Test Rifle","icon":"1/82_90","steps":[1,25],"value":3}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", ranks: ranks, achievements: achievements)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
         var cut = Render<AchievementsTab>(p => p.Add(a => a.Handle, "Fox").Add(a => a.Sub, "challenges"));  // a mock page: the overview shows
         cut.WaitForAssertion(() => Assert.Equal("25 Mule Deer", cut.Find("div.item .text b").TextContent));
         Assert.Contains("2023-11-15", cut.Find("div.item time").TextContent);
         Assert.Contains("4", cut.Find("p.line").TextContent);
-        Assert.Single(cut.FindAll("ul.pills a"));
+        Assert.Equal(5, cut.FindAll("ul.pills a").Count);
+        cut = Render<AchievementsTab>(p => p.Add(a => a.Handle, "Fox").Add(a => a.Sub, "weapons"));
+        cut.WaitForAssertion(() => Assert.Contains("Test Rifle", cut.Find("div.row h4").TextContent));
+        Assert.Contains("ach-icon-1/82_90", cut.Find("div.row").TextContent);  // the labelled box names its slot
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>

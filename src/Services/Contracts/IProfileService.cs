@@ -14,8 +14,9 @@ public sealed record Progress(int Score, int Max, int Rank, Achievement? Latest)
 
 public sealed record Challenge(string Title, string Description);
 public sealed record AchievementSummary(IReadOnlyList<RankBar> Categories, int Unlocked, IReadOnlyList<Achievement> Recent);
-/// <summary>A row of milestones: <see cref="Steps"/> are the goals, <see cref="Value"/> the player's count, <see cref="Done"/> of the steps reached.</summary>
-public sealed record Milestone(string Title, int Done, IReadOnlyList<int> Steps, int Value);
+/// <summary>A row of milestones: <see cref="Steps"/> are the goals, <see cref="Value"/> the player's count, <see cref="Done"/> of the steps reached;
+/// <see cref="Icon"/> the achievement's picture path without extension (the live site), null on the mock.</summary>
+public sealed record Milestone(string Title, int Done, IReadOnlyList<int> Steps, int Value, string? Icon = null);
 /// <summary>A round gauge: Spotting, Tracking or Shooting, its level and the percent to the next level.</summary>
 public sealed record SkillRing(string Label, int Level, int Percent);
 /// <summary>A skill card; weapon skills have a <see cref="Group"/> (the weapon category).</summary>

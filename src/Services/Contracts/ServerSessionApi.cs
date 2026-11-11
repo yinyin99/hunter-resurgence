@@ -85,7 +85,7 @@ public sealed record ServerRank(long Id, string Category, string Name, long Valu
 
 /// <param name="Category">animals, weapons, exploration or day-mission.</param>
 /// <param name="Steps">The thresholds; <c>Value</c> the counter they are reached by.</param>
-public sealed record ServerMilestone(string Category, string Title, long[] Steps, long Value);
+public sealed record ServerMilestone(string Category, string Title, long[] Steps, long Value, string? Icon = null);
 
 /// <summary>A hunter's achievements of <see cref="ServerSessionApi.AchievementsSuffix"/>: the progress of each category, how many are unlocked and the latest.</summary>
 public sealed record ServerAchievements(ServerAchievementCategory[] Categories, int Unlocked, ServerAchievement[] Recent);
