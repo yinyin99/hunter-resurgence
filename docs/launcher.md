@@ -8,13 +8,13 @@ It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 contr
 
 The screens follow the old launcher and its website screen for screen: the same theme, the same places for things, the same navigation and the same English texts (French uses the original French texts). Where the original had a defect or a text that cannot be reused, the screen does the sensible thing instead.
 
-Everything behind the screens is a **mock** for now: fixed, fictional data and fake actions, until the community server exists. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. The launcher is not usable for playing yet.
+Behind the screens the data is a **mock** (fixed, fictional data and fake actions) unless `server_url` is set; then the services listed under "What is real" are the community server's. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. The launcher is not usable for playing yet.
 
 Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
 
 ## The service layer
 
-Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings.
+Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher does that for game settings, and for the website's `Server*` services when `server_url` is set.
 
 ## Build and run
 
@@ -88,7 +88,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |
 | `options_key_prefix` | The text that precedes each key name in the options file. |
-| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Not set: every picture is a labelled box. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
+| `server_url` | The community server's `https://` address (its website shares it). At each start the launcher reads the list of the operator's pictures from its `/images.json` and shows them from its `/images/` ([images.md](images.md)). Only the scheme, host and port are used. Also switches the launcher's services to the community server's (see [What is real](#what-is-real-and-what-is-mock)). Not set: every picture is a labelled box and every service is a mock. `http://` is accepted only for a website on this PC (`localhost`, `dotnet run`). |
 | `game_name` | The short name shown wherever the screens say "the game" (the fallback when empty). |
 | `game_full` | The name with its edition (falls back to `game_name`). |
 | `link_*` | External links of the footer, the help pages and the menus; the key is `link_` plus `forum`, `support`, `support_connections`, `support_request`, `wiki`, `wiki_de`, `wiki_fr`, `wiki_es`, `steam_store`, `steam_community`, `developer`, `twitter`, `facebook`, `youtube`, `instagram`, `discord`, `fps_tool`, `health_utility`, `trailer` (the "Watch the trailer" button of the news), `backup` (the backup tool's release zip, linked from the news), `source` (the project's repository: "Follow the project on GitHub" in the news), or a numbered one: `link_guide_1` ..., `link_video_v1` ... (the launcher's help page only) and `link_community_1` .... A link that is not set is not shown. |
@@ -105,7 +105,9 @@ Real today:
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
 - **The news**: the project's own posts and their carousel, the same as on the website (`src/Ui/NewsPosts.cs`, [website.md](website.md#sign-in)).
 
-Mock: sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
+- **With `server_url` set** the launcher registers the website's services (`src/Web/Program.cs`): profiles, friends, messages, wallet balances, missions, the store, the hunterscore board and the backup restore are the community server's, through one client and one session cookie, and runs in live mode: the pages the website hides (competitions, the bank and the like) redirect to the feed. The patch panel always reports ready and ignores `--mock=patch:*`. The session cookie is filled by the launcher's sign-in (not part of this change); until then the calls go out signed out. Without `server_url` everything below stays mock.
+
+Mock (the whole list without `server_url`; with it only what the server has no source for): sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
 ## Files on the PC
 
