@@ -105,6 +105,8 @@ Real today:
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
 - **The news**: the project's own posts and their carousel, the same as on the website (`src/Ui/NewsPosts.cs`, [website.md](website.md#sign-in)).
 
+- **With `server_url` set** the launcher registers the website's services (`src/Web/Program.cs`): profiles, friends, messages, wallet balances, missions, the store, the hunterscore board and the backup restore are the community server's, through one client and one session cookie, and the launcher runs in live mode (pages of mock data and the bank are hidden, as on the website). The patch panel reports ready. Without `server_url` everything below stays mock.
+
 Mock: sign-in (the code step accepts any six digits), sign-up, the servers and the map, hunting, the store, wallet and bank, missions, competitions, leaderboards, profiles and statistics, friends, messages, account settings, game management, the patch panel, and the buttons that open the game's folders or start the game (they only log).
 
 ## Files on the PC
