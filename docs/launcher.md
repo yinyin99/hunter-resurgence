@@ -14,7 +14,7 @@ Until the official servers close, a large orange backup tool button shows under 
 
 ## The service layer
 
-Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings.
+Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher already does that for game settings and the launcher bridge.
 
 ## Build and run
 
@@ -102,7 +102,7 @@ Real today:
 - **Game settings** (the dialog from the Settings menu and the first-start dialog): reads and writes the game's graphics and options files; see below.
 - **launcher.json**: the language chosen in the language dialog or on the Settings page is saved and applied at once (see [Languages](#languages)); so is whether game settings were saved once (the next game start no longer asks). The game folder chosen by hand is saved there too and used from the next start.
 - **Finding the game** (`GameFinder`: the folder chosen by hand, the command Steam passes, Steam's own library files and the app manifest). It runs at start and is covered by the tests; no screen shows the result yet.
-- **Starting the game**: `LauncherBridge.StartGame` runs `<game folder>\<client_exe> /connect:<url> /param:<n> /steam` in the game folder; `<n>` is a random non-negative number with bit 128 clear. While that exe already runs, or when it is missing or fails to start, a message box says so and the launcher keeps running.
+- **Starting the game**: `LauncherBridge.StartGame` runs `<game folder>\<client_exe> /connect:<url> /param:<n> /steam` in the game folder; `<n>` is a random non-negative number with bit 128 clear. While that exe already runs, or when it is missing or fails to start, the start returns a failed `Result` (a translated text the page shows in a dialog) and the launcher keeps running.
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
 - **The news**: the project's own posts and their carousel, the same as on the website (`src/Ui/NewsPosts.cs`, [website.md](website.md#sign-in)).
 

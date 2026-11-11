@@ -7,6 +7,8 @@ namespace Resurgence.Tests.LauncherApp;
 
 public class LauncherBridgeTests
 {
+    static readonly MockLauncherBridge Rest = new(NullLogger<MockLauncherBridge>.Instance);
+
     [Fact]
     public void TheCommandLineHasTheServerARandomNumberWithBit128ClearAndTheSteamFlag()
     {
@@ -24,40 +26,37 @@ public class LauncherBridgeTests
         try
         {
             var started = new List<ProcessStartInfo>();
-            var shown = new List<string>();
             var running = false;
-            var b = new LauncherBridge(() => new(dir, exe), new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), n => running && n == "client", i => { started.Add(i); return true; }, shown.Add);
+            var b = new LauncherBridge(() => new(dir, exe), Rest, e => running && e == exe, i => { started.Add(i); return true; });
 
-            b.StartGame("srv://x");
+            Assert.True(b.StartGame("srv://x").Ok);
             var i = Assert.Single(started);
             Assert.Equal(exe, i.FileName);
             Assert.Equal(dir, i.WorkingDirectory);
             Assert.StartsWith("/connect:srv://x /param:", i.Arguments);
-            Assert.Empty(shown);
 
             running = true;
-            b.StartGame("srv://x");
+            Assert.Equal("Launch.AlreadyRunning", b.StartGame("srv://x").Error);
             Assert.Single(started);
-            Assert.Single(shown);
+
+            running = false;
+            Assert.Equal("Launch.Failed", b.StartGame("srv://x /y").Error);
+            Assert.Single(started);
         }
         finally { Directory.Delete(dir, true); }
     }
 
     [Fact]
-    public void AMissingExeOrAFailedStartShowsAMessage()
+    public void AMissingExeOrAFailedStartIsAFailedResult()
     {
-        var shown = new List<string>();
-        var rest = new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance);
-        new LauncherBridge(() => null, rest, _ => false, _ => true, shown.Add).StartGame("srv://x");
-        Assert.Single(shown);
+        Assert.Equal("Launch.NoGame", new LauncherBridge(() => null, Rest, _ => false, _ => true).StartGame("srv://x").Error);
 
         var dir = Directory.CreateTempSubdirectory().FullName;
         try
         {
             var exe = Path.Combine(dir, "client.exe");
             File.WriteAllText(exe, "");
-            new LauncherBridge(() => new(dir, exe), rest, _ => false, _ => false, shown.Add).StartGame("srv://x");
-            Assert.Equal(2, shown.Count);
+            Assert.Equal("Launch.StartFailed", new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => false).StartGame("srv://x").Error);
         }
         finally { Directory.Delete(dir, true); }
     }
