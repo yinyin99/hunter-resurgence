@@ -510,16 +510,4 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(1, cut.FindAll("div.thread div.me").Count);
         Assert.Empty(cut.FindAll("textarea, #sendMessage, a[href='/new-message'], #receive-private-messages"));  // nothing is sent
     }
-
-    // the community server has no Discord widget: a signed-in player sees it on the launcher and the development website only
-    [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 0)]
-    public void OnlyTheMockFeedHasTheDiscordWidget(bool live, int widgets)
-    {
-        Live(live);
-        var cut = Render<Feed>();
-        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".news")));
-        Assert.Equal(widgets, cut.FindAll("section.discord").Count);
-    }
 }

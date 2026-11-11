@@ -16,8 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 // LINK_BACKUP, LINK_SOURCE, GAME_NAME, GAME_FULL: set by the deploy (docs/deploy.md); each wins over its key in settings.json
 var config = builder.Configuration;
-builder.Services.AddUiLocalization(Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
-    .With("link_backup", config["LINK_BACKUP"]).With("link_source", config["LINK_SOURCE"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]));
+var brand = Branding.Load(Path.Combine(builder.Environment.ContentRootPath, "settings.json"))
+    .With("link_backup", config["LINK_BACKUP"]).With("link_source", config["LINK_SOURCE"]).With("game_name", config["GAME_NAME"]).With("game_full", config["GAME_FULL"]);
+builder.Services.AddUiLocalization(brand);
 builder.Services.AddMockServices();
 // with SERVER_URL the pages of mock data and the bank are hidden, and the store buys from the server (HostMode.Live, docs/website.md#sign-in)
 var live = builder.Configuration["SERVER_URL"] is { Length: > 0 };
@@ -42,7 +43,16 @@ else
 // the development states (?mock=patch:..., ?mock=settings:first) are per browser circuit too
 builder.Services.AddScoped<IPatchService>(sp => new MockPatchService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IGameSettingsService>(sp => new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), sp.GetRequiredService<HostMode>().Mock));
-builder.Services.AddScoped<INewsService>(sp => new MockNewsService());
+// the Discord widget is Discord's own for the link_discord invite (docs/website.md); without the link the live site has none and the mock site keeps its sample
+if (live || brand.Link("discord") is not null)
+{
+    builder.Services.AddHttpClient("discord", c => { c.Timeout = TimeSpan.FromSeconds(5); c.DefaultRequestHeaders.UserAgent.ParseAdd("hunter-resurgence"); });
+    builder.Services.AddSingleton<ServerCache<DiscordInvite>>();
+    builder.Services.AddSingleton<ServerCache<DiscordWidget>>();
+    builder.Services.AddScoped<INewsService>(sp => new DiscordNewsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("discord"), brand.Link("discord"),
+        sp.GetRequiredService<ServerCache<DiscordInvite>>(), sp.GetRequiredService<ServerCache<DiscordWidget>>(), sp.GetRequiredService<ILogger<DiscordNewsService>>()));
+}
+else builder.Services.AddScoped<INewsService>(sp => new MockNewsService());
 builder.Services.AddScoped<IMissionsService>(sp => new MockMissionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IFriendsService>(sp => new MockFriendsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IMessagesService>(sp => new MockMessagesService(sp.GetRequiredService<HostMode>().Mock));
