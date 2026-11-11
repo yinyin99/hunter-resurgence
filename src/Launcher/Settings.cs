@@ -6,7 +6,7 @@ namespace Resurgence.Launcher;
 /// settings.json next to the exe: steam_app_id and client_exe (path of the game client relative to its install folder), and for Game settings
 /// graphics_file, options_file (names relative to %APPDATA%) and options_key_prefix (what precedes each key name in the options file).
 /// A missing file, a missing key or a placeholder (&lt;...&gt;) gives null: the feature that needs it says "not configured", the launcher still starts.
-/// server_url: the community server's address (its website gives the pictures).
+/// server_url: the community server's address (its website gives the pictures and its services the data).
 /// </summary>
 public sealed record Settings(string? SteamAppId, string? ClientExe, string? GraphicsFile = null, string? OptionsFile = null, string? OptionsKeyPrefix = null, Uri? ServerUrl = null)
 {
