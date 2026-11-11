@@ -34,6 +34,7 @@
     async Task Start(Tutorial t)
     {
         if (!await Modal.SetUpFirst(GameSettings)) return;
-        if (!(await Service.StartTutorialAsync(t.Id)).Ok) Modal.Alert(L["Launch.Failed"]);
+        var r = await Service.StartTutorialAsync(t.Id);
+        if (!r.Ok) Modal.Alert(L[r.Error ?? "Launch.Failed"]);
     }
 }

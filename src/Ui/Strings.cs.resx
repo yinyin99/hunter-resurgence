@@ -172,6 +172,9 @@
   <data name="Launch.Loadout" xml:space="preserve"><value>Starting Loadout</value></data>
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Při vytváření herní relace se něco pokazilo. Obnovte prosím seznam serverů a zkuste se připojit k jiné hře.</value></data>
+  <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Hra už běží.</value></data>
+  <data name="Launch.NoGame" xml:space="preserve"><value>Hra nebyla nalezena. Zkontrolujte její složku v nastavení.</value></data>
+  <data name="Launch.StartFailed" xml:space="preserve"><value>Hru se nepodařilo spustit.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>VYHLEDAT HRU S OSTATNÍMI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Najít hru nebo hostitele...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Vymazat</value></data>

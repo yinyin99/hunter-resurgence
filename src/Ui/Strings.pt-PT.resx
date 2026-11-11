@@ -172,6 +172,9 @@
   <data name="Launch.Loadout" xml:space="preserve"><value>Equipamento Inicial</value></data>
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Último equipamento utilizado</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Algo correu mal ao criar a sessão do teu jogo. Recarrega a lista de servidores e tenta juntar-te a outro jogo.</value></data>
+  <data name="Launch.AlreadyRunning" xml:space="preserve"><value>O jogo já está em execução.</value></data>
+  <data name="Launch.NoGame" xml:space="preserve"><value>Jogo não encontrado. Verifique a pasta dele nas definições.</value></data>
+  <data name="Launch.StartFailed" xml:space="preserve"><value>Não foi possível iniciar o jogo.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>PROCURAR UM JOGO MULTIJOGADOR</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Procurar um jogo ou anfitrião…</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Limpar</value></data>
