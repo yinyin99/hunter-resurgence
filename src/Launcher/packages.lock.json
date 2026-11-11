@@ -297,7 +297,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "[10.0.14, )",
           "Microsoft.Extensions.Localization": "[10.0.14, )",
-          "Resurgence.Services": "[0.0.0-test, )"
+          "Resurgence.Services": "[1.0.0, )"
         }
       }
     },

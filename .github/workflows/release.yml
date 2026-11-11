@@ -40,6 +40,11 @@ jobs:
           CLIENT_EXE: ${{ secrets.CLIENT_EXE }}
           CRASH_HOST: ${{ secrets.CRASH_HOST }}
           PLAY_SERVER_URL: ${{ secrets.PLAY_SERVER_URL }}
+          STEAM_APP_ID: ${{ secrets.STEAM_APP_ID }}
+          LAUNCHER_CLIENT_EXE: ${{ secrets.LAUNCHER_CLIENT_EXE }}
+          GRAPHICS_FILE: ${{ secrets.GRAPHICS_FILE }}
+          OPTIONS_FILE: ${{ secrets.OPTIONS_FILE }}
+          OPTIONS_KEY_PREFIX: ${{ secrets.OPTIONS_KEY_PREFIX }}
         run: |
           $s = [ordered]@{
             client_exe         = $env:CLIENT_EXE
@@ -72,6 +77,12 @@ jobs:
             # the launcher's settings.json: the example (placeholders mean "not configured") with the community server's address
             $l = Get-Content src\Launcher\settings.example.json -Raw | ConvertFrom-Json
             $l.server_url = $env:PLAY_SERVER_URL.Trim()
+            # the keys the launcher needs to find and start the game and edit its settings; all required with the launcher
+            foreach ($m in @(@("steam_app_id", "STEAM_APP_ID"), @("client_exe", "LAUNCHER_CLIENT_EXE"), @("graphics_file", "GRAPHICS_FILE"), @("options_file", "OPTIONS_FILE"), @("options_key_prefix", "OPTIONS_KEY_PREFIX"))) {
+              $v = "$([Environment]::GetEnvironmentVariable($m[1]))".Trim()
+              if (-not $v) { throw "repository secret for $($m[1]) is missing or blank" }
+              $l.($m[0]) = $v
+            }
             $l | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\launcher-settings.json"
             "PLAY=1" >> $env:GITHUB_ENV
           }
@@ -128,7 +139,7 @@ jobs:
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
           $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($play) { "SHA-256 of play-win-x64.zip:`n`n$playSha`n`nSHA-256 of launcher-win-x64.zip:`n`n$launcherSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
-          if ($play) { $notes += " settings.json in the play zip holds the community server's address and the same host names: the player kit needs them to point the game at that server. settings.json in the launcher zip holds the community server's address; the other keys are placeholders." }
+          if ($play) { $notes += " settings.json in the play zip holds the community server's address and the same host names: the player kit needs them to point the game at that server. settings.json in the launcher zip holds the community server's address; the game's identity and file names; the links and names are placeholders (not shown)." }
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
