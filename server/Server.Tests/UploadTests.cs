@@ -359,6 +359,17 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheOperatorCanKeepTheAccountsOwnHandle()
+    {
+        var done = Operator.Approve(await Keep(TestZip.Own(), "keep.zip", player, cookie), keepHandle: true);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("you keep the one you chose here", done.Message);
+        Assert.Equal("player", state.Store.HandleOf(1001));  // the user id is the backup's, the name the account's
+        var decision = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("player", true), ((string)decision["handle"]!, (bool)decision["handleKept"]!));
+    }
+
+    [Fact]
     public async Task TestUploadLimitsAndAFileThatIsNotABackup()
     {
         var notZip = await Upload("not a zip"u8.ToArray());

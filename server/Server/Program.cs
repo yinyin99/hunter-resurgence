@@ -31,10 +31,11 @@ const string ImportUsage = """
 const string ReviewUsage = """
     The backup zips players uploaded: every one is kept for an operator and never restored automatically.
 
-    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> | review reject <id> [reason]
+    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> [--keep-handle] | review reject <id> [reason]
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     approve restores it by the community rules (once per game user id, never a user id another account holds, the account's user id
     changes only before it has played) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
+    --keep-handle leaves the account its own name instead of the backup's.
     reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. Both leave the player a notice in the game.
     """;
 
@@ -150,7 +151,7 @@ void Review(string[] a)
     long id = 0;
     var reason = "";
     if (a is ["reject", var r, .. var rest] && long.TryParse(r, out id)) reason = string.Join(' ', rest);
-    else if (!(a is ["list"] || (a is ["approve", var n] && long.TryParse(n, out id)))) Die(ReviewUsage);
+    else if (!(a is ["list"] || (a is ["approve", var n, .. var opt] && opt is [] or ["--keep-handle"] && long.TryParse(n, out id)))) Die(ReviewUsage);
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
@@ -164,7 +165,7 @@ void Review(string[] a)
             if (kept.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":
-            var done = uploads.Approve(id);
+            var done = uploads.Approve(id, keepHandle: a is [_, _, "--keep-handle"]);
             if (done.Kind != "restored") Die($"refused: {done.Message}");
             Console.WriteLine(done.Message);
             Console.Write(done.Report);

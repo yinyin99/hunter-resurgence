@@ -293,8 +293,8 @@ public sealed class Uploads(State state, string dataDir)
     }).ToList();
 
     /// <summary>The operator's approve: the rules above, then the restore (the kept zip stays, the waiting row goes; the player gets a notice and a result).
-    /// A refusal is kept as the zip's note, and the player gets a notice of it once. Status 404: no such id.</summary>
-    public UploadOutcome Approve(long id)
+    /// `keepHandle`: the account keeps the name it has, the operator's choice. A refusal is kept as the zip's note, and the player gets a notice of it once. Status 404: no such id.</summary>
+    public UploadOutcome Approve(long id, bool keepHandle = false)
     {
         lock (decide)
         {
@@ -312,9 +312,9 @@ public sealed class Uploads(State state, string dataDir)
             if (Refusal(account, uid) is { } refused) return Refused(row, refused);
             var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
             var current = (string)Store.AccountJson(account)["handle"]!;
-            var adopt = zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
+            var adopt = !keepHandle && zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
             var handle = adopt ? zipHandle! : current;
-            var summary = Summary(model, handle != current, zipHandle is not null && !adopt);
+            var summary = Summary(model, handle != current, zipHandle is not null && !adopt, keepHandle);
             try
             {
                 var result = Restorer.Apply(state, path, row.Sha, read, account, uid, handle, exists: true, backupDatabase: false, dataDir,
@@ -374,7 +374,7 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
-    static string Summary(PlayerModel m, bool handleChanged, bool handleKept)
+    static string Summary(PlayerModel m, bool handleChanged, bool handleKept, bool keptByOperator)
     {
         var parts = new List<string> { $"{m.Items.Count} items" };
         if (m.Wallet is not null) parts.Add("gold and silver");
@@ -384,7 +384,8 @@ public sealed class Uploads(State state, string dataDir)
         parts.Add($"{m.Trophies.Count} trophies");
         var text = $"The backup was restored: {string.Join(", ", parts)}.";
         if (handleChanged) text += " The name is now the one in the backup.";
-        else if (handleKept) text += " The name was not changed, because the one in the backup is not allowed or belongs to another player.";
+        else if (handleKept) text += keptByOperator ? " The name was not changed: you keep the one you chose here."
+                                                     : " The name was not changed, because the one in the backup is not allowed or belongs to another player.";
         return text;
     }
 
