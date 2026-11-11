@@ -23,8 +23,8 @@ public class DiscordNewsServiceTests
     static HttpResponseMessage Discord(HttpRequestMessage r, bool widgetOn) => r.RequestUri!.AbsolutePath switch
     {
         "/api/v10/invites/abc" => Json(HttpStatusCode.OK, """{"code": "abc", "guild": {"id": "42", "name": "Test"}}"""),
-        "/api/guilds/42/widget.json" when widgetOn => Json(HttpStatusCode.OK, """{"id": "42", "presence_count": 3, "members": [{"username": "Ann", "game": {"name": "A game"}}, {"username": "Bob"}]}"""),
-        "/api/guilds/42/widget.json" => Json(HttpStatusCode.Forbidden, """{"message": "Widget Disabled", "code": 50004}"""),
+        "/api/v10/guilds/42/widget.json" when widgetOn => Json(HttpStatusCode.OK, """{"id": "42", "presence_count": 3, "members": [{"username": "Ann", "game": {"name": "A game"}}, {"username": "Bob"}]}"""),
+        "/api/v10/guilds/42/widget.json" => Json(HttpStatusCode.Forbidden, """{"message": "Widget Disabled", "code": 50004}"""),
         _ => new(HttpStatusCode.NotFound),
     };
 
