@@ -25,6 +25,7 @@ jobs:
           "VERSION=$ver" >> $env:GITHUB_ENV
       - run: dotnet build tools/backup -c Release -p:Version=${{ env.VERSION }}
       - run: dotnet build tools/play -c Release -p:Version=${{ env.VERSION }}
+      - run: dotnet build src/Launcher -c Release -p:Version=${{ env.VERSION }}
       - run: dotnet test tests/Resurgence.Tests -c Release
       # One repository secret per settings.json key. Values are never printed; every key is required, so a missing secret fails the release.
       - name: Write settings.json
@@ -39,6 +40,11 @@ jobs:
           CLIENT_EXE: ${{ secrets.CLIENT_EXE }}
           CRASH_HOST: ${{ secrets.CRASH_HOST }}
           PLAY_SERVER_URL: ${{ secrets.PLAY_SERVER_URL }}
+          STEAM_APP_ID: ${{ secrets.STEAM_APP_ID }}
+          LAUNCHER_CLIENT_EXE: ${{ secrets.LAUNCHER_CLIENT_EXE }}
+          GRAPHICS_FILE: ${{ secrets.GRAPHICS_FILE }}
+          OPTIONS_FILE: ${{ secrets.OPTIONS_FILE }}
+          OPTIONS_KEY_PREFIX: ${{ secrets.OPTIONS_KEY_PREFIX }}
         run: |
           $s = [ordered]@{
             client_exe         = $env:CLIENT_EXE
@@ -68,6 +74,20 @@ jobs:
               if (-not $p[$k]) { throw "repository secret for $k is missing or blank" }
             }
             $p | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\play-settings.json"
+            # the launcher's settings.json, only when STEAM_APP_ID is set (without it the release has no launcher): the example (placeholders mean "not configured") with the community server's address
+            if (-not $env:STEAM_APP_ID) { Write-Host "STEAM_APP_ID is not set: no launcher in this release" }
+            else {
+            $l = Get-Content src\Launcher\settings.example.json -Raw | ConvertFrom-Json
+            $l.server_url = $env:PLAY_SERVER_URL.Trim()
+            # the keys the launcher needs to find and start the game and edit its settings; all required with the launcher
+            foreach ($m in @(@("steam_app_id", "STEAM_APP_ID"), @("client_exe", "LAUNCHER_CLIENT_EXE"), @("graphics_file", "GRAPHICS_FILE"), @("options_file", "OPTIONS_FILE"), @("options_key_prefix", "OPTIONS_KEY_PREFIX"))) {
+              $v = "$([Environment]::GetEnvironmentVariable($m[1]))".Trim()
+              if (-not $v) { throw "repository secret for $($m[1]) is missing or blank" }
+              $l.($m[0]) = $v
+            }
+            $l | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\launcher-settings.json"
+            "LAUNCHER=1" >> $env:GITHUB_ENV
+            }
             "PLAY=1" >> $env:GITHUB_ENV
           }
       - name: Publish and zip
@@ -77,6 +97,10 @@ jobs:
         if: env.PLAY == '1'
         shell: cmd
         run: tools\play\publish.cmd "%RUNNER_TEMP%\play-settings.json" ${{ env.VERSION }}
+      - name: Publish and zip the launcher
+        if: env.LAUNCHER == '1'
+        shell: cmd
+        run: src\Launcher\publish.cmd "%RUNNER_TEMP%\launcher-settings.json" ${{ env.VERSION }}
       # Build provenance (attestations need a public repository on this plan: skipped while private).
       - name: Attest
         if: ${{ !github.event.repository.private }}
@@ -92,6 +116,13 @@ jobs:
           subject-path: |
             tools/play/bin/Release/net10.0-windows/win-x64/play-win-x64.zip
             tools/play/bin/Release/net10.0-windows/win-x64/publish/play.exe
+      - name: Attest the launcher
+        if: ${{ env.LAUNCHER == '1' && !github.event.repository.private }}
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/launcher-win-x64.zip
+            src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/publish/resurgence-launcher.exe
       - name: Release
         shell: pwsh
         env:
@@ -100,9 +131,12 @@ jobs:
         run: |
           $zip = "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"
           $playZip = "tools\play\bin\Release\net10.0-windows\win-x64\play-win-x64.zip"
+          $launcherZip = "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\launcher-win-x64.zip"
           $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $play = $env:PLAY -eq '1'
           if ($play) { $playSha = (Get-FileHash $playZip -Algorithm SHA256).Hash.ToLower() }
+          $launcher = $env:LAUNCHER -eq '1'
+          if ($launcher) { $launcherSha = (Get-FileHash $launcherZip -Algorithm SHA256).Hash.ToLower() }
           # checkout may turn an annotated tag into a lightweight one: fetch the real tag object, then use its message if there is one
           git fetch --force origin "refs/tags/${env:TAG}:refs/tags/${env:TAG}"
           $notes = ""
@@ -110,8 +144,9 @@ jobs:
             $msg = (git tag -l --format='%(contents)' $env:TAG) -join "`n"
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
-          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($play) { "SHA-256 of play-win-x64.zip:`n`n$playSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
+          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($play) { "SHA-256 of play-win-x64.zip:`n`n$playSha`n`n" })$(if ($launcher) { "SHA-256 of launcher-win-x64.zip:`n`n$launcherSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
           if ($play) { $notes += " settings.json in the play zip holds the community server's address and the same host names: the player kit needs them to point the game at that server." }
+          if ($launcher) { $notes += " settings.json in the launcher zip holds the community server's address and the game's identity and file names; the other keys are placeholders." }
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
@@ -120,6 +155,8 @@ jobs:
           gh release upload $env:TAG $zip
           if ($LASTEXITCODE -ne 0) { exit 1 }
           if ($play) { gh release upload $env:TAG $playZip }
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($launcher) { gh release upload $env:TAG $launcherZip }
           if ($LASTEXITCODE -ne 0) { exit 1 }
           gh release edit $env:TAG --draft=false
           if ($LASTEXITCODE -ne 0) { exit 1 }

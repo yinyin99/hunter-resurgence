@@ -1,6 +1,6 @@
 # Player guide: from backup to playing on the community server
 
-Five steps, in this order. Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
+Five steps, in this order (a sixth, the launcher, is optional). Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
 
 **The order matters.** A backup can only be restored onto an account that has not played yet. Hunt on the community server before your backup is restored and it can no longer be restored onto that account. Do steps 2 to 4 before your first hunt there.
 
@@ -48,6 +48,16 @@ The player kit points the game at the community server. It never changes the gam
 Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` window.
 
 **Back to the official servers**: double-click `3-remove.cmd` and choose **Yes** when Windows asks to remove the certificate. The game then talks to its own servers again (while they exist). You need this before running the backup tool again.
+
+## 6. Optional: the launcher
+
+The launcher opens from Steam's Play button, lets you sign in, and starts the game. It does not replace the player kit: do step 5 first.
+
+1. Download `launcher-win-x64.zip`, unpack it and keep `resurgence-launcher.exe`, `settings.json` and the `wwwroot` folder together.
+2. In Steam, right-click the game, choose **Properties**, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into **Launch options**, with the real path.
+3. Keep `2-run.cmd` open, press **Play** in Steam, and sign in with the code link the launcher shows.
+
+More: [launcher](launcher.md).
 
 ## Problems
 

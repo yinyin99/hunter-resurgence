@@ -14,6 +14,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- also set by the publish profile; here too so a build and a publish restore the same packages (the single-file setting adds the ILLink tasks) -->
+    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
