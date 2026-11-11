@@ -477,10 +477,10 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 **Review.** The operator works the kept zips with the server's command line (no web page):
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> | reject <id> [reason]
+dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> [--keep-handle] | reject <id> [reason]
 ```
 
-`list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only). `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; `reject <id> [reason]` deletes the kept zip and its `uploads` row and keeps the reason (the rest of the line) for the player. Like `import backup` it runs on its own and needs the recordings.
+`list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only). `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; with `--keep-handle` the account keeps its own name instead of taking the zip's (the player's notice says so). `reject <id> [reason]` deletes the kept zip and its `uploads` row and keeps the reason (the rest of the line) for the player. Like `import backup` it runs on its own and needs the recordings.
 
 **What the player is told.** A refused approve stores its reason as the zip's `note`; an approve that restores, and a reject, add a row to `upload_results` (the `decisions` above) and every one of these three leaves a message from the server's notice sender in the account's inbox, the thread `Chat/conversations` lists: "Your backup was not restored: <reason>" (once per reason: the same refusal again adds nothing), "The backup was restored: …" with the user id and the name, or "Your backup was rejected by the operator", with the reason when there is one. The website's restore page shows the same. The messages are English, like the server's other notices.
 
