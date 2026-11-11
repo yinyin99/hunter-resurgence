@@ -60,7 +60,7 @@ public static class HuntersApi
                 ? Json(200, state.PublicSkills(id))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterSkills").WithSummary("A hunter's skills: the species' spotting and tracking, the weapons' shooting")
-            .WithDescription("`{species: [{name, image, spotting, tracking}], weapons: [{id, name, group, value}]}`, each number a level plus the fraction of its span (as Skill/list); `image` is the species' define in lower case (null without one), `id` the weapon's item id; the dog species and species 56 are left out. "
+            .WithDescription("`{species: [{name, image, spotting, tracking}], weapons: [{id, name, variation, group, value}]}`, each number a level plus the fraction of its span (as Skill/list); `image` is the species' define in lower case (null without one), `id` the weapon's item id, `variation` its variation name (null without one); the dog species and species 56 are left out. "
                              + "404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 

@@ -811,7 +811,7 @@ public sealed partial class State
 
     /// <summary>What a profile page's skills tab shows of an account: `species` [{name, image, spotting, tracking}] (the numbers of
     /// Skill/list, one per species of the connect's list; `image` is the species' define in lower case, null without one; the dog species
-    /// and species 56 are left out, as the original website did) and `weapons` [{id, name, group, value}] (the item's id, its name and its
+    /// and species 56 are left out, as the original website did) and `weapons` [{id, name, variation, group, value}] (the item's id, its name, its variation name and its
     /// sub-category's name, null without one).</summary>
     public JsonObject PublicSkills(long account)
     {
@@ -825,7 +825,7 @@ public sealed partial class State
             ["weapons"] = new JsonArray([.. n["weapon"]!.AsObject().Select(w =>
             {
                 var item = items.GetValueOrDefault(long.Parse(w.Key));
-                return (JsonNode?)new JsonObject { ["id"] = long.Parse(w.Key), ["name"] = C(item?["name"]) ?? "#" + w.Key, ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
+                return (JsonNode?)new JsonObject { ["id"] = long.Parse(w.Key), ["name"] = C(item?["name"]) ?? "#" + w.Key, ["variation"] = C(item?["variationname"]), ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
             })]),
         };
     }

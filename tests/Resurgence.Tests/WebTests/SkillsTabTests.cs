@@ -32,7 +32,7 @@ public sealed class SkillsTabTests : UiContext
     [Fact]
     public void AWeaponIsACardWithItsItemPictureAndShootingDial()
     {
-        SkillsOnly.Skills = [new("Rifle X", "Rifles", [new("Shooting", 3, 40)], null, 5)];
+        SkillsOnly.Skills = [new("Rifle X", "Rifles", [new("Shooting", 3, 40)], null, 5, "Blue")];
         Services.AddSingleton(DispatchProxy.Create<IProfileService, SkillsOnly>());
         Services.GetRequiredService<HostMode>().Live = true;
 
@@ -40,6 +40,7 @@ public sealed class SkillsTabTests : UiContext
 
         var card = cut.Find(".weapons > .weapon");
         Assert.Equal("Rifle X", card.QuerySelector(".name")!.TextContent);
+        Assert.Equal("Blue", card.QuerySelector(".variation")!.TextContent);
         Assert.Equal("store-item-5", card.QuerySelector(".pic .asset-slot")!.GetAttribute("aria-label"));
         Assert.Equal("3", card.QuerySelector(".dial b")!.TextContent);
     }

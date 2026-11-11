@@ -382,7 +382,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var third = JsonNode.Parse((await Get("web.test", "/hunters/third/skills")).Body)!;
         Assert.Contains(third["species"]!.AsArray(), s => (double)s!["spotting"]! == 3 && (double)s["tracking"]! > 1);
         Assert.Equal(["mule_deer", "cottontail_rabbit"], third["species"]!.AsArray().Select(s => (string)s!["image"]!));  // the dog species and species 56 are left out
-        Assert.Equal("""[{"id": 5, "name": "Test Rifle", "group": null, "value": 1.14}, {"id": 99, "name": "#99", "group": null, "value": 1.14}]""", Py.Dumps(third["weapons"]));  // an item the catalogue lacks is named by its id
+        Assert.Equal("""[{"id": 5, "name": "Test Rifle", "variation": null, "group": null, "value": 1.14}, {"id": 99, "name": "#99", "variation": null, "group": null, "value": 1.14}]""", Py.Dumps(third["weapons"]));  // an item the catalogue lacks is named by its id
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/skills")).Status);
         Assert.Equal(404, (await Get("web.test", "/hunters/banned/skills")).Status);
         // Skill/list of another account's user id: its numbers, not the empty reply

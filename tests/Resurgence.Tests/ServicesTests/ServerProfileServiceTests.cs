@@ -181,7 +181,7 @@ public class ServerProfileServiceTests
     [InlineData(HttpStatusCode.OK, "<html>")]
     public async Task AFailedOrGarbledAnswerIsNoProfile(HttpStatusCode code, string body) => Assert.Null(await Make(new Fake(_ => Json(code, body))).ProfileAsync("Owl"));
 
-    const string Skills = """{"species":[{"name":"Red Fox","image":"red_fox","spotting":2.5,"tracking":1.007}],"weapons":[{"id":7,"name":"Rifle","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
+    const string Skills = """{"species":[{"name":"Red Fox","image":"red_fox","spotting":2.5,"tracking":1.007}],"weapons":[{"id":7,"name":"Rifle","variation":"Blue","group":"Rifles","value":3},{"name":"Bow","group":null,"value":1.14}]}""";
 
     [Fact]
     public async Task SpeciesSkillsAreRingsOfLevelAndPercent()
@@ -197,7 +197,7 @@ public class ServerProfileServiceTests
     public async Task WeaponSkillsAreGroupedWithAShootingRing()
     {
         var skills = await Make(new Fake(_ => Json(HttpStatusCode.OK, Skills))).SkillsAsync("fox", "weapons");
-        Assert.Equal([("Rifle", "Rifles", 3, 0, 7L), ("Bow", null, 1, 14, null)], skills.Select(s => (s.Name, s.Group, s.Rings[0].Level, s.Rings[0].Percent, s.Id)));
+        Assert.Equal([("Rifle", "Blue", "Rifles", 3, 0, 7L), ("Bow", null, null, 1, 14, null)], skills.Select(s => (s.Name, s.Variation, s.Group, s.Rings[0].Level, s.Rings[0].Percent, s.Id)));
     }
 
     [Theory]

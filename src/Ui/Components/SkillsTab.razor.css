@@ -11,7 +11,8 @@ h4 { margin: 0 0 8px; font-size: 16px; line-height: 22px; font-weight: 400; colo
 .dial b { font-size: 22px; line-height: 24px; color: #fff; }
 .group { margin: 18px 0 8px; font-size: 18px; }
 .weapons { display: flex; flex-wrap: wrap; gap: 10px; width: 740px; }
-.weapon { box-sizing: border-box; display: grid; grid-template-columns: 230px 1fr; width: 330px; padding: 10px; border-top: 1px solid #222; border-bottom: 1px solid #121212; background: linear-gradient(#191919, #181818); }
-.weapon .name { grid-column: 1 / -1; padding: 5px 0; margin-bottom: 10px; overflow: hidden; font-size: 18px; color: #aaa; white-space: nowrap; text-overflow: ellipsis; }
+.weapon { display: grid; grid-template-columns: 230px 1fr; width: 330px; padding: 10px; border-top: 1px solid #222; border-bottom: 1px solid #121212; background: linear-gradient(#191919, #181818); }
+.weapon .name { grid-column: 1 / -1; padding: 5px 0; overflow: hidden; font-size: 18px; color: #aaa; white-space: nowrap; text-overflow: ellipsis; }
+.weapon .variation { grid-column: 1 / -1; min-height: 16px; font-size: 13px; color: var(--text-3); }
 .weapon .pic { align-self: start; width: 230px; height: 50px; margin-top: 30px; }
 .weapon ::deep .asset-slot { display: block; }

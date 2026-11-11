@@ -25,6 +25,7 @@ else
             {
                 <div class="weapon">
                     <div class="name">@s.Name</div>
+                    <div class="variation">@s.Variation</div>
                     <div class="pic">@if (s.Id is { } id) { <AssetSlot Name="@Mode.ItemSlot((int)id)" Width="230" Height="50" /> }</div>
                     @foreach (var r in s.Rings) { @Ring(r) }
                 </div>

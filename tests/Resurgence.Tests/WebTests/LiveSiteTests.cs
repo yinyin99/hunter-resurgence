@@ -215,7 +215,7 @@ public sealed class LiveSiteTests : UiContext
         Live(true);
         var cut = Render<DogsTab>(p => p.Add(d => d.Handle, "Fox"));
         cut.WaitForAssertion(() => Assert.Equal("Rex", cut.Find("ul.dogs li h2").TextContent));
-        Assert.Equal("Test Hound (Chocolate)", cut.Find("ul.dogs li > div:last-of-type > span").TextContent);
+        Assert.Equal("Test Hound (Chocolate)", cut.Find("ul.dogs li .breed").TextContent);
         Assert.Equal(["store-item-503", "dog-skill-loyalty-stamina-2", "dog-skill-retrieve-soft-mouth-1", "dog-trophy-ribbon-9"], cut.FindAll(".asset-slot").Select(s => s.GetAttribute("aria-label")));
         Assert.Equal("Loyalty Stamina (Lvl: 2)", cut.Find("ul.dogs .skills span.loyalty").GetAttribute("data-tip"));
         Assert.Contains("border-bottom-color:#3f2f24", cut.Find("ul.dogs li").GetAttribute("style"));
