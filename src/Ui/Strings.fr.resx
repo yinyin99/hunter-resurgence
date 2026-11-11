@@ -1294,4 +1294,7 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Supprimer vos données</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Connectez-vous, ouvrez « Restaurer votre sauvegarde » et utilisez « Supprimer mes données ». Cela supprime le compte, ses données de jeu, les zips conservés et les photos, et vous déconnecte. Votre id Steam est ensuite oublié ; vous reconnecter crée un nouveau compte.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>L’opérateur de ce serveur peut voir tout ce qui précède.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Confirmez le code {0} dans votre navigateur.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>La connexion n'a pas été confirmée à temps. Veuillez réessayer.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Le serveur est injoignable. Veuillez réessayer.</value></data>
 </root>

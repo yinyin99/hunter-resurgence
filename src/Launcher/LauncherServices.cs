@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -45,11 +46,20 @@ static class LauncherServices
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
     }
 
+    /// <summary>Opens the server's sign-in in the player's browser; without a browser the player still has the code on screen.</summary>
+    static void OpenBrowser(string url)
+    {
+        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
+        catch (System.ComponentModel.Win32Exception) { }
+    }
+
     /// <summary>With server_url the pages are the community server's, as on the website (src/Web/Program.cs); one client and one cookie for the launcher (sign-in fills the cookie).</summary>
     static void AddServerServices(IServiceCollection services, Uri server)
     {
         services.AddSingleton<ServerCookie>();
         services.AddSingleton(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) });
+        services.AddSingleton<ISessionService>(sp => new LauncherSessionService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
+            Path.Combine(Path.GetDirectoryName(Prefs.DefaultPath)!, "session.dat"), OpenBrowser, sp.GetRequiredService<ILogger<ServerSessionService>>()));
         services.AddSingleton<ServerCache<ServerStore>>();
         services.AddSingleton<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
         services.AddSingleton<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>()));

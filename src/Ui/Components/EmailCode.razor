@@ -1,6 +1,23 @@
 @using System.ComponentModel.DataAnnotations
+@implements IDisposable
 @inject ISessionService Sessions
 
+@if (Sessions.CodeLink)
+{
+    @* the code link: the player signs in in the browser and compares this code there *@
+    <form class="su-form" @onsubmit="Link" novalidate>
+        <div class="su-msgs">
+            @if (linkCode is not null) { <p class="su-hint">@L["Signin.Link", linkCode]</p> }
+            @if (error is not null) { <div class="su-login-error" role="alert">@L[error]</div> }
+        </div>
+        <div class="su-actions">
+            <button type="submit" class="su-btn @(Dialog ? "medium" : "large")" disabled="@busy">@L[SubmitText]</button>
+            @Cancel
+        </div>
+    </form>
+}
+else
+{
 <form class="su-form" @onsubmit="Send" novalidate>
     @if (!codeSent)
     {
@@ -21,6 +38,7 @@
         @Cancel
     </div>
 </form>
+}
 
 @code {
     ElementReference box;
@@ -42,9 +60,25 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!focus) return;
+        if (!focus || Sessions.CodeLink) return; // the code link has no field to focus
         focus = false;
         await box.FocusAsync();
+    }
+
+    string? linkCode;
+
+    public void Dispose() { if (busy && Sessions.CodeLink) Sessions.CancelLink(); } // a sign-in nobody waits for must not finish later
+
+    /// <summary>The code link: the browser opens, the code shows here, and a confirmed sign-in ends the wait.</summary>
+    async Task Link()
+    {
+        if (busy) return;
+        busy = true;
+        error = null;
+        var result = await Sessions.SignInWithLinkAsync(c => { linkCode = c; _ = InvokeAsync(StateHasChanged); });
+        busy = false;
+        error = result.Error;
+        if (result.Ok) await Done.InvokeAsync();
     }
 
     /// <summary>Step 1 asks for the e-mail address, step 2 for the one-time code; a good code signs in.</summary>
