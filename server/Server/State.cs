@@ -13,7 +13,7 @@ public sealed partial class State
 {
     public const string UPLOAD_PATH = "/upload/storage/v1/b/photos/o";  // object-storage upload shape the client uses
     public const string PHOTO_PREFIX = "/photos/";
-    public const string TOAST_TEXT = "Local test server\nProgress is not saved to the official servers";
+    public const string TOAST_TEXT = "Hunter Resurgence community server\nProgress is saved on the community server";
     public const long SHOT_EVIDENCE = 14;  // photo_type of the automatic shot screenshot
     // the client often exits without disconnect: an open expedition with no heartbeat for this long has ended
     // (the client sends heartbeats about every 20 s)

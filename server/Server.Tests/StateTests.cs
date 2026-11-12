@@ -82,7 +82,7 @@ public class InventoryTests : StateTestBase
         var updates = Hb();
         Assert.Single(updates);
         Eq("3", updates[0]!["update"]);
-        Assert.Equal(State.TOAST_TEXT, (string)updates[0]!["text"]!);
+        Assert.Equal("Hunter Resurgence community server\nProgress is saved on the community server", (string)updates[0]!["text"]!);
         Assert.Empty(Hb());
     }
 
