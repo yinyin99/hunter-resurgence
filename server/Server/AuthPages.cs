@@ -17,10 +17,13 @@ public static class AuthPages
 
     static string E(string s) => WebUtility.HtmlEncode(s);
 
+    /// <summary>The line and button to the operator's Discord; nothing without the link.</summary>
+    static string Discord(string? url) => url is null ? "" : $"""<p>Join the Discord: news, help and the operator<br><a href="{E(url)}" target="_blank" rel="noopener"><button type="button">Join the Discord</button></a></p>""";
+
     /// <summary>The page the launcher shows (both states also link the launcher that replaces it). Signed out: sign in with Steam in the player's own browser (the launcher's
     /// cannot load Steam's pages) or, as a second link, in this window. Signed in: Play, which asks the server for a
     /// launch URL and hands it to the launcher.</summary>
-    public static string Start(string? handle, string page = "/") => Page((handle is null
+    public static string Start(string? handle, string page = "/", string? discord = null) => Page((handle is null
         ? $"""
           <h1>Welcome</h1><p>Sign in with Steam to play on this server.</p>
           <p><button id="steam" type="button">Sign in with Steam</button></p>
@@ -30,7 +33,7 @@ public static class AuthPages
         : $"""
           <h1>Hello, {E(handle)}</h1><p><button id="play" type="button">Play</button></p>
           <p class="small"><a href="#" id="out">Not you? Sign out</a></p>
-          """) + """
+          """ + Discord(discord)) + """
           <hr><p><button id="new" type="button">Open the new launcher</button></p>
           <p class="small"><a href="https://github.com/yinyin99/hunter-resurgence/releases/latest">Download it</a></p>
           """, """
@@ -74,24 +77,26 @@ public static class AuthPages
         """);
 
     /// <summary>An app (the launcher or the backup tool) is waiting for this sign-in: confirm only when the code is the one it shows.</summary>
-    public static string Confirm(string csrf, string handle, string userCode) => Page($"""
+    public static string Confirm(string csrf, string handle, string userCode, string? discord = null) => Page($"""
         <h1>Sign in the app that shows this code?</h1>
         <p>You are <b>{E(handle)}</b>. The app that shows the code <b>{E(userCode)}</b> (the launcher or the backup tool) will be signed in as you.</p>
         <p class="small">Confirm only if this code is on your screen right now.</p>
         <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
         <p><button type="submit">Yes, sign in</button></p></form>
+        {Discord(discord)}
         """);
 
     /// <summary>An app on this PC (the launcher or the backup tool) started this sign-in: its answer goes to this PC only, once the player says yes.</summary>
-    public static string ConfirmApp(string csrf, string handle) => Page($"""
+    public static string ConfirmApp(string csrf, string handle, string? discord = null) => Page($"""
         <h1>Sign in the app on this PC?</h1>
         <p>You are <b>{E(handle)}</b>. The launcher or the backup tool that you just started on this PC will be signed in as you.</p>
         <p class="small">Confirm only if you pressed "Sign in with Steam" in one of them a moment ago.</p>
         <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
         <p><button type="submit">Yes, sign in</button></p></form>
+        {Discord(discord)}
         """);
 
-    public static string Done() => Page("<h1>Done</h1><p>Go back to the app that showed the code (the launcher or the backup tool).</p>");
+    public static string Done(string? discord = null) => Page("<h1>Done</h1><p>Go back to the app that showed the code (the launcher or the backup tool).</p>" + Discord(discord));
 
     public static string Problem(string text) => Page($"<h1>Sorry</h1><p>{E(text)}</p>");
 }
