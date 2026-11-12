@@ -1313,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Usuwanie Twoich danych</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Zaloguj się, otwórz Przywróć kopię zapasową i użyj Usuń moje dane. Usuwa to konto, jego dane z gry, przechowywane zipy i zdjęcia oraz wylogowuje Cię. Twoje id Steam zostaje wtedy zapomniane; ponowne logowanie tworzy nowe konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operator tego serwera widzi wszystko powyższe.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Potwierdź kod {0} w przeglądarce.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Przeglądarka jest otwarta. Zaloguj się tam przez Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Zaloguj się przez Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Logowanie nie zostało potwierdzone na czas. Spróbuj ponownie.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Nie można połączyć się z serwerem. Spróbuj ponownie.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json nie jest poprawnym JSON-em.</value></data>

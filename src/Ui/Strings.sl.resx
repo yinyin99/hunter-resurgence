@@ -1313,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Brisanje vaših podatkov</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi; ob novi prijavi se ustvari nov račun.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operater tega strežnika vidi vse zgoraj navedeno.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Potrdite kodo {0} v brskalniku.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Brskalnik je odprt. Tam se prijavite s Steamom.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Prijava s Steamom</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Strežnik ni dosegljiv. Poskusite znova.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ni veljaven JSON.</value></data>

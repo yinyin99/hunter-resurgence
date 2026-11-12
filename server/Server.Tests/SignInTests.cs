@@ -1,3 +1,5 @@
+using System.Buffers.Text;
+using System.Security.Cryptography;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -201,9 +203,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         server.SendAsync(method, host, path, [("X-Requested-With", "XMLHttpRequest"), .. headers], method == "POST" ? [] : null);
 
     /// <summary>The first half: the browser at /auth/steam/login, and Steam's return URL (path and query on the host) it will come back to.</summary>
-    async Task<(string Login, string ReturnPath)> Begin(string host, string query = "")
+    async Task<(string Login, string ReturnPath)> Begin(string host, string query = "", string path = "/auth/steam/login")
     {
-        var start = await Get(host, "/auth/steam/login" + query);
+        var start = await Get(host, path + query);
         Assert.Equal(302, start.Status);
         Assert.StartsWith(SteamOpenId.Endpoint + "?", Location(start));
         var returnTo = HttpUtility.ParseQueryString(new Uri(Location(start)).Query)["openid.return_to"]!;
@@ -916,6 +918,110 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(400, (await server.SendAsync("POST", "signup.test", "/auth/link", [], [])).Status);
     }
 
+    // ---- an app on the player's PC (loopback redirect and PKCE)
+
+    const string AppState = "abcdefghijklmnop0123456789";
+
+    static (string Verifier, string Challenge) Pkce()
+    {
+        var verifier = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
+        return (verifier, Base64Url.EncodeToString(SHA256.HashData(Encoding.ASCII.GetBytes(verifier))));
+    }
+
+    Task<Reply> Exchange(string code, string verifier, params (string, string)[] headers) =>
+        server.SendAsync("POST", "web.test", "/auth/app/exchange", [.. Form, .. headers], Encoding.UTF8.GetBytes($"code={code}&verifier={verifier}"));
+
+    /// <summary>The browser's half of an app's sign-in up to the confirmation: the reply to the confirming POST (the redirect to the app).</summary>
+    async Task<Reply> AppConfirm(string challenge, string handle = "Looper", string host = "web.test")
+    {
+        var begun = await Begin(host, $"?challenge={challenge}&port=51234&state={AppState}", "/auth/app/start");
+        var back = await Return(host, begun);
+        if (Location(back) == "/auth/handle") back = await PostForm(host, "/auth/handle", $"csrf={begun.Login}&handle={handle}", Ck("hr_login", begun.Login));
+        Assert.Equal("/auth/confirm", Location(back));
+        return await PostForm(host, "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login));
+    }
+
+    static string CodeOf(Reply redirect) => HttpUtility.ParseQueryString(new Uri(Location(redirect)).Query)["code"]!;
+
+    [Fact]
+    public async Task TestAnAppSignsInThroughTheLoopbackRedirectAndPkce()
+    {
+        var (verifier, challenge) = Pkce();
+        var begun = await Begin("web.test", $"?challenge={challenge}&port=51234&state={AppState}", "/auth/app/start");
+        Assert.Equal("/auth/handle", Location(await Return("web.test", begun)));
+        var named = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle=Looper", Ck("hr_login", begun.Login));
+        Assert.Equal("/auth/confirm", Location(named));
+        Assert.Null(Cookie(named, "hr_session"));  // this browser is not signed in: the app is
+        Assert.Contains("Looper", Body(await Get("web.test", "/auth/confirm", Ck("hr_login", begun.Login))));
+        Assert.Equal(400, (await PostForm("web.test", "/auth/confirm", "csrf=0", Ck("hr_login", begun.Login))).Status);
+        Assert.Equal(400, (await server.SendAsync("POST", "web.test", "/auth/confirm", [.. Form, Ck("hr_login", begun.Login)], Encoding.UTF8.GetBytes("csrf=" + begun.Login))).Status);  // a cross-site form carries no Origin and no header
+
+        var sent = await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login));
+        Assert.Equal(302, sent.Status);
+        var redirect = System.Text.RegularExpressions.Regex.Match(Location(sent), $@"\Ahttp://127\.0\.0\.1:51234/\?code=([0-9a-f]{{64}})&state={AppState}\z");
+        Assert.True(redirect.Success, Location(sent));
+        Assert.Equal(400, (await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login))).Status);  // one confirmation, one code
+
+        var code = redirect.Groups[1].Value;
+        Assert.Equal(400, (await Exchange(code, verifier)).Status);  // not from our own page: no X-Requested-With
+        var ok = await Exchange(code, verifier, ("X-Requested-With", "launcher"));
+        Assert.Equal(200, ok.Status);
+        Assert.Equal("Looper", (string?)(await Me(Cookie(ok, "hr_session")!))!["handle"]);
+        Assert.Equal(400, (await Exchange(code, verifier, ("X-Requested-With", "launcher"))).Status);  // the code works once
+    }
+
+    [Fact]
+    public async Task TestAWrongVerifierSignsNothingInAndSpendsTheCode()
+    {
+        var (verifier, challenge) = Pkce();
+        var xhr = ("X-Requested-With", "launcher");
+        var code = CodeOf(await AppConfirm(challenge));
+        var wrong = await Exchange(code, Pkce().Verifier, xhr);
+        Assert.Equal(400, wrong.Status);
+        Assert.Null(Cookie(wrong, "hr_session"));
+        Assert.Equal(400, (await Exchange(code, verifier, xhr)).Status);  // a guess costs the code
+
+        var again = CodeOf(await AppConfirm(challenge));
+        Assert.Equal(400, (await Exchange(again, challenge, xhr)).Status);  // the challenge is not the verifier
+        Assert.Equal(400, (await Exchange(CodeOf(await AppConfirm(challenge)), "short", xhr)).Status);
+        Assert.Equal(400, (await Exchange(new string('0', 64), verifier, xhr)).Status);
+        Assert.Equal(400, (await Exchange("", "", xhr)).Status);
+    }
+
+    [Fact]
+    public async Task TestAnAppSignInOnlyStartsWithAValidChallengePortAndState()
+    {
+        var (_, challenge) = Pkce();
+        foreach (var query in new[]
+        {
+            "", $"?port=51234&state={AppState}", $"?challenge={challenge}&state={AppState}", $"?challenge={challenge}&port=51234",
+            $"?challenge={challenge[..42]}&port=51234&state={AppState}", $"?challenge={challenge}A&port=51234&state={AppState}",
+            $"?challenge={challenge[..42]}%2B&port=51234&state={AppState}",
+            $"?challenge={challenge}&port=1023&state={AppState}", $"?challenge={challenge}&port=65536&state={AppState}", $"?challenge={challenge}&port=http&state={AppState}",
+            $"?challenge={challenge}&port=-5&state={AppState}", $"?challenge={challenge}&port=51234.evil.test&state={AppState}",
+            $"?challenge={challenge}&port=51234&state=short", $"?challenge={challenge}&port=51234&state={AppState}%26code%3Dx",
+            $"?challenge={challenge}&port=51234&state={AppState}/%2F@evil.test", $"?challenge={challenge}&port=51234&state={new string('a', 129)}",
+        })
+        {
+            var start = await Get("web.test", "/auth/app/start" + query);
+            Assert.Equal(400, start.Status);
+            Assert.Null(Cookie(start, "hr_login"));
+        }
+        Assert.Equal(302, (await Get("web.test", $"/auth/app/start?challenge={challenge}&port=1024&state={AppState}")).Status);
+        Assert.Equal(302, (await Get("web.test", $"/auth/app/start?challenge={challenge}&port=65535&state={AppState}")).Status);
+    }
+
+    [Fact]
+    public async Task TestALinkCodeIsNotAnAppCode()
+    {
+        var (verifier, challenge) = Pkce();
+        var code = CodeOf(await AppConfirm(challenge));
+        Assert.Equal(404, (await Get("web.test", "/auth/link/" + code)).Status);
+        var link = (string)JsonNode.Parse((await Xhr("POST", "web.test", "/auth/link")).Body)!["code"]!;
+        Assert.Equal(400, (await Exchange(link, verifier, ("X-Requested-With", "launcher"))).Status);
+        Assert.Equal(200, (await Exchange(code, verifier, ("X-Requested-With", "launcher"))).Status);
+    }
+
     // ---- the tokens the game is given
 
     [Fact]
@@ -1125,6 +1231,28 @@ public class SignInClockTests : StateTestBase
         var expired = signIn.PollLink(Rq("GET", "/auth/link/" + code));
         Assert.Equal(404, expired.Status);
         Eq("""{"status": "expired"}""", JsonNode.Parse(expired.Body));
+    }
+
+    [Fact]
+    public async Task TestAnAppCodeLivesThreeMinutes()
+    {
+        state.CreateAccount(state.Store.NextServerId(), "clock_one", "99999999999999991");
+        var verifier = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
+        var challenge = Base64Url.EncodeToString(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+        async Task<string> Code()
+        {
+            var login = LoginOf(signIn.StartApp(Rq("GET", "/auth/app/start", $"challenge={challenge}&port=51234&state=abcdefghijklmnop0123456789")));
+            Assert.Equal(302, (await Return(login)).Status);
+            var confirm = signIn.Confirm(new("POST", Host, "/auth/confirm", "", k => k == "Origin" ? "https://" + Host : k == "Cookie" ? "hr_login=" + login : null, Encoding.UTF8.GetBytes("csrf=" + login), true));
+            return System.Web.HttpUtility.ParseQueryString(new Uri(confirm.Headers.Single(h => h.Name == "Location").Value).Query)["code"]!;
+        }
+        Reply Exchange(string code) => signIn.ExchangeApp(new("POST", Host, "/auth/app/exchange", "", k => k == "X-Requested-With" ? "test" : null, Encoding.UTF8.GetBytes($"code={code}&verifier={verifier}"), true));
+
+        var (live, stale) = (await Code(), await Code());
+        clock += TimeSpan.FromMinutes(2.9);
+        Assert.Equal(200, Exchange(live).Status);
+        clock += TimeSpan.FromMinutes(0.2);
+        Assert.Equal(400, Exchange(stale).Status);
     }
 
     [Fact]

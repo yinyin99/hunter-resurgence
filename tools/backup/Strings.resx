@@ -467,7 +467,7 @@
     <value>Sign in on the server's website</value>
   </data>
   <data name="Send_Code_Text" xml:space="preserve">
-    <value>Your browser opens the sign-in page. Check that it shows the code {0}, sign in with Steam and confirm. Press Cancel to stop waiting.</value>
+    <value>Your browser opens the sign-in page. Sign in with Steam there and confirm. Press Cancel to stop waiting.</value>
   </data>
   <data name="Send_Sending_Title" xml:space="preserve">
     <value>Sending the backup</value>

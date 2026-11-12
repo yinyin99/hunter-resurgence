@@ -39,7 +39,7 @@ The launcher signs you in, starts the game and, on its first start, sets up your
 
 1. The first time, the launcher lists what it will change and asks to set up. A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder inside the launcher, and trusts a local certificate that is good only for those names. Windows asks twice: install the certificate (Yes) and allow the launcher to edit the hosts file as administrator (Yes). **Make your backup first**: while the setup is in place the game talks only to the community server, and the backup tool needs the official servers.
 2. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher. Keep it open while you play: the forwarder runs inside it.
-3. Sign in with the code link the sign-in page shows (the same account as on the website). The launcher starts the game for you.
+3. Press "Sign in with Steam" and sign in in the browser that opens (the same account as on the website). The launcher starts the game for you.
 4. The game's files are never changed. Settings, **Remove the setup** undoes everything and gives the official servers back.
 
 Steps, what it changes and what to do when something fails: [docs/launcher.md](docs/launcher.md#the-player-kit). The whole way from backup to playing: [the player guide](docs/guide.md). The files it writes: [docs/launcher.md](docs/launcher.md).

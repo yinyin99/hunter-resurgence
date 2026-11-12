@@ -1313,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Smazání vašich údajů</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene; novým přihlášením vznikne nový účet.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operátor tohoto serveru vidí vše výše uvedené.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Potvrďte kód {0} ve svém prohlížeči.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Prohlížeč se otevřel. Přihlaste se tam přes Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Přihlásit se přes Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Přihlášení nebylo včas potvrzeno. Zkuste to prosím znovu.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Server není dostupný. Zkuste to prosím znovu.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json není platný JSON.</value></data>
