@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiuj</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Uruchamianie gry przyciskiem Graj w Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Oficjalne serwery są zamknięte. Własny launcher gry, który Steam otwiera po naciśnięciu Graj, nie może już sam połączyć się z serwerem: potrzebuje tego launchera, który niesie Twoje połączenie z serwerem społeczności.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Aby Graj nadal działało, ten launcher może poprosić Steam o otwarcie jego zamiast tamtego. Zmienia jedno ustawienie tej gry w Steam (opcje uruchamiania) i nic więcej: nie inne gry, nie sam Steam, nie pliki gry. Zobaczysz je w Steam: kliknij grę prawym przyciskiem, Właściwości, Opcje uruchamiania.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam musi być zamknięty podczas zapisywania ustawienia, ponieważ Steam zapisuje własną kopię przy zamknięciu. Odinstalowanie tego launchera przywraca ustawienie.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Aby Graj nadal działało, ten launcher może poprosić Steam o otwarcie jego zamiast tamtego.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Zmienia jedno ustawienie tej gry w Steam (opcje uruchamiania) i nic więcej: nie inne gry, nie sam Steam, nie pliki gry.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Zobaczysz je w Steam: kliknij grę prawym przyciskiem, Właściwości, Opcje uruchamiania.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam musi być zamknięty podczas zapisywania ustawienia, ponieważ Steam zapisuje własną kopię przy zamknięciu.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Odinstalowanie tego launchera przywraca ustawienie.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Twoja obecna opcja uruchamiania tej gry to: {0}. Zostanie zastąpiona tylko, jeśli wybierzesz pierwszy przycisk.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Zamknij Steam i ustaw</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Zamiast tego skopiuj wiersz</value></data>

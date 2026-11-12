@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiera</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Starta spelet från Steams Spela-knapp</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>De officiella servrarna är stängda. Spelets egen startprogram, som Steam öppnar när du trycker på Spela, kan inte längre nå någon server på egen hand: det behöver det här startprogrammet, som bär din anslutning till community-servern.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>För att Spela ska fortsätta fungera kan det här startprogrammet be Steam öppna det i stället. Det ändrar en enda inställning för det här spelet i Steam (startalternativen) och inget annat: inte dina andra spel, inte Steam självt, inte spelets filer. Du ser den i Steam: högerklicka på spelet, Egenskaper, Startalternativ.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam måste vara stängt medan inställningen skrivs, eftersom Steam sparar sin egen kopia när det avslutas. När du avinstallerar det här startprogrammet sätts inställningen tillbaka.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>För att Spela ska fortsätta fungera kan det här startprogrammet be Steam öppna det i stället.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Det ändrar en enda inställning för det här spelet i Steam (startalternativen) och inget annat: inte dina andra spel, inte Steam självt, inte spelets filer.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Du ser den i Steam: högerklicka på spelet, Egenskaper, Startalternativ.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam måste vara stängt medan inställningen skrivs, eftersom Steam sparar sin egen kopia när det avslutas.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>När du avinstallerar det här startprogrammet sätts inställningen tillbaka.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Ditt nuvarande startalternativ för det här spelet är: {0}. Det ersätts bara om du väljer den första knappen.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Stäng Steam och ställ in</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopiera raden i stället</value></data>

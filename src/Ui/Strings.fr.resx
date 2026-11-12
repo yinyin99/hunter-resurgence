@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Copier</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Lancer le jeu depuis le bouton Jouer de Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Les serveurs officiels sont fermés. Le lanceur propre au jeu, que Steam ouvre quand vous appuyez sur Jouer, ne peut plus joindre de serveur seul : il a besoin de ce lanceur, qui porte votre connexion au serveur communautaire.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Pour que Jouer continue de fonctionner, ce lanceur peut demander à Steam de l'ouvrir à la place. Il modifie un seul réglage de ce jeu dans Steam (ses options de lancement), rien d'autre : ni vos autres jeux, ni Steam lui-même, ni les fichiers du jeu. Vous pouvez le voir dans Steam : clic droit sur le jeu, Propriétés, Options de lancement.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam doit être fermé pendant l'écriture du réglage, car Steam enregistre sa propre copie en se fermant. La désinstallation de ce lanceur remet le réglage d'origine.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Pour que Jouer continue de fonctionner, ce lanceur peut demander à Steam de l'ouvrir à la place.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Il modifie un seul réglage de ce jeu dans Steam (ses options de lancement), rien d'autre : ni vos autres jeux, ni Steam lui-même, ni les fichiers du jeu.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Vous pouvez le voir dans Steam : clic droit sur le jeu, Propriétés, Options de lancement.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam doit être fermé pendant l'écriture du réglage, car Steam enregistre sa propre copie en se fermant.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>La désinstallation de ce lanceur remet le réglage d'origine.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Votre option de lancement actuelle pour ce jeu est : {0}. Elle n'est remplacée que si vous choisissez le premier bouton.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Fermer Steam et l'appliquer</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copier plutôt la ligne</value></data>

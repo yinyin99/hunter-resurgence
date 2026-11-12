@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopier</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Start spillet fra Steams Spill-knapp</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>De offisielle serverne er stengt. Spillets egen starter, som Steam åpner når du trykker på Spill, kan ikke lenger nå en server på egen hånd: den trenger denne starteren, som bærer tilkoblingen din til fellesskapsserveren.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>For at Spill skal fortsette å fungere, kan denne starteren be Steam åpne den i stedet. Den endrer én innstilling for dette spillet i Steam (startvalgene) og ingenting annet: ikke de andre spillene dine, ikke Steam selv, ikke spillets filer. Du ser den i Steam: høyreklikk på spillet, Egenskaper, Startvalg.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam må være lukket mens innstillingen skrives, fordi Steam lagrer sin egen kopi når det avsluttes. Avinstallerer du denne starteren, settes innstillingen tilbake.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>For at Spill skal fortsette å fungere, kan denne starteren be Steam åpne den i stedet.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Den endrer én innstilling for dette spillet i Steam (startvalgene) og ingenting annet: ikke de andre spillene dine, ikke Steam selv, ikke spillets filer.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Du ser den i Steam: høyreklikk på spillet, Egenskaper, Startvalg.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam må være lukket mens innstillingen skrives, fordi Steam lagrer sin egen kopi når det avsluttes.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Avinstallerer du denne starteren, settes innstillingen tilbake.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Ditt nåværende startvalg for dette spillet er: {0}. Det erstattes bare hvis du velger den første knappen.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Lukk Steam og sett det</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopier linjen i stedet</value></data>

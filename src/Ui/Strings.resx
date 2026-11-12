@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Start the game from Steam's Play button</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>The official servers are closed. The game's own launcher, which Steam opens when you press Play, can no longer reach a server by itself: it needs this launcher, which carries your connection to the community server.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>So that Play keeps working, this launcher can tell Steam to open it instead. It changes one setting of this game in Steam (its launch options), nothing else: not your other games, not Steam itself, not the game's files. You can see it in Steam: right-click the game, Properties, Launch options.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam must be closed while the setting is written, because Steam saves its own copy when it exits. Uninstalling this launcher puts the setting back.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>So that Play keeps working, this launcher can tell Steam to open it instead.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>It changes one setting of this game in Steam (its launch options), nothing else: not your other games, not Steam itself, not the game's files.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>You can see it in Steam: right-click the game, Properties, Launch options.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam must be closed while the setting is written, because Steam saves its own copy when it exits.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Uninstalling this launcher puts the setting back.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Your current launch option for this game is: {0}. It is only replaced if you choose the first button.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Close Steam and set it</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copy the line instead</value></data>
