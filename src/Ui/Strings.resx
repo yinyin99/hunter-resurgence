@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam did not close in time. Close it yourself, then try again.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam must be closed to put the game's launch option back. Close Steam now? Choose No to leave the option as it is.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Seasonal events</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>While a seasonal event runs, the community server adds its creatures to the game and the launcher shows its pictures. Turn this off to play without the event. It applies the next time you start the game.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Play seasonal events</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>The setting could not be saved. Try again.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Game settings</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logfiles</value></data>

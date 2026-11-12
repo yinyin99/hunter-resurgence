@@ -4,6 +4,8 @@
 @inject IServersService Service
 @inject ISessionService Sessions
 @inject IGameSettingsService GameSettings
+@inject ISeasonalEventsService Events
+@inject AssetImages Images
 @inject ModalService Modal
 
 <PageTitle>@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</PageTitle>
@@ -61,7 +63,7 @@ else
 <div class="badges">
     @foreach (var r in reserves)
     {
-        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve ? "true" : "false")" @onclick="() => Choose(r.Id)"><AssetSlot Name="@($"reserve-{r.Id:00}")" Width="70" Height="70" /></button>
+        <button type="button" class="@(r.Id == reserve ? "current" : "")" data-reserve="@r.Id" aria-label="@r.Name" aria-pressed="@(r.Id == reserve ? "true" : "false")" @onclick="() => Choose(r.Id)"><AssetSlot Name="@Badge(r.Id)" Width="70" Height="70" /></button>
     }
 </div>
 <div class="stage">
@@ -107,6 +109,7 @@ else
     int? hover, centre;
     IReadOnlyList<Loadout> loadouts = [];
     int loadout;
+    SeasonalEvents seasonal = new(true, null, []);
 
     // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
     bool ready => Status.State is PatchState.Ready or PatchState.Done;
@@ -137,6 +140,14 @@ else
         // the start ids are the server's: begin at the first lodge of the reserve, not at a number of the mock
         if (markers.FirstOrDefault(m => m.Kind == MarkerKind.Lodge) is { } lodge) marker = lodge.Id;
         loadouts = await Service.LoadoutsAsync();
+        seasonal = await Events.GetAsync();
+    }
+
+    /// <summary>The reserve's badge: the event's picture while the event runs on that reserve for a player who plays events and the operator has it, else the normal one (docs/images.md).</summary>
+    string Badge(int id)
+    {
+        var variant = $"reserve-{id:00}-{seasonal.Event}";
+        return seasonal.Shows(id) && Images.Url(variant) is not null ? variant : $"reserve-{id:00}";
     }
 
     void SetHour(string value) => hour = int.Parse(value[..2]);

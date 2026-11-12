@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 16;
+    public const int Version = 17;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -135,6 +135,7 @@ public sealed class Store
             created_ts INTEGER NOT NULL,
             claimed_ts INTEGER,
             banned INTEGER NOT NULL DEFAULT 0,
+            seasonal_events INTEGER NOT NULL DEFAULT 1,       -- 0: the player opted out of seasonal events
             account TEXT NOT NULL);                          -- the connect reply's `account` object
         CREATE TABLE tokens (
             hash TEXT PRIMARY KEY,                           -- SHA-256 of the token, hex
@@ -289,6 +290,8 @@ public sealed class Store
             if (version < 15) con.Script(DailyMissions);
             if (version < 16 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'start_time'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN start_time INTEGER");
+            if (version < 17 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'seasonal_events'")! == 0)
+                con.Script("ALTER TABLE accounts ADD COLUMN seasonal_events INTEGER NOT NULL DEFAULT 1");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -343,6 +346,19 @@ public sealed class Store
     {
         using var con = Open();
         return con.Scalar("SELECT account_id FROM restored_ids WHERE user_id = ?", userId) as long?;
+    }
+
+    /// <summary>Whether the account plays seasonal events: yes unless it opted out (<see cref="SetPlaysEvents"/>).</summary>
+    public bool PlaysEvents(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT seasonal_events FROM accounts WHERE id = ?", id) is not 0L;
+    }
+
+    public void SetPlaysEvents(long id, bool plays)
+    {
+        using var con = Open();
+        con.Exec("UPDATE accounts SET seasonal_events = ? WHERE id = ?", plays ? 1 : 0, id);
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie

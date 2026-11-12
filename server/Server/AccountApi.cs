@@ -203,6 +203,27 @@ public static class AccountApi
             .WithDescription("What `GET /game/user/loadout` answers for the player: `[{name, color, items, id}]` ascending by id; `id` is the number `POST /auth/launch` takes as `loadout`.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/events", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.EventStatus(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountEvents").WithSummary("The player's seasonal events setting and the event that runs now")
+            .WithDescription("`{play, event}`: `play` is whether the player plays seasonal events (on by default), `event` the event that runs now as `{name, define, reserves}` (the game's reserve numbers, "
+                             + "empty for every reserve), or null outside its window or with none set. The launcher shows the event's pictures only while `play` is true.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/events", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                if (!form.TryGetValue("play", out var play) || play[0] is not ("1" or "0")) return Refuse(400, "invalid", "This needs play=1 or play=0.");
+                state.Store.SetPlaysEvents(account, play[0] == "1");
+                return Json(200, state.EventStatus(account));
+            })
+            .WithName("AccountEventsSet").WithSummary("Play seasonal events or not (form `play=1` or `play=0`)")
+            .WithDescription("Stored for the account; the game's next connect carries no event for a player who turned it off (a running hunt keeps the event it started with). Answers like `GET /account/events`.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebFriends(account))
                 : Refuse(401, "signed_out", "Sign in first."))

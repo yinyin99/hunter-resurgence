@@ -1,5 +1,6 @@
 // The facts file (server/facts/facts.json): game facts the operator's install does not carry, in this project's own
 // format (docs/server.md#the-facts-file). Read once; the code asks it for its tables instead of keeping them.
+using System.Globalization;
 using System.Text.Json.Nodes;
 
 namespace Resurgence.Server;
@@ -117,6 +118,21 @@ public sealed class Facts
             });
         return Py.DumpBytes(new JsonObject { ["populations"] = populations, ["species_ammo"] = ammo });
     }
+
+    /// <summary>What the event <paramref name="name"/> adds on the game's reserve number <paramref name="reserve"/> (`events.<name>.reserves.<reserve>`): the permitted ammo
+    /// every species of the reserve lists in `species_ammo`, and populations as the client reads them (their `reserve` is the web's number, the game's + 1). Null for an event or a reserve
+    /// the file has nothing for.</summary>
+    public (long[] Ammo, JsonObject[] Populations)? Event(string name, int reserve)
+    {
+        if (Obj("events")[name]?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)] is not JsonObject content) return null;
+        long[] ammo = [.. (content["ammo"] as JsonArray ?? []).Select(Py.L)];
+        JsonObject[] populations = [.. (content["populations"] as JsonArray ?? []).Select(p => Population(p!.AsObject(), reserve + 1))];
+        return (ammo, populations);
+    }
+
+    /// <summary>The `index` of every population any event adds on the game's reserve number <paramref name="reserve"/>.</summary>
+    public IEnumerable<long> EventIndexes(int reserve) => Obj("events").SelectMany(e => (e.Value?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)]?["populations"] as JsonArray ?? [])
+        .Select(p => Py.L(p!["index"])));
 
     // the client's population row; fields the file leaves out are the client's defaults (null / -1)
     static JsonObject Population(JsonObject p, int reserve)
