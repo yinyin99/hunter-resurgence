@@ -11,13 +11,34 @@ namespace Resurgence.Server.Tests;
 /// <summary>The first sign-in's "I played before" choice, with a fake archive.db of one made-up player (Alpha, hunterscore 500, one item).</summary>
 public class SignUpClaimTests : StateTestBase, IAsyncLifetime
 {
-    static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+    static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))).Append(KeyValuePair.Create("signup_webhook", (JsonNode?)"https://hooks.test/s/1")));
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     readonly FakeSteam fake = new();
     Loopback server = null!;
+    readonly Capture hook = new();
+    readonly HttpClient oldShared = Alerts.Shared;
+
+    sealed class Capture : HttpMessageHandler
+    {
+        public readonly List<string> Texts = [];
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            lock (Texts) Texts.Add((string)JsonNode.Parse(request.Content!.ReadAsStringAsync(ct).Result)!["content"]!);
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
+        }
+    }
+
+    async Task<string> OneAlert()
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && hook.Texts.Count == 0) await Task.Delay(20);
+        await Task.Delay(100);
+        return Assert.Single(hook.Texts);
+    }
 
     public async ValueTask InitializeAsync()
     {
+        Alerts.Shared = new HttpClient(hook);
         state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
         MakeArchive();
         var table = new HarTable();
@@ -25,7 +46,11 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(table, Cfg, state, tmp), tmp, steamHttp: new HttpClient(fake));  // the server looks for archive.db in the work folder
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        Alerts.Shared = oldShared;
+        await server.DisposeAsync();
+    }
 
     void MakeArchive()
     {
@@ -93,5 +118,25 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var taken = await Post(login, "kind=new&handle=Fresh");  // "I am new here" still works on the same login
         Assert.Equal(302, taken.Status);
         Assert.Equal("Fresh", state.Store.HandleOf(state.Store.AccountBySteam("99999999999999992")!.Value));
+    }
+
+    [Fact]
+    public async Task TestASignUpSendsOneSignupAlertWithItsOutcome()
+    {
+        var fresh = await Post(await NewLogin("99999999999999993"), "kind=new&handle=Newbie");
+        Assert.Equal(302, fresh.Status);
+        var text = await OneAlert();
+        Assert.Contains("New account: Newbie, account ", text);
+        Assert.Contains("fresh start", text);
+        Assert.Contains("<https://steamcommunity.com/profiles/99999999999999993>", text);
+
+        hook.Texts.Clear();
+        await Post(await NewLogin("99999999999999994"), "kind=old&old=Alpha&handle=");
+        Assert.Contains("claimed Alpha (hunterscore 500): restored", await OneAlert());
+
+        hook.Texts.Clear();
+        Alerts.Signup(new JsonObject(), "unset", new HttpClient(hook));
+        await Task.Delay(200);
+        Assert.Empty(hook.Texts);
     }
 }

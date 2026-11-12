@@ -127,7 +127,7 @@ public sealed class GameTokens(Store store, string webHost)
 /// player start the sign-in again), the accounts and the cookie sessions are in the database.</summary>
 /// <param name="siteHost">Our website's domain, and gameWebHost the game's own web host: the launcher page there sends the player's browser
 /// to our site for Steam (the browser trusts our certificate; it does not reach the game's host), and learns the result by polling.</param>
-public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null, string? discord = null)
+public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null, string? discord = null, Action<string>? signupAlert = null)
 {
     public const string SessionCookie = "hr_session";
     const string LoginCookie = "hr_login";
@@ -353,7 +353,14 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
                     }
             }
         if (error is not null) return Html(200, AuthPages.Handle(login.Id, handle, error, offer, old, restore));
-        if (player is not null) claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);  // restored or kept for review: the player's inbox says which
+        var outcome = "fresh start";
+        if (player is not null)  // restored or kept for review: the player's inbox says which
+        {
+            var o = claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);
+            outcome = $"claimed {Alerts.Name(player.Handle)} (hunterscore {player.Hunterscore}): "
+                      + (o.Kind == "restored" ? "restored" : o.Kind == "review" ? "waiting for review" : $"refused ({o.Kind})");
+        }
+        signupAlert?.Invoke($"New account: {Alerts.Name(handle)}, account {account}, {Alerts.Steam(steamId)}, {outcome}.");
         return Finish(login, account);
     }
 

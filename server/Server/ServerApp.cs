@@ -77,7 +77,7 @@ public static class ServerApp
         {
             builder.Services.AddSingleton(new Uploads(state, o.WorkDir) { Alert = text => Alerts.Review(o.Game.Cfg, text) });
             // the operator's archive of public profiles to claim (Settings sets archive_db; tests leave it out and put archive.db in the work folder)
-            builder.Services.AddSingleton(new Claims(state, new Archive((string?)o.Game.Cfg["archive_db"] ?? Path.Combine(o.WorkDir, "archive.db")), o.WorkDir) { Alert = text => Alerts.Review(o.Game.Cfg, text) });
+            builder.Services.AddSingleton(new Claims(state, new Archive((string?)o.Game.Cfg["archive_db"] ?? Path.Combine(o.WorkDir, "archive.db")), o.WorkDir) { Alert = text => Alerts.Review(o.Game.Cfg, text), Signup = text => Alerts.Signup(o.Game.Cfg, text) });
         }
         builder.Services.AddProblemDetails();
         builder.Services.AddOpenApi("game", d =>
