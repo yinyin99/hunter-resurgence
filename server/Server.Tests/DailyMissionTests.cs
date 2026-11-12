@@ -357,6 +357,21 @@ public class DailyMissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheSchemaOfVersion15GetsTheExpeditionsStartTime()
+    {
+        var file = Path.Combine(tmp, "v15.db");
+        var store = new Store(file);
+        using (var con = store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN start_time");
+            con.Exec("PRAGMA user_version = 15");
+        }
+        using var migrated = new Store(file).Open();
+        Assert.Equal(1L, migrated.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'start_time'"));
+        Assert.Equal((long)Store.Version, migrated.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
     public void TestTheSchemaOfVersion14GetsTheDailyMissionsTable()
     {
         var file = Path.Combine(tmp, "v14.db");

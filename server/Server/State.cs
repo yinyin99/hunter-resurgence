@@ -1089,7 +1089,7 @@ public sealed partial class State
         var tutorial = session is not null && latestTutorial.TryGetValue(account, out var latest) && latest.Session == session ? Tutorial(latest.Id) : null;
         var inventory = connect["inventory"]!.AsObject();
         JsonArray rows;
-        JsonNode? expeditionId, locationId, reserve;
+        JsonNode? expeditionId, locationId, reserve, startTime = null;
         using (var con = Con(account))
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
@@ -1114,12 +1114,12 @@ public sealed partial class State
             // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
             // with the first heartbeat
             con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
-            var row = con.Rows("SELECT id, location_id, reserve FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
+            var row = con.Rows("SELECT id, location_id, reserve, start_time FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
                                + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (tutorial is not null)  // a tutorial opens no expedition
                 (expeditionId, locationId, reserve) = (0L, (Py.L(tutorial["reserve_id"]) - 1) * 100, C(tutorial["reserve_id"]));
             else if (row is not null)
-                (expeditionId, locationId, reserve) = (Py.FromSql(row[0]), Py.FromSql(row[1]), Py.FromSql(row[2]));
+                (expeditionId, locationId, reserve, startTime) = (Py.FromSql(row[0]), Py.FromSql(row[1]), Py.FromSql(row[2]), Py.FromSql(row[3]));
             else
             {
                 var lodge = connect["expedition"]!["lodge"];
@@ -1141,6 +1141,8 @@ public sealed partial class State
         expedition["y"] = y;
         expedition["z"] = z;
         expedition["lodge"] = lodgeOut;
+        if (startTime is not null)
+            expedition["start_time"] = startTime;
         if (tutorial is not null)
         {
             expedition["mode"] = 1;
@@ -1537,13 +1539,15 @@ public sealed partial class State
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         latestTutorial.TryRemove(account, out _);
+        var time = Form1(form, "time");
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();
         var closed = con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
-        con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event) VALUES ($a, ?, ?, ?, ?)",
-                 Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con));
+        con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event, start_time) VALUES ($a, ?, ?, ?, ?, ?)",
+                 Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con),
+                 Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null);  // out of one day: the recorded time stays
         MissionLaunch(con, Py.IsDigit(start) && long.TryParse(start, out var lodge) ? lodge : null);
         ApplyLoadout(con, Form1(form, "loadout_id"));
         con.Commit();

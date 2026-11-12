@@ -535,6 +535,22 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("[]", connect["user_stats"]!["achievement_stats"]);
     }
 
+    [Fact]
+    public void TestAPickedTimeOfDayIsTheConnectsStartTime()
+    {
+        string StartTime(string form)
+        {
+            state.NoteLaunch(8, Encoding.ASCII.GetBytes("start=100&reserve=2" + form));
+            return JsonNode.Parse(state.ConnectReply(8))!["expedition"]!["start_time"]?.ToJsonString() ?? "none";
+        }
+        var recorded = StartTime("");
+        Assert.Equal("540", StartTime("&time=540"));
+        Assert.Equal("0", StartTime("&time=0"));
+        Assert.Equal(recorded, StartTime(""));  // the next hunt picked none
+        foreach (var bad in new[] { "1440", "99999999999999999999", "x", "" })
+            Assert.Equal(recorded, StartTime("&time=" + bad));
+    }
+
     static JsonNode Ids(JsonNode list) => new JsonArray([.. list.AsArray().Select(e => e!["id"]!.DeepClone())]);
 
     [Fact]

@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 15;
+    public const int Version = 16;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -171,7 +171,8 @@ public sealed class Store
         CREATE TABLE expeditions (
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
             first_event INTEGER, distance INTEGER, last_seen REAL,
-            stats TEXT);  -- a closed hunt's statistics (State.HuntStats), stored at its close
+            stats TEXT,   -- a closed hunt's statistics (State.HuntStats), stored at its close
+            start_time INTEGER);  -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -286,6 +287,8 @@ public sealed class Store
                 con.Script(RestoredChallenges.Replace("$a", "e.account_id"));
             }
             if (version < 15) con.Script(DailyMissions);
+            if (version < 16 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'start_time'")! == 0)
+                con.Script("ALTER TABLE expeditions ADD COLUMN start_time INTEGER");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
