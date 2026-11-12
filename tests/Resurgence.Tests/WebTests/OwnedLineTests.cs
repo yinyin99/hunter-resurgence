@@ -35,6 +35,10 @@ public sealed class OwnedLineTests : UiContext
         Assert.Equal("You have an unlimited license", Text(Render<OwnedLine>(p => Add(p, Item(1, expires: 0)))));
     }
 
+    // a value in milliseconds (a restored backup) is far past year 9999: it must not break the page
+    [Fact]
+    public void AHugeEndDoesNotThrow() => Assert.Equal("Expires: 9999-12-31", Text(Render<OwnedLine>(p => Add(p, Item(1, expires: 1798761600000)))));
+
     [Fact]
     public void ALicenseThatHasEndedShowsNothing() => Assert.Empty(Render<OwnedLine>(p => Add(p, Item(1, expires: 1000))).FindAll(".own"));
 
