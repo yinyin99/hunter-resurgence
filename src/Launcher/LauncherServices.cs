@@ -28,6 +28,8 @@ static class LauncherServices
         services.AddSingleton(new HostMode { Launcher = true, Mock = mock, Live = server is not null });
         // live: the launcher has no patch source yet, so the panel always reports ready
         services.AddSingleton<IPatchService>(new MockPatchService(server is null ? mock : null));
+        // the player kit: setup, removal and the forwarder (live only with an https server_url)
+        services.AddSingleton<IKitService>(new LauncherKit(server));
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));

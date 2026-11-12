@@ -114,7 +114,7 @@ The copy of a game settings file the launcher makes before its first write.
 _Avoid_: backup
 
 **Player kit**:
-The Windows tool that sends the game to the community server: a one-time `setup` and the `run` forwarder.
+The part of the launcher that sends the game to the community server: a one-time setup (Settings has Remove) and the forwarder.
 _Avoid_: remote play tool, helper
 
 **Forwarder**:

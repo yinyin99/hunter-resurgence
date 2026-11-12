@@ -1,7 +1,7 @@
 using System.Text;
-using Play;
+using Resurgence.Launcher;
 
-namespace Resurgence.Tests.PlayKit;
+namespace Resurgence.Tests.LauncherApp;
 
 public class HostsTests
 {
@@ -89,7 +89,7 @@ public class HostsTests
     {
         using var dir = new TempDir("play-hosts-");
         var path = Path.Combine(dir.Path, "hosts");
-        byte[] original = [0xEF, 0xBB, 0xBF, .. "# caf"u8, 0xE9, .. "\r\n127.0.0.1 localhost\r\n"u8];
+        byte[] original = [239, 187, 191, .. "# caf"u8, 233, .. "\r\n127.0.0.1 localhost\r\n"u8]; // a UTF-8 BOM, and one byte that is not UTF-8
         File.WriteAllBytes(path, original);
 
         Assert.True(Hosts.Apply(path, Names));

@@ -28,7 +28,6 @@
     <ProjectReference Include="..\..\src\Launcher\Resurgence.Launcher.csproj" />
     <ProjectReference Include="..\..\src\Restore\Resurgence.Restore.csproj" />
     <ProjectReference Include="..\..\tools\backup\backup.csproj" />
-    <ProjectReference Include="..\..\tools\play\play.csproj" />
     <ProjectReference Include="..\..\src\Web\Resurgence.Web.csproj" />
   </ItemGroup>
 
