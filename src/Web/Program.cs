@@ -171,6 +171,9 @@ app.MapStaticAssets();
 app.MapGet("/images.json", () => imageIndex);
 // the slots drawn without a picture since the start (docs/images.md): {"<key>":"<first page>"}
 app.MapGet("/images-missing.json", () => images.Missing);
+// the public pages for search engines (docs/website.md#search-engines)
+app.MapGet("/sitemap.xml", async (HttpRequest r, IStoreService store, ILeaderboardsService boards) =>
+    Results.Content(await Seo.SitemapAsync($"{r.Scheme}://{r.Host}", store, boards), "application/xml"));
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = null).AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
 

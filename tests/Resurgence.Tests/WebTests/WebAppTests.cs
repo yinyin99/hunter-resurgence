@@ -142,6 +142,49 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(html, "class=\"card "));  // the one item, nothing of the mock's 46
     }
 
+    // one URL per page and language (docs/website.md#search-engines): only page and lang change what a page shows, /feed is /
+    [Theory]
+    [InlineData("/feed?ref=news", "http://localhost/")]
+    [InlineData("/store?page=1", "http://localhost/store")]
+    [InlineData("/store?page=2&lang=fr&next=%2F", "http://localhost/store?page=2&amp;lang=fr")]
+    [InlineData("/help?lang=en", "http://localhost/help")]
+    public async Task TheCanonicalLinkKeepsOnlyThePageAndTheLanguage(string url, string canonical) =>
+        Assert.Contains($"<link rel=\"canonical\" href=\"{canonical}\" />", await Html(await Get(Client(), url)));
+
+    [Fact]
+    public async Task APageNamesEveryLanguageVersionAndEnglishIsTheDefault()
+    {
+        var html = await Html(await Get(Client(), "/help", "fr"));
+        Assert.Contains("<link rel=\"canonical\" href=\"http://localhost/help?lang=fr\" />", html);
+        Assert.Equal(Resurgence.Ui.Languages.All.Length + 1, System.Text.RegularExpressions.Regex.Matches(html, "hreflang=").Count);
+        Assert.Contains("hreflang=\"pt-BR\" href=\"http://localhost/help?lang=pt-BR\"", html);
+        Assert.Contains("hreflang=\"en\" href=\"http://localhost/help\"", html);
+        Assert.Contains("hreflang=\"x-default\" href=\"http://localhost/help\"", html);
+    }
+
+    [Fact]
+    public async Task APageNotFoundHasNoCanonicalLink()
+    {
+        var r = await Get(Client(), "/no-such-page");
+        Assert.Equal(HttpStatusCode.NotFound, r.StatusCode);
+        Assert.DoesNotContain("rel=\"canonical\"", await Html(r));
+    }
+
+    [Fact]
+    public async Task TheSitemapListsTheOpenPagesTheStoreAndTheProfiles()
+    {
+        var r = await Get(Client(), "/sitemap.xml");
+        var xml = System.Xml.Linq.XDocument.Parse(await Html(r));
+        var locs = xml.Descendants("{http://www.sitemaps.org/schemas/sitemap/0.9}loc").Select(l => l.Value).ToList();
+        Assert.Equal("application/xml", r.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("http://localhost/", locs);
+        Assert.Contains("http://localhost/help", locs);
+        Assert.Contains(locs, l => l.StartsWith("http://localhost/store/item/", StringComparison.Ordinal));
+        Assert.Contains(locs, l => l.StartsWith("http://localhost/store/bundle/", StringComparison.Ordinal));
+        Assert.Contains(locs, l => l.StartsWith("http://localhost/profile/", StringComparison.Ordinal));
+        Assert.Equal(locs.Count, locs.Distinct().Count());
+    }
+
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)
     {
         using var scope = f.Services.CreateScope();
