@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mensagens</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mensagens ({0} novas)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Minha Carteira / Histórico de Compras</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventário</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Você ainda não possui nenhum item.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>restam {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Outros</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sair</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Sua Pontuação de Caçador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Enquanto um evento sazonal está em andamento, o servidor da comunidade adiciona seus animais ao jogo e o launcher mostra suas imagens. Desative para jogar sem o evento. A mudança vale na próxima vez que você iniciar o jogo.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jogar eventos sazonais</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Não foi possível salvar a configuração. Tente novamente.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento em andamento: {0}, em {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ajustes do Jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de tela</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Arquivos de Log</value></data>

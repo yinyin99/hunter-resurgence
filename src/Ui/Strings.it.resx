@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Messaggi</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Messaggi ({0} nuovi)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Il mio portafoglio / Cronologia acquisti</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventario</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Non possiedi ancora nessun oggetto.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} rimasti</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Equipaggiato</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Altro</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Esci</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Il tuo Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Il tuo profilo</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mentre un evento stagionale è in corso, il server della community aggiunge i suoi animali al gioco e il launcher mostra le sue immagini. Disattivalo per giocare senza l'evento. La modifica si applica al prossimo avvio del gioco.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Partecipa agli eventi stagionali</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Impossibile salvare l'impostazione. Riprova.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Impostazioni di gioco</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshot</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>File di log</value></data>

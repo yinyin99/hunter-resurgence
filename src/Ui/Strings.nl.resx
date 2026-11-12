@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Berichten</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Berichten ({0} nieuw)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mijn portemonnee / Aankoopgeschiedenis</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventaris</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Je bezit nog geen voorwerpen.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} over</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Uitgerust</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Overig</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Zolang een seizoensevenement loopt, voegt de communityserver de dieren ervan toe aan het spel en toont de launcher de bijbehorende afbeeldingen. Schakel dit uit om zonder het evenement te spelen. De wijziging geldt vanaf de volgende keer dat je het spel start.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Seizoensevenementen spelen</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>De instelling kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evenement bezig: {0}, in {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>alle reservaten</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Seizoensevenement</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logbestanden</value></data>

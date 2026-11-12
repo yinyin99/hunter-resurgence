@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mesaje</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesaje ({0} noi)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Portofelul meu / Istoricul achizițiilor</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Nu deții încă niciun obiect.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} rămase</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Echipat</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Altele</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Deconectare</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Hunter Score-ul dvs.</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Cât timp rulează un eveniment sezonier, serverul comunității adaugă animalele sale în joc, iar launcherul îi afișează imaginile. Dezactivează opțiunea pentru a juca fără eveniment. Modificarea se aplică la următoarea pornire a jocului.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Joacă evenimente sezoniere</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Setarea nu a putut fi salvată. Încearcă din nou.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Eveniment în desfășurare: {0}, în {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>toate rezervațiile</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Eveniment sezonier</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fișiere jurnal</value></data>

@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Meldinger</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Meldinger ({0} nye)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min lommebok / Transaksjonslogg</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Du eier ingen gjenstander ennå.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} igjen</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Utstyrt</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Annet</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logg ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Jegerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mens en sesongbegivenhet pågår, legger fellesskapsserveren dyrene sine til i spillet, og launcheren viser bildene sine. Slå av dette for å spille uten begivenheten. Endringen gjelder neste gang du starter spillet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spill sesongbegivenheter</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Innstillingen kunne ikke lagres. Prøv igjen.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Hendelse pågår: {0}, i {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sesonghendelse</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spillinnstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skjermbilder</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Loggfiler</value></data>

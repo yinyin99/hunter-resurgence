@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mensagens</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mensagens ({0} novas)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>A minha carteira / Histórico de compras</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventário</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Ainda não possui nenhum item.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>restam {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Outros</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Terminar sessão</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A tua Pontuação de Caçador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>O teu perfil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Enquanto um evento sazonal está a decorrer, o servidor da comunidade acrescenta os seus animais ao jogo e o launcher mostra as suas imagens. Desative para jogar sem o evento. A alteração aplica-se na próxima vez que iniciar o jogo.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jogar eventos sazonais</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Não foi possível guardar a definição. Tente novamente.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento a decorrer: {0}, em {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Definições do jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de ecrã</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Ficheiros de registo</value></data>

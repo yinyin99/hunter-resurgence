@@ -40,6 +40,8 @@ public static class ServerAccountApi
     public const string Loadouts = "/account/loadouts";
     /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
     public const string Events = "/account/events";
+    /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
+    public const string Inventory = "/account/inventory";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
@@ -60,6 +62,11 @@ public sealed record ServerEvent(string Name, string Define, int[] Reserves);
 
 /// <summary><see cref="ServerAccountApi.Events"/>: <c>Event</c> is null when none runs.</summary>
 public sealed record ServerEvents(bool Play, ServerEvent? Event);
+
+/// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>.</summary>
+public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped);
+
+public sealed record ServerInventory(ServerInventoryItem[] Items);
 
 /// <summary>A saved loadout of <see cref="ServerAccountApi.Loadouts"/>; its <c>Id</c> is what <see cref="ServerLaunchApi.Launch"/> takes as <c>loadout</c>.</summary>
 public sealed record ServerLoadout(int Id, string Name);

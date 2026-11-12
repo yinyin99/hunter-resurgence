@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mitteilungen</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mitteilungen ({0} neue)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mein Kontostand / Kaufverlauf</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Sie besitzen noch keine Gegenstände.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} übrig</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Ausgerüstet</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Sonstiges</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr Hunter-Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Solange ein saisonales Event läuft, fügt der Community-Server dem Spiel seine Tiere hinzu und der Launcher zeigt seine Bilder. Schalte das aus, um ohne das Event zu spielen. Die Änderung gilt ab dem nächsten Spielstart.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Saisonale Events spielen</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Die Einstellung konnte nicht gespeichert werden. Versuche es erneut.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Ereignis läuft: {0}, in {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>allen Revieren</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Saisonales Ereignis</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spieleinstellungen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Log-Dateien</value></data>

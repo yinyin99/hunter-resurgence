@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mensajes</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mensajes ({0} nuevos)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mi cartera / Historial de compras</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventario</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Todavía no tienes ningún objeto.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>quedan {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Otros</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Cerrar la sesión</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tu Puntuación del Cazador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mientras dura un evento de temporada, el servidor comunitario añade sus animales al juego y el launcher muestra sus imágenes. Desactívalo para jugar sin el evento. El cambio se aplica la próxima vez que inicies el juego.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jugar eventos de temporada</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>No se pudo guardar el ajuste. Inténtalo de nuevo.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento en curso: {0}, en {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>todas las reservas</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento de temporada</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Configuración del juego</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Registros</value></data>

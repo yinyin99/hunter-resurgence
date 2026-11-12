@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Meddelanden</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Meddelanden ({0} nya)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min plånbok / Köphistorik</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventarie</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Du äger inga föremål ännu.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} kvar</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Utrustad</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Övrigt</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logga ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Hunterpoäng</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Medan en säsongshändelse pågår lägger gemenskapsservern till dess djur i spelet och launchern visar dess bilder. Stäng av detta för att spela utan händelsen. Ändringen gäller nästa gång du startar spelet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spela säsongshändelser</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Inställningen kunde inte sparas. Försök igen.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Händelse pågår: {0}, i {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>alla reservat</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Säsongshändelse</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinställningar</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skärmdumpar</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Loggfiler</value></data>

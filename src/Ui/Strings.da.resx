@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Beskeder</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Beskeder ({0} nye)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min tegnebog / Købshistorik</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Du ejer endnu ingen genstande.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} tilbage</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Udstyret</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Andet</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Log ud</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din jægerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mens en sæsonbegivenhed kører, tilføjer fællesskabsserveren dens dyr til spillet, og launcheren viser dens billeder. Slå det fra for at spille uden begivenheden. Ændringen træder i kraft, næste gang du starter spillet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spil sæsonbegivenheder</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Indstillingen kunne ikke gemmes. Prøv igen.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Begivenhed i gang: {0}, i {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sæsonbegivenhed</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spilindstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skærmbilleder</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logfiler</value></data>

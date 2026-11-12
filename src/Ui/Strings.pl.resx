@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Wiadomości</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Wiadomości ({0} nowych)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mój portfel / Historia zakupów</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Ekwipunek</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Nie masz jeszcze żadnych przedmiotów.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>zostało {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Wyposażone</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Inne</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Wyloguj się</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Twoje Punkty Myśliwego</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
@@ -69,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Gdy trwa wydarzenie sezonowe, serwer społeczności dodaje do gry jego zwierzęta, a launcher pokazuje jego obrazy. Wyłącz to, aby grać bez wydarzenia. Zmiana obowiązuje od następnego uruchomienia gry.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Graj w wydarzenia sezonowe</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Nie udało się zapisać ustawienia. Spróbuj ponownie.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Trwa wydarzenie: {0}, w: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>wszystkie rezerwaty</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Wydarzenie sezonowe</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ustawienia gry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Zrzuty ekranu</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Pliki dziennika</value></data>
