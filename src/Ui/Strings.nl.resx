@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Wat je nodig hebt</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Een pc met Windows 10 of 11, Steam en je eigen exemplaar van {game}, geïnstalleerd vanuit je Steam-bibliotheek. Hunter Resurgence bevat geen spelbestanden: de launcher verbindt jouw exemplaar met de communityserver.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Download de Hunter Resurgence-launcher en start hem. Hij installeert alleen voor jouw gebruiker (zonder beheerdersvraag), maakt een snelkoppeling en werkt zichzelf bij.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Haal je profiel terug</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Een back-up gemaakt met de back-uptool? Upload de zip bij {0}Je back-up herstellen{1} vóór je eerste jacht op de communityserver. De beheerder controleert hem met de hand en herstelt dan je inventaris, trofeeën, statistieken en portemonnee.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Een back-up? Herstel die eerst</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Een profiel kan alleen worden hersteld op een account dat nog niet op de communityserver heeft gejaagd. Meld je aan op deze website, upload de zip van de back-uptool bij {0}Je back-up herstellen{1} en wacht tot de beheerder hem heeft hersteld vóór je eerste jacht.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelersgids: elke stap en oplossingen voor veelvoorkomende problemen</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download de launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Stap {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start biedt de launcher aan om te openen via de Spelen-knop van Steam: accepteer en druk dan in Steam op Spelen. De launcher toont wat hij op je pc verandert: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. De bestanden van het spel worden nooit veranderd.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Meld je aan met de codelink die de launcher toont, met het Steam-account waarmee je speelt. Kies een reservaat en een startpunt en druk op Starten. De eerste keer vraagt Windows Firewall naar het spel: kies Toestaan. Laat de launcher open terwijl je speelt.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Meld je aan met de codelink die de launcher toont, met het Steam-account waarmee je speelt. Kies een reservaat en een startpunt en druk op Spel starten. De eerste keer vraagt Windows Firewall naar het spel: kies Toestaan. Laat de launcher open terwijl je speelt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Problemen oplossen</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Je back-up herstellen</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Jouw gegevens</value></data>

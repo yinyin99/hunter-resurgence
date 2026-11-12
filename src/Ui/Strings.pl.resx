@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Czego potrzebujesz</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Komputera z Windows 10 lub 11, Steama i własnej kopii {game}, zainstalowanej z biblioteki Steam. Hunter Resurgence nie zawiera plików gry: jego launcher łączy twoją kopię z serwerem społeczności.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Pobierz launcher Hunter Resurgence i uruchom go. Instaluje się tylko dla twojego użytkownika (bez pytania o uprawnienia administratora), dodaje skrót i sam się aktualizuje.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Odzyskaj swój profil</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Masz kopię zrobioną narzędziem do kopii zapasowych? Prześlij jej plik zip w {0}Przywróć kopię zapasową{1} przed pierwszym polowaniem na serwerze społeczności. Operator sprawdza ją ręcznie, a potem przywraca twój ekwipunek, trofea, statystyki i portfel.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Masz kopię? Najpierw ją przywróć</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Profil można przywrócić tylko na konto, które jeszcze nie polowało na serwerze społeczności. Zaloguj się na tej stronie, prześlij plik zip z narzędzia do kopii zapasowych w {0}Przywróć kopię zapasową{1} i przed pierwszym polowaniem poczekaj, aż operator go przywróci.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Poradnik gracza: każdy krok i rozwiązania częstych problemów</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Pobierz launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher proponuje otwieranie go przyciskiem Graj w Steamie: zgódź się, a potem naciśnij Graj w Steamie. Launcher pokazuje, co zmienia na twoim komputerze: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Pliki gry nigdy nie są zmieniane.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Zaloguj się linkiem z kodem, który pokazuje launcher, na konto Steam, na którym grasz. Wybierz rezerwat i punkt startowy, a potem naciśnij Start. Za pierwszym razem Zapora systemu Windows zapyta o grę: wybierz Zezwalaj. Nie zamykaj launchera podczas gry.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Zaloguj się linkiem z kodem, który pokazuje launcher, na konto Steam, na którym grasz. Wybierz rezerwat i punkt startowy, a potem naciśnij Start gry. Za pierwszym razem Zapora systemu Windows zapyta o grę: wybierz Zezwalaj. Nie zamykaj launchera podczas gry.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Rozwiązywanie problemów</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Twoje dane</value></data>

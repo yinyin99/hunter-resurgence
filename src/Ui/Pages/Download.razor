@@ -6,6 +6,7 @@
 <div class="page-min">
     <h2 class="page-title">@L["Download.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
     <section class="box panel"><h3>@L["Download.Need.Title"]</h3><p class="plain">@L["Download.Need.Text"]</p></section>
+    <section class="box panel"><h3>@L["Download.Restore.Title"]</h3><p class="plain">@L.Html("Download.Restore.Text", "<a href=\"/restore\">", "</a>")</p></section>
     <section class="box panel">
         <h3>@L["Download.Step", 1]</h3>
         <p class="plain">@L["Download.Step1.Text"]</p>
@@ -14,14 +15,16 @@
     </section>
     <section class="box panel"><h3>@L["Download.Step", 2]</h3><p class="plain">@L["Download.Step2.Text"]</p></section>
     <section class="box panel"><h3>@L["Download.Step", 3]</h3><p class="plain">@L["Download.Step3.Text"]</p></section>
-    <section class="box panel"><h3>@L["Download.Restore.Title"]</h3><p class="plain">@L.Html("Download.Restore.Text", "<a href=\"/restore\">", "</a>")</p></section>
-    <section class="box panel">
-        <h3>@L["Download.Trouble.Title"]</h3>
-        <ul>
-            @if (Source is not null) { <li><a href="@(Source + "/blob/main/docs/guide.md")" target="_blank" rel="noopener">@L["Download.Trouble.Guide"]</a></li> }
-            @if (Brand.Link("discord") is not null) { <li><ExternalLink Key="discord">@L["Help.Support.LinkDiscord"]</ExternalLink></li> }
-        </ul>
-    </section>
+    @if (Source is not null || Brand.Link("discord") is not null)
+    {
+        <section class="box panel">
+            <h3>@L["Download.Trouble.Title"]</h3>
+            <ul>
+                @if (Source is not null) { <li><a href="@(Source + "/blob/main/docs/guide.md")" target="_blank" rel="noopener">@L["Download.Trouble.Guide"]</a></li> }
+                @if (Brand.Link("discord") is not null) { <li><ExternalLink Key="discord">@L["Help.Support.LinkDiscord"]</ExternalLink></li> }
+            </ul>
+        </section>
+    }
 </div>
 
 @code {

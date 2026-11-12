@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Co potřebujete</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Počítač s Windows 10 nebo 11, Steam a vlastní kopii {game} nainstalovanou z knihovny Steamu. Hunter Resurgence neobsahuje žádné soubory hry: jeho launcher připojí vaši kopii ke komunitnímu serveru.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Stáhněte launcher Hunter Resurgence a spusťte ho. Nainstaluje se jen pro vašeho uživatele (bez dotazu na správce), přidá zástupce a sám se aktualizuje.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Získejte zpět svůj profil</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Máte zálohu z nástroje pro zálohování? Nahrajte její zip v sekci {0}Obnovit zálohu{1} před prvním lovem na komunitním serveru. Operátor ji ručně zkontroluje a pak obnoví váš inventář, trofeje, statistiky a peněženku.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Máte zálohu? Nejdřív ji obnovte</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Profil lze obnovit jen na účet, který na komunitním serveru ještě nelovil. Přihlaste se na tomto webu, nahrajte zip z nástroje pro zálohování v sekci {0}Obnovit zálohu{1} a před prvním lovem počkejte, až ho operátor obnoví.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Průvodce hráče: každý krok a řešení běžných problémů</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Stáhnout launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher nabídne, že se bude otevírat tlačítkem Hrát ve Steamu: přijměte to a pak ve Steamu stiskněte Hrát. Launcher vypíše, co na počítači mění: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Soubory hry se nikdy nemění.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Přihlaste se odkazem s kódem, který launcher ukáže, účtem Steam, se kterým hrajete. Vyberte revír a start a stiskněte Začátek. Poprvé se brána Windows Firewall zeptá na hru: zvolte Povolit. Nechte launcher během hraní otevřený.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Přihlaste se odkazem s kódem, který launcher ukáže, účtem Steam, se kterým hrajete. Vyberte revír a start a stiskněte Spustit hru. Poprvé se brána Windows Firewall zeptá na hru: zvolte Povolit. Nechte launcher během hraní otevřený.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Řešení potíží</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovit zálohu</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Vaše údaje</value></data>

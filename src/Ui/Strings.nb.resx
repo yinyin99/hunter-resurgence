@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Dette trenger du</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>En PC med Windows 10 eller 11, Steam og din egen kopi av {game}, installert fra Steam-biblioteket ditt. Hunter Resurgence inneholder ingen spillfiler: launcheren kobler kopien din til fellesskapsserveren.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Last ned Hunter Resurgence-launcheren og kjør den. Den installeres bare for brukeren din (uten administratorspørsmål), legger til en snarvei og oppdaterer seg selv.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Få profilen din tilbake</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Har du tatt en sikkerhetskopi med sikkerhetskopiverktøyet? Last opp zip-filen under {0}Gjenopprett sikkerhetskopien din{1} før din første jakt på fellesskapsserveren. Operatøren sjekker den for hånd og gjenoppretter så inventaret, troféene, statistikken og lommeboken din.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Har du en sikkerhetskopi? Gjenopprett den først</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>En profil kan bare gjenopprettes på en konto som ennå ikke har jaktet på fellesskapsserveren. Logg inn på dette nettstedet, last opp zip-filen fra sikkerhetskopiverktøyet under {0}Gjenopprett sikkerhetskopien din{1}, og vent til operatøren har gjenopprettet den før din første jakt.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spillerguide: hvert steg og løsninger på vanlige problemer</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Last ned launcheren</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Trinn {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Ved første start tilbyr launcheren å åpnes fra Steams Spill-knapp: godta, og trykk så Spill i Steam. Launcheren viser hva den endrer på PC-en: velg Sett opp, og svar Ja når Windows spør om å installere et sertifikat og redigere hosts-filen. Spillets filer endres aldri.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Logg inn med kodelenken launcheren viser, med Steam-kontoen du spiller med. Velg et reservat og et startpunkt, og trykk Start. Første gang spør Windows-brannmuren om spillet: velg Tillat. Hold launcheren åpen mens du spiller.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Logg inn med kodelenken launcheren viser, med Steam-kontoen du spiller med. Velg et reservat og et startpunkt, og trykk Start spillet. Første gang spør Windows-brannmuren om spillet: velg Tillat. Hold launcheren åpen mens du spiller.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Feilsøking</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Gjenopprett sikkerhetskopien din</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Dine data</value></data>

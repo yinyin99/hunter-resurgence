@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Что нужно</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>ПК с Windows 10 или 11, Steam и своя копия {game}, установленная из библиотеки Steam. Hunter Resurgence не содержит файлов игры: его лаунчер подключает вашу копию к серверу сообщества.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Скачайте лаунчер Hunter Resurgence и запустите его. Он устанавливается только для вашего пользователя (без запроса прав администратора), создаёт ярлык и обновляется сам.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Верните свой профиль</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Сделали резервную копию инструментом резервного копирования? Загрузите её zip на странице {0}Восстановить резервную копию{1} до первой охоты на сервере сообщества. Оператор проверяет её вручную, а затем восстанавливает инвентарь, трофеи, статистику и кошелёк.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Есть резервная копия? Сначала восстановите её</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Профиль можно восстановить только на аккаунт, который ещё не охотился на сервере сообщества. Войдите на этом сайте, загрузите zip инструмента резервного копирования на странице {0}Восстановить резервную копию{1} и дождитесь, пока оператор его восстановит, до первой охоты.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Руководство игрока: все шаги и решения частых проблем</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Скачать лаунчер</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Шаг {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер предлагает открываться по кнопке «Играть» в Steam: согласитесь, затем нажмите «Играть» в Steam. Лаунчер перечисляет, что он меняет на ПК: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Файлы игры никогда не изменяются.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Войдите по ссылке с кодом, которую показывает лаунчер, с тем аккаунтом Steam, на котором играете. Выберите заповедник и точку старта и нажмите «Старт». В первый раз брандмауэр Windows спросит об игре: выберите «Разрешить». Не закрывайте лаунчер во время игры.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Войдите по ссылке с кодом, которую показывает лаунчер, с тем аккаунтом Steam, на котором играете. Выберите заповедник и точку старта и нажмите «Начать игру». В первый раз брандмауэр Windows спросит об игре: выберите «Разрешить». Не закрывайте лаунчер во время игры.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Устранение неполадок</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Восстановить резервную копию</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Ваши данные</value></data>

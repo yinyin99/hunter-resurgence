@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Do que você precisa</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Um PC com Windows 10 ou 11, a Steam e sua própria cópia de {game}, instalada pela sua biblioteca da Steam. O Hunter Resurgence não contém arquivos do jogo: o launcher dele conecta sua cópia ao servidor da comunidade.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Baixe o launcher do Hunter Resurgence e execute-o. Ele instala só para o seu usuário (sem pedido de administrador), cria um atalho e se atualiza sozinho.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Recupere seu perfil</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Fez um backup com a ferramenta de backup? Envie o zip em {0}Restaurar seu backup{1} antes da sua primeira caçada no servidor da comunidade. O operador confere à mão e então restaura seu inventário, troféus, estatísticas e carteira.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Tem um backup? Restaure primeiro</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Um perfil só pode ser restaurado em uma conta que ainda não caçou no servidor da comunidade. Entre neste site, envie o zip da ferramenta de backup em {0}Restaurar seu backup{1} e espere o operador restaurar antes da sua primeira caçada.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guia do jogador: cada passo e soluções para problemas comuns</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Baixar o launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passo {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Na primeira vez, o launcher oferece abrir pelo botão Jogar da Steam: aceite e depois aperte Jogar na Steam. O launcher lista o que muda no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o arquivo hosts. Os arquivos do jogo nunca são alterados.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Entre com o link com código que o launcher mostra, com a conta Steam com que você joga. Escolha uma reserva e um ponto de partida e aperte Início. Na primeira vez, o Firewall do Windows pergunta sobre o jogo: escolha Permitir. Deixe o launcher aberto enquanto joga.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Entre com o link com código que o launcher mostra, com a conta Steam com que você joga. Escolha uma reserva e um ponto de partida e aperte Iniciar Jogo. Na primeira vez, o Firewall do Windows pergunta sobre o jogo: escolha Permitir. Deixe o launcher aberto enquanto joga.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Solução de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar seu backup</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Seus dados</value></data>

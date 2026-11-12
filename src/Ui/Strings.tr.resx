@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Neye ihtiyacın var</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Windows 10 veya 11 yüklü bir PC, Steam ve Steam kütüphanenden kurulmuş kendi {game} kopyan. Hunter Resurgence oyun dosyası içermez: başlatıcısı kopyanı topluluk sunucusuna bağlar.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Hunter Resurgence başlatıcısını indir ve çalıştır. Yalnızca senin kullanıcın için kurulur (yönetici sorusu yok), bir kısayol ekler ve kendini günceller.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Profilini geri getir</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Yedekleme aracıyla bir yedek aldın mı? Topluluk sunucusundaki ilk avından önce zip dosyasını {0}Yedeği geri yükle{1} sayfasına yükle. Operatör onu elle kontrol eder, sonra envanterini, kupalarını, istatistiklerini ve cüzdanını geri yükler.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Yedeğin mi var? Önce onu geri yükle</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Bir profil yalnızca topluluk sunucusunda henüz avlanmamış bir hesaba geri yüklenebilir. Bu sitede giriş yap, yedekleme aracının zip dosyasını {0}Yedeği geri yükle{1} sayfasına yükle ve ilk avından önce operatörün onu geri yüklemesini bekle.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Oyuncu rehberi: her adım ve sık görülen sorunların çözümleri</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Başlatıcıyı indir</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Adım {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı, Steam'in Oyna düğmesinden açılmayı önerir: kabul et, sonra Steam'de Oyna'ya bas. Başlatıcı PC'nde neyi değiştirdiğini listeler: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Oyunun dosyaları asla değiştirilmez.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Başlatıcının gösterdiği kodlu bağlantıyla, oynadığın Steam hesabıyla giriş yap. Bir av alanı ve başlangıç noktası seç, sonra Başlat'a bas. İlk seferde Windows Güvenlik Duvarı oyunu sorar: İzin ver'i seç. Oynarken başlatıcıyı açık tut.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Başlatıcının gösterdiği kodlu bağlantıyla, oynadığın Steam hesabıyla giriş yap. Bir av alanı ve başlangıç noktası seç, sonra Oyunu Başlat'a bas. İlk seferde Windows Güvenlik Duvarı oyunu sorar: İzin ver'i seç. Oynarken başlatıcıyı açık tut.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Sorun Giderme</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Yedeği geri yükle</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Verileriniz</value></data>

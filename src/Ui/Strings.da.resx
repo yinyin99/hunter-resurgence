@@ -1257,13 +1257,13 @@
   <data name="Download.Need.Title" xml:space="preserve"><value>Det skal du bruge</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>En pc med Windows 10 eller 11, Steam og din egen kopi af {game}, installeret fra dit Steam-bibliotek. Hunter Resurgence indeholder ingen spilfiler: dens launcher forbinder din kopi med fællesskabsserveren.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Download Hunter Resurgence-launcheren og kør den. Den installeres kun for din bruger (ingen administratorforespørgsel), tilføjer en genvej og opdaterer sig selv.</value></data>
-  <data name="Download.Restore.Title" xml:space="preserve"><value>Få din profil tilbage</value></data>
-  <data name="Download.Restore.Text" xml:space="preserve"><value>Har du lavet en backup med backupværktøjet? Upload dens zip under {0}Gendan din backup{1} før din første jagt på fællesskabsserveren. Operatøren tjekker den i hånden og gendanner så din inventar, dine trofæer, statistikker og din tegnebog.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Har du en backup? Gendan den først</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>En profil kan kun gendannes på en konto, der endnu ikke har jaget på fællesskabsserveren. Log ind på denne hjemmeside, upload backupværktøjets zip under {0}Gendan din backup{1}, og vent på, at operatøren gendanner den, før din første jagt.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spillerguide: hvert trin og løsninger på almindelige problemer</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download launcheren</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Trin {0}</value></data>
   <data name="Download.Step2.Text" xml:space="preserve"><value>Ved første start tilbyder launcheren at åbne fra Steams Spil-knap: sig ja, og tryk så på Spil i Steam. Launcheren viser, hvad den ændrer på din pc: vælg Sæt op, og svar Ja, når Windows spørger om at installere et certifikat og redigere hosts-filen. Spillets filer ændres aldrig.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Log ind med kodelinket, som launcheren viser, med den Steam-konto du spiller med. Vælg et reservat og et startpunkt, og tryk på Start. Første gang spørger Windows Firewall om spillet: vælg Tillad. Hold launcheren åben, mens du spiller.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Log ind med kodelinket, som launcheren viser, med den Steam-konto du spiller med. Vælg et reservat og et startpunkt, og tryk på Start spillet. Første gang spørger Windows Firewall om spillet: vælg Tillad. Hold launcheren åben, mens du spiller.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Fejlfinding</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Gendan din backup</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Dine data</value></data>
