@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Je kunt deze dienst rechtstreeks op de DM-pagina kopen: zodra je je reeks verbreekt, verschijnt links van je DM van "Dag 1" een knop waarmee je de dienst kunt kopen (of gebruiken, als je er al minstens één bezit).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Je kunt hem ook kopen in de {0}winkel{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Eenmaal gekocht kun je deze dienst rechtstreeks op de DM-pagina gebruiken:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Zo download en speel je {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Multiplayervereisten</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Singleplayervereisten</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Ondersteunde besturingssystemen:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Besturingssysteem:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Processor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Geheugen:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Videokaart:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafische resolutie:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internetverbinding:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Host-fps:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 en Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 en Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dualcoreprocessor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8-serie (8800 of beter), ATI Radeon HD 2000-serie (2400 of beter). 256 MB videogeheugen (voor laag en gemiddeld). 512 - 768 MB videogeheugen (voor hoog, afhankelijk van het aantal spelers).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7-serie (7600 of beter). ATI X1900 (of beter). 256 MB videogeheugen (voor laag en gemiddeld). 512 MB videogeheugen (voor hoog).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Minimaal 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps up en down</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps up en down (afhankelijk van het aantal spelers)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Als de host het spel niet op minstens 25-30 fps (frames per seconde) draait, zal de fysica fouten opleveren. Spelers met een zwakkere computer kunnen proberen de instellingen te verlagen om het spel met een zo hoog mogelijke fps te draaien. {0}30 FPS{1} is de laagst aanbevolen waarde. Fps kun je meten met gratis hulpprogramma's die op internet beschikbaar zijn.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Hulpprogramma zoeken</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Download het spel (ongeveer 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Klik hier om te downloaden</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Zo speel je {game} op Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Wat je nodig hebt</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Een pc met Windows 10 of 11, Steam en je eigen exemplaar van {game}, geïnstalleerd vanuit je Steam-bibliotheek. Hunter Resurgence bevat geen spelbestanden: de launcher verbindt jouw exemplaar met de communityserver.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Download de Hunter Resurgence-launcher en start hem. Hij installeert alleen voor jouw gebruiker (zonder beheerdersvraag), maakt een snelkoppeling en werkt zichzelf bij.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Haal je profiel terug</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Een back-up gemaakt met de back-uptool? Upload de zip bij {0}Je back-up herstellen{1} vóór je eerste jacht op de communityserver. De beheerder controleert hem met de hand en herstelt dan je inventaris, trofeeën, statistieken en portemonnee.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelersgids: elke stap en oplossingen voor veelvoorkomende problemen</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Download de launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Stap {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Start het spel zodra de installatie is voltooid.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Klik op de knop {0} op de webpagina om een nieuw spel te starten.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start biedt de launcher aan om te openen via de Spelen-knop van Steam: accepteer en druk dan in Steam op Spelen. De launcher toont wat hij op je pc verandert: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. De bestanden van het spel worden nooit veranderd.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Meld je aan met de codelink die de launcher toont, met het Steam-account waarmee je speelt. Kies een reservaat en een startpunt en druk op Starten. De eerste keer vraagt Windows Firewall naar het spel: kies Toestaan. Laat de launcher open terwijl je speelt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Problemen oplossen</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Het probleemoplossingsprogramma controleert automatisch je spelconfiguratie, detecteert veelvoorkomende problemen en stelt oplossingen voor, zodat je sneller weer kunt spelen.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Download het probleemoplossingsprogramma.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Plaats het in je spelmap, naast het uitvoerbare bestand van het spel.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Game Folder]\game\&lt;utility&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Voer het programma uit om configuratie- en prestatieproblemen te analyseren.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Pas de voorgestelde oplossingen toe die tijdens de analyse worden aangeboden.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Als de voorgestelde oplossingen niet helpen, download dan het gegenereerde logbestand en stuur het naar ons {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>supportteam</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Programma downloaden</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Je back-up herstellen</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Jouw gegevens</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Je back-up herstellen</value></data>

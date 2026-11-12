@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Usługę możesz kupić bezpośrednio na stronie MD: gdy tylko przerwiesz serię, po lewej stronie Twojej MD „Dzień 1” pojawi się przycisk z propozycją jej zakupu (lub użycia, jeśli masz już co najmniej jedną).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Możesz ją też kupić w {0}Sklepie{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Po zakupie usługę możesz wykorzystać bezpośrednio na stronie MD:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Jak pobrać i zagrać w {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Wymagania dla gry wieloosobowej</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Wymagania dla gry jednoosobowej</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Obsługiwane systemy operacyjne:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>System operacyjny:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Procesor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Pamięć:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Karta graficzna:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Rozdzielczość grafiki:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Połączenie z internetem:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS hosta:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 i Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 i Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Procesor dwurdzeniowy (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA serii 8 (8800 lub lepsza), ATI Radeon HD serii 2000 (2400 lub lepsza). 256 MB pamięci na karcie (dla niskich i średnich). 512–768 MB pamięci na karcie (dla wysokich, zależnie od liczby graczy).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA serii 7 (7600 lub lepsza). ATI X1900 (lub lepsza). 256 MB pamięci na karcie (dla niskich i średnich). 512 MB pamięci na karcie (dla wysokich).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Co najmniej 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kb/s w obie strony</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Mb/s w obie strony (zależnie od liczby graczy)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Jeśli host nie uruchamia gry z co najmniej 25–30 FPS (klatek na sekundę), fizyka będzie generować błędy. Gracze ze słabszymi komputerami powinni obniżyć ustawienia, aby uruchomić grę z jak najwyższym FPS. {0}30 FPS{1} to najniższa zalecana wartość. FPS można zmierzyć darmowymi narzędziami dostępnymi w internecie.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Szukaj narzędzia</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Pobierz grę (ok. 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Kliknij tutaj, aby pobrać</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Jak grać w {game} na Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Czego potrzebujesz</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Komputera z Windows 10 lub 11, Steama i własnej kopii {game}, zainstalowanej z biblioteki Steam. Hunter Resurgence nie zawiera plików gry: jego launcher łączy twoją kopię z serwerem społeczności.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Pobierz launcher Hunter Resurgence i uruchom go. Instaluje się tylko dla twojego użytkownika (bez pytania o uprawnienia administratora), dodaje skrót i sam się aktualizuje.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Odzyskaj swój profil</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Masz kopię zrobioną narzędziem do kopii zapasowych? Prześlij jej plik zip w {0}Przywróć kopię zapasową{1} przed pierwszym polowaniem na serwerze społeczności. Operator sprawdza ją ręcznie, a potem przywraca twój ekwipunek, trofea, statystyki i portfel.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Poradnik gracza: każdy krok i rozwiązania częstych problemów</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Pobierz launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Uruchom grę po zakończeniu instalacji.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Kliknij przycisk {0} na stronie, aby rozpocząć nową grę.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher proponuje otwieranie go przyciskiem Graj w Steamie: zgódź się, a potem naciśnij Graj w Steamie. Launcher pokazuje, co zmienia na twoim komputerze: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Pliki gry nigdy nie są zmieniane.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Zaloguj się linkiem z kodem, który pokazuje launcher, na konto Steam, na którym grasz. Wybierz rezerwat i punkt startowy, a potem naciśnij Start. Za pierwszym razem Zapora systemu Windows zapyta o grę: wybierz Zezwalaj. Nie zamykaj launchera podczas gry.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Rozwiązywanie problemów</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Narzędzie do rozwiązywania problemów automatycznie sprawdza konfigurację gry, wykrywa typowe usterki i podpowiada rozwiązania, aby szybciej wrócić do grania.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Pobierz narzędzie do rozwiązywania problemów.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Umieść je w folderze gry, obok pliku wykonywalnego gry.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Folder gry]\game\&lt;narzędzie&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Uruchom narzędzie, aby przeanalizować problemy z konfiguracją i wydajnością.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Zastosuj poprawki zaproponowane podczas analizy.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Jeśli proponowane rozwiązania nie pomogą, pobierz wygenerowany plik dziennika i wyślij go do naszego {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>zespołu wsparcia</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Pobierz narzędzie</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Twoje dane</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>

@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Voit ostaa palvelun suoraan päivittäistehtäväsivulta: heti kun katkaiset putkesi, ”Päivä 1” -päivittäistehtävän vasemmalle puolelle ilmestyy painike, joka kehottaa ostamaan sen (tai käyttämään, jos omistat jo vähintään yhden).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Vaihtoehtoisesti voit ostaa sen {0}kaupasta{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Oston jälkeen voit käyttää palvelua suoraan päivittäistehtäväsivulla:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Näin lataat ja pelaat peliä {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Moninpelin vaatimukset</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Yksinpelin vaatimukset</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Tuetut käyttöjärjestelmät:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Käyttöjärjestelmä:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Suoritin:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Muisti:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Näytönohjain:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafiikan resoluutio:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internet-yhteys:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Isäntä:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Isännän FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 ja Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 ja Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Kaksiytiminen suoritin (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 -sarja (8800 tai parempi), ATI Radeon HD 2000 -sarja (2400 tai parempi). 256 MB:n näytönohjaimen muisti (matalalle ja keskitasolle). 512–768 MB:n näytönohjaimen muisti (korkealle, pelaajamäärästä riippuen).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 -sarja (7600 tai parempi). ATI X1900 (tai parempi). 256 MB:n näytönohjaimen muisti (matalalle ja keskitasolle). 512 MB:n näytönohjaimen muisti (korkealle).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Vähintään 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Pelaaja: 512 kbps lataus ja lähetys</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Mbps lataus ja lähetys (pelaajamäärästä riippuen)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Jos isäntä ei pyöritä peliä vähintään 25–30 FPS:llä (ruutua sekunnissa), fysiikka tuottaa virheitä. Pelaajien, joilla on heikko tietokone, kannattaa laskea asetuksia, jotta peli toimisi mahdollisimman korkealla FPS:llä. {0}30 FPS{1} on pienin suositeltu arvo. FPS:ää voi mitata internetistä löytyvillä ilmaisilla työkaluilla.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Hakutyökalu</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Lataa peli (noin 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Lataa napsauttamalla tästä</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Näin pelaat {game}-peliä Hunter Resurgencessa</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Mitä tarvitset</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>PC, jossa on Windows 10 tai 11, Steam ja oma kopiosi {game}-pelistä Steam-kirjastostasi asennettuna. Hunter Resurgence ei sisällä pelitiedostoja: sen käynnistin yhdistää kopiosi yhteisöpalvelimeen.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Lataa Hunter Resurgencen käynnistin ja suorita se. Se asentuu vain käyttäjällesi (ilman järjestelmänvalvojan kyselyä), lisää pikakuvakkeen ja päivittyy itse.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Palauta profiilisi</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Teitkö varmuuskopion varmuuskopiotyökalulla? Lataa sen zip-tiedosto kohdassa {0}Palauta varmuuskopiosi{1} ennen ensimmäistä metsästystäsi yhteisöpalvelimella. Ylläpitäjä tarkistaa sen käsin ja palauttaa sitten varusteesi, trofeesi, tilastosi ja lompakkosi.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Pelaajan opas: jokainen vaihe ja ratkaisut yleisiin ongelmiin</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Lataa käynnistin</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Vaihe {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Käynnistä peli asennuksen päätyttyä.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Napsauta verkkosivun {0}-painiketta aloittaaksesi uuden pelin.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ensimmäisellä käynnistyskerralla käynnistin tarjoutuu avautumaan Steamin Pelaa-painikkeesta: hyväksy ja paina sitten Steamissa Pelaa. Käynnistin luettelee, mitä se muuttaa PC:lläsi: valitse Määritä ja vastaa Kyllä, kun Windows kysyy varmenteen asentamisesta ja hosts-tiedoston muokkaamisesta. Pelin tiedostoja ei koskaan muuteta.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Kirjaudu käynnistimen näyttämällä koodilinkillä sillä Steam-tilillä, jolla pelaat. Valitse alue ja aloituspaikka ja paina Aloitus. Ensimmäisellä kerralla Windowsin palomuuri kysyy pelistä: valitse Salli. Pidä käynnistin auki pelatessasi.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Vianmääritys</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Vianmäärityksen apuohjelma tarkistaa automaattisesti pelisi asetukset, havaitsee yleiset ongelmat ja ehdottaa korjauksia, jotta pääset takaisin pelaamaan nopeammin.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Lataa vianmäärityksen apuohjelma.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Sijoita se pelikansioosi pelin suoritustiedoston viereen.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Pelikansio]\game\&lt;apuohjelma&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Suorita työkalu analysoidaksesi asetus- ja suorituskykyongelmia.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Ota käyttöön analyysin aikana ehdotetut korjaukset.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Jos ehdotetut ratkaisut eivät auta, lataa luotu lokitiedosto ja lähetä se {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>tukitiimillemme</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Lataa apuohjelma</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Tietosi</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>

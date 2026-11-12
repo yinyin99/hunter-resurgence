@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Услугу можно купить прямо на странице ЕМ: как только вы прервёте серию, слева от вашей ЕМ «День 1» появится кнопка с предложением купить её (или использовать, если у вас уже есть хотя бы одна).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Также её можно купить в {0}магазине{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>После покупки услугу можно будет использовать прямо на странице ЕМ:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Как скачать {game} и начать играть</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Требования для мультиплеера</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Требования для одиночной игры</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Поддерживаемые операционные системы:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Операционная система:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Процессор:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Память:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Видеокарта:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Разрешение экрана:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Интернет-соединение:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Хост:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS хоста:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 и Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 и Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Двухъядерный процессор (2 ГГц)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 ГГц)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 ГБ</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 или лучше), ATI Radeon HD 2000 Series (2400 или лучше). 256 МБ видеопамяти (для низких и средних настроек). 512–768 МБ видеопамяти (для высоких, в зависимости от числа игроков).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 или лучше). ATI X1900 (или лучше). 256 МБ видеопамяти (для низких и средних настроек). 512 МБ видеопамяти (для высоких).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Не менее 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Клиент: 512 Кбит/с вх. и исх.</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Мбит/с вх. и исх. (в зависимости от числа игроков)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Если хост запускает игру менее чем на 25–30 FPS (кадров в секунду), физика будет работать с ошибками. Игрокам со слабыми компьютерами стоит снизить настройки, чтобы игра работала при как можно большем FPS. {0}30 FPS{1} — минимальное рекомендуемое значение. FPS можно измерить бесплатными программами, которые есть в интернете.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Найти программу</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Скачайте игру (около 12 ГБ).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Нажмите здесь, чтобы скачать</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Как играть в {game} на Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Что нужно</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>ПК с Windows 10 или 11, Steam и своя копия {game}, установленная из библиотеки Steam. Hunter Resurgence не содержит файлов игры: его лаунчер подключает вашу копию к серверу сообщества.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Скачайте лаунчер Hunter Resurgence и запустите его. Он устанавливается только для вашего пользователя (без запроса прав администратора), создаёт ярлык и обновляется сам.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Верните свой профиль</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Сделали резервную копию инструментом резервного копирования? Загрузите её zip на странице {0}Восстановить резервную копию{1} до первой охоты на сервере сообщества. Оператор проверяет её вручную, а затем восстанавливает инвентарь, трофеи, статистику и кошелёк.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Руководство игрока: все шаги и решения частых проблем</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Скачать лаунчер</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Шаг {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Запустите игру после завершения установки.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Нажмите кнопку {0} на странице сайта, чтобы начать новую игру.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер предлагает открываться по кнопке «Играть» в Steam: согласитесь, затем нажмите «Играть» в Steam. Лаунчер перечисляет, что он меняет на ПК: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Файлы игры никогда не изменяются.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Войдите по ссылке с кодом, которую показывает лаунчер, с тем аккаунтом Steam, на котором играете. Выберите заповедник и точку старта и нажмите «Старт». В первый раз брандмауэр Windows спросит об игре: выберите «Разрешить». Не закрывайте лаунчер во время игры.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Устранение неполадок</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Утилита устранения неполадок автоматически проверяет настройку игры, находит типичные проблемы и рекомендует исправления, чтобы вы быстрее вернулись к игре.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Скачайте утилиту устранения неполадок.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Поместите её в папку игры рядом с исполняемым файлом игры.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Папка игры]\game\&lt;утилита&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Запустите утилиту, чтобы проанализировать проблемы конфигурации и производительности.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Примените исправления, предложенные в ходе анализа.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Если предложенные решения не помогли, скачайте созданный файл журнала и отправьте его в нашу {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>службу поддержки</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Скачать утилиту</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Восстановить резервную копию</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Ваши данные</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Восстановить резервную копию</value></data>

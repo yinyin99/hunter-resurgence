@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Ezt a szolgáltatást közvetlenül az NK oldalon vásárolhatod meg: amint megszakad a sorozatod, az „1. nap” NK-d bal oldalán megjelenik egy gomb, amely felszólít a megvásárlására (vagy a használatára, ha már van legalább egy).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Megvásárolhatod az {0}Áruházból{1} is.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>A megvásárlás után a szolgáltatást közvetlenül az NK oldalon használhatod:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Hogyan töltsd le és játszd: {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Többjátékos rendszerkövetelmények</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Egyjátékos rendszerkövetelmények</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Támogatott operációs rendszerek:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operációs rendszer:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Processzor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Memória:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Videokártya:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafikus felbontás:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internetkapcsolat:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Házigazda:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Házigazda FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 és Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 és Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Kétmagos processzor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8-as sorozat (8800 vagy jobb), ATI Radeon HD 2000-es sorozat (2400 vagy jobb). 256 MB memória a kártyán (alacsony és közepes beállításhoz). 512–768 MB memória a kártyán (magas beállításhoz, a játékosok számától függően).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7-es sorozat (7600 vagy jobb). ATI X1900 (vagy jobb). 256 MB memória a kártyán (alacsony és közepes beállításhoz). 512 MB memória a kártyán (magas beállításhoz).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Legalább 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Kliens: 512 kbps fel- és letöltés</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps fel- és letöltés (a játékosok számától függően)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Ha a házigazda nem legalább 25–30 fps-sel (képkocka/másodperc) futtatja a játékot, a fizika hibákat fog produkálni. A gyengébb számítógéppel rendelkező játékosok próbálják csökkenteni a beállításokat, hogy a játékot a lehető legmagasabb fps-sel futtathassák. A legalacsonyabb ajánlott érték {0}30 FPS{1}. Az FPS ingyenes, az interneten elérhető eszközökkel mérhető.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Eszköz keresése</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Töltsd le a játékot (kb. 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Kattints ide a letöltéshez</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Így játszhatsz a(z) {game} játékkal a Hunter Resurgence-en</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Amire szükséged van</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Windows 10 vagy 11 rendszerű PC, Steam és a(z) {game} saját példánya, a Steam-könyvtáradból telepítve. A Hunter Resurgence nem tartalmaz játékfájlokat: az indítója köti a példányodat a közösségi szerverhez.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Töltsd le a Hunter Resurgence indítóját, és futtasd. Csak a te felhasználódnak települ (rendszergazdai kérdés nélkül), parancsikont hoz létre, és magától frissül.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Hozd vissza a profilodat</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Készítettél mentést a mentőeszközzel? Töltsd fel a zip-fájlját itt: {0}Mentés visszaállítása{1}, még az első vadászatod előtt a közösségi szerveren. Az üzemeltető kézzel ellenőrzi, majd visszaállítja a felszerelésedet, trófeáidat, statisztikáidat és a pénztárcádat.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Játékosútmutató: minden lépés és a gyakori problémák megoldása</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Az indító letöltése</value></data>
   <data name="Download.Step" xml:space="preserve"><value>{0}. lépés</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>A telepítés befejezése után indítsd el a játékot.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Kattints a weboldalon a következő gombra: {0} – így új játékot indíthatsz.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Első indításkor az indító felajánlja, hogy a Steam Játék gombjáról nyíljon meg: fogadd el, majd nyomd meg a Játék gombot a Steamben. Az indító felsorolja, mit változtat a gépeden: válaszd a Beállítás lehetőséget, és felelj Igennel, amikor a Windows tanúsítvány telepítésére és a hosts fájl szerkesztésére kér engedélyt. A játék fájljai sosem változnak.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Jelentkezz be az indító által mutatott kódos linkkel, azzal a Steam-fiókkal, amellyel játszol. Válassz egy rezervátumot és egy kezdőpontot, majd nyomd meg a Kezdés gombot. Első alkalommal a Windows tűzfal rákérdez a játékra: válaszd az Engedélyezés lehetőséget. Játék közben hagyd nyitva az indítót.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Hibaelhárítás</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>A hibaelhárító segédprogram automatikusan ellenőrzi a játék beállításait, felismeri a gyakori problémákat, és javításokat javasol, hogy minél hamarabb visszatérhess a játékhoz.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Töltsd le a hibaelhárító segédprogramot.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Helyezd a játék mappájába, a játék futtatható fájlja mellé.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Játékmappa]\game\&lt;segédprogram&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Futtasd az eszközt a konfigurációs és teljesítményproblémák elemzéséhez.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Alkalmazd az elemzés során felajánlott javításokat.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Ha a javasolt megoldások nem segítenek, töltsd le a létrehozott naplófájlt, és küldd el a {0} számára.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>támogatói csapatunk</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Segédprogram letöltése</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Mentés visszaállítása</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Adataid</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Mentés visszaállítása</value></data>

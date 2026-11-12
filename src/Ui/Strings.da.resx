@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Du kan købe tjenesten direkte på DM-siden: Så snart du bryder din serie, vises en knap til venstre for din »Dag 1«-DM, der opfordrer dig til at købe den (eller bruge den, hvis du allerede ejer mindst én).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Du kan også købe den i {0}butikken{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Når du har købt den, kan du bruge tjenesten direkte på DM-siden:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Sådan downloader og spiller du {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Krav til multiplayer</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Krav til singleplayer</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Understøttede operativsystemer:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operativsystem:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Hukommelse:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Grafikkort:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafikopløsning:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internetforbindelse:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Vært:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Værtens FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 og Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 og Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual-core-processor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 eller bedre), ATI Radeon HD 2000 Series (2400 eller bedre). 256 MB indbygget hukommelse (til lav og mellem). 512-768 MB indbygget hukommelse (til høj, afhængigt af antal spillere).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 eller bedre). ATI X1900 (eller bedre). 256 MB indbygget hukommelse (til lav og mellem). 512 MB indbygget hukommelse (til høj).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Mindst 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kbps op og ned</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps op og ned (afhængigt af antal spillere)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Hvis værten ikke kører spillet med mindst 25-30 fps (billeder pr. sekund), giver fysikken fejl. Spillere med svage computere bør prøve at sænke indstillingerne for at kunne køre spillet med så høj fps som muligt. {0}30 FPS{1} er den laveste anbefalede værdi. FPS kan måles med gratis værktøjer, der findes på internettet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Søg efter værktøj</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Download spillet (ca. 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Klik her for at downloade</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Sådan spiller du {game} på Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Det skal du bruge</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>En pc med Windows 10 eller 11, Steam og din egen kopi af {game}, installeret fra dit Steam-bibliotek. Hunter Resurgence indeholder ingen spilfiler: dens launcher forbinder din kopi med fællesskabsserveren.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Download Hunter Resurgence-launcheren og kør den. Den installeres kun for din bruger (ingen administratorforespørgsel), tilføjer en genvej og opdaterer sig selv.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Få din profil tilbage</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Har du lavet en backup med backupværktøjet? Upload dens zip under {0}Gendan din backup{1} før din første jagt på fællesskabsserveren. Operatøren tjekker den i hånden og gendanner så din inventar, dine trofæer, statistikker og din tegnebog.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spillerguide: hvert trin og løsninger på almindelige problemer</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Download launcheren</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Trin {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Kør spillet, når installationen er færdig.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Klik på knappen {0} på hjemmesiden for at starte et nyt spil.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ved første start tilbyder launcheren at åbne fra Steams Spil-knap: sig ja, og tryk så på Spil i Steam. Launcheren viser, hvad den ændrer på din pc: vælg Sæt op, og svar Ja, når Windows spørger om at installere et certifikat og redigere hosts-filen. Spillets filer ændres aldrig.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Log ind med kodelinket, som launcheren viser, med den Steam-konto du spiller med. Vælg et reservat og et startpunkt, og tryk på Start. Første gang spørger Windows Firewall om spillet: vælg Tillad. Hold launcheren åben, mens du spiller.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Fejlfinding</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Fejlfindingsværktøjet kontrollerer automatisk din spilopsætning, finder almindelige problemer og anbefaler løsninger, så du hurtigere kan komme tilbage til at spille.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Download fejlfindingsværktøjet.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Placér det i din spilmappe ved siden af spillets eksekverbare fil.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Spilmappe]\game\&lt;værktøj&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Kør værktøjet for at analysere konfigurations- og ydelsesproblemer.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Anvend de foreslåede løsninger, der tilbydes under analysen.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Hvis de foreslåede løsninger ikke hjælper, kan du downloade den oprettede logfil og sende den til vores {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>supportteam</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Download værktøj</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Gendan din backup</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Dine data</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Gendan din backup</value></data>

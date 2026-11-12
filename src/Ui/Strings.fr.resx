@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Vous pouvez acheter ce service directement sur la page des MQ : dès que vous brisez votre série, un bouton apparaît à gauche de votre MQ « Jour 1 », vous invitant à l’acheter (ou à l’utiliser si vous en possédez déjà au moins un).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Vous pouvez aussi l’acheter dans la {0}boutique{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Une fois acheté, vous pourrez utiliser ce service directement sur la page des MQ :</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Comment télécharger et jouer à {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Configuration requise en multijoueur</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Configuration requise en simple joueur</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Systèmes d’exploitation pris en charge :</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Système d’exploitation :</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Processeur :</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Mémoire :</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Carte graphique :</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Résolution graphique :</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Connexion Internet :</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Hôte :</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS de l’hôte :</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 et Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 et Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Processeur double cœur (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 Go</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA série 8 (8800 ou supérieure), ATI Radeon HD série 2000 (2400 ou supérieure). 256 Mo de mémoire embarquée (pour faible et moyen). 512 à 768 Mo de mémoire embarquée (pour élevé, selon le nombre de joueurs).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA série 7 (7600 ou supérieure). ATI X1900 (ou supérieure). 256 Mo de mémoire embarquée (pour faible et moyen). 512 Mo de mémoire embarquée (pour élevé).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Au moins 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client : 512 kbit/s montant et descendant</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 à 2 Mbit/s montant et descendant (selon le nombre de joueurs)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Si l’hôte n’exécute pas le jeu à au moins 25-30 FPS (images par seconde), la physique produira des erreurs. Les joueurs disposant d’un ordinateur peu puissant devraient essayer de baisser les paramètres pour faire tourner le jeu avec le plus de FPS possible. {0}30 FPS{1} est la valeur minimale recommandée. Les FPS peuvent être mesurés avec des outils gratuits disponibles sur Internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Rechercher un outil</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Téléchargez le jeu (environ 12 Go).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Cliquez ici pour télécharger</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Comment jouer à {game} sur Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Ce qu’il vous faut</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Un PC sous Windows 10 ou 11, Steam et votre propre copie de {game}, installée depuis votre bibliothèque Steam. Hunter Resurgence ne contient aucun fichier du jeu : son lanceur relie votre copie au serveur communautaire.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Téléchargez le lanceur Hunter Resurgence et lancez-le. Il s’installe pour votre utilisateur seulement (sans demande d’administrateur), ajoute un raccourci et se met à jour tout seul.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Récupérer votre profil</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Vous avez fait une sauvegarde avec l’outil de sauvegarde ? Envoyez son zip sur {0}Restaurer votre sauvegarde{1} avant votre première chasse sur le serveur communautaire. L’opérateur la vérifie à la main, puis restaure votre inventaire, vos trophées, vos statistiques et votre portefeuille.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guide du joueur : chaque étape, et les solutions aux problèmes courants</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Télécharger le lanceur</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Étape {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Lancez le jeu une fois l’installation terminée.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Cliquez sur le bouton {0} de la page web pour démarrer une nouvelle partie.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Au premier démarrage, le lanceur propose de s’ouvrir depuis le bouton Jouer de Steam : acceptez, puis appuyez sur Jouer dans Steam. Le lanceur liste ce qu’il modifie sur votre PC : choisissez Configurer, et répondez Oui quand Windows demande d’installer un certificat et de modifier le fichier hosts. Les fichiers du jeu ne sont jamais modifiés.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Connectez-vous avec le lien à code que montre le lanceur, avec le compte Steam avec lequel vous jouez. Choisissez une réserve et un point de départ, puis appuyez sur Départ. La première fois, le pare-feu Windows pose une question sur le jeu : choisissez Autoriser. Gardez le lanceur ouvert pendant que vous jouez.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Dépannage</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>L’utilitaire de dépannage vérifie automatiquement la configuration de votre jeu, détecte les problèmes courants et recommande des correctifs pour vous permettre de reprendre plus vite la partie.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Téléchargez l’utilitaire de dépannage.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Placez-le dans le répertoire de votre jeu, à côté de l’exécutable du jeu.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Répertoire du jeu]\game\&lt;utilitaire&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Lancez l’outil pour analyser les problèmes de configuration et de performances.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Appliquez les correctifs proposés pendant l’analyse.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Si les solutions proposées ne suffisent pas, téléchargez le fichier journal généré et envoyez-le à notre {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>service client</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Télécharger l’utilitaire</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Vos données</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
