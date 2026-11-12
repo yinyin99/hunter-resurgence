@@ -64,7 +64,7 @@
         if (Mode.Dev && DevModal is "settings" or "initial" && !alerted) { alerted = true; Modal.Show<GameSettingsModal>(new Dictionary<string, object?> { [nameof(GameSettingsModal.FirstStart)] = DevModal == "initial" }); }
         // launcher-only routes and signed-in routes are not served to the public website, nor pages of mock data with a community server: back to the feed
         var path = Nav.ToBaseRelativePath(Nav.Uri);
-        if (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path) || Mode.Live && LauncherGuard.MockOnly(path)) Nav.NavigateTo("/feed", replace: true);
+        if (LauncherGuard.Disabled(path) || (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path) || Mode.Live && LauncherGuard.MockOnly(path))) Nav.NavigateTo("/feed", replace: true);
         // a signed-in hunter who has not accepted the current agreements is sent from the feed to the agreements page
         eula = path.Split('?', '#')[0].Trim('/').Equals("eula", StringComparison.OrdinalIgnoreCase);
         if (session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);

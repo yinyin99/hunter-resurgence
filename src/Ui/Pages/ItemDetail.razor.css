@@ -8,8 +8,8 @@
 .buy s { margin: 0 14px 0 0; text-decoration: none; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: var(--text-3); }
-.cap, .own { margin: 0 0 20px; font-size: 12px; line-height: 16px; }
-.own { color: #e0301e; margin-bottom: 8px; }
+.cap, .item ::deep .own { margin: 0 0 20px; font-size: 12px; line-height: 16px; }
+.item ::deep .own { color: #e0301e; margin-bottom: 8px; }
 .text { margin: 0; font-size: 12px; line-height: 20px; font-weight: 300; white-space: pre-line; color: var(--text-2); }
 .fits, .ethics { margin: 20px 0 0; }
 .fits h4:not(:first-child) { margin-top: 14px; }

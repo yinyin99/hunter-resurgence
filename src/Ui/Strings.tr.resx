@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Satın alınamaz</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Oturum aç ve satın al</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Size ait:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Sahip olunan</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Sona Erme Tarihi:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Lisansınız bu tarihe kadar geçerli:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Limitsiz bir lisansa sahipsiniz</value></data>
   <data name="Store.Or" xml:space="preserve"><value>veya</value></data>
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>

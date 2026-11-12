@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>NEM VÁSÁROLHATÓ</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Bejelentkezés a vásárláshoz</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Nálad van:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Megvásárolva</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Lejárat:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Az engedélyed eddig érvényes:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Végtelen engedélye van</value></data>
   <data name="Store.Or" xml:space="preserve"><value>vagy</value></data>
   <data name="Store.Days" xml:space="preserve"><value>nap</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIÓ</value></data>

@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Niet te koop</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Log in om te kopen</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Je bezit:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>In bezit</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Verloopt:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Je hebt een geldige licentie tot:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Je hebt een onbeperkte licentie</value></data>
   <data name="Store.Or" xml:space="preserve"><value>of</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagen</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ACTIE</value></data>

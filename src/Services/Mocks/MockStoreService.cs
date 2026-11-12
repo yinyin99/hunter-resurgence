@@ -35,9 +35,9 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
         var (key, name) = Leaves[i % Leaves.Length];
         var ems = 2 + i * 7 % 60;
         var sale = i % 11 != 10;
-        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
+        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : i is 6 or 7 ? 1 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
             "Two-man item suitable for extremely cold conditions. Not recommended for use in warm reserves however.\n\nCharacteristics:\n* Establish a new permanent spawn point\n* Access your inventory\n* Up to 10 can be erected in each reserve at the same time\n* Can be dismantled and moved",
-            DaysLeft: i switch { 9 => 12, 25 => 0.5, 41 => 0, _ => null }, OwnLimit: i % 18 == 4 ? 3 : 0, DisabledByServices: i == 41,
+            DaysLeft: i switch { 9 => 12, 25 => 0.5, 41 => 0, _ => null }, Expires: i switch { 6 => 1798761600, 7 => 0, _ => null }, OwnLimit: i % 18 == 4 ? 3 : 0, DisabledByServices: i == 41,
             Banner: i switch { 3 or 43 => "premium", 10 => "limited", 21 => "new", 32 => "community", _ => null }, MultiBuy: key == "10");
     }).ToArray();
 
@@ -99,6 +99,8 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     public Task<StoreItem?> ItemAsync(int id) => Task.FromResult(Items.Where(i => i.Id == id).Select(Live).FirstOrDefault());
 
     public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult(Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault());
+
+    public void RefreshOwned() { }
 
     // the request takes a moment, so the pending state of the buy dialog can be seen
     public async Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1)

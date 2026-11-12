@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Non achetable</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Connexion pour acheter</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Vous en possédez :</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Possédé</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Expire le :</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Vous possédez une licence valable jusqu'au :</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Vous possédez une licence illimitée</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ou</value></data>
   <data name="Store.Days" xml:space="preserve"><value>jours</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>PROMO</value></data>

@@ -78,8 +78,8 @@ public sealed record ServerEventItem(int Id, string Name);
 /// <summary><see cref="ServerAccountApi.EventPanel"/>: <c>Start</c> and <c>End</c> are unix seconds; <c>Name</c> is null when there is no panel.</summary>
 public sealed record ServerEventPanel(string? Name, string? Title, long Start, long End, ServerCommunityMission[]? Community, ServerContributor[]? Contributors,
     ServerEventMission[]? Missions, ServerEventItem[]? Items);
-/// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>.</summary>
-public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped);
+/// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>; <c>Expires</c> is unix seconds, 0 for an unlimited license, null for none.</summary>
+public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped, long? Expires = null);
 
 public sealed record ServerInventory(ServerInventoryItem[] Items);
 

@@ -31,10 +31,9 @@
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
+            <OwnedLine Owned="item.Owned" Counted="item.Counted" Expires="item.Expires" DaysLeft="item.DaysLeft" Full />
             @if (!Mode.Live)
             {
-                @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-                else if (item.Owned > 0) { <p class="own">@L["Store.Own"] @item.Owned</p> }
                 @if (!item.Buyable || item.DisabledByServices) { <p class="own">@L["Store.CantBuy"]</p> }
                 else if (item.LimitReached) { <p class="own">@L["Store.AlreadyOwn"]</p> }
             }
@@ -88,6 +87,7 @@
     protected override async Task OnParametersSetAsync()
     {
         signedIn = await Sessions.CurrentAsync() is not null;
+        Service.RefreshOwned();
         await Load();
         loaded = true;
     }
@@ -96,7 +96,7 @@
 
     void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
     {
-        ["Id"] = item!.Id, ["Name"] = item.Name, ["Ems"] = item.Ems, ["Gms"] = item.Gms, ["Owned"] = item.Owned, ["DaysLeft"] = item.DaysLeft, ["Multi"] = item.MultiBuy,
+        ["Id"] = item!.Id, ["Name"] = item.Name, ["Ems"] = item.Ems, ["Gms"] = item.Gms, ["Owned"] = item.Owned, ["DaysLeft"] = item.DaysLeft, ["Counted"] = item.Counted, ["Expires"] = item.Expires, ["Multi"] = item.MultiBuy,
         ["Bought"] = EventCallback.Factory.Create(this, Load),
     });
 }

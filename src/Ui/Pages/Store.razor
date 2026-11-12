@@ -29,11 +29,7 @@
                         @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
-                @if (!Mode.Live)
-                {
-                    @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-                    else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
-                }
+                <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" />
                 @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
@@ -68,6 +64,7 @@
     protected override async Task OnParametersSetAsync()
     {
         signedIn = await Sessions.CurrentAsync() is not null;
+        Service.RefreshOwned();
         // no sale: the old store goes to its bundles instead
         if (key == "sales" && !await Service.HasSalesAsync()) { Nav.NavigateTo("/store/bundles", replace: true); return; }
         page = PageNo ?? 1;
@@ -93,7 +90,7 @@
 
     void Buy(StoreItem i) => Modal.Show<BuyModal>(new Dictionary<string, object?>
     {
-        ["Id"] = i.Id, ["Name"] = i.Name, ["Ems"] = i.Ems, ["Gms"] = i.Gms, ["Owned"] = i.Owned, ["DaysLeft"] = i.DaysLeft, ["Multi"] = i.MultiBuy,
+        ["Id"] = i.Id, ["Name"] = i.Name, ["Ems"] = i.Ems, ["Gms"] = i.Gms, ["Owned"] = i.Owned, ["DaysLeft"] = i.DaysLeft, ["Counted"] = i.Counted, ["Expires"] = i.Expires, ["Multi"] = i.MultiBuy,
         ["Bought"] = EventCallback.Factory.Create(this, Load),
     });
 }

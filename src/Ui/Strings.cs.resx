@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Nelze koupit</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Přihlaste se k nákupu</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Vlastníte:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Vlastníte</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Vyprší:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Máte platnou licenci do:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Máte neomezenou licenci</value></data>
   <data name="Store.Or" xml:space="preserve"><value>nebo</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dní</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SLEVA</value></data>

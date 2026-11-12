@@ -90,7 +90,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, with em$ or gm$
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
-    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
+    builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<IInventoryService>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
 }
 builder.Services.AddScoped<ModalService>();
 builder.Services.AddScoped<ILanguageSwitcher, WebLanguageSwitcher>();
