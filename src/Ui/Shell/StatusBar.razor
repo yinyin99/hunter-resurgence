@@ -6,6 +6,7 @@
 @inject IFriendsService Friends
 @inject IMessagesService Messages
 @inject IAccountService Account
+@inject ModalService Modal
 
 <header class="bar @(Mode.Launcher ? "" : "web")">
     <div class="row">
@@ -65,6 +66,7 @@
 
 @code {
     readonly CancellationTokenSource stop = new();
+    Action? modalChanged;
 
     /// <summary>After scrolling the menu bar's items are shown inside this bar (quick-nav).</summary>
     [Parameter] public bool Quick { get; set; }
@@ -106,6 +108,8 @@
     {
         if (Minimal) return;
         Account.Changed += Picked;
+        // a purchase's dialog closes after it: the balances show the new amounts at once, not at the next poll
+        Modal.Changed += modalChanged = () => _ = InvokeAsync(async () => { balances = await Wallet.BalancesAsync(); StateHasChanged(); });
         if (!Mode.Live) avatar = (await Account.AccountAsync()).Avatar;  // the account's avatar is the mock's
         await Refresh();
         _ = Poll();
@@ -125,6 +129,7 @@
     public void Dispose()
     {
         Account.Changed -= Picked;
+        Modal.Changed -= modalChanged;
         stop.Cancel();
     }
 }
