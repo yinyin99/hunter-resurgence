@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mientras dura un evento de temporada, el servidor comunitario añade sus animales al juego y el launcher muestra sus imágenes. Desactívalo para jugar sin el evento. El cambio se aplica la próxima vez que inicies el juego.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jugar eventos de temporada</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>No se pudo guardar el ajuste. Inténtalo de nuevo.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento en curso: {0}, en {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>todas las reservas</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento de temporada</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Configuración del juego</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Registros</value></data>
