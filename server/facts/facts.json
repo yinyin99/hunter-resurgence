@@ -201,6 +201,7 @@
   "NO_EQUIP": {"id":14,"slots":[0,1,32,45],"capacity":0},
   "CLOTHING_BACKPACK": {"id":15,"slots":[0],"capacity":10000},
   "DEPLOYABLE": {"id":12,"slots":[0,1,17,23,32,43,45],"capacity":0},
+  "LICENSE": {"id":13,"slots":[0],"capacity":0},
   "CLOTHING_GLASSES": {"id":34,"slots":[0,1,24],"capacity":0},
   "EXTRA_SLOT": {"id":21,"slots":[0],"capacity":0},
   "MISSION_RESET": {"id":23,"slots":[0],"capacity":0},

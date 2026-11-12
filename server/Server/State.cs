@@ -22,6 +22,7 @@ public sealed partial class State
     public Func<double> Clock { get; set; } = Py.Now;
     public const long SYSTEM_SENDER = 1024;  // the id this server gives its notice sender (Chat inbox)
     public const long SERVICE = 45;  // item type of premium services (unlimited ammo/fuel); no item is delivered for them
+    public const long LICENSE = 13;  // item type of the licenses (species, reserve); the facts file's `LICENSE` type
     public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
     /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
     /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.</summary>
@@ -543,6 +544,9 @@ public sealed partial class State
     readonly JsonArray discounts, ethicalAmmo;
     /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
     public SeasonalEvent? Seasonal { get; }
+    /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
+    /// (<see cref="UnlimitedLicenses"/>); it cannot be bought. Off: licenses are items like any other.</summary>
+    public bool AllLicenses { get; init; }
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -1102,6 +1106,8 @@ public sealed partial class State
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
             rows = Items(con);
+            if (AllLicenses)
+                UnlimitedLicenses(rows);
             // Send one definition per distinct owned item id, in order of first appearance, as the game's server does; a list longer than
             // the items stops the game after connect, so never the whole catalogue
             var infosOut = new JsonArray(rows.Select(r => Py.L(r!["item_id"])).Distinct()
@@ -1196,6 +1202,10 @@ public sealed partial class State
                         present.RemoveAt(i);
         if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
             AddSeasonal(reply, seasonal, clientReserve);
+        if (AllLicenses && reply["spawn_licenses"] is JsonArray licensed)  // 2 (not available) stays; 0 and 1 are licensed
+            for (var i = 0; i < licensed.Count; i++)
+                if (Py.L(licensed[i]) != 2)
+                    licensed[i] = 1;
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
@@ -1327,20 +1337,42 @@ public sealed partial class State
             foreach (var s in Arr(c!["subcategories"]))
                 titles[Py.Str(s!["id"])] = C(s["title"]);
         using var con = Con(account);
+        var rows = con.Rows("SELECT item_id, slot, units, json_extract(metadata, '$.expires') FROM items WHERE account_id = $a ORDER BY guid")
+            .Select(r => (Id: (long)r[0], Slot: (long)r[1], Units: Py.FromSql(r[2]), Expires: r[3] is long or double ? Py.FromSql(r[3]) : null, Item: items.GetValueOrDefault((long)r[0])));
+        if (AllLicenses)  // owned without end: the account's own license rows give way to one row of each
+            rows = rows.Where(r => !IsLicense(r.Item ?? installItems.GetValueOrDefault(r.Id)))
+                       .Concat(Licenses.Select(l => (Id: Py.L(l["id"]), Slot: 0L, Units: (JsonNode?)null, Expires: (JsonNode?)0L, Item: (JsonObject?)l)));
         return new JsonObject
         {
-            ["items"] = new JsonArray([.. con.Rows("SELECT item_id, slot, units, json_extract(metadata, '$.expires') FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
+            ["items"] = new JsonArray([.. rows.Select(r =>
             {
-                var item = items.GetValueOrDefault((long)r[0]);
-                var key = item?["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
+                var key = r.Item?["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
                 return (JsonNode?)new JsonObject
                 {
-                    ["id"] = (long)r[0], ["name"] = C(item?["name"]) ?? "", ["variant"] = C(item is null ? null : G(item, "variationname", null)) ?? "",
-                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0, ["expires"] = r[3] is long or double ? Py.FromSql(r[3]) : null,
+                    ["id"] = r.Id, ["name"] = C(r.Item?["name"]) ?? "", ["variant"] = C(r.Item is null ? null : G(r.Item, "variationname", null)) ?? "",
+                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = r.Units, ["slot"] = r.Slot, ["equipped"] = r.Slot > 0, ["expires"] = r.Expires,
                 };
             })]),
         };
     }
+
+    /// <summary>Whether the catalogue item is a license (type <see cref="LICENSE"/>).</summary>
+    static bool IsLicense(JsonObject? item) => item is not null && Is(item["type"], LICENSE);
+
+    JsonObject[]? licenses;
+    /// <summary>The license items of the catalogue, then of the install's definitions the catalogue lacks.</summary>
+    JsonObject[] Licenses => licenses ??= [.. items.Values.Concat(installItems.Values).Where(IsLicense)];
+
+    /// <summary>With `all_licenses`: the rows of a connect's inventory without the account's own license rows, then one slot-0 row (no units, no end) of every license item.</summary>
+    void UnlimitedLicenses(JsonArray rows)
+    {
+        for (var i = rows.Count - 1; i >= 0; i--)
+            if (IsLicense(items.GetValueOrDefault(Py.L(rows[i]!["item_id"])) ?? installItems.GetValueOrDefault(Py.L(rows[i]!["item_id"]))))
+                rows.RemoveAt(i);
+        foreach (var l in Licenses)  // ponytail: a guid far above the table's, so none collides; a move of such a row finds no row
+            rows.Add(new JsonObject { ["item_id"] = Py.L(l["id"]), ["slot"] = 0, ["guid"] = (LicenseGuid + Py.L(l["id"])).ToString(), ["metadata"] = new JsonObject(), ["units"] = null });
+    }
+    const long LicenseGuid = 1L << 40;
 
     // ponytail: services (connect active_services with an expiry) are not sold
     static bool Sellable(JsonObject item, string key) => item[key] is not null && !Py.Truthy(item["notbuyable"]) && !Is(item["type"], SERVICE);
@@ -1379,11 +1411,14 @@ public sealed partial class State
 
     /// <summary>Whether n more copies of the item put the player over the catalogue's `ownLimit`, or over 1 when `ownMultiple` is false:
     /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit. An item with `units`
-    /// (a one-use order or refill) is exempt from the `ownMultiple` rule only: the original store never showed one as owned.</summary>
+    /// (a one-use order or refill) is exempt from the `ownMultiple` rule only: the original store never showed one as owned. With `all_licenses`
+    /// a license is always over the limit: every player owns it already.</summary>
     bool OverOwnLimit(Db con, long itemId, int n)
     {
         if (items.GetValueOrDefault(itemId) is not { } item)
             return false;
+        if (AllLicenses && IsLicense(item))
+            return true;
         var limit = Py.Truthy(item["ownLimit"]) ? Py.L(item["ownLimit"]) : long.MaxValue;
         if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]) && !Py.Truthy(item["units"]))
             limit = Math.Min(limit, 1);
