@@ -11,7 +11,7 @@ services:
       SERVER_URL: http://server:8080 # the website's server-side calls to the community server
       LINK_BACKUP: ${LINK_BACKUP:-} # written into .env by every deploy (docs/deploy.md); empty: settings.json decides
       LINK_DISCORD: ${LINK_DISCORD:-} # the Discord invite, written like LINK_BACKUP: the feed's widget, the footer icon and the support tab's line
-      LINK_SOURCE: ${LINK_SOURCE:-} # the project's repository, written like LINK_BACKUP: the live feed's development note links it
+      LINK_SOURCE: ${LINK_SOURCE:-} # the project's repository, written like LINK_BACKUP: the feed's development note and the download page link it
       GAME_NAME: ${GAME_NAME:-} # the game's name and its name with edition, written like LINK_BACKUP
       GAME_FULL: ${GAME_FULL:-}
       IMAGES_DIR: /images # the operator's pictures, never committed (docs/images.md); an empty folder: the labelled boxes

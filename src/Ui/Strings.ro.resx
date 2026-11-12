@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Puteți cumpăra acest serviciu direct din pagina MZ: imediat ce vă întrerupeți seria, va apărea un buton în stânga MZ „Ziua 1”, care vă invită să-l cumpărați (sau să-l folosiți, dacă dețineți deja cel puțin unul).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternativ, îl puteți cumpăra din {0}magazin{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>După achiziție, veți putea folosi acest serviciu direct din pagina MZ:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Cum descărcați și jucați {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Cerințe multiplayer</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Cerințe single-player</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Sisteme de operare acceptate:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Sistem de operare:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Procesor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Memorie:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Placă video:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Rezoluție grafică:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Conexiune la internet:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Gazdă:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS gazdă:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 și Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 și Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Procesor dual core (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA seria 8 (8800 sau mai bun), ATI Radeon HD seria 2000 (2400 sau mai bun). 256 MB memorie integrată (pentru setări reduse și medii). 512–768 MB memorie integrată (pentru setări ridicate, în funcție de numărul de jucători).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA seria 7 (7600 sau mai bun). ATI X1900 (sau mai bun). 256 MB memorie integrată (pentru setări reduse și medii). 512 MB memorie integrată (pentru setări ridicate).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Cel puțin 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps încărcare și descărcare</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps încărcare și descărcare (în funcție de numărul de jucători)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Dacă gazda nu rulează jocul la cel puțin 25-30 fps (cadre pe secundă), fizica va produce erori. Jucătorii cu calculatoare mai slabe ar trebui să încerce să reducă setările pentru a putea rula jocul cu un număr cât mai mare de fps. {0}30 FPS{1} este cea mai mică valoare recomandată. FPS-ul poate fi măsurat cu instrumente gratuite disponibile pe internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Căutați un instrument</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Descărcați jocul (aprox. 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Faceți clic aici pentru a descărca</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Cum joci {game} pe Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>De ce ai nevoie</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Un PC cu Windows 10 sau 11, Steam și propria copie a {game}, instalată din biblioteca Steam. Hunter Resurgence nu conține fișiere ale jocului: launcherul său conectează copia ta la serverul comunității.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Descarcă launcherul Hunter Resurgence și rulează-l. Se instalează doar pentru utilizatorul tău (fără cerere de administrator), adaugă o scurtătură și se actualizează singur.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Ai mai jucat? Recuperează-ți profilul</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Conectează-te pe acest site și deschide {0}Restaurați backup-ul{1}. Ai o arhivă zip de backup? Încarc-o acolo: operatorul o verifică manual, apoi o restaurează. Nu ai arhiva zip de backup? Folosește acolo „Revendicați vechiul profil” cu vechiul tău nume de vânător.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Ghidul jucătorului: fiecare pas și soluții pentru problemele frecvente</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Descarcă launcherul</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Pasul {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Rulați jocul după finalizarea instalării.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Faceți clic pe butonul {0} din pagina web pentru a porni un joc nou.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>La prima pornire, launcherul se oferă să se deschidă din butonul Joacă al Steam: alege „Închide Steam și setează”. Steam pornește din nou singur. Apoi apasă Joacă în Steam. Launcherul arată ce schimbă pe PC: alege Configurează și răspunde Da când Windows cere să instaleze un certificat și să editeze fișierul hosts. Fișierele jocului nu sunt modificate niciodată.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Apasă „Conectare cu Steam” în launcher și conectează-te în browserul care se deschide, cu contul Steam cu care joci. Alege o rezervație și un punct de start, apoi apasă Începeți jocul. Prima dată, Windows Firewall întreabă despre joc: alege Permite. Ține launcherul deschis cât joci.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Depanare</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Utilitarul de depanare verifică automat configurația jocului, detectează problemele frecvente și recomandă soluții pentru a vă ajuta să reveniți mai repede la joc.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Descărcați utilitarul de depanare.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Plasați-l în folderul jocului, lângă fișierul executabil al jocului.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Folderul jocului]\game\&lt;utilitar&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Rulați utilitarul pentru a analiza problemele de configurare și de performanță.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Aplicați soluțiile sugerate în timpul analizei.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Dacă soluțiile propuse nu ajută, descărcați fișierul jurnal generat și trimiteți-l către {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>echipa de asistență</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Descărcați utilitarul</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurați backup-ul</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Datele dvs.</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurați backup-ul</value></data>

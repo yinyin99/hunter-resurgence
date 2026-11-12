@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Storitev lahko kupiš neposredno na strani DM: takoj ko prekineš niz, se levo od tvoje DM „Dan 1“ prikaže gumb, ki te pozove, da jo kupiš (ali uporabiš, če jo že imaš).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Lahko jo kupiš tudi v {0}trgovini{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Ko jo kupiš, jo lahko uporabiš neposredno na strani DM:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Kako prenesti in igrati igro {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Zahteve za skupinski lov</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Zahteve za samostojni lov</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Podprti operacijski sistemi:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operacijski sistem:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Procesor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Pomnilnik:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Grafična kartica:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafična ločljivost:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internetna povezava:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Gostitelj:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS gostitelja:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 in Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 in Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dvojedrni procesor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA serije 8 (8800 ali boljša), ATI Radeon HD serije 2000 (2400 ali boljša). 256 MB vgrajenega pomnilnika (za nizko in srednjo kakovost). 512–768 MB vgrajenega pomnilnika (za visoko kakovost, glede na število igralcev).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA serije 7 (7600 ali boljša). ATI X1900 (ali boljša). 256 MB vgrajenega pomnilnika (za nizko in srednjo kakovost). 512 MB vgrajenega pomnilnika (za visoko kakovost).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Vsaj 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Odjemalec: 512 kbps nalaganje in prenos</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps nalaganje in prenos (glede na število igralcev)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Če gostitelj ne poganja igre pri vsaj 25–30 sličicah na sekundo (FPS), bo fizika povzročala napake. Igralci s šibkejšimi računalniki naj poskusijo znižati nastavitve, da bi igro poganjali pri čim višjem FPS. {0}30 FPS{1} je najnižja priporočena vrednost. FPS lahko izmeriš z brezplačnimi orodji, ki so na voljo na internetu.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Poišči orodje</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Prenesi igro (približno 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Klikni tukaj za prenos</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Kako igrati {game} na Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Kaj potrebujete</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Računalnik z Windows 10 ali 11, Steam in lastno kopijo igre {game}, nameščeno iz knjižnice Steam. Hunter Resurgence ne vsebuje datotek igre: njegov zaganjalnik poveže vašo kopijo s skupnostnim strežnikom.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Prenesite zaganjalnik Hunter Resurgence in ga zaženite. Namesti se samo za vašega uporabnika (brez vprašanja za skrbnika), doda bližnjico in se sam posodablja.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Ste že igrali? Povrnite svoj profil</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Prijavite se na tem spletnem mestu in odprite {0}Obnovitev varnostne kopije{1}. Imate zip z varnostno kopijo? Naložite ga tam: operater ga ročno preveri in nato obnovi. Nimate zipa z varnostno kopijo? Tam uporabite „Zahtevajte svoj stari profil“ s svojim starim lovskim imenom.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Vodnik za igralce: vsak korak in rešitve pogostih težav</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Prenesi zaganjalnik</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Korak {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Po končani namestitvi zaženi igro.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Na spletni strani klikni gumb {0}, da začneš novo igro.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ob prvem zagonu zaganjalnik ponudi, da se odpira z gumbom Igraj v Steamu: izberite „Zapri Steam in nastavi“. Steam se sam znova zažene. Nato v Steamu pritisnite Igraj. Zaganjalnik navede, kaj spremeni na računalniku: izberite Nastavi in odgovorite Da, ko Windows vpraša za namestitev potrdila in urejanje datoteke hosts. Datoteke igre se nikoli ne spremenijo.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>V zaganjalniku pritisnite „Prijava s Steamom“ in se v brskalniku, ki se odpre, prijavite z računom Steam, s katerim igrate. Izberite lovišče in začetno točko ter pritisnite Zaženi igro. Prvič požarni zid Windows vpraša o igri: izberite Dovoli. Med igranjem pustite zaganjalnik odprt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Odpravljanje težav</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Pripomoček za odpravljanje težav samodejno preveri nastavitev tvoje igre, zazna pogoste težave in predlaga rešitve, da se hitreje vrneš k igranju.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Prenesi pripomoček za odpravljanje težav.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Postavi ga v mapo z igro, blizu izvršljive datoteke igre.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Mapa igre]\game\&lt;pripomoček&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Zaženi orodje, da analizira težave s konfiguracijo in zmogljivostjo.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Uporabi predlagane popravke, ki jih ponudi analiza.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Če predlagane rešitve ne pomagajo, prenesi ustvarjeno dnevniško datoteko in jo pošlji prek povezave: {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>skupina za podporo</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Prenesi pripomoček</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Vaši podatki</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>

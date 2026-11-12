@@ -1,45 +1,33 @@
 @page "/download"
+@inject Branding Brand
 
 <PageTitle>@L["Menu.Downloads"]</PageTitle>
 
 <div class="page-min">
     <h2 class="page-title">@L["Download.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
+    <section class="box panel"><h3>@L["Download.Need.Title"]</h3><p class="plain">@L["Download.Need.Text"]</p></section>
+    <section class="box panel"><h3>@L["Download.Restore.Title"]</h3><p class="plain">@L.Html("Download.Restore.Text", "<a href=\"/restore\">", "</a>")</p><p class="plain">@L["Restore.Hint"]</p></section>
     <section class="box panel">
-        <h3>@L["Download.Multi.Title"]</h3>
-        <p><b>@L["Download.Req.SupportedOs"]</b> @L["Download.Req.OsMulti"] <b>@L["Download.Req.Cpu"]</b> @L["Download.Req.CpuMulti"]<br />
-            <b>@L["Download.Req.Memory"]</b> @L["Download.Req.MemoryValue"]<br />
-            <b>@L["Download.Req.Graphics"]</b> @L["Download.Req.GraphicsMulti"]<br />
-            <b>@L["Download.Req.Resolution"]</b> @L["Download.Req.ResolutionValue"]<br />
-            <b>@L["Download.Req.Internet"]</b> @L["Download.Req.InternetClient"]<br />
-            <b>@L["Download.Req.Host"]</b> @L["Download.Req.HostValue"]<br />
-            <b>@L["Download.Req.HostFps"]</b> @L.Html("Download.Req.HostFpsText", "<b>", "</b>") <ExternalLink Key="fps_tool">@L["Download.Req.FpsTool"]</ExternalLink><br />
-            <b>@L["Download.Req.Os"]</b> @L["Download.Req.OsAll"]</p>
-        <h3>@L["Download.Single.Title"]</h3>
-        <p><b>@L["Download.Req.SupportedOs"]</b> @L["Download.Req.OsAll"]<br />
-            <b>@L["Download.Req.Cpu"]</b> @L["Download.Req.CpuSingle"]<br />
-            <b>@L["Download.Req.Memory"]</b> @L["Download.Req.MemoryValue"]<br />
-            <b>@L["Download.Req.Graphics"]</b> @L["Download.Req.GraphicsSingle"]<br />
-            <b>@L["Download.Req.Resolution"]</b> @L["Download.Req.ResolutionValue"]<br />
-            <b>@L["Download.Req.Internet"]</b> @L["Alert.Yes"]</p>
-        <p class="plain">@L["Download.Size"]</p>
-        <ExternalLink Key="steam_store" Class="btn btn-primary btn-large get">@L["Download.Click"] <Icon Name="download" /></ExternalLink>
+        <h3>@L["Download.Step", 1]</h3>
+        <p class="plain">@L["Download.Step1.Text"]</p>
+        <p class="plain">@L["Backup.SmartScreen"]</p>
+        @if (Source is not null) { <a href="@(Source + "/releases/latest/download/HunterResurgence-win-Setup.exe")" class="btn btn-primary btn-large get">@L["Download.Click"] <Icon Name="download" /></a> }
     </section>
     <section class="box panel"><h3>@L["Download.Step", 2]</h3><p class="plain">@L["Download.Step2.Text"]</p></section>
-    <section class="box panel"><h3>@L["Download.Step", 3]</h3><p class="plain">@L.Html("Download.Step3.Text", "<a href=\"/dashboard\">" + System.Net.WebUtility.HtmlEncode(L["Menu.HuntNow"].Value) + "</a>")</p></section>
-    <section class="box panel">
-        <h3>@L["Download.Trouble.Title"]</h3>
-        <p class="plain">@L["Download.Trouble.Intro"]</p>
-        <ul>
-            <li>@L["Download.Trouble.Step1"]</li>
-            <li>@L["Download.Trouble.Step2"] <b>@L["Download.Trouble.Path"]</b></li>
-            <li>@L["Download.Trouble.Step3"]</li>
-            <li>@L["Download.Trouble.Step4"]</li>
-            <li>@L.Frag("Download.Trouble.Step5", Support())</li>
-        </ul>
-        <ExternalLink Key="health_utility">@L["Download.Trouble.Utility"]</ExternalLink>
-    </section>
+    <section class="box panel"><h3>@L["Download.Step", 3]</h3><p class="plain">@L["Download.Step3.Text"]</p></section>
+    @if (Source is not null || Brand.Link("discord") is not null)
+    {
+        <section class="box panel">
+            <h3>@L["Download.Trouble.Title"]</h3>
+            <ul>
+                @if (Source is not null) { <li><a href="@(Source + "/blob/main/docs/guide.md")" target="_blank" rel="noopener">@L["Download.Trouble.Guide"]</a></li> }
+                @if (Brand.Link("discord") is not null) { <li><ExternalLink Key="discord">@L["Help.Support.LinkDiscord"]</ExternalLink></li> }
+            </ul>
+        </section>
+    }
 </div>
 
 @code {
-    RenderFragment Support() => @<ExternalLink Key="support_request">@L["Download.Trouble.SupportTeam"]</ExternalLink>;
+    // the project's repository (LINK_SOURCE, set by every deploy): its latest release has the launcher, docs/guide.md the player guide
+    string? Source => Brand.Link("source");
 }

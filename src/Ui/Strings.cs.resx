@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Službu můžete koupit přímo na stránce DM: jakmile sérii přerušíte, vlevo od vaší DM „Den 1“ se objeví tlačítko, které vás vyzve k jejímu nákupu (nebo použití, pokud už alespoň jednu vlastníte).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Případně ji můžete koupit v {0}obchodě{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Po zakoupení budete moci službu použít přímo na stránce DM:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Jak stáhnout hru {game} a začít hrát</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Požadavky pro hru s ostatními</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Požadavky pro hru pro jednoho</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Podporované operační systémy:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operační systém:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Procesor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Paměť:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Grafická karta:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafické rozlišení:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Připojení k internetu:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Hostitel:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS hostitele:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 a Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 a Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dvoujádrový procesor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA řady 8 (8800 nebo lepší), ATI Radeon HD řady 2000 (2400 nebo lepší). 256 MB paměti na kartě (pro nízké a střední nastavení). 512–768 MB paměti na kartě (pro vysoké nastavení, podle počtu hráčů).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA řady 7 (7600 nebo lepší). ATI X1900 (nebo lepší). 256 MB paměti na kartě (pro nízké a střední nastavení). 512 MB paměti na kartě (pro vysoké nastavení).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Alespoň 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kb/s příjem i odesílání</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1–2 Mb/s příjem i odesílání (podle počtu hráčů)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Pokud hostitel nespouští hru alespoň na 25–30 fps (snímků za sekundu), dojde k chybám ve fyzice. Hráči se slabšími počítači by se měli pokusit snížit nastavení, aby hra běžela na co nejvyšších fps. {0}30 FPS{1} je nejnižší doporučená hodnota. FPS lze měřit zdarma dostupnými nástroji na internetu.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Hledat nástroj</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Stáhněte si hru (asi 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Klikněte zde pro stažení</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Jak hrát {game} na Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Co potřebujete</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Počítač s Windows 10 nebo 11, Steam a vlastní kopii {game} nainstalovanou z knihovny Steamu. Hunter Resurgence neobsahuje žádné soubory hry: jeho launcher připojí vaši kopii ke komunitnímu serveru.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Stáhněte launcher Hunter Resurgence a spusťte ho. Nainstaluje se jen pro vašeho uživatele (bez dotazu na správce), přidá zástupce a sám se aktualizuje.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Hráli jste dřív? Získejte svůj profil zpět</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Přihlaste se na tomto webu a otevřete {0}Obnovit zálohu{1}. Máte zip se zálohou? Nahrajte ho tam: operátor ho ručně zkontroluje a pak obnoví. Nemáte zip se zálohou? Použijte tam „Získejte zpět starý profil“ se svým starým loveckým jménem.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Průvodce hráče: každý krok a řešení běžných problémů</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Stáhnout launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Po dokončení instalace hru spusťte.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Kliknutím na tlačítko {0} na webu spustíte novou hru.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher nabídne, že se bude otevírat tlačítkem Hrát ve Steamu: zvolte „Zavřít Steam a nastavit“. Steam se sám znovu spustí. Pak ve Steamu stiskněte Hrát. Launcher vypíše, co na počítači mění: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Soubory hry se nikdy nemění.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>V launcheru stiskněte „Přihlásit se přes Steam“ a přihlaste se v prohlížeči, který se otevře, účtem Steam, se kterým hrajete. Vyberte revír a start a stiskněte Spustit hru. Poprvé se brána Windows Firewall zeptá na hru: zvolte Povolit. Nechte launcher během hraní otevřený.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Řešení potíží</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Nástroj pro řešení potíží automaticky zkontroluje nastavení vaší hry, zjistí běžné problémy a doporučí opravy, abyste se mohli rychleji vrátit ke hraní.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Stáhněte si nástroj pro řešení potíží.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Umístěte jej do složky hry vedle spustitelného souboru hry.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Složka hry]\game\&lt;nástroj&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Spusťte nástroj a nechte jej analyzovat problémy s konfigurací a výkonem.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Použijte opravy navržené během analýzy.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Pokud navržená řešení nepomohou, stáhněte si vygenerovaný soubor protokolu a pošlete jej našemu {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>týmu podpory</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Stáhnout nástroj</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovit zálohu</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Vaše údaje</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Obnovit zálohu</value></data>

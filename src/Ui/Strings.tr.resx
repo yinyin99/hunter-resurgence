@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Bu hizmeti doğrudan Günlük Görev sayfasından satın alabilirsiniz: serinizi bozduğunuz anda “1. gün” Günlük Görevinizin soluna, onu satın almanızı (veya en az bir tanesine zaten sahipseniz kullanmanızı) isteyen bir düğme gelir.</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternatif olarak {0}Mağaza{1} üzerinden de satın alabilirsiniz.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Satın aldıktan sonra bu hizmeti doğrudan Günlük Görev sayfasında kullanabilirsiniz:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>{game} nasıl indirilir ve oynanır</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Çok oyunculu mod gereksinimleri</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Tek oyunculu mod gereksinimleri</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Desteklenen işletim sistemleri:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>İşletim sistemi:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>İşlemci:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Bellek:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Ekran kartı:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafik çözünürlüğü:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>İnternet bağlantısı:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Kurucu:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Kurucu FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 ve Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 ve Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Çift çekirdekli işlemci (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Serisi (8800 veya üzeri), ATI Radeon HD 2000 Serisi (2400 veya üzeri). 256 MB ekran kartı belleği (düşük ve orta için). 512 - 768 MB ekran kartı belleği (yüksek için, oyuncu sayısına bağlı olarak).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Serisi (7600 veya üzeri). ATI X1900 (veya üzeri). 256 MB ekran kartı belleği (düşük ve orta için). 512 MB ekran kartı belleği (yüksek için).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>En az 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>İstemci: 512 kbps yükleme ve indirme</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps yükleme ve indirme (oyuncu sayısına bağlı olarak)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Kurucu oyunu en az 25-30 fps (saniyedeki kare sayısı) ile çalıştırmazsa fizik motoru hatalar üretir. Düşük donanımlı bilgisayarları olan oyuncular, oyunu mümkün olan en yüksek fps ile çalıştırabilmek için ayarları düşürmeyi denemelidir. {0}30 FPS{1} önerilen en düşük değerdir. FPS, internette bulunan ücretsiz araçlarla ölçülebilir.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Araç ara</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Oyunu indirin (yaklaşık 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>İndirmek için buraya tıklayın</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Hunter Resurgence'ta {game} nasıl oynanır</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Neye ihtiyacın var</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Windows 10 veya 11 yüklü bir PC, Steam ve Steam kütüphanenden kurulmuş kendi {game} kopyan. Hunter Resurgence oyun dosyası içermez: başlatıcısı kopyanı topluluk sunucusuna bağlar.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Hunter Resurgence başlatıcısını indir ve çalıştır. Yalnızca senin kullanıcın için kurulur (yönetici sorusu yok), bir kısayol ekler ve kendini günceller.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Daha önce oynadın mı? Profilini geri al</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Bu sitede giriş yap ve {0}Yedeği geri yükle{1} sayfasını aç. Yedek zip dosyan var mı? Onu oraya yükle: operatör elle kontrol eder, sonra geri yükler. Yedek zip dosyan yok mu? Orada eski avcı adınla “Eski profilinizi geri alın” seçeneğini kullan.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Oyuncu rehberi: her adım ve sık görülen sorunların çözümleri</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Başlatıcıyı indir</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Adım {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Kurulum tamamlandıktan sonra oyunu çalıştırın.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Yeni bir oyun başlatmak için web sayfasındaki {0} düğmesine tıklayın.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı, Steam'in Oyna düğmesinden açılmayı önerir: “Steam'i kapat ve ayarla” seçeneğini seç. Steam kendiliğinden yeniden başlar. Sonra Steam'de Oyna'ya bas. Başlatıcı PC'nde neyi değiştirdiğini listeler: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Oyunun dosyaları asla değiştirilmez.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Başlatıcıda “Steam ile oturum aç” düğmesine bas ve açılan tarayıcıda oynadığın Steam hesabıyla giriş yap. Bir av alanı ve başlangıç noktası seç, sonra Oyunu Başlat'a bas. İlk seferde Windows Güvenlik Duvarı oyunu sorar: İzin ver'i seç. Oynarken başlatıcıyı açık tut.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Sorun Giderme</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Sorun giderme aracı oyun kurulumunuzu otomatik olarak kontrol eder, yaygın sorunları tespit eder ve oyuna daha hızlı dönmeniz için düzeltmeler önerir.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Sorun giderme aracını indirin.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Oyun klasörünüzde oyunun çalıştırılabilir dosyasının yanına yerleştirin.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Oyun Klasörü]\game\&lt;araç&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Yapılandırma ve performans sorunlarını analiz etmek için aracı çalıştırın.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Analiz sırasında sunulan önerilen düzeltmeleri uygulayın.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Önerilen çözümler işe yaramazsa oluşturulan günlük dosyasını indirin ve şuraya gönderin: {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>destek ekibi</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Aracı İndir</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Yedeği geri yükle</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Verileriniz</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Yedeği geri yükle</value></data>

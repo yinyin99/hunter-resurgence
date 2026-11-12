@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Puedes comprar este servicio directamente en la página de MD: en cuanto rompas tu racha, aparecerá a la izquierda de tu MD del «Día 1» un botón que te invitará a comprarlo (o a usarlo, si ya tienes al menos uno).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>También puedes comprarlo en la {0}tienda{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Una vez comprado, podrás usar este servicio directamente en la página de MD:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Cómo descargar y jugar a {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Requisitos para multijugador</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Requisitos para un jugador</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Sistemas operativos compatibles:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Sistema operativo:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Memoria:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Tarjeta gráfica:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Resolución gráfica:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Conexión a internet:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>FPS del host:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 y Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 y Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Procesador de doble núcleo (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA serie 8 (8800 o superior), ATI Radeon HD serie 2000 (2400 o superior). 256 MB de memoria integrada en la tarjeta (para ajustes bajos y medios). 512 - 768 MB de memoria integrada en la tarjeta (para ajustes altos, según el número de jugadores).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA serie 7 (7600 o superior). ATI X1900 (o superior). 256 MB de memoria integrada en la tarjeta (para ajustes bajos y medios). 512 MB de memoria integrada en la tarjeta (para ajustes altos).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Al menos 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Cliente: 512 kbps de subida y bajada</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps de subida y bajada (según el número de jugadores)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Si el host no ejecuta el juego al menos a 25-30 fps (fotogramas por segundo), la física producirá errores. Los jugadores con ordenadores de gama baja deberían intentar reducir los ajustes para poder ejecutar el juego con tantos fps como sea posible. {0}30 FPS{1} es el valor mínimo recomendado. Los FPS se pueden medir con herramientas gratuitas disponibles en internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Buscar herramienta</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Descarga el juego (unos 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Haz clic aquí para descargar</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Cómo jugar a {game} en Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Qué necesitas</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Un PC con Windows 10 u 11, Steam y tu propia copia de {game}, instalada desde tu biblioteca de Steam. Hunter Resurgence no contiene archivos del juego: su lanzador conecta tu copia al servidor comunitario.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Descarga el lanzador de Hunter Resurgence y ejecútalo. Se instala solo para tu usuario (sin pedir permisos de administrador), añade un acceso directo y se actualiza solo.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>¿Ya jugabas? Recupera tu perfil</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Inicia sesión en esta web y abre {0}Restaurar tu copia de seguridad{1}. ¿Tienes un zip de copia? Súbelo allí: el operador lo revisa a mano y luego lo restaura. ¿No tienes zip de copia? Usa allí «Reclama tu perfil antiguo» con tu antiguo nombre de cazador.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guía del jugador: cada paso y soluciones a los problemas habituales</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Descargar el lanzador</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Paso {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Ejecuta el juego cuando termine la instalación.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Haz clic en el botón {0} de la página web para iniciar una nueva partida.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>En su primer inicio, el lanzador ofrece abrirse desde el botón Jugar de Steam: elige «Cerrar Steam y aplicarlo». Steam se vuelve a iniciar solo. Luego pulsa Jugar en Steam. El lanzador indica lo que cambia en tu PC: elige Configurar y responde Sí cuando Windows pida instalar un certificado y editar el archivo hosts. Los archivos del juego nunca se modifican.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Pulsa «Iniciar sesión con Steam» en el lanzador e inicia sesión en el navegador que se abre, con la cuenta de Steam con la que juegas. Elige una reserva y un punto de inicio, y pulsa Iniciar partida. La primera vez, el Firewall de Windows pregunta por el juego: elige Permitir. Deja el lanzador abierto mientras juegas.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Solución de problemas</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>La utilidad de solución de problemas comprueba automáticamente la configuración de tu juego, detecta los problemas habituales y recomienda soluciones para que vuelvas a jugar cuanto antes.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Descarga la utilidad de solución de problemas.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Colócala en la carpeta de tu juego, junto al ejecutable del juego.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Carpeta del juego]\game\&lt;utilidad&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Ejecuta la herramienta para analizar problemas de configuración y rendimiento.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Aplica las soluciones sugeridas durante el análisis.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Si las soluciones propuestas no ayudan, descarga el archivo de registro generado y envíaselo a nuestro {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>equipo de soporte</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Descargar utilidad</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar tu copia de seguridad</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Tus datos</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurar tu copia de seguridad</value></data>

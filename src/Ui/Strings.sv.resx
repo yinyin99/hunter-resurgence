@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>Du kan köpa tjänsten direkt på sidan för dagliga uppdrag: så fort du bryter din svit visas en knapp till vänster om ditt dagliga uppdrag ”Dag 1” som uppmanar dig att köpa den (eller använda den, om du redan äger minst en).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Du kan också köpa den i {0}butiken{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>När du har köpt den kan du använda tjänsten direkt på sidan för dagliga uppdrag:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>Så laddar du ner och spelar {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Krav för flerspelarläge</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Krav för enspelarläge</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Operativsystem som stöds:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operativsystem:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>Processor:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Minne:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Grafikkort:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Grafikupplösning:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internetanslutning:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Värd:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Värdens FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 och Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 och Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Tvåkärnig processor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 eller bättre), ATI Radeon HD 2000 Series (2400 eller bättre). 256 MB inbyggt minne (för låg och medel). 512–768 MB inbyggt minne (för hög, beroende på antal spelare).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 eller bättre). ATI X1900 (eller bättre). 256 MB inbyggt minne (för låg och medel). 512 MB inbyggt minne (för hög).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>Minst 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Klient: 512 kbps upp och ner</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps – 2 Mbps upp och ner (beroende på antal spelare)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>Om värden inte kör spelet i minst 25–30 fps (bildrutor per sekund) uppstår fel i fysiken. Spelare med svagare datorer bör försöka sänka inställningarna för att kunna köra spelet med så hög fps som möjligt. {0}30 FPS{1} är det lägsta rekommenderade värdet. FPS kan mätas med gratisverktyg som finns på internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Sök efter verktyg</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Ladda ner spelet (cirka 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Klicka här för att ladda ner</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>Så spelar du {game} på Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>Det här behöver du</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>En dator med Windows 10 eller 11, Steam och ditt eget exemplar av {game}, installerat från ditt Steam-bibliotek. Hunter Resurgence innehåller inga spelfiler: dess launcher kopplar ditt exemplar till gemenskapsservern.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Ladda ner Hunter Resurgence-launchern och kör den. Den installeras bara för din användare (ingen administratörsfråga), lägger till en genväg och uppdaterar sig själv.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Har du spelat förut? Få tillbaka din profil</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Logga in på den här webbplatsen och öppna {0}Återställ din säkerhetskopia{1}. Har du en zip med säkerhetskopia? Ladda upp den där: operatören kontrollerar den för hand och återställer den sedan. Ingen zip med säkerhetskopia? Använd ”Hämta din gamla profil” där med ditt gamla jägarnamn.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelarguide: varje steg och lösningar på vanliga problem</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Ladda ner launchern</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Steg {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Kör spelet när installationen är klar.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Klicka på knappen {0} på webbsidan för att starta ett nytt spel.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Vid första starten erbjuder launchern att öppnas från Steams Spela-knapp: välj ”Stäng Steam och ställ in”. Steam startar om av sig självt. Tryck sedan på Spela i Steam. Launchern visar vad den ändrar på datorn: välj Konfigurera och svara Ja när Windows frågar om att installera ett certifikat och redigera hosts-filen. Spelets filer ändras aldrig.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Tryck på ”Logga in med Steam” i launchern och logga in i webbläsaren som öppnas, med det Steam-konto du spelar med. Välj ett reservat och en startpunkt och tryck på Starta spel. Första gången frågar Windows-brandväggen om spelet: välj Tillåt. Låt launchern vara öppen medan du spelar.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Felsökning</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>Felsökningsverktyget kontrollerar automatiskt din spelinstallation, hittar vanliga problem och föreslår lösningar så att du snabbare kommer tillbaka till spelet.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Ladda ner felsökningsverktyget.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Placera det i din spelmapp bredvid spelets körbara fil.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Spelmapp]\game\&lt;verktyg&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Kör verktyget för att analysera problem med konfiguration och prestanda.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Tillämpa de föreslagna lösningarna som verktyget erbjuder under analysen.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>Om de föreslagna lösningarna inte hjälper, ladda ner den skapade loggfilen och skicka den till vårt {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>supportteam</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Ladda ner verktyget</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Återställ din säkerhetskopia</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Dina uppgifter</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Återställ din säkerhetskopia</value></data>

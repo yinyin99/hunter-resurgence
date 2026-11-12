@@ -61,7 +61,7 @@ jobs:
         env:
           LINK_BACKUP: ${{ secrets.LINK_BACKUP }}
           LINK_DISCORD: ${{ secrets.LINK_DISCORD }}
-          # the project's repository, for the live feed's development note; a LINK_SOURCE secret wins
+          # the project's repository, for the feed's development note and the download page; a LINK_SOURCE secret wins
           LINK_SOURCE: ${{ secrets.LINK_SOURCE || format('{0}/{1}', github.server_url, github.repository) }}
           GAME_NAME: ${{ secrets.GAME_NAME }}
           GAME_FULL: ${{ secrets.GAME_FULL }}

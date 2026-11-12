@@ -1253,45 +1253,18 @@
   <data name="DayHelp.Resume.4" xml:space="preserve"><value>You can purchase this service directly on the DM page: as soon as you break your streak a button will appear to the left of your "Day 1" DM, prompting you to buy it (or use it, if you already own at least one).</value></data>
   <data name="DayHelp.Resume.5" xml:space="preserve"><value>Alternatively, you can purchase it from the {0}Store{1}.</value></data>
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Once purchased you will be able to use this service directly on the DM page:</value></data>
-  <data name="Download.Title" xml:space="preserve"><value>How to download and play {game}</value></data>
-  <data name="Download.Multi.Title" xml:space="preserve"><value>Multiplayer requirements</value></data>
-  <data name="Download.Single.Title" xml:space="preserve"><value>Single player requirements</value></data>
-  <data name="Download.Req.SupportedOs" xml:space="preserve"><value>Supported operating systems:</value></data>
-  <data name="Download.Req.Os" xml:space="preserve"><value>Operating system:</value></data>
-  <data name="Download.Req.Cpu" xml:space="preserve"><value>CPU:</value></data>
-  <data name="Download.Req.Memory" xml:space="preserve"><value>Memory:</value></data>
-  <data name="Download.Req.Graphics" xml:space="preserve"><value>Graphics card:</value></data>
-  <data name="Download.Req.Resolution" xml:space="preserve"><value>Graphics resolution:</value></data>
-  <data name="Download.Req.Internet" xml:space="preserve"><value>Internet connection:</value></data>
-  <data name="Download.Req.Host" xml:space="preserve"><value>Host:</value></data>
-  <data name="Download.Req.HostFps" xml:space="preserve"><value>Host FPS:</value></data>
-  <data name="Download.Req.OsMulti" xml:space="preserve"><value>Windows 7, Windows 8/8.1 &amp; Windows 10</value></data>
-  <data name="Download.Req.OsAll" xml:space="preserve"><value>Windows 7, Windows 8/8.1, Windows 10 &amp; Windows 11</value></data>
-  <data name="Download.Req.CpuMulti" xml:space="preserve"><value>Dual core processor (2 GHz)</value></data>
-  <data name="Download.Req.CpuSingle" xml:space="preserve"><value>Pentium 4 (3 GHz)</value></data>
-  <data name="Download.Req.MemoryValue" xml:space="preserve"><value>2 GB</value></data>
-  <data name="Download.Req.GraphicsMulti" xml:space="preserve"><value>NVIDIA 8 Series (8800 or better), ATI Radeon HD 2000 Series (2400 or better). 256 MB on board memory (for low &amp; medium). 512 - 768 MB on board memory (for high, depending on number of players).</value></data>
-  <data name="Download.Req.GraphicsSingle" xml:space="preserve"><value>NVIDIA 7 Series (7600 or better). ATI X1900 (or better). 256 MB on board memory (for low &amp; medium). 512 MB on board memory (for high).</value></data>
-  <data name="Download.Req.ResolutionValue" xml:space="preserve"><value>At least 1024x768</value></data>
-  <data name="Download.Req.InternetClient" xml:space="preserve"><value>Client: 512 kbps Up &amp; Down</value></data>
-  <data name="Download.Req.HostValue" xml:space="preserve"><value>1 Mbps - 2 Mbps Up &amp; Down (depending on number of players)</value></data>
-  <data name="Download.Req.HostFpsText" xml:space="preserve"><value>If the host does not run the game in at least 25-30 fps (frames per second), the physics will produce errors. Players with low-end computers should try to lower the settings to be able to run the game with as high fps as possible. {0}30 FPS{1} is the lowest recommended value. FPS can be measured with free tools available on the internet.</value></data>
-  <data name="Download.Req.FpsTool" xml:space="preserve"><value>Search tool</value></data>
-  <data name="Download.Size" xml:space="preserve"><value>Download the game (about 12 GB).</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Click here to download</value></data>
+  <data name="Download.Title" xml:space="preserve"><value>How to play {game} on Hunter Resurgence</value></data>
+  <data name="Download.Need.Title" xml:space="preserve"><value>What you need</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>A PC with Windows 10 or 11, Steam, and your own copy of {game} installed from your Steam library. Hunter Resurgence contains no game files: its launcher connects your copy to the community server.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Download the Hunter Resurgence launcher and run it. It installs for your user only (no administrator prompt), adds a shortcut and updates itself.</value></data>
+  <data name="Download.Restore.Title" xml:space="preserve"><value>Played before? Get your profile back</value></data>
+  <data name="Download.Restore.Text" xml:space="preserve"><value>Sign in on this website and open {0}Restore your backup{1}. Have a backup zip? Upload it there: the operator checks it by hand, then restores it. No backup zip? Use “Claim your old profile” there with your old hunter name.</value></data>
+  <data name="Download.Trouble.Guide" xml:space="preserve"><value>Player guide: every step, and fixes for common problems</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Download the launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Step {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Run the game after installation completes.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Click the {0} button on the webpage to start a new game.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>On its first start, the launcher offers to open from Steam's Play button: choose “Close Steam and set it”. Steam starts again by itself. Then press Play in Steam. The launcher lists what it changes on your PC: choose Set up, and answer Yes when Windows asks to install a certificate and to edit the hosts file. The game's files are never changed.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Press “Sign in with Steam” in the launcher and sign in in the browser that opens, with the Steam account you play with. Choose a reserve and a start, then press Start Game. The first time, Windows Firewall asks about the game: choose Allow. Keep the launcher open while you play.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Troubleshooting</value></data>
-  <data name="Download.Trouble.Intro" xml:space="preserve"><value>The troubleshooting utility automatically checks your game setup, detects common issues, and recommends fixes to help you get back to playing faster.</value></data>
-  <data name="Download.Trouble.Step1" xml:space="preserve"><value>Download the troubleshooting utility.</value></data>
-  <data name="Download.Trouble.Step2" xml:space="preserve"><value>Place it in your game folder near the game executable.</value></data>
-  <data name="Download.Trouble.Path" xml:space="preserve"><value>[Game Folder]\game\&lt;utility&gt;</value></data>
-  <data name="Download.Trouble.Step3" xml:space="preserve"><value>Run the tool to analyze configuration and performance issues.</value></data>
-  <data name="Download.Trouble.Step4" xml:space="preserve"><value>Apply the suggested fixes offered during the analysis.</value></data>
-  <data name="Download.Trouble.Step5" xml:space="preserve"><value>If the proposed solutions don't help, download the generated log file and send it to our {0}.</value></data>
-  <data name="Download.Trouble.SupportTeam" xml:space="preserve"><value>support team</value></data>
-  <data name="Download.Trouble.Utility" xml:space="preserve"><value>Download Utility</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
