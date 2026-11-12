@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>The game is already running.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>The game was not found. Check its folder in the settings.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>The game could not be started.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam and sign in, then try again.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND A MULTIPLAYER GAME</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find a game or host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Confirm the code {0} in your browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>The sign-in was not confirmed in time. Please try again.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>The server could not be reached. Please try again.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json is not valid JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: set "{0}" (missing or still a placeholder).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" must be an https address without a query.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" is not a host name.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Setup changes three things on this PC and nothing else (game files are never touched):
+1. The Windows hosts file ({3}): {0} of the game's server names point to this PC, between two marked lines.
+2. Your Windows trust list (your user only): a local certificate authority named "{1}". It can vouch only for those {0} names; its key is deleted as soon as setup ends and is never saved.
+3. A certificate for those names. Its key cannot be exported and stays in your Windows profile; the certificate file is in {2}.
+Undo all of it at any time: Settings, Remove the setup.
+The names:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows will now ask whether to trust the certificate authority. Choose Yes.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Then Windows will ask for administrator permission to edit the hosts file (a prompt of its own). Choose Yes. Only that edit runs as administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>The hosts file was not changed (permission refused, or a security program blocked it). Set up again to retry; Remove the setup in Settings undoes what was done.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Done. Keep the launcher open while you play: it sends the game to the community server. The first time the game starts, Windows Firewall asks about it: click Allow.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Removed the hosts block, the certificate authority and the certificate. The game talks to its own servers again.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>No certificate found: this PC is not set up yet.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>The certificate has expired. Set up again: it makes a new one.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>The hosts file has no block from setup (not run, or removed), so the game still talks to its own servers.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Could not listen on port 80 or 443: {0}
+Close the program that uses it (another server, or a second copy of the launcher), then start the launcher again.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Set up</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Not now</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Remove the setup? The hosts block, the certificate authority and the certificate are removed, and the game talks to its own servers again.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Set up for the community server</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Remove the setup</value></data>
 </root>

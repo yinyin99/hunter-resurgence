@@ -1,6 +1,7 @@
 @inject HostMode Mode
 @inject ModalService Modal
 @inject ILauncherBridge Bridge
+@inject IKitService Kit
 
 <ul class="settings-menu">
     @if (!Mode.Live)
@@ -19,5 +20,26 @@
         <li><a href="#" @onclick='() => Bridge.OpenFolder("game")' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>
         <li><a href="#" @onclick='() => Bridge.ClearCache("launcher")' @onclick:preventDefault>@L["Settings.ClearLauncherCache"]</a></li>
         <li><a href="#" @onclick='() => Bridge.ClearCache("game")' @onclick:preventDefault>@L["Settings.ClearGameCache"]</a></li>
+        @if (Kit.Available)
+        {
+            <li><a href="#" @onclick="SetUp" @onclick:preventDefault>@L["Settings.KitSetup"]</a></li>
+            <li><a href="#" @onclick="Remove" @onclick:preventDefault>@L["Settings.KitRemove"]</a></li>
+        }
     }
 </ul>
+
+@code {
+    // setup again replaces everything it made (a new certificate); a settings.json without a usable server_url or *_host says so
+    void SetUp()
+    {
+        try { Modal.Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = Kit.Plan() }); }
+        catch (InvalidOperationException e) { Modal.Alert(e.Message); }
+    }
+
+    async Task Remove()
+    {
+        if (!await Modal.Confirm(L["Kit.RemoveConfirm"])) return;
+        var r = await Kit.RemoveAsync();
+        Modal.Alert(r.Ok ? L["Kit.Removed"].Value : r.Error!);
+    }
+}

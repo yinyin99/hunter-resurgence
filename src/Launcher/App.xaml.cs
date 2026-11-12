@@ -12,6 +12,14 @@ public partial class App : System.Windows.Application
             CultureInfo.GetCultureInfo(Pick(Prefs.Load(Prefs.DefaultPath).Language, CultureInfo.CurrentUICulture.Name));
     }
 
+    protected override void OnStartup(System.Windows.StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        // the elevated copy that player kit setup starts (--hosts on|off): it edits the hosts file and exits, without a window
+        if (Kit.HostsArgument(e.Args) is { } on) { Shutdown(Kit.EditHosts(on)); return; }
+        (MainWindow = new MainWindow()).Show();
+    }
+
     /// <summary>The saved choice when it is one of the languages, else the closest to the Windows display language (de-AT: German), else English.</summary>
     public static string Pick(string? saved, string windows) =>
         (Resurgence.Ui.Languages.Find(saved) ?? Resurgence.Ui.Languages.Match(windows))?.Code ?? "en";

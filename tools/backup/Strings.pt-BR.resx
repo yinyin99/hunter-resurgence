@@ -545,7 +545,7 @@
     <value>inacessível (fora do ar, ou sem rede)</value>
   </data>
   <data name="Check_redirected" xml:space="preserve">
-    <value>redirecionado: o kit do jogador, ou outra entrada do arquivo hosts, envia os nomes do jogo para este PC. Remova o kit do jogador (3-remove.cmd) antes de um backup.</value>
+    <value>redirecionado: o launcher, ou outra entrada do arquivo hosts, envia os nomes do jogo para este PC. Remova a configuração do launcher (Configurações) antes de um backup.</value>
   </data>
   <data name="Check_unset" xml:space="preserve">
     <value>não definido</value>

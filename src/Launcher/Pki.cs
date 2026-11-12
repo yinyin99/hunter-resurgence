@@ -2,7 +2,7 @@ using System.Formats.Asn1;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Play;
+namespace Resurgence.Launcher;
 
 /// <summary>
 /// The local certificate authority and the certificate the forwarder answers with. The authority is name-constrained to the game's names
@@ -65,7 +65,7 @@ static class Pki
         req.CertificateExtensions.Add(X509AuthorityKeyIdentifierExtension.CreateFromCertificate(ca, true, false));
         req.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(req.PublicKey, false));
         var serial = RandomNumberGenerator.GetBytes(8);
-        serial[0] = (byte)((serial[0] & 0x7F) | 0x10); // a positive number
+        serial[0] = (byte)((serial[0] & 127) | 16); // a positive number
         return req.Create(ca, now.AddDays(-1), now + Life - TimeSpan.FromDays(1), serial);
     }
 
@@ -112,9 +112,9 @@ static class Pki
     /// <summary>The leaf with its key, for Kestrel. Throws with a texts key when setup has not run or the leaf has expired.</summary>
     public static X509Certificate2 LoadLeaf(DateTimeOffset now)
     {
-        if (!File.Exists(LeafFile) || !CngKey.Exists(KeyName)) throw new InvalidOperationException(Loc.S("RunNoLeaf"));
+        if (!File.Exists(LeafFile) || !CngKey.Exists(KeyName)) throw new InvalidOperationException(Kit.S("Kit.NoLeaf"));
         using var pub = X509CertificateLoader.LoadCertificate(File.ReadAllBytes(LeafFile));
-        if (pub.NotAfter < now) throw new InvalidOperationException(Loc.S("RunLeafExpired"));
+        if (pub.NotAfter < now) throw new InvalidOperationException(Kit.S("Kit.LeafExpired"));
         return WithKey(pub, KeyName);
     }
 

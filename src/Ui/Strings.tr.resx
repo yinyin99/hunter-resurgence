@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Oyun zaten çalışıyor.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Oyun bulunamadı. Klasörünü ayarlardan kontrol edin.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Oyun başlatılamadı.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Steam'i başlatın, oturum açın ve tekrar deneyin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ÇOK OYUNCULU OYUN BUL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Oyun veya kurucu ara...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Temizle</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>{0} kodunu tarayıcında onayla.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Giriş zamanında onaylanmadı. Lütfen tekrar dene.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Sunucuya ulaşılamadı. Lütfen tekrar dene.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json geçerli bir JSON değil.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: "{0}" değerini ayarla (eksik ya da hâlâ örnek).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" sorgusuz bir https adresi olmalı.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" bir ana bilgisayar adı değil.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Kurulum bu bilgisayarda üç şeyi değiştirir, başka hiçbir şeyi değiştirmez (oyun dosyalarına asla dokunulmaz):
+1. Windows hosts dosyası ({3}): oyunun {0} sunucu adı, iki işaretli satır arasında bu bilgisayarı gösterir.
+2. Windows güven listen (yalnızca senin kullanıcın): "{1}" adlı yerel bir sertifika yetkilisi. Yalnızca bu {0} ad için güvence verebilir; anahtarı kurulum biter bitmez silinir ve asla kaydedilmez.
+3. Bu adlar için bir sertifika. Anahtarı dışa aktarılamaz ve Windows profilinde kalır; sertifika dosyası {2} içindedir.
+Hepsini istediğin zaman geri alabilirsin: Ayarlar, Kurulumu kaldır.
+Adlar:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows şimdi sertifika yetkilisine güvenip güvenmeyeceğini soracak. Evet'i seç.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Ardından Windows, hosts dosyasını düzenlemek için yönetici izni isteyecek (ayrı bir pencere). Evet'i seç. Yalnızca bu düzenleme yönetici olarak çalışır.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Hosts dosyası değiştirilmedi (izin reddedildi ya da bir güvenlik programı engelledi). Yeniden denemek için tekrar kur; Ayarlar'daki Kurulumu kaldır, yapılanı geri alır.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Bitti. Oynarken launcher'ı açık tut: oyunu topluluk sunucusuna gönderir. Oyun ilk kez başladığında Windows Güvenlik Duvarı onu soracak: İzin ver'e tıkla.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hosts bloğu, sertifika yetkilisi ve sertifika kaldırıldı. Oyun yine kendi sunucularıyla konuşuyor.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Sertifika bulunamadı: bu bilgisayar henüz kurulmadı.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Sertifikanın süresi doldu. Yeniden kur: yenisini oluşturur.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Hosts dosyasında kurulumun bloğu yok (çalıştırılmadı ya da kaldırıldı), bu yüzden oyun hâlâ kendi sunucularıyla konuşuyor.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>80 veya 443 numaralı bağlantı noktası dinlenemedi: {0}
+Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir kopyası) ve launcher'ı yeniden başlat.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Kur</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Şimdi değil</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Kurulum kaldırılsın mı? Hosts bloğu, sertifika yetkilisi ve sertifika kaldırılır, oyun yine kendi sunucularıyla konuşur.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Topluluk sunucusu için kur</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Kurulumu kaldır</value></data>
 </root>

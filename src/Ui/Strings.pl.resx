@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Gra jest już uruchomiona.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Nie znaleziono gry. Sprawdź jej folder w ustawieniach.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Nie udało się uruchomić gry.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Uruchom Steam, zaloguj się i spróbuj ponownie.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ZNAJDŹ GRĘ WIELOOSOBOWĄ</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Znajdź grę lub hosta...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Wyczyść</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Potwierdź kod {0} w przeglądarce.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Logowanie nie zostało potwierdzone na czas. Spróbuj ponownie.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Nie można połączyć się z serwerem. Spróbuj ponownie.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json nie jest poprawnym JSON-em.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: ustaw "{0}" (brak lub nadal przykład).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" musi być adresem https bez zapytania.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" nie jest nazwą hosta.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Konfiguracja zmienia na tym komputerze trzy rzeczy i nic więcej (pliki gry nigdy nie są ruszane):
+1. Plik hosts systemu Windows ({3}): {0} nazw serwerów gry wskazuje na ten komputer, między dwiema oznaczonymi liniami.
+2. Twoja lista zaufanych certyfikatów systemu Windows (tylko Twój użytkownik): lokalny urząd certyfikacji o nazwie "{1}". Może poświadczać tylko te {0} nazw; jego klucz jest usuwany zaraz po zakończeniu konfiguracji i nigdy nie jest zapisywany.
+3. Certyfikat dla tych nazw. Jego klucza nie można wyeksportować i zostaje w Twoim profilu Windows; plik certyfikatu leży w {2}.
+Możesz to wszystko cofnąć w dowolnej chwili: Ustawienia, Usuń konfigurację.
+Nazwy:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows zapyta teraz, czy zaufać urzędowi certyfikacji. Wybierz Tak.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Potem Windows poprosi o uprawnienia administratora do zmiany pliku hosts (osobne okno). Wybierz Tak. Tylko ta zmiana działa jako administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Plik hosts nie został zmieniony (odmowa uprawnień lub blokada przez program zabezpieczający). Skonfiguruj ponownie, aby spróbować jeszcze raz; Usuń konfigurację w Ustawieniach cofa to, co zrobiono.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Gotowe. Zostaw launcher otwarty podczas gry: wysyła grę na serwer społeczności. Przy pierwszym uruchomieniu gry Zapora systemu Windows zapyta o nią: kliknij Zezwól.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Usunięto blok hosts, urząd certyfikacji i certyfikat. Gra znów łączy się ze swoimi serwerami.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Nie znaleziono certyfikatu: ten komputer nie jest jeszcze skonfigurowany.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Certyfikat wygasł. Skonfiguruj ponownie: powstanie nowy.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>W pliku hosts nie ma bloku konfiguracji (nie wykonano lub usunięto), więc gra nadal łączy się ze swoimi serwerami.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Nie można nasłuchiwać na porcie 80 ani 443: {0}
+Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uruchom launcher ponownie.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Skonfiguruj</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Nie teraz</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Usunąć konfigurację? Blok hosts, urząd certyfikacji i certyfikat zostaną usunięte, a gra znów będzie łączyć się ze swoimi serwerami.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Skonfiguruj dla serwera społeczności</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Usuń konfigurację</value></data>
 </root>

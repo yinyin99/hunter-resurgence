@@ -2,6 +2,8 @@
 @layout SignupLayout
 @inject NavigationManager Nav
 @inject HostMode Mode
+@inject ModalService Modal
+@inject IKitService Kit
 @inject Branding Brand
 
 <PageTitle>@L["Splash.Loading"]</PageTitle>
@@ -16,8 +18,11 @@
     [SupplyParameterFromQuery] public string? Error { get; set; }
 
     // the old launcher shows a local splash before the signup page loads; here it is the first paint of the start (mock start:hold keeps it for the comparison)
-    protected override void OnAfterRender(bool firstRender)
+    // On the way the player kit starts: its setup dialog opens over the next page when this PC still needs setup.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Error is null && Mode.Mock != "start:hold") Nav.NavigateTo("/signup/start", replace: true);
+        if (!firstRender || Error is not null) return;
+        await Modal.OfferKitAsync(Kit);
+        if (Mode.Mock != "start:hold") Nav.NavigateTo("/signup/start", replace: true);
     }
 }

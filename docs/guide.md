@@ -1,6 +1,6 @@
 # Player guide: from backup to playing on the community server
 
-Five steps, in this order (a sixth, the launcher, is optional). Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
+Five steps, in this order. Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
 
 **The order matters.** A backup can only be restored onto an account that has not played yet. Hunt on the community server before your backup is restored and it can no longer be restored onto that account. Do steps 2 to 4 before your first hunt there.
 
@@ -8,7 +8,7 @@ Five steps, in this order (a sixth, the launcher, is optional). Steps 1 to 4 bri
 
 This needs the official servers, so do it while they are up (until 2026-11-11). A restore can only bring back what a backup saved. If you already have a backup zip, go to step 2.
 
-1. If the player kit is installed, run its `3-remove.cmd` first: while it is installed the game, and the backup tool, cannot reach the official servers.
+1. If the launcher's setup is in place, choose Settings, Remove the setup first: while it is installed the game, and the backup tool, cannot reach the official servers.
 2. Download `backup-win-x64.zip`, unpack it and keep `backup.exe` and `settings.json` in the same folder. Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
 3. Start the game and start a hunt. The backup tool reads your account through the running game, and the game is signed in only once a hunt has started.
 4. Start `backup.exe`, choose **My account (from the running game)**, keep the ticks the tool proposes and press **Start**. Kill pages and photos and Photos are ticked by default: after a restore they give the gallery, the kill photos and the score sheets, and they cannot be fetched once the official servers close, so keep them (they add many requests and take a while). The groups that are off by default (messages, competition history) are not needed for a restore, and ticking Messages marks your unread messages as read for good. Leave the game running until it is done.
@@ -35,37 +35,29 @@ Nothing is restored automatically: the operator (the person who runs the server)
 
 Do not hunt on the community server before that.
 
-## 5. Play with the player kit
+## 5. Play with the launcher
 
-The player kit points the game at the community server. It never changes the game's files.
+The launcher signs you in, sets up your PC for the community server (the player kit) and starts the game. It never changes the game's files.
 
-1. Download `play-win-x64.zip` and unpack it. Keep every file in the same folder. Windows may warn that the files are not code-signed: choose **More info**, then **Run anyway**.
-2. Double-click `1-setup.cmd`, once. Windows asks twice: install the certificate (**Yes**), and let `play.exe` change the hosts file as administrator (**Yes**).
-3. Double-click `2-run.cmd` and **leave its window open** while you play.
-4. Start the game from Steam as usual. The game's own launcher opens the community server's start page: press **Sign in with Steam**, sign in in the browser that opens with the same Steam account as in step 2, confirm the code the start page shows (**Yes, sign in**), then press **Play**.
+1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt) and adds a shortcut. Windows may warn that it is not code-signed: choose **More info**, then **Run anyway**.
+2. In Steam, right-click the game, choose **Properties**, and paste `"%LocalAppData%\HunterResurgence\current\resurgence-launcher.exe" %command%` into **Launch options**, with `%LocalAppData%` written out (`C:\Users\<you>\AppData\Local`).
+3. Press **Play** in Steam. The first time, the launcher lists what it changes and asks you to set up. Choose **Set up**. Windows asks twice: install the certificate (**Yes**), and let the launcher change the hosts file as administrator (**Yes**).
+4. Sign in with the code link the launcher shows (the same Steam account as in step 2), choose a reserve and a start, and press **Start**.
 5. The first time the game starts, Windows Firewall asks about the game: choose **Allow**. Without it the game cannot hunt.
 
-Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` window.
+**Keep the launcher open** while you play: it answers the game. Next time: press **Play** in Steam and sign in.
 
-**Back to the official servers**: double-click `3-remove.cmd` and choose **Yes** when Windows asks to remove the certificate. The game then talks to its own servers again (while they exist). You need this before running the backup tool again.
+**Back to the official servers**: in the launcher choose Settings, **Remove the setup**, and **Yes** to Windows' questions (the certificate, and permission to edit the hosts file). The game then talks to its own servers again (while they exist). You need this before running the backup tool again.
 
-## 6. Optional: the launcher
-
-The launcher opens from Steam's Play button, lets you sign in, and starts the game. It does not replace the player kit: do step 5 first.
-
-1. Download `launcher-win-x64.zip`, unpack it and keep `resurgence-launcher.exe`, `settings.json` and the `wwwroot` folder together.
-2. In Steam, right-click the game, choose **Properties**, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into **Launch options**, with the real path.
-3. Keep `2-run.cmd` open, press **Play** in Steam, and sign in with the code link the launcher shows.
-
-More: [launcher](launcher.md).
+More: [launcher](launcher.md#the-player-kit).
 
 ## Problems
 
-- **The backup tool says "redirected"** under Check connection: the player kit is installed. Run `3-remove.cmd`, back up, then `1-setup.cmd` again.
+- **The backup tool says "redirected"** under Check connection: the launcher's setup is in place. Remove it in the launcher's Settings, back up, then set up again (Settings, Set up for the community server).
 - **The backup tool cannot read your account**: the game must be running, in a hunt, on the same PC.
-- **"Could not listen on port 80 or 443"** in the `2-run.cmd` window: another program uses that port (a web server, a second `2-run.cmd`). Close it and run again.
-- **The game cannot connect**: the `2-run.cmd` window must be open, and the game allowed in Windows Firewall.
-- **The game still reaches the official servers**: `2-run.cmd` says so; run `1-setup.cmd` again. Some antivirus programs block edits of the hosts file.
+- **"Could not listen on port 80 or 443"** when the launcher starts: another program uses that port (a web server, a second launcher). Close it and start the launcher again.
+- **The game cannot connect**: the launcher must be open, and the game allowed in Windows Firewall.
+- **The game still reaches the official servers**: the launcher offers the setup again at its start. Some antivirus programs block edits of the hosts file.
 - **You hunted before the restore**: the backup can no longer be restored onto that account, and the restore page shows that reason under the waiting backup. Open **Restore your backup** on the website, tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
 
-More detail on each tool: [backup tool](backup.md), [player kit](play.md), [website](website.md#restore-and-your-data).
+More detail on each tool: [backup tool](backup.md), [launcher](launcher.md), [website](website.md#restore-and-your-data).

@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Il gioco è già in esecuzione.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Gioco non trovato. Controlla la sua cartella nelle impostazioni.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Impossibile avviare il gioco.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Avvia Steam, accedi e riprova.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TROVA UNA PARTITA MULTIPLAYER</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Trova una partita o un host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Cancella</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Conferma il codice {0} nel tuo browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>L'accesso non è stato confermato in tempo. Riprova.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Impossibile raggiungere il server. Riprova.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json non è un JSON valido.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: imposta "{0}" (mancante o ancora un segnaposto).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" deve essere un indirizzo https senza parametri.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" non è un nome host.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>La configurazione cambia tre cose su questo PC e nient'altro (i file del gioco non vengono mai toccati):
+1. Il file hosts di Windows ({3}): {0} nomi dei server del gioco puntano a questo PC, tra due righe contrassegnate.
+2. L'elenco di attendibilità di Windows (solo il tuo utente): un'autorità di certificazione locale chiamata "{1}". Può garantire solo per questi {0} nomi; la sua chiave viene eliminata appena la configurazione termina e non viene mai salvata.
+3. Un certificato per questi nomi. La sua chiave non può essere esportata e resta nel tuo profilo Windows; il file del certificato si trova in {2}.
+Annulla tutto in qualsiasi momento: Impostazioni, Rimuovi la configurazione.
+I nomi:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows ora chiederà se considerare attendibile l'autorità di certificazione. Scegli Sì.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Poi Windows chiederà l'autorizzazione di amministratore per modificare il file hosts (una richiesta a parte). Scegli Sì. Solo quella modifica viene eseguita come amministratore.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Il file hosts non è stato modificato (autorizzazione negata o bloccato da un programma di sicurezza). Configura di nuovo per riprovare; Rimuovi la configurazione, nelle Impostazioni, annulla quanto fatto.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Fatto. Tieni aperto il launcher mentre giochi: invia il gioco al server della community. La prima volta che il gioco si avvia, Windows Firewall ti chiede di lui: fai clic su Consenti.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Blocco hosts, autorità di certificazione e certificato rimossi. Il gioco torna a parlare con i propri server.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Nessun certificato trovato: questo PC non è ancora configurato.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Il certificato è scaduto. Configura di nuovo: ne crea uno nuovo.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Il file hosts non ha il blocco della configurazione (non eseguita o rimossa), quindi il gioco parla ancora con i propri server.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Impossibile ascoltare sulla porta 80 o 443: {0}
+Chiudi il programma che la usa (un altro server o una seconda copia del launcher) e avvia di nuovo il launcher.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Configura</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Non ora</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Rimuovere la configurazione? Il blocco hosts, l'autorità di certificazione e il certificato vengono rimossi e il gioco torna a parlare con i propri server.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Configura per il server della community</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Rimuovi la configurazione</value></data>
 </root>

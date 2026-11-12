@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Игра уже запущена.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Игра не найдена. Проверьте её папку в настройках.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Не удалось запустить игру.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Запустите Steam, войдите в аккаунт и повторите попытку.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>НАЙТИ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Найти игру или хост...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Очистить</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Подтвердите код {0} в браузере.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Вход не был подтверждён вовремя. Попробуйте ещё раз.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Не удалось связаться с сервером. Попробуйте ещё раз.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json — некорректный JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: задайте "{0}" (отсутствует или всё ещё заглушка).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" должен быть адресом https без параметров.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" не является именем узла.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Настройка меняет на этом ПК три вещи и больше ничего (файлы игры никогда не трогаются):
+1. Файл hosts Windows ({3}): {0} имён серверов игры указывают на этот ПК, между двумя помеченными строками.
+2. Ваш список доверенных сертификатов Windows (только ваш пользователь): локальный центр сертификации "{1}". Он может ручаться только за эти {0} имён; его ключ удаляется сразу после настройки и нигде не сохраняется.
+3. Сертификат для этих имён. Его ключ нельзя экспортировать, он остаётся в вашем профиле Windows; файл сертификата лежит в {2}.
+Отменить всё можно в любой момент: Настройки, Удалить настройку.
+Имена:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Сейчас Windows спросит, доверять ли центру сертификации. Выберите «Да».</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Затем Windows запросит права администратора на изменение файла hosts (отдельное окно). Выберите «Да». От имени администратора выполняется только это изменение.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Файл hosts не изменён (отказано в доступе или заблокировано программой безопасности). Повторите настройку; «Удалить настройку» в Настройках отменяет сделанное.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Готово. Не закрывайте лаунчер, пока играете: он отправляет игру на сервер сообщества. При первом запуске игры брандмауэр Windows спросит про неё: нажмите «Разрешить».</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Блок hosts, центр сертификации и сертификат удалены. Игра снова обращается к своим серверам.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Сертификат не найден: этот ПК ещё не настроен.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Срок действия сертификата истёк. Повторите настройку: она создаст новый.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>В файле hosts нет блока настройки (не выполнялась или удалена), поэтому игра всё ещё обращается к своим серверам.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Не удалось слушать порт 80 или 443: {0}
+Закройте программу, которая его занимает (другой сервер или вторая копия лаунчера), и снова запустите лаунчер.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Настроить</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Не сейчас</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Удалить настройку? Блок hosts, центр сертификации и сертификат будут удалены, и игра снова будет обращаться к своим серверам.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Настроить для сервера сообщества</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Удалить настройку</value></data>
 </root>

@@ -619,6 +619,11 @@
         "resolved": "6.0.1",
         "contentHash": "IQ4NXP/B3Ayzvw0rDQzVTYsCKyy0Jp9KI6aYcK7UnGVlR9+Awz++TIPCQtPYfLJfOpm8ajowMR09V7quD3sEHw=="
       },
+      "Velopack": {
+        "type": "Transitive",
+        "resolved": "1.2.161",
+        "contentHash": "OpHNacIumnkhaaX3ZlQ/TCR4YPOJvud2/PAOoWb6o+mIrLwIVA275I5wAgt4q/1O2VrJeDwR1qFQyqzG4lUArg=="
+      },
       "WPF-UI": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -706,15 +711,13 @@
           "WPF-UI": "[4.3.0, )"
         }
       },
-      "play": {
-        "type": "Project"
-      },
       "resurgence-launcher": {
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebView.Wpf": "[10.0.120, )",
           "Resurgence.Restore": "[1.0.0, )",
-          "Resurgence.Ui": "[1.0.0, )"
+          "Resurgence.Ui": "[1.0.0, )",
+          "Velopack": "[1.2.161, )"
         }
       },
       "resurgence.restore": {

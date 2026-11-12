@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Het spel draait al.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Het spel is niet gevonden. Controleer de map in de instellingen.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Het spel kon niet worden gestart.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, log in en probeer het opnieuw.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>EEN MULTIPLAYERSPEL ZOEKEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Zoek een spel of host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Wissen</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Bevestig de code {0} in je browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>De aanmelding is niet op tijd bevestigd. Probeer het opnieuw.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>De server is niet bereikbaar. Probeer het opnieuw.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json is geen geldige JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: stel "{0}" in (ontbreekt of is nog een voorbeeld).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" moet een https-adres zonder query zijn.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" is geen hostnaam.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>De installatie wijzigt drie dingen op deze pc en verder niets (spelbestanden worden nooit aangeraakt):
+1. Het Windows-hostsbestand ({3}): {0} servernamen van het spel wijzen naar deze pc, tussen twee gemarkeerde regels.
+2. Je Windows-vertrouwenslijst (alleen jouw gebruiker): een lokale certificeringsinstantie met de naam "{1}". Ze kan alleen instaan voor die {0} namen; haar sleutel wordt verwijderd zodra de installatie klaar is en wordt nooit opgeslagen.
+3. Een certificaat voor die namen. De sleutel ervan kan niet worden geëxporteerd en blijft in je Windows-profiel; het certificaatbestand staat in {2}.
+Maak alles op elk moment ongedaan: Instellingen, Installatie verwijderen.
+De namen:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows vraagt nu of de certificeringsinstantie vertrouwd moet worden. Kies Ja.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Daarna vraagt Windows om beheerdersrechten om het hostsbestand te wijzigen (een apart venster). Kies Ja. Alleen die wijziging draait als beheerder.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Het hostsbestand is niet gewijzigd (toestemming geweigerd of geblokkeerd door een beveiligingsprogramma). Stel opnieuw in om het nog eens te proberen; Installatie verwijderen in de instellingen maakt het gedane ongedaan.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Klaar. Laat de launcher open terwijl je speelt: hij stuurt het spel naar de communityserver. De eerste keer dat het spel start, vraagt Windows Firewall ernaar: klik op Toestaan.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hostsblok, certificeringsinstantie en certificaat verwijderd. Het spel praat weer met zijn eigen servers.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Geen certificaat gevonden: deze pc is nog niet ingesteld.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Het certificaat is verlopen. Stel opnieuw in: er wordt een nieuw gemaakt.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Het hostsbestand heeft geen blok van de installatie (niet uitgevoerd of verwijderd), dus het spel praat nog steeds met zijn eigen servers.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Kan niet luisteren op poort 80 of 443: {0}
+Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie van de launcher) en start de launcher opnieuw.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Instellen</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Niet nu</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Installatie verwijderen? Het hostsblok, de certificeringsinstantie en het certificaat worden verwijderd en het spel praat weer met zijn eigen servers.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Instellen voor de communityserver</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Installatie verwijderen</value></data>
 </root>

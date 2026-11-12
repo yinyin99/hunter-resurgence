@@ -29,32 +29,32 @@ jobs:
           $names = ($zip.Entries.FullName | Sort-Object) -join ","
           $zip.Dispose()
           if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
-      # the player kit's release zip, the same way (tools/play)
-      - name: Publish the player kit
+      # the launcher: the exe, its settings and the page it shows (the exe loads wwwroot at start), packed with Velopack
+      - name: Install vpk
+        run: dotnet tool install -g vpk --version 1.2.161
+      - name: Publish and pack the launcher
         shell: cmd
-        run: tools\play\publish.cmd tools\play\settings.example.json 0.0.0-ci
-      - name: Check the player kit's release zip
+        run: src\Launcher\publish.cmd src\Launcher\settings.example.json 0.0.1-ci
+      - name: Check the launcher's publish folder and release
         shell: pwsh
         run: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "tools\play\bin\Release\net10.0-windows\win-x64\play-win-x64.zip"))
-          $names = ($zip.Entries.FullName | Sort-Object) -join ","
-          $zip.Dispose()
-          if ($names -ne "1-setup.cmd,2-run.cmd,3-remove.cmd,play.exe,settings.json") { throw "zip holds: $names" }
-      # the launcher's release zip: the exe, its settings and the page it shows (the exe loads wwwroot at start)
-      - name: Publish the launcher
-        shell: cmd
-        run: src\Launcher\publish.cmd src\Launcher\settings.example.json 0.0.0-ci
-      - name: Check the launcher's release zip
+          $out = "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64"
+          foreach ($n in "resurgence-launcher.exe", "settings.json", "wwwroot\index.html", "wwwroot\_framework\blazor.webview.js") { if (-not (Test-Path "$out\publish\$n")) { throw "publish lacks $n" } }
+          foreach ($n in "HunterResurgence-win-Setup.exe", "HunterResurgence-0.0.1-ci-full.nupkg", "releases.win.json") { if (-not (Test-Path "$out\releases\$n")) { throw "releases lack $n" } }
+      # the Setup itself: installs for the CI user with no prompt, the install hook writes the link scheme, the uninstall hook removes it
+      - name: Install and uninstall the launcher
         shell: pwsh
         run: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\launcher-win-x64.zip"))
-          $names = @($zip.Entries.FullName)
-          $zip.Dispose()
-          foreach ($n in "resurgence-launcher.exe", "settings.json", "wwwroot/index.html", "wwwroot/_framework/blazor.webview.js") { if ($names -notcontains $n) { throw "zip lacks $n" } }
-          $stray = $names | Where-Object { $_ -notmatch '^(resurgence-launcher\.exe|settings\.json|wwwroot/.*)$' }
-          if ($stray) { throw "zip holds: $($stray -join ',')" }
+          $setup = (Resolve-Path "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\releases\HunterResurgence-win-Setup.exe")
+          $root = "$env:LOCALAPPDATA\HunterResurgence"
+          $p = Start-Process $setup -ArgumentList "--silent", "--nolaunch" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "setup exited with $($p.ExitCode)" }
+          if (-not (Test-Path "$root\current\resurgence-launcher.exe")) { throw "the launcher is not installed" }
+          $cmd = (Get-ItemProperty "HKCU:\Software\Classes\hunter-resurgence\shell\open\command").'(default)'
+          if ($cmd -ne "`"$root\current\resurgence-launcher.exe`" `"%1`"") { throw "link scheme command: $cmd" }
+          $p = Start-Process "$root\Update.exe" -ArgumentList "--uninstall", "--silent" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "uninstall exited with $($p.ExitCode)" }
+          if (Test-Path "HKCU:\Software\Classes\hunter-resurgence") { throw "the link scheme is still registered" }
   # the server's tests on Linux too: operators run the community server on a VPS (the build job above runs them on Windows with the rest of the solution)
   server-ubuntu:
     runs-on: ubuntu-latest

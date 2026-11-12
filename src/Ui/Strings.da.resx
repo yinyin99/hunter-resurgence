@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kører allerede.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Spillet blev ikke fundet. Tjek dets mappe i indstillingerne.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, log ind, og prøv igen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND ET MULTIPLAYER-SPIL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find et spil eller en vært...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Ryd</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Bekræft koden {0} i din browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Login blev ikke bekræftet i tide. Prøv igen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Serveren kunne ikke nås. Prøv igen.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json er ikke gyldig JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: angiv "{0}" (mangler eller er stadig et eksempel).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" skal være en https-adresse uden forespørgsel.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" er ikke et værtsnavn.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Opsætningen ændrer tre ting på denne pc og intet andet (spilfiler røres aldrig):
+1. Windows' hosts-fil ({3}): {0} af spillets servernavne peger på denne pc, mellem to markerede linjer.
+2. Din Windows-tillidsliste (kun din bruger): en lokal certifikatmyndighed ved navn "{1}". Den kan kun stå inde for disse {0} navne; dens nøgle slettes, så snart opsætningen er færdig, og gemmes aldrig.
+3. Et certifikat til disse navne. Dets nøgle kan ikke eksporteres og bliver i din Windows-profil; certifikatfilen ligger i {2}.
+Fortryd det hele når som helst: Indstillinger, Fjern opsætningen.
+Navnene:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows spørger nu, om certifikatmyndigheden skal have tillid. Vælg Ja.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Derefter beder Windows om administratorrettigheder til at ændre hosts-filen (en separat dialog). Vælg Ja. Kun den ændring kører som administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Hosts-filen blev ikke ændret (tilladelse nægtet, eller et sikkerhedsprogram blokerede den). Konfigurer igen for at prøve igen; Fjern opsætningen i Indstillinger fortryder det, der er gjort.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Færdig. Lad launcheren være åben, mens du spiller: den sender spillet til community-serveren. Første gang spillet starter, spørger Windows Firewall om det: klik på Tillad.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hosts-blokken, certifikatmyndigheden og certifikatet er fjernet. Spillet taler igen med sine egne servere.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Intet certifikat fundet: denne pc er ikke sat op endnu.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Certifikatet er udløbet. Sæt op igen: der laves et nyt.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Hosts-filen har ingen blok fra opsætningen (ikke kørt eller fjernet), så spillet taler stadig med sine egne servere.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Kunne ikke lytte på port 80 eller 443: {0}
+Luk programmet, der bruger den (en anden server eller en anden kopi af launcheren), og start launcheren igen.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Sæt op</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Ikke nu</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Fjern opsætningen? Hosts-blokken, certifikatmyndigheden og certifikatet fjernes, og spillet taler igen med sine egne servere.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Sæt op til community-serveren</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Fjern opsætningen</value></data>
 </root>

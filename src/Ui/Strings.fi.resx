@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Peli on jo käynnissä.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Peliä ei löytynyt. Tarkista sen kansio asetuksista.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Peliä ei voitu käynnistää.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Käynnistä Steam, kirjaudu sisään ja yritä uudelleen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ETSI MONINPELI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Etsi peli tai isäntä...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Tyhjennä</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Vahvista koodi {0} selaimessasi.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Palvelimeen ei saatu yhteyttä. Yritä uudelleen.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ei ole kelvollista JSON:ia.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: aseta "{0}" (puuttuu tai on yhä esimerkki).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" on oltava https-osoite ilman kyselyä.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" ei ole isäntänimi.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Määritys muuttaa tällä tietokoneella kolme asiaa eikä mitään muuta (pelin tiedostoihin ei koskaan kosketa):
+1. Windowsin hosts-tiedosto ({3}): {0} pelin palvelinnimeä osoittaa tähän tietokoneeseen kahden merkityn rivin välissä.
+2. Windowsin luotettujen luettelo (vain sinun käyttäjäsi): paikallinen varmenteen myöntäjä nimeltä "{1}". Se voi taata vain nämä {0} nimeä; sen avain poistetaan heti määrityksen päätyttyä, eikä sitä tallenneta koskaan.
+3. Varmenne näille nimille. Sen avainta ei voi viedä, ja se pysyy Windows-profiilissasi; varmennetiedosto on kansiossa {2}.
+Voit perua kaiken milloin tahansa: Asetukset, Poista määritys.
+Nimet:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows kysyy nyt, luotetaanko varmenteen myöntäjään. Valitse Kyllä.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Sen jälkeen Windows pyytää järjestelmänvalvojan oikeuksia hosts-tiedoston muokkaamiseen (oma kehotteensa). Valitse Kyllä. Vain tämä muokkaus suoritetaan järjestelmänvalvojana.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Hosts-tiedostoa ei muutettu (lupa evättiin tai tietoturvaohjelma esti sen). Määritä uudelleen yrittääksesi uudestaan; Asetusten Poista määritys peruu tehdyn.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Valmis. Pidä launcher auki pelatessasi: se lähettää pelin yhteisöpalvelimelle. Kun peli käynnistyy ensimmäisen kerran, Windowsin palomuuri kysyy siitä: valitse Salli.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hosts-lohko, varmenteen myöntäjä ja varmenne poistettu. Peli keskustelee taas omien palvelimiensa kanssa.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Varmennetta ei löytynyt: tätä tietokonetta ei ole vielä määritetty.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Varmenne on vanhentunut. Määritä uudelleen: se luo uuden.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Hosts-tiedostossa ei ole määrityksen lohkoa (ei tehty tai poistettu), joten peli keskustelee yhä omien palvelimiensa kanssa.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Porttia 80 tai 443 ei voitu kuunnella: {0}
+Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopio), ja käynnistä launcher uudelleen.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Määritä</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Ei nyt</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Poistetaanko määritys? Hosts-lohko, varmenteen myöntäjä ja varmenne poistetaan, ja peli keskustelee taas omien palvelimiensa kanssa.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Määritä yhteisöpalvelinta varten</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Poista määritys</value></data>
 </root>

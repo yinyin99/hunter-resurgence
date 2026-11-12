@@ -178,6 +178,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Das Spiel läuft bereits.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Das Spiel wurde nicht gefunden. Prüfen Sie seinen Ordner in den Einstellungen.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Das Spiel konnte nicht gestartet werden.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Starte Steam, melde dich an und versuche es erneut.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>MULTIPLAYER-SPIEL FINDEN</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Spiel oder Host finden...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Löschen</value></data>
@@ -1300,4 +1301,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Bestätige den Code {0} in deinem Browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Der Server ist nicht erreichbar. Bitte versuche es erneut.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ist kein gültiges JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: Setze "{0}" (fehlt oder ist noch ein Platzhalter).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" muss eine https-Adresse ohne Abfrage sein.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" ist kein Hostname.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Die Einrichtung ändert drei Dinge auf diesem PC und sonst nichts (Spieldateien werden nie angefasst):
+1. Die Windows-Hosts-Datei ({3}): {0} Servernamen des Spiels zeigen auf diesen PC, zwischen zwei markierten Zeilen.
+2. Deine Windows-Vertrauensliste (nur dein Benutzer): eine lokale Zertifizierungsstelle namens "{1}". Sie kann nur für diese {0} Namen bürgen; ihr Schlüssel wird gelöscht, sobald die Einrichtung endet, und nie gespeichert.
+3. Ein Zertifikat für diese Namen. Sein Schlüssel lässt sich nicht exportieren und bleibt in deinem Windows-Profil; die Zertifikatsdatei liegt in {2}.
+Mach alles jederzeit rückgängig: Einstellungen, Einrichtung entfernen.
+Die Namen:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows fragt jetzt, ob der Zertifizierungsstelle vertraut werden soll. Wähle Ja.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Danach fragt Windows nach Administratorrechten, um die Hosts-Datei zu ändern (eigene Abfrage). Wähle Ja. Nur diese Änderung läuft als Administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Die Hosts-Datei wurde nicht geändert (Berechtigung verweigert oder von einem Sicherheitsprogramm blockiert). Richte erneut ein, um es noch einmal zu versuchen; „Einrichtung entfernen“ in den Einstellungen macht das Getane rückgängig.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Fertig. Lass den Launcher beim Spielen geöffnet: Er schickt das Spiel zum Community-Server. Beim ersten Start des Spiels fragt die Windows-Firewall danach: Klicke auf Zugriff zulassen.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hosts-Block, Zertifizierungsstelle und Zertifikat entfernt. Das Spiel spricht wieder mit seinen eigenen Servern.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Kein Zertifikat gefunden: Dieser PC ist noch nicht eingerichtet.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Das Zertifikat ist abgelaufen. Richte erneut ein: Dabei wird ein neues erstellt.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Die Hosts-Datei hat keinen Block der Einrichtung (nicht ausgeführt oder entfernt), das Spiel spricht also weiter mit seinen eigenen Servern.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Port 80 oder 443 kann nicht abgehört werden: {0}
+Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie des Launchers), und starte den Launcher erneut.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Einrichten</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Nicht jetzt</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Einrichtung entfernen? Der Hosts-Block, die Zertifizierungsstelle und das Zertifikat werden entfernt, und das Spiel spricht wieder mit seinen eigenen Servern.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Für den Community-Server einrichten</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Einrichtung entfernen</value></data>
 </root>

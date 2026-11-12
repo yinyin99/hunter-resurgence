@@ -48,6 +48,14 @@ public sealed class ModalService
         return await done.Task;
     }
 
+    /// <summary>At the launcher's start: the setup this PC still needs (the player kit, docs/launcher.md#the-player-kit), else what stops the forwarder. The dialog answers by itself; the start does not wait for it.</summary>
+    public async Task OfferKitAsync(IKitService kit)
+    {
+        if (!kit.Available) return;
+        if (await kit.StartAsync() is { } plan) Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = plan });
+        else if (kit.Problem is { } problem) Alert(problem);
+    }
+
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
     /// <summary>The old app opens "Done hunting for now?" five seconds after a game was started or joined, whatever else is open then.</summary>
