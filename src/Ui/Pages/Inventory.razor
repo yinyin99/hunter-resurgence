@@ -12,7 +12,7 @@
     @foreach (var g in groups)
     {
         <section class="group">
-            <h3>@g.Key</h3>
+            <h3>@(g.First().CategoryName is { Length: > 0 } title ? title : L["Inv.Other"].Value)</h3>
             <div class="grid">
                 @foreach (var i in g)
                 {
@@ -38,7 +38,7 @@
     {
         var items = await Service.ItemsAsync();
         var order = (await Store.CategoriesAsync()).SelectMany(c => c.Children).Select(c => c.Key).ToList();
-        groups = [.. items.GroupBy(i => i.CategoryName).OrderBy(g => order.IndexOf(g.First().Category) is var n && n >= 0 ? n : int.MaxValue)];
+        groups = [.. items.GroupBy(i => i.Category).OrderBy(g => order.IndexOf(g.Key) is var n && n >= 0 ? n : int.MaxValue)];
         loaded = true;
     }
 }

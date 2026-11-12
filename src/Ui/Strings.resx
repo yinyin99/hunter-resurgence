@@ -43,6 +43,7 @@
   <data name="Inv.None" xml:space="preserve"><value>You don't own any items yet.</value></data>
   <data name="Inv.Units" xml:space="preserve"><value>{0} left</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipped</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Other</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sign Out</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Your Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>

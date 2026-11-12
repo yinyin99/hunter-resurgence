@@ -43,6 +43,7 @@
   <data name="Inv.None" xml:space="preserve"><value>Sinulla ei ole vielä yhtään esinettä.</value></data>
   <data name="Inv.Units" xml:space="preserve"><value>{0} jäljellä</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Varusteena</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Muut</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Metsästäjän pisteesi</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>

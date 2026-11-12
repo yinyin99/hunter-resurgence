@@ -25,7 +25,7 @@
                 <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
                 @* the wallet is the account's on the live site too *@
                 <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
-                <a class="section" href="/inventory">@L["Inv.Title"]</a>
+                <a class="section" href="/inventory" data-tip="@L["Inv.Title"]" aria-label="@L["Inv.Title"]">@L["Inv.Title"]</a>
                 <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
                 <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
                 @if (balances.AmmoDays is { } ammo) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", ammo]</span></span> }

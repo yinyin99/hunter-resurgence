@@ -43,6 +43,7 @@
   <data name="Inv.None" xml:space="preserve"><value>Todavía no tienes ningún objeto.</value></data>
   <data name="Inv.Units" xml:space="preserve"><value>quedan {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Otros</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Cerrar la sesión</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tu Puntuación del Cazador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>

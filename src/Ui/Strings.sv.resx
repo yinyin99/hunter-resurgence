@@ -43,6 +43,7 @@
   <data name="Inv.None" xml:space="preserve"><value>Du äger inga föremål ännu.</value></data>
   <data name="Inv.Units" xml:space="preserve"><value>{0} kvar</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Utrustad</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Övrigt</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logga ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Hunterpoäng</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>

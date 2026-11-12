@@ -32,6 +32,7 @@ public class LauncherGuardTests
     [InlineData("/Messages", false)]                 // the server's: the restored messages, read only
     [InlineData("new-message", true)]
     [InlineData("bank/ems", true)]
+    [InlineData("inventory", false)]                 // the server's: the owner's items
     [InlineData("missions", false)]                  // the server's: the owner's missions
     [InlineData("/Missions/group/3", false)]
     [InlineData("missions/daily", false)]            // the server's: the owner's streak

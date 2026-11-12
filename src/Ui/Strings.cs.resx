@@ -43,6 +43,7 @@
   <data name="Inv.None" xml:space="preserve"><value>Zatím nevlastníte žádné předměty.</value></data>
   <data name="Inv.Units" xml:space="preserve"><value>zbývá {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Vybaveno</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Ostatní</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odhlásit</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše lovecké skóre</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
