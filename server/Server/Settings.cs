@@ -58,6 +58,13 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var offline) => offline,
             _ => throw new InvalidDataException("offline_mode: true or false"),
         };
+        // true: every license of the game is unlimited for every player (docs/server.md#licenses)
+        cfg["all_licenses"] = root["all_licenses"] switch
+        {
+            null => true,
+            JsonValue flag when flag.TryGetValue<bool>(out var all) => all,
+            _ => throw new InvalidDataException("all_licenses: true or false"),
+        };
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch

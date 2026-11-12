@@ -62,6 +62,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void AllLicensesDefaultsToTrueAndNeedsTrueOrFalse()
+    {
+        Assert.True((bool)Load(Minimal()).Cfg["all_licenses"]!);
+        var off = Minimal();
+        off["all_licenses"] = false;
+        Assert.False((bool)Load(off).Cfg["all_licenses"]!);
+        foreach (var bad in new JsonNode[] { 0, "true" })
+        {
+            var o = Minimal();
+            o["all_licenses"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void MinimalFileGetsDefaultsAndPathsRelativeToTheFile()
     {
         var s = Load(Minimal());

@@ -24,7 +24,8 @@ public sealed record StoreItem(int Id, string Name, string Variant, string Categ
     IReadOnlyList<ItemFit>? Fits = null, EthicalMatrix? Ethics = null,
     bool Counted = false, long? Expires = null)
 {
-    public bool LimitReached => OwnLimit > 0 && Owned >= OwnLimit;
+    /// <summary>No more to buy: the own limit is reached, or the player has a license without end.</summary>
+    public bool LimitReached => Expires == 0 || (OwnLimit > 0 && Owned >= OwnLimit);
 }
 
 /// <summary>A bundle line; <see cref="OwnLimit"/> is 0 for unlimited.</summary>

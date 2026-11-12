@@ -8,6 +8,7 @@
   "mirror_dir": "mirror",
   "variants_file": "variants.json",
   "offline_mode": true,
+  "all_licenses": true,
   "listeners": [
     { "address": "127.0.0.1", "port": 443, "cert": "data/leaf.pem", "key": "data/leaf.key", "admin": true },
     { "address": "127.0.0.1", "port": 80, "admin": true }
