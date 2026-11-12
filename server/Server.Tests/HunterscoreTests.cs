@@ -378,8 +378,8 @@ public class HunterscoreTests : StateTestBase
         var page = state.PublicHunts(B, 1);
         Eq("[1, 1, 2]", T(page["page"], page["pages"], page["total"]));
         var (open, closed) = (page["rows"]![0]!, page["rows"]![1]!);
-        Eq("""[0, "Test Reserve", "#101", 0, 0]""", T(open["seconds"], open["reserve"], open["lodge"], open["collectables"], open["kills"]));
-        Eq("""["Test Reserve", "#101", 1]""", T(closed["reserve"], closed["lodge"], closed["kills"]));
+        Eq("""[0, "Test Reserve", "Lodge 1", 0, 0]""", T(open["seconds"], open["reserve"], open["lodge"], open["collectables"], open["kills"]));
+        Eq("""["Test Reserve", "Lodge 1", 1]""", T(closed["reserve"], closed["lodge"], closed["kills"]));
         Assert.True((long)open["id"]! > (long)closed["id"]!);
         Assert.Equal(page["rows"]!.ToJsonString(), state.PublicHunts(B, 9)["rows"]!.ToJsonString());  // a page past the last is the last
 

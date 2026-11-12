@@ -342,7 +342,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, list.Status);
         var page = JsonNode.Parse(list.Body)!;
         var row = page["rows"]!.AsArray().Single()!;
-        Eq("""[1, 1, 1, "Test Reserve", "#101", 1]""", T(page["page"], page["pages"], page["total"], row["reserve"], row["lodge"], row["kills"]));
+        Eq("""[1, 1, 1, "Test Reserve", "Lodge 1", 1]""", T(page["page"], page["pages"], page["total"], row["reserve"], row["lodge"], row["kills"]));
         Eq("1", JsonNode.Parse((await Get("web.test", "/hunters/third/hunts?page=7")).Body)!["page"]);  // a page past the last is the last
 
         var id = (long)row["id"]!;

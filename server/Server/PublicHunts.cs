@@ -27,9 +27,19 @@ public sealed partial class State
 
     string ItemName(JsonNode? id) => Lookup(items, id)?["name"] is { } n && Py.IsStr(n) ? (string)n! : "";
 
+    Dictionary<long, string>? startNames;
+
+    /// <summary>The name of a hunt's start as the launcher's map calls it (<see cref="LaunchCatalogue"/>); "" for none, and for a place the catalogue does not list.</summary>
+    string StartName(JsonNode? locationId)
+    {
+        startNames ??= new(LaunchCatalogue()["reserves"]!.AsArray().SelectMany(r => r!["starts"]!.AsArray())
+            .Select(s => KeyValuePair.Create((long)s!["id"]!, (string)s["name"]!)).DistinctBy(p => p.Key));
+        return TryKey(locationId, out var id) && startNames.TryGetValue(id, out var name) ? name : "";
+    }
+
     /// <summary>What a profile page's hunt history shows of an account, `GET /hunters/&lt;handle&gt;/hunts?page=n`: `{page, pages, total, rows: [{id, start, seconds, reserve, lodge, collectables, kills}]}`,
-    /// <see cref="HuntsPageSize"/> a page, newest first: the hunts made here, then the restored ones (as Expedition/list); `start` is Unix seconds, `seconds` 0 for an open hunt, `lodge` "#id" (the
-    /// catalogue has no lodge names), "" without one.</summary>
+    /// <see cref="HuntsPageSize"/> a page, newest first: the hunts made here, then the restored ones (as Expedition/list); `start` is Unix seconds, `seconds` 0 for an open hunt, `lodge` the name of the start
+    /// (<see cref="StartName"/>), "" without one.</summary>
     public JsonObject PublicHunts(long account, int page)
     {
         var all = JsonNode.Parse(ExpeditionListReply(account, "{}"u8.ToArray(), []))!["expeditions"]!.AsArray();
@@ -42,7 +52,7 @@ public sealed partial class State
             return new JsonObject
             {
                 ["id"] = Integer(o["id"]), ["start"] = start, ["seconds"] = end > start ? end - start : 0, ["reserve"] = ReserveName(o["reserve"]),
-                ["lodge"] = Py.Truthy(o["location_id"]) ? "#" + Py.Str(o["location_id"]) : "", ["collectables"] = Count(o["collectables"]), ["kills"] = Count(o["kills"]),
+                ["lodge"] = StartName(o["location_id"]), ["collectables"] = Count(o["collectables"]), ["kills"] = Count(o["kills"]),
             };
         }
         return new JsonObject
@@ -80,7 +90,7 @@ public sealed partial class State
         }
         return new JsonObject
         {
-            ["id"] = Integer(e["id"]), ["reserve"] = ReserveName(e["reserve"]), ["lodge"] = Py.Truthy(e["location_id"]) ? "#" + Py.Str(e["location_id"]) : "", ["start"] = start,
+            ["id"] = Integer(e["id"]), ["reserve"] = ReserveName(e["reserve"]), ["lodge"] = StartName(e["location_id"]), ["start"] = start,
             ["end"] = Py.IsNum(e["end_ts"]) ? end : null,
             ["weapons"] = C(view?["weapons"]) ?? new JsonArray(), ["animals"] = C(view?["animals"]) ?? new JsonArray(), ["collectables"] = new JsonArray(), ["achievements"] = new JsonArray(),
             ["distanceKm"] = Real(view?["distanceKm"]), ["seconds"] = Py.IsNum(e["end_ts"]) && end > start ? end - start : 0, ["antlers"] = new JsonArray(),

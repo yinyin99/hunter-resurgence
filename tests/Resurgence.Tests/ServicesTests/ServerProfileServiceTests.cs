@@ -113,11 +113,11 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task TheHistoryIsThePageOfTheServersHunts()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":90,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Reserve","lodge":"#101","collectables":2,"kills":1}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":90,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Reserve","lodge":"Border Lodge","collectables":2,"kills":1}]}"""));
         var page = await Make(fake).HistoryAsync("a b", 2);
         Assert.EndsWith("/hunters/a%20b/hunts?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
         Assert.Equal((2, 3, 90), (page.Number, page.Pages, page.Total));
-        Assert.Equal(new HistoryRow(12, new DateTime(2023, 11, 14, 22, 15, 0, DateTimeKind.Utc), 3600, "Reserve", "#101", 2, 1), Assert.Single(page.Rows));
+        Assert.Equal(new HistoryRow(12, new DateTime(2023, 11, 14, 22, 15, 0, DateTimeKind.Utc), 3600, "Reserve", "Border Lodge", 2, 1), Assert.Single(page.Rows));
     }
 
     [Theory]
@@ -130,7 +130,7 @@ public class ServerProfileServiceTests
     }
 
     const string Hunt = """
-        {"id":12,"reserve":"Reserve","lodge":"#101","start":1700000100,"end":null,"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
+        {"id":12,"reserve":"Reserve","lodge":"Border Lodge","start":1700000100,"end":null,"weapons":[{"weapon":"Rifle","ammo":"Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
          "animals":[{"name":"Deer","spotted":0,"tracked":0,"harvested":1}],"collectables":[],"achievements":[],"distanceKm":4.0,"seconds":3600,"antlers":[],
          "kills":[{"id":5,"species":"Deer","weapon":"Rifle","ammo":"Bullet","distanceM":82.0,"score":120.5,"weightKg":64.35,"when":1700000500,"sheet":false}]}
         """;
@@ -142,7 +142,7 @@ public class ServerProfileServiceTests
         var service = Make(fake);
         var hunt = await service.ExpeditionAsync("fox", 12);
         Assert.Equal("/hunters/fox/hunts/12", fake.Seen[0].RequestUri!.AbsolutePath);
-        Assert.Equal((12L, "Reserve", "#101", null, 4.0, 3600), (hunt!.Id, hunt.Reserve, hunt.Lodge, hunt.End, hunt.DistanceKm, hunt.Seconds));
+        Assert.Equal((12L, "Reserve", "Border Lodge", null, 4.0, 3600), (hunt!.Id, hunt.Reserve, hunt.Lodge, hunt.End, hunt.DistanceKm, hunt.Seconds));
         Assert.Equal(new WeaponStat("Rifle", "Bullet", 1, 100.0, 1, 100.0, 82.0), Assert.Single(hunt.Weapons));
         Assert.Equal(new SpeciesStat("Deer", 0, 0, 1), Assert.Single(hunt.Animals));
         Assert.Equal(new Kill(5, "Deer", "Rifle", "Bullet", 82.0, 120.5, 64.35, new DateTime(2023, 11, 14, 22, 21, 40, DateTimeKind.Utc), null, false), Assert.Single(hunt.Kills));  // no sheet to open

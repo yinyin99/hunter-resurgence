@@ -263,7 +263,7 @@ public class RestoreTests : StateTestBase
         Restorer.Import(state, Zip(zip), null, tmp);
 
         var row = state.PublicHunts(1001, 1)["rows"]!.AsArray().Single()!;
-        Eq("""[9100, 1700000100, 3600, "Test Reserve", "#101", 2, 1]""", T(row["id"], row["start"], row["seconds"], row["reserve"], row["lodge"], row["collectables"], row["kills"]));
+        Eq("""[9100, 1700000100, 3600, "Test Reserve", "Lodge 1", 2, 1]""", T(row["id"], row["start"], row["seconds"], row["reserve"], row["lodge"], row["collectables"], row["kills"]));
         var hunt = state.PublicHunt(1001, 9100)!;
         Eq("""[1700003700, 4.0, 3600, "Test Rifle", "Test Bullet", 1, "Test Deer", 1]""", T(hunt["end"], hunt["distanceKm"], hunt["seconds"], hunt["weapons"]![0]!["weapon"], hunt["weapons"]![0]!["ammo"],
             hunt["weapons"]![0]!["shots"], hunt["animals"]![0]!["name"], hunt["animals"]![0]!["harvested"]));
