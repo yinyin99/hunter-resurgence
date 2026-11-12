@@ -1,0 +1,9 @@
+.group { margin: 0 0 20px; }
+.group h3 { margin: 0 0 10px; font-size: 22px; line-height: 40px; font-weight: 300; text-transform: uppercase; }
+.grid { display: grid; grid-template-columns: repeat(4, 170px); gap: 10px; }
+.card { padding: 10px; box-sizing: border-box; background: var(--surface-3); }
+.card ::deep .pic { display: block; margin: 0 auto 10px; }
+.name { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.variant { display: block; font-size: 12px; line-height: 16px; color: var(--text-5); }
+.units, .equipped { margin: 6px 0 0; font-size: 12px; line-height: 16px; color: var(--text-3); }
+.none { margin: 0; padding: 10px; background: var(--surface-3); font-size: 14px; color: var(--text-3); }

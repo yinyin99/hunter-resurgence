@@ -83,6 +83,7 @@ static class LauncherServices
             new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>()));
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
+        services.AddSingleton<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
         // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL
         services.AddSingleton<ServerCache<ServerLaunchCatalogue>>();

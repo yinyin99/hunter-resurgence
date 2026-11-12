@@ -248,6 +248,13 @@ public static class AccountApi
             .WithDescription("What `GET /game/user/loadout` answers for the player: `[{name, color, items, id}]` ascending by id; `id` is the number `POST /auth/launch` takes as `loadout`.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/inventory", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WebInventory(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountInventory").WithSummary("The player's own items")
+            .WithDescription("`{items: [{id, name, variant, category, categoryName, units, slot, equipped}]}`, one row per owned copy, oldest first: name, variant and the store's sub-category are the catalogue's, `units` is null for an item that is not counted, `equipped` is a slot above 0.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/events", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.EventStatus(account))
                 : Refuse(401, "signed_out", "Sign in first."))

@@ -1,0 +1,44 @@
+@page "/inventory"
+@inject IInventoryService Service
+@inject IStoreService Store
+@inject HostMode Mode
+
+<PageTitle>@L["Inv.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Inv.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
+    @if (!loaded) { <div class="skeleton wait"></div> }
+    else if (groups.Count == 0) { <p class="none">@L["Inv.None"]</p> }
+    @foreach (var g in groups)
+    {
+        <section class="group">
+            <h3>@g.Key</h3>
+            <div class="grid">
+                @foreach (var i in g)
+                {
+                    <article class="card">
+                        <AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" />
+                        <span class="name">@i.Name</span>
+                        <span class="variant">@i.Variant</span>
+                        @if (i.Units is { } units) { <p class="units">@L["Inv.Units", units]</p> }
+                        @if (i.Equipped) { <p class="equipped">@L["Inv.Equipped"]</p> }
+                    </article>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    IReadOnlyList<IGrouping<string, InventoryItem>> groups = [];
+    bool loaded;
+
+    // read again on every open, so an item just bought shows; the groups follow the store's sub-categories, an item of none last
+    protected override async Task OnInitializedAsync()
+    {
+        var items = await Service.ItemsAsync();
+        var order = (await Store.CategoriesAsync()).SelectMany(c => c.Children).Select(c => c.Key).ToList();
+        groups = [.. items.GroupBy(i => i.CategoryName).OrderBy(g => order.IndexOf(g.First().Category) is var n && n >= 0 ? n : int.MaxValue)];
+        loaded = true;
+    }
+}

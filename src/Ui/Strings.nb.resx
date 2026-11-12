@@ -39,6 +39,10 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Meldinger</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Meldinger ({0} nye)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min lommebok / Transaksjonslogg</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Du eier ingen gjenstander ennå.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} igjen</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Utstyrt</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logg ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Jegerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>

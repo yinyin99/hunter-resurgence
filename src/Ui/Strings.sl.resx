@@ -39,6 +39,10 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Sporočila</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Sporočila ({0} novih)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Moja denarnica / zgodovina nakupov</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Zaenkrat nimate nobenih predmetov.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>še {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Opremljeno</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoje lovske točke</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
