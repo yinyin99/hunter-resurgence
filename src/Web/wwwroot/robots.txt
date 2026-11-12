@@ -28,3 +28,8 @@ Disallow: /tutorials
 Disallow: /game-management
 Disallow: /invite-friends
 Disallow: /missions
+Disallow: /competitions
+Disallow: /community-league
+Disallow: /community_league
+Disallow: /restore
+Disallow: /auth/
