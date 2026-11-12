@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Oyun zaten çalışıyor.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Oyun bulunamadı. Klasörünü ayarlardan kontrol edin.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Oyun başlatılamadı.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Steam'i başlatın, oturum açın ve tekrar deneyin.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ÇOK OYUNCULU OYUN BUL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Oyun veya kurucu ara...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Temizle</value></data>
