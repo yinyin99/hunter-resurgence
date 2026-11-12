@@ -9,6 +9,9 @@ static class Program
 {
     const string Instance = "hunter-resurgence-launcher";
 
+    /// <summary>True in the one start Velopack makes right after the install: the clean-up of an older setup (<see cref="LauncherCleanup"/>) runs then.</summary>
+    public static bool FirstRun { get; private set; }
+
     [STAThread]
     static void Main(string[] args)
     {
@@ -19,7 +22,9 @@ static class Program
         VelopackApp.Build()
             .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
-            .OnBeforeUninstallFastCallback(_ => LinkScheme.Remove(Registry.CurrentUser))
+            .OnFirstRun(_ => FirstRun = true)
+            .OnBeforeUninstallFastCallback(_ => Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
+                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
             .Run();
 
         var app = new App();

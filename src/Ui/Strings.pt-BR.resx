@@ -1326,4 +1326,14 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Remover a configuração? O bloco do hosts, a autoridade de certificação e o certificado são removidos, e o jogo volta a falar com os próprios servidores.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Configurar para o servidor da comunidade</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Remover a configuração</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>A configuração deste PC foi feita para outros nomes de servidor que os de settings.json. Configure de novo: ela substitui o bloco do hosts e o certificado.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>A autoridade de certificação não é confiável neste PC (removida, ou o aviso do Windows foi recusado). Configure de novo.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Configuração antiga encontrada</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Estes programas antigos estão em execução. Excluir fecha-os primeiro:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Pastas antigas descompactadas (Excluir apaga cada uma com todo o conteúdo):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Registros do jogo restantes na pasta de instalação do jogo:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Há uma configuração antiga do kit do jogador neste PC e ela ainda serve: continua como está.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Há uma configuração antiga do kit do jogador neste PC, mas ela não serve: a próxima janela a substitui em uma etapa.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Excluir</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Excluir também os dados do launcher (idioma, pasta do jogo e login salvo em %APPDATA%\hunter-resurgence)? Escolha Não para mantê-los.</value></data>
 </root>

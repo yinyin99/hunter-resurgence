@@ -1326,4 +1326,14 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Remove the setup? The hosts block, the certificate authority and the certificate are removed, and the game talks to its own servers again.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Set up for the community server</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Remove the setup</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>The setup on this PC was made for other server names than settings.json lists. Set up again: it replaces the hosts block and the certificate.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>The certificate authority is not trusted on this PC (removed, or the Windows prompt was refused). Set up again.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Older setup found</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>These older programs are running. Delete closes them first:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Old unpacked folders (Delete removes each one with everything in it):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Leftover game logs in the game's install folder:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>An older player kit setup is on this PC and still fits: it stays as it is.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>An older player kit setup is on this PC but does not fit: the next window replaces it in one step.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Also delete your launcher data (language, game folder and saved sign-in in %APPDATA%\hunter-resurgence)? Choose No to keep it.</value></data>
 </root>

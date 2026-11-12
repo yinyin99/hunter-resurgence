@@ -143,7 +143,7 @@ The setup window prints this before it starts. It changes three things on your P
 2. **Your Windows trust list** (the current user's only, not the whole PC): a local certificate authority named `Hunter Resurgence local CA`. It is made on your PC, valid for two years, and **name-constrained**: Windows accepts a certificate it signed only for the game's server names, never for any other site. Its private key is created in memory, used once to sign the next item and then thrown away: it is never saved, so nobody can export or reuse it.
 3. **A certificate for those names**, signed by that authority. Its public part is the file `%LOCALAPPDATA%\hunter-resurgence-play\leaf.cer`; its private key is a non-exportable key in your Windows key store. The forwarder uses it to answer the game over HTTPS.
 
-Setting up again replaces all of it (and asks again). It is needed again when the certificate has expired: the launcher says so at its start and opens the window.
+Setting up again replaces all of it (and asks again). It is needed again when the certificate has expired, was made for other names than `settings.json` lists, or its authority is no longer trusted (removed, or you said No at the certificate prompt): the launcher says so at its start and opens the window. The check of the hosts block looks at the block only (its names, in any order); lines of other tools before or after it do not matter.
 
 The administrator window: setup itself runs as you, so the certificate lands in your own trust list. Only when it needs to write the hosts file does the launcher start a second copy of its exe through the Windows permission window, with exactly the command line `--hosts on` (Remove: `--hosts off`); that copy edits the hosts file and exits, without a window or any other work. Any other command line starts the launcher normally. If the launcher itself runs as administrator, no window appears. The forwarder never needs administrator rights.
 
@@ -174,9 +174,9 @@ The tests (`tests/Resurgence.Tests/LauncherApp`: `HostsTests`, `PkiTests`, `Forw
 | the game's graphics file | Game settings, on Save | fullscreen, resolution and refresh rate, scene complexity, texture, shadow, anti-aliasing, anisotropic filtering, vertical sync |
 | the game's options file | Game settings, on Save | volume, gamma, mouse and controller options, speeds, interface switches, scope quality |
 | `%APPDATA%\hunter-resurgence\session.dat` | Sign-in, with `server_url` | the community server's session cookie, protected by Windows DPAPI for this Windows user; deleted by Sign out |
-| the Windows hosts file | Player kit setup (an elevated copy of the launcher), removed by Remove | the marked block that points the game's server names at this PC |
-| `Hunter Resurgence local CA` in the current user's trust list | Player kit setup | the name-constrained local authority; removed by Remove |
-| `%LOCALAPPDATA%\hunter-resurgence-play\leaf.cer` and the key `hunter-resurgence-play-leaf` in the user's key store | Player kit setup | the certificate the forwarder answers with and its non-exportable key; removed by Remove |
+| the Windows hosts file | Player kit setup (an elevated copy of the launcher), removed by Remove and by the uninstall | the marked block that points the game's server names at this PC |
+| `Hunter Resurgence local CA` in the current user's trust list | Player kit setup | the name-constrained local authority; removed by Remove and by the uninstall |
+| `%LOCALAPPDATA%\hunter-resurgence-play\leaf.cer` and the key `hunter-resurgence-play-leaf` in the user's key store | Player kit setup | the certificate the forwarder answers with and its non-exportable key; removed by Remove and by the uninstall |
 | `<file>.resurgence-backup` | Game settings, once | settings copy of each of those two files made before the first write; never overwritten |
 | `%LocalAppData%\HunterResurgence\` | the Setup and the updates | the installed launcher (`current\`) and the downloaded packages (Velopack); removed by the uninstall |
 | `HKCU\Software\Classes\hunter-resurgence` | the Setup | the link `hunter-resurgence://`; removed by the uninstall |
@@ -202,6 +202,23 @@ Press Play in Steam. The game's own files stay untouched. On its first start the
 - **Velopack** (`Program.cs`) runs first in `Main`: it handles the install, update and uninstall steps of the Setup and applies an update that was downloaded earlier when the launcher starts. A launcher that was not installed by the Setup (`dotnet run`, an unpacked build) never updates itself and shows no update.
 - **The update** (`LauncherUpdater`) checks the releases of this repository at start (`GithubSource`, no pre-releases), downloads a newer one in the background (the patch bar shows it as a launcher update) and then shows the "launcher updated" message; its OK button applies the update and restarts the launcher. Nothing is checked, shown or applied while the game runs (`GameFiles.ClientRunning`), and a feed, download or checksum that fails leaves the installed version as it is, without a message.
 - **The link** `hunter-resurgence://open` (`LinkScheme`) is written by the Setup and removed by the uninstall, under `HKCU\Software\Classes\hunter-resurgence`: Windows starts `resurgence-launcher.exe "hunter-resurgence://open"`. One launcher runs at a time: a second start (the link, a shortcut, Steam) brings the open window forward and exits. The elevated `--hosts on|off` copy is not a second start: it runs on its own.
+
+### Install and uninstall
+
+**The first start after the install** (Velopack's first-run hook, `Program.FirstRun`; `Cleanup.cs`) looks in fixed places for what an older setup left and shows one dialog, **Older setup found**. Nothing is deleted before the player chooses **Delete**; **Not now** leaves everything. Nothing outside the list below is touched.
+
+| Found | Where | What happens |
+|---|---|---|
+| An older player kit setup: the hosts block, the authority `Hunter Resurgence local CA`, the leaf and its key | the hosts file, the current user's trust list, `%LOCALAPPDATA%\hunter-resurgence-play` | Shown as kept when it fits this version (the block has the names in `settings.json`, in any order, other lines do not matter; the leaf is valid, has exactly those names and is signed by the trusted authority), else as replaced: the setup window that follows opens with the reason and replaces all of it in its one hosts prompt. |
+| A running `play.exe` (next to a `settings.json`) or a `resurgence-launcher.exe` that is not this install | any process | Listed; Delete asks it to close and stops it if it does not within a few seconds. |
+| Old unpacked folders `launcher-win-x64` and `play-win-x64`, each with its exe still inside | Downloads, the desktop, the folder above a running old program's folder | Listed; Delete removes each with everything in it. |
+| Stray game logs: `*.netlog`, `cef.log`, an empty `icons` folder | the game's install folder itself, never inside the game's own `game` folder | Listed; Delete removes them. |
+
+If the player said No at the certificate prompt of a setup, no leaf is left (it is written last): the next start finds no setup and shows the setup window again.
+
+**The uninstall** (Velopack's before-uninstall hook, `Cleanup.Uninstall`) removes the hosts block (the file is then byte for byte what it was before setup), the leaf and its key, the authority and the link scheme. Each step runs on its own: one that fails does not stop the others. Windows may ask in the hook (administrator permission for the hosts file, and to remove the authority); the hook has 30 seconds. If you say No, remove the block yourself (the lines between `# >>> hunter-resurgence play` and `# <<< hunter-resurgence play`) or run Settings, Remove the setup before uninstalling. The hook also asks, in a Yes/No box whose default is **No**, whether to delete `%APPDATA%\hunter-resurgence` (`launcher.json`, `session.dat`); No, closing the box without an answer and the 30 seconds running out all keep the data. The question is in the Windows display language. The game's files are never touched.
+
+Tests: `CleanupTests` (temporary folders, hosts file, certificate store and registry key).
 
 ## Languages
 

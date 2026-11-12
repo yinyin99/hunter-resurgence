@@ -1326,4 +1326,14 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Odstranim nastavitev? Blok hosts, overitelj potrdil in potrdilo bodo odstranjeni, igra pa bo spet govorila z lastnimi strežniki.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Nastavi za skupnostni strežnik</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Odstrani nastavitev</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Nastavitev v tem računalniku je bila narejena za druga imena strežnikov, kot jih navaja settings.json. Nastavite znova: zamenja blok hosts in potrdilo.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Overitelj potrdil v tem računalniku ni zaupanja vreden (odstranjen ali pa je bilo vprašanje sistema Windows zavrnjeno). Nastavite znova.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Najdena starejša nastavitev</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Ti starejši programi se izvajajo. Izbriši jih najprej zapre:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Stare razpakirane mape (Izbriši odstrani vsako skupaj z vsebino):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Ostanki dnevnikov igre v namestitveni mapi igre:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Starejša nastavitev kompleta igralca je v tem računalniku in še ustreza: ostane nespremenjena.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starejša nastavitev kompleta igralca je v tem računalniku, vendar ne ustreza: naslednje okno jo zamenja v enem koraku.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Izbriši</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Izbrišem tudi podatke zaganjalnika (jezik, mapo igre in shranjeno prijavo v %APPDATA%\hunter-resurgence)? Izberite Ne, če jih želite obdržati.</value></data>
 </root>

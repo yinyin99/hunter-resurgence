@@ -24,9 +24,9 @@ static class Kit
     }
 
     /// <summary>Edits the hosts file. Without administrator rights, starts this exe again with "--hosts on|off" through the UAC prompt: that copy only edits the file, so the certificate steps stay in the user's own session.</summary>
-    public static void SetHosts(bool on, string[]? hosts)
+    public static void SetHosts(bool on, string[]? hosts, string? hostsFile = null)
     {
-        var path = Hosts.DefaultPath;
+        var path = hostsFile ?? Hosts.DefaultPath;
         try { Hosts.ApplyAndFlush(path, hosts); return; }
         catch (UnauthorizedAccessException) { }
         try

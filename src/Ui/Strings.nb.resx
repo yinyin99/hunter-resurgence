@@ -1326,4 +1326,14 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Fjerne oppsettet? Hosts-blokken, sertifikatutstederen og sertifikatet fjernes, og spillet snakker med sine egne servere igjen.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Sett opp for community-serveren</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Fjern oppsettet</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Oppsettet på denne PC-en ble laget for andre servernavn enn de i settings.json. Sett opp på nytt: det erstatter hosts-blokken og sertifikatet.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Sertifikatutstederen er ikke klarert på denne PC-en (fjernet, eller Windows-spørsmålet ble avslått). Sett opp på nytt.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Eldre oppsett funnet</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Disse eldre programmene kjører. Slett lukker dem først:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Gamle utpakkede mapper (Slett fjerner hver mappe med alt innhold):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Gjenværende spillogger i spillets installasjonsmappe:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Et eldre oppsett av spillerpakken finnes på denne PC-en og passer fortsatt: det blir som det er.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Et eldre oppsett av spillerpakken finnes på denne PC-en, men passer ikke: neste vindu erstatter det i ett trinn.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Slett</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Slette også launcherens data (språk, spillmappe og lagret pålogging i %APPDATA%\hunter-resurgence)? Velg Nei for å beholde dem.</value></data>
 </root>

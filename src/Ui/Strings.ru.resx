@@ -1326,4 +1326,14 @@
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Удалить настройку? Блок hosts, центр сертификации и сертификат будут удалены, и игра снова будет обращаться к своим серверам.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Настроить для сервера сообщества</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Удалить настройку</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Настройка на этом ПК сделана для других имён серверов, чем указаны в settings.json. Настройте заново: блок hosts и сертификат будут заменены.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Центр сертификации не является доверенным на этом ПК (удалён или запрос Windows отклонён). Настройте заново.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Найдена прежняя настройка</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Эти старые программы запущены. «Удалить» сначала закроет их:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Старые распакованные папки («Удалить» удалит каждую со всем содержимым):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Оставшиеся журналы игры в папке установки игры:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Прежняя настройка набора игрока есть на этом ПК и ещё подходит: она остаётся без изменений.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Прежняя настройка набора игрока есть на этом ПК, но не подходит: следующее окно заменит её за один шаг.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Удалить также данные лаунчера (язык, папку игры и сохранённый вход в %APPDATA%\hunter-resurgence)? Выберите «Нет», чтобы сохранить их.</value></data>
 </root>

@@ -47,11 +47,22 @@ static class Hosts
         return text + glue + block + (glue.Length == 0 ? nl : "");
     }
 
+    /// <summary>The file as text. Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte.</summary>
+    public static string Read(string path) => Encoding.Latin1.GetString(File.ReadAllBytes(path));
+
+    /// <summary>True when the text holds a complete block with exactly the names <paramref name="hosts"/> (in any order). Lines before and after the block do not matter.</summary>
+    public static bool Matches(string text, IEnumerable<string> hosts)
+    {
+        var lines = Lines(text);
+        var b = Array.FindIndex(lines, l => l.Trim() == Begin);
+        var e = b < 0 ? -1 : Array.FindIndex(lines, b + 1, l => l.Trim() == End);
+        return e >= 0 && lines[(b + 1)..e].Select(l => l.Trim()).Order().SequenceEqual(hosts.Select(h => "127.0.0.1 " + h).Order());
+    }
+
     /// <summary>Adds the block (<paramref name="hosts"/>) or removes it (null) in the hosts file at <paramref name="path"/>. False when nothing had to change; throws UnauthorizedAccessException without administrator rights.</summary>
     public static bool Apply(string path, IReadOnlyCollection<string>? hosts)
     {
-        // Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte
-        var text = Encoding.Latin1.GetString(File.ReadAllBytes(path));
+        var text = Read(path);
         var next = hosts is null ? Remove(text) : Add(text, hosts);
         if (next == text) return false;
         File.WriteAllText(path, next, Encoding.Latin1);

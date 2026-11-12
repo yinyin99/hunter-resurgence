@@ -19,7 +19,7 @@ public sealed class LauncherKit(Uri? server) : IKitService
 
     public KitPlan Plan() => Plan(KitSettings.Load(), null);
 
-    static KitPlan Plan(KitSettings s, string? notice) => new(s.Hosts, Pki.CaSubject[3..], Pki.Dir, Hosts.DefaultPath, notice);
+    static KitPlan Plan(KitSettings s, string? notice) => new(s.Hosts, Pki.CaSubject[3..], Pki.Place.Default.Dir, Hosts.DefaultPath, notice);
 
     public async Task<KitPlan?> StartAsync()
     {
@@ -27,12 +27,15 @@ public sealed class LauncherKit(Uri? server) : IKitService
         try
         {
             var s = KitSettings.Load();
-            string? notice = null;
-            try { leaf = Pki.LoadLeaf(DateTimeOffset.UtcNow); }
-            catch (InvalidOperationException e) { notice = e.Message; } // no certificate yet, or an expired one: setup makes a new one
-            if (leaf is not null)
+            var now = DateTimeOffset.UtcNow;
+            // no certificate, an expired one, one for other names or an authority that is not trusted (the player said No at the prompt): setup makes new ones
+            var notice = Pki.Check(s.Hosts, now);
+            if (notice is null)
             {
-                if (!Hosts.Has(File.ReadAllText(Hosts.DefaultPath))) notice = Kit.S("Kit.NoHosts");
+                leaf = Pki.LoadLeaf(now);
+                var text = Hosts.Read(Hosts.DefaultPath);
+                if (!Hosts.Has(text)) notice = Kit.S("Kit.NoHosts");
+                else if (!Hosts.Matches(text, s.Hosts)) notice = Kit.S("Kit.OtherNames"); // a block of an older setup for other names
                 await Run(s);
             }
             return notice is null ? null : Plan(s, notice);

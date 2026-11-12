@@ -1,0 +1,8 @@
+.old { position: absolute; top: 83px; left: calc(50% - 310px); width: var(--w-gamesettings); max-height: 600px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--fg-muted-3) transparent; }
+h1 { margin: 0 0 7px; font-size: 38.5px; line-height: 50px; font-weight: 400; color: #fff; }
+p, li { font-size: 16px; line-height: 22px; color: var(--text-2); }
+p { margin: 0 0 4px; }
+ul { margin: 0 0 10px; padding-left: 28px; overflow-wrap: anywhere; }
+.error { margin: 10px 0 0; color: var(--su-error); white-space: pre-line; }
+.buttons { display: flex; justify-content: flex-end; gap: 4px; margin-top: 10px; }
+.buttons .btn { height: 42px; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }

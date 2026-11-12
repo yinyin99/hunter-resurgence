@@ -1326,4 +1326,14 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Kurulum kaldırılsın mı? Hosts bloğu, sertifika yetkilisi ve sertifika kaldırılır, oyun yine kendi sunucularıyla konuşur.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Topluluk sunucusu için kur</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Kurulumu kaldır</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Bu bilgisayardaki kurulum, settings.json'daki sunucu adlarından farklı adlar için yapılmış. Yeniden kurun: hosts bloğunu ve sertifikayı değiştirir.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Sertifika yetkilisi bu bilgisayarda güvenilir değil (kaldırılmış veya Windows istemi reddedilmiş). Yeniden kurun.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Eski bir kurulum bulundu</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Bu eski programlar çalışıyor. Sil önce bunları kapatır:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Eski açılmış klasörler (Sil her birini içindekilerle birlikte kaldırır):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Oyunun kurulum klasöründe kalan oyun günlükleri:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Bu bilgisayarda oyuncu setinin eski bir kurulumu var ve hâlâ uygun: olduğu gibi kalır.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Bu bilgisayarda oyuncu setinin eski bir kurulumu var ama uygun değil: sonraki pencere onu tek adımda değiştirir.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Sil</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Başlatıcı verileri de silinsin mi (%APPDATA%\hunter-resurgence içindeki dil, oyun klasörü ve kayıtlı oturum)? Saklamak için Hayır'ı seçin.</value></data>
 </root>

@@ -1326,4 +1326,14 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Eltávolítod a beállítást? A hosts blokk, a hitelesítésszolgáltató és a tanúsítvány törlődik, és a játék újra a saját szervereivel beszél.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Beállítás a közösségi szerverhez</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Beállítás eltávolítása</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Ezen a gépen a beállítás más szervernevekre készült, mint amelyeket a settings.json felsorol. Állítsa be újra: lecseréli a hosts-blokkot és a tanúsítványt.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>A tanúsítványkiadó nem megbízható ezen a gépen (eltávolították, vagy a Windows kérdését elutasították). Állítsa be újra.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Régebbi beállítás található</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Ezek a régebbi programok futnak. A Törlés előbb bezárja őket:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Régi kicsomagolt mappák (a Törlés mindegyiket a tartalmával együtt eltávolítja):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Megmaradt játéknaplók a játék telepítési mappájában:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>A játékoskészlet régebbi beállítása megvan ezen a gépen, és még megfelel: változatlanul marad.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>A játékoskészlet régebbi beállítása megvan ezen a gépen, de nem felel meg: a következő ablak egy lépésben lecseréli.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Törlés</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Törli az indító adatait is (nyelv, játékmappa és mentett bejelentkezés itt: %APPDATA%\hunter-resurgence)? A megtartásukhoz válassza a Nemet.</value></data>
 </root>

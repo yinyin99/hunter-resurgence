@@ -1326,4 +1326,14 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Installatie verwijderen? Het hostsblok, de certificeringsinstantie en het certificaat worden verwijderd en het spel praat weer met zijn eigen servers.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Instellen voor de communityserver</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Installatie verwijderen</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>De instelling op deze pc is gemaakt voor andere servernamen dan in settings.json staan. Stel opnieuw in: het vervangt het hosts-blok en het certificaat.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>De certificeringsinstantie wordt op deze pc niet vertrouwd (verwijderd, of de Windows-melding is geweigerd). Stel opnieuw in.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Oudere instelling gevonden</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Deze oude programma's draaien nog. Verwijderen sluit ze eerst:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Oude uitgepakte mappen (Verwijderen wist elke map met alles erin):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Overgebleven spellogboeken in de installatiemap van het spel:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Een oudere instelling van de spelerskit staat op deze pc en past nog: ze blijft zoals ze is.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Een oudere instelling van de spelerskit staat op deze pc maar past niet: het volgende venster vervangt ze in één stap.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ook de gegevens van de launcher verwijderen (taal, spelmap en opgeslagen aanmelding in %APPDATA%\hunter-resurgence)? Kies Nee om ze te bewaren.</value></data>
 </root>

@@ -1326,4 +1326,14 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Rimuovere la configurazione? Il blocco hosts, l'autorità di certificazione e il certificato vengono rimossi e il gioco torna a parlare con i propri server.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Configura per il server della community</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Rimuovi la configurazione</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>La configurazione di questo PC è stata fatta per nomi di server diversi da quelli di settings.json. Configura di nuovo: sostituisce il blocco hosts e il certificato.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>L'autorità di certificazione non è attendibile su questo PC (rimossa, o la richiesta di Windows è stata rifiutata). Configura di nuovo.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Trovata una configurazione precedente</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Questi vecchi programmi sono in esecuzione. Elimina li chiude prima:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Vecchie cartelle estratte (Elimina rimuove ognuna con tutto il contenuto):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Log del gioco rimasti nella cartella di installazione del gioco:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Su questo PC c'è una configurazione precedente del kit giocatore, ancora valida: resta com'è.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Su questo PC c'è una configurazione precedente del kit giocatore, ma non è valida: la finestra successiva la sostituisce in un passaggio.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Elimina</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Eliminare anche i dati del launcher (lingua, cartella del gioco e accesso salvato in %APPDATA%\hunter-resurgence)? Scegli No per conservarli.</value></data>
 </root>
