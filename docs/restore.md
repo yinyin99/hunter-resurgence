@@ -6,7 +6,7 @@
 
 `server import backup <zip> [--account <id>]` restores a zip into the server's database and prints the report: [docs/server.md](server.md#import-a-backup-zip). It reads the zip with the server's own item catalogue (an `Application/application` reply, never the one inside the zip being read) so the units rule is exact; without a catalogue the rule is `zero-only`. A zip the reader refuses prints `refused: <reason>`; a file that cannot be read prints `cannot read: <message>`; both exit 1.
 
-In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue.
+In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Model, Report)` or throws `RestoreException`; `ApplicationCatalogue.Read(stream)` is the catalogue. `Importer.FromReplies(uid, handle, replies, catalogue)` does the same for a public profile whose replies are kept elsewhere (no zip): each `ArchivedReply(Path, Endpoint, Params, Status, Body)` is one reply file as a public-mode zip would hold it. The manifest is made up (format 2, mode `public`, identity `handle`, the uid and handle), the bodies are parsed with the zip's JSON caps, a body that is not JSON goes to `Rejected`, and the replies are mapped like a public zip's (the report mode is `public by handle` when a `Public_user/getByHostname` reply is among them). A `uid` that is not digits within an id throws `RestoreException`.
 
 ## What is refused, what is rejected
 
@@ -36,7 +36,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | Model | Rows |
 |---|---|
 | `Items` | `items`. `Units` as read (layer A applied the catalogue). A placed item's `Position` and `Direction` (millimetres) go into its metadata under `__position` and `__direction` (the table has no columns for them); the connect reply moves them back to the row's `position` and `direction`. `WebReserve` goes into it as `__reserve` (the connect row has none; `Inventory/list` shows it as the `location`'s `reserve`) |
-| `Wallet` | `wallet` (`em`, `gm`); a zip without one (a public zip) stores 0 |
+| `Wallet` | `wallet` (`em`, `gm`); a zip without one (a public zip) stores 0 em. The gm is never under 15,000 (`Restorer.GmFloor`, the same as a new account's): the restore raises a lower one, and the report says `wallet: gm raised from <old> to 15000` (a zip without a wallet: the dropped list says what was stored). It holds for every restore: the command, an approved upload and any other that goes through `Restorer.Apply` |
 | `Skills` | `skills`: weapon by item id, tracking and spotting by species slot; `xp` is `Skills.Xp(level plus progress)`. A zip without skills stores a new player's 59 + 59 |
 | `Profile`, the zip's own `Me/me` | `profile`: the reply of `Me/me` without `ems`, `gms` and `unread_messages`, over the typed profile fields (`id` and `handle` are the account's) |
 | `Stats` | `statistics` |

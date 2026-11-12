@@ -11,8 +11,8 @@ public static class ServerAccountApi
     /// <summary>GET with the cookie: <c>{enabled, claimed: null | {state, handle, ts}}</c>; with <c>?name=</c>: <c>{found, handle, hunterscore, items, trophies, lodges, skills, statistics, achievements, nameFree}</c> or 429 for more than 5 searches a day.
     /// POST with <c>X-Requested-With</c> to <c>/claim</c> and the form <c>name</c> (the old name), <c>old_name</c> (1 or 0), <c>confirm=overwrite</c>: <c>{status, message}</c>.</summary>
     public const string Archive = "/account/archive";
-    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>bundle=1</c> for a bundle: buys with em$ at the store's price; 200 <c>{status, ems}</c>,
-    /// or 409 for something not for sale or a balance too low.</summary>
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>wallet</c> (<c>GOLD</c> or <c>SILVER</c>), <c>bundle=1</c> for a bundle: buys with em$ or gm$ at the store's price; 200 <c>{status, ems}</c>
+    /// (<c>gms</c> for gm$), or 409 for something not for sale or a balance too low.</summary>
     public const string Buy = "/account/buy";
     /// <summary>GET with the cookie: 200 <see cref="ServerFriends"/> (the friends, the requests and the pending requests of the player); POST with <c>X-Requested-With</c> to
     /// <c>/add</c> (asks, or accepts the other's request) or <c>/remove</c> (declines, cancels or removes) and the form <c>handle</c>: 200, or 404 for a handle that is not another player.</summary>
@@ -38,6 +38,8 @@ public static class ServerAccountApi
     public const string Wallet = "/account/wallet";
     /// <summary>GET with the cookie: 200 the player's saved loadouts, <see cref="ServerLoadout"/>, ascending by id.</summary>
     public const string Loadouts = "/account/loadouts";
+    /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
+    public const string Events = "/account/events";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
@@ -52,6 +54,12 @@ public sealed record ServerConversations(ServerConversation[] Conversations);
 public sealed record ServerMessage(bool Mine, string Content, long Ts);
 
 public sealed record ServerThread(ServerMessage[] Messages);
+
+/// <summary>The event of <see cref="ServerAccountApi.Events"/> that runs now: its <c>Name</c> and the game's reserve numbers it covers (empty: every reserve).</summary>
+public sealed record ServerEvent(string Name, string Define, int[] Reserves);
+
+/// <summary><see cref="ServerAccountApi.Events"/>: <c>Event</c> is null when none runs.</summary>
+public sealed record ServerEvents(bool Play, ServerEvent? Event);
 
 /// <summary>A saved loadout of <see cref="ServerAccountApi.Loadouts"/>; its <c>Id</c> is what <see cref="ServerLaunchApi.Launch"/> takes as <c>loadout</c>.</summary>
 public sealed record ServerLoadout(int Id, string Name);

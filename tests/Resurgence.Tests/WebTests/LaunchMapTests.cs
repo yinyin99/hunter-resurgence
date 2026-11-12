@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
+using Resurgence.Ui;
 using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
@@ -44,5 +45,43 @@ public sealed class LaunchMapTests : UiContext
         cut.WaitForAssertion(() => Assert.Null(cut.Find("button.go").GetAttribute("disabled")));
         cut.Find("button.go").Click();
         cut.WaitForAssertion(() => Assert.Equal((2, 101), service.Started));
+    }
+
+    sealed class Events(SeasonalEvents state) : ISeasonalEventsService
+    {
+        public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
+        public Task<Result> SetAsync(bool play) => Task.FromResult(Result.Success);
+    }
+
+    // the game's reserve 1 is the launch map's reserve 2
+    [Theory]
+    [InlineData(true, "halloween_2026", new[] { 0, 1, 2 }, true, true)]
+    [InlineData(true, "halloween_2026", new int[0], true, true)]        // no reserves listed: every reserve
+    [InlineData(false, "halloween_2026", new[] { 0, 1, 2 }, true, false)]  // the player opted out
+    [InlineData(true, "halloween_2026", new[] { 8, 9 }, true, false)]    // not this reserve
+    [InlineData(true, "halloween_2026", new[] { 0, 1, 2 }, false, false)] // the operator has no picture of the event
+    [InlineData(true, null, new int[0], true, false)]                    // no event runs
+    public void TheBadgeIsTheEventsPictureWhileItRunsForAPlayerWhoPlaysAndTheOperatorHasIt(bool play, string? name, int[] reserves, bool hasPicture, bool event_)
+    {
+        var pictures = new Dictionary<string, string> { ["reserve-02.png"] = "1" };
+        if (hasPicture) pictures["reserve-02-halloween-2026.png"] = "1";
+        Services.AddSingleton(new AssetImages(pictures));
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(play, name, reserves)));
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.Contains(event_ ? "/images/reserve-02-halloween-2026.png?" : "/images/reserve-02.png?", cut.Find("button[data-reserve='2'] img").GetAttribute("src")));
+    }
+
+    [Fact]
+    public void WithoutAPictureTheBadgeSlotKeepsTheNormalName()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(true, "halloween_2026", [1])));  // no pictures at all
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.Equal("reserve-02", cut.Find("button[data-reserve='2'] [role=img]").GetAttribute("aria-label")));
     }
 }

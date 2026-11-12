@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam nu s-a închis la timp. Închide-l tu și încearcă din nou.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam trebuie să fie închis pentru a repune opțiunea de lansare a jocului. Închizi Steam acum? Alege Nu pentru a lăsa opțiunea așa cum este.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Limba</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Evenimente sezoniere</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Cât timp rulează un eveniment sezonier, serverul comunității adaugă animalele sale în joc, iar launcherul îi afișează imaginile. Dezactivează opțiunea pentru a juca fără eveniment. Modificarea se aplică la următoarea pornire a jocului.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Joacă evenimente sezoniere</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Setarea nu a putut fi salvată. Încearcă din nou.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fișiere jurnal</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>CUMPĂRAȚI cu gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Gm$ insuficienți</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Em$ insuficienți: ai {0}, costă {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Achizițiile cu gm$ nu sunt încă disponibile.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Gm$ insuficienți: ai {0}, costă {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Obțineți mai mulți em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Include</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Achiziție finalizată!</value></data>

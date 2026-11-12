@@ -12,6 +12,9 @@ public static class Restorer
     /// <summary>Report: what layer A read, what was stored per table, what was dropped and why (also kept in the audit row).</summary>
     public sealed record Result(long Account, bool Created, string Sha256, string Report);
 
+    /// <summary>The gm$ an account has at least after a restore: a new account starts with the same (`start.wallet` of the facts file).</summary>
+    public const double GmFloor = 15000;
+
     /// <summary>Keys dropped from every JSON reply that is stored: the accounts of this server keep no e-mail, real name, address or phone.</summary>
     static readonly string[] Personal = ["email", "first_name", "last_name", "real_name", "address", "phone"];
 
@@ -227,9 +230,11 @@ public static class Restorer
         PlayerRows.SetProfile(con, me);
 
         var wallet = m.Wallet ?? new Wallet(0, 0);
+        var gm = Math.Max(wallet.Gm, GmFloor);  // every restore leaves the player enough gm$ to start again
         PlayerRows.SetWallet(con, "em", wallet.Em);
-        PlayerRows.SetWallet(con, "gm", wallet.Gm);
-        if (m.Wallet is null) dropped.Add("not in the zip: wallet (0 em, 0 gm stored)");
+        PlayerRows.SetWallet(con, "gm", gm);
+        if (m.Wallet is null) dropped.Add($"not in the zip: wallet ({wallet.Em} em, {gm} gm stored)");
+        else if (gm > wallet.Gm) lines.Add($"wallet: gm raised from {wallet.Gm} to {gm}");
 
         foreach (var i in m.Items)
         {

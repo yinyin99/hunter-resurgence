@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam stängdes inte i tid. Stäng det själv och försök igen.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam måste vara stängt för att spelets startalternativ ska kunna sättas tillbaka. Stäng Steam nu? Välj Nej för att lämna alternativet som det är.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Säsongshändelser</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Medan en säsongshändelse pågår lägger gemenskapsservern till dess djur i spelet och launchern visar dess bilder. Stäng av detta för att spela utan händelsen. Ändringen gäller nästa gång du startar spelet.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Spela säsongshändelser</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Inställningen kunde inte sparas. Försök igen.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinställningar</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skärmdumpar</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Loggfiler</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>KÖP med gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>För lite gm$</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>För lite em$: du har {0}, det kostar {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Köp med gm$ är inte tillgängliga än.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>För lite gm$: du har {0}, det kostar {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Skaffa mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inkluderar</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Köpet är klart!</value></data>

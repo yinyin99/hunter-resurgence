@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>A Steam nem záródott be időben. Zárd be magad, majd próbáld újra.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>A Steamnek zárva kell lennie a játék indítási beállításának visszaállításához. Bezárod most a Steamet? A Nem a beállítást érintetlenül hagyja.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Nyelv</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Szezonális események</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Amíg egy szezonális esemény tart, a közösségi szerver hozzáadja az állatait a játékhoz, az indító pedig megjeleníti a képeit. Kapcsold ki, ha esemény nélkül szeretnél játszani. A változás a játék következő indításakor lép életbe.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Szezonális események játszása</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>A beállítást nem sikerült elmenteni. Próbáld újra.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Játékbeállítások</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Képernyőmentések</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Naplófájlok</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>VÁSÁRLÁS (gm$)</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Nincs elég gm$</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Nincs elég em$: {0} van, ez {1} em$-be kerül.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>A gm$-val történő vásárlás még nem érhető el.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Nincs elég gm$: {0} van, ez {1} gm$-be kerül.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Több em$ szerzése</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Tartalmazza</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>A vásárlás megtörtént!</value></data>

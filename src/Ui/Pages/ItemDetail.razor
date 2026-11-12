@@ -16,9 +16,13 @@
                 @* signed out the old page shows only the button *@
                 @if (signedIn)
                 {
-                    @if (item.Gms > 0) { <span class="gms">@L["Store.Or"] @item.Gms gm$</span> }
-                    <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
-                    @if (item.WasEms is { } was) { <s>@was em$</s> }
+                    @if (item.Gms > 0) { <span class="gms">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> }
+                    @* an item sold for gm$ alone has no em$ price to show *@
+                    @if (item.Ems > 0 || item.Gms <= 0)
+                    {
+                        <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
+                        @if (item.WasEms is { } was) { <s>@was em$</s> }
+                    }
                 }
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
@@ -27,8 +31,6 @@
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
-            @* the server sells for em$ only: an item with a gm$ price alone says so *@
-            @if (Mode.Live && signedIn && !item.Buyable && item.Ems <= 0 && item.Gms > 0) { <p class="own">@L["Store.GmsUnavailable"]</p> }
             @if (!Mode.Live)
             {
                 @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }

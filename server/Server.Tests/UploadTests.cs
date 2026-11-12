@@ -75,6 +75,40 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         return Waiting(account);
     }
 
+    sealed class Capture : HttpMessageHandler
+    {
+        public readonly List<(Uri? Url, string Body)> Posts = [];
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            lock (Posts) Posts.Add((request.RequestUri, request.Content!.ReadAsStringAsync(ct).Result));
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
+        }
+    }
+
+    [Fact]
+    public async Task TestAKeptZipSendsOneReviewAlertOnlyWhenTheWebhookIsSet()
+    {
+        var texts = new List<string>();
+        var uploads = new Uploads(state, tmp) { Alert = texts.Add };
+        var zip = Zip(TestZip.Own(), "alert.zip");
+        var id = uploads.Start(player)!;
+        Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)))).Kind);
+        Assert.Equal("review", uploads.Finish(player, id).Kind);
+        var text = Assert.Single(texts);
+        Assert.Equal($"Backup waiting for review: id {Waiting(player)}, account {player}, backup user id 1001, handle sample. Run: review list", text);
+
+        var http = new Capture();
+        Alerts.Review(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, text, new HttpClient(http));
+        Alerts.Review(new JsonObject(), text, new HttpClient(http));
+        Alerts.Review(new JsonObject { ["review_webhook"] = "http://hooks.test/w/1" }, text, new HttpClient(http));
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && http.Posts.Count == 0) await Task.Delay(20);
+        await Task.Delay(100);
+        var post = Assert.Single(http.Posts);
+        Assert.Equal("https://hooks.test/w/1", post.Url!.ToString());
+        Assert.Equal(text, (string)JsonNode.Parse(post.Body)!["content"]!);
+    }
+
     [Fact]
     public async Task TestAZipWhoseSteamIdMatchesIsKeptAndNeverRestored()
     {
@@ -118,7 +152,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1001L, state.Store.ResolveToken(token));
         Assert.Equal(1001L, state.Store.ResolveWebSession(cookie));
         Eq("1001", state.Store.AccountJson(1001)["user_id"]);
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
         Assert.Equal(1L, Count(1001, "pending"));
         Assert.Equal(0L, Count(player, "pending"));
         Assert.Equal(1L, Count(1001, "restore_audit"));
@@ -145,7 +179,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             Assert.Equal((409, "already"), (refused.Status, refused.Kind));
             Assert.Contains("can be restored once", refused.Message);
         }
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));  // nothing changed
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));  // nothing changed
         Assert.True(state.Store.AccountExists(other));
         Assert.Equal(0L, Count(other, "restore_audit"));
         // and now an upload of that user id is refused at once
