@@ -181,16 +181,18 @@ public sealed class CleanupTests : IDisposable
     }
 
     [Fact]
-    public void TheDataFolderStaysWhenThePlayerSaysNoAndWhenAnotherStepFails()
+    public void TheDataFolderStaysWhenThePlayerSaysNoAndIsDeletedEvenWhenAnEarlierStepFails()
     {
         var data = Path.Combine(tmp.Path, "data").Also(d => Files.Touch(Path.Combine(d, "launcher.json")));
         var key = @"Software\resurgence-test-" + Guid.NewGuid().ToString("N");
         using var root = Registry.CurrentUser.CreateSubKey(key);
         try
         {
-            var bad = Path.Combine(tmp.Path, "not-a-hosts-file"); // a step that throws must not stop the others
+            var bad = Path.Combine(tmp.Path, "not-a-hosts-file"); // the hosts step throws: the others must still run
             Cleanup.Uninstall(bad, place, root, data, () => false);
             Assert.True(File.Exists(Path.Combine(data, "launcher.json")));
+            Cleanup.Uninstall(bad, place, root, data, () => true);
+            Assert.False(Directory.Exists(data));
         }
         finally { Registry.CurrentUser.DeleteSubKeyTree(key, false); }
     }
