@@ -50,7 +50,8 @@ public sealed partial class State
     /// <see cref="AddCurrency"/>, update 15 into `updates`, a toast. A hunt changes only its own player's wallet, so every contributor is paid at their own next heartbeat.</summary>
     void CommunityPay(Db con, JsonArray updates)
     {
-        if (community.Count == 0 || Seasonal is not { } e)
+        if (community.Count == 0 || Seasonal is not { } e
+            || con.Scalar("SELECT 1 FROM community_progress WHERE event = ? AND account_id = $a AND paid = 0 AND count > 0", e.Name) is null)
             return;
         con.Begin();
         foreach (var c in community.Where(c => Progress(con, e.Name, c) >= Needed(c)).ToList())
@@ -85,7 +86,7 @@ public sealed partial class State
             ["id"] = c.Id, ["title"] = c.Title, ["progress"] = Math.Min(Progress(con, e.Name, c), Needed(c)), ["target"] = Needed(c), ["gm"] = c.Gm, ["em"] = c.Em,
         }).ToList();
         var contributors = con.Rows("SELECT a.handle, SUM(p.count) AS n FROM community_progress p JOIN accounts a ON a.id = p.account_id"
-                                    + " WHERE p.event = ? GROUP BY p.account_id ORDER BY n DESC, a.handle LIMIT 10", e.Name)
+                                    + " WHERE p.event = ? AND a.banned = 0 GROUP BY p.account_id ORDER BY n DESC, a.handle LIMIT 10", e.Name)
             .Select(r => new JsonObject { ["handle"] = (string)r[0], ["count"] = (long)r[1] }).ToList();
         con.Commit();
         var available = Available(rows).Select(m => m.Id).ToHashSet();

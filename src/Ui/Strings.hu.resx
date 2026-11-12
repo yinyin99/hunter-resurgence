@@ -70,7 +70,7 @@
   <data name="Events.Play" xml:space="preserve"><value>Szezonális események játszása</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>A beállítást nem sikerült elmenteni. Próbáld újra.</value></data>
   <data name="Events.Community" xml:space="preserve"><value>Közösségi küldetések</value></data>
-  <data name="Events.Personal" xml:space="preserve"><value>Eseménykuldetéseid</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Eseményküldetéseid</value></data>
   <data name="Events.Contributors" xml:space="preserve"><value>Legjobb közreműködők</value></data>
   <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
   <data name="Events.Items" xml:space="preserve"><value>Az esemény bolti tárgyai</value></data>

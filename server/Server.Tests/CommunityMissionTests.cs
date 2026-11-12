@@ -91,6 +91,32 @@ public class CommunityMissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestABannedPlayerIsNotListedAmongTheContributors()
+    {
+        state = New();
+        Hb(ME, Kill(1));
+        Hb(B, Kill(2));
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", B);
+        Assert.Equal(["hunter"], state.EventPanel(ME)!["contributors"]!.AsArray().Select(c => (string)c!["handle"]!));
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion18GetsTheCommunityTable()
+    {
+        var file = Path.Combine(tmp, "v18.db");
+        var store = new Store(file);
+        using (var con = store.Open())
+        {
+            con.Exec("DROP TABLE community_progress");
+            con.Exec("PRAGMA user_version = 18");
+        }
+        using var check = new Store(file).Open();
+        Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM community_progress"));
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
     public void TestNothingCountsOutsideTheEventsWindow()
     {
         state = New();
@@ -117,11 +143,11 @@ public class CommunityMissionTests : StateTestBase
     }
 
     [Fact]
-    public void TestWithNoEventTheDivisorOrCommunityMissionsThereIsNoPanel()
+    public void TestBeforeTheEventsStartThereIsNoPanel()
     {
         state = New();
         state.Clock = () => Start.ToUnixTimeSeconds() - 1;
         Assert.Null(state.EventPanel(ME));
-        Assert.Equal(20, state.CommunityDivisor);
+        Assert.Equal(20, state.CommunityDivisor);  // the default
     }
 }
