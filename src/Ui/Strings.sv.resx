@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Medan en säsongshändelse pågår lägger gemenskapsservern till dess djur i spelet och launchern visar dess bilder. Stäng av detta för att spela utan händelsen. Ändringen gäller nästa gång du startar spelet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spela säsongshändelser</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Inställningen kunde inte sparas. Försök igen.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Gemenskapsuppdrag</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Dina eventuppdrag</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Bästa bidragsgivare</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} till {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Eventets butiksartiklar</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Belöning till varje bidragsgivare: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål klara</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinställningar</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skärmdumpar</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Loggfiler</value></data>

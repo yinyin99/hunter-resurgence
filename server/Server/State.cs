@@ -1595,6 +1595,7 @@ public sealed partial class State
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); });
+        CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });

@@ -26,6 +26,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheCommunityDivisorDefaultsToTwentyAndNeedsAWholeNumberOfAtLeastOne()
+    {
+        Assert.Equal(20, (int)Load(Minimal()).Cfg["event_community_divisor"]!);
+        var five = Minimal();
+        five["event_community_divisor"] = 5;
+        Assert.Equal(5, (int)Load(five).Cfg["event_community_divisor"]!);
+        foreach (var bad in new JsonNode[] { 0, -3, 2.5, "20" })
+        {
+            var o = Minimal();
+            o["event_community_divisor"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void MinimalFileGetsDefaultsAndPathsRelativeToTheFile()
     {
         var s = Load(Minimal());

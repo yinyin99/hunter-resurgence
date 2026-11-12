@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Zolang een seizoensevenement loopt, voegt de communityserver de dieren ervan toe aan het spel en toont de launcher de bijbehorende afbeeldingen. Schakel dit uit om zonder het evenement te spelen. De wijziging geldt vanaf de volgende keer dat je het spel start.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Seizoensevenementen spelen</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>De instelling kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Gemeenschapsmissies</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Je evenementmissies</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Beste bijdragers</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} tot {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Winkelitems van het evenement</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Beloning voor elke bijdrager: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} van {1} doelen voltooid</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logbestanden</value></data>

@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Kun kausitapahtuma on käynnissä, yhteisöpalvelin lisää sen eläimet peliin ja launcher näyttää sen kuvat. Poista tämä käytöstä, jos haluat pelata ilman tapahtumaa. Muutos tulee voimaan, kun seuraavan kerran käynnistät pelin.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Pelaa kausitapahtumia</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Asetusta ei voitu tallentaa. Yritä uudelleen.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Yhteisön tehtävät</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Tapahtumatehtäväsi</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Parhaat osallistujat</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Tapahtuman kauppatuotteet</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Palkkio jokaiselle osallistujalle: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0}/{1} tavoitetta suoritettu</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Pelin asetukset</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Kuvakaappaukset</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Lokitiedostot</value></data>

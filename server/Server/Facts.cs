@@ -130,6 +130,9 @@ public sealed class Facts
         return (ammo, populations);
     }
 
+    /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
+    public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
+
     /// <summary>The `index` of every population any event adds on the game's reserve number <paramref name="reserve"/>.</summary>
     public IEnumerable<long> EventIndexes(int reserve) => Obj("events").SelectMany(e => (e.Value?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)]?["populations"] as JsonArray ?? [])
         .Select(p => Py.L(p!["index"])));

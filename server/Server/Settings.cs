@@ -60,6 +60,12 @@ public sealed class Settings
         };
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
+        cfg["event_community_divisor"] = root["event_community_divisor"] switch
+        {
+            null => 20,
+            JsonValue n when n.TryGetValue<int>(out var divisor) && divisor >= 1 => divisor,
+            _ => throw new InvalidDataException("event_community_divisor: a whole number, at least 1"),
+        };
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)

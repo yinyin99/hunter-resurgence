@@ -26,6 +26,27 @@ public sealed class ServerSeasonalEventsService(HttpClient http, ServerCookie co
         return None;
     }
 
+    public async Task<EventPanelData?> PanelAsync()
+    {
+        if (cookie.Value is null) return null;
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.EventPanel);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerEventPanel>() is { Name: not null } p)
+                return new(p.Title ?? p.Name, DateTimeOffset.FromUnixTimeSeconds(p.Start), DateTimeOffset.FromUnixTimeSeconds(p.End),
+                    [.. (p.Community ?? []).Select(c => new CommunityMission(c.Title, c.Progress, c.Target, c.Gm, c.Em))],
+                    [.. (p.Contributors ?? []).Select(c => new Contributor(c.Handle, c.Count))],
+                    [.. (p.Missions ?? []).Select(m => new EventMission(new(m.Id, m.Title, m.State, "", [.. m.Objectives.Select(o => o.Title)], m.Reward, "", "", ""), m.Objectives.Count(o => o.Done)))],
+                    [.. (p.Items ?? []).Select(i => new EventItem(i.Id, i.Name))]);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer the event panel ({Reason}): no panel", e.Message);
+        }
+        return null;
+    }
+
     public async Task<Result> SetAsync(bool play)
     {
         if (cookie.Value is null) return Result.Fail("Events.Failed");

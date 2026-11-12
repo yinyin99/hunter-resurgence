@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Cât timp rulează un eveniment sezonier, serverul comunității adaugă animalele sale în joc, iar launcherul îi afișează imaginile. Dezactivează opțiunea pentru a juca fără eveniment. Modificarea se aplică la următoarea pornire a jocului.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Joacă evenimente sezoniere</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Setarea nu a putut fi salvată. Încearcă din nou.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Misiuni ale comunității</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Misiunile tale din eveniment</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Cei mai buni contribuitori</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Articole din magazin ale evenimentului</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Recompensă pentru fiecare contribuitor: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} din {1} obiective îndeplinite</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fișiere jurnal</value></data>

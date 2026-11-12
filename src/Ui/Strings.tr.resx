@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Sezonluk bir etkinlik sürerken topluluk sunucusu hayvanlarını oyuna ekler ve başlatıcı görsellerini gösterir. Etkinlik olmadan oynamak için bunu kapatın. Değişiklik oyunu bir sonraki başlatışınızda geçerli olur.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Sezonluk etkinlikleri oyna</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Ayar kaydedilemedi. Tekrar deneyin.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Topluluk görevleri</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Etkinlik görevlerin</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>En iyi katkıda bulunanlar</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Etkinliğin mağaza ürünleri</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Her katkıda bulunana ödül: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} hedef tamamlandı</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Günlük Dosyaları</value></data>

@@ -454,7 +454,7 @@
   "66": "wendigo"
  },
  "events": {
-  "halloween_2026": {"reserves": {
+  "halloween_2026": {"title": "Halloween 2026", "missions": [1201], "items": [960, 967, 1143, 962, 963, 1142], "community": [], "reserves": {
    "9": {
     "ammo": [962,963,1142],
     "populations": [

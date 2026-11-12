@@ -50,6 +50,7 @@ public sealed class LaunchMapTests : UiContext
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService
     {
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
+        public Task<EventPanelData?> PanelAsync() => Task.FromResult<EventPanelData?>(null);
         public Task<Result> SetAsync(bool play) => Task.FromResult(Result.Success);
     }
 

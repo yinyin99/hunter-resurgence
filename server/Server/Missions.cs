@@ -103,6 +103,7 @@ public sealed partial class State
         foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
             lodgeNames[Py.L(loc["id"])] = [.. new[] { loc["name"], loc["define"] }.Where(Py.IsStr).Select(n => Normalise((string)n!)).Where(n => n.Length > 0)];
         LoadDailyMissions(RuleOf);
+        LoadCommunity(RuleOf);
     }
 
     static long[] Ids(JsonNode? n) => [.. Arr(n).Where(x => TryKey(x, out _)).Select(Py.L).Distinct()];
@@ -282,7 +283,7 @@ public sealed partial class State
     void MissionEvent(Db con, JsonObject e, JsonArray updates)
     {
         var kind = Is(e["event"], 3) ? Kind.Harvest : Is(e["event"], 11) ? Kind.Spot : Is(e["event"], 12) ? Kind.Track : Is(e["event"], 101) ? Kind.Arrive : Kind.Other;
-        if (kind == Kind.Other || (missions.Count == 0 && dailies.Count == 0))
+        if (kind == Kind.Other || (missions.Count == 0 && dailies.Count == 0 && community.Count == 0))
             return;
         EnsureMissions(con);
         long? animalSpecies = null, gender = null;
@@ -315,7 +316,7 @@ public sealed partial class State
     /// `Start at ...` objectives of the lodge are met. update 15 goes into `pending`.</summary>
     void MissionLaunch(Db con, long? lodge)
     {
-        if (missions.Count == 0 && dailies.Count == 0)
+        if (missions.Count == 0 && dailies.Count == 0 && community.Count == 0)
             return;
         EnsureMissions(con);
         foreach (var (id, (state, done)) in MissionRows(con))
@@ -356,6 +357,7 @@ public sealed partial class State
                 Complete(con, m, now);
         }
         DailyAdvance(con, kind, meets, now);
+        CommunityCount(con, kind, meets);
     }
 
     /// <summary>The last objective is finished: the mission is completed, its gm$ and em$ are paid (update 15 with the new balance, a wallet row each),

@@ -174,6 +174,8 @@ The Settings menu has "Seasonal events", in the launcher and on the website alik
 
 The launch map's reserve badges are the normal `reserve-<NN>` pictures. While the server says an event runs, the event covers the reserve and the player plays seasonal events, `LaunchMap` draws `reserve-<NN>-<event>` instead (the event `halloween_2026` is the slot `reserve-<NN>-halloween-2026`, [images.md](images.md)); the event's `reserves` are the game's reserve numbers (the launch map's reserve id minus 1), and none listed means every reserve. Where the operator has no file for that slot the normal badge stays. The launcher asks the server when the launch map opens.
 
+**The event panel.** While the server says an event runs and the player plays seasonal events, the dashboard shows `EventPanel` above the hunt blocks: the event's name and dates, its community missions with a bar (progress / divided target) and the reward every contributor gets, the top contributors, the player's own event missions (objectives done of all, with Activate for an available one) and the event's store items, each a link to its store page. It reads `GET /account/events/panel` once when the dashboard opens (`ISeasonalEventsService.PanelAsync`); without a session, an answer, an event or with the setting off there is no panel. Mock `events:running` shows one with made-up numbers.
+
 ## Files on the PC
 
 | File | Who writes it | Content |

@@ -1,0 +1,63 @@
+@inject ISeasonalEventsService Events
+@inject IMissionsService Missions
+
+@if (panel is not null)
+{
+    <section class="event" aria-labelledby="event-title">
+        <h3 id="event-title">@panel.Title</h3>
+        <p class="dates">@L["Events.Dates", panel.Start.ToString("yyyy-MM-dd"), panel.End.ToString("yyyy-MM-dd")]</p>
+        @if (panel.Community.Count > 0)
+        {
+            <h4>@L["Events.Community"]</h4>
+            <ul class="community">
+                @foreach (var c in panel.Community)
+                {
+                    <li>
+                        <span class="name">@c.Title</span>
+                        <div class="bar" role="progressbar" aria-valuenow="@c.Progress" aria-valuemax="@c.Target"><i style="width:@(c.Progress * 100 / c.Target)%"></i></div>
+                        <span class="numbers">@c.Progress/@c.Target</span>
+                        <span class="pay">@L["Events.Pay", Pay(c)]</span>
+                    </li>
+                }
+            </ul>
+            @if (panel.Contributors.Count > 0)
+            {
+                <h4>@L["Events.Contributors"]</h4>
+                <ol class="contributors">@foreach (var c in panel.Contributors) { <li><a href="/profile/@c.Handle">@c.Handle</a> <span class="numbers">@c.Count</span></li> }</ol>
+            }
+        }
+        @if (panel.Missions.Count > 0)
+        {
+            <h4>@L["Events.Personal"]</h4>
+            <ul class="personal">
+                @foreach (var m in panel.Missions)
+                {
+                    <li>
+                        <b>@m.Mission.Name</b> <span class="numbers">@L["Events.Objectives", m.Done, m.Mission.Objectives.Count]</span>
+                        @if (m.Mission.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Mission.Id)">@L["Mis.Activate"]</button> }
+                        <p>@m.Mission.Reward</p>
+                    </li>
+                }
+            </ul>
+        }
+        @if (panel.Items.Count > 0)
+        {
+            <h4>@L["Events.Items"]</h4>
+            <p class="items">@foreach (var i in panel.Items) { <a href="/store/item/@i.Id">@i.Name</a> }</p>
+        }
+    </section>
+}
+
+@code {
+    EventPanelData? panel;
+
+    static string Pay(CommunityMission c) => string.Join(", ", new[] { c.Gm > 0 ? $"{c.Gm} gm$" : null, c.Em > 0 ? $"{c.Em} em$" : null }.Where(x => x is not null));
+
+    protected override async Task OnInitializedAsync() => panel = await Events.PanelAsync();
+
+    async Task Activate(int id)
+    {
+        await Missions.ActivateAsync(id);
+        panel = await Events.PanelAsync();
+    }
+}

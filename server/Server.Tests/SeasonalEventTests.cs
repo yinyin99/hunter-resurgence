@@ -150,6 +150,31 @@ public class SeasonalEventTests : StateTestBase
     }
 
     [Fact]
+    public async Task TestThePanelIsReadOnlyByAPlayerWhoPlaysWhileTheEventRuns()
+    {
+        var s = New(Season(1));
+        await using var server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), WebCfg, s, tmp), tmp);
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={s.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Task<Reply> Get(params (string, string)[] headers) => server.SendAsync("GET", "web.test", "/account/events/panel", headers);
+
+        Assert.Equal(401, (await Get()).Status);
+        var panel = JsonNode.Parse((await Get(cookie)).Body)!;
+        Eq("""["season", "season", [], [], [], []]""", T(panel["name"], panel["title"], panel["community"], panel["contributors"], panel["missions"], panel["items"]));
+        s.Store.SetPlaysEvents(ME, false);
+        Eq("""{"event": null}""", JsonNode.Parse((await Get(cookie)).Body));
+    }
+
+    [Fact]
+    public void TestTheShippedHalloweenEventHasItsMissionAndItsStoreItems()
+    {
+        var content = Facts.Default.EventOf("halloween_2026")!;
+        Assert.Equal("Halloween 2026", (string)content["title"]!);
+        Eq("[1201]", content["missions"]);
+        Eq("[960, 967, 1143, 962, 963, 1142]", content["items"]);
+        Eq("[]", content["community"]);  // no number of its community missions is known
+    }
+
+    [Fact]
     public async Task TestWithNoEventTheSettingIsStillReadable()
     {
         var s = New(null);

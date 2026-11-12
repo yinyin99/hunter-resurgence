@@ -69,6 +69,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Dokler poteka sezonski dogodek, strežnik skupnosti igri doda njegove živali, zaganjalnik pa prikaže njegove slike. Izklopite to, če želite igrati brez dogodka. Sprememba velja ob naslednjem zagonu igre.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Igraj sezonske dogodke</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Nastavitve ni bilo mogoče shraniti. Poskusite znova.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Skupnostne misije</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Tvoje misije dogodka</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Najboljši sodelujoči</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Predmeti dogodka v trgovini</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Nagrada za vsakega sodelujočega: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>Izpolnjenih ciljev: {0} od {1}</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavitve igre</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Posnetki zaslona</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Dnevniki</value></data>
