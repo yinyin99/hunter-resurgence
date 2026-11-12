@@ -211,6 +211,8 @@ ssh deploy@<vps> "cd ~/web && docker compose restart web"
 
 `server-backup` is a second service of the server's own image: once a day (every 24 hours from its start) it runs `server backup /backups 7`, which makes a consistent copy of every database of `/data` with SQLite's `VACUUM INTO` (not a file copy, [ADR 0001](adr/0001-sqlite-for-profiles.md)) as `<name>-<yyyymmdd>.db` in the volume `serverbackups`, and keeps the newest 7 of each. It is safe while the server runs. A sidecar instead of a host cron line because it needs nothing on the host (no `sqlite3`, no cron entry, no path to the volume), is deployed and rolled back with the server, and uses the server's `SQLitePCL` build, so the copy is made by the same SQLite that wrote the file; the price is that a daily copy on the same disk is no protection against losing the VPS: copy `serverbackups` off the machine now and then (`docker compose cp server-backup:/backups ./offsite`, then `scp`).
 
+Only the files at the top of `/data` are copied. The claims archive is large and made on the operator's PC, so keep it in a folder below: `/data/archive/archive.db`, with `"archive_db": "/data/archive/archive.db"` in the server's `settings.json` ([server.md](server.md#archive-claims)); the operator's PC keeps the copy that counts.
+
 **Restore drill**, to run once after the first deploy and then every few months: check that the newest copy opens and holds data, on a scratch volume, with nothing of production touched.
 
 ```
