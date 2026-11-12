@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mesajlar</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesajlar ({0} yeni)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Cüzdanım / Satın Alma Geçmişi</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Envanter</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Henüz hiç eşyan yok.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} kaldı</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Kuşanıldı</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Diğer</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Oturumu Kapat</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>

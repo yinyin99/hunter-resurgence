@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Üzenetek</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Üzenetek ({0} új)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Pénztárcám / Vásárlási előzmények</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Készlet</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Még nincs egyetlen tárgyad sem.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} maradt</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Felszerelve</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Egyéb</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te vadászpontjaid</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>

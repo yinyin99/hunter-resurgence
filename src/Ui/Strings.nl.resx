@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Berichten</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Berichten ({0} nieuw)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Mijn portemonnee / Aankoopgeschiedenis</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventaris</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Je bezit nog geen voorwerpen.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} over</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Uitgerust</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Overig</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>

@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Сообщения</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Сообщения (новых: {0})</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Мой кошелёк / История покупок</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Инвентарь</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>У вас пока нет предметов.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>осталось {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Экипировано</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Прочее</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Выйти</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ваши очки охотника</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>

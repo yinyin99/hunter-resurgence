@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mensagens</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mensagens ({0} novas)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Minha Carteira / Histórico de Compras</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventário</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Você ainda não possui nenhum item.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>restam {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Outros</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sair</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Sua Pontuação de Caçador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>

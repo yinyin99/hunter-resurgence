@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Beskeder</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Beskeder ({0} nye)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Min tegnebog / Købshistorik</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventar</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Du ejer endnu ingen genstande.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} tilbage</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Udstyret</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Andet</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Log ud</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din jægerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
