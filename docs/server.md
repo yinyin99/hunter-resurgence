@@ -433,7 +433,7 @@ Only a recorded `Application/application` has categories and bundles: a catalogu
 
 The original sold a license to hunt a species (1, 7 or 28 days) and licenses of the reserves; the catalogue's item type of them is `LICENSE` (the facts file's `types`, number 13; their slot is the lodge's, 0). With `all_licenses` on (the default) every player has all of them, without end, until the operator sets it to `false`:
 
-- **Connect:** every entry of `spawn_licenses` that is 0 or 1 becomes 1 (licensed), so the game shows no "need license" notice and refuses no kill; an entry of 2 (the species is not available) stays 2. The admin spawner still sets its own species to 1.
+- **Connect:** every entry of `spawn_licenses` other than 2 becomes 1 (licensed), so the game shows no "need license" notice and refuses no kill; an entry of 2 (the species is not available) stays 2. The admin spawner still sets its own species to 1.
 - **Inventory:** the connect reply's `inventory.items` lists one lodge-slot row (no units) of every license item the catalogue or the install's definitions have, with its definition in `infos`, in place of the account's own license rows; `GET /account/inventory` lists the same rows with `expires` 0, which the store shows as "You have an unlimited license" with no buy button.
 - **Buying:** `Inventory/buy` and `POST /account/buy` refuse a license as already owned (`{"success": false}`, 409 `refused`), nothing is charged. A bundle that lists one is refused as a whole.
 
