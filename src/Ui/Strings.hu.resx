@@ -134,10 +134,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezárnak. Töltsd le a mentőeszközt, és mentsd el a profilodat most: felszerelés, trófeák, statisztikák és más. A közösségi szerveren visszaállíthatod, amint megnyílik.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Mentsd el a profilod 2026. november 11. előtt.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Olvasd el itt</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>TAG ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Csatlakozz a Discordhoz</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Lógj olyanokkal, akik értik a lényeget</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Irány vadászni</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EGYJÁTÉKOS</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>TÖBBJÁTÉKOS KOOPERATÍV</value></data>

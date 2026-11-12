@@ -134,10 +134,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Les serveurs officiels ferment le 11 novembre 2026. Téléchargez l’outil de sauvegarde et enregistrez votre profil dès maintenant : inventaire, trophées, statistiques et plus. Vous pourrez le restaurer sur le serveur communautaire à son ouverture.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Sauvegardez votre profil avant le 11 novembre 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>À lire ici</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>En ligne : {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>MEMBRES EN LIGNE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Rejoindre Discord</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Passez du temps avec des gens qui vous comprennent</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Chasser</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SIMPLE JOUEUR</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIJOUEUR</value></data>

@@ -134,10 +134,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server schließen am 11. November 2026. Laden Sie das Backup-Tool herunter und sichern Sie jetzt Ihr Profil: Inventar, Trophäen, Statistiken und mehr. Nach der Eröffnung des Community-Servers können Sie es dort wiederherstellen.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Sichern Sie Ihr Profil vor dem 11. November 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Hier lesen</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>MITGLIEDER ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Discord beitreten</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Treffen Sie Gleichgesinnte</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Zur Jagd</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EINZELSPIELER</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>MULTIPLAYER CO-OP</value></data>
