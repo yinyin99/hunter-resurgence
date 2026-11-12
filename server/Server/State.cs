@@ -1388,7 +1388,7 @@ public sealed partial class State
     long[]? BundleSale(JsonNode b)
     {
         long[] ids = [.. Arr(b["items"]).Select(x => Py.L(x))];
-        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(this.items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) ? ids : null;
+        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) ? ids : null;
     }
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
