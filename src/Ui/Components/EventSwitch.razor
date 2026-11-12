@@ -1,0 +1,36 @@
+@inject ISeasonalEventsService Events
+
+@* while an event runs: its name, where it is on, and the "Play seasonal events" setting of the Settings menu (docs/launcher.md#seasonal-events) *@
+@if (State.Event is { } name)
+{
+    <div class="event-switch">
+        <p>@L["Event.Line", Title(name), Where]</p>
+        <label><input type="checkbox" class="tick" id="play-events-inline" disabled="@busy" @bind="play" @bind:after="Save" /> @L["Events.Play"]</label>
+        @if (failed) { <span class="error" role="alert">@L["Events.Failed"]</span> }
+    </div>
+}
+
+@code {
+    bool play, busy, failed;
+
+    [Parameter, EditorRequired] public SeasonalEvents State { get; set; } = new(true, null, []);
+    [Parameter] public EventCallback<SeasonalEvents> StateChanged { get; set; }
+    /// <summary>The launch map's reserves, to name where the event is on; empty: the line says every reserve.</summary>
+    [Parameter] public IReadOnlyList<Reserve> Reserves { get; set; } = [];
+
+    string Where => State.Reserves.Count == 0 || Reserves.Count == 0 ? L["Event.AllReserves"].Value
+        : string.Join(", ", Reserves.Where(r => State.Reserves.Contains(r.Id - 1)).Select(r => r.Name));
+
+    /// <summary>"halloween_2026" reads "Halloween 2026".</summary>
+    static string Title(string id) => System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(id.Replace('_', ' '));
+
+    protected override void OnParametersSet() { if (!busy) play = State.Play; }
+
+    async Task Save()
+    {
+        (busy, failed) = (true, false);
+        if ((await Events.SetAsync(play)).Ok) await StateChanged.InvokeAsync(State with { Play = play });
+        else (play, failed) = (!play, true);
+        busy = false;
+    }
+}

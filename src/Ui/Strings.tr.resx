@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Mesajlar</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Mesajlar ({0} yeni)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Cüzdanım / Satın Alma Geçmişi</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Envanter</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Henüz hiç eşyan yok.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} kaldı</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Kuşanıldı</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Diğer</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Oturumu Kapat</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
@@ -76,6 +81,9 @@
   <data name="Events.Items" xml:space="preserve"><value>Etkinliğin mağaza ürünleri</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Her katkıda bulunana ödül: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} hedef tamamlandı</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Etkinlik sürüyor: {0}, şurada: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>tüm av alanları</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sezonluk etkinlik</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Günlük Dosyaları</value></data>

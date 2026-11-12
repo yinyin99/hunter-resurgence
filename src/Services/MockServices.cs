@@ -19,6 +19,7 @@ public static class MockServices
         .AddSingleton<IProfileService>(sp => new MockProfileService(null, sp.GetRequiredService<IFriendsService>()))
         .AddSingleton<IFriendsService, MockFriendsService>()
         .AddSingleton<IMessagesService, MockMessagesService>()
+        .AddSingleton<IInventoryService, MockInventoryService>()
         .AddSingleton<IAccountService, MockAccountService>()
         .AddSingleton<ISeasonalEventsService, MockSeasonalEventsService>()
         .AddSingleton<IGameManagementService, MockGameManagementService>()

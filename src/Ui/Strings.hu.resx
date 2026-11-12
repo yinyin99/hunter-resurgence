@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Üzenetek</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Üzenetek ({0} új)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Pénztárcám / Vásárlási előzmények</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Készlet</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Még nincs egyetlen tárgyad sem.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>{0} maradt</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Felszerelve</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Egyéb</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te vadászpontjaid</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>
@@ -76,6 +81,9 @@
   <data name="Events.Items" xml:space="preserve"><value>Az esemény bolti tárgyai</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Jutalom minden közreműködőnek: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} cél teljesítve</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Esemény fut: {0}, itt: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>minden vadászterület</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Szezonális esemény</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Játékbeállítások</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Képernyőmentések</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Naplófájlok</value></data>

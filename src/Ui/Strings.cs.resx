@@ -39,6 +39,11 @@
   <data name="Tip.Messages" xml:space="preserve"><value>Zprávy</value></data>
   <data name="Tip.MessagesNew" xml:space="preserve"><value>Zprávy ({0} nových)</value></data>
   <data name="Tip.Wallet" xml:space="preserve"><value>Moje peněženka / Historie nákupů</value></data>
+  <data name="Inv.Title" xml:space="preserve"><value>Inventář</value></data>
+  <data name="Inv.None" xml:space="preserve"><value>Zatím nevlastníte žádné předměty.</value></data>
+  <data name="Inv.Units" xml:space="preserve"><value>zbývá {0}</value></data>
+  <data name="Inv.Equipped" xml:space="preserve"><value>Vybaveno</value></data>
+  <data name="Inv.Other" xml:space="preserve"><value>Ostatní</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odhlásit</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše lovecké skóre</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
@@ -76,6 +81,9 @@
   <data name="Events.Items" xml:space="preserve"><value>Předměty události v obchodě</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Odměna pro každého přispěvatele: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Splněno cílů: {0} z {1}</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Probíhá událost: {0}, na: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>všechny revíry</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sezónní událost</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavení hry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshoty</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Protokoly</value></data>

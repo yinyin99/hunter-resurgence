@@ -49,9 +49,11 @@ public sealed class LaunchMapTests : UiContext
 
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService
     {
+        public bool Play = state.Play, Fail;
+        public Task? Gate;
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
         public Task<EventPanelData?> PanelAsync() => Task.FromResult<EventPanelData?>(null);
-        public Task<Result> SetAsync(bool play) => Task.FromResult(Result.Success);
+        public async Task<Result> SetAsync(bool play) { if (Gate is not null) await Gate; if (Fail) return Result.Fail("Events.Failed"); Play = play; return Result.Success; }
     }
 
     // the game's reserve 1 is the launch map's reserve 2
@@ -84,5 +86,70 @@ public sealed class LaunchMapTests : UiContext
         var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
 
         cut.WaitForAssertion(() => Assert.Equal("reserve-02", cut.Find("button[data-reserve='2'] [role=img]").GetAttribute("aria-label")));
+    }
+
+    // the switch on the start screen is the Settings menu's setting; the badge follows it at once
+    [Fact]
+    public void WhileAnEventRunsTheSwitchIsShownAndTogglingItChangesTheBadge()
+    {
+        Services.AddSingleton(new AssetImages(new Dictionary<string, string> { ["reserve-02.png"] = "1", ["reserve-02-halloween-2026.png"] = "1" }));
+        Services.AddSingleton<IServersService>(new Recording());
+        var events = new Events(new(true, "halloween_2026", [1]));
+        Services.AddSingleton<ISeasonalEventsService>(events);
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.Contains("halloween-2026", cut.Find("button[data-reserve='2'] img").GetAttribute("src")));
+        Assert.Contains("Halloween 2026", cut.Find(".event-switch p").TextContent);
+        cut.Find("#play-events-inline").Change(false);
+
+        cut.WaitForAssertion(() => Assert.DoesNotContain("halloween-2026", cut.Find("button[data-reserve='2'] img").GetAttribute("src")));
+        Assert.False(events.Play);
+    }
+
+    [Fact]
+    public void WithoutAnEventNeitherTheLineNorTheSwitchIsShown()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(true, null, [])));
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[data-reserve]")));
+        Assert.Empty(cut.FindAll(".event-switch"));
+    }
+
+    [Fact]
+    public void AFailedSaveTurnsTheSwitchBack()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(true, "halloween_2026", [1])) { Fail = true });
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#play-events-inline")));
+        cut.Find("#play-events-inline").Change(false);
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".event-switch .error")));
+        Assert.True(cut.Find("#play-events-inline").HasAttribute("checked"));
+    }
+
+    // the launch map redraws every half second: that must not put the old value back while the save runs
+    [Fact]
+    public void ARedrawDuringTheSaveKeepsTheSwitch()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        var gate = new TaskCompletionSource();
+        var events = new Events(new(true, "halloween_2026", [1])) { Gate = gate.Task };
+        Services.AddSingleton<ISeasonalEventsService>(events);
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#play-events-inline")));
+        cut.Find("#play-events-inline").Change(false);
+        cut.Render();
+        Assert.False(cut.Find("#play-events-inline").HasAttribute("checked"));
+        gate.SetResult();
+
+        cut.WaitForAssertion(() => Assert.False(events.Play));
+        Assert.False(cut.Find("#play-events-inline").HasAttribute("checked"));
     }
 }

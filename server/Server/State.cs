@@ -1192,7 +1192,7 @@ public sealed partial class State
         if (reply["populations"] is JsonArray present)  // a recorded connect may carry an event's creatures
             foreach (var index in facts.EventIndexes(clientReserve))
                 for (var i = present.Count - 1; i >= 0; i--)
-                    if (Py.L(present[i]?["index"]) == index)
+                    if (present[i] is JsonObject row && Py.L(row["index"]) == index)
                         present.RemoveAt(i);
         if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
             AddSeasonal(reply, seasonal, clientReserve);
@@ -1316,6 +1316,30 @@ public sealed partial class State
                 ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
             });
         return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
+    }
+
+    /// <summary>The signed-in player's own items, `GET /account/inventory`: `{items: [{id, name, variant, category, categoryName, units, slot, equipped}]}`, a row per owned copy oldest first.
+    /// Name, variant and category (the store's sub-category key and title) are the catalogue's, "" for an item it lacks; `units` is null for an item that is not counted; `equipped` is a slot above 0.</summary>
+    public JsonObject WebInventory(long account)
+    {
+        var titles = new Dictionary<string, JsonNode?>();
+        foreach (var c in Arr(G(application, "categories", null)))
+            foreach (var s in Arr(c!["subcategories"]))
+                titles[Py.Str(s!["id"])] = C(s["title"]);
+        using var con = Con(account);
+        return new JsonObject
+        {
+            ["items"] = new JsonArray([.. con.Rows("SELECT item_id, slot, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
+            {
+                var item = items.GetValueOrDefault((long)r[0]);
+                var key = item?["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
+                return (JsonNode?)new JsonObject
+                {
+                    ["id"] = (long)r[0], ["name"] = C(item?["name"]) ?? "", ["variant"] = C(item is null ? null : G(item, "variationname", null)) ?? "",
+                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0,
+                };
+            })]),
+        };
     }
 
     // ponytail: services (connect active_services with an expiry) are not sold
