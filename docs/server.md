@@ -435,7 +435,7 @@ The original sold a license to hunt a species (1, 7 or 28 days) and licenses of 
 
 - **Connect:** every entry of `spawn_licenses` other than 2 becomes 1 (licensed), so the game shows no "need license" notice and refuses no kill; an entry of 2 (the species is not available) stays 2. The admin spawner still sets its own species to 1.
 - **Inventory:** the connect reply's `inventory.items` lists one lodge-slot row (no units) of every license item the catalogue or the install's definitions have, with its definition in `infos`, in place of the account's own license rows; `GET /account/inventory` lists the same rows with `expires` 0, which the store shows as "You have an unlimited license" with no buy button.
-- **Buying:** `Inventory/buy` and `POST /account/buy` refuse a license as already owned (`{"success": false}`, 409 `refused`), nothing is charged. A bundle that lists one is refused as a whole.
+- **Buying:** `Inventory/buy` and `POST /account/buy` refuse a license as already owned (`{"success": false}`, 409 `refused`), nothing is charged. A bundle that lists one is not for sale: `buyable` is false in `GET /catalog/store` (the website shows no buy button) and `POST /account/buy` refuses it.
 
 With it off, a license is an item like any other: sold, owned by the rows the account has, its `spawn_licenses` as the connect carries it.
 

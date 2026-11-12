@@ -20,6 +20,7 @@ public class AllLicensesTests : StateTestBase
             {"id": 76, "name": "Test Species License", "type": 13, "group": 12, "cat": 6, "price": 45, "silver_price": 765, "notbuyable": 0,
              "units": {"count": 1, "name": "day"}, "subcat": {"id": 9}, "inventory": {"slots": [0], "capacity": 0, "weight": 0}, "fit": {}}
             """));
+        app["bundles"] = JsonNode.Parse("""[{"id": 9, "name": "Test Bundle", "price": 100, "items": [19, 76]}]""");
         return new State(Path.Combine(tmp, $"{all}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES) { AllLicenses = all };
     }
 
@@ -68,6 +69,19 @@ public class AllLicensesTests : StateTestBase
         Eq("182.0", s.Wallet(ME)["em"]);
         Eq("33.0", s.Wallet(ME)["gm"]);
         Assert.DoesNotContain(License, s.Inventory(ME).Select(i => (long)i!["item_id"]!));
+    }
+
+    [Fact]
+    public void ABundleWithALicenseIsNotForSaleWhenOn()
+    {
+        foreach (var all in new[] { true, false })
+        {
+            var s = Make(all);
+            var bundle = s.StoreCatalogue()["bundles"]!.AsArray().Single()!;
+            Assert.Equal(!all, (bool)bundle["buyable"]!);
+            Assert.Equal(!all, s.WebBuy(ME, 9, true, 1) is not null);
+            Eq(all ? "182.0" : "82.0", s.Wallet(ME)["em"]);
+        }
     }
 
     [Fact]

@@ -1383,11 +1383,12 @@ public sealed partial class State
     /// <summary>What the website's store sells of the items for a price (<c>price</c> for em$, <c>silver_price</c> for gm$): shown, with that price of at least 1, and sellable.</summary>
     static bool StoreSells(JsonObject item, string key) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, key, null)) > 0 && Sellable(item, key);
 
-    /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue.</summary>
+    /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue,
+    /// none of them a license while `all_licenses` is on (every player owns it).</summary>
     long[]? BundleSale(JsonNode b)
     {
         long[] ids = [.. Arr(b["items"]).Select(x => Py.L(x))];
-        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(this.items.ContainsKey) ? ids : null;
+        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(this.items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) ? ids : null;
     }
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
