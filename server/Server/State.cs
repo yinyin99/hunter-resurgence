@@ -615,6 +615,12 @@ public sealed partial class State
             defaultUnits[Py.L(i!["item_id"])] = i["units"];
         // permitted ammo per species id, all species (species_ammo is the reserve's subset)
         ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
+        // a species the recorded connect lists with no ammo (the event creatures, in a recording from before the event) is permitted what the facts file says, not every ammo
+        foreach (var (id, rule) in this.facts.SpeciesRules)
+        {
+            while (ethicalAmmo.Count <= id) ethicalAmmo.Add(new JsonArray());
+            if (!Py.Truthy(ethicalAmmo[id])) ethicalAmmo[id] = new JsonArray([.. rule.Ammo.Select(a => (JsonNode?)a)]);
+        }
         var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
         // the account's picture is `<base>/256/<id>.png`; the notice sender's icons live beside it
@@ -729,7 +735,7 @@ public sealed partial class State
     public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp)
     {
         var allowed = sp is not null && Mod100(sp) < ethicalAmmo.Count ? ethicalAmmo[(int)Mod100(sp)] : null;
-        if (!Py.Truthy(allowed))  // empty list (dogs, event creatures): no rule
+        if (!Py.Truthy(allowed))  // empty list (dogs): no rule
             return null;
         if (allowed!.AsArray().Any(a => Py.Eq(a, hit["ammunition_id"])))
             return null;
