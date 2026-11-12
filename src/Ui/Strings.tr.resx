@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Hesap ayarları</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Oyun Yönetimi</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam başlatma seçeneği</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Oyunu bu başlatıcı üzerinden açmak için bu satırı Steam'deki oyunun Başlatma seçeneklerine (Özellikler) yapıştırın:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopyala</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>

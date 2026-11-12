@@ -88,3 +88,8 @@ export function firstTime(name) {
     document.cookie = `${name}=1; max-age=31536000; path=/; samesite=lax; secure`;
     return true;
 }
+
+// Copies text to the clipboard (the Steam launch option line).
+export function copy(text) {
+    return navigator.clipboard.writeText(text);
+}

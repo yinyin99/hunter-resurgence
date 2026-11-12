@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ustawienia konta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Zarządzanie grą</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Opcja uruchamiania w Steam</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Wklej ten wiersz w opcjach uruchamiania gry w Steam (Właściwości), aby uruchamiać grę przez ten launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopiuj</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Język</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ustawienia gry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Zrzuty ekranu</value></data>

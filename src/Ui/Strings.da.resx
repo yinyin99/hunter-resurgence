@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoindstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spiladministration</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-startindstilling</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Indsæt denne linje i spillets startindstillinger i Steam (Egenskaber), så spillet starter via denne launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopiér</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprog</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spilindstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skærmbilleder</value></data>

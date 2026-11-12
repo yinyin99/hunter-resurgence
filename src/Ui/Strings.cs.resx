@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavení účtu</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Správa hry</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Možnost spuštění ve Steamu</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Vložte tento řádek do Možností spuštění hry ve Steamu (Vlastnosti), aby se hra spouštěla přes tento launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopírovat</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jazyk</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavení hry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshoty</value></data>

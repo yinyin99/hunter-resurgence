@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spelbeheer</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-startoptie</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Plak deze regel in de startopties van het spel in Steam (Eigenschappen) om het spel via deze launcher te starten:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopiëren</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Taal</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

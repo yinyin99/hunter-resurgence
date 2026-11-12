@@ -134,6 +134,8 @@ Download `launcher-win-x64.zip` from the [latest release](https://github.com/yin
 "C:\path\to\resurgence-launcher.exe" %command%
 ```
 
+The launcher's Settings menu has **Steam launch option** with this line filled in with its own exe path and a Copy button (launcher window only).
+
 Press Play in Steam. The game's own files stay untouched.
 
 ## Languages

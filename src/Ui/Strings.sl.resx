@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavitve računa</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Upravljanje igre</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Možnost zagona v Steamu</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Prilepite to vrstico v zagonske možnosti igre v Steamu (Lastnosti), da se igra zažene prek tega zaganjalnika:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopiraj</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavitve igre</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Posnetki zaslona</value></data>

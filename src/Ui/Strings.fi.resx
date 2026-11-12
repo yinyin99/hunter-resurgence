@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Tilin asetukset</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Pelin hallinta</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steamin käynnistysvalinta</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Liitä tämä rivi pelin käynnistysvalintoihin Steamissa (Ominaisuudet), niin peli käynnistyy tämän käynnistimen kautta:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopioi</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Kieli</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Pelin asetukset</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Kuvakaappaukset</value></data>

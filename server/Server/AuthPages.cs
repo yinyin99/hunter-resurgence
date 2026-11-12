@@ -17,10 +17,10 @@ public static class AuthPages
 
     static string E(string s) => WebUtility.HtmlEncode(s);
 
-    /// <summary>The page the launcher shows. Signed out: sign in with Steam in the player's own browser (the launcher's
+    /// <summary>The page the launcher shows (both states also link the new launcher). Signed out: sign in with Steam in the player's own browser (the launcher's
     /// cannot load Steam's pages) or, as a second link, in this window. Signed in: Play, which asks the server for a
     /// launch URL and hands it to the launcher.</summary>
-    public static string Start(string? handle, string page = "/") => Page(handle is null
+    public static string Start(string? handle, string page = "/") => Page((handle is null
         ? $"""
           <h1>Welcome</h1><p>Sign in with Steam to play on this server.</p>
           <p><button id="steam" type="button">Sign in with Steam</button></p>
@@ -30,6 +30,9 @@ public static class AuthPages
         : $"""
           <h1>Hello, {E(handle)}</h1><p><button id="play" type="button">Play</button></p>
           <p class="small"><a href="#" id="out">Not you? Sign out</a></p>
+          """) + """
+          <hr><p><button id="new" type="button">Open the new launcher</button></p>
+          <p class="small"><a href="https://github.com/yinyin99/hunter-resurgence/releases/latest">Download it</a></p>
           """, """
         function $(id){return document.getElementById(id)}
         function say(t){$('msg').innerHTML='';$('msg').appendChild(document.createTextNode(t))}
@@ -48,6 +51,8 @@ public static class AuthPages
         if($('play'))$('play').onclick=function(){call('POST','/auth/launch',function(s,j){
           if(s==200&&j&&j.url){if(window.ewlauncher)ewlauncher.startGame(j.url);else say('Open this page in the launcher to play.')}
           else{say('Could not start the game. Sign in again.');if(s==401)location.reload()}})};
+        $('new').onclick=function(){if(window.ewlauncher&&ewlauncher.openURL){ewlauncher.openURL('hunter-resurgence://open');ewlauncher.exitLauncher()}
+          else say('Open this page in the original launcher to open the new one.')};
         if($('out'))$('out').onclick=function(){call('POST','/auth/signout',function(){location.reload()});return false};
         """);
 

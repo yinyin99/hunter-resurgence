@@ -1,0 +1,22 @@
+@inject ModalService Modal
+@inject IJSRuntime JS
+
+<div class="steam-opt dialog-card" role="dialog" aria-modal="true">
+    <p>@L["Steam.Help"]</p>
+    <input id="steam-line" class="line" readonly value="@Line" />
+    <div class="buttons">
+        <button class="btn btn-primary" id="steam-copy" autofocus @onclick="Copy">@L["Steam.Copy"]</button>
+        <button class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
+    </div>
+</div>
+
+@code {
+    // the launcher host only (the menu item hides elsewhere): the process is the launcher exe
+    static string Line => $"\"{Environment.ProcessPath}\" %command%";
+
+    async Task Copy()
+    {
+        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await shell.InvokeVoidAsync("copy", Line);
+    }
+}
