@@ -636,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>OSTA gm$:llä</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Ei tarpeeksi gm$:ää</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Ei tarpeeksi em$:ää: sinulla on {0}, tämä maksaa {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Ostokset gm$:llä eivät ole vielä käytettävissä.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Ei tarpeeksi gm$:ää: sinulla on {0}, tämä maksaa {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Hanki lisää em$:ää</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Sisältää</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Osto suoritettu!</value></data>

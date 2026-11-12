@@ -658,7 +658,7 @@ public static class GameApi
 
     public sealed record BuyForm(long item_id,
         [property: Description("Count (usually 1)")] long amount,
-        [property: Description("`GOLD` (em, catalogue price); `SILVER` not modelled")] string wallet,
+        [property: Description("`GOLD` (em, catalogue price, discounted) or `SILVER` (gm, catalogue `silver_price`, not discounted)")] string wallet,
         string? oauth_access_token);
 
     public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);

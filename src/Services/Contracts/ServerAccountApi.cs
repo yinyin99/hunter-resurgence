@@ -8,8 +8,8 @@ public static class ServerAccountApi
     public const string Restore = "/account/restore";
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>confirm=delete</c>: deletes the account and all its data.</summary>
     public const string Delete = "/account/delete";
-    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>bundle=1</c> for a bundle: buys with em$ at the store's price; 200 <c>{status, ems}</c>,
-    /// or 409 for something not for sale or a balance too low.</summary>
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>wallet</c> (<c>GOLD</c> or <c>SILVER</c>), <c>bundle=1</c> for a bundle: buys with em$ or gm$ at the store's price; 200 <c>{status, ems}</c>
+    /// (<c>gms</c> for gm$), or 409 for something not for sale or a balance too low.</summary>
     public const string Buy = "/account/buy";
     /// <summary>GET with the cookie: 200 <see cref="ServerFriends"/> (the friends, the requests and the pending requests of the player); POST with <c>X-Requested-With</c> to
     /// <c>/add</c> (asks, or accepts the other's request) or <c>/remove</c> (declines, cancels or removes) and the form <c>handle</c>: 200, or 404 for a handle that is not another player.</summary>
