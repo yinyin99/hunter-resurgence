@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>ACQUISTA con em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>ACQUISTA con gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>gm$ insufficienti</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>em$ insufficienti: ne hai {0}, costa {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Gli acquisti con gm$ non sono ancora disponibili.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Ottieni più em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Include</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Acquisto completato!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminare i tuoi dati</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Accedi, apri Ripristina il tuo backup e usa Elimina i miei dati. Elimina l’account, i suoi dati di gioco, gli zip conservati e le foto, e ti disconnette. Il tuo id Steam viene poi dimenticato; accedendo di nuovo si crea un nuovo account.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>L’operatore di questo server può vedere tutto quanto sopra.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Conferma il codice {0} nel tuo browser.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Il tuo browser è aperto. Accedi lì con Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Accedi con Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>L'accesso non è stato confermato in tempo. Riprova.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Impossibile raggiungere il server. Riprova.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json non è un JSON valido.</value></data>

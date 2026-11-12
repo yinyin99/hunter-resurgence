@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>KOPEN met em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>KOPEN met gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Onvoldoende gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>Onvoldoende em$: je hebt er {0}, dit kost {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Aankopen met gm$ zijn nog niet beschikbaar.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Meer em$ kopen</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Bevat</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Aankoop voltooid!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log in, open Je back-up herstellen en gebruik Mijn gegevens verwijderen. Dat verwijdert het account, de spelgegevens, de bewaarde zips en de foto's, en logt je uit. Je Steam-id wordt dan vergeten; opnieuw inloggen maakt een nieuw account aan.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>De operator van deze server kan alles hierboven zien.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Bevestig de code {0} in je browser.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Je browser is geopend. Log daar in met Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Inloggen met Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>De aanmelding is niet op tijd bevestigd. Probeer het opnieuw.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>De server is niet bereikbaar. Probeer het opnieuw.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json is geen geldige JSON.</value></data>

@@ -34,4 +34,18 @@ public sealed class StatusBarTests : UiContext
         Assert.Equal(walletLinks, cut.FindAll("a[href^='/wallet']").Count);
         Assert.Single(cut.FindAll(".pill.ems"));
     }
+
+    // a purchase's dialog closes after it: the bar shows the new balance at once, not at the next poll
+    [Fact]
+    public void TheBalancesAreReadAgainWhenADialogCloses()
+    {
+        var cut = Render<StatusBar>(p => p.Add(b => b.Session, new Resurgence.Services.Session("Fox", 5)));
+        var state = Services.GetRequiredService<Resurgence.Services.Mocks.MockWalletState>();
+        Assert.Equal($"{state.Ems}", cut.Find(".pill.ems").TextContent);
+
+        state.Ems -= 30;
+        Services.GetRequiredService<Resurgence.Ui.Modals.ModalService>().Close();
+
+        cut.WaitForAssertion(() => Assert.Equal($"{state.Ems}", cut.Find(".pill.ems").TextContent));
+    }
 }

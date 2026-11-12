@@ -29,6 +29,9 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>The cap of one zip; a test lowers it.</summary>
     public long MaxZip { get; init; } = MaxZipBytes;
 
+    /// <summary>Called with the text for the operator when a zip is kept (the server sets it to the review webhook).</summary>
+    public Action<string> Alert { get; init; } = _ => { };
+
     static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
 
     readonly ConcurrentDictionary<long, bool> inFlight = new();
@@ -220,7 +223,7 @@ public sealed class Uploads(State state, string dataDir)
         {
             // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
             if (Refusal(account, uid) is { Kind: "already" or "taken" } refused) return refused;
-            return Review(account, sha, path, uid, "waiting for the operator");
+            return Review(account, sha, path, uid, "waiting for the operator", read.Model.Profile.Handle ?? read.Model.Identity.Handle);
         }
     }
 
@@ -240,21 +243,31 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>Keep the zip for the operator and write nothing of it into the account.</summary>
-    UploadOutcome Review(long account, string sha, string path, long uid, string note)
+    UploadOutcome Review(long account, string sha, string path, long uid, string note, string? handle)
     {
-        using var con = Store.Open(account);
-        con.Begin();
-        var known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
-        if (!known)
+        long? keptId = null;
+        using (var con = Store.Open(account))
         {
-            if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
-                return new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
-            var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
-            Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
-            File.Copy(path, kept, overwrite: true);
-            con.Exec("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, ?, ?, ?, ?)", Store.Now(), sha, uid, note);
+            con.Begin();
+            var known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
+            if (!known)
+            {
+                if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
+                    return new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
+                var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
+                Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
+                File.Copy(path, kept, overwrite: true);
+                con.Exec("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, ?, ?, ?, ?)", Store.Now(), sha, uid, note);
+                keptId = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+            }
+            con.Commit();
         }
-        con.Commit();
+        if (keptId is { } n)
+        {
+            // the handle is the zip's own text: only plain name characters go into the alert
+            var name = Regex.Replace(handle ?? "", @"[^A-Za-z0-9_.-]", "");
+            Alert($"Backup waiting for review: id {n}, account {account}, backup user id {uid}, handle {(name.Length > 32 ? name[..32] : name)}. Run: review list");
+        }
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
 

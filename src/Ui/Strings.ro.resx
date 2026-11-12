@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>CUMPĂRAȚI cu em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>CUMPĂRAȚI cu gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Gm$ insuficienți</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>Em$ insuficienți: ai {0}, costă {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Achizițiile cu gm$ nu sunt încă disponibile.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Obțineți mai mulți em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Include</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Achiziție finalizată!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatorul acestui server poate vedea tot ce este menționat mai sus.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Confirmă codul {0} în browser.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Browserul este deschis. Conectează-te acolo cu Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Conectare cu Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Autentificarea nu a fost confirmată la timp. Încearcă din nou.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Serverul nu poate fi contactat. Încearcă din nou.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json nu este un JSON valid.</value></data>

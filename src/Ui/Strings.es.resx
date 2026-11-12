@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>COMPRAR con em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>COMPRAR con gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>No tienes suficientes gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>No tienes suficientes em$: tienes {0} y cuesta {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Las compras con gm$ aún no están disponibles.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Consigue más em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Incluye</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>¡Compra completada!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar tus datos</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Inicia sesión, abre Restaurar tu copia de seguridad y usa Eliminar mis datos. Se eliminan la cuenta, sus datos de juego, los zips conservados y las fotos, y se cierra tu sesión. Tu id de Steam se olvida; si vuelves a iniciar sesión, se crea una cuenta nueva.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>El operador de este servidor puede ver todo lo anterior.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Confirma el código {0} en tu navegador.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Tu navegador está abierto. Inicia sesión allí con Steam.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Iniciar sesión con Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>El inicio de sesión no se confirmó a tiempo. Inténtalo de nuevo.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>No se pudo contactar con el servidor. Inténtalo de nuevo.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json no es un JSON válido.</value></data>

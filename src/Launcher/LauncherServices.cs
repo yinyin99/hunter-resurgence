@@ -58,7 +58,7 @@ static class LauncherServices
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
     }
 
-    /// <summary>Opens the server's sign-in in the player's browser; without a browser the player still has the code on screen.</summary>
+    /// <summary>Opens the server's sign-in in the player's browser; without a browser the sign-in waits for its time-out or the player's cancel.</summary>
     static void OpenBrowser(string url)
     {
         try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }

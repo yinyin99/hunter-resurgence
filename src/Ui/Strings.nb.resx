@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>KJØP med em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>KJØP med gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Ikke nok gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>Ikke nok em$: du har {0}, dette koster {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Kjøp med gm$ er ikke tilgjengelig ennå.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Få mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inneholder</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Kjøpet er fullført!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletting av dataene dine</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Logg inn, åpne Gjenopprett sikkerhetskopien din og bruk Slett dataene mine. Det sletter kontoen, spilldataene, de lagrede zip-filene og bildene, og logger deg ut. Steam-ID-en din glemmes deretter; ny innlogging oppretter en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren av denne serveren kan se alt det ovennevnte.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Bekreft koden {0} i nettleseren din.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Nettleseren din er åpen. Logg inn med Steam der.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Logg inn med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Innloggingen ble ikke bekreftet i tide. Prøv igjen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Kunne ikke nå serveren. Prøv igjen.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json er ikke gyldig JSON.</value></data>

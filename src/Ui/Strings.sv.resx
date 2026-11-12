@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>KÖP med em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>KÖP med gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>För lite gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>För lite em$: du har {0}, det kostar {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Köp med gm$ är inte tillgängliga än.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Skaffa mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inkluderar</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Köpet är klart!</value></data>
@@ -1311,7 +1313,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort; att logga in igen skapar ett nytt konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatören för den här servern kan se allt ovan.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Bekräfta koden {0} i din webbläsare.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Din webbläsare är öppen. Logga in med Steam där.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Logga in med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Det gick inte att nå servern. Försök igen.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json är inte giltig JSON.</value></data>
