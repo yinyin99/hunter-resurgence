@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Setări cont</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionarea jocului</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Opțiune de lansare Steam</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Lipește această linie în opțiunile de lansare ale jocului din Steam (Proprietăți) pentru a porni jocul prin acest launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Copiază</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Limba</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>

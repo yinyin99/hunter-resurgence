@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Account settings</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Game Management</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam launch option</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Paste this line into the game's Launch options in Steam (Properties) to start the game through this launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Game settings</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

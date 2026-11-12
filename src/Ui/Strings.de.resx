@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoeinstellungen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spielverwaltung</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-Startoption</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Füge diese Zeile in die Startoptionen des Spiels in Steam (Eigenschaften) ein, damit das Spiel über diesen Launcher startet:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopieren</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprache</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spieleinstellungen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

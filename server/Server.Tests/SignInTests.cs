@@ -837,13 +837,23 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, page.Status);
         Assert.Contains("Sign in with Steam", Body(page));
         Assert.DoesNotContain("id=\"play\"", Body(page));
+        AssertNewLauncherLinks(Body(page));
         var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
         page = await Get("signup.test", "/", Ck("hr_session", cookie));
         Assert.Contains("Hello, Hunter_One", Body(page));
         Assert.Contains("id=\"play\"", Body(page));
+        AssertNewLauncherLinks(Body(page));
         Assert.DoesNotContain("=>", Body(page));   // ES5 only: the launcher's browser is Chromium 25
         Assert.DoesNotContain("let ", Body(page));
         Assert.DoesNotContain("const ", Body(page));
+    }
+
+    static void AssertNewLauncherLinks(string html)
+    {
+        Assert.Contains("Open the new launcher", html);
+        Assert.Contains("Open this page in the original launcher to open the new one.", html);
+        Assert.Contains("ewlauncher.openURL('hunter-resurgence://open');ewlauncher.exitLauncher()", html);
+        Assert.Contains("href=\"https://github.com/yinyin99/hunter-resurgence/releases/latest\">Download it", html);
     }
 
     [Fact]

@@ -1,0 +1,5 @@
+.steam-opt { position: absolute; top: calc(50% - 90px); left: calc(50% - 300px); width: 600px; }
+p { margin: 0; padding: 24px 20px 12px; font-size: 16px; line-height: 20px; font-weight: 500; color: var(--text-1); }
+.line { display: block; box-sizing: border-box; width: calc(100% - 40px); margin: 0 20px 20px; padding: 6px; font-family: monospace; }
+.buttons { padding: 12px 20px 11px 14px; text-align: right; border-top: 2px groove #4e4c50; }
+.btn { margin-left: 5px; padding: 6px 12px; font-weight: 500; }
