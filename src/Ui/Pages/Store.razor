@@ -29,6 +29,7 @@
                         @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
+                @if (Mode.Live && signedIn && !i.Buyable && i.Ems <= 0 && i.Gms > 0) { <p class="own">@L["Store.GmsUnavailable"]</p> }
                 @if (!Mode.Live)
                 {
                     @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
