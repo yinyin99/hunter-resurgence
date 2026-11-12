@@ -1,6 +1,6 @@
 name: deploy
 # After a green ci run of a push to main: build the website and server images, push them to GHCR as <sha> and latest, roll them out on the VPS (docs/deploy.md).
-# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. The repository secrets LINK_BACKUP, LINK_SOURCE, GAME_NAME and GAME_FULL (the ones the release uses too) become the website's links and game name.
+# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. The repository secrets LINK_BACKUP, LINK_SOURCE, LINK_DISCORD, GAME_NAME and GAME_FULL (the ones the release uses too) become the website's links and game name.
 on:
   workflow_run:
     workflows: [ci]
@@ -60,6 +60,7 @@ jobs:
         if: steps.secrets.outputs.ok
         env:
           LINK_BACKUP: ${{ secrets.LINK_BACKUP }}
+          LINK_DISCORD: ${{ secrets.LINK_DISCORD }}
           # the project's repository, for the live feed's development note; a LINK_SOURCE secret wins
           LINK_SOURCE: ${{ secrets.LINK_SOURCE || format('{0}/{1}', github.server_url, github.repository) }}
           GAME_NAME: ${{ secrets.GAME_NAME }}
@@ -67,10 +68,10 @@ jobs:
         run: |
           # the secrets go into .env and into a single-quoted remote command: the links URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
           # trimmed like the release does, so a pasted trailing newline or space is not part of the value
-          for v in LINK_BACKUP LINK_SOURCE GAME_NAME GAME_FULL; do x=${!v}; x=${x#"${x%%[![:space:]]*}"}; printf -v "$v" '%s' "${x%"${x##*[![:space:]]}"}"; done
+          for v in LINK_BACKUP LINK_SOURCE LINK_DISCORD GAME_NAME GAME_FULL; do x=${!v}; x=${x#"${x%%[![:space:]]*}"}; printf -v "$v" '%s' "${x%"${x##*[![:space:]]}"}"; done
           extra=""
           url='^https://[A-Za-z0-9._~:/?@!&+,;=%-]+$'
-          for v in LINK_BACKUP LINK_SOURCE; do
+          for v in LINK_BACKUP LINK_SOURCE LINK_DISCORD; do
             [ -n "${!v}" ] || continue
             [[ ${!v} =~ $url ]] || { echo "::error::$v is not an https URL"; exit 1; }
             extra+=" && echo '$v=${!v}' >> .env"
@@ -85,6 +86,6 @@ jobs:
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy)
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2> /dev/null
           scp -i ~/.ssh/deploy deploy/compose.yml deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:web/"
-          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=$SHA/' -e 's/^SERVER_TAG=.*/SERVER_TAG=$SHA/' .env && sed -i -e '/^\(LINK_BACKUP\|LINK_SOURCE\|GAME_NAME\|GAME_FULL\)=/d' -e '\$a\\' .env$extra && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
+          ssh -i ~/.ssh/deploy "$DEPLOY_USER@$DEPLOY_HOST" "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=$SHA/' -e 's/^SERVER_TAG=.*/SERVER_TAG=$SHA/' .env && sed -i -e '/^\(LINK_BACKUP\|LINK_DISCORD\|LINK_SOURCE\|GAME_NAME\|GAME_FULL\)=/d' -e '\$a\\' .env$extra && docker compose pull && docker compose up -d && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile && docker image prune -f"
       - if: always()
         run: rm -f ~/.ssh/deploy

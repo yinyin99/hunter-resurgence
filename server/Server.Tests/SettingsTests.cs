@@ -3,6 +3,11 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Server.Tests;
 
+// one test sets LINK_DISCORD, a process-wide environment variable: no other test runs beside this class
+[CollectionDefinition("ProcessState", DisableParallelization = true)]
+public sealed class ProcessStateCollection;
+
+[Collection("ProcessState")]
 public class SettingsTests : IDisposable
 {
     readonly string tmp = Directory.CreateTempSubdirectory("settings").FullName;
@@ -23,6 +28,22 @@ public class SettingsTests : IDisposable
         var file = Path.Combine(tmp, "settings.json");
         File.WriteAllText(file, o.ToJsonString());
         return Settings.Load(file);
+    }
+
+    [Fact]
+    public void TheDeploysDiscordInviteWinsOverTheFilesAndOnlyHttpsCounts()
+    {
+        var o = Minimal();
+        o["link_discord"] = "https://file.test/invite";
+        try
+        {
+            Assert.Equal("https://file.test/invite", (string?)Load(o).Cfg["link_discord"]);
+            Environment.SetEnvironmentVariable("LINK_DISCORD", " https://env.test/invite\n");
+            Assert.Equal("https://env.test/invite", (string?)Load(o).Cfg["link_discord"]);
+            Environment.SetEnvironmentVariable("LINK_DISCORD", "http://env.test/invite");
+            Assert.Null(Load(o).Cfg["link_discord"]);
+        }
+        finally { Environment.SetEnvironmentVariable("LINK_DISCORD", null); }
     }
 
     [Fact]
