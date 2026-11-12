@@ -1,13 +1,17 @@
 # Local test: builds the image and serves https://localhost with a self-signed chain (docs/deploy.md, "Local test").
-services:
+services: # Docker Desktop has no host journal: the default log driver
   web:
+    logging: { driver: json-file }
     image: web:dev
     build: { context: .., dockerfile: src/Web/Dockerfile }
   caddy:
+    logging: { driver: json-file }
     volumes:
       - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
   server:
+    logging: { driver: json-file }
     image: server:dev
     build: { context: .., dockerfile: server/Server/Dockerfile }
   server-backup:
+    logging: { driver: json-file }
     image: server:dev

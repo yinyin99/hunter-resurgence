@@ -1,7 +1,9 @@
 # The website and the community server behind Caddy (docs/deploy.md). Values come from .env next to this file; host-only additions go in compose.override.yml.
 name: web
+x-logging: &logging { driver: journald } # the host journal keeps the logs when a deploy recreates a container (docs/deploy.md, "Logs")
 services:
   web:
+    logging: *logging
     image: ${WEB_IMAGE}:${WEB_TAG:-latest}
     restart: unless-stopped
     environment:
@@ -22,6 +24,7 @@ services:
       interval: 30s
       start_period: 10s
   server:
+    logging: *logging
     image: ${SERVER_IMAGE}:${SERVER_TAG:-latest}
     restart: unless-stopped
     volumes:
@@ -36,6 +39,7 @@ services:
       interval: 30s
       start_period: 30s # it loads the recordings first
   server-backup: # a consistent copy of every database once a day, seven kept (docs/deploy.md, "Backups")
+    logging: *logging
     image: ${SERVER_IMAGE}:${SERVER_TAG:-latest}
     restart: unless-stopped
     entrypoint: ["sh", "-c", "while true; do dotnet server.dll backup /backups 7 || echo backup failed; sleep 86400; done"]
@@ -49,6 +53,7 @@ services:
     depends_on:
       server: { condition: service_healthy }
   caddy:
+    logging: *logging
     image: caddy:2.11
     restart: unless-stopped
     ports: ["80:80", "443:443"]
