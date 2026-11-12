@@ -292,7 +292,6 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
   - help's guides, video tutorials and community sites tabs: their content is the mock's; help keeps its support tab and its daily missions tab ([#225](https://github.com/yinyin99/hunter-resurgence/issues/225));
   - bank, settings, game management, invite friends, welcome and new message: the website reads no such data from the server yet, and the bank would take real money. The wallet shows the player's own history only (restored and made on the server), without a bank tab.
 - **The store** is the catalogue of the server's recording, frozen on the day it was made: a new price or item means a new recording. A sale shows only when the recording holds one. Without a recording that matches the settings' host names, the server falls back to the install's items, with no categories or bundles ([server.md](server.md#the-store-catalogue)).
-  - Buying is em$ only ([#221](https://github.com/yinyin99/hunter-resurgence/issues/221)).
   - The pictures are labelled boxes until they are mapped ([#224](https://github.com/yinyin99/hunter-resurgence/issues/224)).
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
 - **The news** is the project's two posts (the backup tool and the project in development), the same as on the mock website. The posts' slides show two of the operator's competition pictures (`competition-hero-170031`, `competition-hero-170026`).

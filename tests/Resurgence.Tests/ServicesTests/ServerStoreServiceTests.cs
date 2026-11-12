@@ -179,21 +179,33 @@ public class ServerStoreServiceTests
         Assert.Equal((HttpMethod.Post, "/account/buy", "site.test"), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Host));
         Assert.Contains("secret", string.Join(";", request.Headers.GetValues("Cookie")));
         Assert.True(request.Headers.Contains("X-Requested-With"));
-        Assert.Equal("id=9&count=1&bundle=1", form);
+        Assert.Equal("id=9&count=1&bundle=1&wallet=GOLD", form);
+    }
+
+    // gm$ is the SILVER wallet of the same call
+    [Fact]
+    public async Task BuyingWithGmsAsksForTheSilverWallet()
+    {
+        string? form = null;
+        var fake = new Fake(r => { form = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"status": "bought", "gms": 10}"""); });
+
+        Assert.True((await Make(fake).BuyAsync(1, false, true, 2)).Ok);
+
+        Assert.Equal("id=1&count=2&bundle=0&wallet=SILVER", form);
     }
 
     [Fact]
     public async Task ARefusalIsAFailedPurchase() =>
         Assert.Equal("Store.Oops", (await Make(new Fake(_ => Json(HttpStatusCode.Conflict, """{"status": "refused"}"""))).BuyAsync(1, false, false, 3)).Error);
 
-    // the server sells for em$ only, and a signed-out visitor buys nothing: neither asks the server
+    // a signed-out visitor buys nothing, with either currency: the server is not asked
     [Theory]
-    [InlineData(true, "secret")]
-    [InlineData(false, null)]
-    public async Task GmsOrSignedOutIsNotSent(bool gms, string? session)
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task SignedOutIsNotSent(bool gms)
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
-        var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" },
+        var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = null, Host = "site.test" },
             new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance);
         Assert.False((await service.BuyAsync(1, false, gms)).Ok);
         Assert.Empty(fake.Seen);

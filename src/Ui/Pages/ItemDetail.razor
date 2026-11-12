@@ -32,7 +32,6 @@
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
             @* the server sells for em$ only: an item with a gm$ price alone says so *@
-            @if (Mode.Live && signedIn && !item.Buyable && item.Ems <= 0 && item.Gms > 0) { <p class="own">@L["Store.GmsUnavailable"]</p> }
             @if (!Mode.Live)
             {
                 @if (item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }

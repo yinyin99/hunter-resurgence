@@ -632,7 +632,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>gm$ ile SATIN AL</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Yeterli gm$ yok</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Yeterli em$ yok: {0} em$'ünüz var, bunun fiyatı {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>gm$ ile satın alma henüz kullanılamıyor.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Yeterli gm$ yok: {0} gm$'ünüz var, bunun fiyatı {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Daha fazla em$ al</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>İçerir</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Satın alma tamamlandı!</value></data>

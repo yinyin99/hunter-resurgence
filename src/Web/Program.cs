@@ -83,7 +83,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the missions page is the account's too: the server's missions, their progress and the page's writes and the daily missions
     builder.Services.Replace(ServiceDescriptor.Scoped<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         sp.GetRequiredService<ILogger<ServerMissionsService>>())));
-    // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
+    // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, with em$ or gm$
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));
 }

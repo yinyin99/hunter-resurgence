@@ -11,7 +11,7 @@ public sealed class HostMode
     /// <summary>Development website only: mock state from ?mock= (session:out shows the public site).</summary>
     public string? Mock { get; set; }
     /// <summary>True on the website with a community server: what would show a signed-in player mock data is hidden (the pages of <see cref="LauncherGuard.MockOnly"/>, their links,
-    /// a real player's profile tabs without a server source, the bank), the friends, the messages (read only), the wallet and the store are the server's (the store buys with em$ only; docs/website.md#sign-in).</summary>
+    /// a real player's profile tabs without a server source, the bank), the friends, the messages (read only), the wallet and the store are the server's (the store buys with em$ or gm$; docs/website.md#sign-in).</summary>
     public bool Live { get; set; }
 
     /// <summary>The picture slot of a store item or bundle. With a community server the ids are the original's, and the stand-in pictures in the operator's folder are named after the mock's
