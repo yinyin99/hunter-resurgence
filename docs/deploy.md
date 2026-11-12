@@ -149,7 +149,7 @@ Repository secrets (Settings, Secrets and variables, Actions, Secrets), the same
 | Secret | Value | Unset |
 |---|---|---|
 | `LINK_BACKUP` | the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` | `link_backup` of `settings.json`, if any, else no backup tool button |
-| `LINK_DISCORD` | the operator's Discord invite (`https://`): the website's feed widget, footer icon and support tab line, and the "Join the Discord" line on the server's sign-in pages (the server's `environment`); the launcher release reads the same secret | `link_discord` of the website's and the server's `settings.json`, else none |
+| `LINK_DISCORD` | the operator's Discord invite (`https://`): the website's feed widget, footer icon and support tab line, and the "Join the Discord" line on the launcher's start page when signed in (the server's `environment`; the website's sign-in pages read the website's own); the launcher release reads the same secret | `link_discord` of the website's and the server's `settings.json`, else none |
 | `LINK_SOURCE` | the project's repository, linked by the feed's development post | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |

@@ -1398,4 +1398,33 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Há uma configuração antiga do kit do jogador neste PC, mas ela não serve: a próxima janela a substitui em uma etapa.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Excluir</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Excluir também os dados do launcher (idioma, pasta do jogo e login salvo em %APPDATA%\hunter-resurgence)? Escolha Não para mantê-los.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Escolha seu nome</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Este é o nome que os outros caçadores veem.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Seu nome</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 a 20 letras, dígitos, - ou _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Sou novo aqui</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Já joguei antes: restaurar o que foi guardado do meu perfil antigo</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Guardamos parte dos perfis públicos: itens, troféus, cabanas, habilidades, estatísticas e conquistas. Caçadas, fotos e dinheiro não foram guardados. Os perfis com pontuação alta são verificados antes pelo operador.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Deixe vazio para usar seu nome antigo, se ele estiver livre.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Um nome tem de 3 a 20 letras, dígitos, - ou _ e começa com uma letra ou um dígito.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Este nome já está em uso.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Escolha um nome: o antigo já está em uso.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Entrar no aplicativo que mostra este código?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Você é {0}. O aplicativo que mostra este código (o launcher ou a ferramenta de backup) entrará como você.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirme só se este código estiver na sua tela agora.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Entrar no aplicativo deste PC?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Você é {0}. O aplicativo que você acabou de iniciar neste PC (o launcher ou a ferramenta de backup) entrará como você.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirme só se você acabou de clicar em “{0}” em um deles.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sim, entrar</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Pronto</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte ao aplicativo que mostrou o código (o launcher ou a ferramenta de backup).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Entre no Discord: novidades, ajuda e o operador</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Desculpe</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Esta entrada expirou ou foi iniciada em outro navegador. Comece de novo.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Este link de entrada expirou. Comece de novo pelo launcher ou pela ferramenta de backup.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Este link de entrada não é válido. Comece de novo pelo launcher ou pela ferramenta de backup.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>A Steam não confirmou a entrada. Comece de novo.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta não pode entrar.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
 </root>

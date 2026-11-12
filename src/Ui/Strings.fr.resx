@@ -1398,4 +1398,33 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lan
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Une ancienne configuration du kit joueur est sur ce PC mais ne convient pas : la fenêtre suivante la remplace en une étape.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Supprimer</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Supprimer aussi les données du lanceur (langue, dossier du jeu et connexion enregistrée dans %APPDATA%\hunter-resurgence) ? Choisissez Non pour les garder.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Choisissez votre nom</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>C’est le nom que voient les autres chasseurs.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Votre nom</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 à 20 lettres, chiffres, - ou _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Je suis nouveau ici</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>J’ai déjà joué : restaurer ce qui a été conservé de mon ancien profil</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Nous avons conservé une partie des profils publics : objets, trophées, pavillons, compétences, statistiques et succès. Les chasses, les photos et l’argent n’ont pas été conservés. Les profils à score élevé sont d’abord vérifiés par l’opérateur.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Laissez vide pour utiliser votre ancien nom s’il est libre.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nom comporte de 3 à 20 lettres, chiffres, - ou _ et commence par une lettre ou un chiffre.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ce nom est déjà pris.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choisissez un nom : l’ancien est déjà pris.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Connecter l’application qui affiche ce code ?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vous êtes {0}. L’application qui affiche ce code (le launcher ou l’outil de sauvegarde) sera connectée sous votre nom.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Ne confirmez que si ce code est en ce moment sur votre écran.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Connecter l’application de ce PC ?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Vous êtes {0}. L’application que vous venez de démarrer sur ce PC (le launcher ou l’outil de sauvegarde) sera connectée sous votre nom.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Ne confirmez que si vous venez d’appuyer sur « {0} » dans l’une d’elles.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Oui, me connecter</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Terminé</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Retournez à l’application qui a affiché le code (le launcher ou l’outil de sauvegarde).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Rejoignez le Discord : actualités, aide et opérateur</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Désolé</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Cette connexion a expiré ou a été lancée dans un autre navigateur. Recommencez.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ce lien de connexion a expiré. Recommencez depuis le launcher ou l’outil de sauvegarde.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ce lien de connexion n’est pas valide. Recommencez depuis le launcher ou l’outil de sauvegarde.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam n’a pas confirmé la connexion. Recommencez.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ce compte n’est pas autorisé à se connecter.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ce formulaire ne provient pas de ce serveur.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
 </root>

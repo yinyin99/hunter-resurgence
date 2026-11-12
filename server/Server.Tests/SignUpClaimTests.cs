@@ -85,7 +85,7 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var returnTo = HttpUtility.ParseQueryString(new Uri(start.Headers.Single(h => h.Name == "Location").Value).Query)["openid.return_to"]!;
         var path = returnTo["https://web.test".Length..];
         var back = await server.SendAsync("GET", "web.test", path + "&" + FakeSteam.Assertion(returnTo, steamId), [("Cookie", "hr_login=" + login)]);
-        Assert.Equal("/auth/handle", back.Headers.Single(h => h.Name == "Location").Value);
+        Assert.Equal("/signin/handle", back.Headers.Single(h => h.Name == "Location").Value);
         return login;
     }
 
@@ -96,8 +96,8 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
     public async Task TestAReturningPlayerGetsTheArchivedProfileAtTheFirstSignIn()
     {
         var login = await NewLogin("99999999999999991");
-        var page = await server.SendAsync("GET", "web.test", "/auth/handle", [("Cookie", "hr_login=" + login)]);
-        Assert.Contains("I played before", Body(page));
+        var pending = JsonNode.Parse(Body(await server.SendAsync("GET", "web.test", "/auth/pending", [("Cookie", "hr_login=" + login), ("X-Requested-With", "XMLHttpRequest")])))!;
+        Assert.True((bool)pending["offer"]!);  // the website's page offers "I played before" only when the server has an archive
 
         var done = await Post(login, "kind=old&old=ALPHA&handle=");  // empty name: the old one, free, any case of the typed old name
         Assert.Equal(302, done.Status);
@@ -107,12 +107,13 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAnUnknownOldNameShowsThePageAgainAndMakesNoAccount()
+    public async Task TestAnUnknownOldNameShowsTheFormAgainAndMakesNoAccount()
     {
         var login = await NewLogin("99999999999999992");
         var page = await Post(login, "kind=old&old=nobody&handle=Fresh");
-        Assert.Equal(200, page.Status);
-        Assert.Contains("We did not keep a profile under this name.", Body(page));
+        Assert.Equal("/signin/handle", page.Headers.Single(h => h.Name == "Location").Value);
+        var shown = JsonNode.Parse(Body(await server.SendAsync("GET", "web.test", "/auth/pending", [("Cookie", "hr_login=" + login), ("X-Requested-With", "XMLHttpRequest")])))!;
+        Assert.Equal(("unknown", "Fresh", "nobody", true), ((string)shown["error"]!, (string)shown["handle"]!, (string)shown["old"]!, (bool)shown["restore"]!));  // the page shows the form again, with the reason
         Assert.Null(state.Store.AccountBySteam("99999999999999992"));
 
         var taken = await Post(login, "kind=new&handle=Fresh");  // "I am new here" still works on the same login

@@ -1398,4 +1398,33 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>An older player kit setup is on this PC but does not fit: the next window replaces it in one step.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Also delete your launcher data (language, game folder and saved sign-in in %APPDATA%\hunter-resurgence)? Choose No to keep it.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Choose your name</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>This is the name other hunters see.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Your name</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 to 20 letters, digits, - or _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>I am new here</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>I played before: restore what was kept of my old profile</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>We kept part of the public profiles: items, trophies, lodges, skills, statistics and achievements. Hunts, photos and money were not kept. High-score profiles are checked by the operator first.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Leave it empty to use your old name when it is free.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>A name has 3 to 20 letters, digits, - or _ and starts with a letter or a digit.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>This name is taken.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choose a name: the old one is taken.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Sign in the app that shows this code?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool that shows this code will be signed in as you.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirm only if this code is on your screen right now.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Sign in the app on this PC?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool that you just started on this PC will be signed in as you.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirm only if you pressed “{0}” in one of them a moment ago.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Yes, sign in</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Done</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Go back to the app that showed the code (the launcher or the backup tool).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Join the Discord: news, help and the operator</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>This sign-in ran out of time, or was started in another browser. Start again.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>This sign-in link ran out of time. Start again from the launcher or the backup tool.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>This sign-in link is not valid. Start again from the launcher or the backup tool.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam did not confirm the sign-in. Start again.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This account may not sign in.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
 </root>

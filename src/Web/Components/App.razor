@@ -23,18 +23,18 @@
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 <body>
-    <Routes Launcher="Mode.Launcher" Dev="Mode.Dev" Mock="@Mode.Mock" Cookie="@cookie" Host="@host" @rendermode="InteractiveServer" />
+    <Routes Launcher="Mode.Launcher" Dev="Mode.Dev" Mock="@Mode.Mock" Cookie="@cookie" Login="@login" Host="@host" @rendermode="InteractiveServer" />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 
 @code {
     [CascadingParameter] HttpContext? Http { get; set; }
-    string? cookie, host;
+    string? cookie, login, host;
 
-    /// <summary>With SERVER_URL the request's session cookie and host go to the circuit as Routes parameters (the page marker is protected, the browser cannot read it): HttpContext is not reliable once the circuit runs.</summary>
+    /// <summary>With SERVER_URL the request's session cookie, sign-in cookie and host go to the circuit as Routes parameters (the page marker is protected, the browser cannot read it): HttpContext is not reliable once the circuit runs.</summary>
     protected override void OnInitialized()
     {
-        if (Http is not null && Config["SERVER_URL"] is { Length: > 0 }) (cookie, host) = (Http.Request.Cookies[ServerSessionApi.Cookie], Http.Request.Host.Value);
+        if (Http is not null && Config["SERVER_URL"] is { Length: > 0 }) (cookie, login, host) = (Http.Request.Cookies[ServerSessionApi.Cookie], Http.Request.Cookies[ServerSessionApi.LoginCookie], Http.Request.Host.Value);
     }
 }

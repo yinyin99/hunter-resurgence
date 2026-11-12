@@ -1,42 +1,36 @@
-// The HTML of the sign-in: the launcher's start page and the small pages around Steam's. Plain HTML and ES5 (the old
-// launcher's browser is Chromium 25), English only, no external files. Values are HTML-encoded; the script has none.
+// The launcher's start page: the one sign-in page the server still draws. The old launcher's browser is Chromium 25 (no grid, no CSS variables, no flex gap, ES5), English only, no external files.
+// Its colours and type are the website's (src/Ui/wwwroot/theme.css) as literals. The pages in the player's own browser are the website's (docs/website.md#sign-in).
 using System.Net;
 
 namespace Resurgence.Server;
 
 public static class AuthPages
 {
-    static string Page(string body, string script = "") => $$"""
-        <!DOCTYPE html>
-        <html><head><meta charset="utf-8"><title>Sign in</title>
-        <style>body{font-family:Arial,sans-serif;background:#222;color:#eee;text-align:center;padding-top:60px}
-        button{font-size:20px;padding:12px 32px;cursor:pointer}input{font-size:18px;padding:6px}
-        a{color:#f90}.small{font-size:13px;color:#aaa}.err{color:#f66}</style></head>
-        <body>{{body}}<p id="msg" class="err"></p>{{(script == "" ? "" : "<script>" + script + "</script>")}}</body></html>
-        """;
-
     static string E(string s) => WebUtility.HtmlEncode(s);
 
-    /// <summary>The line and button to the operator's Discord; nothing without the link.</summary>
-    static string Discord(string? url) => url is null ? "" : $"""<p>Join the Discord: news, help and the operator<br><a href="{E(url)}" target="_blank" rel="noopener"><button type="button">Join the Discord</button></a></p>""";
+    /// <summary>The line to the operator's Discord; nothing without the link.</summary>
+    static string Discord(string? url) => url is null ? "" : $"""<p><a href="{E(url)}" target="_blank" rel="noopener">Join the Discord: news, help and the operator</a></p>""";
 
-    /// <summary>The page the launcher shows (both states also link the launcher that replaces it). Signed out: sign in with Steam in the player's own browser (the launcher's
-    /// cannot load Steam's pages) or, as a second link, in this window. Signed in: Play, which asks the server for a
-    /// launch URL and hands it to the launcher.</summary>
-    public static string Start(string? handle, string page = "/", string? discord = null) => Page((handle is null
-        ? $"""
-          <h1>Welcome</h1><p>Sign in with Steam to play on this server.</p>
-          <p><button id="steam" type="button">Sign in with Steam</button></p>
-          <p id="code"></p>
-          <p class="small"><a href="/auth/steam/login?next={Uri.EscapeDataString(page)}">Sign in inside this window instead</a></p>
-          """
-        : $"""
-          <h1>Hello, {E(handle)}</h1><p><button id="play" type="button">Play</button></p>
-          <p class="small"><a href="#" id="out">Not you? Sign out</a></p>
-          """ + Discord(discord)) + """
-          <hr><p><button id="new" type="button">Open the new launcher</button></p>
-          <p class="small"><a href="https://github.com/yinyin99/hunter-resurgence/releases/latest">Download it</a></p>
-          """, """
+    const string Style = """
+        html,body{margin:0;background:#000}
+        body{padding:24px 16px;color:#bbb;font:400 14px/20px Roboto,Arial,sans-serif;text-align:center}
+        .card{max-width:400px;margin:0 auto;padding:32px 24px;background:#161616;border-radius:8px;-webkit-box-sizing:border-box;box-sizing:border-box}
+        h1{margin:0 0 16px;font:400 31px/38px "Helvetica Neue",Helvetica,Arial,sans-serif;color:#eee;word-wrap:break-word}
+        p{margin:0 0 24px}
+        a{color:#f9560d;text-decoration:none}
+        a:hover{color:#fb8a58}
+        .btn{display:inline-block;max-width:100%;padding:11px 19px;border:0;border-radius:4px;background:#f9370d;color:#fff;font:400 17.5px/20px Roboto,Arial,sans-serif;cursor:pointer}
+        .btn:hover{background:#e72d06}
+        .btn.alt{background:#444}
+        .btn.alt:hover{background:#555}
+        .btn:focus,a:focus{outline:2px solid #f9560d;outline-offset:2px}
+        .more{margin:40px 0 0}
+        .more p:last-child,.card>p:last-child{margin-bottom:0}
+        #code:empty,#msg:empty{display:none}
+        #msg{color:#f66}
+        """;
+
+    const string Script = """
         function $(id){return document.getElementById(id)}
         function say(t){$('msg').innerHTML='';$('msg').appendChild(document.createTextNode(t))}
         function call(method,url,cb){var x=new XMLHttpRequest();x.open(method,url,true);
@@ -57,46 +51,30 @@ public static class AuthPages
         $('new').onclick=function(){if(window.ewlauncher&&ewlauncher.openURL){ewlauncher.openURL('hunter-resurgence://open');ewlauncher.exitLauncher()}
           else say('Open this page in the original launcher to open the new one.')};
         if($('out'))$('out').onclick=function(){call('POST','/auth/signout',function(){location.reload()});return false};
-        """);
+        """;
 
-    /// <summary>The first sign-in: Steam gives no name, so the player picks one. With an archive (`offer`) a returning player may ask for the old profile.</summary>
-    public static string Handle(string csrf, string handle, string? error, bool offer = false, string old = "", bool restore = false) => Page($"""
-        <h1>Choose your name</h1><p>This is the name other hunters see.</p>
-        <form method="post" action="/auth/handle"><input type="hidden" name="csrf" value="{E(csrf)}">
-        {(!offer ? "" : $""""
-        <p><label><input type="radio" name="kind" value="new"{(restore ? "" : " checked")}> I am new here</label><br>
-        <label><input type="radio" name="kind" value="old"{(restore ? " checked" : "")}> I played before: restore what was kept of my old profile</label></p>
-        <p>Only if you played before: <input name="old" value="{E(old)}" maxlength="20" autocomplete="off"> Your old hunter name</p>
-        <p class="small">We kept part of the public profiles: items, trophies, lodges, skills, statistics and achievements. Hunts, photos and money were not kept. High-score profiles are checked by the operator first.</p>
-        <p class="small">Your name below: leave it empty to use the old one when it is free.</p>
-        """")}
-        <p><input name="handle" value="{E(handle)}" maxlength="20" autocomplete="off" autofocus></p>
-        <p class="small">3 to 20 letters, digits, - or _.</p>
-        {(error is null ? "" : $"<p class=\"err\">{E(error)}</p>")}
-        <p><button type="submit">Continue</button></p></form>
-        """);
-
-    /// <summary>An app (the launcher or the backup tool) is waiting for this sign-in: confirm only when the code is the one it shows.</summary>
-    public static string Confirm(string csrf, string handle, string userCode, string? discord = null) => Page($"""
-        <h1>Sign in the app that shows this code?</h1>
-        <p>You are <b>{E(handle)}</b>. The app that shows the code <b>{E(userCode)}</b> (the launcher or the backup tool) will be signed in as you.</p>
-        <p class="small">Confirm only if this code is on your screen right now.</p>
-        <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
-        <p><button type="submit">Yes, sign in</button></p></form>
-        {Discord(discord)}
-        """);
-
-    /// <summary>An app on this PC (the launcher or the backup tool) started this sign-in: its answer goes to this PC only, once the player says yes.</summary>
-    public static string ConfirmApp(string csrf, string handle, string? discord = null) => Page($"""
-        <h1>Sign in the app on this PC?</h1>
-        <p>You are <b>{E(handle)}</b>. The launcher or the backup tool that you just started on this PC will be signed in as you.</p>
-        <p class="small">Confirm only if you pressed "Sign in with Steam" in one of them a moment ago.</p>
-        <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
-        <p><button type="submit">Yes, sign in</button></p></form>
-        {Discord(discord)}
-        """);
-
-    public static string Done(string? discord = null) => Page("<h1>Done</h1><p>Go back to the app that showed the code (the launcher or the backup tool).</p>" + Discord(discord));
-
-    public static string Problem(string text) => Page($"<h1>Sorry</h1><p>{E(text)}</p>");
+    /// <summary>The page the launcher shows (both states also link the launcher that replaces it). Signed out: sign in with Steam in the player's own browser (the launcher's
+    /// cannot load Steam's pages). Signed in: Play, which asks the server for a launch URL and hands it to the launcher.</summary>
+    public static string Start(string? handle, string? discord = null) => $"""
+        <!DOCTYPE html>
+        <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hunter Resurgence</title>
+        <style>
+        {Style}</style></head>
+        <body><div class="card">
+        {(handle is null
+            ? """
+              <h1>Welcome</h1><p>Sign in with Steam to play on this server.</p>
+              <p><button id="steam" class="btn" type="button">Sign in with Steam</button></p>
+              """
+            : $"""
+              <h1>Hello, {E(handle)}</h1><p><button id="play" class="btn" type="button">Play</button></p>
+              <p><a href="#" id="out">Not you? Sign out</a></p>
+              {Discord(discord)}
+              """)}
+        <p id="code"></p><p id="msg"></p>
+        <div class="more"><p><button id="new" class="btn alt" type="button">Open the new launcher</button></p>
+        <p><a href="https://github.com/yinyin99/hunter-resurgence/releases/latest">Download it</a></p></div>
+        </div><script>
+        {Script}</script></body></html>
+        """;
 }

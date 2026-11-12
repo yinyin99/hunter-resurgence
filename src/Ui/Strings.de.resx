@@ -1398,4 +1398,33 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Eine ältere Einrichtung des Spieler-Kits ist auf diesem PC, passt aber nicht: das nächste Fenster ersetzt sie in einem Schritt.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Löschen</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Auch Ihre Launcher-Daten löschen (Sprache, Spielordner und gespeicherte Anmeldung in %APPDATA%\hunter-resurgence)? Wählen Sie Nein, um sie zu behalten.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Wähle deinen Namen</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Diesen Namen sehen andere Jäger.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Dein Name</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 bis 20 Buchstaben, Ziffern, - oder _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Ich bin neu hier</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Ich habe früher gespielt: Stelle wieder her, was von meinem alten Profil aufbewahrt wurde</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Wir haben einen Teil der öffentlichen Profile aufbewahrt: Gegenstände, Trophäen, Hütten, Fähigkeiten, Statistiken und Erfolge. Jagden, Fotos und Geld wurden nicht aufbewahrt. Profile mit hoher Punktzahl prüft zuerst der Betreiber.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lass das Feld leer, um deinen alten Namen zu verwenden, wenn er frei ist.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Ein Name hat 3 bis 20 Buchstaben, Ziffern, - oder _ und beginnt mit einem Buchstaben oder einer Ziffer.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dieser Name ist vergeben.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wähle einen Namen: Der alte ist vergeben.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Die App anmelden, die diesen Code zeigt?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du bist {0}. Die App, die diesen Code zeigt (der Launcher oder das Backup-Tool), wird als du angemeldet.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bestätige nur, wenn dieser Code gerade auf deinem Bildschirm steht.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Die App auf diesem PC anmelden?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du bist {0}. Die App, die du gerade auf diesem PC gestartet hast (der Launcher oder das Backup-Tool), wird als du angemeldet.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bestätige nur, wenn du gerade in einer von ihnen auf „{0}“ geklickt hast.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, anmelden</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fertig</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gehe zurück zur App, die den Code gezeigt hat (der Launcher oder das Backup-Tool).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Tritt dem Discord bei: Neuigkeiten, Hilfe und der Betreiber</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Entschuldigung</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Diese Anmeldung ist abgelaufen oder wurde in einem anderen Browser gestartet. Beginne von vorn.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Dieser Anmeldelink ist abgelaufen. Beginne von vorn im Launcher oder im Backup-Tool.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Dieser Anmeldelink ist ungültig. Beginne von vorn im Launcher oder im Backup-Tool.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam hat die Anmeldung nicht bestätigt. Beginne von vorn.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dieses Konto darf sich nicht anmelden.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dieses Formular stammt nicht von diesem Server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
 </root>

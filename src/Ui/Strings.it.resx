@@ -1398,4 +1398,33 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Su questo PC c'è una configurazione precedente del kit giocatore, ma non è valida: la finestra successiva la sostituisce in un passaggio.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Elimina</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Eliminare anche i dati del launcher (lingua, cartella del gioco e accesso salvato in %APPDATA%\hunter-resurgence)? Scegli No per conservarli.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Scegli il tuo nome</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>È il nome che vedono gli altri cacciatori.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Il tuo nome</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Da 3 a 20 lettere, cifre, - o _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Sono nuovo qui</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Ho già giocato: ripristina ciò che è stato conservato del mio vecchio profilo</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Abbiamo conservato una parte dei profili pubblici: oggetti, trofei, riserve, abilità, statistiche e obiettivi. Cacce, foto e denaro non sono stati conservati. I profili con punteggio alto vengono prima controllati dall’operatore.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lascia vuoto per usare il tuo vecchio nome, se è libero.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nome ha da 3 a 20 lettere, cifre, - o _ e inizia con una lettera o una cifra.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Questo nome è già in uso.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Scegli un nome: quello vecchio è già in uso.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Accedere all’app che mostra questo codice?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sei {0}. L’app che mostra questo codice (il launcher o lo strumento di backup) accederà come te.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Conferma solo se questo codice è sul tuo schermo in questo momento.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Accedere all’app su questo PC?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Sei {0}. L’app che hai appena avviato su questo PC (il launcher o lo strumento di backup) accederà come te.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Conferma solo se hai appena premuto «{0}» in una di esse.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sì, accedi</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fatto</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Torna all’app che ha mostrato il codice (il launcher o lo strumento di backup).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Unisciti al Discord: novità, aiuto e operatore</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Spiacenti</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Questo accesso è scaduto o è stato avviato in un altro browser. Ricomincia.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Questo link di accesso è scaduto. Ricomincia dal launcher o dallo strumento di backup.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Questo link di accesso non è valido. Ricomincia dal launcher o dallo strumento di backup.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam non ha confermato l’accesso. Ricomincia.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Questo account non può accedere.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Questo modulo non proviene da questo server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
 </root>

@@ -1398,4 +1398,33 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Pelaajapaketin vanhempi asennus on tällä tietokoneella mutta ei sovi: seuraava ikkuna korvaa sen yhdellä kertaa.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Poista</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Poistetaanko myös käynnistimen tiedot (kieli, pelikansio ja tallennettu kirjautuminen kansiossa %APPDATA%\hunter-resurgence)? Valitse Ei säilyttääksesi ne.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Valitse nimesi</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Tämän nimen muut metsästäjät näkevät.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Nimesi</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3–20 kirjainta, numeroa, - tai _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Olen uusi täällä</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Olen pelannut ennen: palauta se, mitä vanhasta profiilistani säilytettiin</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Säilytimme osan julkisista profiileista: esineet, trofeet, majat, taidot, tilastot ja saavutukset. Metsästyksiä, kuvia ja rahaa ei säilytetty. Ylläpitäjä tarkistaa korkean pistemäärän profiilit ensin.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Jätä tyhjäksi, jos haluat käyttää vanhaa nimeäsi, kun se on vapaa.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nimessä on 3–20 kirjainta, numeroa, - tai _, ja se alkaa kirjaimella tai numerolla.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Tämä nimi on jo käytössä.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Valitse nimi: vanha on jo käytössä.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Kirjataanko sisään sovellus, joka näyttää tämän koodin?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Olet {0}. Sovellus, joka näyttää tämän koodin (launcher tai varmuuskopiotyökalu), kirjataan sisään sinuna.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Vahvista vain, jos tämä koodi on juuri nyt näytölläsi.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Kirjataanko sisään tämän tietokoneen sovellus?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Olet {0}. Sovellus, jonka juuri käynnistit tällä tietokoneella (launcher tai varmuuskopiotyökalu), kirjataan sisään sinuna.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Vahvista vain, jos painoit juuri jossakin niistä kohtaa ”{0}”.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Kyllä, kirjaa sisään</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Valmis</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Palaa sovellukseen, joka näytti koodin (launcher tai varmuuskopiotyökalu).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Liity Discordiin: uutiset, apu ja ylläpitäjä</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Valitettavasti</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Tämä kirjautuminen vanheni tai se aloitettiin toisessa selaimessa. Aloita alusta.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Tämä kirjautumislinkki vanheni. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Tämä kirjautumislinkki ei kelpaa. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam ei vahvistanut kirjautumista. Aloita alusta.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä tili ei saa kirjautua sisään.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
 </root>

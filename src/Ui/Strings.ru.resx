@@ -1398,4 +1398,33 @@
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Прежняя настройка набора игрока есть на этом ПК, но не подходит: следующее окно заменит её за один шаг.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Удалить</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Удалить также данные лаунчера (язык, папку игры и сохранённый вход в %APPDATA%\hunter-resurgence)? Выберите «Нет», чтобы сохранить их.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Выберите имя</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Это имя увидят другие охотники.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Ваше имя</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>От 3 до 20 букв, цифр, - или _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Я здесь новичок</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Я играл раньше: восстановить то, что сохранилось от моего старого профиля</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, домики, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Оставьте пустым, чтобы использовать старое имя, если оно свободно.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Имя содержит от 3 до 20 букв, цифр, - или _ и начинается с буквы или цифры.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Выберите имя: старое занято.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Войти в приложении, которое показывает этот код?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Вы — {0}. Приложение, которое показывает этот код (лаунчер или инструмент резервного копирования), войдёт под вашим именем.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Подтверждайте, только если этот код сейчас на вашем экране.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Войти в приложении на этом ПК?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Вы — {0}. Приложение, которое вы только что запустили на этом ПК (лаунчер или инструмент резервного копирования), войдёт под вашим именем.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Подтверждайте, только если вы только что нажали «{0}» в одном из них.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Да, войти</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Готово</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Вернитесь в приложение, которое показало код (лаунчер или инструмент резервного копирования).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Присоединяйтесь к Discord: новости, помощь и оператор</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Извините</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Этот вход устарел или был начат в другом браузере. Начните заново.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ссылка для входа устарела. Начните заново из лаунчера или инструмента резервного копирования.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ссылка для входа недействительна. Начните заново из лаунчера или инструмента резервного копирования.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam не подтвердил вход. Начните заново.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Этой учётной записи вход запрещён.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
 </root>

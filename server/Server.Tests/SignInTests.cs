@@ -202,6 +202,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     Task<Reply> Xhr(string method, string host, string path, params (string, string)[] headers) =>
         server.SendAsync(method, host, path, [("X-Requested-With", "XMLHttpRequest"), .. headers], method == "POST" ? [] : null);
 
+    /// <summary>What the website's page of a step reads: the sign-in in progress in this browser.</summary>
+    Task<Reply> Pending(string host, string login) => Xhr("GET", host, "/auth/pending", Ck("hr_login", login));
+
+    /// <summary>A refused request of the player's browser is sent to the website's problem page, with the key of its reason.</summary>
+    static void Problem(Reply r, string reason)
+    {
+        Assert.Equal(302, r.Status);
+        Assert.Equal("/signin/problem?reason=" + reason, Location(r));
+    }
+
     /// <summary>The first half: the browser at /auth/steam/login, and Steam's return URL (path and query on the host) it will come back to.</summary>
     async Task<(string Login, string ReturnPath)> Begin(string host, string query = "", string path = "/auth/steam/login")
     {
@@ -223,9 +233,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var begun = await Begin(host, query);
         var back = await Return(host, begun, steamId);
         Assert.Equal(302, back.Status);
-        if (Location(back) == "/auth/handle")
+        if (Location(back) == "/signin/handle")
         {
-            Assert.Contains("Choose your name", Body(await Get(host, "/auth/handle", Ck("hr_login", begun.Login))));
+            Assert.Equal("handle", (string)JsonNode.Parse((await Pending(host, begun.Login)).Body)!["step"]!);
             back = await PostForm(host, "/auth/handle", $"csrf={begun.Login}&handle={handle}", Ck("hr_login", begun.Login));
         }
         return Cookie(back, "hr_session") ?? throw new InvalidOperationException($"no session: {Location(back)}");
@@ -647,11 +657,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         await SignIn("99999999999999991", "Hunter_One");
         var begun = await Begin("web.test");
         await Return("web.test", begun, "99999999999999992");
-        foreach (var (handle, text) in new[] { ("hunter_one", "taken"), ("HUNTER_ONE", "taken"), ("x", "3 to 20"), ("two words", "3 to 20") })
+        foreach (var (handle, error) in new[] { ("hunter_one", "taken"), ("HUNTER_ONE", "taken"), ("x", "invalid"), ("two words", "invalid") })
         {
-            var page = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode(handle)}", Ck("hr_login", begun.Login));
-            Assert.Equal(200, page.Status);
-            Assert.Contains(text, Body(page));
+            var again = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode(handle)}", Ck("hr_login", begun.Login));
+            Assert.Equal("/signin/handle", Location(again));  // the website's page shows the form again, with the reason
+            var shown = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;
+            Assert.Equal((error, handle), ((string)shown["error"]!, (string)shown["handle"]!));
         }
         Assert.Null(state.Store.AccountBySteam("99999999999999992"));
         var ok = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle=Second", Ck("hr_login", begun.Login));
@@ -664,15 +675,15 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         var begun = await Begin("web.test");
         var url = begun.ReturnPath + "&" + FakeSteam.Assertion("https://web.test" + begun.ReturnPath);
-        Assert.Equal(400, (await Get("web.test", url)).Status);                                  // no cookie: another browser
-        Assert.Equal(400, (await Get("web.test", url, Ck("hr_login", "0000"))).Status);          // not its login
+        Problem(await Get("web.test", url), "expired");                                  // no cookie: another browser
+        Problem(await Get("web.test", url, Ck("hr_login", "0000")), "expired");          // not its login
         Assert.Empty(fake.Asked);
         Assert.Equal(302, (await Get("web.test", url, Ck("hr_login", begun.Login))).Status);
-        Assert.Equal(400, (await Get("web.test", url, Ck("hr_login", begun.Login))).Status);     // the same URL again
+        Problem(await Get("web.test", url, Ck("hr_login", begun.Login)), "expired");     // the same URL again
         // an assertion for the other host's return URL is not this one's
         var other = await Begin("web.test");
         var wrong = await Get("web.test", other.ReturnPath + "&" + FakeSteam.Assertion("https://signup.test" + other.ReturnPath), Ck("hr_login", other.Login));
-        Assert.Equal(400, wrong.Status);
+        Problem(wrong, "steam");
     }
 
     [Fact]
@@ -680,40 +691,58 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         fake.Answer = "is_valid:false\n";
         var back = await Return("web.test", await Begin("web.test"));
-        Assert.Equal(400, back.Status);
+        Problem(back, "steam");
         Assert.Null(Cookie(back, "hr_session"));
         Assert.Null(state.Store.AccountBySteam("99999999999999991"));
     }
 
     [Fact]
-    public async Task TestThePagesCarryTheirSecurityHeaders()
-    {
-        var begun = await Begin("signup.test");
-        await Return("signup.test", begun);
-        foreach (var page in new[] { await Get("signup.test", "/auth/handle", Ck("hr_login", begun.Login)), await Get("signup.test", "/") })
-        {
-            Assert.Equal(200, page.Status);
-            foreach (var header in new[] { ("Referrer-Policy", "same-origin"), ("X-Frame-Options", "DENY"), ("Cache-Control", "no-store"),
-                                           ("X-Content-Type-Options", "nosniff"), ("Content-Type", "text/html; charset=utf-8") })
-                Assert.Contains(header, page.Headers);
-        }
-    }
-
-    [Fact]
-    public async Task TestATypedHandleIsEscapedWhenTheFormComesBack()
+    public async Task TestTheStartPageAndTheStateCarryTheirSecurityHeaders()
     {
         var begun = await Begin("web.test");
         await Return("web.test", begun);
-        var page = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode("\"><script>alert(1)</script>")}", Ck("hr_login", begun.Login));
-        Assert.Equal(200, page.Status);
-        Assert.Contains("&quot;&gt;&lt;script&gt;", Body(page));
-        Assert.DoesNotContain("<script>alert", Body(page));
+        var start = await Get("signup.test", "/");
+        Assert.Equal(200, start.Status);
+        foreach (var header in new[] { ("Referrer-Policy", "same-origin"), ("X-Frame-Options", "DENY"), ("Cache-Control", "no-store"),
+                                       ("X-Content-Type-Options", "nosniff"), ("Content-Type", "text/html; charset=utf-8") })
+            Assert.Contains(header, start.Headers);
+        var pending = await Pending("web.test", begun.Login);  // the csrf token is in it: never cached, never sniffed into a script
+        Assert.Equal(200, pending.Status);
+        foreach (var header in new[] { ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff"), ("Content-Type", "application/json") })
+            Assert.Contains(header, pending.Headers);
+        Assert.Contains(("Cache-Control", "no-store"), (await Get("web.test", "/auth/confirm", Ck("hr_login", begun.Login))).Headers);
+    }
+
+    [Fact]
+    public async Task TestATypedHandleComesBackAsDataNotMarkup()
+    {
+        var begun = await Begin("web.test");
+        await Return("web.test", begun);
+        const string Hostile = "\"><script>alert(1)</script>";
+        var again = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode(Hostile)}", Ck("hr_login", begun.Login));
+        Assert.Equal("/signin/handle", Location(again));
+        var shown = await Pending("web.test", begun.Login);
+        Assert.Equal(Hostile[..20], (string)JsonNode.Parse(shown.Body)!["handle"]!);  // data for the website's page, which encodes it; cut to the 20 characters a name has
+        Assert.Contains(("Content-Type", "application/json"), shown.Headers);
+    }
+
+    [Fact]
+    public async Task TestTheStepsStateNeedsTheBrowsersOwnLoginAndAPageOfThisSite()
+    {
+        var begun = await Begin("web.test");
+        Assert.Equal(404, (await Pending("web.test", begun.Login)).Status);   // Steam has not confirmed yet
+        await Return("web.test", begun);
+        Assert.Equal(404, (await Xhr("GET", "web.test", "/auth/pending")).Status);                       // another browser: no cookie
+        Assert.Equal(404, (await Pending("web.test", "0000")).Status);
+        Assert.Equal(400, (await server.SendAsync("GET", "web.test", "/auth/pending", [Ck("hr_login", begun.Login)])).Status);  // not a page of ours: no X-Requested-With
+        var step = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;
+        Assert.Equal(("handle", begun.Login), ((string)step["step"]!, (string)step["csrf"]!));
     }
 
     [Fact]
     public async Task TestOnePlayersJourneyFromSignInToTheBoard()
     {
-        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var cookie = await SignIn();
         var launch = await Xhr("POST", "signup.test", "/auth/launch", Ck("hr_session", cookie));
         var session = System.Text.RegularExpressions.Regex.Match((string)JsonNode.Parse(launch.Body)!["url"]!, @"game_web\.test/([0-9a-f]{40})/").Groups[1].Value;
         Assert.NotEmpty(session);
@@ -816,7 +845,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         // a game token is no session, and a session no game token
         Assert.Null(await Me(state.Store.CreateToken(state.Store.AccountBySteam("99999999999999991")!.Value)));
         Assert.Null(state.Store.ResolveToken(cookie));
-        Assert.Equal("/auth/handle", Location(back));
+        Assert.Equal("/signin/handle", Location(back));
     }
 
     [Fact]
@@ -826,7 +855,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE steam_id64 = ?", "99999999999999991");
         var back = await Return("web.test", await Begin("web.test"));
-        Assert.Equal(403, back.Status);
+        Problem(back, "banned");
         Assert.Null(Cookie(back, "hr_session"));
     }
 
@@ -840,7 +869,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Contains("Sign in with Steam", Body(page));
         Assert.DoesNotContain("id=\"play\"", Body(page));
         AssertNewLauncherLinks(Body(page));
-        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var cookie = await SignIn();
         page = await Get("signup.test", "/", Ck("hr_session", cookie));
         Assert.Contains("Hello, Hunter_One", Body(page));
         Assert.Contains("id=\"play\"", Body(page));
@@ -848,16 +877,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.DoesNotContain("=>", Body(page));   // ES5 only: the launcher's browser is Chromium 25
         Assert.DoesNotContain("let ", Body(page));
         Assert.DoesNotContain("const ", Body(page));
+        foreach (var modern in new[] { "grid", "var(", "--", "gap" })  // no grid, no CSS variables, no flex gap: the launcher's browser is Chromium 25
+            Assert.DoesNotContain(modern, Body(page));
     }
 
     [Fact]
-    public void TestThePagesAfterSignInLinkTheDiscordOnlyWhenSet()
+    public void TestTheStartPageLinksTheDiscordOnlyWhenSet()
     {
         const string Url = "https://discord.test/invite";
-        foreach (var page in new[] { AuthPages.Done(Url), AuthPages.Start("Hunter_One", "/", Url), AuthPages.Confirm("c", "Hunter_One", "AB-12", Url), AuthPages.ConfirmApp("c", "Hunter_One", Url) })
-            Assert.Contains($"href=\"{Url}\" target=\"_blank\" rel=\"noopener\"", page);
-        foreach (var page in new[] { AuthPages.Done(), AuthPages.Start("Hunter_One"), AuthPages.Confirm("c", "Hunter_One", "AB-12"), AuthPages.ConfirmApp("c", "Hunter_One") })
-            Assert.DoesNotContain("discord", page, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"href=\"{Url}\" target=\"_blank\" rel=\"noopener\"", AuthPages.Start("Hunter_One", Url));
+        Assert.DoesNotContain("discord", AuthPages.Start("Hunter_One"), StringComparison.OrdinalIgnoreCase);
     }
 
     static void AssertNewLauncherLinks(string html)
@@ -871,7 +900,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestTheStartPageGivesALaunchUrlWhoseTokensAreThePlayers()
     {
-        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var cookie = await SignIn();
         Assert.Equal(401, (await Xhr("POST", "signup.test", "/auth/launch")).Status);
         Assert.Equal(400, (await server.SendAsync("POST", "signup.test", "/auth/launch", [Ck("hr_session", cookie)], [])).Status);
         var reply = await Xhr("POST", "signup.test", "/auth/launch", Ck("hr_session", cookie));
@@ -895,22 +924,28 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var j = JsonNode.Parse(link.Body)!;
         var (code, userCode) = ((string)j["code"]!, (string)j["userCode"]!);
         Assert.Matches("^[0-9A-F]{4}-[0-9A-F]{4}$", userCode);
-        Assert.Equal($"https://signup.test/auth/steam/login?link={code}", (string)j["url"]!);
+        Assert.Equal($"https://web.test/auth/steam/login?link={code}", (string)j["url"]!);  // the player's browser signs in on our site, whose pages it sees
         Assert.Equal("pending", (string)JsonNode.Parse((await Get("signup.test", "/auth/link/" + code)).Body)!["status"]!);
+        // another host does not start a sign-in: it sends the browser to our site, with the same fixed path and query
+        var moved = await Get("signup.test", "/auth/steam/login?link=" + code);
+        Assert.Equal($"https://web.test/auth/steam/login?link={code}", Location(moved));
+        Assert.Null(Cookie(moved, "hr_login"));
 
-        // in the player's browser: Steam, the first sign-in's name, then the confirmation of the code
-        var begun = await Begin("signup.test", "?link=" + code);
-        var back = await Return("signup.test", begun);
-        Assert.Equal("/auth/handle", Location(back));
-        var named = await PostForm("signup.test", "/auth/handle", $"csrf={begun.Login}&handle=Launched", Ck("hr_login", begun.Login));
-        Assert.Equal("/auth/confirm", Location(named));
+        // in the player's browser, on our site: Steam, the first sign-in's name, then the confirmation of the code
+        var begun = await Begin("web.test", "?link=" + code);
+        var back = await Return("web.test", begun);
+        Assert.Equal("/signin/handle", Location(back));
+        var named = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle=Launched", Ck("hr_login", begun.Login));
+        Assert.Equal("/signin/confirm", Location(named));
         Assert.Null(Cookie(named, "hr_session"));  // this browser is not signed in on the start page: the launcher is
-        var ask = Body(await Get("signup.test", "/auth/confirm", Ck("hr_login", begun.Login)));
-        Assert.Contains(userCode, ask);
-        Assert.Contains("Launched", ask);
+        Assert.Equal("/signin/confirm", Location(await Get("web.test", "/auth/confirm", Ck("hr_login", begun.Login))));
+        var ask = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;
+        Assert.Equal(("confirm", userCode, "Launched", begun.Login), ((string)ask["step"]!, (string)ask["code"]!, (string)ask["handle"]!, (string)ask["csrf"]!));
         Assert.Equal("pending", (string)JsonNode.Parse((await Get("signup.test", "/auth/link/" + code)).Body)!["status"]!);  // not before the player says yes
-        Assert.Equal(400, (await PostForm("signup.test", "/auth/confirm", "csrf=0", Ck("hr_login", begun.Login))).Status);
-        Assert.Equal(200, (await PostForm("signup.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login))).Status);
+        Problem(await PostForm("web.test", "/auth/confirm", "csrf=0", Ck("hr_login", begun.Login)), "form");
+        var done = await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login));
+        Assert.Equal("/signin/done", Location(done));
+        Assert.Equal(404, (await Pending("web.test", begun.Login)).Status);  // the sign-in is over: nothing to confirm again
 
         var poll = await Get("signup.test", "/auth/link/" + code);
         Assert.Equal("ok", (string)JsonNode.Parse(poll.Body)!["status"]!);
@@ -923,8 +958,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestALinkNeedsALiveCode()
     {
-        var start = await Get("signup.test", "/auth/steam/login?link=" + new string('a', 32));
-        Assert.Equal(400, start.Status);
+        Problem(await Get("web.test", "/auth/steam/login?link=" + new string('a', 32)), "link");
         Assert.Equal(400, (await server.SendAsync("POST", "signup.test", "/auth/link", [], [])).Status);
     }
 
@@ -946,8 +980,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         var begun = await Begin(host, $"?challenge={challenge}&port=51234&state={AppState}", "/auth/app/start");
         var back = await Return(host, begun);
-        if (Location(back) == "/auth/handle") back = await PostForm(host, "/auth/handle", $"csrf={begun.Login}&handle={handle}", Ck("hr_login", begun.Login));
-        Assert.Equal("/auth/confirm", Location(back));
+        if (Location(back) == "/signin/handle") back = await PostForm(host, "/auth/handle", $"csrf={begun.Login}&handle={handle}", Ck("hr_login", begun.Login));
+        Assert.Equal("/signin/confirm", Location(back));
         return await PostForm(host, "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login));
     }
 
@@ -958,19 +992,22 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         var (verifier, challenge) = Pkce();
         var begun = await Begin("web.test", $"?challenge={challenge}&port=51234&state={AppState}", "/auth/app/start");
-        Assert.Equal("/auth/handle", Location(await Return("web.test", begun)));
+        Assert.Equal("/signin/handle", Location(await Return("web.test", begun)));
         var named = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle=Looper", Ck("hr_login", begun.Login));
-        Assert.Equal("/auth/confirm", Location(named));
+        Assert.Equal("/signin/confirm", Location(named));
         Assert.Null(Cookie(named, "hr_session"));  // this browser is not signed in: the app is
-        Assert.Contains("Looper", Body(await Get("web.test", "/auth/confirm", Ck("hr_login", begun.Login))));
-        Assert.Equal(400, (await PostForm("web.test", "/auth/confirm", "csrf=0", Ck("hr_login", begun.Login))).Status);
-        Assert.Equal(400, (await server.SendAsync("POST", "web.test", "/auth/confirm", [.. Form, Ck("hr_login", begun.Login)], Encoding.UTF8.GetBytes("csrf=" + begun.Login))).Status);  // a cross-site form carries no Origin and no header
+        var ask = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;
+        Assert.Equal(("app", "Looper", null), ((string)ask["step"]!, (string)ask["handle"]!, (string?)ask["code"]));
+        Problem(await PostForm("web.test", "/auth/confirm", "csrf=0", Ck("hr_login", begun.Login)), "form");
+        Problem(await server.SendAsync("POST", "web.test", "/auth/confirm", [.. Form, Ck("hr_login", begun.Login)], Encoding.UTF8.GetBytes("csrf=" + begun.Login)), "form");  // a cross-site form carries no Origin and no header
+        Problem(await server.SendAsync("POST", "web.test", "/auth/confirm", [.. Form, ("Origin", "https://evil.test"), Ck("hr_login", begun.Login)], Encoding.UTF8.GetBytes("csrf=" + begun.Login)), "form");
+        Problem(await server.SendAsync("POST", "web.test", "/auth/handle", [.. Form, ("Origin", "https://evil.test"), Ck("hr_login", begun.Login)], Encoding.UTF8.GetBytes("csrf=" + begun.Login + "&handle=Another")), "expired");  // the name was chosen: nothing to choose again
 
         var sent = await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login));
         Assert.Equal(302, sent.Status);
         var redirect = System.Text.RegularExpressions.Regex.Match(Location(sent), $@"\Ahttp://127\.0\.0\.1:51234/\?code=([0-9a-f]{{64}})&state={AppState}\z");
         Assert.True(redirect.Success, Location(sent));
-        Assert.Equal(400, (await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login))).Status);  // one confirmation, one code
+        Problem(await PostForm("web.test", "/auth/confirm", "csrf=" + begun.Login, Ck("hr_login", begun.Login)), "expired");  // one confirmation, one code
 
         var code = redirect.Groups[1].Value;
         Assert.Equal(400, (await Exchange(code, verifier)).Status);  // not from our own page: no X-Requested-With
@@ -1014,7 +1051,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         })
         {
             var start = await Get("web.test", "/auth/app/start" + query);
-            Assert.Equal(400, start.Status);
+            Problem(start, "app");
             Assert.Null(Cookie(start, "hr_login"));
         }
         Assert.Equal(302, (await Get("web.test", $"/auth/app/start?challenge={challenge}&port=1024&state={AppState}")).Status);
@@ -1037,7 +1074,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestLaunchStartIssuesTheTokensOfTheRequestsAccount()
     {
-        var cookie = await SignIn("99999999999999991", "Hunter_One", "signup.test");
+        var cookie = await SignIn();
         var player = state.Store.AccountBySteam("99999999999999991")!.Value;
         var token = state.Store.CreateToken(player, TimeSpan.FromHours(1));
         var reply = await server.SendAsync("POST", "api.test", LAUNCH_START, Form, Encoding.ASCII.GetBytes($"start=100&reserve=2&loctype=LODGE&oauth_access_token={token}"));
@@ -1230,7 +1267,7 @@ public class SignInClockTests : StateTestBase
         clock += TimeSpan.FromMinutes(14);
         Assert.Equal(302, (await Return(early)).Status);
         clock += TimeSpan.FromMinutes(2);
-        Assert.Equal(400, (await Return(late)).Status);
+        Assert.Equal("/signin/problem?reason=expired", (await Return(late)).Headers.Single(h => h.Name == "Location").Value);
     }
 
     [Fact]
@@ -1278,7 +1315,7 @@ public class SignInClockTests : StateTestBase
             Assert.Equal(302, start.Status);
             ids.Add(LoginOf(start));
         }
-        Assert.Equal(400, (await Return(ids[0])).Status);
+        Assert.Equal("/signin/problem?reason=expired", (await Return(ids[0])).Headers.Single(h => h.Name == "Location").Value);
         Assert.Equal(302, (await Return(ids[^1])).Status);
     }
 

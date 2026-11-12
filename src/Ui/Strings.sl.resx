@@ -1398,4 +1398,33 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starejša nastavitev kompleta igralca je v tem računalniku, vendar ne ustreza: naslednje okno jo zamenja v enem koraku.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Izbriši</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Izbrišem tudi podatke zaganjalnika (jezik, mapo igre in shranjeno prijavo v %APPDATA%\hunter-resurgence)? Izberite Ne, če jih želite obdržati.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Izberite svoje ime</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>To ime vidijo drugi lovci.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Vaše ime</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 do 20 črk, števk, - ali _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Tu sem nov</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Že sem igral: obnovi, kar je bilo shranjeno od mojega starega profila</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Shranili smo del javnih profilov: predmete, trofeje, koče, spretnosti, statistiko in dosežke. Lovi, fotografije in denar niso bili shranjeni. Profile z visokim izidom najprej preveri operater.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Pustite prazno, če želite uporabiti staro ime, ko je prosto.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Ime ima 3 do 20 črk, števk, - ali _ in se začne s črko ali števko.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>To ime je zasedeno.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Izberite ime: staro je zasedeno.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Prijavim aplikacijo, ki prikazuje to kodo?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vi ste {0}. Aplikacija, ki prikazuje to kodo (zaganjalnik ali orodje za varnostno kopiranje), bo prijavljena kot vi.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potrdite le, če je ta koda zdaj na vašem zaslonu.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Prijavim aplikacijo na tem računalniku?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Vi ste {0}. Aplikacija, ki ste jo pravkar zagnali na tem računalniku (zaganjalnik ali orodje za varnostno kopiranje), bo prijavljena kot vi.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potrdite le, če ste pravkar pritisnili »{0}« v eni od njiju.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Da, prijavi</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Končano</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vrnite se v aplikacijo, ki je prikazala kodo (zaganjalnik ali orodje za varnostno kopiranje).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Pridružite se Discordu: novice, pomoč in operater</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Oprostite</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ta prijava je potekla ali je bila začeta v drugem brskalniku. Začnite znova.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ta povezava za prijavo je potekla. Začnite znova iz zaganjalnika ali orodja za varnostno kopiranje.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ta povezava za prijavo ni veljavna. Začnite znova iz zaganjalnika ali orodja za varnostno kopiranje.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam prijave ni potrdil. Začnite znova.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun se ne sme prijaviti.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
 </root>

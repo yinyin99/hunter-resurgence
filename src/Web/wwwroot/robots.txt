@@ -8,6 +8,7 @@ Disallow: /
 User-agent: *
 Disallow: /_blazor/
 Disallow: /auto-login
+Disallow: /signin/
 Disallow: /logout
 Disallow: /email/
 Disallow: /thank-you

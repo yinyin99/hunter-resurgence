@@ -1,0 +1,34 @@
+@page "/signin/confirm"
+@layout SignInLayout
+@inject ISignInService SignIn
+
+@* the player says yes to the launcher that shows the code, or to the app on this PC that just started the sign-in; the server does the rest (POST /auth/confirm, docs/server.md#sign-in-and-tokens) *@
+@if (!loaded) { }
+else if (step is { Step: "confirm" or "app" })
+{
+    var code = step.Step == "confirm";
+    <PageTitle>@L[code ? "SignInPage.Confirm.CodeTitle" : "SignInPage.Confirm.AppTitle"]</PageTitle>
+    <h1>@L[code ? "SignInPage.Confirm.CodeTitle" : "SignInPage.Confirm.AppTitle"]</h1>
+    @if (code) { <p class="code">@step.Code</p> }
+    <p>@L.Frag(code ? "SignInPage.Confirm.CodeText" : "SignInPage.Confirm.AppText", Bold(step.Handle))</p>
+    <form method="post" action="/auth/confirm">
+        <input type="hidden" name="csrf" value="@step.Csrf" />
+        <button type="submit" class="btn btn-primary btn-large btn-block">@L["SignInPage.Confirm.Yes"]</button>
+    </form>
+    <p class="note">@(code ? L["SignInPage.Confirm.CodeNote"] : L["SignInPage.Confirm.AppNote", L["Signin.Steam"].Value])</p>
+    <SignInDiscord />
+}
+else { <SignInProblem Reason="expired" /> }
+
+@code {
+    SignInStep? step;
+    bool loaded;
+
+    RenderFragment Bold(string text) => @<b>@text</b>;
+
+    protected override async Task OnInitializedAsync()
+    {
+        step = await SignIn.PendingAsync();
+        loaded = true;
+    }
+}
