@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Fechar o Steam e configurar</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiar a linha em vez disso</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Não perguntar de novo</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Junte-se a nós no Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>A comunidade se reúne no Discord: novidades, ajuda e outros caçadores. Venha dizer oi!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Entrar no Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Depois</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Pronto. O botão Jogar do Steam agora abre este iniciador. Iniciar o Steam novamente?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Iniciar o Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Este iniciador não foi instalado com o instalador (cópia de desenvolvimento ou descompactada), então não pode definir a opção de inicialização do Steam para você.</value></data>

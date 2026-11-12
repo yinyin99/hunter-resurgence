@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Închide Steam și setează</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiază în schimb linia</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Nu mai întreba</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Alătură-te nouă pe Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Comunitatea se întâlnește pe Discord: noutăți, ajutor și alți vânători. Vino să saluți!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Intră pe Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Mai târziu</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Gata. Butonul Joacă din Steam deschide acum acest launcher. Pornești din nou Steam?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Pornește Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Acest launcher nu a fost instalat cu programul de instalare (copie de dezvoltare sau dezarhivată), deci nu poate seta opțiunea de lansare din Steam pentru tine.</value></data>

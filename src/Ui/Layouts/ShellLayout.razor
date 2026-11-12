@@ -7,6 +7,8 @@
 @inject ISessionService Sessions
 @inject ILauncherBridge Bridge
 @inject AssetImages Images
+@inject IDiscordInviteService Invite
+@inject Branding Brand
 
 @* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher shows it too *@
 <div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
@@ -35,7 +37,7 @@
 @code {
     IJSObjectReference? module;
     DotNetObjectReference<ShellLayout>? self;
-    bool quick, alerted, eula;
+    bool quick, alerted, eula, offered;
     Session? session;
     Action? changed;
     string? pageBg;
@@ -72,10 +74,18 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
-        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
-        await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
-        if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
+            if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
+        }
+        // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, once per account (docs/website.md)
+        if (!offered && !eula && session is { Handle.Length: > 0 } && Brand.Link("discord") is not null && await Sessions.LicenseAcceptedAsync())
+        {
+            offered = true;
+            await Modal.OfferDiscordAsync(Invite);
+        }
     }
 
     /// <summary>Called by shell.js on Ctrl+D in the launcher window.</summary>

@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Cerrar Steam y aplicarlo</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiar la línea en su lugar</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>No volver a preguntar</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Únete a nosotros en Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>La comunidad se reúne en Discord: novedades, ayuda y otros cazadores. ¡Ven a saludar!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Unirse al Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Más tarde</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Listo. El botón Jugar de Steam ahora abre este lanzador. ¿Volver a iniciar Steam?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Iniciar Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Este lanzador no se instaló con el instalador (copia de desarrollo o descomprimida), así que no puede establecer la opción de lanzamiento de Steam por ti.</value></data>

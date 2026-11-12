@@ -179,6 +179,10 @@ The launch map's reserve badges are the normal `reserve-<NN>` pictures. While th
 
 While an event runs, the launch map and the tutorials page show a line with the event's name and its reserves and the same "Play seasonal events" box (`EventSwitch`), reading and writing the same setting as the dialog (`ISeasonalEventsService`). Changing it there switches the badges at once and applies to the next hunt; a refused change turns the box back with a message. A reserve the event is on gets a small star on its badge when the operator has no picture for the slot. With no event the line and box are not shown; the Settings menu item stays.
 
+## The Discord invitation
+
+With `link_discord` set (the `LINK_DISCORD` variable of the website's deploy wins over it there; the launcher reads only `settings.json`), the feed shows a "Join the Discord" button above Discord's frame, as on the website, and the first time an account is in the launcher's shell after a sign-in a dialog says the community meets on Discord, with "Join the Discord" and "Later" (`DiscordInviteModal`; [website.md](website.md) has the details). Both open the invite in the player's browser. The dialog comes once per account, not per PC: the server remembers it (`ServerDiscordInviteService`, `POST /account/discord`), and it never opens over another dialog, so the first-start dialogs (the older setup, the player kit, Steam's Play button) come first and the invitation, if it was skipped for one of them, at the next start (one that finds a dialog opened while the server answers is dropped, as the server has stored it already). Without `server_url` the mock asks once per run.
+
 ## Files on the PC
 
 | File | Who writes it | Content |

@@ -45,6 +45,7 @@ static class LauncherServices
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<ISeasonalEventsService>(new MockSeasonalEventsService(mock));
+        services.AddSingleton<IDiscordInviteService>(new MockDiscordInviteService());
         // the feed's Discord frame for link_discord, as on the website (docs/website.md); without the link there is none
         var discord = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
         discord.DefaultRequestHeaders.UserAgent.ParseAdd("hunter-resurgence");
@@ -83,6 +84,7 @@ static class LauncherServices
             new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>()));
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
+        services.AddSingleton<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>()));
         services.AddSingleton<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<IInventoryService>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
         // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL
