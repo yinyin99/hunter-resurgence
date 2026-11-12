@@ -192,4 +192,24 @@ public class LaunchCatalogueTests : StateTestBase
         Assert.Equal("", Open());
         Assert.Equal(400, (await Launch("tutorial=99")).Status);
     }
+
+    /// <summary>Two hunts from different lodges and one with no start: the game's list carries each one's location id, the website's history and hunt page its name
+    /// (the catalogue's `name`, else the game's `locations_descr` text of the connect, else the kind and its number); no start is no lodge.</summary>
+    [Fact]
+    public void EachHuntListsItsOwnStartingLodgeInTheGameAndOnTheWebsite()
+    {
+        var connect = CONNECT;
+        connect["locations_descr"] = JsonNode.Parse("""[{"id": 11, "name": "Border Lodge", "description": null}, {"id": 102, "name": "Ignored", "description": null}]""");
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, Catalogue(), LOCALE, TEXTURES);
+        state.NoteLaunch(ME, "start=10&reserve=1"u8.ToArray());
+        state.NoteLaunch(ME, "reserve=1&lodge_id=11"u8.ToArray());  // the launcher's form
+        state.NoteLaunch(ME, "start=102&reserve=2"u8.ToArray());  // a point of interest with a name of its own
+        state.NoteLaunch(ME, "reserve=2"u8.ToArray());  // no start
+
+        var game = JsonNode.Parse(state.ExpeditionListReply(ME, "{}"u8.ToArray(), []))!["expeditions"]!.AsArray();
+        Eq("[null, 102, 11, 10]", new JsonArray(game.Select(e => e!["location_id"]?.DeepClone()).ToArray()));
+        var rows = state.PublicHunts(ME, 1)["rows"]!.AsArray();
+        Eq("""["", "Old Mill", "Border Lodge", "Lodge 1"]""", new JsonArray(rows.Select(r => (JsonNode?)r!["lodge"]!.DeepClone()).ToArray()));
+        Eq("""["", "Old Mill", "Border Lodge", "Lodge 1"]""", new JsonArray(rows.Select(r => (JsonNode?)state.PublicHunt(ME, (long)r!["id"]!)!["lodge"]!.DeepClone()).ToArray()));
+    }
 }

@@ -13,7 +13,7 @@ public sealed partial class State
 {
     public const string UPLOAD_PATH = "/upload/storage/v1/b/photos/o";  // object-storage upload shape the client uses
     public const string PHOTO_PREFIX = "/photos/";
-    public const string TOAST_TEXT = "Local test server\nProgress is not saved to the official servers";
+    public const string TOAST_TEXT = "Hunter Resurgence community server\nProgress is saved on the community server";
     public const long SHOT_EVIDENCE = 14;  // photo_type of the automatic shot screenshot
     // the client often exits without disconnect: an open expedition with no heartbeat for this long has ended
     // (the client sends heartbeats about every 20 s)
@@ -1460,8 +1460,21 @@ public sealed partial class State
         ["LODGE"] = ("lodge", "Lodge"), ["CAMPSITE"] = ("campsite", "Campsite"), ["HUNTING_TOWER"] = ("tower", "Tower"), ["INTEREST"] = ("interest", "Point of interest"),
     };
 
+    Dictionary<long, string>? placeTexts;
+
+    /// <summary>A start's own name: the catalogue's `name`, else the game's text for it (`locations_descr` of the connect, which the game's own screens read by location id); null with neither.</summary>
+    string? PlaceName(JsonObject l)
+    {
+        if (Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0)
+            return (string)l["name"]!;
+        // built whole before it is shared: a request on another thread never reads a half-filled table
+        placeTexts ??= Arr(G(connect, "locations_descr", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _) && Py.IsStr(d["name"]) && ((string)d["name"]!).Length > 0)
+            .GroupBy(d => Py.L(d["id"])).ToDictionary(g => g.Key, g => (string)g.Last()["name"]!);
+        return placeTexts.GetValueOrDefault(Py.L(l["id"]));
+    }
+
     /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are percent
-    /// (two decimals) of the reserve's map picture, world x to the right and z down: the picture covers the square of the facts file's `reserves[].map`; a reserve without one is
+    /// (two decimals) of the reserve's map picture, world x to the right and z down: the picture covers the box of the facts file's `reserves[].map`; a reserve without one is
     /// the square around its starts with 10% left free on each side.</summary>
     public JsonObject LaunchCatalogue()
     {
@@ -1490,7 +1503,7 @@ public sealed partial class State
                 seen[kind] = seen.GetValueOrDefault(kind) + 1;
                 return (JsonNode?)new JsonObject
                 {
-                    ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0 ? (string)l["name"]! : $"{word} {seen[kind]}",
+                    ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = PlaceName(l) ?? $"{word} {seen[kind]}",
                     ["x"] = Math.Round((Py.D(l["pos"]!["x"]) - left) / (right - left) * 100, 2), ["y"] = Math.Round((Py.D(l["pos"]!["z"]) - top) / (bottom - top) * 100, 2),
                 };
             }).ToArray());

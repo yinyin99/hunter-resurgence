@@ -161,20 +161,21 @@ public sealed class LiveSiteTests : UiContext
     [Fact]
     public void TheHistoryTabListsTheServersHuntsAndLinksEachToItsPage()
     {
-        const string hunts = """{"page":1,"pages":1,"total":2,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Fox Reserve","lodge":"#101","collectables":0,"kills":2},{"id":11,"start":1699990000,"seconds":0,"reserve":"Fox Reserve","lodge":"","collectables":1,"kills":0}]}""";
+        const string hunts = """{"page":1,"pages":1,"total":2,"rows":[{"id":12,"start":1700000100,"seconds":3600,"reserve":"Fox Reserve","lodge":"Border Lodge","collectables":0,"kills":2},{"id":11,"start":1699990000,"seconds":0,"reserve":"Fox Reserve","lodge":"","collectables":1,"kills":0}]}""";
         Services.AddSingleton<IProfileService>(Real(new Server(Hunter, "{}", hunts: hunts)));
         Live(true);
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "statistics").Add(h => h.Sub, "history"));
         cut.WaitForAssertion(() => Assert.Equal(["/profile/Fox/expedition/12", "/profile/Fox/expedition/11"], cut.FindAll("table.hist a").Select(a => a.GetAttribute("href"))));
         Assert.Equal("2023-11-14 22:15", cut.Find("table.hist a").TextContent);
         Assert.Contains("Fox Reserve", cut.Markup);
+        Assert.Contains("Border Lodge", cut.Find("table.hist").TextContent);
     }
 
     [Fact]
     public void TheHuntPageShowsTheServersHuntAndLinksOnlyTheKillsWithASheet()
     {
         const string hunt = """
-            {"id":12,"reserve":"Fox Reserve","lodge":"#101","start":1700000100,"end":1700003700,"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
+            {"id":12,"reserve":"Fox Reserve","lodge":"Border Lodge","start":1700000100,"end":1700003700,"weapons":[{"weapon":"Fox Rifle","ammo":"Fox Bullet","shots":1,"accuracy":100.0,"kills":1,"killsPerHit":100.0,"longest":82.0}],
              "animals":[{"name":"Fox Deer","spotted":0,"tracked":0,"harvested":2}],"collectables":[],"achievements":[],"distanceKm":4.0,"seconds":3600,"antlers":[],
              "kills":[{"id":5,"species":"Fox Deer","weapon":"Fox Rifle","ammo":"Fox Bullet","distanceM":82.0,"score":120.5,"weightKg":64.35,"when":1700000500,"sheet":true},
                       {"id":777,"species":"Restored Deer","weapon":"Fox Rifle","ammo":"Fox Bullet","distanceM":60.0,"score":99.0,"weightKg":50.0,"when":1700000600,"sheet":false}]}
@@ -184,6 +185,7 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "expedition").Add(h => h.Sub, "12"));
         cut.WaitForAssertion(() => Assert.Contains("Fox Reserve", cut.Markup));
         Assert.Contains("Fox Rifle", cut.Markup);
+        Assert.Equal("Fox Reserve - Border Lodge", cut.Find(".head .where").TextContent);
         Assert.Equal(["/profile/Fox/score/5"], cut.FindAll("table.kills a").Select(a => a.GetAttribute("href")));  // the restored kill has no sheet yet
         Assert.Contains("Restored Deer", cut.Find("table.kills").TextContent);
     }
