@@ -9,7 +9,7 @@
 @inject HostMode Mode
 @inject NavigationManager Nav
 
-<PageTitle>@L["Prof.Title", Handle]</PageTitle>
+<PageTitle>@L["Prof.Title", Handle]@if (tabs.FirstOrDefault(t => t.Key == marked).Label is { } label) { <text> - @L[label]</text> }</PageTitle>
 
 <div class="page-min">
 @if (profile is not null)

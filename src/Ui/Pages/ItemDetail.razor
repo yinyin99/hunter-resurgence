@@ -4,7 +4,7 @@
 @inject ModalService Modal
 @inject HostMode Mode
 
-<PageTitle>@L["Menu.Store"]</PageTitle>
+<PageTitle>@(item?.Name ?? L["Menu.Store"])</PageTitle>
 
 <StoreFrame Active="@(item?.Category ?? "all")">
     @if (item is not null)
