@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam sloot niet op tijd af. Sluit het zelf af en probeer het opnieuw.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam moet gesloten zijn om de startoptie van het spel terug te zetten. Steam nu sluiten? Kies Nee om de optie te laten zoals ze is.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Seizoensevenementen</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Zolang een seizoensevenement loopt, voegt de communityserver de dieren ervan toe aan het spel en toont de launcher de bijbehorende afbeeldingen. Schakel dit uit om zonder het evenement te spelen. De wijziging geldt vanaf de volgende keer dat je het spel start.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Seizoensevenementen spelen</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>De instelling kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logbestanden</value></data>

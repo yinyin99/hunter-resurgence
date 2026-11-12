@@ -41,6 +41,8 @@ public class LauncherServicesTests
         Assert.IsType<Resurgence.Services.ServerMissionsService>(live.GetRequiredService<Resurgence.Services.IMissionsService>());
         Assert.IsType<Resurgence.Services.ServerLeaderboardsService>(live.GetRequiredService<Resurgence.Services.ILeaderboardsService>());
         Assert.IsType<Resurgence.Services.ServerRestoreService>(live.GetRequiredService<Resurgence.Services.IRestoreService>());
+        Assert.IsType<Resurgence.Services.ServerSeasonalEventsService>(live.GetRequiredService<Resurgence.Services.ISeasonalEventsService>());
+        Assert.IsType<Resurgence.Services.Mocks.MockSeasonalEventsService>(mock.GetRequiredService<Resurgence.Services.ISeasonalEventsService>());
         Assert.True(live.GetRequiredService<Resurgence.Ui.HostMode>().Live);
         Assert.Equal(Resurgence.Services.PatchState.Ready, live.GetRequiredService<Resurgence.Services.IPatchService>().StatusAsync().Result.State);
         Assert.Same(live.GetRequiredService<Resurgence.Services.ServerCookie>(), live.GetRequiredService<Resurgence.Services.ServerCookie>());

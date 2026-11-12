@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam blev ikke lukket i tide. Luk det selv, og prøv igen.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam skal være lukket for at sætte spillets startindstilling tilbage. Luk Steam nu? Vælg Nej for at lade indstillingen være, som den er.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprog</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Sæsonbegivenheder</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Mens en sæsonbegivenhed kører, tilføjer fællesskabsserveren dens dyr til spillet, og launcheren viser dens billeder. Slå det fra for at spille uden begivenheden. Ændringen træder i kraft, næste gang du starter spillet.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Spil sæsonbegivenheder</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Indstillingen kunne ikke gemmes. Prøv igen.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spilindstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skærmbilleder</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logfiler</value></data>

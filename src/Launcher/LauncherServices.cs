@@ -44,6 +44,7 @@ static class LauncherServices
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
+        services.AddSingleton<ISeasonalEventsService>(new MockSeasonalEventsService(mock));
         // the feed's Discord frame for link_discord, as on the website (docs/website.md); without the link there is none
         var discord = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
         discord.DefaultRequestHeaders.UserAgent.ParseAdd("hunter-resurgence");
@@ -81,6 +82,7 @@ static class LauncherServices
         services.AddSingleton<IWalletService>(sp => new ServerWalletService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerWalletService>>()));
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
+        services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
         // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL
         services.AddSingleton<ServerCache<ServerLaunchCatalogue>>();
