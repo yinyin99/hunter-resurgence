@@ -20,6 +20,15 @@ public sealed class LiveSiteTests : UiContext
             Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
     }
 
+    /// <summary>The player has 100 em$ (<c>/auth/me</c>); a purchase is answered with <paramref name="code"/>.</summary>
+    sealed class Buying(HttpStatusCode code) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
+            Task.FromResult(request.Method == HttpMethod.Post
+                ? new HttpResponseMessage(code) { Content = new StringContent("""{"status": "bought", "ems": 70}""", System.Text.Encoding.UTF8, "application/json") }
+                : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("""{"userId": 1, "handle": "Fox", "ems": 100, "gms": 0}""", System.Text.Encoding.UTF8, "application/json") });
+    }
+
     void Live(bool live) => Services.GetRequiredService<HostMode>().Live = live;
 
     [Theory]
@@ -46,6 +55,25 @@ public sealed class LiveSiteTests : UiContext
         list.WaitForAssertion(() => Assert.Contains(list.FindAll(".card button:not([disabled])"), b => b.TextContent.Trim() == buy));
         var bundle = Render<BundleDetail>(p => p.Add(b => b.Id, 1));
         bundle.WaitForAssertion(() => Assert.Single(bundle.FindAll("#buy-bundle")));
+    }
+
+    // the buy dialog on the server's services: the em$ button buys, and the thanks or the failure shows, as the server answered
+    [Theory]
+    [InlineData(HttpStatusCode.OK, "Store.Complete")]
+    [InlineData(HttpStatusCode.Conflict, "Store.Oops")]
+    public void TheLiveBuyDialogShowsWhatTheServerAnswered(HttpStatusCode code, string heading)
+    {
+        var http = new HttpClient(new Buying(code)) { BaseAddress = new Uri("http://server.test") };
+        var cookie = new ServerCookie { Value = "secret" };
+        Services.AddSingleton<IWalletService>(new ServerWalletService(http, cookie, new MockWalletService(new MockWalletState()), NullLogger<ServerWalletService>.Instance));
+        Services.AddSingleton<IStoreService>(new ServerStoreService(http, cookie, new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
+        Live(true);
+        var cut = Render<Resurgence.Ui.Modals.BuyModal>(p => p.Add(m => m.Id, 7).Add(m => m.Name, "Hat").Add(m => m.Ems, 30));
+
+        cut.WaitForElement(".buttons button:not([disabled])").Click();
+
+        var title = Services.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<Resurgence.Ui.Strings>>()[heading].Value;
+        cut.WaitForAssertion(() => Assert.Equal(title, cut.Find("h2").TextContent));
     }
 
     [Fact]

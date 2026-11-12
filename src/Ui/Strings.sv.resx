@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>KÖP med em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>KÖP med gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>För lite gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>För lite em$: du har {0}, det kostar {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Köp med gm$ är inte tillgängliga än.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Skaffa mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inkluderar</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Köpet är klart!</value></data>
