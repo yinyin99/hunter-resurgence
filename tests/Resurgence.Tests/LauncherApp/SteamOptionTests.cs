@@ -25,6 +25,19 @@ public class SteamOptionTests
     }
 
     [Fact]
+    public void TheStableExeIsTheRootsTitledExeNotUpdateOrCurrent()
+    {
+        // the installed layout: the titled stub and Update.exe at the root, the real exe in current\
+        using var temp = new TempDir("resurgence-test-");
+        Directory.CreateDirectory(Path.Combine(temp.Path, "current"));
+        File.WriteAllText(Path.Combine(temp.Path, "current", "launcher.exe"), "");
+        File.WriteAllText(Path.Combine(temp.Path, "Update.exe"), "");
+        Assert.Null(SteamOption.RootExe(temp.Path));
+        File.WriteAllText(Path.Combine(temp.Path, "My App.exe"), "");
+        Assert.Equal(Path.Combine(temp.Path, "My App.exe"), SteamOption.RootExe(temp.Path));
+    }
+
+    [Fact]
     public void WritesOneValueAndKeepsEveryOtherByteAndTheBackup()
     {
         using var temp = new TempDir("resurgence-test-");

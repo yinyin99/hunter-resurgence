@@ -14,8 +14,11 @@ static class SteamOption
 
     /// <summary>The exe at the root of the Velopack install folder (it stays when updates replace <c>current\</c>); null when this launcher was not installed by the Setup.</summary>
     public static string? StableExe() =>
-        VelopackLocator.IsCurrentSet && VelopackLocator.Current is { CurrentlyInstalledVersion: not null, RootAppDir: { } root } && Environment.ProcessPath is { } p
-            && File.Exists(Path.Combine(root, Path.GetFileName(p))) ? Path.Combine(root, Path.GetFileName(p)) : null;
+        VelopackLocator.IsCurrentSet && VelopackLocator.Current is { CurrentlyInstalledVersion: not null, RootAppDir: { } root } ? RootExe(root) : null;
+
+    /// <summary>The root's own exe: Velopack names it after the package title, not the main exe, so it is the one exe there besides <c>Update.exe</c>.</summary>
+    public static string? RootExe(string root) =>
+        Directory.Exists(root) && Directory.GetFiles(root, "*.exe").Where(f => !Path.GetFileName(f).Equals("Update.exe", StringComparison.OrdinalIgnoreCase)).ToArray() is [var exe] ? exe : null;
 
     static string Read(string vdf)
     {
