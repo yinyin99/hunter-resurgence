@@ -58,6 +58,8 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var offline) => offline,
             _ => throw new InvalidDataException("offline_mode: true or false"),
         };
+        // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
+        cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");

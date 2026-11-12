@@ -149,4 +149,20 @@ public class SettingsTests : IDisposable
         Assert.Equal([(IPAddress.Loopback, 80)], Load(o).AdminListeners);
         Assert.Empty(Load(Minimal()).AdminListeners);
     }
+
+    [Fact]
+    public void AnEventIsCheckedAndKeptForTheState()
+    {
+        Assert.Null(SeasonalEvent.Parse(Load(Minimal()).Cfg["event"]));
+        var o = Minimal();
+        o["event"] = new JsonObject
+        {
+            ["name"] = "season", ["define"] = "SEASON", ["reserves"] = new JsonArray(1, 2), ["start"] = "2031-03-10T00:00:00Z", ["end"] = "2031-03-20T00:00:00Z",
+        };
+        var e = SeasonalEvent.Parse(Load(o).Cfg["event"])!;
+        Assert.Equal(("season", "SEASON"), (e.Name, e.Define));
+        Assert.Equal([1, 2], e.Reserves);
+        o["event"]!["end"] = "2031-03-01T00:00:00Z";
+        Assert.Throws<InvalidDataException>(() => Load(o));
+    }
 }

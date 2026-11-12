@@ -541,6 +541,8 @@ public sealed partial class State
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
+    /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
+    public SeasonalEvent? Seasonal { get; }
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -555,13 +557,15 @@ public sealed partial class State
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
     /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
     /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
-    /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).</summary>
+    /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).
+    /// seasonal: the event the connect reply announces while its window runs, to the players who play events.</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null)
     {
         this.facts = facts ?? Facts.Default;
+        Seasonal = seasonal;
         this.avatars = avatars ?? [];
         this.skillList = skillList;
         this.offline = offline;
@@ -1178,15 +1182,49 @@ public sealed partial class State
                     network["ip"] = null;  // single player sends none
             }
         }
-        // no seasonal event on this server, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
+        // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
         reply["ingame_event"] = null;
         if (reply["species_ammo"] is JsonArray ammo)
             foreach (var row in ammo.OfType<JsonObject>())
                 if (long.TryParse(Py.Str(row["species_id"]), out var sid) && sid >= 0 && sid < ethicalAmmo.Count)
                     row["ammo"] = C(ethicalAmmo[(int)sid]);
+        var clientReserve = (int)(Py.L(expedition["lodge"]) / 100);  // the game's own reserve number, as it reads it
+        if (reply["populations"] is JsonArray present)  // a recorded connect may carry an event's creatures
+            foreach (var index in facts.EventIndexes(clientReserve))
+                for (var i = present.Count - 1; i >= 0; i--)
+                    if (Py.L(present[i]?["index"]) == index)
+                        present.RemoveAt(i);
+        if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
+            AddSeasonal(reply, seasonal, clientReserve);
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
+
+    /// <summary>The event's `ingame_event` and, on the reserves it covers, what the facts file has for it there: its populations (their window the event's) and, as the ammo
+    /// every species of the reserve lists, the event's. The game reads the event once per start, so nothing of it changes a hunt that is running.</summary>
+    void AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
+    {
+        reply["ingame_event"] = seasonal.Json();
+        if (!seasonal.Covers(reserve) || facts.Event(seasonal.Name, reserve) is not { } content)
+            return;
+        static string At(DateTimeOffset t) => t.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
+        if (reply["populations"] is JsonArray populations)
+            foreach (var row in content.Populations)
+            {
+                (row["active_start"], row["active_end"]) = (At(seasonal.Start), At(seasonal.End));
+                populations.Add(row);
+            }
+        if (content.Ammo.Length > 0 && reply["species_ammo"] is JsonArray species)
+            foreach (var row in species.OfType<JsonObject>())
+                row["ammo"] = new JsonArray([.. content.Ammo.Select(a => (JsonNode?)a)]);
+    }
+
+    /// <summary>The player's seasonal events setting and the event that runs now: `{play, event}` (event: `ingame_event`'s object, or null outside the window or with no event set).</summary>
+    public JsonObject EventStatus(long account) => new()
+    {
+        ["play"] = Store.PlaysEvents(account),
+        ["event"] = Seasonal is { } e && e.Running(Clock()) ? e.Json() : null,
+    };
 
     /// <summary>update 10 definition: the recorded connect's, else the install sample's, else built from the
     /// Application/application record (or, for an item that record lacks, the install's item definitions); null for an unknown item.</summary>

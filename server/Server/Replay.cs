@@ -340,7 +340,8 @@ public static class Replay
             offline: offline,  // a request no token resolves is the local account's; false on a community server
             startBody: recorded ? neutral : null,
             avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null,
-            challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null);
+            challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null,
+            seasonal: SeasonalEvent.Parse(cfg["event"]));
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)
