@@ -17,15 +17,17 @@ public static class Scoring
     public static readonly HashSet<int> BIRDS_AG = [7, 15, 16, 27, 28, 29, 33, 34, 35, 47, 51];
     public static readonly HashSet<int> FLYING = [6, 11];  // animal_state flying, flying (not spooked)
 
-    /// <summary>Config-dependent globals: game_web_host (the score sheets' images) and the variant table (min/max score and css multiplier per variant; a missing file = empty table).</summary>
+    /// <summary>Config-dependent globals: game_web_host (the score sheets' images) and the variant table (min/max score and css multiplier per variant; a missing file = empty table). A
+    /// species the file lacks gets the facts file's `species_rules` bounds (the event creatures), so a file from before the event still pays them.</summary>
     public static void Load(JsonObject cfg, string? variantsFile)
     {
         StaticHost = (string)cfg["game_web_host"]!;
         Variants = new();
-        var path = variantsFile;
-        if (path is null || !File.Exists(path)) return;
-        foreach (var v in JsonNode.Parse(File.ReadAllText(path))!.AsArray())
-            Variants[(int)Py.L(v!["id"])] = (Py.D(v["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
+        if (variantsFile is not null && File.Exists(variantsFile))
+            foreach (var v in JsonNode.Parse(File.ReadAllText(variantsFile))!.AsArray())
+                Variants[(int)Py.L(v!["id"])] = (Py.D(v["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
+        foreach (var (id, rule) in Facts.Default.SpeciesRules)
+            Variants.TryAdd(id, (rule.MinScore, rule.MaxScore, rule.CssMultiplier));
     }
 
     // ---- numeric helpers -------------------------------------------------------------------------------------

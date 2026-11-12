@@ -898,3 +898,46 @@ public class SkillTests : StateTestBase
             .Where(u => (int?)u!["update"] == 15).ToArray()));  // not a dog, not an item
     }
 }
+
+public class EventCreatureTests : StateTestBase
+{
+    public EventCreatureTests()
+    {
+        var connect = CONNECT;  // its `ethical` lists no ammo for the event creatures, like a recording from before the event; the facts file's rules apply
+        connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
+        Scoring.Load(O("""{"game_web_host": "static.test"}"""), null);  // no variants file: the facts file's bounds for 50 and 58 are all there is
+        Scoring.Variants[1] = (30, 260, 1.1);  // what the other state tests pin, since the table is shared
+        Scoring.Variants[17] = (600, 1800, 0.9);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+    }
+
+    JsonNode Kill(int individual, int species, int weightGrams, int ammo)
+    {
+        Hb(O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 0, "weight_grams": {{weightGrams}}}"""),
+           O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{ammo}}, "weapon_id": 5}"""),
+           O($$"""{"event": 3, "individual": {{individual}}, "extended_species": {{species}}}"""));
+        return Hb().Single(u => Py.Eq(u!["update"], 6) && Py.Eq(u["individual"], individual))!;
+    }
+
+    [Fact]
+    public void TestAWerewolfAndAWendigoShotWithSilverAreScoredByWeightAndPaid()
+    {
+        // pounds of the weight, css = 100 x (pounds - 190) / 200: 264.5547 lb pay round(37.3), 286.6009 lb round(48.3)
+        var werewolf = Kill(600, 50, 120000, 962);
+        Eq("[1, 264.5547, 37.3]", T(werewolf["trophy_shot"], werewolf["score"], werewolf["css"]));
+        var wendigo = Kill(601, 58, 130000, 1142);
+        Eq("[1, 286.6009, 48.3]", T(wendigo["trophy_shot"], wendigo["score"], wendigo["css"]));
+        Eq("118.0", Reply(state.ConnectReply(ME))["wallet"]!["gm"]);  // 33 + 37 + 48
+    }
+
+    [Fact]
+    public void TestAnAmmoOutsideTheSilverIsDisqualifiedAsForOtherSpecies()
+    {
+        var werewolf = Kill(602, 50, 120000, 10);
+        Eq("""[0, -1, 0.0]""", T(werewolf["trophy_shot"], werewolf["score"], werewolf["css"]));
+        var reply = Reply(state.ConnectReply(ME));
+        Eq("33.0", reply["wallet"]!["gm"]);
+        Eq("[962, 963, 1142]", reply["ethical"]![50]);  // the game gets the same list
+    }
+}
