@@ -175,6 +175,8 @@ The Settings menu has "Seasonal events", in the launcher and on the website alik
 
 The launch map's reserve badges are the normal `reserve-<NN>` pictures. While the server says an event runs, the event covers the reserve and the player plays seasonal events, `LaunchMap` draws `reserve-<NN>-<event>` instead (the event `halloween_2026` is the slot `reserve-<NN>-halloween-2026`, [images.md](images.md)); the event's `reserves` are the game's reserve numbers (the launch map's reserve id minus 1), and none listed means every reserve. Where the operator has no file for that slot the normal badge stays. The launcher asks the server when the launch map opens.
 
+While an event runs, the launch map and the tutorials page show a line with the event's name and its reserves and the same "Play seasonal events" box (`EventSwitch`), reading and writing the same setting as the dialog (`ISeasonalEventsService`). Changing it there switches the badges at once and applies to the next hunt; a refused change turns the box back with a message. A reserve the event is on gets a small star on its badge when the operator has no picture for the slot. With no event the line and box are not shown; the Settings menu item stays.
+
 ## Files on the PC
 
 | File | Who writes it | Content |

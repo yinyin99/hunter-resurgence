@@ -74,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Amíg egy szezonális esemény tart, a közösségi szerver hozzáadja az állatait a játékhoz, az indító pedig megjeleníti a képeit. Kapcsold ki, ha esemény nélkül szeretnél játszani. A változás a játék következő indításakor lép életbe.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Szezonális események játszása</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>A beállítást nem sikerült elmenteni. Próbáld újra.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Esemény fut: {0}, itt: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>minden vadászterület</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Szezonális esemény</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Játékbeállítások</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Képernyőmentések</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Naplófájlok</value></data>

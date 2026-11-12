@@ -74,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Pendant un événement saisonnier, le serveur communautaire ajoute ses animaux au jeu et le lanceur affiche ses images. Désactivez cette option pour jouer sans l'événement. Le changement s'applique au prochain démarrage du jeu.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jouer les événements saisonniers</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Le paramètre n'a pas pu être enregistré. Réessayez.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Événement en cours : {0}, dans {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>toutes les réserves</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Événement saisonnier</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Paramètres de jeu</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Captures d’écran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fichiers journaux</value></data>

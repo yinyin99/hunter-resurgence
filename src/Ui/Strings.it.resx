@@ -74,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Mentre un evento stagionale è in corso, il server della community aggiunge i suoi animali al gioco e il launcher mostra le sue immagini. Disattivalo per giocare senza l'evento. La modifica si applica al prossimo avvio del gioco.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Partecipa agli eventi stagionali</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Impossibile salvare l'impostazione. Riprova.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Impostazioni di gioco</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshot</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>File di log</value></data>

@@ -1,0 +1,5 @@
+.event-switch { margin: 0 0 10px; padding: 8px 10px; border-radius: var(--r-2); background: var(--surface-3); }
+.event-switch p { margin: 0 0 4px; line-height: 20px; color: var(--text-2); }
+.event-switch label { color: var(--fg-muted-2); line-height: 20px; }
+.event-switch .tick { margin: 0 4px -3px 0; }
+.event-switch .error { margin-left: 10px; }

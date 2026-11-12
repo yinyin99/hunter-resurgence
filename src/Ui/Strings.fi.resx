@@ -74,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Kun kausitapahtuma on käynnissä, yhteisöpalvelin lisää sen eläimet peliin ja launcher näyttää sen kuvat. Poista tämä käytöstä, jos haluat pelata ilman tapahtumaa. Muutos tulee voimaan, kun seuraavan kerran käynnistät pelin.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Pelaa kausitapahtumia</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Asetusta ei voitu tallentaa. Yritä uudelleen.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Tapahtuma käynnissä: {0}. Alueet: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>kaikki</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Kausitapahtuma</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Pelin asetukset</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Kuvakaappaukset</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Lokitiedostot</value></data>

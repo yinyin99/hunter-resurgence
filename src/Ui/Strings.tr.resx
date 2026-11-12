@@ -74,6 +74,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Sezonluk bir etkinlik sürerken topluluk sunucusu hayvanlarını oyuna ekler ve başlatıcı görsellerini gösterir. Etkinlik olmadan oynamak için bunu kapatın. Değişiklik oyunu bir sonraki başlatışınızda geçerli olur.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Sezonluk etkinlikleri oyna</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Ayar kaydedilemedi. Tekrar deneyin.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Etkinlik sürüyor: {0}, şurada: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>tüm av alanları</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sezonluk etkinlik</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Günlük Dosyaları</value></data>
