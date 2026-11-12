@@ -184,14 +184,17 @@ public class SeasonalEventTests : StateTestBase
 
     static readonly Dictionary<string, int[]> Maps = new()
     {
-        ["werewolf"] = [0, 1, 2, 8, 10], ["wendigo"] = [9], ["feral_hog"] = [0, 1, 2, 6, 8, 9, 11], ["snowshoe_hare"] = [9],
+        ["werewolf"] = [0, 1, 2, 8, 10], ["feral_hog"] = [0, 1, 2, 6, 8, 9, 11], ["snowshoe_hare"] = [9],
     };
 
-    /// <summary>A hunt on the game's <paramref name="reserve"/> with the shipped facts and the shipped event; the player has a species of that reserve's list.</summary>
+    /// <summary>A hunt on the game's <paramref name="reserve"/> with the shipped facts and the shipped event; the recorded connect it starts from already carries
+    /// an event creature of that reserve (and a row that is no object), as a connect recorded during an event does.</summary>
     State Hunt(int reserve, bool playsEvents = true)
     {
         var connect = CONNECT;
-        connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""));
+        connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""), JsonValue.Create("r3"));
+        if (Facts.Default.EventIndexes(reserve).FirstOrDefault() is > 0 and var recorded)
+            connect["populations"]!.AsArray().Add(O($$"""{"index": {{recorded}}, "animal": "werewolf", "density_map": "werewolf", "reserve": {{reserve + 1}}}"""));
         connect["species_ammo"] = new JsonArray(O("""{"species_id": "17", "ammo": [999]}"""));
         var app = APP;
         app["locations"] = new JsonArray([.. new[] { 0, 100, 200, 500, 800, 900 }.Select(l => (JsonNode?)O(
@@ -204,6 +207,8 @@ public class SeasonalEventTests : StateTestBase
         return s;
     }
 
+    static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];
+
     [Theory]
     [InlineData(0, "werewolf:50:werewolf,feral_hog:51:feral_hog")]
     [InlineData(1, "werewolf:150:werewolf")]
@@ -214,7 +219,9 @@ public class SeasonalEventTests : StateTestBase
     {
         var reply = Connect(Hunt(reserve));
         Eq("""{"name": "halloween_2026", "define": "HALLOWEEN_2026", "reserves": [0, 1, 2, 8, 9]}""", reply["ingame_event"]);
-        var rows = reply["populations"]!.AsArray().Where(p => p!["active_start"] is not null).ToArray();
+        var rows = Rows(reply).Where(p => p["active_start"] is not null).ToArray();
+        var ids = Rows(reply).Select(p => (long)p["index"]!).ToArray();
+        Assert.Equal(ids.Length, ids.Distinct().Count());  // the recorded creature is replaced, not doubled
         Assert.Equal(content, string.Join(",", rows.Select(p => $"{p!["animal"]}:{p["index"]}:{p["density_map"]}")));
         Assert.All(rows, p =>
         {
@@ -236,8 +243,8 @@ public class SeasonalEventTests : StateTestBase
     {
         var reply = Connect(Hunt(reserve, playsEvents: false));
         Assert.Null(reply["ingame_event"]);
-        Assert.DoesNotContain(reply["populations"]!.AsArray(), p => p!["active_start"] is not null);
-        Assert.DoesNotContain(reply["populations"]!.AsArray(), p => Facts.Default.EventIndexes(reserve).Contains((long)p!["index"]!));
+        Assert.DoesNotContain(Rows(reply), p => p["active_start"] is not null);
+        Assert.DoesNotContain(Rows(reply), p => Facts.Default.EventIndexes(reserve).Contains((long)p["index"]!));  // the recorded creature goes too
         Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
     }
 
@@ -246,7 +253,7 @@ public class SeasonalEventTests : StateTestBase
     {
         var reply = Connect(Hunt(5));
         Eq("""{"name": "halloween_2026", "define": "HALLOWEEN_2026", "reserves": [0, 1, 2, 8, 9]}""", reply["ingame_event"]);
-        Assert.Equal("996", Indexes(reply));
+        Assert.Equal("996", string.Join(",", Rows(reply).Select(p => (long)p["index"]!)));
         Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
     }
 

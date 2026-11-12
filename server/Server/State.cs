@@ -1192,7 +1192,7 @@ public sealed partial class State
         if (reply["populations"] is JsonArray present)  // a recorded connect may carry an event's creatures
             foreach (var index in facts.EventIndexes(clientReserve))
                 for (var i = present.Count - 1; i >= 0; i--)
-                    if (Py.L(present[i]?["index"]) == index)
+                    if (present[i] is JsonObject row && Py.L(row["index"]) == index)
                         present.RemoveAt(i);
         if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
             AddSeasonal(reply, seasonal, clientReserve);

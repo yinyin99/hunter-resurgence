@@ -209,7 +209,7 @@ A reserve of the event without an entry gets only `ingame_event`, and so does ev
 | 1 (2, Logger's Point) | a werewolf (150) | the game ships a werewolf density map for it; its feral hog is the normal one |
 | 2 (3, Settler Creeks) | a werewolf (250) | the same |
 | 8 (9, Bushrangers Run) | a werewolf (850) | the same |
-| 9 (10, Whiterime Ridge) | a werewolf (908) and a wendigo (909), both on the snowshoe hare's map, and a feral hog (914) | the game ships no werewolf map for it, but the wendigo has its own map for this reserve only; the sizes are the ones the event used |
+| 9 (10, Whiterime Ridge) | a werewolf (908) and a wendigo (909), both on the snowshoe hare's map, and a feral hog (914) | the game ships no werewolf map for it, so both monsters use the snowshoe hare's, as the event's own rows do; the sizes are the event's |
 
 A creature is only ever put on a density map the game ships for that reserve (a missing map fails the hunt): the werewolf's maps are the game's reserves 0, 1, 2, 8 and 10, the feral hog's 0, 1, 2, 6, 8, 9 and 11. Reserve 9's rows are the event's own; the other rows are sized like them. All five entries carry the three silver ammunitions, the ones reserve 9 carries, as the `species_ammo` of every species the reserve lists. The event has nothing else for any of them: no seasonal collectable has a `count_per_area` above 0 in its connect replies, and `ingame_store` is the same. A connect recorded during an event may carry its creatures; the server removes the rows the facts file lists for any event before it adds the running one's, so a player who does not play events never gets them.
 
