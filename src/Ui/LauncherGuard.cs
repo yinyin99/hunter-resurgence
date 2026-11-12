@@ -1,6 +1,6 @@
 namespace Resurgence.Ui;
 
-/// <summary>Routes the website does not serve: those only the launcher has and those that need a signed-in player. Both go back to the feed.</summary>
+/// <summary>Routes the website does not serve: those only the launcher has and those that need a signed-in player. Both go back to the feed, as do the turned-off pages (<see cref="Disabled"/>) everywhere.</summary>
 public static class LauncherGuard
 {
     static readonly string[] LauncherOnly = ["dashboard", "launch-map", "servers", "tutorials"];
