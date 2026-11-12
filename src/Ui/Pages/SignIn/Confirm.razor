@@ -2,13 +2,12 @@
 @layout SignInLayout
 @inject ISignInService SignIn
 
-<PageTitle>@L["SignInPage.Confirm.AppTitle"]</PageTitle>
-
 @* the player says yes to the launcher that shows the code, or to the app on this PC that just started the sign-in; the server does the rest (POST /auth/confirm, docs/server.md#sign-in-and-tokens) *@
 @if (!loaded) { }
 else if (step is { Step: "confirm" or "app" })
 {
     var code = step.Step == "confirm";
+    <PageTitle>@L[code ? "SignInPage.Confirm.CodeTitle" : "SignInPage.Confirm.AppTitle"]</PageTitle>
     <h1>@L[code ? "SignInPage.Confirm.CodeTitle" : "SignInPage.Confirm.AppTitle"]</h1>
     @if (code) { <p class="code">@step.Code</p> }
     <p>@L.Frag(code ? "SignInPage.Confirm.CodeText" : "SignInPage.Confirm.AppText", Bold(step.Handle))</p>

@@ -11,8 +11,6 @@ public static class AuthPages
     /// <summary>The line to the operator's Discord; nothing without the link.</summary>
     static string Discord(string? url) => url is null ? "" : $"""<p><a href="{E(url)}" target="_blank" rel="noopener">Join the Discord: news, help and the operator</a></p>""";
 
-    /// <summary>The page the launcher shows (both states also link the launcher that replaces it). Signed out: sign in with Steam in the player's own browser (the launcher's
-    /// cannot load Steam's pages). Signed in: Play, which asks the server for a launch URL and hands it to the launcher.</summary>
     const string Style = """
         html,body{margin:0;background:#000}
         body{padding:24px 16px;color:#bbb;font:400 14px/20px Roboto,Arial,sans-serif;text-align:center}
