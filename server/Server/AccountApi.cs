@@ -70,6 +70,13 @@ public static class AccountApi
             .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator, each with its time and note "
                              + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected, userId, handle, handleKept, reason}`.");
 
+        // one line per upload outcome: a refused upload keeps nothing, so the log is its only record (the request line has no account or kind)
+        Reply Logged(long account, UploadOutcome o)
+        {
+            if (o.Kind != "received") Console.WriteLine($"upload of account {account}: {o.Kind}: {o.Message.ReplaceLineEndings(" ")}"); // a reader's message can quote the zip
+            return Outcome(o);
+        }
+
         // an upload's requests: our own page, signed in; the body is never buffered for the log
         async Task<Reply> Upload(HttpContext ctx, Func<long, Task<Reply>> then)
         {
@@ -81,12 +88,12 @@ public static class AccountApi
 
         group.MapPost("/restore", Task<Reply> (HttpContext ctx) => Upload(ctx, async account =>
             {
-                if (Oversized(ctx)) return Refuse(413, "too_large", TooLarge);
-                if (uploads.Start(account) is not { } id) return Refuse(429, "busy", Busy);
+                if (Oversized(ctx)) return Logged(account, new(413, "too_large", TooLarge));
+                if (uploads.Start(account) is not { } id) return Logged(account, new(429, "busy", Busy));
                 try
                 {
                     var part = await uploads.Part(account, id, 0, ctx.Request.Body);
-                    return Outcome(part.Kind == "received" ? uploads.Finish(account, id) : part);
+                    return Logged(account, part.Kind == "received" ? uploads.Finish(account, id) : part);
                 }
                 finally
                 {
@@ -101,20 +108,20 @@ public static class AccountApi
 
         group.MapPost("/restore/start", Task<Reply> (HttpContext ctx) => Upload(ctx, account => Task.FromResult(uploads.Start(account) is { } id
                 ? Json(200, new JsonObject { ["status"] = "started", ["id"] = id, ["partBytes"] = Uploads.MaxPartBytes })
-                : Refuse(429, "busy", Busy))))
+                : Logged(account, new(429, "busy", Busy)))))
             .WithName("AccountRestoreStart").WithSummary("Start an upload of a backup zip in parts")
             .WithDescription("Answers `{status: started, id, partBytes}`: send the zip in parts of at most `partBytes` to `POST /account/restore/<id>/<part>`, "
                              + "then `POST /account/restore/<id>/finish`. One upload at a time per account: a start drops the account's upload that waits for its next part (`429` `busy` while a part is received); one that gets no part for 30 minutes is deleted.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/restore/{id}/{part:int:min(0)}", (HttpContext ctx, string id, int part) => Upload(ctx, async account =>
-                Oversized(ctx) ? Refuse(413, "too_large", TooLarge) : Outcome(await uploads.Part(account, id, part, ctx.Request.Body))))
+                Logged(account, Oversized(ctx) ? new(413, "too_large", TooLarge) : await uploads.Part(account, id, part, ctx.Request.Body))))
             .WithName("AccountRestorePart").WithSummary("One part of an upload (raw body)")
             .WithDescription("Part `<part>`, from 0, in order, at most 90 MiB: the server appends it to the upload's file. The last part may be sent again (it replaces itself). "
                              + "Answers `{status: received}`; `409` `invalid` for a part out of order, `404` `invalid` for an upload not open, `413` `too_large` when the zip passes 1 GiB (the upload ends).")
             .Produces(200, contentType: "application/json");
 
-        group.MapPost("/restore/{id}/finish", (HttpContext ctx, string id) => Upload(ctx, account => Task.FromResult(Outcome(uploads.Finish(account, id)))))
+        group.MapPost("/restore/{id}/finish", (HttpContext ctx, string id) => Upload(ctx, account => Task.FromResult(Logged(account, uploads.Finish(account, id)))))
             .WithName("AccountRestoreFinish").WithSummary("Finish an upload: the joined zip is read like a zip sent at once")
             .WithDescription("Answers what `POST /account/restore` answers; the upload ends whatever the outcome.")
             .Produces(200, contentType: "application/json");

@@ -31,6 +31,14 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 - Ubuntu 24.04, Docker Engine and the Compose plugin from [Docker's apt repository](https://docs.docker.com/engine/install/ubuntu/).
 - A non-root user for deploys (`deploy` below) in the `docker` group, with the public half of the deploy key in `~/.ssh/authorized_keys`. Never root.
 - The shared network, once: `docker network create edge`.
+- The journal's retention, once, as root ([Logs](#logs)):
+
+```
+sudo mkdir -p /etc/systemd/journald.conf.d
+printf '[Journal]\nStorage=persistent\nMaxRetentionSec=30day\nSystemMaxUse=2G\n' | sudo tee /etc/systemd/journald.conf.d/retention.conf
+sudo systemctl restart systemd-journald
+```
+
 - `~/web/` of that user holding:
 
 ```
@@ -223,6 +231,18 @@ docker compose up -d
 ```
 
 Repeat the `cp` for every other database of `/data` that was lost (`ls /backups` shows the names). The players' progress is what the copy held: the hours since it was made are gone.
+
+## Logs
+
+Every service logs to the host journal (`logging: *logging` in `compose.yml`, Docker's `journald` driver), so a deploy that recreates a container keeps its logs; the default `json-file` driver deletes them with the container. Read them on the VPS, as root or a member of `systemd-journal`:
+
+```
+journalctl CONTAINER_NAME=web-server-1 --since -2h        # the server; web-web-1, web-caddy-1, web-server-backup-1 likewise
+journalctl CONTAINER_NAME=web-server-1 -g 'upload of account'   # every upload outcome (server.md, "Upload a backup zip")
+docker compose logs server                                # the current container only
+```
+
+The lines hold client addresses and handles, so the journal keeps them at most 30 days and 2 GB in all (the drop-in of [VPS prerequisites](#vps-prerequisites)); `journalctl --disk-usage` shows the size. Caddy writes no access log.
 
 ## Adding another site
 

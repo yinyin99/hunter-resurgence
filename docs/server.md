@@ -490,6 +490,8 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | A user id another account holds | Refused, nothing kept | `taken` |
 | Any other zip | Kept as `restores/<account id>/<SHA-256>.zip`, a row in `uploads`; nothing is restored. The player is told that an operator will check it | `review` |
 
+Every outcome of an upload except a received part writes one console line, `upload of account <id>: <status>: <message>`: a refused zip keeps nothing, so this line is its only record (the reader's reason for `invalid`, which of the three `busy` cases). On the VPS the console goes to the host journal ([deploy.md](deploy.md#logs)).
+
 **Review.** The operator works the kept zips with the server's command line (no web page):
 
 ```
