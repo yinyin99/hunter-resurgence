@@ -88,6 +88,7 @@ public sealed class LauncherBuyFlowTests : UiContext
         store.FindAll(".card").First(c => c.TextContent.Contains("Cap")).QuerySelector("button.btn-primary")!.Click();
         var button = host.WaitForElement(".buy .buttons button");
         Assert.Single(host.FindAll(".buy .buttons button"));
+        Assert.Equal("1 x Cap - 50 gm$", host.Find(".buy p.line").TextContent);  // the dialog names the price it charges
         Assert.Equal(Text("Store.BuyGms") + " (50 gm$)", button.TextContent);
         button.Click();
 
