@@ -14,4 +14,25 @@ public static class Steam
         Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", "ActiveUser", 0) is int v ? (uint)v : 0;
 
     public static string SteamId64(uint account) => (76561197960265728UL + account).ToString();
+
+    /// <summary>Starts Steam minimized, false when it is not installed or does not start.</summary>
+    public static bool StartSilent()
+    {
+        if (InstallPath() is not { } dir || Path.Combine(dir, "steam.exe") is var exe && !File.Exists(exe)) return false;
+        try { using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe, "-silent") { WorkingDirectory = dir }); return p is not null; }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return false; }
+    }
+
+    /// <summary>True when somebody is signed in to Steam; when Steam is not running it is started first, and waited for up to the timeout.</summary>
+    public static bool SignedIn(Func<uint> account, Func<bool> startSteam, TimeSpan timeout, TimeSpan poll)
+    {
+        if (account() != 0) return true;
+        if (!startSteam()) return false;
+        for (var end = DateTime.UtcNow + timeout; DateTime.UtcNow < end;)
+        {
+            Thread.Sleep(poll);
+            if (account() != 0) return true;
+        }
+        return false;
+    }
 }

@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>A játék már fut.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>A játék nem található. Ellenőrizd a mappáját a beállításokban.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>A játékot nem sikerült elindítani.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Indítsd el a Steamet, jelentkezz be, és próbáld újra.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TÖBBJÁTÉKOS MÓD KERESÉSE</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Keress játékot vagy házigazdát...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Törlés</value></data>

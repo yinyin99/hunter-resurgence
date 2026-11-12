@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Le jeu est déjà en cours d’exécution.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Le jeu est introuvable. Vérifiez son dossier dans les paramètres.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Le jeu n’a pas pu être démarré.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Lancez Steam, connectez-vous puis réessayez.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TROUVER UNE PARTIE MULTIJOUEUR</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Trouver une partie ou un joueur…</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Effacer</value></data>

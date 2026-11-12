@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kører allerede.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Spillet blev ikke fundet. Tjek dets mappe i indstillingerne.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, log ind, og prøv igen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND ET MULTIPLAYER-SPIL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find et spil eller en vært...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Ryd</value></data>

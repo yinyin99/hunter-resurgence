@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Jocul rulează deja.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Jocul nu a fost găsit. Verifică folderul lui în setări.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Jocul nu a putut fi pornit.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Pornește Steam, autentifică-te și încearcă din nou.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>GĂSIȚI UN JOC MULTIPLAYER</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Găsiți un joc sau o gazdă...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Ștergeți</value></data>
