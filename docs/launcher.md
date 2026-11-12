@@ -14,7 +14,7 @@ Until the official servers close, a large orange backup tool button shows under 
 
 ## The service layer
 
-Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge, player kit). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher does that for game settings, the player kit, and for the website's `Server*` services when `server_url` is set.
+Every screen talks to an interface in `src/Services/Contracts/` (one per area: session, signup, Discord widget, servers, store, wallet, bank, missions, competitions, leaderboards, profile, friends, messages, account, game management, help, patch, game settings, launcher bridge, player kit). `src/Services/Mocks/` implements each of them with fixed data; `AddMockServices()` registers them all. A host replaces a registration with a real one when it exists. The launcher does that for game settings, the player kit, the Discord widget (`DiscordNewsService`, from `link_discord`), and for the website's `Server*` services when `server_url` is set.
 
 ## Build and run
 
