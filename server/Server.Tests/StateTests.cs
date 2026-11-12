@@ -906,7 +906,7 @@ public class EventCreatureTests : StateTestBase
         var connect = CONNECT;  // its `ethical` lists no ammo for the event creatures, like a recording from before the event; the facts file's rules apply
         connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
-        Scoring.Load(O("""{"game_web_host": "static.test"}"""), null);  // no variants file: the facts file's bounds for 50 and 58 are all there is
+        Scoring.Load(O("""{"game_web_host": "static.test"}"""), null);  // no variants file: the facts file's bounds are all there is
         Scoring.Variants[1] = (30, 260, 1.1);  // what the other state tests pin, since the table is shared
         Scoring.Variants[17] = (600, 1800, 0.9);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());

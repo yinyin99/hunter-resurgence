@@ -200,9 +200,9 @@ The database is in WAL mode with `synchronous=NORMAL` and a 5 s busy timeout, co
 
 A harvest (heartbeat event 3) is scored from the kill's spawn (event 7), its trophy measurement (event 22) and its hits (event 1). The next heartbeat carries update 6 with the score (`score_text` "Score: <score>", or "No score"), the kill's `css` and its kill id, and the kill's gm$ comes with update 15 (`CSS Reward`): `round(css)`, paid when it is above 0.
 
-- **Disqualified** (`score_text` "Disqualified ", `score` -1, `trophy_shot` 0, no gm$, the usual notice) only when a hit used an ammunition that is not in the species' permitted list (the connect's `ethical`, by species id; the non-typical deer use their species' list) and not one of the event's silver ammunitions (`species_rules`), which every species permits. A species with an empty list, the dogs, has no rule.
+- **Disqualified** (`score_text` "Disqualified ", `score` -1, `trophy_shot` 0, no gm$, the usual notice) only when a hit used an ammunition that is not in the species' permitted list (the connect's `ethical`, by species id; the non-typical deer use their species' list) and not one of the ammunitions `species_rules` lists (the event's three silver ones), which every species permits. A species with an empty list, the dogs, has no rule.
 - **The score** is one formula per family of the facts file's `families`, from the measurements below. The pheasant, the ducks, the geese and the ptarmigans get score type "A" when the last hit's animal state was flying and "G" otherwise; a tusked kill gets "T" when the tusks outweigh the weight and "W" otherwise.
-- **The css** is `round(css_multiplier x 100 x (score - min_score) / (max_score - min_score), 1)` with the species' row of the facts file's `variants` (the operator's `variants_file` rows win); there is no clamp. A species with no family or no row has no score: the dogs 22, 32 and 48, the sasquatch 31 and the t-rex 56.
+- **The css** is `round(css_multiplier x 100 x (score - min_score) / (max_score - min_score), 1)` with the species' row of the facts file's `variants` (the operator's `variants_file` rows win); there is no clamp. A species with no family has no score, and one with no row has a score and no gm$ (none today): the dogs 22, 32 and 48, the sasquatch 31 and the t-rex 56.
 
 | Family | Species | Score from | A female |
 |---|---|---|---|
