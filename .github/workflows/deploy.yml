@@ -59,11 +59,11 @@ jobs:
       - name: Roll out
         if: steps.secrets.outputs.ok
         env:
-          LINK_BACKUP: ${{ vars.LINK_BACKUP }}
-          # the project's repository, for the live feed's development note; a LINK_SOURCE variable wins
-          LINK_SOURCE: ${{ vars.LINK_SOURCE || format('{0}/{1}', github.server_url, github.repository) }}
-          GAME_NAME: ${{ vars.GAME_NAME }}
-          GAME_FULL: ${{ vars.GAME_FULL }}
+          LINK_BACKUP: ${{ secrets.LINK_BACKUP }}
+          # the project's repository, for the live feed's development note; a LINK_SOURCE secret wins
+          LINK_SOURCE: ${{ secrets.LINK_SOURCE || format('{0}/{1}', github.server_url, github.repository) }}
+          GAME_NAME: ${{ secrets.GAME_NAME }}
+          GAME_FULL: ${{ secrets.GAME_FULL }}
         run: |
           # the repository variables go into .env and into a single-quoted remote command: the links URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
           extra=""

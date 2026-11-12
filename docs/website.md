@@ -50,7 +50,7 @@ Until the official servers close, every website page (signed in or out) offers t
 
 The dialog also opens by itself on a browser's first visit, unless another dialog is open. The `backup_tool` cookie (one year) remembers that it was shown.
 
-The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). The `LINK_BACKUP` environment variable wins over it; the live site gets it from the repository variable `LINK_BACKUP` at every deploy ([deploy.md](deploy.md#deploys)). Without the key and the variable, neither the banner link, the orange button nor the dialog is shown.
+The download button links `link_backup` from `settings.json`, meant to be `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` (always the newest non-prerelease release zip). The `LINK_BACKUP` environment variable wins over it; the live site gets it from the repository secret `LINK_BACKUP` at every deploy ([deploy.md](deploy.md#deploys)). Without the key and the variable, neither the banner link, the orange button nor the dialog is shown.
 
 From 2026-11-12 00:00 UTC all are hidden (`BackupDialog.Offered`).
 
@@ -65,7 +65,7 @@ The development profile listens on `http://localhost:5080`.
 
 Deploy: the container image and the VPS setup are in [deploy.md](deploy.md).
 
-`settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). The `GAME_NAME` and `GAME_FULL` environment variables win over its two names; the live site gets them from the repository variables of the same names at every deploy ([deploy.md](deploy.md#deploys)). Without the file and the variables the texts say "the game" and the links are left out. The real file is git-ignored.
+`settings.json` in `src/Web/` is read for the game name and the external links (`game_name`, `game_full`, `link_*`); the keys are listed in [launcher.md](launcher.md#settingsjson). The `GAME_NAME` and `GAME_FULL` environment variables win over its two names; the live site gets them from the repository secrets of the same names at every deploy ([deploy.md](deploy.md#deploys)). Without the file and the variables the texts say "the game" and the links are left out. The real file is git-ignored.
 
 `IMAGES_DIR` names the folder of the operator's pictures, one file per slot, served at `/images/` ([images.md](images.md)). Unset, every picture is its labelled box. Their list is at `/images.json`, for the launcher, and the slots drawn without one at `/images-missing.json`.
 
