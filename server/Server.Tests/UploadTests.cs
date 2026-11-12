@@ -95,7 +95,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)))).Kind);
         Assert.Equal("review", uploads.Finish(player, id).Kind);
         var text = Assert.Single(texts);
-        Assert.Equal($"Backup waiting for review: id {Waiting(player)}, account {player}, backup user id 1001, handle sample. Run: review list", text);
+        Assert.Equal($"Backup waiting for review: id {Waiting(player)}, account {player}, backup user id 1001, handle sample, {Alerts.Steam(state.Store.SteamId64(player))}. Run: review list", text);
+        Assert.Matches(@"steam id (\d{17}) <https://steamcommunity\.com/profiles/\1>", text);
 
         var http = new Capture();
         Alerts.Review(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, text, new HttpClient(http));

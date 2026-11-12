@@ -104,7 +104,7 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             con.Commit();
         }
         var handle = Regex.Replace(p.Handle, @"[^A-Za-z0-9_.-]", "");  // the archive's own text: only plain name characters go into the alert
-        Alert($"Claim waiting for review: c{id}, account {account}, archived {p.Uid}, handle {(handle.Length > 32 ? handle[..32] : handle)}, hunterscore {p.Hunterscore}. Run: review list");
+        Alert($"Claim waiting for review: c{id}, account {account}, archived {p.Uid}, handle {(handle.Length > 32 ? handle[..32] : handle)}, hunterscore {p.Hunterscore}, {Alerts.Steam(Store.SteamId64(account))}. Run: review list");
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
 

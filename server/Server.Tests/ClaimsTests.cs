@@ -162,7 +162,7 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.False(Owns(player, 9501));  // nothing restored yet
         var waiting = Assert.Single(claims.Waiting());
         Assert.Equal((player, 3002L, "Bravo", 12000L), (waiting.Account, waiting.Uid, waiting.Handle, waiting.Hunterscore));
-        Assert.Equal($"Claim waiting for review: c{waiting.Id}, account {player}, archived 3002, handle Bravo, hunterscore 12000. Run: review list", Assert.Single(alerts));
+        Assert.Equal($"Claim waiting for review: c{waiting.Id}, account {player}, archived 3002, handle Bravo, hunterscore 12000, {Alerts.Steam(state.Store.SteamId64(player))}. Run: review list", Assert.Single(alerts));
         Assert.Contains("waits for an operator", Assert.Single(Notices(player)));
         Assert.Equal("waiting", claims.Of(player)!.State);
         Assert.Equal("refused", claims.Claim(player, "alpha", true, false).Kind);  // the one claim is taken

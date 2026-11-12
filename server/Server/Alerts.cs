@@ -32,4 +32,8 @@ public static class Alerts
             }
         });
     }
+
+    /// <summary>The account's verified Steam id and its profile link for an alert (the link in angle brackets: Discord shows no preview).</summary>
+    public static string Steam(string? steamId64) =>
+        steamId64 is { Length: > 0 } s ? $"steam id {s} <https://steamcommunity.com/profiles/{s}>" : "no steam id";
 }
