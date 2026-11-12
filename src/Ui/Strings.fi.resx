@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Sulje Steam ja aseta se</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopioi rivi sen sijaan</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Älä kysy uudelleen</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Liity seuraamme Discordissa</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Yhteisö kokoontuu Discordissa: uutisia, apua ja muita metsästäjiä. Tule moikkaamaan!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Myöhemmin</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Valmis. Steamin Pelaa-painike avaa nyt tämän käynnistimen. Käynnistetäänkö Steam uudelleen?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Käynnistä Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Tätä käynnistintä ei asennettu asennusohjelmalla (kehitys- tai puretusta kopiosta), joten se ei voi asettaa Steamin käynnistysvalintaa puolestasi.</value></data>

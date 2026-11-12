@@ -284,6 +284,17 @@ public static class AccountApi
             .WithDescription("Stored for the account; the game's next connect carries no event for a player who turned it off (a running hunt keeps the event it started with). Answers like `GET /account/events`.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/discord", (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                return Account(ctx) is { } account
+                    ? Json(200, new JsonObject { ["first"] = state.Store.NoteDiscordInvite(account) })
+                    : Refuse(401, "signed_out", "Sign in first.");
+            })
+            .WithName("AccountDiscord").WithSummary("Whether this is the first time the player is invited to the Discord")
+            .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account). The website and the launcher show their one-time Discord dialog when it is true.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebFriends(account))
                 : Refuse(401, "signed_out", "Sign in first."))

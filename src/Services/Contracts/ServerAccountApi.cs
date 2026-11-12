@@ -40,6 +40,8 @@ public static class ServerAccountApi
     public const string Loadouts = "/account/loadouts";
     /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
     public const string Events = "/account/events";
+    /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerDiscordInvite"/>, <c>First</c> true only the first time for the account.</summary>
+    public const string Discord = "/account/discord";
     /// <summary>GET with the cookie: 200 <see cref="ServerEventPanel"/> for a player who plays the running event, else <c>{"event": null}</c> (no <c>Name</c>).</summary>
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
@@ -64,6 +66,9 @@ public sealed record ServerEvent(string Name, string Define, int[] Reserves);
 
 /// <summary><see cref="ServerAccountApi.Events"/>: <c>Event</c> is null when none runs.</summary>
 public sealed record ServerEvents(bool Play, ServerEvent? Event);
+
+/// <summary><see cref="ServerAccountApi.Discord"/>: <c>First</c> is true the first time the account is asked.</summary>
+public sealed record ServerDiscordInvite(bool First);
 
 public sealed record ServerCommunityMission(string Title, int Progress, int Target, int Gm, int Em);
 

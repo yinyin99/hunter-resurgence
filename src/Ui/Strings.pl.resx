@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Zamknij Steam i ustaw</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Zamiast tego skopiuj wiersz</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Nie pytaj ponownie</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Dołącz do nas na Discordzie</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Społeczność spotyka się na Discordzie: nowości, pomoc i inni myśliwi. Wpadnij się przywitać!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Dołącz do Discorda</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Później</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Gotowe. Przycisk Graj w Steam otwiera teraz ten launcher. Uruchomić Steam ponownie?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Uruchom Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Ten launcher nie został zainstalowany programem instalacyjnym (kopia deweloperska lub rozpakowana), więc nie może ustawić opcji uruchamiania w Steam za Ciebie.</value></data>

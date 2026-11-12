@@ -1,0 +1,12 @@
+@inject ModalService Modal
+@inject Branding Brand
+
+@* the one-time invitation after the first sign-in (ModalService.OfferDiscordAsync, docs/website.md) *@
+<div class="invite dialog-card" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+    <h1 id="invite-title">@L["Discord.Title"]</h1>
+    <p>@L["Discord.Text"]</p>
+    <div class="buttons">
+        <a class="btn btn-primary" id="discord-join" href="@Brand.Link("discord")" target="_blank" rel="noopener" autofocus @onclick="Modal.Close">@L["Discord.Join"]</a>
+        <button type="button" class="btn btn-inverse" id="discord-later" @onclick="Modal.Close">@L["Discord.Later"]</button>
+    </div>
+</div>

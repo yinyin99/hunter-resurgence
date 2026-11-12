@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Steam'i kapat ve ayarla</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Bunun yerine satırı kopyala</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Bir daha sorma</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Bize Discord'da katıl</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Topluluk Discord'da buluşuyor: haberler, yardım ve diğer avcılar. Gel, bir merhaba de!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Daha sonra</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Tamam. Steam'in Oyna düğmesi artık bu başlatıcıyı açıyor. Steam yeniden başlatılsın mı?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Steam'i başlat</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Bu başlatıcı kurulum programıyla kurulmadı (geliştirme veya açılmış kopya), bu yüzden Steam'in başlatma seçeneğini sizin için ayarlayamaz.</value></data>

@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Lukk Steam og sett det</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopier linjen i stedet</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Ikke spør igjen</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Bli med oss på Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Fellesskapet møtes på Discord: nyheter, hjelp og andre jegere. Kom og si hei!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Bli med på Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Senere</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Ferdig. Steams Spill-knapp åpner nå denne starteren. Starte Steam igjen?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Denne starteren ble ikke installert med installasjonsprogrammet (en utviklings- eller utpakket kopi), så den kan ikke sette Steams startvalg for deg.</value></data>

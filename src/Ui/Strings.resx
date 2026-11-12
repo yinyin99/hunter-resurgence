@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Close Steam and set it</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copy the line instead</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Don't ask again</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Join us on Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>The community meets on Discord: news, help and other hunters. Come and say hello!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Join the Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Later</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Done. Steam's Play button now opens this launcher. Start Steam again?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>This launcher was not installed with the Setup (a development or unpacked copy), so it cannot set Steam's launch option for you.</value></data>

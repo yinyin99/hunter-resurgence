@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 19;
+    public const int Version = 20;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -156,6 +156,7 @@ public sealed class Store
             claimed_ts INTEGER,
             banned INTEGER NOT NULL DEFAULT 0,
             seasonal_events INTEGER NOT NULL DEFAULT 1,       -- 0: the player opted out of seasonal events
+            discord_invited INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher showed the player the Discord invite once
             account TEXT NOT NULL);                          -- the connect reply's `account` object
         CREATE TABLE tokens (
             hash TEXT PRIMARY KEY,                           -- SHA-256 of the token, hex
@@ -316,6 +317,8 @@ public sealed class Store
                 con.Script("ALTER TABLE accounts ADD COLUMN seasonal_events INTEGER NOT NULL DEFAULT 1");
             if (version < 18) con.Script(ClaimTables);
             if (version < 19) con.Script(CommunityProgress);
+            if (version < 20 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'discord_invited'")! == 0)
+                con.Script("ALTER TABLE accounts ADD COLUMN discord_invited INTEGER NOT NULL DEFAULT 0");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -383,6 +386,13 @@ public sealed class Store
     {
         using var con = Open();
         con.Exec("UPDATE accounts SET seasonal_events = ? WHERE id = ?", plays ? 1 : 0, id);
+    }
+
+    /// <summary>True the first time it is asked for the account, false after: the one-time Discord invite of the website and the launcher.</summary>
+    public bool NoteDiscordInvite(long id)
+    {
+        using var con = Open();
+        return con.Exec("UPDATE accounts SET discord_invited = 1 WHERE id = ? AND discord_invited = 0", id) > 0;
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie

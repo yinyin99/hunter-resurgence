@@ -67,6 +67,7 @@ builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetR
 builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISeasonalEventsService>(sp => new MockSeasonalEventsService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IDiscordInviteService, MockDiscordInviteService>();
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
 {
@@ -86,6 +87,8 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
         sp.GetRequiredService<ILogger<ServerMissionsService>>())));
     // the seasonal events setting is the account's, with the event that runs now (the Settings menu)
     builder.Services.Replace(ServiceDescriptor.Scoped<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>())));
+    // the one-time Discord invitation is remembered with the account
+    builder.Services.Replace(ServiceDescriptor.Scoped<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>())));
     // the inventory is the account's, read again on every open of its page
     builder.Services.Replace(ServiceDescriptor.Scoped<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, with em$ or gm$

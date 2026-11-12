@@ -7,6 +7,8 @@
 @inject ISessionService Sessions
 @inject ILauncherBridge Bridge
 @inject AssetImages Images
+@inject IDiscordInviteService Invite
+@inject Branding Brand
 
 @* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher shows it too *@
 <div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
@@ -35,7 +37,7 @@
 @code {
     IJSObjectReference? module;
     DotNetObjectReference<ShellLayout>? self;
-    bool quick, alerted, eula;
+    bool quick, alerted, eula, toEula, offered;
     Session? session;
     Action? changed;
     string? pageBg;
@@ -67,11 +69,17 @@
         if (LauncherGuard.Disabled(path) || (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path) || Mode.Live && LauncherGuard.MockOnly(path))) Nav.NavigateTo("/feed", replace: true);
         // a signed-in hunter who has not accepted the current agreements is sent from the feed to the agreements page
         eula = path.Split('?', '#')[0].Trim('/').Equals("eula", StringComparison.OrdinalIgnoreCase);
-        if (session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);
+        if (toEula = session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // the first time a player with a username is in the shell (not on the agreements page): the Discord invitation, once per account (docs/website.md)
+        if (!offered && !eula && !toEula && session is { Handle.Length: > 0 } && Brand.Link("discord") is not null)
+        {
+            offered = true;
+            await Modal.OfferDiscordAsync(Invite);
+        }
         if (!firstRender) return;
         module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
         await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
