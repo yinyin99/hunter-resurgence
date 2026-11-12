@@ -120,10 +120,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Resmi sunucular 11 Kasım 2026'da kapanıyor. Yedekleme aracını indirin ve profilinizi hemen kaydedin: envanter, ödüller, istatistikler ve daha fazlası. Topluluk sunucusu açıldığında geri yükleyebilirsiniz.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Profilinizi 11 Kasım 2026'dan önce yedekleyin.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Buradan okuyun</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Çevrimiçi: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>ÇEVRİMİÇİ ÜYELER</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Sizi anlayan insanlarla takılın</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Ava Çık</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>TEK OYUNCULU MOD</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>ÇOK OYUNCULU KOOP</value></data>
