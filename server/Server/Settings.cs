@@ -68,6 +68,7 @@ public sealed class Settings
         };
         cfg["link_discord"] = Text(root, "link_discord") is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the sign-in pages (AuthPages.cs); anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
+        cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");

@@ -6,17 +6,29 @@ namespace Resurgence.Server;
 
 public static class Alerts
 {
-    static readonly HttpClient Shared = new() { Timeout = TimeSpan.FromSeconds(10) };
+    public static HttpClient Shared { get; set; } = new() { Timeout = TimeSpan.FromSeconds(10) };  // tests swap it
     static int badUrlLogged;
 
     /// <summary>Post `{"content": text}` to the review webhook on a background task. No setting: nothing. A bad URL or a failed post is logged, never thrown.
     /// `http` is for tests.</summary>
-    public static void Review(JsonObject cfg, string text, HttpClient? http = null)
+    public static void Review(JsonObject cfg, string text, HttpClient? http = null) => Send(cfg, "review_webhook", text, http);
+
+    /// <summary>The same for the sign-up webhook (setting signup_webhook): new accounts and claims restored at once.</summary>
+    public static void Signup(JsonObject cfg, string text, HttpClient? http = null) => Send(cfg, "signup_webhook", text, http);
+
+    /// <summary>A handle for an alert: only plain name characters, at most 32 (it may be the archive's own text).</summary>
+    public static string Name(string handle)
     {
-        if ((string?)cfg["review_webhook"] is not { Length: > 0 } url) return;
+        var s = System.Text.RegularExpressions.Regex.Replace(handle, @"[^A-Za-z0-9_.-]", "");
+        return s.Length > 32 ? s[..32] : s;
+    }
+
+    static void Send(JsonObject cfg, string key, string text, HttpClient? http)
+    {
+        if ((string?)cfg[key] is not { Length: > 0 } url) return;
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
         {
-            if (Interlocked.Exchange(ref badUrlLogged, 1) == 0) Console.Error.WriteLine("review_webhook: not an https URL, no alerts are sent");
+            if (Interlocked.Exchange(ref badUrlLogged, 1) == 0) Console.Error.WriteLine($"{key}: not an https URL, no alerts are sent");
             return;
         }
         _ = Task.Run(async () =>
@@ -28,7 +40,7 @@ public static class Alerts
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"review_webhook: alert not sent: {e.GetType().Name}: {e.Message}");
+                Console.Error.WriteLine($"{key}: alert not sent: {e.GetType().Name}: {e.Message}");
             }
         });
     }
