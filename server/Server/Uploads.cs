@@ -9,7 +9,7 @@ using Resurgence.Restore;
 namespace Resurgence.Server;
 
 /// <summary>What an upload came to. Kind: restored (only an operator's approve), review (kept for the operator, nothing restored), already (this user id
-/// was restored before), taken (another account holds the user id), refused (the user id is not accepted, or the account has played), invalid (not a usable backup), busy, too_large.
+/// was restored before), taken (another account holds the user id), refused (the user id is not accepted), invalid (not a usable backup), busy, too_large.
 /// Message is plain words for the player; Report the technical report of a restore.</summary>
 public sealed record UploadOutcome(int Status, string Kind, string Message, string? Report = null);
 
@@ -228,7 +228,8 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>The rules of a restore (the operator's approve runs them again): once per game user id, no user id another
-    /// account holds, a user id other than the account's own only before the account has played. Null: allowed.</summary>
+    /// account holds. Uploading is the player's consent to replace the profile, so an account that has played is restored too
+    /// (Approve keeps its own user id then). Null: allowed.</summary>
     UploadOutcome? Refusal(long account, long uid)
     {
         if (Store.RestoredBy(uid) is not null)
@@ -237,8 +238,6 @@ public sealed class Uploads(State state, string dataDir)
             return new(409, "refused", "This backup has a user id this server does not accept.");
         if (uid != account && Store.AccountExists(uid))
             return new(409, "taken", "Another account on this server already has this backup's user id. Nothing was changed. Ask the operator.");
-        if (uid != account && Store.Played(account))
-            return new(409, "refused", "The account has already played, so its user id cannot change to the one in the backup.");
         return null;
     }
 
@@ -324,20 +323,21 @@ public sealed class Uploads(State state, string dataDir)
             var account = row.Account;
             if (Refusal(account, uid) is { } refused) return Refused(row, refused);
             var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
+            var finalId = Store.Played(account) ? account : uid;  // an account that has played keeps its id: what it played stays under it and no restored id can clash with the ids handed out here
             var current = (string)Store.AccountJson(account)["handle"]!;
             var adopt = !keepHandle && zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
             var handle = adopt ? zipHandle! : current;
             var summary = Summary(model, handle != current, zipHandle is not null && !adopt, keepHandle);
             try
             {
-                var result = Restorer.Apply(state, path, row.Sha, read, account, uid, handle, exists: true, backupDatabase: false, dataDir,
+                var result = Restorer.Apply(state, path, row.Sha, read, account, finalId, handle, exists: true, backupDatabase: false, dataDir,
                     con =>
                     {
                         con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
                         con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
                         con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'restored', ?, ?, ?, '')",
-                                 Store.Now(), uid, handle, adopt ? 0 : 1);
-                        Notify(con, $"{summary} Your user id is {uid} and your name is {handle}.");
+                                 Store.Now(), finalId, handle, adopt ? 0 : 1);
+                        Notify(con, $"{summary} Your user id is {finalId} and your name is {handle}.");
                     });
                 return new(200, "restored", summary, result.Report);
             }

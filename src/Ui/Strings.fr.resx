@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Vos données</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Envoyez le zip créé par l’outil de sauvegarde. Un opérateur le vérifie à la main et, si tout est en ordre, restaure votre inventaire, votre porte-monnaie, vos compétences, vos statistiques, vos succès et vos trophées sur ce serveur.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Envoyez votre sauvegarde avant votre première chasse ici : une sauvegarde ne peut être restaurée que sur un compte qui n’a pas encore joué.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Envoyer une sauvegarde remplace votre profil sur ce serveur : objets, porte-monnaie, compétences, statistiques, succès, trophées et pavillons. Les chasses jouées ici restent.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Utilisez une sauvegarde faite en mode « Mon compte ». L’opérateur voit si elle a été faite pour le compte Steam avec lequel vous êtes connecté ; c’est un indice, pas une preuve.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Une sauvegarde ne peut être restaurée qu’une seule fois. Si vous n’avez pas encore joué sur ce serveur, votre compte reprend alors l’id utilisateur et le nom de la sauvegarde.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Chaque zip est conservé pour qu’un opérateur le vérifie à la main. Rien n’est restauré automatiquement, cela peut donc prendre un moment.</value></data>

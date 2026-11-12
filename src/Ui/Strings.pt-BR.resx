@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Seus dados</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurar seu backup</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Envie o zip criado pela ferramenta de backup. Um operador o confere manualmente e, se estiver tudo certo, restaura seu inventário, carteira, habilidades, estatísticas, conquistas e troféus neste servidor.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Envie seu backup antes da sua primeira caçada aqui: um backup só pode ser restaurado em uma conta que ainda não jogou.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Enviar um backup substitui o seu perfil neste servidor: itens, carteira, habilidades, estatísticas, conquistas, troféus e cabanas. As caçadas que você jogou aqui permanecem.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Use um backup feito no modo Minha conta. O operador vê se ele foi feito para a conta Steam com a qual você entrou; isso é uma pista, não uma prova.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Um backup só pode ser restaurado uma vez. Se você ainda não jogou neste servidor, sua conta passa a ter o id de usuário e o nome do backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Todo zip é guardado para um operador conferir manualmente. Nada é restaurado automaticamente, então pode demorar.</value></data>

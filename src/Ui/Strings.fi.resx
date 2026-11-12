@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Tietosi</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Lähetä varmuuskopiotyökalun tekemä zip. Operaattori tarkistaa sen käsin ja, jos kaikki on kunnossa, palauttaa varusteesi, lompakkosi, taitosi, tilastosi, saavutuksesi ja palkintosi tälle palvelimelle.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Lähetä varmuuskopiosi ennen ensimmäistä metsästystäsi täällä: varmuuskopion voi palauttaa vain tilille, joka ei ole vielä pelannut.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Varmuuskopion lähettäminen korvaa profiilisi tällä palvelimella: esineet, lompakon, taidot, tilastot, saavutukset, palkinnot ja majat. Täällä pelaamasi metsästykset säilyvät.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Käytä varmuuskopiota, joka on tehty tilassa ”My account”. Operaattori näkee, onko se tehty Steam-tilille, jolla kirjauduit sisään; se on vihje, ei todiste.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Varmuuskopion voi palauttaa vain kerran. Jos et ole vielä pelannut tällä palvelimella, tilisi saa silloin varmuuskopion käyttäjätunnuksen ja nimen.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Jokainen zip säilytetään, jotta operaattori voi tarkistaa sen käsin. Mitään ei palauteta automaattisesti, joten se voi viedä hetken.</value></data>

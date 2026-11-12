@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Verileriniz</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Yedeği geri yükle</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Yedekleme aracının oluşturduğu zip dosyasını yükleyin. Bir operatör dosyayı elle kontrol eder ve her şey yolundaysa envanterinizi, cüzdanınızı, becerilerinizi, istatistiklerinizi, başarılarınızı ve ödüllerinizi bu sunucuda geri yükler.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Yedeğinizi burada ilk avınızdan önce yükleyin: yedek yalnızca henüz oynamamış bir hesaba geri yüklenebilir.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Bir yedek yüklemek bu sunucudaki profilinizi değiştirir: eşyalar, cüzdan, beceriler, istatistikler, başarılar, ödüller ve kulübeler. Burada oynadığınız avlar kalır.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>“My account” modunda alınmış bir yedek kullanın. Operatöre, yedeğin oturum açtığınız Steam hesabı için alınıp alınmadığı gösterilir; bu bir ipucudur, kanıt değildir.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Bir yedek yalnızca bir kez geri yüklenebilir. Bu sunucuda henüz oynamadıysanız hesabınız yedeğin kullanıcı id'sini ve adını alır.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Her zip dosyası, bir operatörün elle kontrol etmesi için saklanır. Hiçbir şey otomatik geri yüklenmez, bu yüzden biraz zaman alabilir.</value></data>

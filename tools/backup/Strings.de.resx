@@ -458,7 +458,7 @@
     <value>An den Community-Server senden</value>
   </data>
   <data name="Send_Ask" xml:space="preserve">
-    <value>Dies sendet {0} an {1}: deine gesamte Profilsicherung, einschließlich deiner Steam-Konto-ID und claim.key. Nichts wird gesendet, bevor du auf Senden drückst. Zuerst meldest du dich auf der Website des Servers mit Steam an. Der Server bewahrt die Datei für seinen Betreiber zur Prüfung auf; sie wird nur auf ein Konto wiederhergestellt, das noch nicht gespielt hat, und nur einmal.</value>
+    <value>Dies sendet {0} an {1}: deine gesamte Profilsicherung, einschließlich deiner Steam-Konto-ID und claim.key. Nichts wird gesendet, bevor du auf Senden drückst. Zuerst meldest du dich auf der Website des Servers mit Steam an. Der Server bewahrt die Datei für seinen Betreiber zur Prüfung auf; sie ersetzt dein Profil auf dem Server (Jagden, die du dort gespielt hast, bleiben) und wird nur einmal wiederhergestellt.</value>
   </data>
   <data name="Send_Go" xml:space="preserve">
     <value>Senden</value>
@@ -479,7 +479,7 @@
     <value>Empfangen: wartet auf Prüfung</value>
   </data>
   <data name="Send_review_Text" xml:space="preserve">
-    <value>Der Server hat deine Sicherung. Ein Betreiber prüft sie vor der Wiederherstellung, das kann dauern. Eine Sicherung wird nur auf ein Konto wiederhergestellt, das noch nicht gespielt hat.</value>
+    <value>Der Server hat deine Sicherung. Ein Betreiber prüft sie vor der Wiederherstellung, das kann dauern. Die Wiederherstellung ersetzt dein Profil auf dem Server; Jagden, die du dort gespielt hast, bleiben.</value>
   </data>
   <data name="Send_already_Title" xml:space="preserve">
     <value>Abgelehnt: schon wiederhergestellt</value>

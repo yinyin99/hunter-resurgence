@@ -458,7 +458,7 @@
     <value>Enviar al servidor de la comunidad</value>
   </data>
   <data name="Send_Ask" xml:space="preserve">
-    <value>Esto envía {0} a {1}: toda la copia de tu perfil, incluido el id de tu cuenta de Steam y claim.key. No se envía nada hasta que pulses Enviar. Primero inicias sesión con Steam en el sitio web del servidor. El servidor guarda el archivo para que su operador lo revise; solo se restaura en una cuenta que aún no ha jugado, y una sola vez.</value>
+    <value>Esto envía {0} a {1}: toda la copia de tu perfil, incluido el id de tu cuenta de Steam y claim.key. No se envía nada hasta que pulses Enviar. Primero inicias sesión con Steam en el sitio web del servidor. El servidor guarda el archivo para que su operador lo revise; reemplaza tu perfil en el servidor (las cacerías que jugaste allí se conservan), y solo una vez.</value>
   </data>
   <data name="Send_Go" xml:space="preserve">
     <value>Enviar</value>
@@ -479,7 +479,7 @@
     <value>Recibida: pendiente de revisión</value>
   </data>
   <data name="Send_review_Text" xml:space="preserve">
-    <value>El servidor tiene tu copia. Un operador la revisa antes de restaurarla, lo que puede tardar. Una copia solo se restaura en una cuenta que aún no ha jugado.</value>
+    <value>El servidor tiene tu copia. Un operador la revisa antes de restaurarla, lo que puede tardar. La restauración reemplaza tu perfil en el servidor; las cacerías que jugaste allí se conservan.</value>
   </data>
   <data name="Send_already_Title" xml:space="preserve">
     <value>Rechazada: ya restaurada</value>

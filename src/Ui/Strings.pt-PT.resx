@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Os seus dados</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurar a cópia de segurança</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Envie o zip criado pela ferramenta de cópia de segurança. Um operador verifica-o manualmente e, se estiver tudo bem, restaura o seu inventário, a carteira, as habilidades, as estatísticas, as conquistas e os troféus neste servidor.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Envie a sua cópia de segurança antes da sua primeira caçada aqui: uma cópia de segurança só pode ser restaurada numa conta que ainda não jogou.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Enviar uma cópia de segurança substitui o seu perfil neste servidor: itens, carteira, habilidades, estatísticas, conquistas, troféus e cabanas. As caçadas que jogou aqui permanecem.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Utilize uma cópia de segurança criada no modo «Minha conta». O operador vê se foi criada para a conta Steam com que iniciou sessão; é uma indicação, não uma prova.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Uma cópia de segurança só pode ser restaurada uma vez. Se ainda não jogou neste servidor, a sua conta passa então a ter o ID de utilizador e o nome da cópia de segurança.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Todos os zips são guardados para um operador os verificar manualmente. Nada é restaurado automaticamente, por isso pode demorar algum tempo.</value></data>

@@ -35,8 +35,8 @@ const string ReviewUsage = """
     An id is a number for a zip, or c<number> for a claim (c12).
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note.
-    approve restores a zip by the community rules (once per game user id, never a user id another account holds, the account's user id
-    changes only before it has played) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
+    approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
+    its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
     --keep-handle leaves the account its own name instead of the backup's.
     approve c<id> restores the archived profile onto the claiming account (its user id never changes); --keep-handle leaves the account its own name.
     reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. A rejected claim stays as a row with its reason.

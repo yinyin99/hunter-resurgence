@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Your data</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restore your backup</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Upload the zip the backup tool made. An operator checks it by hand and, if all is well, restores your inventory, wallet, skills, statistics, achievements and trophies on this server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload your backup before your first hunt here: a backup can only be restored onto an account that has not played yet.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Uploading a backup replaces your profile on this server: items, wallet, skills, statistics, achievements, trophies and lodges. Hunts you played here stay.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Use a backup made in My account mode. The operator is shown whether it was made for the Steam account you signed in with; that is a hint, not proof.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>A backup can be restored once. If you have not played on this server yet, your account then takes the user id and name of the backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Every zip is kept for an operator to check by hand. Nothing is restored automatically, so it can take a while.</value></data>

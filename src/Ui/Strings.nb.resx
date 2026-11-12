@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Dine data</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Gjenopprett sikkerhetskopien din</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Last opp zip-filen sikkerhetskopiverktøyet har laget. En operatør sjekker den manuelt og gjenoppretter, hvis alt er i orden, inventaret, lommeboken, ferdighetene, statistikken, prestasjonene og trofeene dine på denne serveren.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Last opp sikkerhetskopien din før din første jakt her: en sikkerhetskopi kan bare gjenopprettes på en konto som ikke har spilt ennå.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Når du laster opp en sikkerhetskopi, erstatter den profilen din på denne serveren: gjenstander, lommebok, ferdigheter, statistikk, prestasjoner, trofeer og hytter. Jakter du har spilt her, blir.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Bruk en sikkerhetskopi laget i modusen «My account». Operatøren får se om den ble laget for Steam-kontoen du logget inn med; det er et hint, ikke et bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En sikkerhetskopi kan gjenopprettes én gang. Hvis du ikke har spilt på denne serveren ennå, får kontoen din deretter bruker-ID-en og navnet fra sikkerhetskopien.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Hver zip-fil lagres slik at en operatør kan sjekke den manuelt. Ingenting gjenopprettes automatisk, så det kan ta en stund.</value></data>

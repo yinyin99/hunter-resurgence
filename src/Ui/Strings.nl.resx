@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Jouw gegevens</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Je back-up herstellen</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Upload de zip die de back-uptool heeft gemaakt. Een operator controleert hem met de hand en herstelt, als alles klopt, je inventaris, portemonnee, vaardigheden, statistieken, prestaties en trofeeën op deze server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload je back-up vóór je eerste jacht hier: een back-up kan alleen worden hersteld op een account dat nog niet heeft gespeeld.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Een back-up uploaden vervangt je profiel op deze server: voorwerpen, portemonnee, vaardigheden, statistieken, prestaties, trofeeën en jachthutten. Jachten die je hier hebt gespeeld, blijven.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Gebruik een back-up die is gemaakt in de modus "My account". De operator ziet of hij is gemaakt voor het Steam-account waarmee je bent ingelogd; dat is een aanwijzing, geen bewijs.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Een back-up kan één keer worden hersteld. Als je nog niet op deze server hebt gespeeld, krijgt je account dan het gebruikers-id en de naam uit de back-up.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Elke zip wordt bewaard zodat een operator hem met de hand kan controleren. Er wordt niets automatisch hersteld, dus het kan even duren.</value></data>

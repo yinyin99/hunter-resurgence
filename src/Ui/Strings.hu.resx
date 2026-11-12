@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Adataid</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Mentés visszaállítása</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Töltsd fel a mentőeszköz által készített zipet. Egy üzemeltető kézzel ellenőrzi, és ha minden rendben van, visszaállítja a felszerelésedet, a pénztárcádat, a készségeidet, a statisztikáidat, az eredményeidet és a trófeáidat ezen a szerveren.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Az első itteni vadászat előtt töltsd fel a mentést: a mentés csak olyan fiókra állítható vissza, amellyel még nem játszottak.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>A mentés feltöltése lecseréli a profilodat ezen a szerveren: a tárgyakat, a pénztárcát, a készségeket, a statisztikákat, az eredményeket, a trófeákat és a vadászházakat. Az itt lejátszott vadászatok megmaradnak.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Olyan mentést használj, amely a „My account” módban készült. Az üzemeltető látja, hogy a mentés arra a Steam-fiókra készült-e, amellyel bejelentkeztél; ez támpont, nem bizonyíték.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>A mentés egyszer állítható vissza. Ha még nem játszottál ezen a szerveren, a fiókod ezután átveszi a mentés felhasználói azonosítóját és nevét.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Minden zipet megőrzünk, hogy egy üzemeltető kézzel ellenőrizhesse. Semmi sem áll vissza automatikusan, ezért ez eltarthat egy ideig.</value></data>

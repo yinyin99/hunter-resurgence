@@ -1,6 +1,6 @@
 # No restore onto an account that has played
 
-Status: accepted
+Status: superseded by [ADR 0009](0009-restore-a-zip-onto-an-account-that-has-played.md)
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 
