@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Fællesskabet mødes på Discord: nyheder, hjælp og andre jægere. Kom og sig hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Deltag på Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senere</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Færdig. Steams Afspil-knap åbner nu denne launcher. Start Steam igen?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Færdig. Steams Afspil-knap åbner nu denne launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam starter igen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Denne launcher blev ikke installeret med installationsprogrammet (en udviklings- eller udpakket kopi), så den kan ikke sætte Steams startindstilling for dig.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Launcheren kunne ikke læse Steams indstillingsfil for dette spil sikkert og lod den være uændret.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam blev ikke lukket i tide. Luk det selv, og prøv igen.</value></data>

@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>The community meets on Discord: news, help and other hunters. Come and say hello!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join the Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Later</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Done. Steam's Play button now opens this launcher. Start Steam again?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Done. Steam's Play button now opens this launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam is starting again.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>This launcher was not installed with the Setup (a development or unpacked copy), so it cannot set Steam's launch option for you.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>The launcher could not read Steam's settings file for this game safely, so it left the file unchanged.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam did not close in time. Close it yourself, then try again.</value></data>

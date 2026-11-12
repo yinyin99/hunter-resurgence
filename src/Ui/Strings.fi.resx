@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Yhteisö kokoontuu Discordissa: uutisia, apua ja muita metsästäjiä. Tule moikkaamaan!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Myöhemmin</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Valmis. Steamin Pelaa-painike avaa nyt tämän käynnistimen. Käynnistetäänkö Steam uudelleen?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Käynnistä Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Valmis. Steamin Pelaa-painike avaa nyt tämän käynnistimen.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam käynnistyy uudelleen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Tätä käynnistintä ei asennettu asennusohjelmalla (kehitys- tai puretusta kopiosta), joten se ei voi asettaa Steamin käynnistysvalintaa puolestasi.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Käynnistin ei voinut lukea Steamin tämän pelin asetustiedostoa turvallisesti ja jätti sen ennalleen.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam ei sulkeutunut ajoissa. Sulje se itse ja yritä uudelleen.</value></data>

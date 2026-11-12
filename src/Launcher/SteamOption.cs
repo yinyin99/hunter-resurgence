@@ -94,17 +94,15 @@ sealed class LauncherSteamOption(LauncherEnv env, Func<string?> stableExe) : ISt
 
     public Task<SteamOptionInfo> ReadAsync() => Task.Run(Info);
 
-    public Task<Result> SetAsync() => Task.Run(() =>
+    public Task<(Result Result, bool Restarted)> SetAsync() => Task.Run(() =>
     {
         var info = Info();
-        if (info.Ours) return Result.Success; // nothing to write, Steam stays open
-        if (!info.CanSet || Vdf() is not { } vdf) return Result.Fail(Kit.S("Steam.Unreadable"));
-        if (info.Running && !Steam.Shutdown(TimeSpan.FromSeconds(30))) return Result.Fail(Kit.S("Steam.NoClose"));
-        try { SteamOption.Set(vdf, env.Settings.SteamAppId!, info.Line, env.Prefs, env.Save); return Result.Success; }
-        catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { return Result.Fail(Kit.S("Steam.Unreadable")); }
+        if (info.Ours) return (Result.Success, false); // nothing to write, Steam stays open
+        if (!info.CanSet || Vdf() is not { } vdf) return (Result.Fail(Kit.S("Steam.Unreadable")), false);
+        if (info.Running && !Steam.Shutdown(TimeSpan.FromSeconds(30))) return (Result.Fail(Kit.S("Steam.NoClose")), false);
+        try { SteamOption.Set(vdf, env.Settings.SteamAppId!, info.Line, env.Prefs, env.Save); return (Result.Success, info.Running && Steam.StartSilent()); } // Steam shows its own window; if it does not start, the Start button does
+        catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { return (Result.Fail(Kit.S("Steam.Unreadable")), false); }
     });
-
-    public bool StartSteam() => Steam.StartSilent();
 
     public Task<bool> DueAsync() => Task.Run(() =>
     {

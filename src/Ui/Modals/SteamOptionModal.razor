@@ -9,10 +9,9 @@
     @if (info is null) { }
     else if (done)
     {
-        <p id="steam-done">@L["Steam.Done"]</p>
+        <p id="steam-done">@L["Steam.Done"]@if (restarted) { <text> @L["Steam.Restarted"]</text> }</p>
         <div class="buttons">
-            <button type="button" class="btn btn-primary" id="steam-start" autofocus @onclick="StartSteam">@L["Steam.StartSteam"]</button>
-            <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
+            <button type="button" class="btn btn-primary" autofocus @onclick="Modal.Close">@L["Alert.Close"]</button>
         </div>
     }
     else if (copy || !info.CanSet)
@@ -53,7 +52,7 @@
 
 @code {
     SteamOptionInfo? info;
-    bool copy, done, busy, never;
+    bool copy, done, busy, never, restarted;
     string? error;
 
     protected override async Task OnInitializedAsync() => info = await Steam.ReadAsync();
@@ -64,15 +63,9 @@
     async Task Set()
     {
         (busy, error) = (true, null);
-        var r = await Steam.SetAsync();
+        var (r, again) = await Steam.SetAsync();
         busy = false;
-        if (r.Ok) { done = true; never = false; } else error = r.Error;
-    }
-
-    void StartSteam()
-    {
-        Steam.StartSteam(); // Steam shows its own window; if it does not start the player starts it
-        Modal.Close();
+        if (r.Ok) { restarted = again; done = true; never = false; } else error = r.Error;
     }
 
     async Task Copy()

@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Komunita se schází na Discordu: novinky, pomoc a další lovci. Přijďte se pozdravit!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Připojit se k Discordu</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Později</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Hotovo. Tlačítko Hrát ve Steamu nyní otevírá tento launcher. Spustit Steam znovu?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Spustit Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Hotovo. Tlačítko Hrát ve Steamu nyní otevírá tento launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam se znovu spouští.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Tento launcher nebyl nainstalován instalátorem (vývojová nebo rozbalená kopie), takže za vás nemůže nastavit volbu spouštění ve Steamu.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Launcher nemohl bezpečně přečíst soubor nastavení Steamu pro tuto hru a nechal ho beze změny.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam se nezavřel včas. Zavřete ho sami a zkuste to znovu.</value></data>

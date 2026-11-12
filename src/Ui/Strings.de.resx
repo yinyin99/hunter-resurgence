@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Die Community trifft sich auf Discord: Neuigkeiten, Hilfe und andere Jäger. Schau vorbei und sag Hallo!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Dem Discord beitreten</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Später</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Fertig. Steams Play-Taste öffnet jetzt diesen Launcher. Steam wieder starten?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam starten</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Fertig. Steams Play-Taste öffnet jetzt diesen Launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam startet wieder.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Dieser Launcher wurde nicht mit dem Setup installiert (Entwicklungs- oder entpackte Kopie), deshalb kann er die Startoption von Steam nicht für Sie setzen.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Der Launcher konnte die Einstellungsdatei von Steam für dieses Spiel nicht sicher lesen und hat die Datei unverändert gelassen.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam wurde nicht rechtzeitig beendet. Schließen Sie es selbst und versuchen Sie es erneut.</value></data>

@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Сообщество собирается в Discord: новости, помощь и другие охотники. Заходите поздороваться!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Позже</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Готово. Кнопка «Играть» в Steam теперь открывает этот лаунчер. Запустить Steam снова?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Запустить Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Готово. Кнопка «Играть» в Steam теперь открывает этот лаунчер.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam запускается снова.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Этот лаунчер установлен не программой установки (копия для разработки или распакованная), поэтому он не может задать параметр запуска в Steam за вас.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Лаунчер не смог безопасно прочитать файл настроек Steam для этой игры и оставил его без изменений.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam не закрылся вовремя. Закройте его сами и повторите попытку.</value></data>

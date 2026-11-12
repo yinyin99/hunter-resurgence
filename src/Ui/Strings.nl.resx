@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>De community komt samen op Discord: nieuws, hulp en andere jagers. Kom gedag zeggen!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Word lid van de Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Later</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Klaar. Steams Spelen-knop opent nu deze launcher. Steam opnieuw starten?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam starten</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Klaar. Steams Spelen-knop opent nu deze launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam wordt opnieuw gestart.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Deze launcher is niet met de Setup geïnstalleerd (een ontwikkel- of uitgepakte kopie), dus hij kan de startoptie van Steam niet voor je instellen.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>De launcher kon het instellingenbestand van Steam voor dit spel niet veilig lezen en heeft het ongewijzigd gelaten.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam sloot niet op tijd af. Sluit het zelf af en probeer het opnieuw.</value></data>

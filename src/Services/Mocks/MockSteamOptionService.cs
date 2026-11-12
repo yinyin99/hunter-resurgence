@@ -4,8 +4,7 @@ namespace Resurgence.Services.Mocks;
 public sealed class MockSteamOptionService : ISteamOptionService
 {
     public Task<SteamOptionInfo> ReadAsync() => Task.FromResult(new SteamOptionInfo("\"C:\\Launcher\\launcher.exe\" %command%", true, true, null, false, false));
-    public Task<Result> SetAsync() => Task.FromResult(Result.Success);
-    public bool StartSteam() => true;
+    public Task<(Result Result, bool Restarted)> SetAsync() => Task.FromResult((Result.Success, false));
     public Task<bool> DueAsync() => Task.FromResult(false);
     public void NotAgain() { }
 }
