@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Руководство игрока: все шаги и решения частых проблем</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Скачать лаунчер</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Шаг {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер предлагает открываться по кнопке «Играть» в Steam: согласитесь, затем нажмите «Играть» в Steam. Лаунчер перечисляет, что он меняет на ПК: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Файлы игры никогда не изменяются.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер предлагает открываться по кнопке «Играть» в Steam: выберите «Закрыть Steam и задать», затем «Запустить Steam» и нажмите «Играть» в Steam. Лаунчер перечисляет, что он меняет на ПК: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Файлы игры никогда не изменяются.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Войдите по ссылке с кодом, которую показывает лаунчер, с тем аккаунтом Steam, на котором играете. Выберите заповедник и точку старта и нажмите «Начать игру». В первый раз брандмауэр Windows спросит об игре: выберите «Разрешить». Не закрывайте лаунчер во время игры.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Устранение неполадок</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Восстановить резервную копию</value></data>

@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guía del jugador: cada paso y soluciones a los problemas habituales</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Descargar el lanzador</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Paso {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>En su primer inicio, el lanzador ofrece abrirse desde el botón Jugar de Steam: acepta y luego pulsa Jugar en Steam. El lanzador indica lo que cambia en tu PC: elige Configurar y responde Sí cuando Windows pida instalar un certificado y editar el archivo hosts. Los archivos del juego nunca se modifican.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>En su primer inicio, el lanzador ofrece abrirse desde el botón Jugar de Steam: elige «Cerrar Steam y aplicarlo», luego «Iniciar Steam», y pulsa Jugar en Steam. El lanzador indica lo que cambia en tu PC: elige Configurar y responde Sí cuando Windows pida instalar un certificado y editar el archivo hosts. Los archivos del juego nunca se modifican.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Inicia sesión con el enlace con código que muestra el lanzador, con la cuenta de Steam con la que juegas. Elige una reserva y un punto de inicio, y pulsa Iniciar partida. La primera vez, el Firewall de Windows pregunta por el juego: elige Permitir. Deja el lanzador abierto mientras juegas.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Solución de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar tu copia de seguridad</value></data>

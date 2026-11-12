@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Průvodce hráče: každý krok a řešení běžných problémů</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Stáhnout launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher nabídne, že se bude otevírat tlačítkem Hrát ve Steamu: přijměte to a pak ve Steamu stiskněte Hrát. Launcher vypíše, co na počítači mění: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Soubory hry se nikdy nemění.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher nabídne, že se bude otevírat tlačítkem Hrát ve Steamu: zvolte „Zavřít Steam a nastavit“, pak „Spustit Steam“ a ve Steamu stiskněte Hrát. Launcher vypíše, co na počítači mění: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Soubory hry se nikdy nemění.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Přihlaste se odkazem s kódem, který launcher ukáže, účtem Steam, se kterým hrajete. Vyberte revír a start a stiskněte Spustit hru. Poprvé se brána Windows Firewall zeptá na hru: zvolte Povolit. Nechte launcher během hraní otevřený.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Řešení potíží</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovit zálohu</value></data>

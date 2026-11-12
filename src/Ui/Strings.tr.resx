@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Oyuncu rehberi: her adım ve sık görülen sorunların çözümleri</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Başlatıcıyı indir</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Adım {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı, Steam'in Oyna düğmesinden açılmayı önerir: kabul et, sonra Steam'de Oyna'ya bas. Başlatıcı PC'nde neyi değiştirdiğini listeler: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Oyunun dosyaları asla değiştirilmez.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı, Steam'in Oyna düğmesinden açılmayı önerir: “Steam'i kapat ve ayarla”, ardından “Steam'i başlat” seçeneğini seç ve Steam'de Oyna'ya bas. Başlatıcı PC'nde neyi değiştirdiğini listeler: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Oyunun dosyaları asla değiştirilmez.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Başlatıcının gösterdiği kodlu bağlantıyla, oynadığın Steam hesabıyla giriş yap. Bir av alanı ve başlangıç noktası seç, sonra Oyunu Başlat'a bas. İlk seferde Windows Güvenlik Duvarı oyunu sorar: İzin ver'i seç. Oynarken başlatıcıyı açık tut.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Sorun Giderme</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Yedeği geri yükle</value></data>

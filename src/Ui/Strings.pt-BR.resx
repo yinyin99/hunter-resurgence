@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guia do jogador: cada passo e soluções para problemas comuns</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Baixar o launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passo {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Na primeira vez, o launcher oferece abrir pelo botão Jogar da Steam: aceite e depois aperte Jogar na Steam. O launcher lista o que muda no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o arquivo hosts. Os arquivos do jogo nunca são alterados.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Na primeira vez, o launcher oferece abrir pelo botão Jogar da Steam: escolha “Fechar o Steam e configurar”, depois “Iniciar o Steam”, e aperte Jogar na Steam. O launcher lista o que muda no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o arquivo hosts. Os arquivos do jogo nunca são alterados.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Entre com o link com código que o launcher mostra, com a conta Steam com que você joga. Escolha uma reserva e um ponto de partida e aperte Iniciar Jogo. Na primeira vez, o Firewall do Windows pergunta sobre o jogo: escolha Permitir. Deixe o launcher aberto enquanto joga.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Solução de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar seu backup</value></data>

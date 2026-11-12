@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Ghidul jucătorului: fiecare pas și soluții pentru problemele frecvente</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Descarcă launcherul</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Pasul {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>La prima pornire, launcherul se oferă să se deschidă din butonul Joacă al Steam: acceptă, apoi apasă Joacă în Steam. Launcherul arată ce schimbă pe PC: alege Configurează și răspunde Da când Windows cere să instaleze un certificat și să editeze fișierul hosts. Fișierele jocului nu sunt modificate niciodată.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>La prima pornire, launcherul se oferă să se deschidă din butonul Joacă al Steam: alege „Închide Steam și setează”, apoi „Pornește Steam” și apasă Joacă în Steam. Launcherul arată ce schimbă pe PC: alege Configurează și răspunde Da când Windows cere să instaleze un certificat și să editeze fișierul hosts. Fișierele jocului nu sunt modificate niciodată.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Conectează-te cu linkul cu cod pe care îl arată launcherul, cu contul Steam cu care joci. Alege o rezervație și un punct de start, apoi apasă Începeți jocul. Prima dată, Windows Firewall întreabă despre joc: alege Permite. Ține launcherul deschis cât joci.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Depanare</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurați backup-ul</value></data>

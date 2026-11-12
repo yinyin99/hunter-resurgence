@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelersgids: elke stap en oplossingen voor veelvoorkomende problemen</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download de launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Stap {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start biedt de launcher aan om te openen via de Spelen-knop van Steam: accepteer en druk dan in Steam op Spelen. De launcher toont wat hij op je pc verandert: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. De bestanden van het spel worden nooit veranderd.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start biedt de launcher aan om te openen via de Spelen-knop van Steam: kies "Steam sluiten en instellen", dan "Steam starten", en druk in Steam op Spelen. De launcher toont wat hij op je pc verandert: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. De bestanden van het spel worden nooit veranderd.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Meld je aan met de codelink die de launcher toont, met het Steam-account waarmee je speelt. Kies een reservaat en een startpunt en druk op Spel starten. De eerste keer vraagt Windows Firewall naar het spel: kies Toestaan. Laat de launcher open terwijl je speelt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Problemen oplossen</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Je back-up herstellen</value></data>

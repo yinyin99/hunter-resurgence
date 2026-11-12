@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Poradnik gracza: każdy krok i rozwiązania częstych problemów</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Pobierz launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher proponuje otwieranie go przyciskiem Graj w Steamie: zgódź się, a potem naciśnij Graj w Steamie. Launcher pokazuje, co zmienia na twoim komputerze: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Pliki gry nigdy nie są zmieniane.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher proponuje otwieranie go przyciskiem Graj w Steamie: wybierz „Zamknij Steam i ustaw”, potem „Uruchom Steam” i naciśnij Graj w Steamie. Launcher pokazuje, co zmienia na twoim komputerze: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Pliki gry nigdy nie są zmieniane.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Zaloguj się linkiem z kodem, który pokazuje launcher, na konto Steam, na którym grasz. Wybierz rezerwat i punkt startowy, a potem naciśnij Start gry. Za pierwszym razem Zapora systemu Windows zapyta o grę: wybierz Zezwalaj. Nie zamykaj launchera podczas gry.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Rozwiązywanie problemów</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>

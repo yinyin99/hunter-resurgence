@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Player guide: every step, and fixes for common problems</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download the launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Step {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>On its first start, the launcher offers to open from Steam's Play button: accept, then press Play in Steam. The launcher lists what it changes on your PC: choose Set up, and answer Yes when Windows asks to install a certificate and to edit the hosts file. The game's files are never changed.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>On its first start, the launcher offers to open from Steam's Play button: choose “Close Steam and set it”, then “Start Steam”, and press Play in Steam. The launcher lists what it changes on your PC: choose Set up, and answer Yes when Windows asks to install a certificate and to edit the hosts file. The game's files are never changed.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Sign in with the code link the launcher shows, with the Steam account you play with. Choose a reserve and a start, then press Start Game. The first time, Windows Firewall asks about the game: choose Allow. Keep the launcher open while you play.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Troubleshooting</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>

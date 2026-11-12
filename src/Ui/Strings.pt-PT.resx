@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guia do jogador: cada passo e soluções para problemas comuns</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Transferir o launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passo {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>No primeiro arranque, o launcher propõe abrir-se a partir do botão Jogar do Steam: aceite e depois carregue em Jogar no Steam. O launcher indica o que altera no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o ficheiro hosts. Os ficheiros do jogo nunca são alterados.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>No primeiro arranque, o launcher propõe abrir-se a partir do botão Jogar do Steam: escolha «Fechar o Steam e definir», depois «Iniciar o Steam», e carregue em Jogar no Steam. O launcher indica o que altera no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o ficheiro hosts. Os ficheiros do jogo nunca são alterados.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Inicie sessão com a ligação com código que o launcher mostra, com a conta Steam com que joga. Escolha uma reserva e um ponto de partida e carregue em Iniciar jogo. Da primeira vez, a Firewall do Windows pergunta sobre o jogo: escolha Permitir. Mantenha o launcher aberto enquanto joga.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Resolução de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar a cópia de segurança</value></data>

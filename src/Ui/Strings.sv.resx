@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelarguide: varje steg och lösningar på vanliga problem</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Ladda ner launchern</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Steg {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Vid första starten erbjuder launchern att öppnas från Steams Spela-knapp: godkänn och tryck sedan på Spela i Steam. Launchern visar vad den ändrar på datorn: välj Konfigurera och svara Ja när Windows frågar om att installera ett certifikat och redigera hosts-filen. Spelets filer ändras aldrig.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Vid första starten erbjuder launchern att öppnas från Steams Spela-knapp: välj ”Stäng Steam och ställ in”, sedan ”Starta Steam” och tryck på Spela i Steam. Launchern visar vad den ändrar på datorn: välj Konfigurera och svara Ja när Windows frågar om att installera ett certifikat och redigera hosts-filen. Spelets filer ändras aldrig.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Logga in med kodlänken som launchern visar, med det Steam-konto du spelar med. Välj ett reservat och en startpunkt och tryck på Starta spel. Första gången frågar Windows-brandväggen om spelet: välj Tillåt. Låt launchern vara öppen medan du spelar.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Felsökning</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Återställ din säkerhetskopia</value></data>

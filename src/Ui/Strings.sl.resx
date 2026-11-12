@@ -1262,7 +1262,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Vodnik za igralce: vsak korak in rešitve pogostih težav</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Prenesi zaganjalnik</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Korak {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Ob prvem zagonu zaganjalnik ponudi, da se odpira z gumbom Igraj v Steamu: sprejmite in nato v Steamu pritisnite Igraj. Zaganjalnik navede, kaj spremeni na računalniku: izberite Nastavi in odgovorite Da, ko Windows vpraša za namestitev potrdila in urejanje datoteke hosts. Datoteke igre se nikoli ne spremenijo.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ob prvem zagonu zaganjalnik ponudi, da se odpira z gumbom Igraj v Steamu: izberite „Zapri Steam in nastavi“, nato „Zaženi Steam“ in v Steamu pritisnite Igraj. Zaganjalnik navede, kaj spremeni na računalniku: izberite Nastavi in odgovorite Da, ko Windows vpraša za namestitev potrdila in urejanje datoteke hosts. Datoteke igre se nikoli ne spremenijo.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Prijavite se s povezavo s kodo, ki jo pokaže zaganjalnik, z računom Steam, s katerim igrate. Izberite lovišče in začetno točko ter pritisnite Zaženi igro. Prvič požarni zid Windows vpraša o igri: izberite Dovoli. Med igranjem pustite zaganjalnik odprt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Odpravljanje težav</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>
