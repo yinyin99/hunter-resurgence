@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinställningar</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spelhantering</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steams startalternativ</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Klistra in den här raden i spelets startalternativ i Steam (Egenskaper) för att starta spelet via den här startaren:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Kopiera</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Språk</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinställningar</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skärmdumpar</value></data>

@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Fiókbeállítások</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Játékkezelés</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam indítási beállítás</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Illeszd be ezt a sort a játék Steam indítási beállításai közé (Tulajdonságok), hogy a játék ezzel az indítóval induljon:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Másolás</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Nyelv</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Játékbeállítások</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Képernyőmentések</value></data>

@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ajustes da Conta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Administrar Jogo</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Opção de inicialização da Steam</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Cole esta linha nas opções de inicialização do jogo na Steam (Propriedades) para iniciá-lo por este launcher:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ajustes do Jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de tela</value></data>

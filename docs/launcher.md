@@ -193,6 +193,8 @@ Install the launcher with `HunterResurgence-win-Setup.exe` from the [latest rele
 "C:\path\to\resurgence-launcher.exe" %command%
 ```
 
+The launcher's Settings menu has **Steam launch option** with this line filled in with its own exe path and a Copy button (launcher window only).
+
 Press Play in Steam. The game's own files stay untouched. On its first start the launcher asks to set up this PC for the community server ([The player kit](#the-player-kit)); keep it open while you play.
 
 ## Install, update and the link

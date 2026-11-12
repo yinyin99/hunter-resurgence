@@ -14,6 +14,7 @@
     @if (Mode.Launcher)
     {
         <li class="launcher-item"><a href="#" id="game-settings" @onclick="() => Modal.Show<GameSettingsModal>()" @onclick:preventDefault>@L["Settings.GameSettings"]</a></li>
+        <li><a href="#" id="steam-option" @onclick="() => Modal.Show<SteamOptionModal>()" @onclick:preventDefault>@L["Settings.SteamOption"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("screenshots")' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("logs")' @onclick:preventDefault>@L["Settings.Logfiles"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("game")' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>

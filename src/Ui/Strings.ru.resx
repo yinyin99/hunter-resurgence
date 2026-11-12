@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Параметр запуска Steam</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Вставьте эту строку в параметры запуска игры в Steam (Свойства), чтобы запускать игру через этот лаунчер:</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Копировать</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Язык</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Настройки игры</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Скриншоты</value></data>

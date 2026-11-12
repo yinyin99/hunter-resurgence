@@ -44,6 +44,9 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Votre profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Paramètres du compte</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionnaire du jeu</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Option de lancement Steam</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Collez cette ligne dans les options de lancement du jeu dans Steam (Propriétés) pour le démarrer avec ce lanceur :</value></data>
+  <data name="Steam.Copy" xml:space="preserve"><value>Copier</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Paramètres de jeu</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Captures d’écran</value></data>
