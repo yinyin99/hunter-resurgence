@@ -1394,4 +1394,33 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starší nastavení balíčku hráče je na tomto počítači, ale nevyhovuje: další okno ho nahradí jedním krokem.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Smazat</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Smazat také data launcheru (jazyk, složku hry a uložené přihlášení v %APPDATA%\hunter-resurgence)? Zvolte Ne, pokud je chcete zachovat.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Zvolte si jméno</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Toto jméno uvidí ostatní lovci.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Vaše jméno</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 až 20 písmen, číslic, - nebo _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jsem tu nový</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Hrál jsem dříve: obnovit, co se uchovalo z mého starého profilu</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Uchovali jsme část veřejných profilů: předměty, trofeje, chaty, dovednosti, statistiky a úspěchy. Lovy, fotky a peníze uchovány nebyly. Profily s vysokým skóre nejdřív zkontroluje provozovatel.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Nechte prázdné, pokud chcete použít staré jméno, když je volné.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Jméno má 3 až 20 písmen, číslic, - nebo _ a začíná písmenem nebo číslicí.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Toto jméno je obsazené.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Zvolte jméno: staré je obsazené.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Přihlásit aplikaci, která ukazuje tento kód?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj, který ukazuje tento kód, bude přihlášen jako vy.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potvrďte jen tehdy, když je tento kód právě teď na vaší obrazovce.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Přihlásit aplikaci na tomto počítači?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj, který jste právě spustili na tomto počítači, bude přihlášen jako vy.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potvrďte jen tehdy, když jste v jednom z nich právě stiskli „{0}“.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ano, přihlásit</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Hotovo</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vraťte se do aplikace, která ukázala kód (launcher nebo zálohovací nástroj).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Připojte se na Discord: novinky, pomoc a provozovatel</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Omlouváme se</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Toto přihlášení vypršelo nebo bylo zahájeno v jiném prohlížeči. Začněte znovu.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Odkaz pro přihlášení vypršel. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Odkaz pro přihlášení není platný. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam přihlášení nepotvrdil. Začněte znovu.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet se nesmí přihlásit.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tento formulář nepochází z tohoto serveru.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Toto přihlášení už bylo potvrzeno.</value></data>
 </root>

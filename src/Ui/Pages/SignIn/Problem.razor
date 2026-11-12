@@ -1,0 +1,10 @@
+@page "/signin/problem"
+@layout SignInLayout
+
+<PageTitle>@L["SignInPage.Problem.Title"]</PageTitle>
+
+<SignInProblem Reason="@Reason" />
+
+@code {
+    [SupplyParameterFromQuery] public string? Reason { get; set; }
+}

@@ -3,17 +3,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services;
 
-/// <summary>The browser's session cookie and host of the request that started the circuit; the website fills it from the root component's parameters (the documented way to carry request state into a circuit), never from HttpContext later.</summary>
+/// <summary>The browser's session cookie, the cookie of a sign-in in progress and host of the request that started the circuit; the website fills it from the root component's parameters (the documented way to carry request state into a circuit), never from HttpContext later.</summary>
 public sealed class ServerCookie
 {
     public string? Value { get; set; }
+    /// <summary>The sign-in in progress (<see cref="ServerSessionApi.LoginCookie"/>), while there is one.</summary>
+    public string? Login { get; set; }
     public string? Host { get; set; }
 
-    /// <summary>A request to the server as this browser: its session cookie when it has one, and the host it used.</summary>
+    /// <summary>A request to the server as this browser: its session cookie and the cookie of its sign-in when it has them, and the host it used.</summary>
     public HttpRequestMessage Request(HttpMethod method, string path)
     {
         var request = new HttpRequestMessage(method, path);
-        if (Value is not null) request.Headers.TryAddWithoutValidation("Cookie", $"{ServerSessionApi.Cookie}={Value}");
+        var cookies = new List<string>(2);
+        if (Value is not null) cookies.Add($"{ServerSessionApi.Cookie}={Value}");
+        if (Login is not null) cookies.Add($"{ServerSessionApi.LoginCookie}={Login}");
+        if (cookies.Count > 0) request.Headers.TryAddWithoutValidation("Cookie", string.Join("; ", cookies));
         if (Host is not null) request.Headers.Host = Host;
         return request;
     }

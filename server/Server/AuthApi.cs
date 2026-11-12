@@ -22,15 +22,19 @@ public static class AuthApi
     {
         var state = game.State!;
         var steam = app.Services.GetRequiredService<SteamOpenId>();
-        var auth = new SignIn(state, steam, siteHost: game.Web, gameWebHost: game.GameWeb, claims: app.Services.GetService<Claims>(), discord: (string?)game.Cfg["link_discord"], signupAlert: text => Alerts.Signup(game.Cfg, text));
+        var auth = new SignIn(state, steam, siteHost: game.Web, claims: app.Services.GetService<Claims>(), discord: (string?)game.Cfg["link_discord"], signupAlert: text => Alerts.Signup(game.Cfg, text));
 
         var group = app.MapGroup("/auth").RequireHost(game.Web, game.Signup, game.GameWeb).WithGroupName("game").WithTags("Sign-in (web_host, signup_host, game_web_host)");
         group.MapGet("/steam/login", Do(game, auth.Start)).WithName("SteamLogin").WithSummary("Send the browser to Steam")
              .WithDescription("`next`: a local path to return to; `link`: the code of a launcher waiting for this sign-in.")
              .QueryParams(("next", "local path"), ("link", "launcher code"));
         group.MapGet("/steam/return", Do(game, auth.Return)).WithName("SteamReturn").WithSummary("Steam's answer; sets the session cookie");
-        group.MapMethods("/handle", ["GET", "POST"], Do(game, auth.ChooseHandle)).WithName("ChooseHandle").WithSummary("Pick a name at the first sign-in");
-        group.MapMethods("/confirm", ["GET", "POST"], Do(game, auth.Confirm)).WithName("ConfirmLauncher").WithSummary("Let the launcher that shows the code sign in");
+        group.MapGet("/pending", Do(game, auth.Pending)).WithName("SignInPending").WithSummary("The sign-in in progress in this browser, for the website's page of its step")
+             .WithDescription("Needs `X-Requested-With`. 200 `{step: handle|confirm|app, csrf, ...}` (the token the step's form posts back), 404 `{status: expired}` without a sign-in in progress.");
+        group.MapMethods("/handle", ["GET", "POST"], Do(game, auth.ChooseHandle)).WithName("ChooseHandle").WithSummary("Pick a name at the first sign-in: GET goes to the website's page, POST (form `csrf`, `handle`, `kind`, `old`) answers a redirect")
+             .WithDescription("A post needs a same-origin `Origin` (or `X-Requested-With`) and the step's `csrf` token.");
+        group.MapMethods("/confirm", ["GET", "POST"], Do(game, auth.Confirm)).WithName("ConfirmLauncher").WithSummary("Let the launcher that shows the code, or the app on this PC, sign in: GET goes to the website's page, POST (form `csrf`) answers a redirect")
+             .WithDescription("A post needs a same-origin `Origin` (or `X-Requested-With`) and the step's `csrf` token.");
         group.MapPost("/link", Do(game, auth.NewLink)).WithName("NewLink").WithSummary("A launcher asks to be signed in by the player's browser");
         group.MapGet("/link/{code}", Do(game, auth.PollLink)).WithName("PollLink").WithSummary("The launcher waits: pending, or ok with the cookie");
         group.MapGet("/app/start", Do(game, auth.StartApp)).WithName("AppStart").WithSummary("An app on this PC (launcher, backup tool) asks to be signed in: to Steam, then back to 127.0.0.1")

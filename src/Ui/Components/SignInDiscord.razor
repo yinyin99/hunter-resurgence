@@ -1,0 +1,7 @@
+@inject Branding Brand
+
+@* the operator's invite on the pages after a sign-in (LINK_DISCORD); nothing without one *@
+@if (Brand.Link("discord") is not null)
+{
+    <p class="discord"><ExternalLink Key="discord" Class="btn btn-inverse">@L["SignInPage.Discord"]</ExternalLink></p>
+}

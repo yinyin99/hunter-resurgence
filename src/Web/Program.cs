@@ -68,8 +68,11 @@ builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsServi
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISeasonalEventsService>(sp => new MockSeasonalEventsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<ISignInService>(sp => new MockSignInService(sp.GetRequiredService<HostMode>().Mock));
 if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
 {
+    // the sign-in pages (/signin/...) read the server's login in progress (docs/website.md#sign-in)
+    builder.Services.Replace(ServiceDescriptor.Scoped<ISignInService>(sp => new ServerSignInService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSignInService>>())));
     // the hunterscore board and the profile header are the community server's; registered after the mocks they wrap
     builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
     // the friends (the status bar's list, the profile tab and its buttons) are the account's on the server

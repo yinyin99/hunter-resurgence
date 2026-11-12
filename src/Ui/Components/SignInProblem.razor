@@ -1,0 +1,18 @@
+<h1>@L["SignInPage.Problem.Title"]</h1>
+<p>@L[Key]</p>
+
+@code {
+    /// <summary>One of the fixed reasons of the server's redirect (expired, link, app, steam, banned, form, confirmed); any other is "expired".</summary>
+    [Parameter] public string? Reason { get; set; }
+
+    string Key => Reason switch
+    {
+        "link" => "SignInPage.Problem.Link",
+        "app" => "SignInPage.Problem.App",
+        "steam" => "SignInPage.Problem.Steam",
+        "banned" => "SignInPage.Problem.Banned",
+        "form" => "SignInPage.Problem.Form",
+        "confirmed" => "SignInPage.Problem.Confirmed",
+        _ => "SignInPage.Problem.Expired",
+    };
+}

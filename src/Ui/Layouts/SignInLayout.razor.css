@@ -1,0 +1,9 @@
+.si { box-sizing: border-box; min-height: 100vh; padding: 32px 16px; background: var(--bg-page); text-align: center; }
+.si ::deep .logo { display: block; max-width: 100%; margin: 0 auto 24px; }
+.card { box-sizing: border-box; max-width: 440px; margin: 0 auto; padding: 32px 24px; }
+.card ::deep h1 { margin: 0 0 8px; font-size: var(--fs-h2); line-height: 1.2; font-weight: 400; overflow-wrap: anywhere; }
+.card ::deep p { margin: 0 0 24px; }
+.card ::deep p:last-child { margin-bottom: 0; }
+.card ::deep .note { font-size: 13px; line-height: 18px; color: var(--text-3); }
+.card ::deep form { margin: 0 0 24px; }
+.card ::deep .btn { white-space: normal; }

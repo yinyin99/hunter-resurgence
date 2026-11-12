@@ -1394,4 +1394,33 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>A játékoskészlet régebbi beállítása megvan ezen a gépen, de nem felel meg: a következő ablak egy lépésben lecseréli.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Törlés</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Törli az indító adatait is (nyelv, játékmappa és mentett bejelentkezés itt: %APPDATA%\hunter-resurgence)? A megtartásukhoz válassza a Nemet.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Válaszd ki a neved</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Ezt a nevet látják a többi vadászok.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>A neved</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3–20 betű, számjegy, - vagy _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Új vagyok itt</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Játszottam korábban: állítsd vissza, amit a régi profilomból megőriztünk</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>A nyilvános profilok egy részét megőriztük: tárgyakat, trófeákat, vadászházakat, képességeket, statisztikákat és teljesítményeket. A vadászatokat, a fotókat és a pénzt nem őriztük meg. A magas pontszámú profilokat először az üzemeltető ellenőrzi.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Hagyd üresen, ha a régi neved akarod használni, amíg szabad.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>A név 3–20 betűből, számjegyből, - vagy _ jelből áll, és betűvel vagy számjeggyel kezdődik.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ez a név foglalt.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Válassz nevet: a régi foglalt.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bejelentkezteted az alkalmazást, amely ezt a kódot mutatja?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Te vagy {0}. Az alkalmazás, amely ezt a kódot mutatja (a launcher vagy a mentőeszköz), a te fiókodba jelentkezik be.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha ez a kód éppen most van a képernyődön.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Bejelentkezteted a számítógépen lévő alkalmazást?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Te vagy {0}. Az alkalmazás, amelyet az imént indítottál el ezen a számítógépen (a launcher vagy a mentőeszköz), a te fiókodba jelentkezik be.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha az imént a(z) „{0}” gombra kattintottál az egyikben.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Igen, bejelentkezés</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Kész</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Térj vissza az alkalmazáshoz, amely a kódot mutatta (a launcher vagy a mentőeszköz).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Csatlakozz a Discordhoz: hírek, segítség és az üzemeltető</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sajnáljuk</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ez a bejelentkezés lejárt, vagy másik böngészőben indult. Kezdd elölről.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ez a bejelentkezési hivatkozás lejárt. Kezdd elölről a launcherből vagy a mentőeszközből.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ez a bejelentkezési hivatkozás érvénytelen. Kezdd elölről a launcherből vagy a mentőeszközből.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>A Steam nem erősítette meg a bejelentkezést. Kezdd elölről.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ez a fiók nem jelentkezhet be.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ez az űrlap nem erről a szerverről származik.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
 </root>

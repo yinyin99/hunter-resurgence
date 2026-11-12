@@ -1394,4 +1394,33 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Een oudere instelling van de spelerskit staat op deze pc maar past niet: het volgende venster vervangt ze in één stap.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Verwijderen</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ook de gegevens van de launcher verwijderen (taal, spelmap en opgeslagen aanmelding in %APPDATA%\hunter-resurgence)? Kies Nee om ze te bewaren.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Kies je naam</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Dit is de naam die andere jagers zien.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Je naam</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 tot 20 letters, cijfers, - of _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Ik ben nieuw hier</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Ik heb eerder gespeeld: herstel wat is bewaard van mijn oude profiel</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>We hebben een deel van de openbare profielen bewaard: voorwerpen, trofeeën, jachthutten, vaardigheden, statistieken en prestaties. Jachten, foto's en geld zijn niet bewaard. Profielen met een hoge score worden eerst door de operator gecontroleerd.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Laat dit leeg om je oude naam te gebruiken als die vrij is.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Een naam heeft 3 tot 20 letters, cijfers, - of _ en begint met een letter of een cijfer.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Deze naam is al in gebruik.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Kies een naam: de oude is al in gebruik.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>De app inloggen die deze code toont?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Je bent {0}. De app die deze code toont (de launcher of de back-uptool) wordt als jou ingelogd.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bevestig alleen als deze code nu op je scherm staat.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>De app op deze pc inloggen?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Je bent {0}. De app die je net op deze pc hebt gestart (de launcher of de back-uptool) wordt als jou ingelogd.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bevestig alleen als je zojuist in een van beide op ‘{0}’ hebt gedrukt.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, inloggen</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Klaar</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Ga terug naar de app die de code toonde (de launcher of de back-uptool).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Word lid van de Discord: nieuws, hulp en de operator</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Deze inlogpoging is verlopen of is in een andere browser gestart. Begin opnieuw.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Deze inloglink is verlopen. Begin opnieuw vanuit de launcher of de back-uptool.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Deze inloglink is ongeldig. Begin opnieuw vanuit de launcher of de back-uptool.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam heeft het inloggen niet bevestigd. Begin opnieuw.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dit account mag niet inloggen.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dit formulier komt niet van deze server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
 </root>

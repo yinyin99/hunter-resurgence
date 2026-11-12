@@ -1394,4 +1394,33 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Bu bilgisayarda oyuncu setinin eski bir kurulumu var ama uygun değil: sonraki pencere onu tek adımda değiştirir.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Sil</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Başlatıcı verileri de silinsin mi (%APPDATA%\hunter-resurgence içindeki dil, oyun klasörü ve kayıtlı oturum)? Saklamak için Hayır'ı seçin.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Adınızı seçin</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Diğer avcılar bu adı görür.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Adınız</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 ile 20 arasında harf, rakam, - veya _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Buraya yeniyim</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Daha önce oynadım: eski profilimden saklananları geri yükle</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Herkese açık profillerin bir bölümünü sakladık: eşyalar, kupalar, kulübeler, beceriler, istatistikler ve başarımlar. Avlar, fotoğraflar ve para saklanmadı. Yüksek puanlı profilleri önce operatör kontrol eder.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Eski adınızı, boşsa kullanmak için boş bırakın.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Bir ad 3 ile 20 arasında harf, rakam, - veya _ içerir ve harf ya da rakamla başlar.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Bu ad alınmış.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Bir ad seçin: eski ad alınmış.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bu kodu gösteren uygulamada oturum açılsın mı?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Siz {0} kullanıcısınız. Bu kodu gösteren uygulama (launcher veya yedekleme aracı) sizin adınıza oturum açacak.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Yalnızca bu kod şu anda ekranınızdaysa onaylayın.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Bu bilgisayardaki uygulamada oturum açılsın mı?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Siz {0} kullanıcısınız. Bu bilgisayarda az önce başlattığınız uygulama (launcher veya yedekleme aracı) sizin adınıza oturum açacak.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Yalnızca az önce bunlardan birinde “{0}” düğmesine bastıysanız onaylayın.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Evet, oturum aç</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Tamam</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Kodu gösteren uygulamaya (launcher veya yedekleme aracı) geri dönün.</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Discord’a katılın: haberler, yardım ve operatör</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Üzgünüz</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Bu oturum açma süresi doldu veya başka bir tarayıcıda başlatıldı. Yeniden başlayın.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Bu oturum açma bağlantısının süresi doldu. Launcher’dan veya yedekleme aracından yeniden başlayın.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Bu oturum açma bağlantısı geçerli değil. Launcher’dan veya yedekleme aracından yeniden başlayın.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam oturum açmayı onaylamadı. Yeniden başlayın.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Bu hesap oturum açamaz.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
 </root>

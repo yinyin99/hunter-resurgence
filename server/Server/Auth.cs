@@ -1,4 +1,4 @@
-// Sign-in with Steam on the website's host and on the signup host (the launcher's start page), the cookie session that
+// Sign-in with Steam on the website's host (its pages, /signin/..., are the website's) and the launcher's start page, the cookie session that
 // follows it, and the tokens the game is given (session, access, refresh, the JWT of User/jwt). docs/server.md#sign-in-and-tokens.
 using System.Buffers.Text;
 using System.Collections.Concurrent;
@@ -125,15 +125,16 @@ public sealed class GameTokens(Store store, string webHost)
 
 /// <summary>The sign-in itself. One instance per server: the logins in progress are in memory (a restart only makes a
 /// player start the sign-in again), the accounts and the cookie sessions are in the database.</summary>
-/// <param name="siteHost">Our website's domain, and gameWebHost the game's own web host: the launcher page there sends the player's browser
-/// to our site for Steam (the browser trusts our certificate; it does not reach the game's host), and learns the result by polling.</param>
-public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null, string? discord = null, Action<string>? signupAlert = null)
+/// <param name="siteHost">Our website's domain: the player's own browser signs in there and sees the website's pages (the launcher's start page sends it there for Steam: the browser trusts our certificate and does not reach
+/// the game's host), and the launcher learns the result by polling.</param>
+public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, Claims? claims = null, string? discord = null, Action<string>? signupAlert = null)
 {
     public const string SessionCookie = "hr_session";
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
-    /// account exists (first sign-in: after the name). Link: the launcher waiting for it, if any. App: the app on this PC that asked for it, if any.</summary>
+    /// account exists (first sign-in: after the name). Link: the launcher waiting for it, if any. App: the app on this PC that asked for it, if any.
+    /// Typed, Old, Restore and Error: the last name form and what was wrong with it, for the website's page to show again.</summary>
     sealed class Login(string id, string next, string? link, AppRequest? app, DateTimeOffset expires)
     {
         public readonly string Id = id, Next = next;
@@ -142,6 +143,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         public DateTimeOffset Expires = expires;
         public string? Steam;
         public long? Account;
+        public string Typed = "", Old = "";
+        public bool Restore;
+        public string? Error;
     }
 
     /// <summary>What an app (the launcher or the backup tool) sent to the start route: SHA-256 of its secret verifier, the port it listens on at 127.0.0.1, and its random state.</summary>
@@ -198,7 +202,12 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     static Reply Html(int status, string html, params string[] cookies) =>
         new(status, [.. PageHeaders, .. cookies.Select(c => ("Set-Cookie", c))], Encoding.UTF8.GetBytes(html), "auth");
 
-    static Reply Problem(int status, string text) => Html(status, AuthPages.Problem(text));
+    /// <summary>The website's page of a step (`/signin/handle`, `confirm`, `done`, `problem`; docs/website.md#sign-in): the player's browser sees the website's pages only,
+    /// on our domain. A fixed path of our own host, never one a request names.</summary>
+    string Page(Req r, string step) => (siteHost is null || r.Host == siteHost ? "" : "https://" + siteHost) + "/signin/" + step;
+
+    /// <summary>The website's problem page; <paramref name="reason"/> is one of its fixed keys (expired, link, app, steam, banned, form, confirmed).</summary>
+    Reply Problem(Req r, string reason) => Redirect(Page(r, "problem?reason=" + reason));
 
     static Reply Redirect(string to, params string[] cookies) =>
         new(302, [("Location", to), ("Cache-Control", "no-store"), .. cookies.Select(c => ("Set-Cookie", c))], [], "auth");
@@ -211,6 +220,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     static string SafeNext(string? next) =>
         next is { Length: > 0 and <= 200 } && next[0] == '/' && !next.StartsWith("//", StringComparison.Ordinal) && next.All(c => c is > ' ' and < '\x7f' and not '\\')
             ? next : "/";
+
+    /// <summary>A browser's sign-in runs on our website's host, whose pages it shows: a start on another host (the game's, through a player's forwarder) goes there first,
+    /// with the same fixed path and query. Null on the website's host.</summary>
+    Reply? ToSite(Req r) => siteHost is null || r.Host == siteHost ? null : Redirect("https://" + siteHost + r.Path + (r.Query == "" ? "" : "?" + r.Query));
 
     /// <summary>A state-changing request comes from our own page: its Origin is ours, or (an old browser's XHR, which
     /// sends none) it carries the header a cross-site form cannot set.</summary>
@@ -234,10 +247,11 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>GET /auth/steam/login?next=/path[&link=code]: to Steam. A cookie ties the way back to this browser.</summary>
     public Reply Start(Req r)
     {
+        if (ToSite(r) is { } moved) return moved;
         var q = Py.ParseQs(r.Query);
         var link = q.TryGetValue("link", out var l) ? l[0] : null;
         if (link is not null && !(links.TryGetValue(link, out var entry) && entry.Expires > now()))
-            return Problem(400, "This sign-in link ran out of time. Start again from the launcher or the backup tool.");
+            return Problem(r, "link");
         return BeginLogin(r, SafeNext(q.TryGetValue("next", out var n) ? n[0] : null), link, null);
     }
 
@@ -245,11 +259,12 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// can only go to 127.0.0.1 on that port, so a link sent to someone else gives the sender nothing.</summary>
     public Reply StartApp(Req r)
     {
+        if (ToSite(r) is { } moved) return moved;
         var q = Py.ParseQs(r.Query);
         string Q(string k) => q.TryGetValue(k, out var v) ? v[0] : "";
         if (!Challenge(Q("challenge"), out var challenge) || !Token(Q("state"), 16, 128)
             || !int.TryParse(Q("port"), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var port) || port is < 1024 or > 65535)
-            return Problem(400, "This sign-in link is not valid. Start again from the launcher or the backup tool.");
+            return Problem(r, "app");
         return BeginLogin(r, "/", null, new AppRequest(challenge, port, Q("state")));
     }
 
@@ -271,7 +286,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             logins.TryRemove(logins.MinBy(kv => kv.Value.Expires).Key, out _);
         var login = new Login(Rand(), next, link, app, now() + Lifetimes.Login);
         logins[login.Id] = login;
-        return Redirect(SteamOpenId.LoginUrl(ReturnTo(r, login.Id), Origin(r) + "/"), Set(LoginCookie, login.Id, "/auth", Lifetimes.Login));
+        return Redirect(SteamOpenId.LoginUrl(ReturnTo(r, login.Id), Origin(r) + "/"), Set(LoginCookie, login.Id, "/", Lifetimes.Login));
     }
 
     /// <summary>GET /auth/steam/return: Steam's answer. A known Steam id signs in; a new one picks a name first.</summary>
@@ -279,47 +294,69 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     {
         var id = Py.ParseQs(r.Query).TryGetValue("login", out var l) ? l[0] : null;
         if (id is null || CookieOf(r, LoginCookie) != id || Current(r) is not { Steam: null } login)
-            return Problem(400, "This sign-in ran out of time, or was started in another browser. Start again.");
+            return Problem(r, "expired");
         if (await steam.VerifyAsync(r.Query, ReturnTo(r, id)) is not { } steamId)
         {
             logins.TryRemove(id, out _);
-            return Problem(400, "Steam did not confirm the sign-in. Start again.");
+            return Problem(r, "steam");
         }
         login.Steam = steamId;
         login.Expires = now() + Lifetimes.Login;
-        return Store.AccountBySteam(steamId) is { } account ? Finish(login, account) : Redirect("/auth/handle");
+        return Store.AccountBySteam(steamId) is { } account ? Finish(r, login, account) : Redirect(Page(r, "handle"));
     }
 
     /// <summary>The account is known: a launcher or an app waits (ask the player to confirm), or this browser gets its cookie.</summary>
-    Reply Finish(Login login, long account)
+    Reply Finish(Req r, Login login, long account)
     {
         if (login.Link is not null || login.App is not null)
         {
             login.Account = account;
-            return Redirect("/auth/confirm");
+            return Redirect(Page(r, "confirm"));
         }
         logins.TryRemove(login.Id, out _);
         var cookie = Store.CreateWebSession(account, Lifetimes.Cookie);
         if (Store.ResolveWebSession(cookie) is null)  // a banned account gets no session
         {
             Store.DeleteWebSession(cookie);
-            return Problem(403, "This account may not sign in.");
+            return Problem(r, "banned");
         }
-        return Redirect(login.Next, Set(SessionCookie, cookie, "/", Lifetimes.Cookie), Clear(LoginCookie, "/auth"));
+        return Redirect(login.Next, Set(SessionCookie, cookie, "/", Lifetimes.Cookie), Clear(LoginCookie, "/"));
     }
 
-    /// <summary>GET and POST /auth/handle: the first sign-in picks the name (Steam's is not read, nothing is stored of it).</summary>
+    /// <summary>GET /auth/pending: the sign-in in progress in this browser, for the website's page of its step (docs/website.md#sign-in): the name form
+    /// (`handle`, with the last form and its error), or the confirmation for a launcher that shows a code (`confirm`) or an app on this PC (`app`); 404 without one.
+    /// It reads only, and only this browser's cookie names it; `csrf` is what the step's POST must carry.</summary>
+    public Reply Pending(Req r)
+    {
+        if (r.Header("X-Requested-With") is null) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
+        if (Current(r) is not { Steam: not null } login || login.Link is { } link && !links.ContainsKey(link))
+            return Json(404, new JsonObject { ["status"] = "expired" });
+        if (login.Account is not { } account)
+            return Json(200, new JsonObject
+            {
+                ["step"] = "handle", ["csrf"] = login.Id, ["offer"] = claims is { Enabled: true },
+                ["handle"] = login.Typed, ["old"] = login.Old, ["restore"] = login.Restore, ["error"] = login.Error,
+            });
+        return Json(200, new JsonObject
+        {
+            ["step"] = login.Link is null ? "app" : "confirm", ["csrf"] = login.Id, ["handle"] = Store.HandleOf(account) ?? "",
+            ["code"] = login.Link is { } c ? UserCode(c) : null,
+        });
+    }
+
+    /// <summary>GET and POST /auth/handle: the first sign-in picks the name (Steam's is not read, nothing is stored of it). GET goes to the website's page;
+    /// a refused POST keeps the form and its error (a key of that page: invalid, taken, unknown, old-taken) and goes back there.</summary>
     public Reply ChooseHandle(Req r)
     {
         if (Current(r) is not { Steam: { } steamId, Account: null } login)
-            return Problem(400, "This sign-in ran out of time. Start again.");
+            return Problem(r, "expired");
         if (Store.AccountBySteam(steamId) is { } existing)  // another tab of this sign-in was faster
-            return Finish(login, existing);
+            return Finish(r, login, existing);
         var offer = claims is { Enabled: true };
-        if (r.Method == "GET") return Html(200, AuthPages.Handle(login.Id, "", null, offer));
+        if (r.Method == "GET") return Redirect(Page(r, "handle"));
         var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
         string F(string k) => form.TryGetValue(k, out var v) ? v[0] : "";
-        if (!OwnPost(r) || F("csrf") != login.Id) return Problem(400, "This form is not from this server.");
+        if (!OwnPost(r) || F("csrf") != login.Id) return Problem(r, "form");
         var handle = F("handle").Trim();
         var old = F("old").Trim();
         var restore = offer && F("kind") == "old";
@@ -328,19 +365,19 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (restore)  // the lookup is free here: there is no account yet, and each try is one POST of one sign-in
         {
             player = claims!.Peek(old);
-            if (player is null) error = "We did not keep a profile under this name.";
+            if (player is null) error = "unknown";
             else if (handle == "")
             {
                 if (Handles.Problem(player.Handle) is null && Store.AccountByHandle(player.Handle) is null) handle = player.Handle;
-                else error = "Choose a name: the old one is taken.";
+                else error = "old-taken";
             }
         }
         long account = 0;
-        error ??= Handles.Problem(handle);
+        error ??= Handles.Problem(handle) is null ? null : "invalid";
         if (error is null)
             lock (create)
             {
-                if (Store.AccountByHandle(handle) is not null) error = "This name is taken.";
+                if (Store.AccountByHandle(handle) is not null) error = "taken";
                 else
                     try
                     {
@@ -349,10 +386,14 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
                     }
                     catch (SqliteException e) when (e.SqliteErrorCode == 19)  // taken between the check and the insert
                     {
-                        error = "This name is taken.";
+                        error = "taken";
                     }
             }
-        if (error is not null) return Html(200, AuthPages.Handle(login.Id, handle, error, offer, old, restore));
+        if (error is not null)
+        {
+            (login.Typed, login.Old, login.Restore, login.Error) = (handle.Length > 20 ? handle[..20] : handle, old.Length > 20 ? old[..20] : old, restore, error);
+            return Redirect(Page(r, "handle"));
+        }
         var outcome = "fresh start";
         if (player is not null)  // restored or kept for review: the player's inbox says which
         {
@@ -361,20 +402,20 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
                       + (o.Kind == "restored" ? "restored" : o.Kind == "review" ? "waiting for review" : $"refused ({o.Kind})");
         }
         signupAlert?.Invoke($"New account: {Alerts.Name(handle)}, account {account}, {Alerts.Steam(steamId)}, {outcome}.");
-        return Finish(login, account);
+        return Finish(r, login, account);
     }
 
-    /// <summary>GET and POST /auth/confirm: the player's browser says the launcher that shows the code, or the app on this PC, may be signed in. The app gets a one-time code at 127.0.0.1.</summary>
+    /// <summary>GET and POST /auth/confirm: the player's browser says the launcher that shows the code, or the app on this PC, may be signed in. The app gets a one-time code at 127.0.0.1.
+    /// GET goes to the website's page.</summary>
     public Reply Confirm(Req r)
     {
         if (Current(r) is not { Account: { } account } login || (login.Link is null && login.App is null)
             || (login.Link is { } code && !links.ContainsKey(code)))
-            return Problem(400, "This sign-in ran out of time. Start again from the launcher or the backup tool.");
-        if (r.Method == "GET")
-            return Html(200, login.Link is { } c ? AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(c), discord) : AuthPages.ConfirmApp(login.Id, Store.HandleOf(account) ?? "", discord));
+            return Problem(r, "expired");
+        if (r.Method == "GET") return Redirect(Page(r, "confirm"));
         if (!OwnPost(r) || (Py.ParseQs(Encoding.UTF8.GetString(r.Body)).TryGetValue("csrf", out var csrf) ? csrf[0] : "") != login.Id)
-            return Problem(400, "This form is not from this server.");
-        if (!logins.TryRemove(login.Id, out _)) return Problem(400, "This sign-in was already confirmed."); // a double click makes one code
+            return Problem(r, "form");
+        if (!logins.TryRemove(login.Id, out _)) return Problem(r, "confirmed"); // a double click makes one code
         if (login.App is { } app)
         {
             Purge();
@@ -383,10 +424,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             var appCode = Rand(32);
             appCodes[appCode] = new AppCodeEntry(account, app.Challenge, now() + Lifetimes.AppCode);
             // the redirect goes to 127.0.0.1 and nowhere else: the host is a literal, the port a validated number, the state url-safe
-            return Redirect($"http://127.0.0.1:{app.Port}/?code={appCode}&state={app.State}", Clear(LoginCookie, "/auth"));
+            return Redirect($"http://127.0.0.1:{app.Port}/?code={appCode}&state={app.State}", Clear(LoginCookie, "/"));
         }
         if (links.TryGetValue(login.Link!, out var entry)) entry.Account = account;
-        return Html(200, AuthPages.Done(discord), Clear(LoginCookie, "/auth"));
+        return Redirect(Page(r, "done"), Clear(LoginCookie, "/"));
     }
 
     // ---- the launcher waits for the player's browser
@@ -406,7 +447,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return Json(200, new JsonObject
         {
             ["code"] = code, ["userCode"] = UserCode(code),
-            ["url"] = (r.Host == gameWebHost && siteHost is not null ? "https://" + siteHost : Origin(r)) + "/auth/steam/login?link=" + code, ["expires"] = (long)Lifetimes.Link.TotalSeconds,
+            ["url"] = (siteHost is not null ? "https://" + siteHost : Origin(r)) + "/auth/steam/login?link=" + code, ["expires"] = (long)Lifetimes.Link.TotalSeconds,
         });
     }
 
@@ -488,7 +529,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return Url();
     }
 
-    /// <summary>GET / on the signup host: the launcher's start page.</summary>
+    /// <summary>GET / on the signup host and /launcher on the game's web host: the launcher's start page.</summary>
     public Reply StartPage(Req r) =>
-        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null, r.Path, discord));
+        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null, discord));
 }

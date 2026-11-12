@@ -1,0 +1,57 @@
+@page "/signin/handle"
+@layout SignInLayout
+@inject ISignInService SignIn
+
+<PageTitle>@L["SignInPage.Handle.Title"]</PageTitle>
+
+@* the first sign-in: Steam gives no name, so the player picks one; with an archive a returning player may ask for the old profile. The form posts to the server (POST /auth/handle, docs/server.md#sign-in-and-tokens) *@
+@if (!loaded) { }
+else if (step is { Step: "handle" })
+{
+    <h1>@L["SignInPage.Handle.Title"]</h1>
+    <p>@L["SignInPage.Handle.Intro"]</p>
+    <form method="post" action="/auth/handle">
+        <input type="hidden" name="csrf" value="@step.Csrf" />
+        @if (step.Offer)
+        {
+            <div class="kind">
+                <label><input type="radio" name="kind" value="new" checked="@(!restore)" @onchange="() => restore = false" /> @L["SignInPage.Handle.New"]</label>
+                <label><input type="radio" name="kind" value="old" checked="@restore" @onchange="() => restore = true" /> @L["SignInPage.Handle.Old"]</label>
+            </div>
+            @if (restore)
+            {
+                <label for="old">@L["Claim.Name"]</label>
+                <input id="old" name="old" class="field" value="@step.Old" maxlength="20" autocomplete="off" aria-describedby="old-note" />
+                <p id="old-note" class="note">@L["SignInPage.Handle.OldNote"]</p>
+            }
+        }
+        <label for="handle">@L["SignInPage.Handle.Label"]</label>
+        <input id="handle" name="handle" class="field" value="@step.Handle" maxlength="20" autocomplete="off" autofocus aria-describedby="handle-note" aria-invalid="@(Error is not null ? "true" : null)" />
+        @if (Error is { } error) { <p id="handle-note" class="error" role="alert">@L[error]</p> }
+        else { <p id="handle-note" class="note">@L[restore ? "SignInPage.Handle.OldEmpty" : "SignInPage.Handle.Rule"]</p> }
+        <button type="submit" class="btn btn-primary btn-large btn-block">@L["Signup.Continue"]</button>
+    </form>
+}
+else { <SignInProblem Reason="expired" /> }
+
+@code {
+    SignInStep? step;
+    bool loaded, restore;
+
+    // the server's fixed keys of the last refused form
+    string? Error => step?.Error switch
+    {
+        "invalid" => "SignInPage.Handle.Invalid",
+        "taken" => "SignInPage.Handle.Taken",
+        "unknown" => "Claim.Find.notfound",
+        "old-taken" => "SignInPage.Handle.OldTaken",
+        _ => null,
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        step = await SignIn.PendingAsync();
+        restore = step?.Restore ?? false;
+        loaded = true;
+    }
+}

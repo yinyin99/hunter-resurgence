@@ -1394,4 +1394,33 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>En ældre opsætning af spillerkittet findes på denne pc, men passer ikke: det næste vindue erstatter den i ét trin.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Slet</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Slet også launcherens data (sprog, spilmappe og gemt login i %APPDATA%\hunter-resurgence)? Vælg Nej for at beholde dem.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Vælg dit navn</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Det er det navn, andre jægere ser.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Dit navn</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 til 20 bogstaver, cifre, - eller _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jeg er ny her</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Jeg har spillet før: gendan det, der blev gemt af min gamle profil</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Vi gemte en del af de offentlige profiler: genstande, trofæer, hytter, færdigheder, statistik og præstationer. Jagter, fotos og penge blev ikke gemt. Profiler med høj score tjekkes først af operatøren.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lad feltet stå tomt for at bruge dit gamle navn, når det er ledigt.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Et navn har 3 til 20 bogstaver, cifre, - eller _ og begynder med et bogstav eller et ciffer.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dette navn er optaget.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Vælg et navn: det gamle er optaget.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Log ind i appen, der viser denne kode?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du er {0}. Launcheren eller backupværktøjet, der viser denne kode, bliver logget ind som dig.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bekræft kun, hvis denne kode står på din skærm lige nu.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Log ind i appen på denne pc?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du er {0}. Launcheren eller backupværktøjet, som du lige har startet på denne pc, bliver logget ind som dig.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bekræft kun, hvis du lige har trykket på “{0}” i en af dem.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, log ind</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Færdig</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gå tilbage til appen, der viste koden (launcheren eller backupværktøjet).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Kom med på Discord: nyheder, hjælp og operatøren</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Beklager</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Dette login er udløbet eller blev startet i en anden browser. Start forfra.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Dette loginlink er udløbet. Start forfra fra launcheren eller backupværktøjet.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Dette loginlink er ikke gyldigt. Start forfra fra launcheren eller backupværktøjet.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekræftede ikke login. Start forfra.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne konto må ikke logge ind.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
 </root>

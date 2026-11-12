@@ -343,7 +343,6 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var page = await Get("/launcher");
         Assert.Equal(200, page.Status);
         Assert.Contains("Sign in with Steam", Encoding.UTF8.GetString(page.Body));
-        Assert.Contains("next=%2Flauncher", Encoding.UTF8.GetString(page.Body));  // the in-window sign-in comes back to this page
         var ticket = await Post("/auth/emotelauncher/token", new JsonObject { ["applications"] = new JsonArray(), ["session_id"] = "00" });
         Assert.Equal(401, ticket.Status);
         Assert.Equal("auth.invalid_steam_ticket", (string)Body(ticket)["error"]!["code"]!);
@@ -363,11 +362,11 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var login = Cookie(start, "hr_login").Split(';')[0]["hr_login=".Length..];
         var returnTo = System.Web.HttpUtility.ParseQueryString(new Uri(start.Headers.Single(h => h.Name == "Location").Value).Query)["openid.return_to"]!;
         var back = await server.SendAsync("GET", "web.test", returnTo["https://web.test".Length..] + "&" + FakeSteam.Assertion(returnTo, "99999999999999992"), [Cookie("hr_login", login)]);
-        Assert.Equal("/auth/handle", back.Headers.Single(h => h.Name == "Location").Value);
+        Assert.Equal("/signin/handle", back.Headers.Single(h => h.Name == "Location").Value);
         Reply Form(string path, string form) => server.SendAsync("POST", "web.test", path,
             [("Content-Type", "application/x-www-form-urlencoded"), ("Origin", "https://web.test"), Cookie("hr_login", login)], Encoding.UTF8.GetBytes(form)).Result;
-        Assert.Equal("/auth/confirm", Form("/auth/handle", $"csrf={login}&handle=Launched").Headers.Single(h => h.Name == "Location").Value);
-        Assert.Equal(200, Form("/auth/confirm", $"csrf={login}").Status);
+        Assert.Equal("/signin/confirm", Form("/auth/handle", $"csrf={login}&handle=Launched").Headers.Single(h => h.Name == "Location").Value);
+        Assert.Equal("/signin/done", Form("/auth/confirm", $"csrf={login}").Headers.Single(h => h.Name == "Location").Value);
 
         // the launcher, on the game's host, now gets its session and a launch URL on that host
         var poll = await Get("/auth/link/" + code);

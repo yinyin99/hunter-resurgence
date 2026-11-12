@@ -1394,4 +1394,33 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starsza konfiguracja zestawu gracza jest na tym komputerze, ale nie pasuje: następne okno zastąpi ją w jednym kroku.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Usuń</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Usunąć także dane launchera (język, folder gry i zapisane logowanie w %APPDATA%\hunter-resurgence)? Wybierz Nie, aby je zachować.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Wybierz swoją nazwę</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>To nazwa, którą widzą inni myśliwi.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Twoja nazwa</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Od 3 do 20 liter, cyfr, - lub _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jestem tu nowy</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Grałem wcześniej: przywróć to, co zachowano z mojego starego profilu</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Zachowaliśmy część profili publicznych: przedmioty, trofea, chaty, umiejętności, statystyki i osiągnięcia. Polowań, zdjęć i pieniędzy nie zachowano. Profile z wysokim wynikiem najpierw sprawdza operator.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Zostaw puste, aby użyć starej nazwy, jeśli jest wolna.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nazwa ma od 3 do 20 liter, cyfr, - lub _ i zaczyna się od litery lub cyfry.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ta nazwa jest zajęta.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wybierz nazwę: stara jest zajęta.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Zalogować aplikację, która pokazuje ten kod?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jesteś {0}. Aplikacja, która pokazuje ten kod (launcher lub narzędzie do kopii zapasowej), zostanie zalogowana jako Ty.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy ten kod jest właśnie teraz na Twoim ekranie.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Zalogować aplikację na tym komputerze?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jesteś {0}. Aplikacja uruchomiona przed chwilą na tym komputerze (launcher lub narzędzie do kopii zapasowej) zostanie zalogowana jako Ty.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy w jednej z nich przed chwilą użyto przycisku „{0}”.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Tak, zaloguj</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Gotowe</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Wróć do aplikacji, która pokazała kod (launcher lub narzędzie do kopii zapasowej).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Dołącz do Discorda: nowości, pomoc i operator</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Przepraszamy</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>To logowanie wygasło lub zostało rozpoczęte w innej przeglądarce. Zacznij od nowa.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ten link do logowania wygasł. Zacznij od nowa w launcherze lub narzędziu do kopii zapasowej.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ten link do logowania jest nieprawidłowy. Zacznij od nowa w launcherze lub narzędziu do kopii zapasowej.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam nie potwierdził logowania. Zacznij od nowa.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>To konto nie może się zalogować.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
 </root>

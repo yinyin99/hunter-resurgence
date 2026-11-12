@@ -16,14 +16,15 @@
     [Parameter] public bool Launcher { get; set; }
     [Parameter] public bool Dev { get; set; }
     [Parameter] public string? Mock { get; set; }
-    /// <summary>With SERVER_URL: the browser's session cookie and host, taken from the request by App.razor.</summary>
+    /// <summary>With SERVER_URL: the browser's session cookie, the cookie of its sign-in in progress and its host, taken from the request by App.razor.</summary>
     [Parameter] public string? Cookie { get; set; }
+    [Parameter] public string? Login { get; set; }
     [Parameter] public string? Host { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         (Mode.Launcher, Mode.Dev, Mode.Mock) = (Launcher, Dev, Mock);
-        (ServerCookie.Value, ServerCookie.Host) = (Cookie, Host);
+        (ServerCookie.Value, ServerCookie.Login, ServerCookie.Host) = (Cookie, Login, Host);
         if (Dev) await Mode.ApplyMockSessionAsync(Sessions);
     }
 }

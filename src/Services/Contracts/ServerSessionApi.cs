@@ -4,6 +4,10 @@ namespace Resurgence.Services;
 public static class ServerSessionApi
 {
     public const string Cookie = "hr_session";
+    /// <summary>The cookie of a sign-in in progress (Path=/, 15 minutes); the pages of <see cref="Pending"/>'s steps read it.</summary>
+    public const string LoginCookie = "hr_login";
+    /// <summary>GET with the login cookie and <c>X-Requested-With: XMLHttpRequest</c>: 200 <see cref="SignInStep"/>, or 404 when no sign-in is in progress. The steps' forms post to <c>/auth/handle</c> and <c>/auth/confirm</c> themselves, with the step's token.</summary>
+    public const string Pending = "/auth/pending";
     /// <summary>GET with the cookie: 200 <see cref="ServerAccount"/>, or 401 when signed out.</summary>
     public const string Me = "/auth/me";
     /// <summary>POST with the cookie and <c>X-Requested-With: XMLHttpRequest</c>: 204, the session is deleted.</summary>

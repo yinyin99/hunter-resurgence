@@ -1394,4 +1394,33 @@ Numele:</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>O configurare mai veche a kitului jucătorului este pe acest PC, dar nu se potrivește: fereastra următoare o înlocuiește într-un singur pas.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Ștergere</value></data>
   <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ștergeți și datele launcherului (limba, folderul jocului și autentificarea salvată în %APPDATA%\hunter-resurgence)? Alegeți Nu pentru a le păstra.</value></data>
+  <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Alegeți numele dvs.</value></data>
+  <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Acesta este numele pe care îl văd ceilalți vânători.</value></data>
+  <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Numele dvs.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De la 3 la 20 de litere, cifre, - sau _.</value></data>
+  <data name="SignInPage.Handle.New" xml:space="preserve"><value>Sunt nou aici</value></data>
+  <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Am mai jucat: restaurați ce s-a păstrat din vechiul meu profil</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Am păstrat o parte din profilurile publice: obiecte, trofee, cabane, abilități, statistici și realizări. Vânătorile, fotografiile și banii nu au fost păstrate. Profilurile cu scor mare sunt verificate mai întâi de operator.</value></data>
+  <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lăsați gol pentru a folosi vechiul nume, dacă este liber.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nume are de la 3 la 20 de litere, cifre, - sau _ și începe cu o literă sau o cifră.</value></data>
+  <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Acest nume este deja folosit.</value></data>
+  <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Alegeți un nume: cel vechi este deja folosit.</value></data>
+  <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Conectați aplicația care afișează acest cod?</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sunteți {0}. Aplicația care afișează acest cod (launcherul sau instrumentul de backup) va fi conectată ca dvs.</value></data>
+  <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirmați doar dacă acest cod este chiar acum pe ecranul dvs.</value></data>
+  <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Conectați aplicația de pe acest PC?</value></data>
+  <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Sunteți {0}. Aplicația pe care tocmai ați pornit-o pe acest PC (launcherul sau instrumentul de backup) va fi conectată ca dvs.</value></data>
+  <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirmați doar dacă tocmai ați apăsat „{0}” într-una dintre ele.</value></data>
+  <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Da, conectează</value></data>
+  <data name="SignInPage.Done.Title" xml:space="preserve"><value>Gata</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Reveniți la aplicația care a afișat codul (launcherul sau instrumentul de backup).</value></data>
+  <data name="SignInPage.Discord" xml:space="preserve"><value>Alăturați-vă Discordului: noutăți, ajutor și operatorul</value></data>
+  <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Ne pare rău</value></data>
+  <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Această conectare a expirat sau a fost pornită în alt browser. Începeți din nou.</value></data>
+  <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Acest link de conectare a expirat. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
+  <data name="SignInPage.Problem.App" xml:space="preserve"><value>Acest link de conectare nu este valid. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
+  <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam nu a confirmat conectarea. Începeți din nou.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont nu se poate conecta.</value></data>
+  <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
+  <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
 </root>
