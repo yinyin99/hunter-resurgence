@@ -50,8 +50,9 @@ public sealed class LaunchMapTests : UiContext
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService
     {
         public bool Play = state.Play, Fail;
+        public Task? Gate;
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
-        public Task<Result> SetAsync(bool play) { if (Fail) return Task.FromResult(Result.Fail("Events.Failed")); Play = play; return Task.FromResult(Result.Success); }
+        public async Task<Result> SetAsync(bool play) { if (Gate is not null) await Gate; if (Fail) return Result.Fail("Events.Failed"); Play = play; return Result.Success; }
     }
 
     // the game's reserve 1 is the launch map's reserve 2
@@ -129,5 +130,25 @@ public sealed class LaunchMapTests : UiContext
 
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".event-switch .error")));
         Assert.True(cut.Find("#play-events-inline").HasAttribute("checked"));
+    }
+
+    // the launch map redraws every half second: that must not put the old value back while the save runs
+    [Fact]
+    public void ARedrawDuringTheSaveKeepsTheSwitch()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        var gate = new TaskCompletionSource();
+        var events = new Events(new(true, "halloween_2026", [1])) { Gate = gate.Task };
+        Services.AddSingleton<ISeasonalEventsService>(events);
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#play-events-inline")));
+        cut.Find("#play-events-inline").Change(false);
+        cut.Render();
+        Assert.False(cut.Find("#play-events-inline").HasAttribute("checked"));
+        gate.SetResult();
+
+        cut.WaitForAssertion(() => Assert.False(events.Play));
+        Assert.False(cut.Find("#play-events-inline").HasAttribute("checked"));
     }
 }

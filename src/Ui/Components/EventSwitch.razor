@@ -24,7 +24,7 @@
     /// <summary>"halloween_2026" reads "Halloween 2026".</summary>
     static string Title(string id) => System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(id.Replace('_', ' '));
 
-    protected override void OnParametersSet() => play = State.Play;
+    protected override void OnParametersSet() { if (!busy) play = State.Play; }
 
     async Task Save()
     {
