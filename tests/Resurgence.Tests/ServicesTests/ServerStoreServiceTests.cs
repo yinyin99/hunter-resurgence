@@ -101,7 +101,7 @@ public class ServerStoreServiceTests
             new(2, "Test Pistol", "", "1", "Handguns", 3, false), new(2, "Test Pistol", "", "1", "Handguns", 4, false),
             new(3, "Test Scope", "Silver", "5", "Rifle Sights", null, false, 1800000000)));
         var rows = (await service.ItemsAsync("all", "", 1)).Rows;
-        Assert.Equal([(2, false, null), (7, true, null), (1, false, 1800000000)], rows.Select(r => (r.Owned, r.Counted, r.Expires)).Select(t => t));
+        Assert.Equal([(2, false, null), (7, true, null), (1, false, 1800000000)], rows.Select(r => (r.Owned, r.Counted, r.Expires)));
         Assert.Equal(0, (await Make(new Fake(_ => Json(HttpStatusCode.OK, Store))).ItemAsync(1))!.Owned);
         Assert.Equal(2, (await service.ItemAsync(1))!.Owned);
     }
