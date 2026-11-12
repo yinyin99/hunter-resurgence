@@ -52,7 +52,7 @@ public sealed class LauncherUpdater(UpdateManager manager, Func<bool> gameRunnin
     public bool ApplyAndRestart()
     {
         if (downloaded is null || gameRunning()) return false;
-        manager.ApplyUpdatesAndRestart(downloaded.TargetFullRelease);
+        manager.ApplyUpdatesAndRestart(downloaded.TargetFullRelease, Environment.GetCommandLineArgs()[1..]); // the restart keeps the arguments (Steam's %command%)
         return true;
     }
 }

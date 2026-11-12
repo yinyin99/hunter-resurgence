@@ -12,9 +12,12 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
-        // first: Velopack runs the install and uninstall hooks here and exits; a downloaded update is applied at start, but not while the game runs
+        // first: Velopack runs the install and uninstall hooks here and exits. A downloaded update is applied at start only by the first launcher (a second start, the link or the
+        // elevated --hosts copy, must not close the open one) and never while the game runs
+        var applyUpdate = !Mutex.TryOpenExisting(Instance, out var other) && args is not ["--hosts", _] && !GameFiles.ClientRunning(Settings.Load().ClientExe);
+        other?.Dispose();
         VelopackApp.Build()
-            .SetAutoApplyOnStartup(!GameFiles.ClientRunning(Settings.Load().ClientExe))
+            .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
             .OnBeforeUninstallFastCallback(_ => LinkScheme.Remove(Registry.CurrentUser))
             .Run();
