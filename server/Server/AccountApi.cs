@@ -151,12 +151,15 @@ public static class AccountApi
                 if (!long.TryParse(One("id", ""), NumberStyles.None, CultureInfo.InvariantCulture, out var id)
                     || !int.TryParse(One("count", "1"), NumberStyles.None, CultureInfo.InvariantCulture, out var count))
                     return Refuse(400, "invalid", "Buying needs a number id and count.");
-                return state.WebBuy(account, id, One("bundle", "0") == "1", count) is { } ems
-                    ? Json(200, new JsonObject { ["status"] = "bought", ["ems"] = ems })
-                    : Refuse(409, "refused", "This is not for sale, you do not have enough em$, or you own as many as allowed.");
+                var gms = One("wallet", "GOLD") switch { "GOLD" => false, "SILVER" => true, _ => (bool?)null };
+                if (gms is null) return Refuse(400, "invalid", "The wallet is GOLD (em$) or SILVER (gm$).");
+                return state.WebBuy(account, id, One("bundle", "0") == "1", count, gms.Value) is { } balance
+                    ? Json(200, new JsonObject { ["status"] = "bought", [gms.Value ? "gms" : "ems"] = balance })
+                    : Refuse(409, "refused", $"This is not for sale, you do not have enough {(gms.Value ? "gm$" : "em$")}, or you own as many as allowed.");
             })
-            .WithName("AccountBuy").WithSummary("Buy from the store with em$ (form `id`, `count`, `bundle=1` for a bundle)")
-            .WithDescription("The item or bundle of `GET /catalog/store` at its price: em$ only. Answers `{status: bought, ems}` (the new balance), "
+            .WithName("AccountBuy").WithSummary("Buy from the store with em$ or gm$ (form `id`, `count`, `wallet`, `bundle=1` for a bundle)")
+            .WithDescription("The item or bundle of `GET /catalog/store` at its price: `wallet` `GOLD` (the default) pays the em$ price, `SILVER` the gm$ price (items only, never discounted). "
+                             + "Answers `{status: bought, ems}` or `{status: bought, gms}` (the new balance of the wallet paid), 400 `invalid` for another wallet, "
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
 

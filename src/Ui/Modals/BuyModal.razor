@@ -26,15 +26,20 @@
         @if (balances is not null)
         {
             <div class="buttons">
-                @if (balances.Ems >= Ems * count) { <button class="btn btn-primary" disabled="@pending" @onclick="() => Pay(false)">@L["Store.BuyEms"]</button> }
-                else if (Mode.Live) { @* no bank on the live site *@<button class="btn btn-primary" disabled>@L["Store.BuyEms"]</button> }
-                else { <a class="btn btn-primary" href="/bank/ems" @onclick="Modal.Close">@L["Store.GetMoreEms"]</a> }
-                @* the community server sells for em$ only *@
-                @if (Gms > 0 && !Mode.Live)
+                @* an item the community server sells for gm$ alone has no em$ button *@
+                @if (Ems > 0 || Gms <= 0)
                 {
-                    <button class="btn btn-primary" disabled="@(pending || balances.Gms < Gms * count)" @onclick="() => Pay(true)">@(balances.Gms >= Gms * count ? L["Store.BuyGms"] + " (" + Gms * count + " gm$)" : L["Store.NotEnoughGms"])</button>
+                    @if (balances.Ems >= Ems * count) { <button class="btn btn-primary" disabled="@pending" @onclick="() => Pay(false)">@L["Store.BuyEms"]</button> }
+                    else if (Mode.Live) { @* no bank on the live site: the button stays off and the line below says why *@<button class="btn btn-primary" disabled>@L["Store.BuyEms"]</button> }
+                    else { <a class="btn btn-primary" href="/bank/ems" @onclick="Modal.Close">@L["Store.GetMoreEms"]</a> }
+                }
+                @if (Gms > 0)
+                {
+                    <button class="btn btn-primary" disabled="@(pending || balances.Gms < Gms * count)" @onclick="() => Pay(true)">@(balances.Gms >= Gms * count || Mode.Live ? L["Store.BuyGms"] + " (" + Gms * count + " gm$)" : L["Store.NotEnoughGms"])</button>
                 }
             </div>
+            @if (Mode.Live && Ems > 0 && balances.Ems < Ems * count) { <p class="line">@L["Store.NotEnoughEms", balances.Ems, Ems * count]</p> }
+            @if (Mode.Live && Gms > 0 && balances.Gms < Gms * count) { <p class="line">@L["Store.NotEnoughGmsHave", balances.Gms, Gms * count]</p> }
         }
     }
     else if (state == 1) { <h2>@L["Store.Complete"]</h2><p class="line">@L["Store.Enjoy", Name]</p> }

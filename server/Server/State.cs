@@ -26,9 +26,9 @@ public sealed partial class State
     /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
     /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.</summary>
     public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve";
-    // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
-    static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
-    public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
+    // Inventory/buy `wallet` → (wallet currency, catalogue price key); gm$ is charged the catalogue's silver_price, never discounted (see Price)
+    static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price"), ["SILVER"] = ("gm", "silver_price") };
+    public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // not for sale or over the balance
     const int MaxBuyAmount = 1000;
     // connect keys that differ by launched reserve (locations and locations_descr are the
     // same for every reserve); taken from that reserve's recorded connect
@@ -1221,11 +1221,12 @@ public sealed partial class State
 
     /// <summary>The store script's getPrice: the item's first row in the Application/discounts reply, if active, taken off
     /// and rounded half up (350 at 95 % off costs 18). A later active
-    /// row (100 % ones listed after the 95 % ones) is never used.</summary>
+    /// row (100 % ones listed after the 95 % ones) is never used. The discount is the em$ price's: a gm$ price (<c>silver_price</c>) is charged
+    /// as the catalogue has it.</summary>
     long Price(JsonObject item, string key)
     {
         var now = Py.Now();
-        var d = discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"]));
+        var d = key == "price" ? discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"])) : null;
         var price = Py.D(item[key]);
         if (d is not null && Py.Truthy(d["percentage"]) && Py.D(d["start_ts"]) < now && now < Py.D(d["end_ts"]))
             price -= price * (Py.D(d["percentage"]) / 100);
@@ -1234,7 +1235,7 @@ public sealed partial class State
 
     /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
     /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
-    /// today's price (<see cref="Price"/>, em$ and silver alike; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
+    /// today's prices (<see cref="Price"/>; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
     /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's, and no field the
     /// catalogue gives without a unit (the inventory weight) is passed on.</summary>
     public JsonObject StoreCatalogue()
@@ -1256,8 +1257,8 @@ public sealed partial class State
                 ["id"] = C(item["id"]), ["name"] = C(item["name"]), ["variant"] = C(G(item, "variationname", null)) ?? "",
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
-                ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Price(item, "silver_price") : 0,
-                ["buyable"] = StoreSells(item),
+                ["gms"] = Whole(G(item, "silver_price", null)),
+                ["buyable"] = StoreSells(item, "price") || StoreSells(item, "silver_price"),
             });
         }
         var categories = new JsonArray();
@@ -1285,8 +1286,8 @@ public sealed partial class State
     /// <summary>A catalogue price rounded half up to a whole number; 0 for none.</summary>
     static long Whole(JsonNode? price) => Py.IsNum(price) ? (long)Math.Floor(Py.D(price) + 0.5) : 0;
 
-    /// <summary>What the website's store sells of the items: shown, with a price of at least 1, and sellable.</summary>
-    static bool StoreSells(JsonObject item) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, "price", null)) > 0 && Sellable(item, "price");
+    /// <summary>What the website's store sells of the items for a price (<c>price</c> for em$, <c>silver_price</c> for gm$): shown, with that price of at least 1, and sellable.</summary>
+    static bool StoreSells(JsonObject item, string key) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, key, null)) > 0 && Sellable(item, key);
 
     /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue.</summary>
     long[]? BundleSale(JsonNode b)
@@ -1334,7 +1335,8 @@ public sealed partial class State
         var (itemId, amount, wallet) = (Form1(form, "item_id"), Form1(form, "amount"), Form1(form, "wallet"));
         var item = Py.IsDigit(itemId) ? items.GetValueOrDefault(long.Parse(itemId)) : null;
         var (currency, key) = WALLETS.TryGetValue(wallet, out var w) ? w : (null!, null!);
-        if (!(Py.Truthy(item) && currency is not null && Sellable(item!, key)
+        // an item without a gm$ price is not given away: only an em$ price may be 0 (the free ammunition licence)
+        if (!(Py.Truthy(item) && currency is not null && Sellable(item!, key) && (key == "price" || Whole(item![key]) > 0)
               && int.TryParse(amount, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n is >= 1 and <= MaxBuyAmount))
             return BUY_FAILED;
         var price = Price(item!, key) * n;
@@ -1344,16 +1346,17 @@ public sealed partial class State
     }
 
     /// <summary>The website's store (POST /account/buy): count of an item the store sells (<see cref="StoreSells"/>) at today's em$ price, or
-    /// one bundle it sells (<see cref="BundleSale"/>) at its price with each of its items. The new em$ balance, or null (nothing changed) for
-    /// something not for sale, a balance too low or an own limit reached.</summary>
-    public JsonNode? WebBuy(long account, long id, bool bundle, int count)
+    /// at its gm$ price (<paramref name="gms"/>), or one bundle it sells (<see cref="BundleSale"/>) at its em$ price with each of its items.
+    /// The new balance of the currency paid, or null (nothing changed) for something not for sale, a balance too low or an own limit reached.</summary>
+    public JsonNode? WebBuy(long account, long id, bool bundle, int count, bool gms = false)
     {
+        var (currency, key) = WALLETS[gms ? "SILVER" : "GOLD"];
         if (bundle)
-            return Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
+            return !gms && Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
                 ? Charge(account, "em", Whole(b["price"]), ids)
                 : null;
-        return items.GetValueOrDefault(id) is { } item && StoreSells(item) && count is >= 1 and <= MaxBuyAmount
-            ? Charge(account, "em", Price(item, "price") * count, Enumerable.Repeat(id, count))
+        return items.GetValueOrDefault(id) is { } item && StoreSells(item, key) && count is >= 1 and <= MaxBuyAmount
+            ? Charge(account, currency, Price(item, key) * count, Enumerable.Repeat(id, count))
             : null;
     }
 

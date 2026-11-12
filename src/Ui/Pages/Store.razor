@@ -21,8 +21,13 @@
                 <a href="/store/item/@i.Id" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
                 <p class="price">
-                    @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
-                    @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
+                    @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
+                    @if (i.Ems <= 0 && i.Gms > 0) { <b>@i.Gms gm$</b> }
+                    else
+                    {
+                        @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
+                        @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
+                    }
                 </p>
                 @if (!Mode.Live)
                 {

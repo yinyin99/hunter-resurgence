@@ -19,7 +19,7 @@ public static class CatalogApi
                 ? Json(200, c)
                 : Json(404, new JsonObject { ["error"] = "no catalogue" }))
             .WithName("StoreCatalogue").WithSummary("The store: categories, items with today's price, bundles")
-            .WithDescription("`{categories: [{key, name, children: [{key, name}]}], items: [{id, name, variant, description, category, ems, was, gms, buyable}], bundles: [{id, name, description, price, buyable, items: [{id, name}]}]}` from the application catalogue the server loaded (docs/server.md, Starting data); `ems` and `gms` are today's prices, `was` the em$ price before an active discount, null without one; `buyable` is what `POST /account/buy` sells. 404 when the catalogue has no items.")
+            .WithDescription("`{categories: [{key, name, children: [{key, name}]}], items: [{id, name, variant, description, category, ems, was, gms, buyable}], bundles: [{id, name, description, price, buyable, items: [{id, name}]}]}` from the application catalogue the server loaded (docs/server.md, Starting data); `ems` is today's em$ price and `was` the em$ price before an active discount (null without one); `gms` is the catalogue's gm$ price, never discounted, 0 for none; `buyable` is what `POST /account/buy` sells (for em$ when `ems` is above 0, for gm$ when `gms` is). 404 when the catalogue has no items.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
         group.MapGet("/reserves", () => state.LaunchCatalogue() is var c && c["reserves"]!.AsArray().Count > 0
                 ? Json(200, c)

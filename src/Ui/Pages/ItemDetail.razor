@@ -16,9 +16,13 @@
                 @* signed out the old page shows only the button *@
                 @if (signedIn)
                 {
-                    @if (item.Gms > 0) { <span class="gms">@L["Store.Or"] @item.Gms gm$</span> }
-                    <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
-                    @if (item.WasEms is { } was) { <s>@was em$</s> }
+                    @if (item.Gms > 0) { <span class="gms">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> }
+                    @* an item sold for gm$ alone has no em$ price to show *@
+                    @if (item.Ems > 0 || item.Gms <= 0)
+                    {
+                        <b class="@(item.WasEms is null ? "" : "sale")">@item.Ems em$</b>
+                        @if (item.WasEms is { } was) { <s>@was em$</s> }
+                    }
                 }
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
