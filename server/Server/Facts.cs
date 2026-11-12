@@ -87,7 +87,7 @@ public sealed class Facts
     public JsonArray ApplicationReserves() =>
         new(Arr("reserves").Select(r => (JsonNode?)new JsonObject { ["id"] = r!["id"]!.DeepClone(), ["name"] = r["name"]!.DeepClone() }).ToArray());
 
-    /// <summary>The world square the reserve's map picture covers (`reserves[].map`: world x and z of its left, top, right and bottom edges), or null when the file has none or an empty one.</summary>
+    /// <summary>The world box the reserve's map picture covers (`reserves[].map`: world x and z of its left, top, right and bottom edges), or null when the file has none or an empty one.</summary>
     public double[]? Map(long reserve) =>
         Arr("reserves").FirstOrDefault(r => Py.L(r!["id"]) == reserve)?["map"] is JsonArray { Count: 4 } m && m.All(Py.IsNum) && Py.D(m[2]) > Py.D(m[0]) && Py.D(m[3]) > Py.D(m[1])
             ? [.. m.Select(Py.D)] : null;

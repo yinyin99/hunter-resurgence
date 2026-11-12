@@ -76,7 +76,7 @@
     const int MarkerSize = 24;
 
     /// <summary>A percent as the style wants it: a point for the decimals in every culture.</summary>
-    public static string Pc(double percent) => percent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+    public static string Pc(double percent) => Fmt.Num(percent, "0.##");
 
     static string Name(MarkerKind kind) => kind.ToString().ToLowerInvariant();
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
@@ -27,12 +28,17 @@ public sealed class MapPlaceholderTests : UiContext
         Assert.DoesNotContain("marker-tower", images.Missing.Keys);
     }
 
-    // a decimal percent is written with a point in every culture
+    // a decimal percent is written with a point in a culture that writes a comma
     [Fact]
     public void ThePositionIsAPercentWithAPointForTheDecimals()
     {
-        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers));
-
-        Assert.Equal("left:10.25%;top:79.5%", cut.Find("button.k-lodge").GetAttribute("style"));
+        var (culture, ui) = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (CultureInfo.GetCultureInfo("fr-FR"), CultureInfo.GetCultureInfo("fr"));
+        try
+        {
+            var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers));
+            Assert.Equal("left:10.25%;top:79.5%", cut.Find("button.k-lodge").GetAttribute("style"));
+        }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (culture, ui); }
     }
 }
