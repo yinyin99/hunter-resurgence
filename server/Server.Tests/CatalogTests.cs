@@ -118,7 +118,7 @@ public class CatalogTests : StateTestBase
         Eq("182.0", state.Wallet(ME)["em"]);
         Eq($"{left}", state.Wallet(ME)["gm"]);
         using var con = state.Store.Open(ME);
-        var log = con.Rows("SELECT currency, amount, after, summary, item_ids FROM wallet_log WHERE currency = 'gm' ORDER BY n DESC")[0];
+        var log = con.Rows("SELECT currency, amount, after, summary, item_ids FROM wallet_log WHERE account_id = $a AND currency = 'gm' ORDER BY n DESC")[0];
         Assert.Equal(("gm", -price, left, "In-game payment.", "[1]"), ((string)log[0]!, Convert.ToDouble(log[1]), Convert.ToDouble(log[2]), (string)log[3]!, (string)log[4]!));
     }
 
@@ -140,7 +140,7 @@ public class CatalogTests : StateTestBase
         Eq("182.0", state.Wallet(ME)["em"]);
         Eq($"{33 + gms}", state.Wallet(ME)["gm"]);
         using var con = state.Store.Open(ME);
-        Assert.Empty(con.Rows("SELECT n FROM wallet_log WHERE summary = 'In-game payment.'"));
+        Assert.Empty(con.Rows("SELECT n FROM wallet_log WHERE account_id = $a AND summary = 'In-game payment.'"));
     }
 
     [Theory]
