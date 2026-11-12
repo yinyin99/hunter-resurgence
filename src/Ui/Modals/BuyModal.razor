@@ -9,7 +9,7 @@
     @if (state == 0)
     {
         <h2>@L["Store.Confirm"]</h2>
-        <p class="line">@count x @Name - @(Ems * count) em$</p>
+        <p class="line">@count x @Name - @(Ems > 0 || Gms <= 0 ? Ems * count + " em$" : Gms * count + " gm$")</p>
         @if (Multi) { <select id="buy_count" class="field-sel" disabled="@pending" @bind="count">@foreach (var n in new[] { 1, 5, 10 }) { <option value="@n">@n</option> }</select> }
         @if (Lines is { Count: > 0 })
         {

@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam se ni pravočasno zaprl. Zaprite ga sami in poskusite znova.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam mora biti zaprt, da se možnost zagona igre vrne. Naj zaprem Steam? Izberite Ne, če želite možnost pustiti, kot je.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jezik</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Sezonski dogodki</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Dokler poteka sezonski dogodek, strežnik skupnosti igri doda njegove živali, zaganjalnik pa prikaže njegove slike. Izklopite to, če želite igrati brez dogodka. Sprememba velja ob naslednjem zagonu igre.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Igraj sezonske dogodke</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Nastavitve ni bilo mogoče shraniti. Poskusite znova.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavitve igre</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Posnetki zaslona</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Dnevniki</value></data>

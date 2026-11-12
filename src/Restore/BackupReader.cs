@@ -142,9 +142,7 @@ static class BackupReader
             if (!Convert.ToHexStringLower(h.GetHashAndReset()).Equals(sha, StringComparison.OrdinalIgnoreCase)) { rejected.Add($"{path}: sha256 does not match the manifest"); continue; }
             if (fe["derived"] is JsonValue d && d.TryGetValue<bool>(out var isDerived) && isDerived) continue; // made by the tool: the raw replies decide
             if (!json) { media.Add(new(path, ze.FullName)); continue; }
-            JsonNode? node;
-            try { node = JsonNode.Parse(bytes, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false }); }
-            catch (JsonException) { rejected.Add($"{path}: not JSON, nested deeper than {lim.JsonDepth} or with a duplicate key"); continue; }
+            if (!TryParse(bytes, lim, out var node)) { rejected.Add(NotJson(path, lim)); continue; }
             var (ep, ps) = Text(fe["endpoint"]) is { } e && e.StartsWith('/')
                 ? (e, (fe["params"] as JsonObject ?? []).ToDictionary(p => p.Key, p => Text(p.Value) ?? "", StringComparer.Ordinal))
                 : Endpoints.FromName(path) ?? ("", new Dictionary<string, string>());
@@ -163,11 +161,24 @@ static class BackupReader
     static bool IsAt(ZipArchiveEntry e, string name) =>
         e.FullName == name || (e.FullName.EndsWith("/" + name, StringComparison.Ordinal) && e.FullName.Count(c => c == '/') == 1);
 
-    static JsonNode? Parse(byte[] b, Limits lim)
+    static JsonNode? Parse(byte[] b, Limits lim) => TryParse(b, lim, out var node) ? node : null;
+
+    /// <summary>The one way a saved reply is parsed: depth capped, no duplicate key. False when it is no such JSON.</summary>
+    internal static bool TryParse(byte[] b, Limits lim, out JsonNode? node)
     {
-        try { return JsonNode.Parse(b, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false }); }
-        catch (JsonException) { return null; }
+        try
+        {
+            node = JsonNode.Parse(b, documentOptions: new() { MaxDepth = lim.JsonDepth, AllowDuplicateProperties = false });
+            return true;
+        }
+        catch (JsonException)
+        {
+            node = null;
+            return false;
+        }
     }
+
+    internal static string NotJson(string path, Limits lim) => $"{path}: not JSON, nested deeper than {lim.JsonDepth} or with a duplicate key";
 
     /// <summary>A string or a number as text; null for anything else.</summary>
     internal static string? Text(JsonNode? n) => n is JsonValue v ? v.TryGetValue<string>(out var s) ? s : v.GetValueKind() == JsonValueKind.Number ? v.ToJsonString() : null : null;

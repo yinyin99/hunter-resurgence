@@ -35,6 +35,8 @@ public static class ServerAccountApi
     public const string Wallet = "/account/wallet";
     /// <summary>GET with the cookie: 200 the player's saved loadouts, <see cref="ServerLoadout"/>, ascending by id.</summary>
     public const string Loadouts = "/account/loadouts";
+    /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
+    public const string Events = "/account/events";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
@@ -49,6 +51,12 @@ public sealed record ServerConversations(ServerConversation[] Conversations);
 public sealed record ServerMessage(bool Mine, string Content, long Ts);
 
 public sealed record ServerThread(ServerMessage[] Messages);
+
+/// <summary>The event of <see cref="ServerAccountApi.Events"/> that runs now: its <c>Name</c> and the game's reserve numbers it covers (empty: every reserve).</summary>
+public sealed record ServerEvent(string Name, string Define, int[] Reserves);
+
+/// <summary><see cref="ServerAccountApi.Events"/>: <c>Event</c> is null when none runs.</summary>
+public sealed record ServerEvents(bool Play, ServerEvent? Event);
 
 /// <summary>A saved loadout of <see cref="ServerAccountApi.Loadouts"/>; its <c>Id</c> is what <see cref="ServerLaunchApi.Launch"/> takes as <c>loadout</c>.</summary>
 public sealed record ServerLoadout(int Id, string Name);

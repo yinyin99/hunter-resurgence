@@ -123,19 +123,19 @@ public class CatalogTests : StateTestBase
     }
 
     [Theory]
-    [InlineData("id=1&wallet=SILVER", 0.0)]              // 4000 gm$ for 33
-    [InlineData("id=1&wallet=SILVER&count=2", 5000.0)]   // 8000 for 5033
-    [InlineData("id=2&wallet=SILVER", 5000.0)]           // not buyable
-    [InlineData("id=3&wallet=SILVER", 5000.0)]           // hidden
-    [InlineData("id=4&wallet=SILVER", 5000.0)]           // a service
-    [InlineData("id=5&wallet=SILVER", 5000.0)]           // a gm$ price of 0 would be free
-    [InlineData("id=6&wallet=SILVER", 5000.0)]           // no gm$ price
-    [InlineData("id=9&bundle=1&wallet=SILVER", 5000.0)]  // bundles are em$ only
-    [InlineData("id=1&wallet=PLATINUM", 5000.0)]         // not a wallet
-    public async Task WhatGmCannotPayChangesNothing(string form, double gms)
+    [InlineData("id=1&wallet=SILVER", 0.0, 409)]              // 4000 gm$ for 33
+    [InlineData("id=1&wallet=SILVER&count=2", 5000.0, 409)]   // 8000 for 5033
+    [InlineData("id=2&wallet=SILVER", 5000.0, 409)]           // not buyable
+    [InlineData("id=3&wallet=SILVER", 5000.0, 409)]           // hidden
+    [InlineData("id=4&wallet=SILVER", 5000.0, 409)]           // a service
+    [InlineData("id=5&wallet=SILVER", 5000.0, 409)]           // a gm$ price of 0 would be free
+    [InlineData("id=6&wallet=SILVER", 5000.0, 409)]           // no gm$ price
+    [InlineData("id=9&bundle=1&wallet=SILVER", 5000.0, 409)]  // bundles are em$ only
+    [InlineData("id=1&wallet=PLATINUM", 5000.0, 400)]         // not a wallet
+    public async Task WhatGmCannotPayChangesNothing(string form, double gms, int status)
     {
         var (reply, items) = await Buy(form, gms: gms);
-        Assert.Contains(reply.Status, new[] { 400, 409 });
+        Assert.Equal(status, reply.Status);
         Assert.Empty(items);
         Eq("182.0", state.Wallet(ME)["em"]);
         Eq($"{33 + gms}", state.Wallet(ME)["gm"]);
@@ -152,6 +152,19 @@ public class CatalogTests : StateTestBase
         Assert.Equal(409, reply.Status);
         Assert.Empty(items);
         Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    // the game's call: an item with a gm$ price of 0 or none is not given away, whatever the balance
+    [Theory]
+    [InlineData("item_id=5&amount=1&wallet=SILVER")]
+    [InlineData("item_id=6&amount=1&wallet=SILVER")]
+    public async Task TheGamesGmPurchaseOfAFreeItemChangesNothing(string form)
+    {
+        await using var server = await Start(Store);
+        var count = state.Inventory(ME).Count;
+        Eq("""{"success": false}""", Reply(state.BuyReply(ME, System.Text.Encoding.ASCII.GetBytes(form))));
+        Assert.Equal(count, state.Inventory(ME).Count);
+        Eq("33.0", state.Wallet(ME)["gm"]);
     }
 
     [Theory]
