@@ -706,9 +706,6 @@
           "WPF-UI": "[4.3.0, )"
         }
       },
-      "play": {
-        "type": "Project"
-      },
       "resurgence-launcher": {
         "type": "Project",
         "dependencies": {

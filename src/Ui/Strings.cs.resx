@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Potvrďte kód {0} ve svém prohlížeči.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Přihlášení nebylo včas potvrzeno. Zkuste to prosím znovu.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Server není dostupný. Zkuste to prosím znovu.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json není platný JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: nastavte "{0}" (chybí nebo je stále zástupný text).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" musí být adresa https bez dotazu.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" není název hostitele.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Nastavení mění na tomto počítači tři věci a nic jiného (soubory hry se nikdy nedotýká):
+1. Soubor hosts systému Windows ({3}): {0} názvů serverů hry míří na tento počítač, mezi dvěma označenými řádky.
+2. Váš seznam důvěryhodných certifikátů Windows (jen váš uživatel): místní certifikační autorita s názvem "{1}". Může ručit jen za těchto {0} názvů; její klíč se smaže ihned po dokončení nastavení a nikdy se neukládá.
+3. Certifikát pro tyto názvy. Jeho klíč nelze exportovat a zůstává ve vašem profilu Windows; soubor certifikátu je v {2}.
+Vše můžete kdykoli vrátit zpět: Nastavení, Odebrat nastavení.
+Názvy:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows se nyní zeptá, zda důvěřovat certifikační autoritě. Zvolte Ano.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Poté Windows požádá o oprávnění správce k úpravě souboru hosts (samostatné okno). Zvolte Ano. Jako správce běží jen tato úprava.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Soubor hosts nebyl změněn (oprávnění odepřeno nebo jej zablokoval bezpečnostní program). Nastavte znovu a zkuste to ještě jednou; Odebrat nastavení v Nastavení vrátí zpět, co bylo provedeno.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Hotovo. Nechte launcher otevřený, dokud hrajete: posílá hru na komunitní server. Při prvním spuštění hry se na ni Windows Firewall zeptá: klikněte na Povolit.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Blok hosts, certifikační autorita a certifikát byly odebrány. Hra opět komunikuje se svými vlastními servery.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Certifikát nebyl nalezen: tento počítač ještě není nastaven.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Certifikát vypršel. Nastavte znovu: vytvoří se nový.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Soubor hosts nemá blok z nastavení (neproběhlo nebo bylo odebráno), takže hra stále komunikuje se svými vlastními servery.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Nelze naslouchat na portu 80 ani 443: {0}
+Zavřete program, který jej používá (jiný server nebo druhá kopie launcheru), a launcher spusťte znovu.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Nastavit</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Teď ne</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Odebrat nastavení? Blok hosts, certifikační autorita a certifikát budou odebrány a hra opět bude komunikovat se svými vlastními servery.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Nastavit pro komunitní server</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Odebrat nastavení</value></data>
 </root>

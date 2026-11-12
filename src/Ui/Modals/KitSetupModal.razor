@@ -1,0 +1,33 @@
+@inject ModalService Modal
+@inject IKitService Kit
+
+@* the player kit's setup: shows what it changes (as `play setup` printed), then does it *@
+<div class="kit" role="dialog" aria-modal="true" aria-labelledby="kit-title">
+    <h1 id="kit-title">@L["Settings.KitSetup"]</h1>
+    @if (Plan.Notice is not null) { <p class="notice">@Plan.Notice</p> }
+    <p class="plan">@L["Kit.Plan", Plan.Hosts.Length, Plan.CaName, Plan.Folder, Plan.HostsFile]</p>
+    <ul>@foreach (var h in Plan.Hosts) { <li>@h</li> }</ul>
+    <p>@L["Kit.Trust"] @L["Kit.Elevate"]</p>
+    @if (error is not null) { <p class="error" role="alert">@error</p> }
+    <div class="buttons">
+        <button type="button" class="btn btn-primary" id="kit-setup" disabled="@busy" @onclick="Run">@L["Kit.SetUp"]</button>
+        <button type="button" class="btn btn-inverse" disabled="@busy" @onclick="Modal.Close">@L["Kit.NotNow"]</button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public KitPlan Plan { get; set; } = null!;
+
+    bool busy;
+    string? error;
+
+    async Task Run()
+    {
+        (busy, error) = (true, null);
+        var r = await Kit.SetUpAsync();
+        busy = false;
+        if (!r.Ok) { error = r.Error; return; }
+        Modal.Close();
+        Modal.Alert(L["Kit.Done"].Value);
+    }
+}

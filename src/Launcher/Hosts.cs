@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Play;
+namespace Resurgence.Launcher;
 
 /// <summary>The marked block of the Windows hosts file that points the game's names at this PC. Add and Remove are pure text functions: Remove(Add(t)) is t, byte for byte.</summary>
 static class Hosts

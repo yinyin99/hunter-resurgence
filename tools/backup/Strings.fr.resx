@@ -545,7 +545,7 @@
     <value>injoignable (hors service, ou pas de réseau)</value>
   </data>
   <data name="Check_redirected" xml:space="preserve">
-    <value>redirigé : le kit joueur, ou une autre entrée du fichier hosts, envoie les noms du jeu vers ce PC. Retirez le kit joueur (3-remove.cmd) avant une sauvegarde.</value>
+    <value>redirigé : le lanceur, ou une autre entrée du fichier hosts, envoie les noms du jeu vers ce PC. Supprimez la configuration du lanceur (Paramètres) avant une sauvegarde.</value>
   </data>
   <data name="Check_unset" xml:space="preserve">
     <value>non défini</value>
