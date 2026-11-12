@@ -455,6 +455,31 @@
  },
  "events": {
   "halloween_2026": {"reserves": {
+   "0": {
+    "ammo": [962,963,1142],
+    "populations": [
+     {"index":50,"animal":"werewolf","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":12,"females":22}],"random":{"males":30,"females":48,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}},
+     {"index":51,"animal":"feral_hog","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":30,"males":16,"females":24}]}
+    ]
+   },
+   "1": {
+    "ammo": [962,963,1142],
+    "populations": [
+     {"index":150,"animal":"werewolf","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":12,"females":22}],"random":{"males":30,"females":48,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}}
+    ]
+   },
+   "2": {
+    "ammo": [962,963,1142],
+    "populations": [
+     {"index":250,"animal":"werewolf","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":12,"females":22}],"random":{"males":30,"females":48,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}}
+    ]
+   },
+   "8": {
+    "ammo": [962,963,1142],
+    "populations": [
+     {"index":850,"animal":"werewolf","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":12,"females":22}],"random":{"males":30,"females":48,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}}
+    ]
+   },
    "9": {
     "ammo": [962,963,1142],
     "populations": [

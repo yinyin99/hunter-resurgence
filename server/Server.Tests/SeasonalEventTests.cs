@@ -179,15 +179,75 @@ public class SeasonalEventTests : StateTestBase
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
 
-    [Fact]
-    public void TestTheShippedFactsHoldTheHalloweenEventOfWhiterimeRidge()
+    // the shipped event's reserves, as the game announces them; the density maps the game ships, by creature, as the game's reserve numbers (zone n is reserve n - 1)
+    static readonly SeasonalEvent Halloween = new("halloween_2026", "HALLOWEEN_2026", [0, 1, 2, 8, 9], Start, End);
+
+    static readonly Dictionary<string, int[]> Maps = new()
     {
-        var content = Facts.Default.Event("halloween_2026", 9)!.Value;
-        Assert.Equal([962L, 963L, 1142L], content.Ammo);
-        Assert.Equal(["werewolf", "wendigo", "feral_hog"], content.Populations.Select(p => (string)p["animal"]!));
-        Assert.All(content.Populations, p => Assert.Equal(10, (int)p["reserve"]!));  // the web's number of the game's reserve 9
-        Assert.Equal([908L, 909L, 914L], Facts.Default.EventIndexes(9));
-        Assert.Null(Facts.Default.Event("halloween_2026", 0));
+        ["werewolf"] = [0, 1, 2, 8, 10], ["wendigo"] = [9], ["feral_hog"] = [0, 1, 2, 6, 8, 9, 11], ["snowshoe_hare"] = [9],
+    };
+
+    /// <summary>A hunt on the game's <paramref name="reserve"/> with the shipped facts and the shipped event; the player has a species of that reserve's list.</summary>
+    State Hunt(int reserve, bool playsEvents = true)
+    {
+        var connect = CONNECT;
+        connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""));
+        connect["species_ammo"] = new JsonArray(O("""{"species_id": "17", "ammo": [999]}"""));
+        var app = APP;
+        app["locations"] = new JsonArray([.. new[] { 0, 100, 200, 500, 800, 900 }.Select(l => (JsonNode?)O(
+            $$"""{"id": {{l}}, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": {{l / 100 + 1}}}"""))]);
+        var s = new State(Path.Combine(tmp, Guid.NewGuid().ToString("N") + ".db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,
+                          offline: false, facts: Facts.Default, seasonal: Halloween);
+        s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
+        s.Store.SetPlaysEvents(ME, playsEvents);
+        s.NoteLaunch(ME, Encoding.ASCII.GetBytes($"start={reserve * 100}&reserve={reserve + 1}"));
+        return s;
+    }
+
+    [Theory]
+    [InlineData(0, "werewolf:50:werewolf,feral_hog:51:feral_hog")]
+    [InlineData(1, "werewolf:150:werewolf")]
+    [InlineData(2, "werewolf:250:werewolf")]
+    [InlineData(8, "werewolf:850:werewolf")]
+    [InlineData(9, "werewolf:908:snowshoe_hare,wendigo:909:snowshoe_hare,feral_hog:914:feral_hog")]
+    public void TestEveryReserveOfTheHalloweenEventGetsItsContentForAPlayerWhoPlaysIt(int reserve, string content)
+    {
+        var reply = Connect(Hunt(reserve));
+        Eq("""{"name": "halloween_2026", "define": "HALLOWEEN_2026", "reserves": [0, 1, 2, 8, 9]}""", reply["ingame_event"]);
+        var rows = reply["populations"]!.AsArray().Where(p => p!["active_start"] is not null).ToArray();
+        Assert.Equal(content, string.Join(",", rows.Select(p => $"{p!["animal"]}:{p["index"]}:{p["density_map"]}")));
+        Assert.All(rows, p =>
+        {
+            Assert.Equal(reserve + 1, (int)p!["reserve"]!);  // the web's number of the game's reserve
+            Assert.Equal(reserve, (int)p["index"]! / 100);
+            Assert.Contains(reserve, Maps[(string)p["density_map"]!]);  // a density map the game lacks fails the hunt
+            Assert.Equal(("2031-03-10T00:00:00", "2031-03-20T00:00:00"), ((string)p["active_start"]!, (string)p["active_end"]!));
+        });
+        Eq("[962, 963, 1142]", reply["species_ammo"]![0]!["ammo"]);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(8)]
+    [InlineData(9)]
+    public void TestAPlayerWhoOptedOutGetsNoContentOnAnyReserveOfTheHalloweenEvent(int reserve)
+    {
+        var reply = Connect(Hunt(reserve, playsEvents: false));
+        Assert.Null(reply["ingame_event"]);
+        Assert.DoesNotContain(reply["populations"]!.AsArray(), p => p!["active_start"] is not null);
+        Assert.DoesNotContain(reply["populations"]!.AsArray(), p => Facts.Default.EventIndexes(reserve).Contains((long)p!["index"]!));
+        Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
+    }
+
+    [Fact]
+    public void TestAReserveOutsideTheHalloweenEventIsAnnouncedButGetsNoContent()
+    {
+        var reply = Connect(Hunt(5));
+        Eq("""{"name": "halloween_2026", "define": "HALLOWEEN_2026", "reserves": [0, 1, 2, 8, 9]}""", reply["ingame_event"]);
+        Assert.Equal("996", Indexes(reply));
+        Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
     }
 
     [Theory]
