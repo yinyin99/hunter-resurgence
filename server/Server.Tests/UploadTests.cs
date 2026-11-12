@@ -152,7 +152,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1001L, state.Store.ResolveToken(token));
         Assert.Equal(1001L, state.Store.ResolveWebSession(cookie));
         Eq("1001", state.Store.AccountJson(1001)["user_id"]);
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
         Assert.Equal(1L, Count(1001, "pending"));
         Assert.Equal(0L, Count(player, "pending"));
         Assert.Equal(1L, Count(1001, "restore_audit"));
@@ -179,7 +179,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             Assert.Equal((409, "already"), (refused.Status, refused.Kind));
             Assert.Contains("can be restored once", refused.Message);
         }
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));  // nothing changed
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));  // nothing changed
         Assert.True(state.Store.AccountExists(other));
         Assert.Equal(0L, Count(other, "restore_audit"));
         // and now an upload of that user id is refused at once

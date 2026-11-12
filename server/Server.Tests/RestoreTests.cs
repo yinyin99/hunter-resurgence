@@ -83,7 +83,7 @@ public class RestoreTests : StateTestBase
         Assert.Equal((1001L, true), (result.Account, result.Created));
         Assert.Contains("stored: items 2, wallet 2, skills 120, profile 1, statistics 1, achievements 2, trophies 1, lodges 1,", result.Report);
         Assert.Equal("sample", state.Store.AccountJson(1001)["handle"]!.ToString());
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
         var skills = JsonNode.Parse(state.SkillListReply(1001, "user_id=1001"u8.ToArray()))!;
         Eq("""{"200": 10.2, "300": 4.75}""", skills["weapon"]);
         Eq("[1.5, 2]", T(skills["tracking"]![0], skills["spotting"]![0]));
@@ -128,7 +128,7 @@ public class RestoreTests : StateTestBase
         Restorer.Import(state, Zip(TestZip.Own()), null, tmp);
         Restorer.Import(state, Zip(TestZip.Public(), "public.zip"), 1001, tmp);
         // the public zip has no wallet or skills: new-player values, and nothing of the first zip is left
-        Eq("""{"em": 0.0, "gm": 0.0}""", state.Wallet(1001));
+        Eq("""{"em": 0.0, "gm": 15000.0}""", state.Wallet(1001));
         using var con = state.Store.Open(1001);
         Assert.DoesNotContain(con.Rows("SELECT path FROM extras WHERE account_id = $a"), r => (string)r[0] is "loadout.json" or "Me_me.json");
         Assert.Equal(118L, Count(1001, "skills"));
@@ -161,8 +161,8 @@ public class RestoreTests : StateTestBase
         Restorer.Import(state, Zip(TestZip.Own("\"ems\":1.0,\"gms\":2.0"), "other.zip"), ME, tmp);  // replaces the profile of 7 only
         Assert.Equal(before8, Snapshot(8));
         Assert.NotEqual(before7, Snapshot(ME));
-        Eq("""{"em": 12.5, "gm": 3000.25}""", state.Wallet(1001));
-        Eq("""{"em": 1.0, "gm": 2.0}""", state.Wallet(ME));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
+        Eq("""{"em": 1.0, "gm": 15000.0}""", state.Wallet(ME));
         Eq("7", state.Store.AccountJson(ME)["user_id"]);  // the account keeps its id
     }
 
@@ -194,7 +194,7 @@ public class RestoreTests : StateTestBase
     {
         Restorer.Import(state, Zip(TestZip.Own()), null, tmp);
         var reply = Connect(1001);
-        Eq("""{"em": 12.5, "gm": 3000.25}""", reply["wallet"]);
+        Eq("""{"em": 12.5, "gm": 20000.25}""", reply["wallet"]);
         var skills = reply["skills"]!;
         Eq("""{"200": 10, "300": 4}""", skills["weapon"]);
         Eq("[59, 59, 1, 2]", T(skills["tracking"]!.AsArray().Count, skills["spotting"]!.AsArray().Count, skills["tracking"]![0], skills["spotting"]![0]));
@@ -216,11 +216,19 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestARestoreLeavesAtLeastTheGmFloorAndKeepsAnEm()
+    {
+        var result = Restorer.Import(state, Zip(TestZip.Own("\"ems\":5.5,\"gms\":2.0")), null, tmp);
+        Eq("""{"em": 5.5, "gm": 15000.0}""", state.Wallet(1001));
+        Assert.Contains("wallet: gm raised from 2 to 15000", result.Report);
+    }
+
+    [Fact]
     public void TestConnectOfAPublicZipHasNoWalletOrSkillsOfAnotherPlayer()
     {
         Restorer.Import(state, Zip(TestZip.Public()), null, tmp);
         var reply = Connect(1001);
-        Eq("""{"em": 0.0, "gm": 0.0}""", reply["wallet"]);
+        Eq("""{"em": 0.0, "gm": 15000.0}""", reply["wallet"]);
         Assert.Equal(59, reply["skills"]!["tracking"]!.AsArray().Count);
         Assert.Empty(reply["skills"]!["weapon"]!.AsObject());
         Assert.Equal("user-1001", reply["account"]!["handle"]!.ToString());
@@ -406,7 +414,7 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, "state"), (reply.Status, reply.Source));
         var me = JsonNode.Parse(reply.Body)!;
         // hunterscore: the computed value, the zip's statistics hold no ethical kills
-        Eq("""[1001, "sample", 0, 1, 7, 12.5, 3000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
+        Eq("""[1001, "sample", 0, 1, 7, 12.5, 20000.25, 0, "freeplay"]""", T(me["id"], me["handle"], me["hunterscore"], me["rank"], me["user_group"], me["ems"], me["gms"],
             me["unread_messages"], me["membershipType"]));
         Eq("""{"best": 9}""", me["records"]);
         Eq("[]", me["worlditems"]);

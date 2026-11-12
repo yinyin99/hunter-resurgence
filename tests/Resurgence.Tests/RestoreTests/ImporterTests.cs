@@ -591,4 +591,28 @@ public class ImporterTests
         Assert.Contains("skills tracking: 2 values, 59 expected", w);
         Assert.Contains("skills spotting: 0 values, 59 expected", w);
     }
+
+    [Fact]
+    public void FromRepliesGivesAPublicModelWithoutAZip()
+    {
+        static ArchivedReply R(string path, string endpoint, string body, params (string Key, string Value)[] ps) =>
+            new(path, endpoint, ps.ToDictionary(p => p.Key, p => p.Value), 200, Encoding.UTF8.GetBytes(body));
+        var uid = ("user_id", "1001");
+        var r = Importer.FromReplies("1001", "sample",
+        [
+            R("Public_user_getByHostname__hostname=sample.json", "/v1/Public_user/getByHostname", """{"id":1001,"handle":"sample","hostname":"sample","hunterscore":5}""", ("hostname", "sample")),
+            R("Inventory_dict__user_id=1001.json", "/v1/Inventory/dict", """{"500":[{"id":9001,"slot":1,"units":3,"metadata":{}}]}""", uid),
+            R("Skill_list__user_id=1001.json", "/v1/Skill/list", """{"weapon":{"200":10.2},"tracking":[],"spotting":[]}""", uid),
+            R("Statistics_total__user_id=1001.json", "/v1/Statistics/total", "not json", uid),
+        ]);
+        Assert.Equal(("public", "sample"), (r.Model.Identity.Mode, r.Model.Identity.Handle));
+        Assert.Null(r.Model.Wallet);
+        Assert.Equal("public by handle", r.Report.Mode);
+        var item = Assert.Single(r.Model.Items);
+        Assert.Equal((500, 9001L, (int?)3), (item.ItemId, item.Guid, item.Units));
+        Assert.Equal(10.2, r.Model.Skills!.Weapon[200]);
+        Assert.Single(r.Report.Rejected);
+        Assert.Contains("Statistics_total", r.Report.Rejected[0]);
+        Assert.Throws<RestoreException>(() => Importer.FromReplies("not-digits", "sample", []));
+    }
 }
