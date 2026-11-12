@@ -20,6 +20,9 @@ public class ScoringTests : IDisposable
             Assert.Equal("web.test", Scoring.StaticHost);
             Assert.Equal((30.0, 260.0, 1.1), Scoring.Variants[1]);
             Assert.Equal(66.4, Scoring.Css(1, System.Text.Json.Nodes.JsonValue.Create(168.8186)));
+            File.WriteAllText(file, """[{"id":50,"min_score":100,"max_score":200,"css_multiplier":2}]""");
+            Scoring.Load(O("""{"game_web_host": "web.test"}"""), file);
+            Assert.Equal((100.0, 200.0, 2.0), Scoring.Variants[50]);  // the file's own row wins over the facts file's
             Scoring.Load(O("""{"game_web_host": "web.test"}"""), Path.Combine(tmp, "missing.json"));  // no file: the facts file's bounds of the event creatures only
             Assert.Equal([50, 58], Scoring.Variants.Keys.Order());
             Assert.Equal((190.0, 390.0, 1.0), Scoring.Variants[50]);

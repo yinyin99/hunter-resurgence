@@ -932,6 +932,22 @@ public class EventCreatureTests : StateTestBase
     }
 
     [Fact]
+    public void TestARecordedListForTheEventCreaturesWinsOverTheFactsFile()
+    {
+        var connect = CONNECT;
+        connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
+        var ethical = (JsonArray)connect["ethical"]!;
+        while (ethical.Count < 50) ethical.Add(new JsonArray());
+        ethical.Add(new JsonArray(10));  // the recording's list for 50
+        var own = new State(Path.Combine(tmp, "own.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
+        own.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        var u = Reply(own.HeartbeatReply(ME, Events(O("""{"event": 7, "individual": 604, "species": 50, "gender": 0, "weight_grams": 120000}"""),
+            O("""{"event": 1, "individual": 604, "ammunition_id": 10, "weapon_id": 5}"""), O("""{"event": 3, "individual": 604, "extended_species": 50}"""))))["updates"]!.AsArray();
+        Assert.Contains(u, x => Py.Eq(x!["update"], 15));  // ammo 10 is permitted by the recording, and the kill pays
+        Eq("[10]", Reply(own.ConnectReply(ME))["ethical"]![50]);
+    }
+
+    [Fact]
     public void TestAnAmmoOutsideTheSilverIsDisqualifiedAsForOtherSpecies()
     {
         var werewolf = Kill(602, 50, 120000, 10);
