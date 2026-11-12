@@ -20,6 +20,9 @@ public sealed class Facts
         foreach (var (family, ids) in Obj("families"))
             foreach (var id in ids!.AsArray())
                 Families[(int)Py.L(id)] = family;
+        foreach (var (id, rule) in Obj("species_rules"))
+            SpeciesRules[int.Parse(id, CultureInfo.InvariantCulture)] = new([.. (rule!["ammo"] as JsonArray ?? []).Select(Py.L)],
+                Py.D(rule["min_score"]), Py.D(rule["max_score"]), Py.D(rule["css_multiplier"]));
         var ranks = Obj("ranks");
         RankCap = ranks["cap"] is { } cap ? Py.L(cap) : 0;
         Ranks = [.. (ranks["rows"] as JsonArray ?? []).Select(r => (string?)r!["category"] switch
@@ -53,6 +56,11 @@ public sealed class Facts
 
     /// <summary>Species id → score family (Scoring).</summary>
     public readonly Dictionary<int, string> Families = [];
+
+    /// <summary>What a species needs that a recorded connect or an operator's variants file from before the Halloween event may lack: its permitted ammo, its `min_score` and `max_score`
+    /// and the `css_multiplier` of its gm$ (`species_rules`, by species id). Today the event creatures.</summary>
+    public sealed record SpeciesRule(long[] Ammo, double MinScore, double MaxScore, double CssMultiplier);
+    public readonly Dictionary<int, SpeciesRule> SpeciesRules = [];
 
     /// <summary>A row of the hunterscore: its `id` (the game's ranks reply names it so) and `title`; `animal` (Ids = the species id), `weapon` (the weapon
     /// item ids, all ammo summed) or `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>
