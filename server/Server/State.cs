@@ -531,7 +531,8 @@ public sealed partial class State
     /// <summary>The account of the recorded connect: the one account of a local server, and the one a request that no
     /// token resolves gets while offline.</summary>
     public readonly long LocalAccount;
-    readonly Dictionary<long, JsonObject> species = new(), items = new(), infos = new(), ballistics = new();
+    // installItems: the install's items the store catalogue does not list (a restored inventory may still hold one), for their definitions only
+    readonly Dictionary<long, JsonObject> species = new(), items = new(), installItems = new(), infos = new(), ballistics = new();
     readonly Dictionary<long, string?> reserves = new();
     readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
     readonly JsonObject locale, connect, start;
@@ -629,6 +630,9 @@ public sealed partial class State
             if (d["extra"]?["ammo"] is JsonObject ammo)
                 ballistics[Py.L(d["id"])] = ammo;
         }
+        foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
+            if (!items.ContainsKey(Py.L(i!["id"])))
+                installItems[Py.L(i["id"])] = i.AsObject();
         Store = new Store(dbPath);
         Store.PurgeExpired();
         var local = connect["account"] as JsonObject ?? new JsonObject();
@@ -1185,12 +1189,12 @@ public sealed partial class State
     }
 
     /// <summary>update 10 definition: the recorded connect's, else the install sample's, else built from the
-    /// Application/application record; null for an unknown item.</summary>
+    /// Application/application record (or, for an item that record lacks, the install's item definitions); null for an unknown item.</summary>
     public JsonObject? ItemInfo(long itemId)
     {
         if (infos.TryGetValue(itemId, out var info))
             return info;
-        if (!items.TryGetValue(itemId, out var a) || a.Count == 0)
+        if (!(items.TryGetValue(itemId, out var a) || installItems.TryGetValue(itemId, out a)) || a.Count == 0)
             return null;
         // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots and arm_type; the game does not need them.
         // An ammo needs its ballistics (velocity_falloff, wounding_factor, ...) to get past connect: they come from the install's item definitions.

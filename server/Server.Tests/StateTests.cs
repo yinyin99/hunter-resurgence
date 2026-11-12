@@ -67,6 +67,18 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
+    public void TestAnOwnedItemTheStoreCatalogueLacksGetsTheInstallsDefinition()
+    {
+        // a restored inventory keeps an item the store no longer lists (391 is in the item definitions only): without its info the client closes after connect
+        var connect = CONNECT;
+        connect["inventory"]!["items"]!.AsArray()[0]!["item_id"] = 391;
+        var own = new State(Path.Combine(tmp, "own.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS);
+        var inv = Reply(own.ConnectReply(ME))["inventory"]!;
+        Eq("[391, 10]", new JsonArray(inv["infos"]!.AsArray().Select(i => i!["item_id"]!.DeepClone()).ToArray()));
+        Assert.DoesNotContain(own.StoreCatalogue()["items"]!.AsArray(), i => Py.Eq(i!["id"], 391));  // the store still shows the catalogue's items only
+    }
+
+    [Fact]
     public void TestMovePersistsAcrossRestart()
     {
         Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!)));
