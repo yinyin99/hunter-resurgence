@@ -1311,7 +1311,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ihre Daten löschen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Melden Sie sich an, öffnen Sie „Ihr Backup wiederherstellen“ und wählen Sie „Meine Daten löschen“. Dadurch werden das Konto, seine Spieldaten, die aufbewahrten Zips und die Fotos gelöscht, und Sie werden abgemeldet. Ihre Steam-ID wird dann vergessen; bei einer erneuten Anmeldung wird ein neues Konto angelegt.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Der Betreiber dieses Servers kann all das Obige sehen.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Bestätige den Code {0} in deinem Browser.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Dein Browser ist geöffnet. Melde dich dort mit Steam an.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Mit Steam anmelden</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Der Server ist nicht erreichbar. Bitte versuche es erneut.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ist kein gültiges JSON.</value></data>

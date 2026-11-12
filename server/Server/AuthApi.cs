@@ -33,6 +33,12 @@ public static class AuthApi
         group.MapMethods("/confirm", ["GET", "POST"], Do(game, auth.Confirm)).WithName("ConfirmLauncher").WithSummary("Let the launcher that shows the code sign in");
         group.MapPost("/link", Do(game, auth.NewLink)).WithName("NewLink").WithSummary("A launcher asks to be signed in by the player's browser");
         group.MapGet("/link/{code}", Do(game, auth.PollLink)).WithName("PollLink").WithSummary("The launcher waits: pending, or ok with the cookie");
+        group.MapGet("/app/start", Do(game, auth.StartApp)).WithName("AppStart").WithSummary("An app on this PC (launcher, backup tool) asks to be signed in: to Steam, then back to 127.0.0.1")
+             .WithDescription("`challenge`: SHA-256 of the app's secret verifier, base64url, 43 characters; `port`: 1024 to 65535, where the app listens on 127.0.0.1; `state`: the app's random value (16 to 128 URL-safe characters), returned unchanged. "
+                              + "After Steam and the player's confirmation the browser is redirected to `http://127.0.0.1:<port>/?code=<one-time code>&state=<state>`, and to no other address.")
+             .QueryParams(("challenge", "base64url SHA-256 of the verifier"), ("port", "1024 to 65535"), ("state", "random value"));
+        group.MapPost("/app/exchange", Do(game, auth.ExchangeApp)).WithName("AppExchange").WithSummary("The app trades the code and its verifier for the session cookie")
+             .WithDescription("Form `code` and `verifier` (needs `X-Requested-With` or a same-origin `Origin`). The code is one-time and lives 3 minutes; a wrong verifier spends it. 200 `{status: ok}` with the cookie, else 400 `{status: invalid}`.");
         group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms}` or 401");
         group.MapPost("/signout", Do(game, auth.SignOut)).WithName("AuthSignOut").WithSummary("End the session (needs `X-Requested-With` or a same-origin `Origin`)");
         group.MapPost("/launch", Do(game, r => auth.Launch(r, game.Tokens!))).WithName("AuthLaunch").WithSummary("A launch URL with fresh tokens, for the start page");

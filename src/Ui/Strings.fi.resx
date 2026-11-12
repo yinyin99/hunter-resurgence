@@ -1311,7 +1311,8 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
-  <data name="Signin.Link" xml:space="preserve"><value>Vahvista koodi {0} selaimessasi.</value></data>
+  <data name="Signin.Link" xml:space="preserve"><value>Selaimesi on auki. Kirjaudu siellä Steamilla.</value></data>
+  <data name="Signin.Steam" xml:space="preserve"><value>Kirjaudu Steamilla</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Palvelimeen ei saatu yhteyttä. Yritä uudelleen.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ei ole kelvollista JSON:ia.</value></data>
