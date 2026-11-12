@@ -31,11 +31,11 @@ public sealed class ItemDetailTests : UiContext
         Assert.Single(cut.FindAll("#buy-item"));
     }
 
-    // the live site buys from the server, with em$ only, and has no bank to send a player short of em$ to
+    // the live site buys from the server, with em$ and gm$, and has no bank to send a player short of em$ to
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void TheLiveBuyDialogOffersEmsOnlyAndNoBank(bool live)
+    public void TheLiveBuyDialogOffersBothButtonsAndNoBank(bool live)
     {
         Services.GetRequiredService<HostMode>().Live = live;
         Assert.Single(Render<ItemDetail>(p => p.Add(i => i.Id, 1227)).FindAll("#buy-item"));
@@ -44,8 +44,8 @@ public sealed class ItemDetailTests : UiContext
 
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".buttons")));
         Assert.Equal(live ? 0 : 1, cut.FindAll("a[href='/bank/ems']").Count);
-        Assert.Equal(!live, cut.FindAll(".buttons button").Any(b => b.TextContent.Contains("gm$")));
-        if (live) Assert.True(Assert.Single(cut.FindAll(".buttons button")).HasAttribute("disabled"));  // too dear, and no bank to send to
+        Assert.Contains(cut.FindAll(".buttons button"), b => b.TextContent.Contains("gm$"));
+        if (live) Assert.True(cut.Find(".buttons button").HasAttribute("disabled"));  // the em$ button: too dear, and no bank to send to
     }
 
     // the stand-in pictures are named after the mock's fictional ids: a real item of the same id must not get one

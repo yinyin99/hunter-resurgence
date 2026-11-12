@@ -65,7 +65,7 @@ public sealed class LauncherStoreTests : IDisposable
         Assert.True((await store.BuyAsync(1, false, false)).Ok);
 
         var (line, cookie, form) = Assert.Single(seen, r => r.Line.EndsWith("/account/buy"));
-        Assert.Equal(("POST /account/buy", "hr_session=secret", "id=1&count=1&bundle=0"), (line, cookie, form));
+        Assert.Equal(("POST /account/buy", "hr_session=secret", "id=1&count=1&bundle=0&wallet=GOLD"), (line, cookie, form));
     }
 
     [Fact]
