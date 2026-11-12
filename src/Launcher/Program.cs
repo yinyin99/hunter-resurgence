@@ -23,8 +23,19 @@ static class Program
             .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
             .OnFirstRun(_ => FirstRun = true)
-            .OnBeforeUninstallFastCallback(_ => Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
-                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
+            .OnBeforeUninstallFastCallback(_ =>
+            {
+                // first: the launch option goes back while launcher.json (what was there before) still exists; a failure must not stop the rest of the uninstall
+                try
+                {
+                    SteamOption.Uninstall(Prefs.DefaultPath, Settings.Load(), Steam.InstallPath(), Steam.ActiveAccount(), Steam.Running(),
+                        () => MessageBox.Show(Kit.S("Steam.UninstallClose"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes
+                            && Steam.Shutdown(TimeSpan.FromSeconds(20)));
+                }
+                catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { }
+                Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
+                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes);
+            })
             .Run();
 
         var app = new App();

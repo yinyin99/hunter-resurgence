@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinställningar</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spelhantering</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steams startalternativ</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Använd Steams Spela-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Klistra in den här raden i spelets startalternativ i Steam (Egenskaper) för att starta spelet via den här startaren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiera</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Starta spelet från Steams Spela-knapp</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>De officiella servrarna är stängda. Spelets egen startprogram, som Steam öppnar när du trycker på Spela, kan inte längre nå någon server på egen hand: det behöver det här startprogrammet, som bär din anslutning till community-servern.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>För att Spela ska fortsätta fungera kan det här startprogrammet be Steam öppna det i stället. Det ändrar en enda inställning för det här spelet i Steam (startalternativen) och inget annat: inte dina andra spel, inte Steam självt, inte spelets filer. Du ser den i Steam: högerklicka på spelet, Egenskaper, Startalternativ.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam måste vara stängt medan inställningen skrivs, eftersom Steam sparar sin egen kopia när det avslutas. När du avinstallerar det här startprogrammet sätts inställningen tillbaka.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Ditt nuvarande startalternativ för det här spelet är: {0}. Det ersätts bara om du väljer den första knappen.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Stäng Steam och ställ in</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopiera raden i stället</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Fråga inte igen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Klart. Steams Spela-knapp öppnar nu det här startprogrammet. Starta Steam igen?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Starta Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Det här startprogrammet installerades inte med installationsprogrammet (en utvecklings- eller uppackad kopia), så det kan inte ställa in Steams startalternativ åt dig.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Startprogrammet kunde inte läsa Steams inställningsfil för det här spelet på ett säkert sätt och lämnade den oförändrad.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam stängdes inte i tid. Stäng det själv och försök igen.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam måste vara stängt för att spelets startalternativ ska kunna sättas tillbaka. Stäng Steam nu? Välj Nej för att lämna alternativet som det är.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Språk</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinställningar</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skärmdumpar</value></data>

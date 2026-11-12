@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Hesap ayarları</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Oyun Yönetimi</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam başlatma seçeneği</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam'in Oyna düğmesini kullan</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Oyunu bu başlatıcı üzerinden açmak için bu satırı Steam'deki oyunun Başlatma seçeneklerine (Özellikler) yapıştırın:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopyala</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Oyunu Steam'in Oyna düğmesinden başlat</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Resmi sunucular kapalı. Steam'in Oyna'ya bastığınızda açtığı oyunun kendi başlatıcısı artık tek başına bir sunucuya ulaşamıyor: topluluk sunucusuna bağlantınızı taşıyan bu başlatıcıya ihtiyaç duyuyor.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Oyna'nın çalışmaya devam etmesi için bu başlatıcı Steam'e onun yerine kendisini açmasını söyleyebilir. Steam'de bu oyunun yalnızca tek bir ayarını (başlatma seçenekleri) değiştirir, başka hiçbir şeyi değiştirmez: diğer oyunlarınızı, Steam'in kendisini, oyunun dosyalarını değil. Steam'de görebilirsiniz: oyuna sağ tıklayın, Özellikler, Başlatma seçenekleri.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Ayar yazılırken Steam kapalı olmalıdır, çünkü Steam çıkarken kendi kopyasını kaydeder. Bu başlatıcıyı kaldırmak ayarı geri koyar.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Bu oyun için şu anki başlatma seçeneğiniz: {0}. Yalnızca ilk düğmeyi seçerseniz değiştirilir.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Steam'i kapat ve ayarla</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Bunun yerine satırı kopyala</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Bir daha sorma</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Tamam. Steam'in Oyna düğmesi artık bu başlatıcıyı açıyor. Steam yeniden başlatılsın mı?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam'i başlat</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Bu başlatıcı kurulum programıyla kurulmadı (geliştirme veya açılmış kopya), bu yüzden Steam'in başlatma seçeneğini sizin için ayarlayamaz.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Başlatıcı, bu oyun için Steam'in ayar dosyasını güvenle okuyamadı ve dosyayı değiştirmeden bıraktı.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam zamanında kapanmadı. Kendiniz kapatın ve yeniden deneyin.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Oyunun başlatma seçeneğini geri koymak için Steam kapalı olmalıdır. Steam şimdi kapatılsın mı? Seçeneği olduğu gibi bırakmak için Hayır'ı seçin.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>

@@ -49,20 +49,31 @@ public sealed class ModalService
     }
 
     /// <summary>At the launcher's start: the setup this PC still needs (the player kit, docs/launcher.md#the-player-kit), else what stops the forwarder. The dialog answers by itself; the start does not wait for it.</summary>
-    public async Task OfferKitAsync(IKitService kit)
+    public async Task OfferKitAsync(IKitService kit, ISteamOptionService steam)
     {
-        if (!kit.Available) return;
-        if (await kit.StartAsync() is { } plan) Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = plan });
-        else if (kit.Problem is { } problem) Alert(problem);
+        if (kit.Available && await kit.StartAsync() is { } plan)
+        {
+            var done = new TaskCompletionSource();
+            Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = plan, [nameof(KitSetupModal.Done)] = done });
+            _ = done.Task.ContinueWith(_ => OfferSteamAsync(steam), TaskScheduler.Default); // Steam's dialog opens only after this one is closed
+        }
+        else if (kit.Available && kit.Problem is { } problem) Alert(problem); // Steam's dialog would replace it: it comes at the next start
+        else await OfferSteamAsync(steam);
+    }
+
+    /// <summary>Steam's Play button opens the launcher: the dialog opens when the launch option is not set (at most once a day, never after "don't ask again").</summary>
+    async Task OfferSteamAsync(ISteamOptionService steam)
+    {
+        if (await steam.DueAsync()) Show<SteamOptionModal>();
     }
 
     /// <summary>On the first start after the install: what an older setup left, if any (the "Older setup found" dialog), then the player kit as <see cref="OfferKitAsync"/>. The dialog answers by itself; the start does not wait for it.</summary>
-    public async Task OfferCleanupAsync(ICleanupService cleanup, IKitService kit)
+    public async Task OfferCleanupAsync(ICleanupService cleanup, IKitService kit, ISteamOptionService steam)
     {
-        if (await cleanup.FindAsync() is not { } found) { await OfferKitAsync(kit); return; }
+        if (await cleanup.FindAsync() is not { } found) { await OfferKitAsync(kit, steam); return; }
         var done = new TaskCompletionSource(); // not a TaskCompletionSource<bool>: Close must not answer it, the dialog sets it after it has closed
         Show<OldSetupModal>(new Dictionary<string, object?> { [nameof(OldSetupModal.Found)] = found, [nameof(OldSetupModal.Done)] = done });
-        _ = done.Task.ContinueWith(_ => OfferKitAsync(kit), TaskScheduler.Default); // the kit's dialog opens only after this one is closed
+        _ = done.Task.ContinueWith(_ => OfferKitAsync(kit, steam), TaskScheduler.Default); // the kit's dialog opens only after this one is closed
     }
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");

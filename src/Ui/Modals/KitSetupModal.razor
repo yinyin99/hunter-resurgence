@@ -1,3 +1,4 @@
+@implements IDisposable
 @inject ModalService Modal
 @inject IKitService Kit
 
@@ -17,6 +18,10 @@
 
 @code {
     [Parameter, EditorRequired] public KitPlan Plan { get; set; } = null!;
+    /// <summary>Set when the dialog goes away, however it was closed or replaced (at the start, Steam's dialog follows).</summary>
+    [Parameter] public TaskCompletionSource? Done { get; set; }
+
+    public void Dispose() => Done?.TrySetResult();
 
     bool busy;
     string? error;

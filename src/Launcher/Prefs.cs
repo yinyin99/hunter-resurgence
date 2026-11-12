@@ -16,6 +16,12 @@ public sealed class Prefs
     public bool CloseOnGameStart { get; set; }
     /// <summary>The Game settings were saved once: the first game start no longer asks for them.</summary>
     public bool GameSettingsSaved { get; set; }
+    /// <summary>The launch option line the launcher wrote into Steam, and what was there before (null: nothing). The uninstall puts it back only while the line is still there.</summary>
+    public string? SteamOptionSet { get; set; }
+    public string? SteamOptionBefore { get; set; }
+    /// <summary>When the Steam dialog last opened by itself (at most once a day) and whether the player said "don't ask again".</summary>
+    public DateTimeOffset? SteamOptionAsked { get; set; }
+    public bool SteamOptionNever { get; set; }
 
     public static Prefs Load(string path)
     {

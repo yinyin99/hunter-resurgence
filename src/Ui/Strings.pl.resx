@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ustawienia konta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Zarządzanie grą</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Opcja uruchamiania w Steam</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Użyj przycisku Graj w Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Wklej ten wiersz w opcjach uruchamiania gry w Steam (Właściwości), aby uruchamiać grę przez ten launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiuj</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Uruchamianie gry przyciskiem Graj w Steam</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Oficjalne serwery są zamknięte. Własny launcher gry, który Steam otwiera po naciśnięciu Graj, nie może już sam połączyć się z serwerem: potrzebuje tego launchera, który niesie Twoje połączenie z serwerem społeczności.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Aby Graj nadal działało, ten launcher może poprosić Steam o otwarcie jego zamiast tamtego. Zmienia jedno ustawienie tej gry w Steam (opcje uruchamiania) i nic więcej: nie inne gry, nie sam Steam, nie pliki gry. Zobaczysz je w Steam: kliknij grę prawym przyciskiem, Właściwości, Opcje uruchamiania.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam musi być zamknięty podczas zapisywania ustawienia, ponieważ Steam zapisuje własną kopię przy zamknięciu. Odinstalowanie tego launchera przywraca ustawienie.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Twoja obecna opcja uruchamiania tej gry to: {0}. Zostanie zastąpiona tylko, jeśli wybierzesz pierwszy przycisk.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Zamknij Steam i ustaw</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Zamiast tego skopiuj wiersz</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Nie pytaj ponownie</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Gotowe. Przycisk Graj w Steam otwiera teraz ten launcher. Uruchomić Steam ponownie?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Uruchom Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Ten launcher nie został zainstalowany programem instalacyjnym (kopia deweloperska lub rozpakowana), więc nie może ustawić opcji uruchamiania w Steam za Ciebie.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Launcher nie mógł bezpiecznie odczytać pliku ustawień Steam dla tej gry i zostawił go bez zmian.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam nie zamknął się na czas. Zamknij go sam i spróbuj ponownie.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam musi być zamknięty, aby przywrócić opcję uruchamiania gry. Zamknąć Steam teraz? Wybierz Nie, aby zostawić opcję bez zmian.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Język</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ustawienia gry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Zrzuty ekranu</value></data>

@@ -1,25 +1,77 @@
+@implements IDisposable
 @inject ModalService Modal
 @inject IJSRuntime JS
+@inject ISteamOptionService Steam
 
-<div class="steam-opt dialog-card" role="dialog" aria-modal="true">
-    <p>@L["Steam.Help"]</p>
-    <input id="steam-line" class="line" readonly value="@Line" />
-    <div class="buttons">
-        <button class="btn btn-primary" id="steam-copy" autofocus @onclick="Copy">@L["Steam.Copy"]</button>
-        <button class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
-    </div>
+@* Steam's Play button opens the launcher: what changes, asked before it is written (docs/launcher.md#steams-play-button) *@
+<div class="steam-opt dialog-card" role="dialog" aria-modal="true" aria-labelledby="steam-title">
+    <h1 id="steam-title">@L["Steam.Title"]</h1>
+    @if (info is null) { }
+    else if (done)
+    {
+        <p id="steam-done">@L["Steam.Done"]</p>
+        <div class="buttons">
+            <button type="button" class="btn btn-primary" id="steam-start" autofocus @onclick="StartSteam">@L["Steam.StartSteam"]</button>
+            <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
+        </div>
+    }
+    else if (copy || !info.CanSet)
+    {
+        @if (!info.Installed) { <p>@L["Steam.NotInstalled"]</p> }
+        else if (!info.CanSet) { <p>@L["Steam.Unreadable"]</p> }
+        <p>@L["Steam.Help"]</p>
+        <input id="steam-line" class="line" readonly value="@info.Line" />
+        <div class="buttons">
+            <button type="button" class="btn btn-primary" id="steam-copy" autofocus @onclick="Copy">@L["Steam.Copy"]</button>
+            <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
+        </div>
+    }
+    else
+    {
+        <p>@L["Steam.Why"]</p>
+        <p>@L["Steam.What"]</p>
+        <p>@L["Steam.Closed"]</p>
+        @if (info.Current is { Length: > 0 } && !info.Ours) { <p id="steam-current">@L["Steam.Current", info.Current]</p> }
+        @if (error is not null) { <p class="error" role="alert">@error</p> }
+        <label class="never"><input type="checkbox" id="steam-never" @bind="never" /> @L["Steam.Never"]</label>
+        <div class="buttons">
+            <button type="button" class="btn btn-primary" id="steam-set" autofocus disabled="@busy" @onclick="Set">@L["Steam.Set"]</button>
+            <button type="button" class="btn btn-inverse" id="steam-copy-line" disabled="@busy" @onclick="() => copy = true">@L["Steam.CopyInstead"]</button>
+            <button type="button" class="btn btn-inverse" id="steam-not-now" disabled="@busy" @onclick="Modal.Close">@L["Kit.NotNow"]</button>
+        </div>
+    }
 </div>
 
 @code {
-    // the launcher host only (the menu item hides elsewhere): the process is the launcher exe
-    static string Line => $"\"{Environment.ProcessPath}\" %command%";
+    SteamOptionInfo? info;
+    bool copy, done, busy, never;
+    string? error;
+
+    protected override async Task OnInitializedAsync() => info = await Steam.ReadAsync();
+
+    // "Not now" and every other way out (the backdrop, another dialog) count as the choice of the check box
+    public void Dispose() { if (never) Steam.NotAgain(); }
+
+    async Task Set()
+    {
+        (busy, error) = (true, null);
+        var r = await Steam.SetAsync();
+        busy = false;
+        if (r.Ok) { done = true; never = false; } else error = r.Error;
+    }
+
+    void StartSteam()
+    {
+        Steam.StartSteam(); // Steam shows its own window; if it does not start the player starts it
+        Modal.Close();
+    }
 
     async Task Copy()
     {
         try
         {
             await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
-            await shell.InvokeVoidAsync("copy", Line);
+            await shell.InvokeVoidAsync("copy", info!.Line);
         }
         catch (JSException) { } // the clipboard refused: the line stays selectable in the box
     }

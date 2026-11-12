@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Параметр запуска Steam</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Использовать кнопку «Играть» в Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Вставьте эту строку в параметры запуска игры в Steam (Свойства), чтобы запускать игру через этот лаунчер:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Копировать</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Запуск игры кнопкой «Играть» в Steam</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Официальные серверы закрыты. Собственный лаунчер игры, который Steam открывает по кнопке «Играть», больше не может сам связаться с сервером: ему нужен этот лаунчер, который несёт ваше соединение с сервером сообщества.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Чтобы «Играть» продолжала работать, этот лаунчер может попросить Steam открывать его вместо прежнего. Он меняет одну настройку этой игры в Steam (параметры запуска) и больше ничего: ни другие ваши игры, ни сам Steam, ни файлы игры. Её видно в Steam: щёлкните игру правой кнопкой, «Свойства», «Параметры запуска».</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam должен быть закрыт, пока записывается настройка, потому что при выходе Steam сохраняет собственную копию. При удалении этого лаунчера настройка возвращается.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Ваш текущий параметр запуска этой игры: {0}. Он заменяется, только если вы нажмёте первую кнопку.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Закрыть Steam и задать</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Вместо этого скопировать строку</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Больше не спрашивать</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Готово. Кнопка «Играть» в Steam теперь открывает этот лаунчер. Запустить Steam снова?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Запустить Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Этот лаунчер установлен не программой установки (копия для разработки или распакованная), поэтому он не может задать параметр запуска в Steam за вас.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Лаунчер не смог безопасно прочитать файл настроек Steam для этой игры и оставил его без изменений.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam не закрылся вовремя. Закройте его сами и повторите попытку.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam должен быть закрыт, чтобы вернуть параметр запуска игры. Закрыть Steam сейчас? Выберите «Нет», чтобы оставить параметр как есть.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Язык</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Настройки игры</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Скриншоты</value></data>

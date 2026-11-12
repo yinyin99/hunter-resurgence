@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Account settings</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Game Management</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam launch option</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Use Steam's Play button</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Paste this line into the game's Launch options in Steam (Properties) to start the game through this launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Start the game from Steam's Play button</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>The official servers are closed. The game's own launcher, which Steam opens when you press Play, can no longer reach a server by itself: it needs this launcher, which carries your connection to the community server.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>So that Play keeps working, this launcher can tell Steam to open it instead. It changes one setting of this game in Steam (its launch options), nothing else: not your other games, not Steam itself, not the game's files. You can see it in Steam: right-click the game, Properties, Launch options.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam must be closed while the setting is written, because Steam saves its own copy when it exits. Uninstalling this launcher puts the setting back.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Your current launch option for this game is: {0}. It is only replaced if you choose the first button.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Close Steam and set it</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Copy the line instead</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Don't ask again</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Done. Steam's Play button now opens this launcher. Start Steam again?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>This launcher was not installed with the Setup (a development or unpacked copy), so it cannot set Steam's launch option for you.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>The launcher could not read Steam's settings file for this game safely, so it left the file unchanged.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam did not close in time. Close it yourself, then try again.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam must be closed to put the game's launch option back. Close Steam now? Choose No to leave the option as it is.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Game settings</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

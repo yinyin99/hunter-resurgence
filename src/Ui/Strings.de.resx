@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoeinstellungen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spielverwaltung</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-Startoption</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steams Play-Taste verwenden</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Füge diese Zeile in die Startoptionen des Spiels in Steam (Eigenschaften) ein, damit das Spiel über diesen Launcher startet:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopieren</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Das Spiel über Steams Play-Taste starten</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Die offiziellen Server sind geschlossen. Der eigene Launcher des Spiels, den Steam bei Play öffnet, erreicht von allein keinen Server mehr: Er braucht diesen Launcher, der Ihre Verbindung zum Community-Server herstellt.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Damit Play weiter funktioniert, kann dieser Launcher Steam anweisen, stattdessen ihn zu öffnen. Dabei wird eine einzige Einstellung dieses Spiels in Steam geändert (die Startoptionen), sonst nichts: nicht Ihre anderen Spiele, nicht Steam selbst, nicht die Dateien des Spiels. Sie sehen sie in Steam: Rechtsklick auf das Spiel, Eigenschaften, Startoptionen.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam muss geschlossen sein, während die Einstellung geschrieben wird, weil Steam beim Beenden seine eigene Kopie speichert. Beim Deinstallieren dieses Launchers wird die Einstellung zurückgesetzt.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Ihre aktuelle Startoption für dieses Spiel lautet: {0}. Sie wird nur ersetzt, wenn Sie die erste Schaltfläche wählen.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Steam schließen und einstellen</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Stattdessen die Zeile kopieren</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Nicht mehr fragen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Fertig. Steams Play-Taste öffnet jetzt diesen Launcher. Steam wieder starten?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam starten</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Dieser Launcher wurde nicht mit dem Setup installiert (Entwicklungs- oder entpackte Kopie), deshalb kann er die Startoption von Steam nicht für Sie setzen.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Der Launcher konnte die Einstellungsdatei von Steam für dieses Spiel nicht sicher lesen und hat die Datei unverändert gelassen.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam wurde nicht rechtzeitig beendet. Schließen Sie es selbst und versuchen Sie es erneut.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam muss geschlossen sein, damit die Startoption des Spiels zurückgesetzt werden kann. Steam jetzt schließen? Wählen Sie Nein, um die Option unverändert zu lassen.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprache</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spieleinstellungen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

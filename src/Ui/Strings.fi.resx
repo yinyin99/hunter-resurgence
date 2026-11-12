@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Tilin asetukset</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Pelin hallinta</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steamin käynnistysvalinta</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Käytä Steamin Pelaa-painiketta</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Liitä tämä rivi pelin käynnistysvalintoihin Steamissa (Ominaisuudet), niin peli käynnistyy tämän käynnistimen kautta:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopioi</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Käynnistä peli Steamin Pelaa-painikkeesta</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Viralliset palvelimet on suljettu. Pelin oma käynnistin, jonka Steam avaa, kun painat Pelaa, ei enää tavoita palvelinta yksin: se tarvitsee tämän käynnistimen, joka kantaa yhteytesi yhteisöpalvelimeen.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Jotta Pelaa toimisi edelleen, tämä käynnistin voi pyytää Steamia avaamaan sen tilalle. Se muuttaa yhden tämän pelin asetuksen Steamissä (käynnistysvalinnat) eikä mitään muuta: ei muita pelejäsi, ei Steamiä itseään, ei pelin tiedostoja. Näet sen Steamissä: napsauta peliä hiiren kakkospainikkeella, Ominaisuudet, Käynnistysvalinnat.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steamin on oltava suljettuna, kun asetus kirjoitetaan, koska Steam tallentaa oman kopionsa sulkeutuessaan. Tämän käynnistimen asennuksen poisto palauttaa asetuksen.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Tämän pelin nykyinen käynnistysvalintasi on: {0}. Se korvataan vain, jos valitset ensimmäisen painikkeen.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Sulje Steam ja aseta se</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopioi rivi sen sijaan</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Älä kysy uudelleen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Valmis. Steamin Pelaa-painike avaa nyt tämän käynnistimen. Käynnistetäänkö Steam uudelleen?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Käynnistä Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Tätä käynnistintä ei asennettu asennusohjelmalla (kehitys- tai puretusta kopiosta), joten se ei voi asettaa Steamin käynnistysvalintaa puolestasi.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Käynnistin ei voinut lukea Steamin tämän pelin asetustiedostoa turvallisesti ja jätti sen ennalleen.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam ei sulkeutunut ajoissa. Sulje se itse ja yritä uudelleen.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steamin on oltava suljettuna, jotta pelin käynnistysvalinta voidaan palauttaa. Suljetaanko Steam nyt? Valitse Ei, jos haluat jättää valinnan ennalleen.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Kieli</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Pelin asetukset</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Kuvakaappaukset</value></data>
