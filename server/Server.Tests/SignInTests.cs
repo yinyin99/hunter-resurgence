@@ -851,6 +851,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     static void AssertNewLauncherLinks(string html)
     {
         Assert.Contains("Open the new launcher", html);
+        Assert.Contains("Open this page in the original launcher to open the new one.", html);
         Assert.Contains("ewlauncher.openURL('hunter-resurgence://open');ewlauncher.exitLauncher()", html);
         Assert.Contains("href=\"https://github.com/yinyin99/hunter-resurgence/releases/latest\">Download it", html);
     }
