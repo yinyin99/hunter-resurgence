@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>While a seasonal event runs, the community server adds its creatures to the game and the launcher shows its pictures. Turn this off to play without the event. It applies the next time you start the game.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Play seasonal events</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>The setting could not be saved. Try again.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Event running: {0}, on {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>every reserve</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Seasonal event</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Game settings</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logfiles</value></data>

@@ -3,11 +3,13 @@
 @inject ModalService Modal
 @inject IGameSettingsService GameSettings
 @inject Branding Brand
+@inject ISeasonalEventsService Events
 
 <PageTitle>@L["Menu.Tutorials"]</PageTitle>
 
 <div class="tutorials">
 <p class="intro">@L["Tut.Intro"]</p>
+<EventSwitch @bind-State="seasonal" Reserves="reservesList" />
 <div class="cards">
     @foreach (var t in tutorials)
     {
@@ -24,10 +26,14 @@
 @code {
     IReadOnlyList<Tutorial> tutorials = [];
     Dictionary<int, string> reserves = [];
+    IReadOnlyList<Reserve> reservesList = [];
+    SeasonalEvents seasonal = new(true, null, []);
 
     protected override async Task OnInitializedAsync()
     {
-        reserves = (await Service.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
+        reservesList = await Service.ReservesAsync();
+        reserves = reservesList.ToDictionary(r => r.Id, r => r.Name);
+        seasonal = await Events.GetAsync();
         tutorials = await Service.TutorialsAsync();
     }
 

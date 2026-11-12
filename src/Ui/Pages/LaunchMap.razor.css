@@ -26,7 +26,7 @@ h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text
 .start { width: 220px; margin-left: 0; }
 .start .btn { margin-top: 12px; padding-left: 6px; padding-right: 6px; white-space: nowrap; }
 .badges { display: flex; margin: 0 0 6px; }
-.badges button { box-sizing: border-box; width: 78px; height: 84px; padding: 7px 4px; border: 0; background: none; cursor: pointer; }
+.badges button { position: relative; box-sizing: border-box; width: 78px; height: 84px; padding: 7px 4px; border: 0; background: none; cursor: pointer; }
 .badges button.current { background: #1f1f1f; box-shadow: 0 0 0 1px #2a2a2a; }
 .stage { display: flex; width: 927px; height: 750px; border: 1px solid var(--line); box-sizing: content-box; }
 .pane { box-sizing: border-box; width: 190px; flex: none; padding: 10px 10px 0; background: #1a1a1a; }
@@ -43,3 +43,4 @@ h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text
 .start-label { position: absolute; z-index: 4; margin: -14px 0 0 18px; padding: 5px 12px; border-radius: var(--r-2); background: var(--surface-4); color: var(--text-1); white-space: nowrap; }
 .strip { display: flex; flex-wrap: wrap; gap: 2px; margin: 0 -4px 8px; }
 .strip button { width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-2); background: none; color: var(--fg-muted-2); font-size: 12px; cursor: pointer; }
+.badges .mark { position: absolute; right: 6px; top: 6px; font-size: 14px; line-height: 14px; color: var(--accent); }

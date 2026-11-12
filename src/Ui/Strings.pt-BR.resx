@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Enquanto um evento sazonal está em andamento, o servidor da comunidade adiciona seus animais ao jogo e o launcher mostra suas imagens. Desative para jogar sem o evento. A mudança vale na próxima vez que você iniciar o jogo.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jogar eventos sazonais</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Não foi possível salvar a configuração. Tente novamente.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Evento em andamento: {0}, em {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ajustes do Jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de tela</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Arquivos de Log</value></data>

@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Gdy trwa wydarzenie sezonowe, serwer społeczności dodaje do gry jego zwierzęta, a launcher pokazuje jego obrazy. Wyłącz to, aby grać bez wydarzenia. Zmiana obowiązuje od następnego uruchomienia gry.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Graj w wydarzenia sezonowe</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Nie udało się zapisać ustawienia. Spróbuj ponownie.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Trwa wydarzenie: {0}, w: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>wszystkie rezerwaty</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Wydarzenie sezonowe</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ustawienia gry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Zrzuty ekranu</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Pliki dziennika</value></data>

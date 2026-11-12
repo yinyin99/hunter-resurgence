@@ -49,8 +49,9 @@ public sealed class LaunchMapTests : UiContext
 
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService
     {
+        public bool Play = state.Play;
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
-        public Task<Result> SetAsync(bool play) => Task.FromResult(Result.Success);
+        public Task<Result> SetAsync(bool play) { Play = play; return Task.FromResult(Result.Success); }
     }
 
     // the game's reserve 1 is the launch map's reserve 2
@@ -83,5 +84,36 @@ public sealed class LaunchMapTests : UiContext
         var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
 
         cut.WaitForAssertion(() => Assert.Equal("reserve-02", cut.Find("button[data-reserve='2'] [role=img]").GetAttribute("aria-label")));
+    }
+
+    // the switch on the start screen is the Settings menu's setting; the badge follows it at once
+    [Fact]
+    public void WhileAnEventRunsTheSwitchIsShownAndTogglingItChangesTheBadge()
+    {
+        Services.AddSingleton(new AssetImages(new Dictionary<string, string> { ["reserve-02.png"] = "1", ["reserve-02-halloween-2026.png"] = "1" }));
+        Services.AddSingleton<IServersService>(new Recording());
+        var events = new Events(new(true, "halloween_2026", [1]));
+        Services.AddSingleton<ISeasonalEventsService>(events);
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.Contains("halloween-2026", cut.Find("button[data-reserve='2'] img").GetAttribute("src")));
+        Assert.Contains("Halloween 2026", cut.Find(".event-switch p").TextContent);
+        cut.Find("#play-events-inline").Change(false);
+
+        cut.WaitForAssertion(() => Assert.DoesNotContain("halloween-2026", cut.Find("button[data-reserve='2'] img").GetAttribute("src")));
+        Assert.False(events.Play);
+    }
+
+    [Fact]
+    public void WithoutAnEventNeitherTheLineNorTheSwitchIsShown()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(true, null, [])));
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[data-reserve]")));
+        Assert.Empty(cut.FindAll(".event-switch"));
     }
 }

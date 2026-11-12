@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Cât timp rulează un eveniment sezonier, serverul comunității adaugă animalele sale în joc, iar launcherul îi afișează imaginile. Dezactivează opțiunea pentru a juca fără eveniment. Modificarea se aplică la următoarea pornire a jocului.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Joacă evenimente sezoniere</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Setarea nu a putut fi salvată. Încearcă din nou.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Eveniment în desfășurare: {0}, în {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>toate rezervațiile</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Eveniment sezonier</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fișiere jurnal</value></data>

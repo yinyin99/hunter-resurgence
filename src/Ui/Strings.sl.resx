@@ -69,6 +69,9 @@
   <data name="Events.Info" xml:space="preserve"><value>Dokler poteka sezonski dogodek, strežnik skupnosti igri doda njegove živali, zaganjalnik pa prikaže njegove slike. Izklopite to, če želite igrati brez dogodka. Sprememba velja ob naslednjem zagonu igre.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Igraj sezonske dogodke</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Nastavitve ni bilo mogoče shraniti. Poskusite znova.</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Dogodek poteka: {0}, v: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>vseh revirjih</value></data>
+  <data name="Event.Mark" xml:space="preserve"><value>Sezonski dogodek</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavitve igre</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Posnetki zaslona</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Dnevniki</value></data>
