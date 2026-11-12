@@ -1,0 +1,31 @@
+@inject ModalService Modal
+@inject ISeasonalEventsService Events
+
+@* the player's "Play seasonal events" setting, stored on the community server (docs/server.md#seasonal-events) *@
+<div class="events dialog-card" role="dialog" aria-modal="true" aria-labelledby="events-title">
+    <h1 id="events-title">@L["Settings.SeasonalEvents"]</h1>
+    <p>@L["Events.Info"]</p>
+    <label class="play"><input type="checkbox" class="tick" id="play-events" disabled="@(!loaded || busy)" @bind="play" @bind:after="Save" /> @L["Events.Play"]</label>
+    @if (failed) { <p class="error" role="alert">@L["Events.Failed"]</p> }
+    <div class="buttons">
+        <button type="button" class="btn btn-primary" autofocus @onclick="Modal.Close">@L["Alert.Close"]</button>
+    </div>
+</div>
+
+@code {
+    bool play = true, loaded, busy, failed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        play = (await Events.GetAsync()).Play;
+        loaded = true;
+    }
+
+    async Task Save()
+    {
+        (busy, failed) = (true, false);
+        if (!(await Events.SetAsync(play)).Ok)
+            (play, failed) = (!play, true);
+        busy = false;
+    }
+}

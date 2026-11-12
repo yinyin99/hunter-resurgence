@@ -453,6 +453,18 @@
   "76": "orange_shuck",
   "66": "wendigo"
  },
+ "events": {
+  "halloween_2026": {"reserves": {
+   "9": {
+    "ammo": [962,963,1142],
+    "populations": [
+     {"index":908,"animal":"werewolf","density":"snowshoe_hare","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":12,"females":22}],"random":{"males":30,"females":48,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}},
+     {"index":909,"animal":"wendigo","density":"snowshoe_hare","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":0,"males":3,"females":7}],"random":{"males":6,"females":8,"min_size":1,"max_size":1,"avg_size":1,"max_males":1,"max_females":1,"radius":15,"single_gender":0}},
+     {"index":914,"animal":"feral_hog","endangered":false,"license":1,"groups":[{"x":0,"z":0,"radius":30,"males":16,"females":24}]}
+    ]
+   }
+  }}
+ },
  "start": {
   "items": [257,14,1,1049,39,59,188],
   "wallet": {"em":1000,"gm":15000}

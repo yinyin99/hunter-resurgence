@@ -58,7 +58,8 @@ public static class GameApi
               .WithName("Connect").WithSummary("Start a hunt session")
               .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
-                               + "reserve (always from the `ethical` list), and `ingame_event` null. Queues the server notice toast.")
+                               + "reserve (from the `ethical` list), and `ingame_event` null, except for a player who plays the seasonal event "
+                               + "that runs now (settings `event`), whose reply carries it with its content on its reserves. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
             gs.MapExactPost(game, State.UPLOAD_PATH, r => Own(game, r, a =>
                 {
@@ -657,7 +658,7 @@ public static class GameApi
 
     public sealed record BuyForm(long item_id,
         [property: Description("Count (usually 1)")] long amount,
-        [property: Description("`GOLD` (em, catalogue price); `SILVER` not modelled")] string wallet,
+        [property: Description("`GOLD` (em, catalogue price, discounted) or `SILVER` (gm, catalogue `silver_price`, not discounted)")] string wallet,
         string? oauth_access_token);
 
     public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);

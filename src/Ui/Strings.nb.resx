@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam ble ikke lukket i tide. Lukk det selv og prøv igjen.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam må være lukket for at spillets startvalg skal kunne settes tilbake. Lukke Steam nå? Velg Nei for å la valget stå som det er.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Sesongbegivenheter</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Mens en sesongbegivenhet pågår, legger fellesskapsserveren dyrene sine til i spillet, og launcheren viser bildene sine. Slå av dette for å spille uten begivenheten. Endringen gjelder neste gang du starter spillet.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Spill sesongbegivenheter</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Innstillingen kunne ikke lagres. Prøv igjen.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spillinnstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skjermbilder</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Loggfiler</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>KJØP med gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Ikke nok gm$</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Ikke nok em$: du har {0}, dette koster {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Kjøp med gm$ er ikke tilgjengelig ennå.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Ikke nok gm$: du har {0}, dette koster {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Få mer em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inneholder</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Kjøpet er fullført!</value></data>

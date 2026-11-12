@@ -26,9 +26,9 @@ public sealed partial class State
     /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
     /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.</summary>
     public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve";
-    // Inventory/buy `wallet` → (wallet currency, catalogue price key); ponytail: SILVER (gm, silver_price) not supported yet
-    static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price") };
-    public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // SILVER over the balance
+    // Inventory/buy `wallet` → (wallet currency, catalogue price key); gm$ is charged the catalogue's silver_price, never discounted (see Price)
+    static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price"), ["SILVER"] = ("gm", "silver_price") };
+    public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // not for sale or over the balance
     const int MaxBuyAmount = 1000;
     // connect keys that differ by launched reserve (locations and locations_descr are the
     // same for every reserve); taken from that reserve's recorded connect
@@ -541,6 +541,8 @@ public sealed partial class State
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
+    /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
+    public SeasonalEvent? Seasonal { get; }
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -555,13 +557,15 @@ public sealed partial class State
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
     /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
     /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
-    /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).</summary>
+    /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).
+    /// seasonal: the event the connect reply announces while its window runs, to the players who play events.</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null)
     {
         this.facts = facts ?? Facts.Default;
+        Seasonal = seasonal;
         this.avatars = avatars ?? [];
         this.skillList = skillList;
         this.offline = offline;
@@ -1178,15 +1182,49 @@ public sealed partial class State
                     network["ip"] = null;  // single player sends none
             }
         }
-        // no seasonal event on this server, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
+        // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
         reply["ingame_event"] = null;
         if (reply["species_ammo"] is JsonArray ammo)
             foreach (var row in ammo.OfType<JsonObject>())
                 if (long.TryParse(Py.Str(row["species_id"]), out var sid) && sid >= 0 && sid < ethicalAmmo.Count)
                     row["ammo"] = C(ethicalAmmo[(int)sid]);
+        var clientReserve = (int)(Py.L(expedition["lodge"]) / 100);  // the game's own reserve number, as it reads it
+        if (reply["populations"] is JsonArray present)  // a recorded connect may carry an event's creatures
+            foreach (var index in facts.EventIndexes(clientReserve))
+                for (var i = present.Count - 1; i >= 0; i--)
+                    if (Py.L(present[i]?["index"]) == index)
+                        present.RemoveAt(i);
+        if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
+            AddSeasonal(reply, seasonal, clientReserve);
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
+
+    /// <summary>The event's `ingame_event` and, on the reserves it covers, what the facts file has for it there: its populations (their window the event's) and, as the ammo
+    /// every species of the reserve lists, the event's. The game reads the event once per start, so nothing of it changes a hunt that is running.</summary>
+    void AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
+    {
+        reply["ingame_event"] = seasonal.Json();
+        if (!seasonal.Covers(reserve) || facts.Event(seasonal.Name, reserve) is not { } content)
+            return;
+        static string At(DateTimeOffset t) => t.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
+        if (reply["populations"] is JsonArray populations)
+            foreach (var row in content.Populations)
+            {
+                (row["active_start"], row["active_end"]) = (At(seasonal.Start), At(seasonal.End));
+                populations.Add(row);
+            }
+        if (content.Ammo.Length > 0 && reply["species_ammo"] is JsonArray species)
+            foreach (var row in species.OfType<JsonObject>())
+                row["ammo"] = new JsonArray([.. content.Ammo.Select(a => (JsonNode?)a)]);
+    }
+
+    /// <summary>The player's seasonal events setting and the event that runs now: `{play, event}` (event: `ingame_event`'s object, or null outside the window or with no event set).</summary>
+    public JsonObject EventStatus(long account) => new()
+    {
+        ["play"] = Store.PlaysEvents(account),
+        ["event"] = Seasonal is { } e && e.Running(Clock()) ? e.Json() : null,
+    };
 
     /// <summary>update 10 definition: the recorded connect's, else the install sample's, else built from the
     /// Application/application record (or, for an item that record lacks, the install's item definitions); null for an unknown item.</summary>
@@ -1221,11 +1259,12 @@ public sealed partial class State
 
     /// <summary>The store script's getPrice: the item's first row in the Application/discounts reply, if active, taken off
     /// and rounded half up (350 at 95 % off costs 18). A later active
-    /// row (100 % ones listed after the 95 % ones) is never used.</summary>
+    /// row (100 % ones listed after the 95 % ones) is never used. The discount is the em$ price's: a gm$ price (<c>silver_price</c>) is charged
+    /// as the catalogue has it.</summary>
     long Price(JsonObject item, string key)
     {
         var now = Py.Now();
-        var d = discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"]));
+        var d = key == "price" ? discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"])) : null;
         var price = Py.D(item[key]);
         if (d is not null && Py.Truthy(d["percentage"]) && Py.D(d["start_ts"]) < now && now < Py.D(d["end_ts"]))
             price -= price * (Py.D(d["percentage"]) / 100);
@@ -1234,7 +1273,7 @@ public sealed partial class State
 
     /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
     /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
-    /// today's price (<see cref="Price"/>, em$ and silver alike; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
+    /// today's prices (<see cref="Price"/>; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
     /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's, and no field the
     /// catalogue gives without a unit (the inventory weight) is passed on.</summary>
     public JsonObject StoreCatalogue()
@@ -1256,8 +1295,8 @@ public sealed partial class State
                 ["id"] = C(item["id"]), ["name"] = C(item["name"]), ["variant"] = C(G(item, "variationname", null)) ?? "",
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
-                ["gms"] = Py.IsNum(G(item, "silver_price", null)) ? Price(item, "silver_price") : 0,
-                ["buyable"] = StoreSells(item),
+                ["gms"] = Whole(G(item, "silver_price", null)),
+                ["buyable"] = StoreSells(item, "price") || StoreSells(item, "silver_price"),
             });
         }
         var categories = new JsonArray();
@@ -1285,8 +1324,8 @@ public sealed partial class State
     /// <summary>A catalogue price rounded half up to a whole number; 0 for none.</summary>
     static long Whole(JsonNode? price) => Py.IsNum(price) ? (long)Math.Floor(Py.D(price) + 0.5) : 0;
 
-    /// <summary>What the website's store sells of the items: shown, with a price of at least 1, and sellable.</summary>
-    static bool StoreSells(JsonObject item) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, "price", null)) > 0 && Sellable(item, "price");
+    /// <summary>What the website's store sells of the items for a price (<c>price</c> for em$, <c>silver_price</c> for gm$): shown, with that price of at least 1, and sellable.</summary>
+    static bool StoreSells(JsonObject item, string key) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, key, null)) > 0 && Sellable(item, key);
 
     /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue.</summary>
     long[]? BundleSale(JsonNode b)
@@ -1334,7 +1373,8 @@ public sealed partial class State
         var (itemId, amount, wallet) = (Form1(form, "item_id"), Form1(form, "amount"), Form1(form, "wallet"));
         var item = Py.IsDigit(itemId) ? items.GetValueOrDefault(long.Parse(itemId)) : null;
         var (currency, key) = WALLETS.TryGetValue(wallet, out var w) ? w : (null!, null!);
-        if (!(Py.Truthy(item) && currency is not null && Sellable(item!, key)
+        // an item without a gm$ price is not given away: only an em$ price may be 0 (the free ammunition licence)
+        if (!(Py.Truthy(item) && currency is not null && Sellable(item!, key) && (key == "price" || Whole(item![key]) > 0)
               && int.TryParse(amount, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n is >= 1 and <= MaxBuyAmount))
             return BUY_FAILED;
         var price = Price(item!, key) * n;
@@ -1344,16 +1384,17 @@ public sealed partial class State
     }
 
     /// <summary>The website's store (POST /account/buy): count of an item the store sells (<see cref="StoreSells"/>) at today's em$ price, or
-    /// one bundle it sells (<see cref="BundleSale"/>) at its price with each of its items. The new em$ balance, or null (nothing changed) for
-    /// something not for sale, a balance too low or an own limit reached.</summary>
-    public JsonNode? WebBuy(long account, long id, bool bundle, int count)
+    /// at its gm$ price (<paramref name="gms"/>), or one bundle it sells (<see cref="BundleSale"/>) at its em$ price with each of its items.
+    /// The new balance of the currency paid, or null (nothing changed) for something not for sale, a balance too low or an own limit reached.</summary>
+    public JsonNode? WebBuy(long account, long id, bool bundle, int count, bool gms = false)
     {
+        var (currency, key) = WALLETS[gms ? "SILVER" : "GOLD"];
         if (bundle)
-            return Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
+            return !gms && Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
                 ? Charge(account, "em", Whole(b["price"]), ids)
                 : null;
-        return items.GetValueOrDefault(id) is { } item && StoreSells(item) && count is >= 1 and <= MaxBuyAmount
-            ? Charge(account, "em", Price(item, "price") * count, Enumerable.Repeat(id, count))
+        return items.GetValueOrDefault(id) is { } item && StoreSells(item, key) && count is >= 1 and <= MaxBuyAmount
+            ? Charge(account, currency, Price(item, key) * count, Enumerable.Repeat(id, count))
             : null;
     }
 

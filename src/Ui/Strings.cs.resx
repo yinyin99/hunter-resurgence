@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam se nezavřel včas. Zavřete ho sami a zkuste to znovu.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam musí být zavřený, aby se vrátila volba spouštění hry. Zavřít Steam nyní? Zvolte Ne, aby volba zůstala, jaká je.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jazyk</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Sezónní události</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Dokud probíhá sezónní událost, komunitní server přidává do hry její zvířata a launcher zobrazuje její obrázky. Vypněte to, pokud chcete hrát bez události. Změna se projeví při dalším spuštění hry.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Hrát sezónní události</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Nastavení se nepodařilo uložit. Zkuste to znovu.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavení hry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshoty</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Protokoly</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>KOUPIT za gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Nemáte dostatek gm$</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Nemáte dostatek em$: máte {0}, stojí {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Nákupy za gm$ zatím nejsou k dispozici.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Nemáte dostatek gm$: máte {0}, stojí {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Získejte více em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Zahrnuje</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Nákup dokončen!</value></data>

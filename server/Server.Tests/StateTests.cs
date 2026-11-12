@@ -507,6 +507,23 @@ public class InventoryTests : StateTestBase
         Eq("19", Items(s)[(string)row["guid"]!]!["item_id"]);
     }
 
+    /// <summary>wallet=SILVER pays the silver price (1900) as the catalogue has it, not the 95 % off of the em$ price (170 to 9), takes gm$ only, and queues the gm$ balance.</summary>
+    [Fact]
+    public void TestBuyWithGmChargesTheSilverPriceAndNothingElse()
+    {
+        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
+        using (var con = s.Store.Open(ME)) State.AddCurrency(con, "gm", 4000, "test");  // 33 + 4000
+        Eq("""{"price": 3800.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=2&wallet=SILVER"u8.ToArray())));
+        Eq("233.0", s.Wallet(ME)["gm"]);
+        Eq("182.0", s.Wallet(ME)["em"]);
+        var updates = HbOf(s);
+        Assert.Equal(2, updates.Count);
+        Eq("[10, 2]", T(updates[0]!["update"], updates[0]!["items"]!["items"]!.AsArray().Count));
+        Eq("""{"amount": 233.0, "type": "gm", "update": 15}""", updates[1]!);
+        Eq("""{"price": 9.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=1&wallet=GOLD"u8.ToArray())));  // the em$ price keeps its discount
+        Eq("233.0", s.Wallet(ME)["gm"]);
+    }
+
     [Fact]
     public void TestBuyWithoutFundsChangesNothing()
     {
@@ -514,6 +531,7 @@ public class InventoryTests : StateTestBase
             Eq("""{"success": false}""", Reply(state.BuyReply(ME, Encoding.ASCII.GetBytes(form))));
         Assert.Empty(HbOf(state));
         Eq("182.0", state.Wallet(ME)["em"]);
+        Eq("33.0", state.Wallet(ME)["gm"]);  // 1900 gm$ for 33
         Assert.Equal(2, Items().Count);
     }
 

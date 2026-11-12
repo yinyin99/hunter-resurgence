@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam zamanında kapanmadı. Kendiniz kapatın ve yeniden deneyin.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Oyunun başlatma seçeneğini geri koymak için Steam kapalı olmalıdır. Steam şimdi kapatılsın mı? Seçeneği olduğu gibi bırakmak için Hayır'ı seçin.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Dil</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Sezonluk etkinlikler</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Sezonluk bir etkinlik sürerken topluluk sunucusu hayvanlarını oyuna ekler ve başlatıcı görsellerini gösterir. Etkinlik olmadan oynamak için bunu kapatın. Değişiklik oyunu bir sonraki başlatışınızda geçerli olur.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Sezonluk etkinlikleri oyna</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Ayar kaydedilemedi. Tekrar deneyin.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Oyun ayarları</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Ekran görüntüleri</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Günlük Dosyaları</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>gm$ ile SATIN AL</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Yeterli gm$ yok</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Yeterli em$ yok: {0} em$'ünüz var, bunun fiyatı {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>gm$ ile satın alma henüz kullanılamıyor.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Yeterli gm$ yok: {0} gm$'ünüz var, bunun fiyatı {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Daha fazla em$ al</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>İçerir</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Satın alma tamamlandı!</value></data>

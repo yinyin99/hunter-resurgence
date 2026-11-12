@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam sloot niet op tijd af. Sluit het zelf af en probeer het opnieuw.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam moet gesloten zijn om de startoptie van het spel terug te zetten. Steam nu sluiten? Kies Nee om de optie te laten zoals ze is.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Seizoensevenementen</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Zolang een seizoensevenement loopt, voegt de communityserver de dieren ervan toe aan het spel en toont de launcher de bijbehorende afbeeldingen. Schakel dit uit om zonder het evenement te spelen. De wijziging geldt vanaf de volgende keer dat je het spel start.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Seizoensevenementen spelen</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>De instelling kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Logbestanden</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>KOPEN met gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Onvoldoende gm$</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>Onvoldoende em$: je hebt er {0}, dit kost {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Aankopen met gm$ zijn nog niet beschikbaar.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>Onvoldoende gm$: je hebt er {0}, dit kost {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Meer em$ kopen</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Bevat</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Aankoop voltooid!</value></data>

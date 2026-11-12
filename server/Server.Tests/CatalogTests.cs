@@ -18,7 +18,7 @@ public class CatalogTests : StateTestBase
            {"id": 2, "name": "Test Scope", "subcat": {"id": 5}, "price": 200, "silver_price": null, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 3, "name": "Test Hidden", "subcat": {"id": 0}, "price": 10, "hidden": 1, "ownMultiple": false, "inventory": {}, "fit": {}},
            {"id": 4, "name": "Test Service", "subcat": {"id": 0}, "price": 50, "type": 45, "hidden": 0, "inventory": {}, "fit": {}},
-           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 5, "name": "Test Starter", "subcat": {"id": 0}, "price": 0, "silver_price": 0, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 6, "name": "Test Refill", "subcat": {"id": 0}, "price": 5, "hidden": 0, "ownMultiple": false, "units": {"count": 1, "name": "uses"}, "inventory": {}, "fit": {}}],
          "categories": [
            {"id": "all", "title": "All Items", "subcategories": [{"id": "all", "title": "All Items"}], "default": "all"},
@@ -50,10 +50,15 @@ public class CatalogTests : StateTestBase
     }
 
     /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$) who already owns the owned items; its reply and
-    /// the items ME got.</summary>
-    async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true, long[]? owned = null)
+    /// the items ME got; <paramref name="gms"/> is added to ME's 33 gm$ first.</summary>
+    async Task<(Reply Reply, long[] Got)> Buy(string form, bool signedIn = true, bool ownPage = true, long[]? owned = null, double gms = 0)
     {
         await using var server = await Start(Store);
+        if (gms > 0)
+        {
+            using var con = state.Store.Open(ME);
+            State.AddCurrency(con, "gm", gms, "test");
+        }
         foreach (var id in owned ?? [])
             state.GrantItems(ME, id);
         var before = state.Inventory(ME).Count;
@@ -99,6 +104,45 @@ public class CatalogTests : StateTestBase
         Eq("182.0", state.Wallet(ME)["em"]);
     }
 
+    /// <summary>gm$ pays the catalogue's silver price, the 50 % discount of the em$ price not taken off, and only gm$ is debited; the change is in the wallet history.</summary>
+    [Theory]
+    [InlineData("id=1&wallet=SILVER", 4000.0, 1033.0)]
+    public async Task BuyingWithGmChargesTheSilverPriceAndDebitsOnlyGm(string form, double price, double left)
+    {
+        var (reply, items) = await Buy(form, gms: 5000);
+        Assert.Equal(200, reply.Status);
+        var body = JsonNode.Parse(reply.Body)!;
+        Assert.Equal(left, body["gms"]!.GetValue<double>());
+        Assert.Null(body["ems"]);
+        Assert.Equal([1L], items);
+        Eq("182.0", state.Wallet(ME)["em"]);
+        Eq($"{left}", state.Wallet(ME)["gm"]);
+        using var con = state.Store.Open(ME);
+        var log = con.Rows("SELECT currency, amount, after, summary, item_ids FROM wallet_log WHERE account_id = $a AND currency = 'gm' ORDER BY n DESC")[0];
+        Assert.Equal(("gm", -price, left, "In-game payment.", "[1]"), ((string)log[0]!, Convert.ToDouble(log[1]), Convert.ToDouble(log[2]), (string)log[3]!, (string)log[4]!));
+    }
+
+    [Theory]
+    [InlineData("id=1&wallet=SILVER", 0.0, 409)]              // 4000 gm$ for 33
+    [InlineData("id=1&wallet=SILVER&count=2", 5000.0, 409)]   // 8000 for 5033
+    [InlineData("id=2&wallet=SILVER", 5000.0, 409)]           // not buyable
+    [InlineData("id=3&wallet=SILVER", 5000.0, 409)]           // hidden
+    [InlineData("id=4&wallet=SILVER", 5000.0, 409)]           // a service
+    [InlineData("id=5&wallet=SILVER", 5000.0, 409)]           // a gm$ price of 0 would be free
+    [InlineData("id=6&wallet=SILVER", 5000.0, 409)]           // no gm$ price
+    [InlineData("id=9&bundle=1&wallet=SILVER", 5000.0, 409)]  // bundles are em$ only
+    [InlineData("id=1&wallet=PLATINUM", 5000.0, 400)]         // not a wallet
+    public async Task WhatGmCannotPayChangesNothing(string form, double gms, int status)
+    {
+        var (reply, items) = await Buy(form, gms: gms);
+        Assert.Equal(status, reply.Status);
+        Assert.Empty(items);
+        Eq("182.0", state.Wallet(ME)["em"]);
+        Eq($"{33 + gms}", state.Wallet(ME)["gm"]);
+        using var con = state.Store.Open(ME);
+        Assert.Empty(con.Rows("SELECT n FROM wallet_log WHERE account_id = $a AND summary = 'In-game payment.'"));
+    }
+
     [Theory]
     [InlineData("id=1&count=3", new long[] { 1, 1, 1 })]  // 6 of a rifle the player may own 5 of
     [InlineData("id=9&bundle=1", new long[] { 3 })]       // the bundle's hidden item may be owned once
@@ -108,6 +152,19 @@ public class CatalogTests : StateTestBase
         Assert.Equal(409, reply.Status);
         Assert.Empty(items);
         Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    // the game's call: an item with a gm$ price of 0 or none is not given away, whatever the balance
+    [Theory]
+    [InlineData("item_id=5&amount=1&wallet=SILVER")]
+    [InlineData("item_id=6&amount=1&wallet=SILVER")]
+    public async Task TheGamesGmPurchaseOfAFreeItemChangesNothing(string form)
+    {
+        await using var server = await Start(Store);
+        var count = state.Inventory(ME).Count;
+        Eq("""{"success": false}""", Reply(state.BuyReply(ME, System.Text.Encoding.ASCII.GetBytes(form))));
+        Assert.Equal(count, state.Inventory(ME).Count);
+        Eq("33.0", state.Wallet(ME)["gm"]);
     }
 
     [Theory]
@@ -145,7 +202,7 @@ public class CatalogTests : StateTestBase
         Assert.Equal([1, 2, 4, 5, 6], items.Select(i => (int)i!["id"]!));
         Assert.Equal([true, false, false, false, true], items.Select(i => (bool)i!["buyable"]!));  // not buyable, a service, no price
         var rifle = items[0]!;
-        Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 2000L, true),  // the silver price takes the discount too
+        Assert.Equal(("Test Rifle", "Blue", "A rifle.", "0", 50L, 100L, 4000L, true),  // the silver price takes no discount
             ((string)rifle["name"]!, (string)rifle["variant"]!, (string)rifle["description"]!, (string)rifle["category"]!, (long)rifle["ems"]!, (long)rifle["was"]!, (long)rifle["gms"]!, (bool)rifle["buyable"]!));
         var scope = items[1]!;
         Assert.Equal((200L, 0L, false), ((long)scope["ems"]!, (long)scope["gms"]!, (bool)scope["buyable"]!));

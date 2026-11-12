@@ -65,6 +65,10 @@
   <data name="Steam.NoClose" xml:space="preserve"><value>O Steam não fechou a tempo. Feche-o você mesmo e tente de novo.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>O Steam precisa estar fechado para restaurar a opção de inicialização do jogo. Fechar o Steam agora? Escolha Não para deixar a opção como está.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Eventos sazonais</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Enquanto um evento sazonal está em andamento, o servidor da comunidade adiciona seus animais ao jogo e o launcher mostra suas imagens. Desative para jogar sem o evento. A mudança vale na próxima vez que você iniciar o jogo.</value></data>
+  <data name="Events.Play" xml:space="preserve"><value>Jogar eventos sazonais</value></data>
+  <data name="Events.Failed" xml:space="preserve"><value>Não foi possível salvar a configuração. Tente novamente.</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ajustes do Jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de tela</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Arquivos de Log</value></data>
@@ -632,7 +636,7 @@
   <data name="Store.BuyGms" xml:space="preserve"><value>Comprar com gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>gm$ insuficientes</value></data>
   <data name="Store.NotEnoughEms" xml:space="preserve"><value>em$ insuficientes: você tem {0}, custa {1}.</value></data>
-  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Compras com gm$ ainda não estão disponíveis.</value></data>
+  <data name="Store.NotEnoughGmsHave" xml:space="preserve"><value>gm$ insuficientes: você tem {0}, custa {1}.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Comprar mais em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inclui</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Compra concluída!</value></data>
