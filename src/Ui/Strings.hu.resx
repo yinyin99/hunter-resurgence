@@ -635,6 +635,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>VÁSÁRLÁS (em$)</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>VÁSÁRLÁS (gm$)</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Nincs elég gm$</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>Nincs elég em$: {0} van, ez {1} em$-be kerül.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>A gm$-val történő vásárlás még nem érhető el.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Több em$ szerzése</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Tartalmazza</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>A vásárlás megtörtént!</value></data>

@@ -635,6 +635,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>CUMPĂRAȚI cu em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>CUMPĂRAȚI cu gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>Gm$ insuficienți</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>Em$ insuficienți: ai {0}, costă {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>Achizițiile cu gm$ nu sunt încă disponibile.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Obțineți mai mulți em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Include</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Achiziție finalizată!</value></data>
