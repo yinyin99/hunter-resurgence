@@ -21,8 +21,9 @@ public sealed class Facts
             foreach (var id in ids!.AsArray())
                 Families[(int)Py.L(id)] = family;
         foreach (var (id, rule) in Obj("species_rules"))
-            SpeciesRules[int.Parse(id, CultureInfo.InvariantCulture)] = new([.. (rule!["ammo"] as JsonArray ?? []).Select(Py.L)],
-                Py.D(rule["min_score"]), Py.D(rule["max_score"]), Py.D(rule["css_multiplier"]));
+            SpeciesAmmo[int.Parse(id, CultureInfo.InvariantCulture)] = [.. (rule!["ammo"] as JsonArray ?? []).Select(Py.L)];
+        foreach (var (id, v) in Obj("variants"))
+            Variants[int.Parse(id, CultureInfo.InvariantCulture)] = (Py.D(v!["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
         var ranks = Obj("ranks");
         RankCap = ranks["cap"] is { } cap ? Py.L(cap) : 0;
         Ranks = [.. (ranks["rows"] as JsonArray ?? []).Select(r => (string?)r!["category"] switch
@@ -57,10 +58,11 @@ public sealed class Facts
     /// <summary>Species id → score family (Scoring).</summary>
     public readonly Dictionary<int, string> Families = [];
 
-    /// <summary>What a species needs that a recorded connect or an operator's variants file from before the Halloween event may lack: its permitted ammo, its `min_score` and `max_score`
-    /// and the `css_multiplier` of its gm$ (`species_rules`, by species id). Today the event creatures.</summary>
-    public sealed record SpeciesRule(long[] Ammo, double MinScore, double MaxScore, double CssMultiplier);
-    public readonly Dictionary<int, SpeciesRule> SpeciesRules = [];
+    /// <summary>The permitted ammo of a species whose recorded connect lists none (`species_rules`, by species id): today the event creatures.</summary>
+    public readonly Dictionary<int, long[]> SpeciesAmmo = [];
+
+    /// <summary>Per variant id (the species id, or 100 and up for a non-typical one): the min and max score of its trophies and the css multiplier of its gm$ (`variants`). A species with no row is not scored (the dogs, the sasquatch).</summary>
+    public readonly Dictionary<int, (double Lo, double Hi, double Mult)> Variants = [];
 
     /// <summary>A row of the hunterscore: its `id` (the game's ranks reply names it so) and `title`; `animal` (Ids = the species id), `weapon` (the weapon
     /// item ids, all ammo summed) or `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>

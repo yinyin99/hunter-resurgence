@@ -17,17 +17,14 @@ public static class Scoring
     public static readonly HashSet<int> BIRDS_AG = [7, 15, 16, 27, 28, 29, 33, 34, 35, 47, 51];
     public static readonly HashSet<int> FLYING = [6, 11];  // animal_state flying, flying (not spooked)
 
-    /// <summary>Config-dependent globals: game_web_host (the score sheets' images) and the variant table (min/max score and css multiplier per variant; a missing file = the facts file's bounds only). A
-    /// species the file lacks gets the facts file's `species_rules` bounds (the event creatures), so a file from before the event still pays them.</summary>
+    /// <summary>Config-dependent globals: game_web_host (the score sheets' images) and the variant table (min/max score and css multiplier per variant): the facts file's, and the operator's variants file's rows over them.</summary>
     public static void Load(JsonObject cfg, string? variantsFile)
     {
         StaticHost = (string)cfg["game_web_host"]!;
-        Variants = new();
+        Variants = new(Facts.Default.Variants);
         if (variantsFile is not null && File.Exists(variantsFile))
             foreach (var v in JsonNode.Parse(File.ReadAllText(variantsFile))!.AsArray())
                 Variants[(int)Py.L(v!["id"])] = (Py.D(v["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
-        foreach (var (id, rule) in Facts.Default.SpeciesRules)
-            Variants.TryAdd(id, (rule.MinScore, rule.MaxScore, rule.CssMultiplier));
     }
 
     // ---- numeric helpers -------------------------------------------------------------------------------------
@@ -287,8 +284,8 @@ public static class Scoring
 
     // ---- features --------------------------------------------------------------------------------------------
 
-    // ponytail: turkey, pheasant and elk crown points `i` are not mapped yet
-    /// <summary>Server `features` from the kill's event 7 (spawn) and event 22 (trophy); null where the mapping is unknown.</summary>
+    // ponytail: elk crown points `i` are not mapped yet
+    /// <summary>Server `features` from the kill's event 7 (spawn) and event 22 (trophy); null where the kill has nothing to score (an animal with no antlers, no species row).</summary>
     public static JsonNode? Features(int species, JsonObject e7, JsonObject e22, JsonNode? scale)
     {
         FAMILY.TryGetValue(species, out var fam);
@@ -311,11 +308,17 @@ public static class Scoring
             double Scaled(long v) => R4(v / 100.0 * Py.D(scale));
             return new JsonObject { ["width"] = Scaled(packed >> 16), ["length"] = Scaled(packed & 0xFFFF) };
         }
-        // elk = bc_deer keys; crown points `i` stay unmapped
-        if (fam is null or "turkey" or "pheasant" || !Py.Truthy(e22)) return null;
+        // turkey: beard and spurs as event 22 sends them x1000, mm; pheasant: tail in mm. No scale factor, and a hen carries zeros (a turkey hen scores her weight)
+        if (fam == "turkey")
+            return new JsonObject { ["beard"] = Get(e22, "beard") / 1000, ["spurs"] = new JsonObject { ["left"] = Get(e22, "left_spur") / 1000, ["right"] = Get(e22, "right_spur") / 1000 } };
+        if (fam == "pheasant")
+            return new JsonObject { ["tail"] = Get(e22, "tail"), ["spurs"] = new JsonObject { ["left"] = Get(e22, "left_spur") / 1000, ["right"] = Get(e22, "right_spur") / 1000 } };
+        // a sow has no tusks and scores her weight (`features: []`); a female deer has no antlers and no score
+        JsonNode? none = fam == "tusks" ? new JsonArray() : null;
+        if (fam is null || !Py.Truthy(e22)) return none;
         JsonObject Antler(string k) => e22[k] is { } v && Py.Truthy(v) ? (JsonObject)v : new JsonObject();  // e22.get(k) or {}
         var sides = new List<(string K, JsonObject A)> { ("right", Antler("right_antler")), ("left", Antler("left_antler")) };
-        if (!sides.Any(s => Arr(s.A, "points").Any(p => Code(p!["type"]) == 0))) return null;
+        if (!sides.Any(s => Arr(s.A, "points").Any(p => Code(p!["type"]) == 0))) return none;
 
         long Mm(double v) => (long)Math.Floor(v * Py.D(scale));
         long MmGet(JsonObject o, string k) => Mm(Get(o, k));

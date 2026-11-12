@@ -542,6 +542,7 @@ public sealed partial class State
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
+    readonly JsonNode[] eventAmmo;  // the event's silver ammunition: permitted on every species
     /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
     public SeasonalEvent? Seasonal { get; }
     /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
@@ -616,11 +617,12 @@ public sealed partial class State
         // permitted ammo per species id, all species (species_ammo is the reserve's subset)
         ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
         // a species the recorded connect lists with no ammo (the event creatures, in a recording from before the event) is permitted what the facts file says, not every ammo
-        foreach (var (id, rule) in this.facts.SpeciesRules)
+        foreach (var (id, ammo) in this.facts.SpeciesAmmo)
         {
             while (ethicalAmmo.Count <= id) ethicalAmmo.Add(new JsonArray());
-            if (!Py.Truthy(ethicalAmmo[id])) ethicalAmmo[id] = new JsonArray([.. rule.Ammo.Select(a => (JsonNode?)a)]);
+            if (!Py.Truthy(ethicalAmmo[id])) ethicalAmmo[id] = new JsonArray([.. ammo.Select(a => (JsonNode?)a)]);
         }
+        eventAmmo = [.. this.facts.SpeciesAmmo.Values.SelectMany(a => a).Distinct().Select(a => (JsonNode)a)];
         var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
         // the account's picture is `<base>/256/<id>.png`; the notice sender's icons live beside it
@@ -731,13 +733,13 @@ public sealed partial class State
     }
 
     /// <summary>(toast update, notice message) for a hit with ammo outside the species' connect `ethical` list; null if
-    /// permitted or the species has no list.</summary>
+    /// permitted or the species has no list. The event's silver ammunition is permitted on every species.</summary>
     public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp)
     {
         var allowed = sp is not null && Mod100(sp) < ethicalAmmo.Count ? ethicalAmmo[(int)Mod100(sp)] : null;
         if (!Py.Truthy(allowed))  // empty list (dogs): no rule
             return null;
-        if (allowed!.AsArray().Any(a => Py.Eq(a, hit["ammunition_id"])))
+        if (allowed!.AsArray().Concat(eventAmmo).Any(a => Py.Eq(a, hit["ammunition_id"])))
             return null;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);

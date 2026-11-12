@@ -23,10 +23,10 @@ public class ScoringTests : IDisposable
             File.WriteAllText(file, """[{"id":50,"min_score":100,"max_score":200,"css_multiplier":2}]""");
             Scoring.Load(O("""{"game_web_host": "web.test"}"""), file);
             Assert.Equal((100.0, 200.0, 2.0), Scoring.Variants[50]);  // the file's own row wins over the facts file's
-            Scoring.Load(O("""{"game_web_host": "web.test"}"""), Path.Combine(tmp, "missing.json"));  // no file: the facts file's bounds of the event creatures only
-            Assert.Equal([50, 58], Scoring.Variants.Keys.Order());
+            Scoring.Load(O("""{"game_web_host": "web.test"}"""), Path.Combine(tmp, "missing.json"));  // no file: the facts file's bounds of every species
+            Assert.Equal(Facts.Default.Variants.Keys.Order(), Scoring.Variants.Keys.Order());
             Assert.Equal((190.0, 390.0, 1.0), Scoring.Variants[50]);
-            Assert.Equal(0.0, Scoring.Css(1, System.Text.Json.Nodes.JsonValue.Create(168.8186)));
+            Assert.Equal(79.0, Scoring.Css(1, System.Text.Json.Nodes.JsonValue.Create(168.8186)));  // 1.2 x 100 x (168.8186 - 20) / 226
             Scoring.Variants = new() { [1] = (30, 30, 1.1) };  // max == min: no division by zero
             Assert.Equal(0.0, Scoring.Css(1, System.Text.Json.Nodes.JsonValue.Create(100.0)));
         }
