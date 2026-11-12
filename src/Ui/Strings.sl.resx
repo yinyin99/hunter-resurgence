@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Igra že teče.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Igre ni bilo mogoče najti. Preverite njeno mapo v nastavitvah.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Igre ni bilo mogoče zagnati.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Zaženite Steam, se prijavite in poskusite znova.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>NAJDI SKUPINSKI LOV</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Poišči igro ali gostitelja ...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Počisti</value></data>
