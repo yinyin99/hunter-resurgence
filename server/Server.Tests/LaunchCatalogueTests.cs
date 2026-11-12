@@ -102,6 +102,7 @@ public class LaunchCatalogueTests : StateTestBase
         Assert.Equal("1:11", Open());
         // the connect of the hunt starts at that lodge, as one after start_single_player
         Assert.Equal(11L, (long)JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!["lodge"]!);
+        Assert.Equal(480L, (long)JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!["start_time"]!);  // at the picked hour
     }
 
     [Fact]
