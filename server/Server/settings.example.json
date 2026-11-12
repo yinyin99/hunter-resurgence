@@ -14,5 +14,6 @@
   ],
   "trusted_proxies": [],
   "host_header": "X-Game-Host",
-  "max_body_bytes": 16777216
+  "max_body_bytes": 16777216,
+  "event": null
 }

@@ -85,7 +85,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         sp.GetRequiredService<ILogger<ServerMissionsService>>())));
     // the seasonal events setting is the account's, with the event that runs now (the Settings menu)
-    builder.Services.AddScoped<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
+    builder.Services.Replace(ServiceDescriptor.Scoped<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, em$ only
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));

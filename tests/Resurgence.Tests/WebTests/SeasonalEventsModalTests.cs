@@ -21,7 +21,7 @@ public sealed class SeasonalEventsModalTests : UiContext
     }
 
     [Fact]
-    public void PlayingIsTheStoredSettingAndTheMenuOpensTheDialog()
+    public void TheSettingsMenuOpensTheDialog()
     {
         var menu = Render<SettingsMenu>();
         menu.Find("#seasonal-events").Click();
