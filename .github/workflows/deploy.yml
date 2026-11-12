@@ -1,6 +1,6 @@
 name: deploy
 # After a green ci run of a push to main: build the website and server images, push them to GHCR as <sha> and latest, roll them out on the VPS (docs/deploy.md).
-# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. The repository variables LINK_BACKUP, GAME_NAME and GAME_FULL become the website's backup link and game name.
+# Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. The repository secrets LINK_BACKUP, LINK_SOURCE, GAME_NAME and GAME_FULL (the ones the release uses too) become the website's links and game name.
 on:
   workflow_run:
     workflows: [ci]
@@ -65,7 +65,9 @@ jobs:
           GAME_NAME: ${{ secrets.GAME_NAME }}
           GAME_FULL: ${{ secrets.GAME_FULL }}
         run: |
-          # the repository variables go into .env and into a single-quoted remote command: the links URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
+          # the secrets go into .env and into a single-quoted remote command: the links URL characters only, no ' $ # or spaces; the names letters, digits, spaces and . : - only
+          # trimmed like the release does, so a pasted trailing newline or space is not part of the value
+          for v in LINK_BACKUP LINK_SOURCE GAME_NAME GAME_FULL; do x=${!v}; x=${x#"${x%%[![:space:]]*}"}; printf -v "$v" '%s' "${x%"${x##*[![:space:]]}"}"; done
           extra=""
           url='^https://[A-Za-z0-9._~:/?@!&+,;=%-]+$'
           for v in LINK_BACKUP LINK_SOURCE; do

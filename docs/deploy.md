@@ -144,16 +144,16 @@ Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CO
 
 Without them (a fork, or no VPS yet) the run ends with a notice and deploys nothing. The host key is taken with `ssh-keyscan` at every run (trust on first use); the stricter option is a fourth secret with the pinned `known_hosts` line.
 
-Repository variables (Settings, Secrets and variables, Actions, Variables):
+Repository secrets (Settings, Secrets and variables, Actions, Secrets), the same ones the launcher release reads ([launcher.md](launcher.md#settingsjson)):
 
-| Variable | Value | Unset |
+| Secret | Value | Unset |
 |---|---|---|
 | `LINK_BACKUP` | the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` | `link_backup` of `settings.json`, if any, else no backup tool button |
 | `LINK_SOURCE` | the project's repository, linked by the feed's development post | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |
 
-An unset variable removes its line. A `LINK_BACKUP` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
+An unset secret removes its line; spaces and line breaks around a value are trimmed. A `LINK_BACKUP` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
 
 ## Rollback
 
