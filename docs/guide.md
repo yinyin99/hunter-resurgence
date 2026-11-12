@@ -53,8 +53,8 @@ Next time: step 3 and step 4 only. When you stop playing, close the `2-run.cmd` 
 
 The launcher opens from Steam's Play button, lets you sign in, and starts the game. It does not replace the player kit: do step 5 first.
 
-1. Download `launcher-win-x64.zip`, unpack it and keep `resurgence-launcher.exe`, `settings.json` and the `wwwroot` folder together.
-2. In Steam, right-click the game, choose **Properties**, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into **Launch options**, with the real path.
+1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and starts the launcher. Windows may warn that it is not code-signed: choose **More info**, then **Run anyway**.
+2. In Steam, right-click the game, choose **Properties**, and paste `"%LocalAppData%\HunterResurgence\current\resurgence-launcher.exe" %command%` into **Launch options**, with `%LocalAppData%` written out (`C:\Users\<you>\AppData\Local`).
 3. Keep `2-run.cmd` open, press **Play** in Steam, and sign in with the code link the launcher shows.
 
 More: [launcher](launcher.md).

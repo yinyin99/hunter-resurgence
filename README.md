@@ -45,9 +45,9 @@ Steps, what it changes and what to do when something fails: [docs/play.md](docs/
 
 ## For players: the launcher
 
-Download `launcher-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest), unpack it (keep `resurgence-launcher.exe`, `settings.json` and `wwwroot` together) and start `resurgence-launcher.exe`. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
+Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and an Add/Remove programs entry, and the launcher then updates itself from the later releases. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
 
-1. In Steam, right-click the game, choose Properties, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into Launch options, with the real path. Steam's Play button then opens the launcher.
+1. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher.
 2. Sign in with the code link the sign-in page shows (the same account as on the website).
 3. The launcher starts the game for you. **You still need the [player kit](#for-players-the-player-kit)**: it is what points the game at the community server.
 
