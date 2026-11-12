@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>The game is already running.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>The game was not found. Check its folder in the settings.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>The game could not be started.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam and sign in, then try again.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND A MULTIPLAYER GAME</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find a game or host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>

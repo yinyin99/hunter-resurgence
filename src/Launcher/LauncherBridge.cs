@@ -6,10 +6,11 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Launcher;
 
 /// <summary>The launcher's bridge: StartGame is real, the rest is still the mock's.</summary>
-public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start) : ILauncherBridge
+public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId) : ILauncherBridge
 {
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log) : this(() => env.Install, new MockLauncherBridge(log),
-        GameFiles.ClientRunning, Start)
+        GameFiles.ClientRunning, Start,
+        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId)
     { }
 
     /// <summary>The client's arguments: the server, a random number with bit 128 clear, and the Steam flag.</summary>
@@ -27,8 +28,12 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (install() is not { } g || !File.Exists(g.ClientExe)) return Result.Fail("Launch.NoGame");
         if (url.Any(c => char.IsWhiteSpace(c) || c == '"')) return Result.Fail("Launch.Failed");
         if (isRunning(g.ClientExe)) return Result.Fail("Launch.AlreadyRunning");
+        // the client asks Steam to start it again (running Steam's launch option) unless Steam is up and the app id is given
+        if (!steamReady()) return Result.Fail("Launch.NoSteam");
         // the exe's own folder: the client finds its data and writes its logs relative to the working folder
-        return start(new(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) }) ? Result.Success : Result.Fail("Launch.StartFailed");
+        var info = new ProcessStartInfo(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
+        if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
+        return start(info) ? Result.Success : Result.Fail("Launch.StartFailed");
     }
 
     static bool Start(ProcessStartInfo i)

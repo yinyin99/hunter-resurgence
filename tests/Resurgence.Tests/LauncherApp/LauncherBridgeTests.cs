@@ -28,13 +28,15 @@ public class LauncherBridgeTests
         {
             var started = new List<ProcessStartInfo>();
             var running = false;
-            var b = new LauncherBridge(() => new(dir, exe), Rest, e => running && e == exe, i => { started.Add(i); return true; });
+            var b = new LauncherBridge(() => new(dir, exe), Rest, e => running && e == exe, i => { started.Add(i); return true; }, () => true, "123");
 
             Assert.True(b.StartGame("srv://x").Ok);
             var i = Assert.Single(started);
             Assert.Equal(exe, i.FileName);
             Assert.Equal(Path.GetDirectoryName(exe), i.WorkingDirectory);
             Assert.StartsWith("/connect:srv://x /param:", i.Arguments);
+            Assert.Equal("123", i.Environment["SteamAppId"]);
+            Assert.Equal("123", i.Environment["SteamGameId"]);
 
             running = true;
             Assert.Equal("Launch.AlreadyRunning", b.StartGame("srv://x").Error);
@@ -50,15 +52,47 @@ public class LauncherBridgeTests
     [Fact]
     public void AMissingExeOrAFailedStartIsAFailedResult()
     {
-        Assert.Equal("Launch.NoGame", new LauncherBridge(() => null, Rest, _ => false, _ => true).StartGame("srv://x").Error);
+        Assert.Equal("Launch.NoGame", new LauncherBridge(() => null, Rest, _ => false, _ => true, () => true, null).StartGame("srv://x").Error);
 
         var dir = Directory.CreateTempSubdirectory().FullName;
         try
         {
             var exe = Path.Combine(dir, "client.exe");
             File.WriteAllText(exe, "");
-            Assert.Equal("Launch.StartFailed", new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => false).StartGame("srv://x").Error);
+            Assert.Equal("Launch.StartFailed", new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => false, () => true, null).StartGame("srv://x").Error);
         }
         finally { Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public void WithoutASignedInSteamTheGameIsNotStarted()
+    {
+        var dir = Directory.CreateTempSubdirectory().FullName;
+        try
+        {
+            var exe = Path.Combine(dir, "client.exe");
+            File.WriteAllText(exe, "");
+            var started = 0;
+            Assert.Equal("Launch.NoSteam", new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => { started++; return true; }, () => false, "123").StartGame("srv://x").Error);
+            Assert.Equal(0, started);
+        }
+        finally { Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public void SteamIsStartedAndWaitedForUnlessSomebodyIsSignedIn()
+    {
+        var calls = 0;
+        var signedIn = false;
+        Assert.True(Steam.SignedIn(() => signedIn ? 1u : 0, () => { calls++; return true; }, TimeSpan.Zero, TimeSpan.Zero) is false);
+        Assert.Equal(1, calls); // started, nobody signed in before the timeout
+
+        var polls = 0;
+        Assert.True(Steam.SignedIn(() => ++polls > 2 ? 7u : 0, () => { calls++; return true; }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(1)));
+        Assert.Equal(2, calls); // waited until it signed in
+
+        signedIn = true;
+        Assert.True(Steam.SignedIn(() => 1, () => throw new InvalidOperationException(), TimeSpan.Zero, TimeSpan.Zero)); // already up: not started again
+        Assert.False(Steam.SignedIn(() => 0, () => false, TimeSpan.FromSeconds(5), TimeSpan.Zero)); // not installed
     }
 }

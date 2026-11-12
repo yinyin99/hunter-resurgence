@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spelet körs redan.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Spelet hittades inte. Kontrollera dess mapp i inställningarna.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spelet kunde inte startas.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Starta Steam, logga in och försök igen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>HITTA ETT FLERSPELARSPEL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Hitta ett spel eller en värd...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Rensa</value></data>

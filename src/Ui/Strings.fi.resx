@@ -175,6 +175,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Peli on jo käynnissä.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Peliä ei löytynyt. Tarkista sen kansio asetuksista.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Peliä ei voitu käynnistää.</value></data>
+  <data name="Launch.NoSteam" xml:space="preserve"><value>Käynnistä Steam, kirjaudu sisään ja yritä uudelleen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ETSI MONINPELI</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Etsi peli tai isäntä...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Tyhjennä</value></data>
