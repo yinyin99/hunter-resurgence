@@ -49,9 +49,9 @@ public sealed class LaunchMapTests : UiContext
 
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService
     {
-        public bool Play = state.Play;
+        public bool Play = state.Play, Fail;
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
-        public Task<Result> SetAsync(bool play) { Play = play; return Task.FromResult(Result.Success); }
+        public Task<Result> SetAsync(bool play) { if (Fail) return Task.FromResult(Result.Fail("Events.Failed")); Play = play; return Task.FromResult(Result.Success); }
     }
 
     // the game's reserve 1 is the launch map's reserve 2
@@ -115,5 +115,19 @@ public sealed class LaunchMapTests : UiContext
 
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[data-reserve]")));
         Assert.Empty(cut.FindAll(".event-switch"));
+    }
+
+    [Fact]
+    public void AFailedSaveTurnsTheSwitchBack()
+    {
+        Services.AddSingleton<IServersService>(new Recording());
+        Services.AddSingleton<ISeasonalEventsService>(new Events(new(true, "halloween_2026", [1])) { Fail = true });
+
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#play-events-inline")));
+        cut.Find("#play-events-inline").Change(false);
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".event-switch .error")));
+        Assert.True(cut.Find("#play-events-inline").HasAttribute("checked"));
     }
 }

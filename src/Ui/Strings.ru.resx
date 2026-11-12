@@ -69,8 +69,8 @@
   <data name="Events.Info" xml:space="preserve"><value>Пока идёт сезонное событие, сервер сообщества добавляет в игру его животных, а лаунчер показывает его картинки. Отключите это, чтобы играть без события. Изменение вступит в силу при следующем запуске игры.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Участвовать в сезонных событиях</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Не удалось сохранить настройку. Попробуйте ещё раз.</value></data>
-  <data name="Event.Line" xml:space="preserve"><value>Идёт событие: {0}, в угодьях: {1}.</value></data>
-  <data name="Event.AllReserves" xml:space="preserve"><value>все угодья</value></data>
+  <data name="Event.Line" xml:space="preserve"><value>Идёт событие: {0}. Угодья: {1}.</value></data>
+  <data name="Event.AllReserves" xml:space="preserve"><value>все</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Сезонное событие</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Настройки игры</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Скриншоты</value></data>

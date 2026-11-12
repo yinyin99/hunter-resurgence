@@ -5,13 +5,13 @@
 {
     <div class="event-switch">
         <p>@L["Event.Line", Title(name), Where]</p>
-        <label><input type="checkbox" class="tick" id="play-events-inline" disabled="@busy" checked="@State.Play" @onchange="Toggle" /> @L["Events.Play"]</label>
+        <label><input type="checkbox" class="tick" id="play-events-inline" disabled="@busy" @bind="play" @bind:after="Save" /> @L["Events.Play"]</label>
         @if (failed) { <span class="error" role="alert">@L["Events.Failed"]</span> }
     </div>
 }
 
 @code {
-    bool busy, failed;
+    bool play, busy, failed;
 
     [Parameter, EditorRequired] public SeasonalEvents State { get; set; } = new(true, null, []);
     [Parameter] public EventCallback<SeasonalEvents> StateChanged { get; set; }
@@ -24,12 +24,13 @@
     /// <summary>"halloween_2026" reads "Halloween 2026".</summary>
     static string Title(string id) => System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(id.Replace('_', ' '));
 
-    async Task Toggle(ChangeEventArgs e)
+    protected override void OnParametersSet() => play = State.Play;
+
+    async Task Save()
     {
-        var play = e.Value is true;
         (busy, failed) = (true, false);
         if ((await Events.SetAsync(play)).Ok) await StateChanged.InvokeAsync(State with { Play = play });
-        else failed = true;
+        else (play, failed) = (!play, true);
         busy = false;
     }
 }
