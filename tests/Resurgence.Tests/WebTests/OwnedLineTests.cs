@@ -12,28 +12,44 @@ public sealed class OwnedLineTests : UiContext
     static StoreItem Item(int owned = 0, bool counted = false, long? expires = null, int id = 0) =>
         new(id, "Made-up Item", "", "0", 10, null, 0, owned, true, 0, "", Counted: counted, Expires: expires);
 
+    static ComponentParameterCollectionBuilder<OwnedLine> Add(ComponentParameterCollectionBuilder<OwnedLine> p, StoreItem i) =>
+        p.Add(l => l.Owned, i.Owned).Add(l => l.Counted, i.Counted).Add(l => l.Expires, i.Expires);
+
     string Text(IRenderedComponent<OwnedLine> cut) => cut.Find(".own").TextContent;
 
     [Fact]
     public void ACountedItemShowsItsAmountAndASingleOneShowsOwned()
     {
-        Assert.Equal("You own: 12", Text(Render<OwnedLine>(p => p.Add(l => l.Item, Item(12, counted: true)))));
-        Assert.Equal("You own: 1", Text(Render<OwnedLine>(p => p.Add(l => l.Item, Item(1, counted: true)))));
-        Assert.Equal("Owned", Text(Render<OwnedLine>(p => p.Add(l => l.Item, Item(1)))));
-        Assert.Equal("You own: 2", Text(Render<OwnedLine>(p => p.Add(l => l.Item, Item(2)))));
+        Assert.Equal("You own: 12", Text(Render<OwnedLine>(p => Add(p, Item(12, counted: true)))));
+        Assert.Equal("You own: 1", Text(Render<OwnedLine>(p => Add(p, Item(1, counted: true)))));
+        Assert.Equal("Owned", Text(Render<OwnedLine>(p => Add(p, Item(1)))));
+        Assert.Equal("You own: 2", Text(Render<OwnedLine>(p => Add(p, Item(2)))));
     }
 
     [Fact]
     public void ALicenseShowsItsEndOrThatItIsUnlimited()
     {
         var end = Item(1, expires: 1798761600);   // 2027-01-01
-        Assert.Equal("Expires: 2027-01-01", Text(Render<OwnedLine>(p => p.Add(l => l.Item, end))));
-        Assert.Equal("You have a valid license until: 2027-01-01", Text(Render<OwnedLine>(p => p.Add(l => l.Item, end).Add(l => l.Full, true))));
-        Assert.Equal("You have an unlimited license", Text(Render<OwnedLine>(p => p.Add(l => l.Item, Item(1, expires: 0)))));
+        Assert.Equal("Expires: 2027-01-01", Text(Render<OwnedLine>(p => Add(p, end))));
+        Assert.Equal("You have a valid license until: 2027-01-01", Text(Render<OwnedLine>(p => Add(p, end).Add(l => l.Full, true))));
+        Assert.Equal("You have an unlimited license", Text(Render<OwnedLine>(p => Add(p, Item(1, expires: 0)))));
     }
 
     [Fact]
-    public void AnItemTheyDoNotOwnShowsNothing() => Assert.Empty(Render<OwnedLine>(p => p.Add(l => l.Item, Item())).FindAll(".own"));
+    public void ALicenseThatHasEndedShowsNothing() => Assert.Empty(Render<OwnedLine>(p => Add(p, Item(1, expires: 1000))).FindAll(".own"));
+
+    // the buy dialog says the same as the card
+    [Fact]
+    public void TheBuyDialogSaysWhatTheCardSays()
+    {
+        var one = Render<BuyModal>(p => p.Add(m => m.Id, 5).Add(m => m.Name, "Hat").Add(m => m.Ems, 10).Add(m => m.Owned, 1));
+        Assert.Equal("Owned", one.Find(".own").TextContent);
+        var licence = Render<BuyModal>(p => p.Add(m => m.Id, 5).Add(m => m.Name, "Hat").Add(m => m.Ems, 10).Add(m => m.Owned, 1).Add(m => m.Expires, 0L));
+        Assert.Equal("You have an unlimited license", licence.Find(".own").TextContent);
+    }
+
+    [Fact]
+    public void AnItemTheyDoNotOwnShowsNothing() => Assert.Empty(Render<OwnedLine>(p => Add(p, Item())).FindAll(".own"));
 
     // item 0 is an item like any other
     [Fact]
@@ -70,6 +86,7 @@ public sealed class OwnedLineTests : UiContext
         public Task<bool> HasSalesAsync() => Task.FromResult(false);
         public Task<StoreItem?> ItemAsync(int id) => Task.FromResult<StoreItem?>(Item);
         public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult<StoreBundle?>(null);
+        public void RefreshOwned() { }
         public Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1) => Task.FromResult(Result.Success);
     }
 }

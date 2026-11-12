@@ -106,6 +106,30 @@ public class ServerStoreServiceTests
         Assert.Equal(2, (await service.ItemAsync(1))!.Owned);
     }
 
+    sealed class Counting : IInventoryService
+    {
+        public int Reads;
+        public Task<IReadOnlyList<InventoryItem>> ItemsAsync() { Reads++; return Task.FromResult<IReadOnlyList<InventoryItem>>([]); }
+    }
+
+    // a search is many reads of the store, not of the inventory: it is read again after a page opens or a purchase
+    [Fact]
+    public async Task TheInventoryIsReadOnceUntilAPageOpensOrAPurchaseGoesThrough()
+    {
+        var inv = new Counting();
+        var service = Make(new Fake(r => Json(HttpStatusCode.OK, r.Method == HttpMethod.Get ? Store : "{}")), items: inv);
+        await service.ItemsAsync("all", "r", 1);
+        await service.ItemsAsync("all", "ri", 1);
+        await service.ItemAsync(1);
+        Assert.Equal(1, inv.Reads);
+        service.RefreshOwned();
+        await service.ItemsAsync("all", "", 1);
+        Assert.Equal(2, inv.Reads);
+        Assert.True((await service.BuyAsync(1, false, false)).Ok);
+        await service.ItemAsync(1);
+        Assert.Equal(3, inv.Reads);
+    }
+
     [Fact]
     public async Task APageHoldsTwelveAndThePageNumberIsKept()
     {

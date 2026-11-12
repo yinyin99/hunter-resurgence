@@ -1,16 +1,20 @@
-@* what the player owns of a store item, as the original's store shows it: a license's end (or "unlimited"), the days of a timed item, the amount, "Owned" for one single item; nothing for none *@
-@if (Item.Expires is { } end)
+@* what the player owns of a store item, as the original's store shows it: a license's end (or "unlimited"), the days of a timed item, the amount, "Owned" for one single item; nothing for none, and nothing for a license that has ended (the original has no words for it) *@
+@if (Expires is { } end)
 {
-    <p class="own">@(end == 0 ? L["Store.UnlimitedLicense"] : Full ? L["Store.LicenseUntil"] + " " + Date(end) : L["Store.Expires"] + " " + Date(end))</p>
+    @if (end == 0) { <p class="own">@L["Store.UnlimitedLicense"]</p> }
+    else if (end > DateTimeOffset.UtcNow.ToUnixTimeSeconds()) { <p class="own">@(Full ? L["Store.LicenseUntil"] : L["Store.Expires"]) @DateTimeOffset.FromUnixTimeSeconds(end).ToString("yyyy-MM-dd")</p> }
 }
-else if (Item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-else if (Item.Owned > 0 && !Item.Counted && Item.Owned == 1) { <p class="own">@L["Store.Owned"]</p> }
-else if (Item.Owned > 0) { <p class="own">@L["Store.Own"] @Item.Owned</p> }
+else if (DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+else if (Owned == 1 && !Counted) { <p class="own">@L["Store.Owned"]</p> }
+else if (Owned > 0) { <p class="own">@L["Store.Own"] @Owned</p> }
 
 @code {
-    [Parameter, EditorRequired] public StoreItem Item { get; set; } = null!;
-    /// <summary>The item's page words a license in full; the list says when it expires.</summary>
+    [Parameter] public int Owned { get; set; }
+    /// <summary>The amount is units (a counted item), so one is "You own: 1".</summary>
+    [Parameter] public bool Counted { get; set; }
+    /// <summary>The end of a license in unix seconds, 0 when unlimited.</summary>
+    [Parameter] public long? Expires { get; set; }
+    [Parameter] public double? DaysLeft { get; set; }
+    /// <summary>The item's page words a license in full; the list and the buy dialog say when it expires.</summary>
     [Parameter] public bool Full { get; set; }
-
-    static string Date(long unix) => DateTimeOffset.FromUnixTimeSeconds(unix).ToString("yyyy-MM-dd");
 }

@@ -12,6 +12,11 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
 {
     public const int PageSize = 12;
 
+    // read once and kept until a page opens or a purchase goes through, so a search is not a request each
+    Dictionary<int, (int Owned, bool Counted, long? Expires)>? owned;
+
+    public void RefreshOwned() => owned = null;
+
     static readonly ServerStore Empty = new([], [], []);
 
     public async Task<IReadOnlyList<StoreCategory>> CategoriesAsync()
@@ -69,7 +74,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
             request.Content = new FormUrlEncodedContent([KeyValuePair.Create("id", $"{id}"), KeyValuePair.Create("count", $"{count}"), KeyValuePair.Create("bundle", bundle ? "1" : "0"), KeyValuePair.Create("wallet", gms ? "SILVER" : "GOLD")]);
             using var response = await http.SendAsync(request);
-            if (response.IsSuccessStatusCode) return Result.Success;
+            if (response.IsSuccessStatusCode) { owned = null; return Result.Success; }
             log.LogWarning("The server refused {Path} for {Id} ({Status})", ServerAccountApi.Buy, id, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
@@ -80,7 +85,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     }
 
     /// <summary>The player's items by id: units summed over a counted item's copies, else the number of copies; the latest expiry of a license.</summary>
-    async Task<Dictionary<int, (int Owned, bool Counted, long? Expires)>> OwnAsync() =>
+    async Task<Dictionary<int, (int Owned, bool Counted, long? Expires)>> OwnAsync() => owned ??=
         (await inventory.ItemsAsync()).GroupBy(x => x.Id).ToDictionary(g => g.Key,
             g => (g.Any(x => x.Units is not null) ? g.Sum(x => x.Units ?? 0) : g.Count(), g.Any(x => x.Units is not null),
                   g.Any(x => x.Expires == 0) ? 0L : g.Max(x => x.Expires)));
