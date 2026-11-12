@@ -78,6 +78,26 @@ public static class AdminApi
              .WithDescription("Sent as update 15 with the next heartbeat, else carried by the next connect. Not idempotent.")
              .ProducesProblem(409).ProducesProblem(503);
 
+        admin.MapPost("/rescore", Results<Ok<RescoreResult[]>, ProblemHttpResult> ([Description("User id or handle; omitted: every account")] string? account,
+                                                                               [Description("true (default): report only, write nothing")] bool? dry_run) =>
+            {
+                if (state is null)
+                    return NoState();
+                long? only = null;
+                if (!string.IsNullOrWhiteSpace(account))
+                {
+                    if (ResolveAccount(state, account) is not { } id)
+                        return NoAccount(account);
+                    only = id;
+                }
+                return TypedResults.Ok(state.Rescore(only, dry_run ?? true).Select(r => new RescoreResult(r.Account, r.Rescored, r.Paid, r.Gms)).ToArray());
+            })
+             .WithName("Rescore").WithSummary("Score stored harvests again and pay the gm$ they missed")
+             .WithDescription("Each stored harvest is scored with today's rules. A changed score updates the harvest page; round(css) gm$ is paid "
+                              + "once per kill (never when a `CSS Reward (Animal Id: <kill>)` wallet row exists). Disqualified or unscorable harvests "
+                              + "stay as they are. Repeating pays nothing more. dry_run (default true) reports without writing.")
+             .ProducesProblem(404).ProducesProblem(503);
+
         admin.MapPost("/spawn", Results<Ok<Spawner.Entry>, ValidationProblem, ProblemHttpResult> (Spawner.Request req) =>
             {
                 var errors = Spawner.Validate(req);
@@ -167,5 +187,6 @@ public static class AdminApi
 
     public sealed record SpawnList(List<Spawner.Entry> Entries, List<Spawner.Applied> Applied);
     public sealed record SpawnRemoved(int Removed);
+    public sealed record RescoreResult(long Account, int Rescored, int Paid, long Gms);
     public sealed record SpawnWake(long? PopulationId, int? Group);
 }
