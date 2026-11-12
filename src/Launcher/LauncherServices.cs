@@ -18,7 +18,8 @@ static class LauncherServices
     {
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
-        services.AddUiLocalization(Branding.Load(Settings.FilePath));
+        var brand = Branding.Load(Settings.FilePath);
+        services.AddUiLocalization(brand);
         // the operator's pictures from the website at server_url (docs/images.md): the list is fetched while the window starts; the first slot waits for it
         var images = Task.Run(() => LoadImages(server));
         services.AddSingleton(_ => images.Result);
@@ -43,7 +44,10 @@ static class LauncherServices
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
-        services.AddSingleton<INewsService>(new MockNewsService());
+        // the feed's Discord frame for link_discord, as on the website (docs/website.md); without the link there is none
+        var discord = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+        discord.DefaultRequestHeaders.UserAgent.ParseAdd("hunter-resurgence");
+        services.AddSingleton<INewsService>(sp => new DiscordNewsService(discord, brand.Link("discord"), new(), new(), sp.GetRequiredService<ILogger<DiscordNewsService>>()));
         services.AddSingleton<IMissionsService>(new MockMissionsService(mock));
         services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
         services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
