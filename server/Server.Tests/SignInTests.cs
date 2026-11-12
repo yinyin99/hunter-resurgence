@@ -850,6 +850,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.DoesNotContain("const ", Body(page));
     }
 
+    [Fact]
+    public void TestThePagesAfterSignInLinkTheDiscordOnlyWhenSet()
+    {
+        const string Url = "https://discord.test/invite";
+        foreach (var page in new[] { AuthPages.Done(Url), AuthPages.Start("Hunter_One", "/", Url), AuthPages.Confirm("c", "Hunter_One", "AB-12", Url), AuthPages.ConfirmApp("c", "Hunter_One", Url) })
+            Assert.Contains($"href=\"{Url}\" target=\"_blank\" rel=\"noopener\"", page);
+        foreach (var page in new[] { AuthPages.Done(), AuthPages.Start("Hunter_One"), AuthPages.Confirm("c", "Hunter_One", "AB-12"), AuthPages.ConfirmApp("c", "Hunter_One") })
+            Assert.DoesNotContain("discord", page, StringComparison.OrdinalIgnoreCase);
+    }
+
     static void AssertNewLauncherLinks(string html)
     {
         Assert.Contains("Open the new launcher", html);
