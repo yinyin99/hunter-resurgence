@@ -1304,6 +1304,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Anlıyorum, her şeyi sil</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Verilerimi sil</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Veriler silinemedi. Tekrar deneyin.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Eski profilinizi geri alın</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Eski avcı adınız</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Bul</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Bu adla bir profil saklamadık.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Bugün çok fazla arama yapıldı, yarın tekrar deneyin.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Sunucu yanıt vermedi.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Eşyalar: {0}, kupalar: {1}, kulübeler: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Beceriler: {0}, istatistikler: {1}, başarımlar: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>evet</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>hayır</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Eski adımı kullan</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Bu, bu sunucudaki eşyalarınızı, becerilerinizi, başarımlarınızı, kupalarınızı ve kulübelerinizi eski profille değiştirir. Burada yaptığınız avlar, vurduklarınız ve fotoğraflar kalır. Yalnızca bir profil geri alabilirsiniz.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Bu profili geri al</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>{0} için talebiniz ({1} tarihli) bir operatörü bekliyor.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Eski profiliniz {0} geri yüklendi ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>{0} için talebiniz ({1} tarihli) reddedildi.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Eski profiliniz geri yüklendi.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Bir operatör talebi inceleyecek; gelen kutunuza mesaj gelecek.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Verileriniz</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Bu sunucunun sizin hakkınızda neleri sakladığı ve bunlardan nasıl kurtulacağınız.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Neler saklanır</value></data>

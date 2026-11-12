@@ -22,6 +22,20 @@ public sealed record RestoreDecision(long Ts, string Kind, long? UserId, string?
 /// <param name="Decisions">What the operator decided about the others, oldest first.</param>
 public sealed record RestoreStatus(long? RestoredUserId, IReadOnlyList<KeptZip> Review, IReadOnlyList<RestoreDecision> Decisions);
 
+/// <param name="State"><c>waiting</c>, <c>restored</c> or <c>rejected</c>.</param>
+/// <param name="Ts">Unix seconds of the claim.</param>
+public sealed record ArchiveClaim(string State, string Handle, long Ts);
+
+/// <param name="Enabled">False: the server keeps no old profiles, the page hides the claim box.</param>
+/// <param name="Claimed">The account's own claim, or null.</param>
+public sealed record ArchiveStatus(bool Enabled, ArchiveClaim? Claimed);
+
+/// <summary>An old public profile the server kept: what a claim would restore.</summary>
+public sealed record ArchivedProfile(string Handle, long Hunterscore, int Items, int Trophies, int Lodges, bool Skills, bool Statistics, bool Achievements, bool NameFree);
+
+/// <param name="Status"><c>found</c>, <c>notfound</c>, <c>limit</c> (too many searches today) or <c>unavailable</c>.</param>
+public sealed record ArchiveFind(string Status, ArchivedProfile? Profile = null);
+
 /// <summary>The player's own backup and data on the community server (docs/server.md#upload-a-backup-zip).</summary>
 public interface IRestoreService
 {
@@ -33,4 +47,13 @@ public interface IRestoreService
 
     /// <summary>Delete the account and all its data. True when the server did.</summary>
     Task<bool> DeleteAsync();
+
+    /// <summary>Whether the claim box shows, and the account's own claim. Null: signed out, or the server did not answer.</summary>
+    Task<ArchiveStatus?> ArchiveStatusAsync();
+
+    /// <summary>Look an old hunter name up (5 a day).</summary>
+    Task<ArchiveFind> FindArchivedAsync(string name);
+
+    /// <summary>Claim the old profile. The result's status: <c>restored</c>, <c>review</c>, <c>refused</c>, <c>unknown</c>, <c>limit</c>, <c>confirm</c>, <c>signed_out</c> or <c>unavailable</c>.</summary>
+    Task<RestoreResult> ClaimArchivedAsync(string oldName, bool useOldName);
 }

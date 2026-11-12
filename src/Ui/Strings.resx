@@ -1304,6 +1304,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Claim your old profile</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Your old hunter name</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Find</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>We did not keep a profile under this name.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Too many searches today, try again tomorrow.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>The server did not answer.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Items: {0}, trophies: {1}, lodges: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Skills: {0}, statistics: {1}, achievements: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>yes</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>no</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Use my old name</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>This replaces your items, skills, achievements, trophies and lodges on this server with the old profile. Hunts, kills and photos you made here stay. You can claim only one profile.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Claim this profile</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Your claim for {0} (made {1}) is waiting for an operator.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Your old profile {0} was restored ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Your claim for {0} (made {1}) was rejected.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Your old profile is restored.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>An operator will check this claim; you will get a message in your inbox.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Your data</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>What this server keeps about you, and how to get rid of it.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>What is stored</value></data>

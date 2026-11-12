@@ -1304,6 +1304,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Am înțeles, ștergeți totul</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Ștergeți datele mele</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Datele nu au putut fi șterse. Încercați din nou.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Revendicați vechiul profil</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Vechiul dvs. nume de vânător</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Căutați</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Nu am păstrat niciun profil sub acest nume.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Prea multe căutări azi, încercați mâine.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Serverul nu a răspuns.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Obiecte: {0}, trofee: {1}, cabane: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Abilități: {0}, statistici: {1}, realizări: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>nu</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Folosiți vechiul meu nume</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Aceasta înlocuiește obiectele, abilitățile, realizările, trofeele și cabanele de pe acest server cu vechiul profil. Vânătorile, doborârile și pozele făcute aici rămân. Puteți revendica un singur profil.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Revendicați acest profil</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Cererea dvs. pentru {0} (făcută {1}) așteaptă un operator.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Vechiul profil {0} a fost restaurat ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Cererea dvs. pentru {0} (făcută {1}) a fost respinsă.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Vechiul dvs. profil a fost restaurat.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Un operator va verifica cererea; veți primi un mesaj în inbox.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Datele dvs.</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Ce păstrează acest server despre dvs. și cum puteți scăpa de aceste date.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Ce este stocat</value></data>

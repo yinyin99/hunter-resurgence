@@ -1304,6 +1304,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Razumem, izbriši vse</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Izbriši moje podatke</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Podatkov ni bilo mogoče izbrisati. Poskusite znova.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Zahtevajte svoj stari profil</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Vaše staro ime lovca</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Poišči</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Pod tem imenom nismo shranili profila.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Danes preveč iskanj, poskusite jutri.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Strežnik se ni odzval.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Predmeti: {0}, trofeje: {1}, koče: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Spretnosti: {0}, statistika: {1}, dosežki: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>ne</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Uporabi moje staro ime</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>To na tem strežniku zamenja vaše predmete, spretnosti, dosežke, trofeje in koče s starim profilom. Lovi, odstreli in fotografije, narejene tukaj, ostanejo. Zahtevate lahko samo en profil.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Zahtevaj ta profil</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Vaša zahteva za {0} (oddana {1}) čaka na operaterja.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Vaš stari profil {0} je obnovljen ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Vaša zahteva za {0} (oddana {1}) je bila zavrnjena.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Vaš stari profil je obnovljen.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Operater bo zahtevo preveril; sporočilo boste prejeli v nabiralnik.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Vaši podatki</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Kaj ta strežnik hrani o vas in kako se tega znebite.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Kaj je shranjeno</value></data>

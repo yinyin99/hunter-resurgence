@@ -7,6 +7,46 @@
 
 <div class="page-min">
     <h2 class="page-title">@L["Restore.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
+    @if (archive is { Enabled: true })
+    {
+        <section class="panel box">
+            <h3>@L["Claim.Title"]</h3>
+            @if (archive.Claimed is { } claimed)
+            {
+                <p class="alert @(claimed.State == "restored" ? "ok" : claimed.State == "rejected" ? "bad" : "")">@L["Claim.State." + claimed.State, claimed.Handle, At(claimed.Ts)]</p>
+            }
+            else
+            {
+                <div class="pick">
+                    <label for="oldname">@L["Claim.Name"]</label>
+                    <input id="oldname" type="text" maxlength="64" @bind="oldName" @bind:event="oninput" disabled="@busy" />
+                    <button type="button" class="btn btn-primary" disabled="@(busy || oldName.Trim().Length == 0)" @onclick="Find">@L["Claim.Find"]</button>
+                </div>
+                @if (found is { Status: not "found" })
+                {
+                    <p class="alert @(found.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + found.Status]</p>
+                }
+                @if (found?.Profile is { } p)
+                {
+                    <div class="alert">
+                        <b>@p.Handle</b> · @L["Claim.Score", p.Hunterscore]<br />
+                        @L["Claim.Counts", p.Items, p.Trophies, p.Lodges]<br />
+                        @L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]
+                    </div>
+                    <p><label><input type="checkbox" class="tick" @bind="useOldName" disabled="@(!p.NameFree || busy)" /> @L["Claim.UseName"]</label></p>
+                    <p class="alert bad">@L["Claim.Warning"]</p>
+                    <button type="button" class="btn btn-danger" disabled="@busy" @onclick="Claim">@L["Claim.Button"]</button>
+                }
+            }
+            @if (claimResult is not null)
+            {
+                <div class="alert @(claimResult.Status == "restored" ? "ok" : claimResult.Status == "review" ? "" : "bad")" role="alert">
+                    @if (claimResult.Status is "restored" or "review") { <b>@L["Claim.Result." + claimResult.Status]</b> }
+                    else { @claimResult.Message }
+                </div>
+            }
+        </section>
+    }
     <section class="panel box">
         <p>@L["Restore.Intro"]</p>
         <p>@L["Restore.Hint"]</p>
@@ -75,7 +115,40 @@
     IBrowserFile? file;
     bool busy, confirmDelete, deleteFailed;
 
-    protected override async Task OnInitializedAsync() => status = await Service.StatusAsync();
+    ArchiveStatus? archive;
+    ArchiveFind? found;
+    RestoreResult? claimResult;
+    string oldName = "";
+    bool useOldName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        status = await Service.StatusAsync();
+        archive = await Service.ArchiveStatusAsync();
+    }
+
+    async Task Find()
+    {
+        busy = true;
+        claimResult = null;
+        useOldName = false;
+        found = await Service.FindArchivedAsync(oldName.Trim());
+        busy = false;
+    }
+
+    async Task Claim()
+    {
+        if (found?.Profile is not { } p) return;
+        busy = true;
+        claimResult = await Service.ClaimArchivedAsync(p.Handle, useOldName);
+        if (claimResult.Status is "restored" or "review")
+        {
+            found = null;
+            archive = await Service.ArchiveStatusAsync();
+            status = await Service.StatusAsync();
+        }
+        busy = false;
+    }
 
     static string At(long ts) => DateTimeOffset.FromUnixTimeSeconds(ts).ToString("yyyy-MM-dd HH:mm 'UTC'", System.Globalization.CultureInfo.InvariantCulture);
 

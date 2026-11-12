@@ -1304,6 +1304,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jeg forstår, slett alt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Slett dataene mine</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Dataene kunne ikke slettes. Prøv igjen.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Krev din gamle profil</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Ditt gamle jegernavn</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Søk</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Vi lagret ingen profil under dette navnet.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>For mange søk i dag, prøv igjen i morgen.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Serveren svarte ikke.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Gjenstander: {0}, trofeer: {1}, hytter: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Ferdigheter: {0}, statistikk: {1}, prestasjoner: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>nei</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Bruk mitt gamle navn</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Dette erstatter gjenstandene, ferdighetene, prestasjonene, trofeene og hyttene dine på denne serveren med den gamle profilen. Jakter, fellinger og bilder du har tatt her blir. Du kan bare kreve én profil.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Krev denne profilen</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Kravet ditt for {0} (sendt {1}) venter på en operatør.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Din gamle profil {0} ble gjenopprettet ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Kravet ditt for {0} (sendt {1}) ble avvist.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Din gamle profil er gjenopprettet.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>En operatør sjekker kravet; du får en melding i innboksen.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Dine data</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Hva denne serveren lagrer om deg, og hvordan du kan bli kvitt det.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Hva som lagres</value></data>
