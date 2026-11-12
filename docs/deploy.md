@@ -62,7 +62,7 @@ SERVER_TAG=latest
 SERVER_DIR=/home/deploy/server
 ```
 
-`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `LINK_SOURCE=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository variables of the same names (no line for an unset variable; `LINK_SOURCE` defaults to the repository the deploy runs from); compose passes them to `web`.
+`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `LINK_SOURCE=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository secrets of the same names, the ones the release uses too (no line for an unset secret; `LINK_SOURCE` defaults to the repository the deploy runs from); compose passes them to `web`.
 
 The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `GAME_FULL`, `GAME_NAME`, `IMAGES_DIR`, `LINK_BACKUP`, `LINK_SOURCE` and `SERVER_URL`. `IMAGES_DIR` is `/images`, where compose mounts `SERVER_DIR/images` read-only: the slot pictures ([images.md](images.md)). `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send the server's paths (`/auth/*` first, the others in [the routing table](#the-community-server)) to the server for the sign-in links and the launcher to work.
 
@@ -144,16 +144,16 @@ Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CO
 
 Without them (a fork, or no VPS yet) the run ends with a notice and deploys nothing. The host key is taken with `ssh-keyscan` at every run (trust on first use); the stricter option is a fourth secret with the pinned `known_hosts` line.
 
-Repository variables (Settings, Secrets and variables, Actions, Variables):
+Repository secrets (Settings, Secrets and variables, Actions, Secrets), the same ones the launcher release reads ([launcher.md](launcher.md#settingsjson)):
 
-| Variable | Value | Unset |
+| Secret | Value | Unset |
 |---|---|---|
 | `LINK_BACKUP` | the backup tool link, `https://github.com/<owner>/<repo>/releases/latest/download/backup-win-x64.zip` | `link_backup` of `settings.json`, if any, else no backup tool button |
 | `LINK_SOURCE` | the project's repository, linked by the feed's development post | the repository the deploy runs from (`https://github.com/<owner>/<repo>`) |
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |
 
-An unset variable removes its line. A `LINK_BACKUP` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
+An unset secret removes its line; spaces and line breaks around a value are trimmed. A `LINK_BACKUP` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
 
 ## Rollback
 
