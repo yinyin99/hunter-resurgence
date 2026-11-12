@@ -4,7 +4,7 @@
 @inject ModalService Modal
 @inject HostMode Mode
 
-<PageTitle>@L["Menu.Store"]</PageTitle>
+<PageTitle>@(bundle?.Name ?? L["Menu.Store"])</PageTitle>
 
 <StoreFrame Active="bundles">
     @if (bundle is not null)
