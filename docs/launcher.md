@@ -131,7 +131,7 @@ The kit exists only when `server_url` is an `https://` address (without it, or w
    You do this once. **Not now** keeps the launcher usable, but the game cannot reach the community server until you set up: Settings, **Set up for the community server** opens the same window again.
 2. **Keep the launcher open** while you play, and start the game from it. The forwarder starts with the launcher and stops when it closes.
 3. The first time the game starts, **Windows Firewall asks about the game: click Allow**. Without it the game cannot hunt.
-4. To undo everything, choose Settings, **Remove the setup**. Windows asks once to remove the certificate authority: choose Yes. After that the game talks to its own servers again (if they still exist).
+4. To undo everything, choose Settings, **Remove the setup**. Windows asks to remove the certificate authority (choose Yes) and, as in setup, for administrator permission to edit the hosts file (choose Yes). After that the game talks to its own servers again (if they still exist).
 
 If something does not work, see [Problems](#player-kit-problems).
 

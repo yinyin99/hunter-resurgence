@@ -23,7 +23,7 @@ public sealed class LauncherKit(Uri? server) : IKitService
 
     public async Task<KitPlan?> StartAsync()
     {
-        if (!Available) return null;
+        if (!Available || app is not null) return null; // the forwarder already runs
         try
         {
             var s = KitSettings.Load();

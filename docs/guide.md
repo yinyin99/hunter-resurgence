@@ -47,7 +47,7 @@ The launcher signs you in, sets up your PC for the community server (the player 
 
 **Keep the launcher open** while you play: it answers the game. Next time: press **Play** in Steam and sign in.
 
-**Back to the official servers**: in the launcher choose Settings, **Remove the setup**, and **Yes** when Windows asks to remove the certificate. The game then talks to its own servers again (while they exist). You need this before running the backup tool again.
+**Back to the official servers**: in the launcher choose Settings, **Remove the setup**, and **Yes** to Windows' questions (the certificate, and permission to edit the hosts file). The game then talks to its own servers again (while they exist). You need this before running the backup tool again.
 
 More: [launcher](launcher.md#the-player-kit).
 
