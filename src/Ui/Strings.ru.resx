@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Копировать</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Запуск игры кнопкой «Играть» в Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Официальные серверы закрыты. Собственный лаунчер игры, который Steam открывает по кнопке «Играть», больше не может сам связаться с сервером: ему нужен этот лаунчер, который несёт ваше соединение с сервером сообщества.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Чтобы «Играть» продолжала работать, этот лаунчер может попросить Steam открывать его вместо прежнего. Он меняет одну настройку этой игры в Steam (параметры запуска) и больше ничего: ни другие ваши игры, ни сам Steam, ни файлы игры. Её видно в Steam: щёлкните игру правой кнопкой, «Свойства», «Параметры запуска».</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam должен быть закрыт, пока записывается настройка, потому что при выходе Steam сохраняет собственную копию. При удалении этого лаунчера настройка возвращается.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Чтобы «Играть» продолжала работать, этот лаунчер может попросить Steam открывать его вместо прежнего.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Он меняет одну настройку этой игры в Steam (параметры запуска) и больше ничего: ни другие ваши игры, ни сам Steam, ни файлы игры.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Её видно в Steam: щёлкните игру правой кнопкой, «Свойства», «Параметры запуска».</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam должен быть закрыт, пока записывается настройка, потому что при выходе Steam сохраняет собственную копию.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>При удалении этого лаунчера настройка возвращается.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Ваш текущий параметр запуска этой игры: {0}. Он заменяется, только если вы нажмёте первую кнопку.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Закрыть Steam и задать</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Вместо этого скопировать строку</value></data>

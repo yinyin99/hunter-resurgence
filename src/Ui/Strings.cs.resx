@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopírovat</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Spustit hru tlačítkem Hrát ve Steamu</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Oficiální servery jsou zavřené. Vlastní launcher hry, který Steam otevře po stisku Hrát, už sám žádný server nezastihne: potřebuje tento launcher, který nese vaše připojení ke komunitnímu serveru.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Aby Hrát dál fungovalo, může tento launcher požádat Steam, aby otevíral jeho. Mění jediné nastavení této hry ve Steamu (volby spouštění) a nic jiného: ne vaše ostatní hry, ne samotný Steam, ne soubory hry. Uvidíte ho ve Steamu: klikněte na hru pravým tlačítkem, Vlastnosti, Volby spouštění.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam musí být při zápisu nastavení zavřený, protože při ukončení ukládá vlastní kopii. Odinstalování tohoto launcheru nastavení vrátí.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Aby Hrát dál fungovalo, může tento launcher požádat Steam, aby otevíral jeho.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Mění jediné nastavení této hry ve Steamu (volby spouštění) a nic jiného: ne vaše ostatní hry, ne samotný Steam, ne soubory hry.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Uvidíte ho ve Steamu: klikněte na hru pravým tlačítkem, Vlastnosti, Volby spouštění.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam musí být při zápisu nastavení zavřený, protože při ukončení ukládá vlastní kopii.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Odinstalování tohoto launcheru nastavení vrátí.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Vaše současná volba spouštění této hry je: {0}. Nahradí se jen tehdy, když zvolíte první tlačítko.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Zavřít Steam a nastavit</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Místo toho zkopírovat řádek</value></data>

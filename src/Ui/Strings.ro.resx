@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Copiază</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Pornește jocul din butonul Joacă din Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Serverele oficiale sunt închise. Launcherul propriu al jocului, pe care Steam îl deschide când apeși Joacă, nu mai poate ajunge singur la un server: are nevoie de acest launcher, care poartă conexiunea ta la serverul comunității.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Ca Joacă să continue să funcționeze, acest launcher poate cere Steam să îl deschidă pe el în loc. Schimbă o singură setare a acestui joc în Steam (opțiunile de lansare) și nimic altceva: nu celelalte jocuri ale tale, nu Steam în sine, nu fișierele jocului. O poți vedea în Steam: clic dreapta pe joc, Proprietăți, Opțiuni de lansare.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam trebuie să fie închis cât timp se scrie setarea, pentru că Steam își salvează propria copie la ieșire. Dezinstalarea acestui launcher repune setarea.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Ca Joacă să continue să funcționeze, acest launcher poate cere Steam să îl deschidă pe el în loc.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Schimbă o singură setare a acestui joc în Steam (opțiunile de lansare) și nimic altceva: nu celelalte jocuri ale tale, nu Steam în sine, nu fișierele jocului.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>O poți vedea în Steam: clic dreapta pe joc, Proprietăți, Opțiuni de lansare.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam trebuie să fie închis cât timp se scrie setarea, pentru că Steam își salvează propria copie la ieșire.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Dezinstalarea acestui launcher repune setarea.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Opțiunea ta curentă de lansare pentru acest joc este: {0}. Este înlocuită doar dacă alegi primul buton.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Închide Steam și setează</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiază în schimb linia</value></data>

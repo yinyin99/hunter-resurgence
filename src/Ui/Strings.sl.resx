@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiraj</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Zagon igre z gumbom Igraj v Steamu</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Uradni strežniki so zaprti. Lasten zaganjalnik igre, ki ga Steam odpre ob pritisku na Igraj, sam ne more več doseči strežnika: potrebuje ta zaganjalnik, ki nosi vašo povezavo s strežnikom skupnosti.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Da bi Igraj še naprej deloval, lahko ta zaganjalnik Steamu naroči, naj odpre njega. Spremeni eno samo nastavitev te igre v Steamu (možnosti zagona) in nič drugega: ne vaših drugih iger, ne samega Steama, ne datotek igre. Vidite jo v Steamu: desni klik na igro, Lastnosti, Možnosti zagona.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam mora biti zaprt, medtem ko se nastavitev zapisuje, ker Steam ob izhodu shrani svojo kopijo. Z odstranitvijo tega zaganjalnika se nastavitev vrne.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Da bi Igraj še naprej deloval, lahko ta zaganjalnik Steamu naroči, naj odpre njega.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Spremeni eno samo nastavitev te igre v Steamu (možnosti zagona) in nič drugega: ne vaših drugih iger, ne samega Steama, ne datotek igre.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Vidite jo v Steamu: desni klik na igro, Lastnosti, Možnosti zagona.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam mora biti zaprt, medtem ko se nastavitev zapisuje, ker Steam ob izhodu shrani svojo kopijo.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Z odstranitvijo tega zaganjalnika se nastavitev vrne.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Vaša trenutna možnost zagona te igre je: {0}. Zamenja se le, če izberete prvi gumb.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Zapri Steam in nastavi</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Namesto tega kopiraj vrstico</value></data>

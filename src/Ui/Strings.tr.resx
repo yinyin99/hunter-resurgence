@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopyala</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Oyunu Steam'in Oyna düğmesinden başlat</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Resmi sunucular kapalı. Steam'in Oyna'ya bastığınızda açtığı oyunun kendi başlatıcısı artık tek başına bir sunucuya ulaşamıyor: topluluk sunucusuna bağlantınızı taşıyan bu başlatıcıya ihtiyaç duyuyor.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Oyna'nın çalışmaya devam etmesi için bu başlatıcı Steam'e onun yerine kendisini açmasını söyleyebilir. Steam'de bu oyunun yalnızca tek bir ayarını (başlatma seçenekleri) değiştirir, başka hiçbir şeyi değiştirmez: diğer oyunlarınızı, Steam'in kendisini, oyunun dosyalarını değil. Steam'de görebilirsiniz: oyuna sağ tıklayın, Özellikler, Başlatma seçenekleri.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Ayar yazılırken Steam kapalı olmalıdır, çünkü Steam çıkarken kendi kopyasını kaydeder. Bu başlatıcıyı kaldırmak ayarı geri koyar.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Oyna'nın çalışmaya devam etmesi için bu başlatıcı Steam'e onun yerine kendisini açmasını söyleyebilir.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Steam'de bu oyunun yalnızca tek bir ayarını (başlatma seçenekleri) değiştirir, başka hiçbir şeyi değiştirmez: diğer oyunlarınızı, Steam'in kendisini, oyunun dosyalarını değil.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Steam'de görebilirsiniz: oyuna sağ tıklayın, Özellikler, Başlatma seçenekleri.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Ayar yazılırken Steam kapalı olmalıdır, çünkü Steam çıkarken kendi kopyasını kaydeder.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Bu başlatıcıyı kaldırmak ayarı geri koyar.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Bu oyun için şu anki başlatma seçeneğiniz: {0}. Yalnızca ilk düğmeyi seçerseniz değiştirilir.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Steam'i kapat ve ayarla</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Bunun yerine satırı kopyala</value></data>

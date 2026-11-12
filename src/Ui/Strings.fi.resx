@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopioi</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Käynnistä peli Steamin Pelaa-painikkeesta</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Viralliset palvelimet on suljettu. Pelin oma käynnistin, jonka Steam avaa, kun painat Pelaa, ei enää tavoita palvelinta yksin: se tarvitsee tämän käynnistimen, joka kantaa yhteytesi yhteisöpalvelimeen.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Jotta Pelaa toimisi edelleen, tämä käynnistin voi pyytää Steamia avaamaan sen tilalle. Se muuttaa yhden tämän pelin asetuksen Steamissä (käynnistysvalinnat) eikä mitään muuta: ei muita pelejäsi, ei Steamiä itseään, ei pelin tiedostoja. Näet sen Steamissä: napsauta peliä hiiren kakkospainikkeella, Ominaisuudet, Käynnistysvalinnat.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steamin on oltava suljettuna, kun asetus kirjoitetaan, koska Steam tallentaa oman kopionsa sulkeutuessaan. Tämän käynnistimen asennuksen poisto palauttaa asetuksen.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Jotta Pelaa toimisi edelleen, tämä käynnistin voi pyytää Steamia avaamaan sen tilalle.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Se muuttaa yhden tämän pelin asetuksen Steamissä (käynnistysvalinnat) eikä mitään muuta: ei muita pelejäsi, ei Steamiä itseään, ei pelin tiedostoja.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Näet sen Steamissä: napsauta peliä hiiren kakkospainikkeella, Ominaisuudet, Käynnistysvalinnat.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steamin on oltava suljettuna, kun asetus kirjoitetaan, koska Steam tallentaa oman kopionsa sulkeutuessaan.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Tämän käynnistimen asennuksen poisto palauttaa asetuksen.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Tämän pelin nykyinen käynnistysvalintasi on: {0}. Se korvataan vain, jos valitset ensimmäisen painikkeen.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Sulje Steam ja aseta se</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopioi rivi sen sijaan</value></data>
