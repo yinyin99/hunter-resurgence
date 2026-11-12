@@ -1323,4 +1323,13 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Odebrat nastavení? Blok hosts, certifikační autorita a certifikát budou odebrány a hra opět bude komunikovat se svými vlastními servery.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Nastavit pro komunitní server</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Odebrat nastavení</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Nastavení na tomto počítači bylo vytvořeno pro jiné názvy serverů, než uvádí settings.json. Nastavte znovu: nahradí blok hosts a certifikát.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Certifikační autorita na tomto počítači není důvěryhodná (odstraněna, nebo byl dotaz Windows odmítnut). Nastavte znovu.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Nalezeno starší nastavení</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Tyto starší programy běží. Smazat je nejdřív zavře:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Staré rozbalené složky (Smazat odstraní každou i s obsahem):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Zbylé protokoly hry v instalační složce hry:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Starší nastavení balíčku hráče je na tomto počítači a stále vyhovuje: zůstane beze změny.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starší nastavení balíčku hráče je na tomto počítači, ale nevyhovuje: další okno ho nahradí jedním krokem.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Smazat</value></data>
 </root>

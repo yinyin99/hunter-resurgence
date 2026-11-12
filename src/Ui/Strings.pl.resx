@@ -1323,4 +1323,13 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Usunąć konfigurację? Blok hosts, urząd certyfikacji i certyfikat zostaną usunięte, a gra znów będzie łączyć się ze swoimi serwerami.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Skonfiguruj dla serwera społeczności</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Usuń konfigurację</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Konfiguracja na tym komputerze powstała dla innych nazw serwerów niż w settings.json. Skonfiguruj ponownie: zastąpi blok hosts i certyfikat.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Urząd certyfikacji nie jest zaufany na tym komputerze (usunięty lub odrzucono monit Windows). Skonfiguruj ponownie.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Znaleziono starszą konfigurację</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Te starsze programy są uruchomione. Usuń najpierw je zamknie:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Stare rozpakowane foldery (Usuń kasuje każdy wraz z zawartością):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Pozostałe dzienniki gry w folderze instalacji gry:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Starsza konfiguracja zestawu gracza jest na tym komputerze i nadal pasuje: zostaje bez zmian.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starsza konfiguracja zestawu gracza jest na tym komputerze, ale nie pasuje: następne okno zastąpi ją w jednym kroku.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Usuń</value></data>
 </root>

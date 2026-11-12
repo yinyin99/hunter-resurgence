@@ -1323,4 +1323,13 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Poistetaanko määritys? Hosts-lohko, varmenteen myöntäjä ja varmenne poistetaan, ja peli keskustelee taas omien palvelimiensa kanssa.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Määritä yhteisöpalvelinta varten</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Poista määritys</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Tämän tietokoneen asennus tehtiin eri palvelinnimille kuin settings.json luettelee. Asenna uudelleen: se korvaa hosts-lohkon ja varmenteen.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Varmenteen myöntäjää ei luoteta tällä tietokoneella (poistettu, tai Windowsin kysely hylättiin). Asenna uudelleen.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Vanhempi asennus löytyi</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Nämä vanhat ohjelmat ovat käynnissä. Poista sulkee ne ensin:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Vanhat purketut kansiot (Poista poistaa jokaisen sisältöineen):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Pelin asennuskansioon jääneet pelilokit:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Pelaajapaketin vanhempi asennus on tällä tietokoneella ja sopii yhä: se jää ennalleen.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Pelaajapaketin vanhempi asennus on tällä tietokoneella mutta ei sovi: seuraava ikkuna korvaa sen yhdellä kertaa.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Poista</value></data>
 </root>

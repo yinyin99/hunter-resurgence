@@ -1323,4 +1323,13 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Einrichtung entfernen? Der Hosts-Block, die Zertifizierungsstelle und das Zertifikat werden entfernt, und das Spiel spricht wieder mit seinen eigenen Servern.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Für den Community-Server einrichten</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Einrichtung entfernen</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Die Einrichtung auf diesem PC wurde für andere Servernamen erstellt als in settings.json stehen. Neu einrichten: Hosts-Block und Zertifikat werden ersetzt.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Die Zertifizierungsstelle wird auf diesem PC nicht als vertrauenswürdig geführt (entfernt, oder die Windows-Abfrage wurde abgelehnt). Neu einrichten.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Ältere Einrichtung gefunden</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Diese älteren Programme laufen noch. Löschen schließt sie zuerst:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Alte entpackte Ordner (Löschen entfernt jeden samt Inhalt):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Übrig gebliebene Spielprotokolle im Installationsordner des Spiels:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Eine ältere Einrichtung des Spieler-Kits ist auf diesem PC und passt noch: sie bleibt unverändert.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Eine ältere Einrichtung des Spieler-Kits ist auf diesem PC, passt aber nicht: das nächste Fenster ersetzt sie in einem Schritt.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Löschen</value></data>
 </root>

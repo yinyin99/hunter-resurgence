@@ -1323,4 +1323,13 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Ta bort konfigurationen? Hosts-blocket, certifikatutfärdaren och certifikatet tas bort, och spelet pratar med sina egna servrar igen.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Konfigurera för communityservern</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Ta bort konfigurationen</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Konfigurationen på den här datorn gjordes för andra servernamn än de i settings.json. Konfigurera igen: det ersätter hosts-blocket och certifikatet.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Certifikatutfärdaren är inte betrodd på den här datorn (borttagen, eller Windows-frågan nekades). Konfigurera igen.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Äldre konfiguration hittad</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>De här äldre programmen körs. Ta bort stänger dem först:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Gamla uppackade mappar (Ta bort raderar varje mapp med allt i):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Kvarlämnade spelloggar i spelets installationsmapp:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>En äldre konfiguration av spelarkitet finns på den här datorn och passar fortfarande: den lämnas som den är.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>En äldre konfiguration av spelarkitet finns på den här datorn men passar inte: nästa fönster ersätter den i ett steg.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Ta bort</value></data>
 </root>

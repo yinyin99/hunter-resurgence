@@ -1323,4 +1323,13 @@ Numele:</value></data>
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Elimini configurarea? Blocul hosts, autoritatea de certificare și certificatul sunt eliminate, iar jocul vorbește din nou cu serverele lui.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Configurează pentru serverul comunității</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Elimină configurarea</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Configurarea de pe acest PC a fost făcută pentru alte nume de server decât cele din settings.json. Configurați din nou: înlocuiește blocul hosts și certificatul.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Autoritatea de certificare nu este de încredere pe acest PC (eliminată sau solicitarea Windows a fost refuzată). Configurați din nou.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>S-a găsit o configurare mai veche</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Aceste programe vechi rulează. Ștergere le închide mai întâi:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Foldere vechi dezarhivate (Ștergere elimină fiecare folder cu tot conținutul):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Jurnale de joc rămase în folderul de instalare al jocului:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>O configurare mai veche a kitului jucătorului este pe acest PC și încă se potrivește: rămâne neschimbată.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>O configurare mai veche a kitului jucătorului este pe acest PC, dar nu se potrivește: fereastra următoare o înlocuiește într-un singur pas.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Ștergere</value></data>
 </root>

@@ -201,6 +201,23 @@ Press Play in Steam. The game's own files stay untouched. On its first start the
 - **The update** (`LauncherUpdater`) checks the releases of this repository at start (`GithubSource`, no pre-releases), downloads a newer one in the background (the patch bar shows it as a launcher update) and then shows the "launcher updated" message; its OK button applies the update and restarts the launcher. Nothing is checked, shown or applied while the game runs (`GameFiles.ClientRunning`), and a feed, download or checksum that fails leaves the installed version as it is, without a message.
 - **The link** `hunter-resurgence://open` (`LinkScheme`) is written by the Setup and removed by the uninstall, under `HKCU\Software\Classes\hunter-resurgence`: Windows starts `resurgence-launcher.exe "hunter-resurgence://open"`. One launcher runs at a time: a second start (the link, a shortcut, Steam) brings the open window forward and exits. The elevated `--hosts on|off` copy is not a second start: it runs on its own.
 
+### Install and uninstall
+
+**The first start after the install** (Velopack's first-run hook, `Program.FirstRun`; `Cleanup.cs`) looks in fixed places for what an older setup left and shows one dialog, **Older setup found**. Nothing is deleted before the player chooses **Delete**; **Not now** leaves everything. Nothing outside the list below is touched.
+
+| Found | Where | What happens |
+|---|---|---|
+| An older player kit setup: the hosts block, the authority `Hunter Resurgence local CA`, the leaf and its key | the hosts file, the current user's trust list, `%LOCALAPPDATA%\hunter-resurgence-play` | Shown as kept when it fits this version (the block is exactly what setup writes for the names in `settings.json`; the leaf is valid, has exactly those names and is signed by the trusted authority), else as replaced: the setup window that follows opens with the reason and replaces all of it in its one hosts prompt. |
+| A running `play.exe` (next to a `settings.json`) or a `resurgence-launcher.exe` that is not this install | any process | Listed; Delete asks it to close and stops it if it does not within a few seconds. |
+| Old unpacked folders `launcher-win-x64` and `play-win-x64`, each with its exe still inside | Downloads, the desktop, the folder above a running old program's folder | Listed; Delete removes each with everything in it. |
+| Stray game logs: `*.netlog`, `cef.log`, an empty `icons` folder | the game's install folder itself, never inside the game's own `game` folder | Listed; Delete removes them. |
+
+If the player said No at the certificate prompt of a setup, no leaf is left (it is written last): the next start finds no setup and shows the setup window again.
+
+**The uninstall** (Velopack's before-uninstall hook, `Cleanup.Uninstall`) removes the hosts block (the file is then byte for byte what it was before setup), the authority, the leaf and its key, and the link scheme. Each step runs on its own: one that fails does not stop the others. Windows may ask in the hook (administrator permission for the hosts file, and to remove the authority); the hook has 30 seconds. If you say No, remove the block yourself (the lines between `# >>> hunter-resurgence play` and `# <<< hunter-resurgence play`) or run Settings, Remove the setup before uninstalling. **`%APPDATA%\hunter-resurgence` (`launcher.json`, `session.dat`) is kept**: Velopack's uninstall hook may show no window, so the launcher cannot ask there. Delete the folder by hand to remove it. The game's files are never touched.
+
+Tests: `CleanupTests` (temporary folders, hosts file, certificate store and registry key).
+
 ## Languages
 
 The UI has 19 languages (`Languages.All` in `src/Ui/Languages.cs`): English, French, German, Spanish, Portuguese (Brazil), Russian, Italian, Dutch, Polish, Portuguese (Portugal), Swedish, Danish, Norwegian (bokmål), Finnish, Czech, Hungarian, Romanian, Slovenian and Turkish. All texts are .NET resources in `src/Ui/`: `Strings.resx` (English, also the fallback) and one `Strings.<code>.resx` per other language. The French texts are the original French of the old screens; the few new texts are in our own French.

@@ -32,6 +32,8 @@ static class LauncherServices
         services.AddSingleton<IPatchService>(updater ?? (IPatchService)new MockPatchService(server is null ? mock : null));
         // the player kit: setup, removal and the forwarder (live only with an https server_url)
         services.AddSingleton<IKitService>(new LauncherKit(server));
+        // the first start after the install looks for what an older setup left (docs/launcher.md#install-and-uninstall)
+        services.AddSingleton<ICleanupService>(sp => new LauncherCleanup(() => sp.GetRequiredService<LauncherEnv>().Install, Environment.ProcessPath, Program.FirstRun));
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));

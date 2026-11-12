@@ -47,11 +47,16 @@ static class Hosts
         return text + glue + block + (glue.Length == 0 ? nl : "");
     }
 
+    /// <summary>The file as text. Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte.</summary>
+    public static string Read(string path) => Encoding.Latin1.GetString(File.ReadAllBytes(path));
+
+    /// <summary>True when the text holds exactly the block that <see cref="Add"/> writes for <paramref name="hosts"/>.</summary>
+    public static bool Matches(string text, IEnumerable<string> hosts) => Add(text, hosts) == text;
+
     /// <summary>Adds the block (<paramref name="hosts"/>) or removes it (null) in the hosts file at <paramref name="path"/>. False when nothing had to change; throws UnauthorizedAccessException without administrator rights.</summary>
     public static bool Apply(string path, IReadOnlyCollection<string>? hosts)
     {
-        // Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte
-        var text = Encoding.Latin1.GetString(File.ReadAllBytes(path));
+        var text = Read(path);
         var next = hosts is null ? Remove(text) : Add(text, hosts);
         if (next == text) return false;
         File.WriteAllText(path, next, Encoding.Latin1);

@@ -1,0 +1,47 @@
+@inject ModalService Modal
+@inject ICleanupService Cleanup
+
+@* the first start after the install: what an older setup left on this PC. Nothing is deleted before the player chooses Delete *@
+<div class="old" role="dialog" aria-modal="true" aria-labelledby="old-title">
+    <h1 id="old-title">@L["Cleanup.Title"]</h1>
+    @if (Found.Programs.Count > 0) { <p>@L["Cleanup.Programs"]</p><ul>@foreach (var p in Found.Programs) { <li>@p</li> }</ul> }
+    @if (Found.Folders.Count > 0) { <p>@L["Cleanup.Folders"]</p><ul>@foreach (var f in Found.Folders) { <li>@f</li> }</ul> }
+    @if (Found.Logs.Count > 0) { <p>@L["Cleanup.Logs"]</p><ul>@foreach (var f in Found.Logs) { <li>@f</li> }</ul> }
+    @if (Found.KitKept is { } kept) { <p>@L[kept ? "Cleanup.KitKept" : "Cleanup.KitReplace"]</p> }
+    @if (error is not null) { <p class="error" role="alert">@error</p> }
+    <div class="buttons">
+        @if (Found.Programs.Count + Found.Folders.Count + Found.Logs.Count > 0)
+        {
+            <button type="button" class="btn btn-primary" id="old-delete" disabled="@busy" @onclick="Run">@L["Cleanup.Delete"]</button>
+            <button type="button" class="btn btn-inverse" disabled="@busy" @onclick="Close">@L["Kit.NotNow"]</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary" id="old-ok" @onclick="Close">@L["Alert.Ok"]</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public OldSetup Found { get; set; } = null!;
+    /// <summary>Set after the dialog has closed: the player kit's dialog follows.</summary>
+    [Parameter, EditorRequired] public TaskCompletionSource Done { get; set; } = null!;
+
+    bool busy;
+    string? error;
+
+    void Close()
+    {
+        Modal.Close();
+        Done.TrySetResult();
+    }
+
+    async Task Run()
+    {
+        (busy, error) = (true, null);
+        var r = await Cleanup.CleanAsync(Found);
+        busy = false;
+        if (!r.Ok) { error = r.Error; return; } // stays open: the list shows what is left, Not now closes it
+        Close();
+    }
+}

@@ -1323,4 +1323,13 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>¿Quitar la configuración? Se quitan el bloque de hosts, la autoridad de certificación y el certificado, y el juego vuelve a hablar con sus propios servidores.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Configurar para el servidor de la comunidad</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Quitar la configuración</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>La configuración de este PC se hizo para otros nombres de servidor que los de settings.json. Configura de nuevo: sustituye el bloque de hosts y el certificado.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>La autoridad de certificación no es de confianza en este PC (eliminada, o se rechazó el aviso de Windows). Configura de nuevo.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Configuración anterior encontrada</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Estos programas antiguos están en ejecución. Eliminar los cierra primero:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Carpetas antiguas descomprimidas (Eliminar borra cada una con todo su contenido):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Registros del juego sobrantes en la carpeta de instalación del juego:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>Hay una configuración anterior del kit de jugador en este PC y sigue siendo válida: se queda como está.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>Hay una configuración anterior del kit de jugador en este PC pero no es válida: la siguiente ventana la sustituye en un paso.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Eliminar</value></data>
 </root>

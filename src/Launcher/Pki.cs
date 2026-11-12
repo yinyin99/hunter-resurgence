@@ -13,11 +13,32 @@ namespace Resurgence.Launcher;
 static class Pki
 {
     public const string CaSubject = "CN=Hunter Resurgence local CA";
-    public const string KeyName = "hunter-resurgence-play-leaf";
     static readonly TimeSpan Life = TimeSpan.FromDays(730);
 
-    public static string Dir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "hunter-resurgence-play");
-    static string LeafFile => Path.Combine(Dir, "leaf.cer");
+    /// <summary>Where setup keeps its parts: the leaf's folder, the name of its key in the key store and the name of the current user's certificate store that trusts the authority.
+    /// <see cref="Default"/> in the launcher (the old kit's names, so an old setup is found too); temporary ones in the tests.</summary>
+    public record Place(string Dir, string KeyName, string Store)
+    {
+        public static readonly Place Default = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "hunter-resurgence-play"), "hunter-resurgence-play-leaf", "Root");
+
+        public string LeafFile => Path.Combine(Dir, "leaf.cer");
+
+        public virtual X509Store Open()
+        {
+            var s = new X509Store(Store, StoreLocation.CurrentUser);
+            s.Open(OpenFlags.ReadWrite);
+            return s;
+        }
+    }
+
+    /// <summary>True when any part of a setup exists: the leaf file, its key or the trusted authority.</summary>
+    public static bool Installed(Place? place = null)
+    {
+        var p = place ?? Place.Default;
+        if (File.Exists(p.LeafFile) || CngKey.Exists(p.KeyName)) return true;
+        using var store = p.Open();
+        return Authorities(store).Count > 0;
+    }
 
     public static X509Certificate2 NewCa(IEnumerable<string> hosts, DateTimeOffset now)
     {
@@ -69,7 +90,7 @@ static class Pki
         return req.Create(ca, now.AddDays(-1), now + Life - TimeSpan.FromDays(1), serial);
     }
 
-    /// <summary>A 2048-bit RSA key that cannot be exported. With a name it is kept in the user's key store (<see cref="KeyName"/>), without it lives in memory.</summary>
+    /// <summary>A 2048-bit RSA key that cannot be exported. With a name it is kept in the user's key store (<see cref="Place.KeyName"/>), without it lives in memory.</summary>
     public static RSA NewLeafKey(string? name) => new RSACng(CngKey.Create(CngAlgorithm.Rsa, name, new CngKeyCreationParameters
     {
         ExportPolicy = CngExportPolicies.None,
@@ -78,44 +99,66 @@ static class Pki
     }));
 
     /// <summary>Makes the authority and the leaf, trusts the authority for the current user (Windows asks once), and drops the authority's key.</summary>
-    public static void Install(IEnumerable<string> hosts, DateTimeOffset now)
+    public static void Install(IEnumerable<string> hosts, DateTimeOffset now, Place? place = null)
     {
+        var p = place ?? Place.Default;
         var names = hosts.ToArray();
-        Untrust();
-        Directory.CreateDirectory(Dir);
+        // the old leaf goes first and the new one is written last: a setup that stops anywhere before the end (the player said No at the certificate prompt) leaves none, so the next start offers setup again
+        if (File.Exists(p.LeafFile)) File.Delete(p.LeafFile);
+        Untrust(p);
+        Directory.CreateDirectory(p.Dir);
         using var ca = NewCa(names, now);
-        using var key = NewLeafKey(KeyName);
+        using var key = NewLeafKey(p.KeyName);
         using var leaf = NewLeaf(ca, key, names, now);
-        File.WriteAllBytes(LeafFile, leaf.RawData);
-        using var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-        store.Open(OpenFlags.ReadWrite);
-        using var pub = X509CertificateLoader.LoadCertificate(ca.RawData); // the certificate alone, no key
-        store.Add(pub);
+        using (var store = p.Open())
+        using (var pub = X509CertificateLoader.LoadCertificate(ca.RawData)) // the certificate alone, no key
+            store.Add(pub);
+        File.WriteAllBytes(p.LeafFile, leaf.RawData);
     }
 
     /// <summary>The authority, the leaf's key and its folder. Safe when nothing is installed.</summary>
-    public static void Uninstall()
+    public static void Uninstall(Place? place = null)
     {
-        Untrust();
-        if (CngKey.Exists(KeyName)) using (var k = CngKey.Open(KeyName)) k.Delete();
-        if (Directory.Exists(Dir)) Directory.Delete(Dir, true);
+        var p = place ?? Place.Default;
+        Untrust(p);
+        if (CngKey.Exists(p.KeyName)) using (var k = CngKey.Open(p.KeyName)) k.Delete();
+        if (Directory.Exists(p.Dir)) Directory.Delete(p.Dir, true);
     }
 
-    static void Untrust()
+    static X509Certificate2Collection Authorities(X509Store store) => store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, CaSubject, false);
+
+    static void Untrust(Place p)
     {
-        using var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-        store.Open(OpenFlags.ReadWrite);
-        var found = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, CaSubject, false);
-        if (found.Count > 0) store.RemoveRange(found);
+        using var store = p.Open();
+        if (Authorities(store) is { Count: > 0 } found) store.RemoveRange(found);
+    }
+
+    /// <summary>Null when setup is in place for exactly <paramref name="hosts"/>: the leaf and its key exist, the leaf is valid and a trusted authority signed it. Else why not (a translated text).</summary>
+    public static string? Check(string[] hosts, DateTimeOffset now, Place? place = null)
+    {
+        var p = place ?? Place.Default;
+        if (!File.Exists(p.LeafFile) || !CngKey.Exists(p.KeyName)) return Kit.S("Kit.NoLeaf");
+        using var leaf = X509CertificateLoader.LoadCertificate(File.ReadAllBytes(p.LeafFile));
+        if (leaf.NotAfter < now) return Kit.S("Kit.LeafExpired");
+        var names = leaf.Extensions.OfType<X509SubjectAlternativeNameExtension>().SingleOrDefault()?.EnumerateDnsNames().Order().ToArray() ?? [];
+        if (!names.SequenceEqual(hosts.Order())) return Kit.S("Kit.OtherNames");
+        using var store = p.Open();
+        using var chain = new X509Chain();
+        chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+        chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+        chain.ChainPolicy.VerificationTime = now.UtcDateTime;
+        chain.ChainPolicy.CustomTrustStore.AddRange(Authorities(store));
+        return chain.Build(leaf) ? null : Kit.S("Kit.NoCa");
     }
 
     /// <summary>The leaf with its key, for Kestrel. Throws with a texts key when setup has not run or the leaf has expired.</summary>
-    public static X509Certificate2 LoadLeaf(DateTimeOffset now)
+    public static X509Certificate2 LoadLeaf(DateTimeOffset now, Place? place = null)
     {
-        if (!File.Exists(LeafFile) || !CngKey.Exists(KeyName)) throw new InvalidOperationException(Kit.S("Kit.NoLeaf"));
-        using var pub = X509CertificateLoader.LoadCertificate(File.ReadAllBytes(LeafFile));
+        var p = place ?? Place.Default;
+        if (!File.Exists(p.LeafFile) || !CngKey.Exists(p.KeyName)) throw new InvalidOperationException(Kit.S("Kit.NoLeaf"));
+        using var pub = X509CertificateLoader.LoadCertificate(File.ReadAllBytes(p.LeafFile));
         if (pub.NotAfter < now) throw new InvalidOperationException(Kit.S("Kit.LeafExpired"));
-        return WithKey(pub, KeyName);
+        return WithKey(pub, p.KeyName);
     }
 
     /// <summary>The public certificate joined to its stored key (the key never leaves the key store).</summary>

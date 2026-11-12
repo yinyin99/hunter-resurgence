@@ -1323,4 +1323,13 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Fjern opsætningen? Hosts-blokken, certifikatmyndigheden og certifikatet fjernes, og spillet taler igen med sine egne servere.</value></data>
   <data name="Settings.KitSetup" xml:space="preserve"><value>Sæt op til community-serveren</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Fjern opsætningen</value></data>
+  <data name="Kit.OtherNames" xml:space="preserve"><value>Opsætningen på denne pc blev lavet til andre servernavne end dem i settings.json. Opsæt igen: den erstatter hosts-blokken og certifikatet.</value></data>
+  <data name="Kit.NoCa" xml:space="preserve"><value>Certifikatudstederen er ikke betroet på denne pc (fjernet, eller Windows-spørgsmålet blev afvist). Opsæt igen.</value></data>
+  <data name="Cleanup.Title" xml:space="preserve"><value>Ældre opsætning fundet</value></data>
+  <data name="Cleanup.Programs" xml:space="preserve"><value>Disse ældre programmer kører. Slet lukker dem først:</value></data>
+  <data name="Cleanup.Folders" xml:space="preserve"><value>Gamle udpakkede mapper (Slet fjerner hver mappe med alt indhold):</value></data>
+  <data name="Cleanup.Logs" xml:space="preserve"><value>Efterladte spillogger i spillets installationsmappe:</value></data>
+  <data name="Cleanup.KitKept" xml:space="preserve"><value>En ældre opsætning af spillerkittet findes på denne pc og passer stadig: den bliver som den er.</value></data>
+  <data name="Cleanup.KitReplace" xml:space="preserve"><value>En ældre opsætning af spillerkittet findes på denne pc, men passer ikke: det næste vindue erstatter den i ét trin.</value></data>
+  <data name="Cleanup.Delete" xml:space="preserve"><value>Slet</value></data>
 </root>
