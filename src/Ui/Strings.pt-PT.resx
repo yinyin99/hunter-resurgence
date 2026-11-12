@@ -631,6 +631,8 @@
   <data name="Store.BuyEms" xml:space="preserve"><value>Comprar com em$</value></data>
   <data name="Store.BuyGms" xml:space="preserve"><value>Comprar com gm$</value></data>
   <data name="Store.NotEnoughGms" xml:space="preserve"><value>gm$ insuficientes</value></data>
+  <data name="Store.NotEnoughEms" xml:space="preserve"><value>em$ insuficientes: tens {0}, custa {1}.</value></data>
+  <data name="Store.GmsUnavailable" xml:space="preserve"><value>As compras com gm$ ainda não estão disponíveis.</value></data>
   <data name="Store.GetMoreEms" xml:space="preserve"><value>Obter mais em$</value></data>
   <data name="Store.Includes" xml:space="preserve"><value>Inclui</value></data>
   <data name="Store.Complete" xml:space="preserve"><value>Compra concluída!</value></data>
