@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Dokud probíhá sezónní událost, komunitní server přidává do hry její zvířata a launcher zobrazuje její obrázky. Vypněte to, pokud chcete hrát bez události. Změna se projeví při dalším spuštění hry.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Hrát sezónní události</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Nastavení se nepodařilo uložit. Zkuste to znovu.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Komunitní mise</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Tvé mise události</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Nejlepší přispěvatelé</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} až {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Předměty události v obchodě</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Odměna pro každého přispěvatele: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>Splněno cílů: {0} z {1}</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Probíhá událost: {0}, na: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>všechny revíry</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sezónní událost</value></data>

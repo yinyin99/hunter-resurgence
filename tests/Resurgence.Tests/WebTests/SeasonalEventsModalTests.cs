@@ -12,6 +12,7 @@ public sealed class SeasonalEventsModalTests : UiContext
     {
         public List<bool> Set { get; } = [];
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(new SeasonalEvents(play, null, []));
+        public Task<EventPanelData?> PanelAsync() => Task.FromResult<EventPanelData?>(null);
 
         public Task<Result> SetAsync(bool value)
         {

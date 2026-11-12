@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Amíg egy szezonális esemény tart, a közösségi szerver hozzáadja az állatait a játékhoz, az indító pedig megjeleníti a képeit. Kapcsold ki, ha esemény nélkül szeretnél játszani. A változás a játék következő indításakor lép életbe.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Szezonális események játszása</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>A beállítást nem sikerült elmenteni. Próbáld újra.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Közösségi küldetések</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Eseményküldetéseid</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Legjobb közreműködők</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} – {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Az esemény bolti tárgyai</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Jutalom minden közreműködőnek: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} cél teljesítve</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Esemény fut: {0}, itt: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>minden vadászterület</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Szezonális esemény</value></data>

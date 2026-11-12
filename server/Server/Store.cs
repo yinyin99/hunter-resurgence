@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 18;
+    public const int Version = 19;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -134,6 +134,13 @@ public sealed class Store
             PRIMARY KEY (account_id, day)) WITHOUT ROWID;
         """;
 
+    // a player's count toward each community mission of an event, and whether the reward was paid; shared by all players, so not in PlayerTables
+    const string CommunityProgress = $"""
+        CREATE TABLE IF NOT EXISTS community_progress (
+            event TEXT NOT NULL, mission_id INTEGER NOT NULL, {A}, count INTEGER NOT NULL, paid INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (event, mission_id, account_id)) WITHOUT ROWID;
+        """;
+
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
     /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
     public const long FirstServerId = 2_000_000_000;
@@ -165,6 +172,7 @@ public sealed class Store
         {Challenges}
         {DailyMissions}
         {ClaimTables}
+        {CommunityProgress}
         {Loadouts}
 
         CREATE TABLE items (
@@ -307,6 +315,7 @@ public sealed class Store
             if (version < 17 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'seasonal_events'")! == 0)
                 con.Script("ALTER TABLE accounts ADD COLUMN seasonal_events INTEGER NOT NULL DEFAULT 1");
             if (version < 18) con.Script(ClaimTables);
+            if (version < 19) con.Script(CommunityProgress);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

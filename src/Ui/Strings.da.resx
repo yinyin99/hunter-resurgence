@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Mens en sæsonbegivenhed kører, tilføjer fællesskabsserveren dens dyr til spillet, og launcheren viser dens billeder. Slå det fra for at spille uden begivenheden. Ændringen træder i kraft, næste gang du starter spillet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spil sæsonbegivenheder</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Indstillingen kunne ikke gemmes. Prøv igen.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Fællesskabsmissioner</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Dine begivenhedsmissioner</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Bedste bidragsydere</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} til {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Begivenhedens butiksvarer</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Belønning til hver bidragsyder: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} af {1} mål nået</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Begivenhed i gang: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sæsonbegivenhed</value></data>

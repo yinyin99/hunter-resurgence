@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Пока идёт сезонное событие, сервер сообщества добавляет в игру его животных, а лаунчер показывает его картинки. Отключите это, чтобы играть без события. Изменение вступит в силу при следующем запуске игры.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Участвовать в сезонных событиях</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Не удалось сохранить настройку. Попробуйте ещё раз.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Миссии сообщества</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Ваши миссии события</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Лучшие участники</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>С {0} по {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Товары события в магазине</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Награда каждому участнику: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>Выполнено целей: {0} из {1}</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Идёт событие: {0}. Угодья: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>все</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Сезонное событие</value></data>

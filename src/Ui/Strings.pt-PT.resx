@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Enquanto um evento sazonal está a decorrer, o servidor da comunidade acrescenta os seus animais ao jogo e o launcher mostra as suas imagens. Desative para jogar sem o evento. A alteração aplica-se na próxima vez que iniciar o jogo.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jogar eventos sazonais</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Não foi possível guardar a definição. Tente novamente.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Missões da comunidade</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>As tuas missões do evento</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Melhores colaboradores</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} a {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Artigos do evento na loja</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Recompensa para cada colaborador: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} de {1} objetivos cumpridos</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento a decorrer: {0}, em {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>

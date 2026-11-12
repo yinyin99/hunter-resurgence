@@ -40,6 +40,8 @@ public static class ServerAccountApi
     public const string Loadouts = "/account/loadouts";
     /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
     public const string Events = "/account/events";
+    /// <summary>GET with the cookie: 200 <see cref="ServerEventPanel"/> for a player who plays the running event, else <c>{"event": null}</c> (no <c>Name</c>).</summary>
+    public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
     public const string Inventory = "/account/inventory";
     public const long MaxZipBytes = 1L << 30;
@@ -63,6 +65,19 @@ public sealed record ServerEvent(string Name, string Define, int[] Reserves);
 /// <summary><see cref="ServerAccountApi.Events"/>: <c>Event</c> is null when none runs.</summary>
 public sealed record ServerEvents(bool Play, ServerEvent? Event);
 
+public sealed record ServerCommunityMission(string Title, int Progress, int Target, int Gm, int Em);
+
+public sealed record ServerContributor(string Handle, int Count);
+
+public sealed record ServerEventObjective(string Title, bool Done);
+
+public sealed record ServerEventMission(int Id, string Title, string State, ServerEventObjective[] Objectives, string Reward);
+
+public sealed record ServerEventItem(int Id, string Name);
+
+/// <summary><see cref="ServerAccountApi.EventPanel"/>: <c>Start</c> and <c>End</c> are unix seconds; <c>Name</c> is null when there is no panel.</summary>
+public sealed record ServerEventPanel(string? Name, string? Title, long Start, long End, ServerCommunityMission[]? Community, ServerContributor[]? Contributors,
+    ServerEventMission[]? Missions, ServerEventItem[]? Items);
 /// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>.</summary>
 public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped);
 

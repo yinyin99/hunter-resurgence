@@ -263,6 +263,14 @@ public static class AccountApi
                              + "empty for every reserve), or null outside its window or with none set. The launcher shows the event's pictures only while `play` is true.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/events/panel", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.EventPanel(account) ?? new JsonObject { ["event"] = null })
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountEventPanel").WithSummary("The running event's panel: community missions, the player's event missions, store items")
+            .WithDescription("For a player who plays seasonal events while an event runs: `{name, title, start, end, community, contributors, missions, items}` (`start` and `end` unix seconds; `community` `[{id, title, progress, target, gm, em}]` "
+                             + "with the divided target, `contributors` the top 10 `[{handle, count}]`, `missions` the player's `[{id, title, state, objectives: [{title, done}], reward}]`, `items` `[{id, name}]`). Otherwise `{event: null}`.")
+            .Produces(200, contentType: "application/json");
+
         group.MapPost("/events", async (HttpContext ctx) =>
             {
                 if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");

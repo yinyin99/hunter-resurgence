@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Mentre un evento stagionale è in corso, il server della community aggiunge i suoi animali al gioco e il launcher mostra le sue immagini. Disattivalo per giocare senza l'evento. La modifica si applica al prossimo avvio del gioco.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Partecipa agli eventi stagionali</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Impossibile salvare l'impostazione. Riprova.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Missioni della comunità</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Le tue missioni dell'evento</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Migliori collaboratori</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>Dal {0} al {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Oggetti dell'evento nel negozio</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Ricompensa per ogni collaboratore: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} obiettivi su {1} completati</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>

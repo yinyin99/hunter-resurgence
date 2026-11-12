@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Mens en sesongbegivenhet pågår, legger fellesskapsserveren dyrene sine til i spillet, og launcheren viser bildene sine. Slå av dette for å spille uten begivenheten. Endringen gjelder neste gang du starter spillet.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Spill sesongbegivenheter</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Innstillingen kunne ikke lagres. Prøv igjen.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Fellesskapsoppdrag</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Dine arrangementsoppdrag</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Beste bidragsytere</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} til {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Butikkvarer for arrangementet</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Belønning til hver bidragsyter: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål fullført</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Hendelse pågår: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sesonghendelse</value></data>

@@ -74,6 +74,13 @@
   <data name="Events.Info" xml:space="preserve"><value>Solange ein saisonales Event läuft, fügt der Community-Server dem Spiel seine Tiere hinzu und der Launcher zeigt seine Bilder. Schalte das aus, um ohne das Event zu spielen. Die Änderung gilt ab dem nächsten Spielstart.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Saisonale Events spielen</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Die Einstellung konnte nicht gespeichert werden. Versuche es erneut.</value></data>
+  <data name="Events.Community" xml:space="preserve"><value>Community-Missionen</value></data>
+  <data name="Events.Personal" xml:space="preserve"><value>Deine Event-Missionen</value></data>
+  <data name="Events.Contributors" xml:space="preserve"><value>Beste Beitragende</value></data>
+  <data name="Events.Dates" xml:space="preserve"><value>{0} bis {1}</value></data>
+  <data name="Events.Items" xml:space="preserve"><value>Event-Artikel im Shop</value></data>
+  <data name="Events.Pay" xml:space="preserve"><value>Belohnung für jeden Beitragenden: {0}</value></data>
+  <data name="Events.Objectives" xml:space="preserve"><value>{0} von {1} Zielen erledigt</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Ereignis läuft: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>allen Revieren</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Saisonales Ereignis</value></data>

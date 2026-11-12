@@ -10,8 +10,26 @@ public sealed record SeasonalEvents(bool Play, string? Event, IReadOnlyList<int>
     public bool Shows(int reserve) => Play && Event is not null && (Reserves.Count == 0 || Reserves.Contains(reserve - 1));
 }
 
+/// <summary>A shared objective of the event: all players who play events count toward it; <paramref name="Target"/> is already divided by the server's setting.</summary>
+/// <param name="Gm">The reward in gm$ every contributor gets when it is done.</param>
+public sealed record CommunityMission(string Title, int Progress, int Target, int Gm, int Em);
+
+public sealed record Contributor(string Handle, int Count);
+
+/// <param name="Done">Objectives of the mission finished.</param>
+public sealed record EventMission(Mission Mission, int Done);
+
+public sealed record EventItem(int Id, string Name);
+
+/// <summary>What the event panel shows while an event runs for a player who plays events (<see cref="ServerAccountApi.EventPanel"/>).</summary>
+public sealed record EventPanelData(string Title, DateTimeOffset Start, DateTimeOffset End, IReadOnlyList<CommunityMission> Community, IReadOnlyList<Contributor> Contributors,
+    IReadOnlyList<EventMission> Missions, IReadOnlyList<EventItem> Items);
+
 public interface ISeasonalEventsService
 {
+    /// <summary>The panel of the event that runs now; null when none runs, the player opted out, or there is no answer. Never throws.</summary>
+    Task<EventPanelData?> PanelAsync();
+
     /// <summary>Never throws: signed out or no answer is the default, no event and the player plays.</summary>
     Task<SeasonalEvents> GetAsync();
 

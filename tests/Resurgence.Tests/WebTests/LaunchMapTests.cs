@@ -52,6 +52,7 @@ public sealed class LaunchMapTests : UiContext
         public bool Play = state.Play, Fail;
         public Task? Gate;
         public Task<SeasonalEvents> GetAsync() => Task.FromResult(state);
+        public Task<EventPanelData?> PanelAsync() => Task.FromResult<EventPanelData?>(null);
         public async Task<Result> SetAsync(bool play) { if (Gate is not null) await Gate; if (Fail) return Result.Fail("Events.Failed"); Play = play; return Result.Success; }
     }
 
