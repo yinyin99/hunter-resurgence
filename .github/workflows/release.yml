@@ -84,6 +84,11 @@ jobs:
               if ($v) { $l.($m[0]) = $v }
             }
             $l | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\launcher-settings.json"
+            # a secret that is set must have replaced its placeholder (key names only, never values)
+            $w = Get-Content "$env:RUNNER_TEMP\launcher-settings.json" -Raw | ConvertFrom-Json
+            foreach ($m in @(@("link_discord", "LINK_DISCORD"), @("link_backup", "LINK_BACKUP"), @("link_source", "LINK_SOURCE"), @("game_name", "GAME_NAME"), @("game_full", "GAME_FULL"))) {
+              if ("$([Environment]::GetEnvironmentVariable($m[1]))".Trim() -and $w.($m[0]) -match '^<.*>$') { throw "$($m[0]) is still a placeholder" }
+            }
             "LAUNCHER=1" >> $env:GITHUB_ENV
           }
       - name: Publish and zip
@@ -141,7 +146,7 @@ jobs:
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
           $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($launcher) { "SHA-256 of HunterResurgence-win-Setup.exe:`n`n$launcherSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded file with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
-          if ($launcher) { $notes += " To install the launcher, run HunterResurgence-win-Setup.exe: it installs for your user only (no admin) into %LocalAppData%\HunterResurgence, adds a shortcut and an Add/Remove programs entry (to uninstall: Windows Settings, Apps, Installed apps, Uninstall, or Update.exe --uninstall in that folder), and with your OK it tells Steam to open it from the game's Play button: it changes one setting of this game in Steam (its launch options), nothing else, only while Steam is closed, and uninstalling it puts the setting back, and the installed launcher updates itself from the later releases (the .nupkg files and releases.win.json are what it downloads). Its settings.json holds the community server's address, the game's identity and file names, and the host names the launcher points at that server; the other keys are placeholders." }
+          if ($launcher) { $notes += " To install the launcher, run HunterResurgence-win-Setup.exe: it installs for your user only (no admin) into %LocalAppData%\HunterResurgence, adds a shortcut and an Add/Remove programs entry (to uninstall: Windows Settings, Apps, Installed apps, Uninstall, or Update.exe --uninstall in that folder), and with your OK it tells Steam to open it from the game's Play button: it changes one setting of this game in Steam (its launch options), nothing else, only while Steam is closed, and uninstalling it puts the setting back, and the installed launcher updates itself from the later releases (the .nupkg files and releases.win.json are what it downloads). Its settings.json holds the community server's address, the game's identity and file names, and the host names the launcher points at that server, the Discord, backup tool and source links and the game's names when the maintainer set them; the other keys are placeholders." }
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
