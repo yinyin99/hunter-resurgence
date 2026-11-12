@@ -467,7 +467,7 @@
     <value>Inicia sesión en el sitio web del servidor</value>
   </data>
   <data name="Send_Code_Text" xml:space="preserve">
-    <value>Tu navegador abre la página de inicio de sesión. Comprueba que muestra el código {0}, inicia sesión con Steam y confirma. Pulsa Cancelar para dejar de esperar.</value>
+    <value>Tu navegador abre la página de inicio de sesión. Inicia sesión allí con Steam y confirma. Pulsa Cancelar para dejar de esperar.</value>
   </data>
   <data name="Send_Sending_Title" xml:space="preserve">
     <value>Enviando la copia</value>
