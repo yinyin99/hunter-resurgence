@@ -1336,7 +1336,7 @@ public sealed partial class State
                 return (JsonNode?)new JsonObject
                 {
                     ["id"] = (long)r[0], ["name"] = C(item?["name"]) ?? "", ["variant"] = C(item is null ? null : G(item, "variationname", null)) ?? "",
-                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0, ["expires"] = r[3] is long or double ? Py.FromSql(r[3]) : null,
+                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0, ["expires"] = r[3] is long or double ? (long)Math.Floor(Convert.ToDouble(r[3])) : null,
                 };
             })]),
         };

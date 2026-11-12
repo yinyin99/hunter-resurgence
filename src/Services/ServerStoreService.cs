@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 namespace Resurgence.Services;
 
 /// <summary>The store of the community server (<see cref="ServerCatalogApi.Store"/>): the original's items, prices, sales and bundles. A server that does not answer is an empty store,
-/// never the mock's. What the signed-in player owns comes from <paramref name="inventory"/> (<c>Owned</c>, <c>Expires</c>); the limits of owning, nor a capacity cost. Buying is the server's
+/// never the mock's. What the signed-in player owns comes from <paramref name="inventory"/> (<c>Owned</c>, <c>Expires</c>); it knows nothing of the limits of owning or a capacity cost. Buying is the server's
 /// (<see cref="ServerAccountApi.Buy"/>), with em$ or gm$.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is the same for everyone and is asked without the
