@@ -167,6 +167,8 @@ public class SeasonalEventTests : StateTestBase
         using (var con = store.Open())
         {
             con.Exec("ALTER TABLE accounts DROP COLUMN seasonal_events");
+            con.Exec("DROP TABLE claim_lookups");
+            con.Exec("DROP TABLE claims");
             con.Exec("PRAGMA user_version = 16");
         }
         var migrated = new Store(file);

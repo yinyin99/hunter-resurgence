@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 17;
+    public const int Version = 18;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -121,6 +121,19 @@ public sealed class Store
         CREATE INDEX wallet_log_account ON wallet_log (account_id, currency, n);
         """;
 
+    // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
+    // name the same archived user id (the later ones wait for the operator). claim_lookups counts an account's lookups per UTC day (the day number since 1970)
+    // keep_handle: the player chose to keep the account's own name
+    const string ClaimTables = """
+        CREATE TABLE claims (
+            id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL UNIQUE REFERENCES accounts (id) ON DELETE CASCADE, archived_uid INTEGER NOT NULL, handle TEXT NOT NULL,
+            hunterscore INTEGER NOT NULL, state TEXT NOT NULL, ts INTEGER NOT NULL, decided_ts INTEGER, note TEXT NOT NULL, keep_handle INTEGER NOT NULL);
+        CREATE INDEX claims_uid ON claims (archived_uid);
+        CREATE TABLE claim_lookups (
+            account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, day INTEGER NOT NULL, n INTEGER NOT NULL,
+            PRIMARY KEY (account_id, day)) WITHOUT ROWID;
+        """;
+
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
     /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
     public const long FirstServerId = 2_000_000_000;
@@ -151,6 +164,7 @@ public sealed class Store
         {Missions}
         {Challenges}
         {DailyMissions}
+        {ClaimTables}
         {Loadouts}
 
         CREATE TABLE items (
@@ -292,6 +306,7 @@ public sealed class Store
                 con.Script("ALTER TABLE expeditions ADD COLUMN start_time INTEGER");
             if (version < 17 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'seasonal_events'")! == 0)
                 con.Script("ALTER TABLE accounts ADD COLUMN seasonal_events INTEGER NOT NULL DEFAULT 1");
+            if (version < 18) con.Script(ClaimTables);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

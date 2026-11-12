@@ -56,10 +56,17 @@ public static class AuthPages
         if($('out'))$('out').onclick=function(){call('POST','/auth/signout',function(){location.reload()});return false};
         """);
 
-    /// <summary>The first sign-in: Steam gives no name, so the player picks one.</summary>
-    public static string Handle(string csrf, string handle, string? error) => Page($"""
+    /// <summary>The first sign-in: Steam gives no name, so the player picks one. With an archive (`offer`) a returning player may ask for the old profile.</summary>
+    public static string Handle(string csrf, string handle, string? error, bool offer = false, string old = "", bool restore = false) => Page($"""
         <h1>Choose your name</h1><p>This is the name other hunters see.</p>
         <form method="post" action="/auth/handle"><input type="hidden" name="csrf" value="{E(csrf)}">
+        {(!offer ? "" : $""""
+        <p><label><input type="radio" name="kind" value="new"{(restore ? "" : " checked")}> I am new here</label><br>
+        <label><input type="radio" name="kind" value="old"{(restore ? " checked" : "")}> I played before: restore what was kept of my old profile</label></p>
+        <p>Only if you played before: <input name="old" value="{E(old)}" maxlength="20" autocomplete="off"> Your old hunter name</p>
+        <p class="small">We kept part of the public profiles: items, trophies, lodges, skills, statistics and achievements. Hunts, photos and money were not kept. High-score profiles are checked by the operator first.</p>
+        <p class="small">Your name below: leave it empty to use the old one when it is free.</p>
+        """")}
         <p><input name="handle" value="{E(handle)}" maxlength="20" autocomplete="off" autofocus></p>
         <p class="small">3 to 20 letters, digits, - or _.</p>
         {(error is null ? "" : $"<p class=\"err\">{E(error)}</p>")}

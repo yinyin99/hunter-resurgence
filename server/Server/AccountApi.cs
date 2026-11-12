@@ -46,7 +46,7 @@ public static class AccountApi
 
     public static void MapAccount(this WebApplication app, Game game)
     {
-        if (app.Services.GetService<Uploads>() is not { } uploads) return;
+        if (app.Services.GetService<Uploads>() is not { } uploads || app.Services.GetService<Claims>() is not { } claims) return;
         var state = game.State!;
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
@@ -69,6 +69,48 @@ public static class AccountApi
             .WithName("AccountRestoreStatus").WithSummary("What became of the player's uploads")
             .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator, each with its time and note "
                              + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected, userId, handle, handleKept, reason}`.");
+
+        group.MapGet("/archive", (HttpContext ctx) =>
+            {
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var name = ctx.Request.Query["name"].ToString();
+                if (name.Length == 0)
+                    return Json(200, new JsonObject
+                    {
+                        ["enabled"] = claims.Enabled,
+                        ["claimed"] = claims.Of(account) is { } c ? new JsonObject { ["state"] = c.State, ["handle"] = c.Handle, ["ts"] = c.Ts } : null,
+                    });
+                var found = claims.Lookup(account, name);
+                if (found.Limited) return Json(429, new JsonObject { ["status"] = "limit", ["message"] = "You used your lookups for today. Try again tomorrow." });
+                if (found.Player is not { } p) return Json(200, new JsonObject { ["found"] = false });
+                return Json(200, new JsonObject
+                {
+                    ["found"] = true, ["handle"] = p.Handle, ["hunterscore"] = p.Hunterscore, ["items"] = p.Items, ["trophies"] = p.Trophies, ["lodges"] = p.Lodges,
+                    ["skills"] = p.Skills, ["statistics"] = p.Statistics, ["achievements"] = p.Achievements, ["nameFree"] = found.NameFree,
+                });
+            })
+            .WithName("AccountArchive").WithSummary("Look up an archived profile by name, or the account's own claim (no `name`)")
+            .WithDescription("With `name`: one of the account's 5 lookups of the UTC day. `{found: false}`, or `{found: true, handle, hunterscore, items, trophies, lodges, skills, statistics, achievements, nameFree}` "
+                             + "(counts and flags of what a claim would restore; `nameFree`: the archived handle could be taken); `429` `{status: limit}` over the limit. Without `name`: `{enabled, claimed}`, "
+                             + "`claimed` null or the account's claim `{state: waiting|restored|rejected, handle, ts}`. `enabled` false: the server has no archive.")
+            .QueryParams(("name", "The archived handle, any case, exact"))
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/archive/claim", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                string One(string key) => form.TryGetValue(key, out var v) ? v[0] : "";
+                var o = claims.Claim(account, One("name"), One("old_name") == "1", One("confirm") == "overwrite");
+                if (o.Kind != "review") Console.WriteLine($"claim of account {account}: {o.Kind}");
+                return Outcome(new(o.Status, o.Kind, o.Message));
+            })
+            .WithName("AccountArchiveClaim").WithSummary("Claim an archived profile (form `name`, `old_name=1|0`, `confirm=overwrite`)")
+            .WithDescription("One claim per account, ever. The archived profile replaces the account's items, skills, achievements, trophies and lodges; the user id never changes. Below hunterscore 10,000 it is restored at once "
+                             + "(`restored`); from 10,000, or when another account claimed the same profile, an operator decides (`review`). `confirm=overwrite` is needed when the account has played (else `409` `confirm`). "
+                             + "Answers `{status, message}`: `restored`, `review`, `refused` (409), `unknown` (404), `limit` (429) or `confirm` (409). `old_name=1` takes the archived handle when it is allowed and free.")
+            .Produces(200, contentType: "application/json");
 
         // one line per upload outcome: a refused upload keeps nothing, so the log is its only record (the request line has no account or kind)
         Reply Logged(long account, UploadOutcome o)

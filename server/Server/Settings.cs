@@ -93,10 +93,12 @@ public sealed class Settings
 
         var hostHeader = Text(root, "host_header") ?? DefaultHostHeader;
         var maxBody = root["max_body_bytes"] is JsonValue m ? (m.TryGetValue<long>(out var bytes) && bytes > 0 ? bytes : throw new InvalidDataException("max_body_bytes: a positive number")) : DefaultMaxBodyBytes;
+        var dataDir = Path_("data_dir", "data");
+        cfg["archive_db"] = Path_("archive_db", Path.Combine(dataDir, "archive.db"));  // the operator's archive of public profiles (Archive.cs); a missing file turns claims off
         return new Settings
         {
             Cfg = cfg,
-            DataDir = Path_("data_dir", "data"),
+            DataDir = dataDir,
             RecordingsDir = Path_("recordings_dir", "recordings"),
             MirrorDir = Path_("mirror_dir", "mirror"),
             VariantsFile = Text(root, "variants_file") is { } v ? Path.GetFullPath(v, baseDir) : null,
