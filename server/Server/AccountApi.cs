@@ -102,7 +102,7 @@ public static class AccountApi
                 if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
                 var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
                 string One(string key) => form.TryGetValue(key, out var v) ? v[0] : "";
-                var o = claims.Claim(account, One("name"), One("old_name") == "1", One("confirm") == "overwrite");
+                var o = claims.Claim(account, One("name"), One("old_name") == "1", One("confirm") == "overwrite", announce: true);
                 if (o.Kind != "review") Console.WriteLine($"claim of account {account}: {o.Kind}");
                 return Outcome(new(o.Status, o.Kind, o.Message));
             })

@@ -24,6 +24,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
     /// <summary>Called with the text for the operator when a claim waits for review (the server sets it to the review webhook).</summary>
     public Action<string> Alert { get; init; } = _ => { };
 
+    /// <summary>Called with the text for the sign-up webhook when a claim from the website is restored at once.</summary>
+    public Action<string> Signup { get; init; } = _ => { };
+
     readonly Lock decide = new();  // one decision at a time (one server process, ADR 0001)
 
     Store Store => state.Store;
@@ -70,7 +73,7 @@ public sealed class Claims(State state, Archive archive, string dataDir)
 
     /// <summary>The account claims the archived player named `name` (the operator may give a user id too). One claim per account, ever. `useOldName`: take the archived handle when it is allowed and free.
     /// `byOperator`: no limit, no review, no confirmation; the account's earlier claim row, if any, is replaced.</summary>
-    public ClaimOutcome Claim(long account, string name, bool useOldName, bool confirmOverwrite, bool byOperator = false)
+    public ClaimOutcome Claim(long account, string name, bool useOldName, bool confirmOverwrite, bool byOperator = false, bool announce = false)
     {
         if (!archive.Enabled) return new(404, "unknown", "There is no archive on this server.");
         lock (decide)
@@ -87,7 +90,10 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             using (var con = Store.Open())
                 if (con.Scalar("SELECT 1 FROM claims WHERE archived_uid = ? AND account_id <> ?", player.Uid, account) is not null)
                     return Review(account, player, useOldName, "waiting for the operator: already claimed by another account");
-            return Restore(account, player, useOldName);
+            var done = Restore(account, player, useOldName);
+            if (announce && done.Kind == "restored")
+                Signup($"Claim restored: account {account} {Alerts.Name((string)Store.AccountJson(account)["handle"]!)}, archived {Alerts.Name(player.Handle)} (hunterscore {player.Hunterscore}), {Alerts.Steam(Store.SteamId64(account))}.");
+            return done;
         }
     }
 
