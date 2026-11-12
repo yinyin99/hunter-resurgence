@@ -26,6 +26,22 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheDeploysDiscordInviteWinsOverTheFilesAndOnlyHttpsCounts()
+    {
+        var o = Minimal();
+        o["link_discord"] = "https://file.test/invite";
+        try
+        {
+            Assert.Equal("https://file.test/invite", (string?)Load(o).Cfg["link_discord"]);
+            Environment.SetEnvironmentVariable("LINK_DISCORD", " https://env.test/invite\n");
+            Assert.Equal("https://env.test/invite", (string?)Load(o).Cfg["link_discord"]);
+            Environment.SetEnvironmentVariable("LINK_DISCORD", "http://env.test/invite");
+            Assert.Null(Load(o).Cfg["link_discord"]);
+        }
+        finally { Environment.SetEnvironmentVariable("LINK_DISCORD", null); }
+    }
+
+    [Fact]
     public void TheCommunityDivisorDefaultsToTwentyAndNeedsAWholeNumberOfAtLeastOne()
     {
         Assert.Equal(20, (int)Load(Minimal()).Cfg["event_community_divisor"]!);
