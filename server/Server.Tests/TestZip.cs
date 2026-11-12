@@ -64,7 +64,7 @@ sealed class TestZip
 
     /// <summary>My-account zip: the profile (with an e-mail, a name and an address that must not be stored), a wallet, items
     /// (one placed), skills, statistics, achievements, a trophy, a lodge and a few replies kept as extras.</summary>
-    public static TestZip Own(string wallet = "\"ems\":12.5,\"gms\":3000.25", string uid = "1001", string? steam = "76561190000000000", string handle = "sample") =>
+    public static TestZip Own(string wallet = "\"ems\":12.5,\"gms\":20000.25", string uid = "1001", string? steam = "76561190000000000", string handle = "sample") =>
         new TestZip(true, uid, steam, handle).Common()
         .Reply("Me_me.json", "/v1/Me/me", $$"""
             {"id":{{uid}},"handle":"{{handle}}","hostname":"sample","gender":1,"hunterscore":1234,"avatar":"https://avatars.example/a.png","membershipType":"freeplay",

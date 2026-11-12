@@ -4,6 +4,9 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Restore;
 
+/// <summary>One saved reply of the operator's archive: the file name a public-mode zip would give it, the endpoint and params of its manifest entry, the status and the raw JSON bytes.</summary>
+public sealed record ArchivedReply(string Path, string Endpoint, IReadOnlyDictionary<string, string> Params, int Status, byte[] Body);
+
 /// <summary>Restore layer A: a backup zip of any backup tool version to a <see cref="PlayerModel"/> and a <see cref="Report"/>.
 /// Everything is read from the raw replies; derived files are verified but not used. Mode is decided by the files, never by tool_version.</summary>
 public static class Importer
@@ -19,6 +22,29 @@ public static class Importer
 
     public static Restored Read(Stream zip, IItemCatalogue? catalogue = null, Limits? limits = null) =>
         new Mapper(BackupReader.Read(zip, limits ?? Limits.Default), catalogue).Map();
+
+    /// <summary>A public profile from replies kept elsewhere (the operator's archive) instead of a zip: the content a public-mode zip of that player would give,
+    /// mapped the same way. The caps are the zip's; a reply that is not JSON is rejected, like a zip's.</summary>
+    /// <exception cref="RestoreException">uid is not digits that fit an id, or a reply or the replies together are over a zip's JSON caps.</exception>
+    public static Restored FromReplies(string uid, string handle, IEnumerable<ArchivedReply> replies, IItemCatalogue? catalogue = null)
+    {
+        var lim = Limits.Default;
+        if (uid.Length == 0 || !uid.All(char.IsAsciiDigit) || !long.TryParse(uid, NumberStyles.None, CultureInfo.InvariantCulture, out _))
+            throw new RestoreException("uid is not digits that fit an id");
+        var manifest = new JsonObject { ["format"] = BackupReader.KnownFormat, ["mode"] = "public", ["identity"] = "handle", ["uid"] = uid, ["handle"] = handle };
+        List<SavedFile> files = [];
+        List<string> rejected = [];
+        long total = 0;
+        foreach (var r in replies.OrderBy(r => r.Path, StringComparer.Ordinal))
+        {
+            if (r.Body.Length > Math.Min(lim.EntryBytes, lim.JsonEntryBytes) || (total += r.Body.Length) > lim.JsonTotalBytes)
+                throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
+            if (!BackupReader.TryParse(r.Body, lim, out var node)) { rejected.Add(BackupReader.NotJson(r.Path, lim)); continue; }
+            var (ep, ps) = r.Endpoint.StartsWith('/') ? (r.Endpoint, r.Params) : Endpoints.FromName(r.Path) is { } x ? (x.Endpoint, x.Params) : ("", new Dictionary<string, string>());
+            files.Add(new(r.Path, ep, ps, r.Status, node));
+        }
+        return new Mapper(new(manifest, uid, BackupReader.KnownFormat, files, [], [], rejected, []), catalogue).Map();
+    }
 
     /// <summary>Every character a backup file name may not hold becomes `_` (the backup tool's rule); the restored files are named the same way.</summary>
     public static string CleanName(string name) => System.Text.RegularExpressions.Regex.Replace(name, "[^A-Za-z0-9._=-]", "_");

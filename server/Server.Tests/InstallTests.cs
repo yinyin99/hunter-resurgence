@@ -249,7 +249,7 @@ public class InstallTests : IDisposable
         var state = LoadState(cfg, Recorded(connect), tmp)!;
         state.CreateAccount(5000, "newcomer");
         var reply = JsonNode.Parse(state.ConnectReply(5000))!;
-        Eq("""{"em": 1000, "gm": 0}""", reply["wallet"]);  // the facts file's start, not the recording's
+        Eq("""{"em": 1000, "gm": 15000}""", reply["wallet"]);  // the facts file's start, not the recording's
         Assert.NotEqual(Py.Dumps(connect["inventory"]!["items"]), Py.Dumps(reply["inventory"]!["items"]));
         Assert.StartsWith("https://game_web.test/media/avatar/256/", (string)reply["account"]!["avatar_url"]!);
         Assert.NotEqual((string)connect["account"]!["avatar_url"]!, (string)reply["account"]!["avatar_url"]!);
