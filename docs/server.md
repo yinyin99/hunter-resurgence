@@ -7,7 +7,7 @@ At this stage it answers the hunt itself (connect, heartbeat, kills, harvest, sc
 ## Run it
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | review ... | coverage | backup <folder> [keep]
+dotnet run --project server/Server -c Release -- [--settings <file>] serve | admin ... | import backup ... | review ... | claim ... | coverage | backup <folder> [keep]
 ```
 
 `serve` is the default. The settings file is `--settings <file>`, else the environment variable `SERVER_SETTINGS`, else `settings.json` in the current folder. It is never committed (`.gitignore`); start from `server/Server/settings.example.json`. Relative paths are relative to the settings file.
@@ -24,7 +24,8 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets |
 | `offline_mode` | Default `true`: a request that no token resolves is the local account's (a player's own PC). `false` on a community server: it gets the reply of an expired token, see [Accounts](#accounts) |
-| `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) the server posts `{"content": "..."}` there: the review id, the account id, the backup's user id and its handle, nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
+| `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) or an archive claim waits ([Archive claims](#archive-claims)) the server posts `{"content": "..."}` there: the review id (`c<id>` for a claim), the account id, the backup's or archived user id and its handle (and for a claim the hunterscore), nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
+| `archive_db` | Default `<data_dir>/archive.db`: the operator's archive of public profiles that players can claim ([Archive claims](#archive-claims)). Opened read only. No file there: claims are off |
 | `listeners` | Required: a list of `{address, port}`; add `cert` and `key` (PEM files) for HTTPS. Plain HTTP is a listener without them. `"admin": true` (loopback addresses only) makes it serve the admin API, see below. Every listener speaks HTTP/1.1 only |
 | `trusted_proxies` | Addresses or `address/prefix` of the proxies in front of the server (default none) |
 | `host_header` | Default `X-Game-Host`, see below |
@@ -412,7 +413,7 @@ With `offline_mode` false (a community server) players sign in with Steam; the e
 1. The browser opens `/auth/steam/login?next=<local path>`. The server keeps a login in memory (15 minutes), sets the cookie `hr_login` and sends the browser to Steam with `return_to=https://<host>/auth/steam/return?login=<id>`.
 2. Steam asks for the password and sends the browser back. The server needs the `hr_login` cookie to match `login` (another browser or a replayed URL fails), then asks Steam to confirm (`check_authentication`) and accepts only an assertion that Steam confirms, whose `return_to` is exactly its own, whose `op_endpoint` is Steam's, whose `claimed_id` is `https://steamcommunity.com/openid/id/<17 digits>` and equals `identity`, whose signature covers `op_endpoint`, `claimed_id`, `identity`, `return_to`, `response_nonce` and `assoc_handle`, with no repeated `openid.*` field, and whose `response_nonce` is at most 5 minutes old (or ahead) and not seen before (kept in memory).
 3. A known Steam id gets a session: the cookie `hr_session` (HttpOnly, Secure, SameSite=Lax, 30 days; its SHA-256 is in `web_sessions`, a table of its own, so a cookie is never a game token and a game token never a cookie) and a redirect to `next` (a local path; anything else becomes `/`).
-4. A new Steam id is sent to `/auth/handle`, where the player picks a handle (Steam gives none we keep). The account is created with the next user id of the server's range (below) and the server's starting data, then step 3. Two tabs of one sign-in make one account.
+4. A new Steam id is sent to `/auth/handle`, where the player picks a handle (Steam gives none we keep). When the server has an archive ([Archive claims](#archive-claims)) the page also offers "I played before": the player types the old hunter name and may leave the new name empty to take the old one when it is free (else "Choose a name: the old one is taken."). The old name is looked up before any account exists, and it costs no daily lookup (each try is one POST of one sign-in); an unknown name shows the page again, "We did not keep a profile under this name.", and creates nothing. Otherwise the account is created as below, then the claim runs at once with the account's confirmation (`Claims.Claim`, the same rules: restored, or kept for the operator from hunterscore 10,000) and the player's inbox tells which. Without an archive the page only asks for the name. The account is created with the next user id of the server's range (below) and the server's starting data, then step 3. Two tabs of one sign-in make one account.
 
 **The launcher's start page** is `GET /` on `signup_host` (the launcher loads it with `#/launcher/start`; the hash never reaches the server). The old launcher's browser (Chromium 25, TLS 1.1) cannot be expected to load Steam's pages, so the page signs in through the player's own browser, in the style of a device code: the page asks `POST /auth/link` for a code and opens `https://<signup-host>/auth/steam/login?link=<code>` with `ewlauncher.openURL` (a second link on the page signs in inside the launcher's window instead, which may fail). The player's browser runs steps 1 to 4, then shows "Sign in the launcher that shows the code `ABCD-EFGH`?" (the first 8 characters of the code); the player confirms, and the launcher, polling `GET /auth/link/<code>` every 2 s, gets `ok` with the `hr_session` cookie once and reloads. The confirmation matters: without it, anyone could send a victim a link made from their own code. Signed in, the page shows "Play": `POST /auth/launch` returns `{"url": <launch URL>}`, and the page calls `ewlauncher.startGame(url)`. The page is plain HTML and ES5, English only.
 
@@ -465,7 +466,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] import back
 
 Restores a [backup zip](backup.md) into `state.db` in `data_dir` and prints the report: what the reader found (restored, unsupported, missing, warnings), the rows stored per table, and what was dropped and why. It runs on its own, with no server running, and needs the recordings like `admin` does. Any zip is accepted, and it replaces the account's profile (items, wallet, skills, profile, statistics, achievements, trophies, lodges, loadouts, saved replies); hunt history stays, no merge (only the friend edges of its lists are added to the ones the account has, [Friends](#friends)), and the server hunts still add to the restored statistics ([The statistics](#the-statistics)). The old database is copied first to `state.db.bak-<UTC time>`; the zip is kept as `restores/<account id>/<SHA-256>.zip`; importing the same zip twice gives the same rows (and a second audit row). The account is the zip's user id (created from the zip's handle when it does not exist), `--account <id>` names an existing one, and a local server (`offline_mode` true) restores into the local account, the one the game connects as. Exit code 1 for a refused zip, an unreadable file, a missing `--account` target or a handle another account has. The model, the dropped fields and what the server then answers from the rows are in [docs/restore.md](restore.md#storing-the-model).
 
-**Wallet floor.** Every restore (this command, an approved upload) leaves the account with at least 15,000 gm$, the starting wallet's amount: a lower restored amount, or the missing wallet of a public zip, is raised to it, and the report says so. A higher one is kept. The em$ stay as restored (0 for a zip without a wallet).
+**Wallet floor.** Every restore (this command, an approved upload, [an archive claim](#archive-claims)) leaves the account with at least 15,000 gm$, the starting wallet's amount: a lower restored amount, or the missing wallet of a public zip, is raised to it, and the report says so. A higher one is kept. The em$ stay as restored (0 for a zip without a wallet).
 
 ## Upload a backup zip
 
@@ -526,6 +527,45 @@ dotnet run --project server/Server -c Release -- [--settings <file>] review list
 A user id is restored once, enforced by the primary key of `restored_ids`, so two uploads at the same moment cannot both win. If a restore turns out wrong, the operator deletes the account's rows (or the account) and imports the kept zip again with `import backup <zip> --account <id>`; deleting the account frees its user id.
 
 **Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row, the tokens, the cookie sessions, the review rows, the decisions and the restored user id; then the account's `restores/<id>/` and `photos/<id>/` folders (the pictures a restore unpacked are in the second, [Pictures](restore.md#pictures); a restore that changed the account's user id moved the folder to the new id, so none is left under the old one). The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
+
+## Archive claims
+
+Players can no longer make a backup, so a signed-in player may claim the public profile the operator's archive kept for them ([ADR 0008](adr/0008-archive-claims.md)). The archive is one SQLite file, `archive.db` (the setting `archive_db`, default `<data_dir>/archive.db`), made on the operator's PC and copied into the data folder. The server opens it read only, and no route serves it. No file: claims are off (lookups answer `found: false`, the website hides the claim box). The file is looked for at every call, so copying it in needs no restart.
+
+```
+meta(key, value)                                  -- 'format' = '1'
+player(uid, handle, hostname, hunterscore)        -- hostname = the handle in lower case, unique: the lookup key
+reply(uid, path, endpoint, params, status, body)  -- the replies a public-mode backup zip of that player would hold, file by file
+```
+
+A claim reads the player's `reply` rows with the same reader as a public zip (`Importer.FromReplies`, [restore.md](restore.md)) and writes them with the same restore (`Restorer.Apply`).
+
+**Rules.**
+
+| | |
+|---|---|
+| Lookup | The name must match a handle exactly, in any case. 5 lookups per account per UTC day, counted in the table `claim_lookups` (schema 17), so a restart keeps them. A claim of a name the archive does not have costs one too |
+| One claim per account, ever | A row of the account in `claims` (any state, also a rejected one) refuses another claim |
+| Hunterscore below 10,000, and nobody else claimed the player | Restored at once |
+| Hunterscore 10,000 or more, or another account already has a `claims` row for that archived player | Kept as a `waiting` row for the operator; nothing is restored. The player gets a notice in the inbox and the `review_webhook` gets `Claim waiting for review: c<id>, account <id>, archived <uid>, handle <handle>, hunterscore <n>. Run: review list` |
+| The account has played (a hunt was opened or an event came in) | `409` `confirm` until the player confirms the overwrite (`confirm=overwrite`) |
+
+**What a claim does.** It replaces the account's items, skills, achievements, trophies, lodges, loadouts, missions and challenges, and the saved replies kept as extras, with the archived ones (the restore of [Upload a backup zip](#upload-a-backup-zip), no merge). The statistics are the archive's, and the hunts made here count on top of them ([ADR 0003](adr/0003-statistics-are-a-base-plus-server-hunts.md)). Hunts, kills and photos made here stay. The account's wallet stays too (an archived profile has none), with gm$ raised to at least 15,000 like after every restore. **The account's user id never changes**: no `restored_ids` row is written, so an own-mode zip of the same player can still be approved later, and the rule "an account that has played keeps its user id" ([ADR 0006](adr/0006-no-restore-onto-an-account-that-has-played.md)) does not apply to a claim. No zip is kept; the audit row's `zip_sha256` reads `archive:<archived user id>`. The handle is the archived one when the player asked for it, it is a plain name of at most 32 characters and no other account has it (any case); otherwise the account keeps its own, and the notice says so. The player gets a notice in the inbox, like an approved upload.
+
+| Endpoint (`web_host`, session cookie, as under [Upload a backup zip](#upload-a-backup-zip)) | |
+|---|---|
+| `GET /account/archive?name=<name>` | One lookup: `{found: false}`, or `{found: true, handle, hunterscore, items, trophies, lodges, skills, statistics, achievements, nameFree}`: the counts are what a claim would restore, the three flags say whether the archive has that part, `nameFree` whether the archived handle could be taken. `429` `{status: limit}` over the limit; 401 when signed out |
+| `GET /account/archive` | `{enabled, claimed}`: `claimed` is null, or the account's claim `{state: waiting\|restored\|rejected, handle, ts}`. 401 when signed out |
+| `POST /account/archive/claim` | Form `name`, `old_name=1` (take the archived handle) or `0`, `confirm=overwrite` (optional), same checks as `POST /account/restore`. `{status, message}`: `restored`, `review` (200), `refused` (409: the account has its claim already, or the profile cannot be restored), `unknown` (404), `limit` (429), `confirm` (409) |
+
+**The operator.**
+
+```
+dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve c<id> [--keep-handle] | reject c<id> [reason]
+dotnet run --project server/Server -c Release -- [--settings <file>] claim <account> <archived handle or user id> [--keep-handle]
+```
+
+`review list` prints a waiting claim as `c<id>`, `claim`, `account <id>`, `archived <uid>`, `handle <handle>`, `hunterscore <n>`, the time and the note (why it waits), tab separated, after the kept zips. `review approve c<id>` runs the restore above (the player's choice of name stands unless `--keep-handle` keeps the account's own) and the row becomes `restored`. `review reject c<id> [reason]` marks the row `rejected` and keeps the reason; the player gets it in the inbox, and the claim stays the account's one. `claim` restores an archived player onto an account (its user id or handle) at once: no lookup limit, no review, no confirmation, and it replaces the account's earlier claim row. All of them run on their own and need the recordings, like `import backup`. Deleting an account deletes its `claims` and `claim_lookups` rows, so the archived player can be claimed again.
 
 ## Behind a reverse proxy
 
