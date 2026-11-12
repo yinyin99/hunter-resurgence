@@ -3,6 +3,11 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Server.Tests;
 
+// one test sets LINK_DISCORD, a process-wide environment variable: no other test runs beside this class
+[CollectionDefinition("ProcessState", DisableParallelization = true)]
+public sealed class ProcessStateCollection;
+
+[Collection("ProcessState")]
 public class SettingsTests : IDisposable
 {
     readonly string tmp = Directory.CreateTempSubdirectory("settings").FullName;
