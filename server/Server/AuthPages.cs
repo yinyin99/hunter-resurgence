@@ -75,6 +75,15 @@ public static class AuthPages
         <p><button type="submit">Yes, sign in</button></p></form>
         """);
 
+    /// <summary>An app on this PC (the launcher or the backup tool) started this sign-in: its answer goes to this PC only, once the player says yes.</summary>
+    public static string ConfirmApp(string csrf, string handle) => Page($"""
+        <h1>Sign in the app on this PC?</h1>
+        <p>You are <b>{E(handle)}</b>. The launcher or the backup tool that you just started on this PC will be signed in as you.</p>
+        <p class="small">Confirm only if you pressed "Sign in with Steam" in one of them a moment ago.</p>
+        <form method="post" action="/auth/confirm"><input type="hidden" name="csrf" value="{E(csrf)}">
+        <p><button type="submit">Yes, sign in</button></p></form>
+        """);
+
     public static string Done() => Page("<h1>Done</h1><p>Go back to the app that showed the code (the launcher or the backup tool).</p>");
 
     public static string Problem(string text) => Page($"<h1>Sorry</h1><p>{E(text)}</p>");

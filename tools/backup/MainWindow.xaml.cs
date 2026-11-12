@@ -673,9 +673,9 @@ public partial class MainWindow : FluentWindow
         Func<(string, string)> text;
         try
         {
-            var res = await Backup.Send.Run(http, server, zip, (code, url) =>
+            var res = await Backup.Send.Run(http, server, zip, url =>
             {
-                Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Code_Title"), Loc.F("Send_Code_Text", code)), zip);
+                Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Code_Title"), Loc.S("Send_Code_Text")), zip);
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }, sendCts.Token, sending: (part, parts) => Show(InfoBarSeverity.Informational, () => (Loc.S("Send_Sending_Title"), Loc.F("Send_Sending_Text", name, part, parts)), zip));
             Log($"send: {res.Kind} {res.Message}");
