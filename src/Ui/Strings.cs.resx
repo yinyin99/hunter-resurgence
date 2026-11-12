@@ -120,10 +120,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Oficiální servery se zavřou 11. listopadu 2026. Stáhněte si zálohovací nástroj a uložte si profil hned teď: inventář, trofeje, statistiky a další. Po otevření komunitního serveru ho můžete obnovit.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Zálohujte si profil před 11. listopadem 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Přečtěte si to zde</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>ČLENOVÉ ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Vstoupit na Discord</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Parta lidí, kteří vám rozumí</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Jít na lov</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>HRA PRO JEDNOHO</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>HRA S OSTATNÍMI</value></data>

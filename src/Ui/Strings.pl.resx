@@ -120,10 +120,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Oficjalne serwery zostaną zamknięte 11 listopada 2026. Pobierz narzędzie do kopii zapasowej i zapisz swój profil już teraz: ekwipunek, trofea, statystyki i więcej. Przywrócisz go na serwerze społeczności, gdy tylko zostanie otwarty.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Zrób kopię profilu przed 11 listopada 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Przeczytaj tutaj</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Online: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>CZŁONKOWIE ONLINE</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Dołącz do Discorda</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Spędzaj czas z ludźmi, którzy znają ten klimat</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Poluj</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>GRA JEDNOOSOBOWA</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>GRA WIELOOSOBOWA CO-OP</value></data>

@@ -120,10 +120,6 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Официальные серверы закроются 11 ноября 2026 года. Скачайте инструмент резервного копирования и сохраните профиль уже сейчас: инвентарь, трофеи, статистику и многое другое. Вы сможете восстановить его на сервере сообщества, когда он откроется.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Сохраните профиль до 11 ноября 2026 года.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Читать</value></data>
-  <data name="Discord.Online" xml:space="preserve"><value>Онлайн: {0}</value></data>
-  <data name="Discord.Members" xml:space="preserve"><value>УЧАСТНИКОВ ОНЛАЙН</value></data>
-  <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
-  <data name="Discord.Hangout" xml:space="preserve"><value>Общайтесь с теми, кто вас поймёт</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Пойти на охоту</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ОДИНОЧНАЯ ИГРА</value></data>
   <data name="Hunt.Multi" xml:space="preserve"><value>МУЛЬТИПЛЕЕР</value></data>
