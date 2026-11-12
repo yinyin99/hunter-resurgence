@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ajustes da Conta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Administrar Jogo</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Opção de inicialização da Steam</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Usar o botão Jogar do Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Cole esta linha nas opções de inicialização do jogo na Steam (Propriedades) para iniciá-lo por este launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Iniciar o jogo pelo botão Jogar do Steam</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Os servidores oficiais estão fechados. O iniciador do próprio jogo, que o Steam abre quando você aperta Jogar, não consegue mais alcançar um servidor sozinho: ele precisa deste iniciador, que leva sua conexão ao servidor da comunidade.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Para que o Jogar continue funcionando, este iniciador pode dizer ao Steam para abri-lo no lugar. Ele muda uma única configuração deste jogo no Steam (as opções de inicialização) e nada mais: nem seus outros jogos, nem o Steam em si, nem os arquivos do jogo. Você pode ver no Steam: clique com o botão direito no jogo, Propriedades, Opções de inicialização.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>O Steam precisa estar fechado enquanto a configuração é gravada, porque o Steam salva a própria cópia ao sair. Desinstalar este iniciador restaura a configuração.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Sua opção de inicialização atual para este jogo é: {0}. Ela só é substituída se você escolher o primeiro botão.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Fechar o Steam e configurar</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiar a linha em vez disso</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Não perguntar de novo</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Pronto. O botão Jogar do Steam agora abre este iniciador. Iniciar o Steam novamente?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Iniciar o Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Este iniciador não foi instalado com o instalador (cópia de desenvolvimento ou descompactada), então não pode definir a opção de inicialização do Steam para você.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>O iniciador não conseguiu ler com segurança o arquivo de configurações do Steam para este jogo e o deixou como estava.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>O Steam não fechou a tempo. Feche-o você mesmo e tente de novo.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>O Steam precisa estar fechado para restaurar a opção de inicialização do jogo. Fechar o Steam agora? Escolha Não para deixar a opção como está.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Ajustes do Jogo</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas de tela</value></data>

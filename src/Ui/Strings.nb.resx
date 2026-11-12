@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinnstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spilladministrasjon</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-startvalg</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Bruk Steams Spill-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Lim inn denne linjen i spillets startvalg i Steam (Egenskaper) for å starte spillet via denne starteren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopier</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Start spillet fra Steams Spill-knapp</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>De offisielle serverne er stengt. Spillets egen starter, som Steam åpner når du trykker på Spill, kan ikke lenger nå en server på egen hånd: den trenger denne starteren, som bærer tilkoblingen din til fellesskapsserveren.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>For at Spill skal fortsette å fungere, kan denne starteren be Steam åpne den i stedet. Den endrer én innstilling for dette spillet i Steam (startvalgene) og ingenting annet: ikke de andre spillene dine, ikke Steam selv, ikke spillets filer. Du ser den i Steam: høyreklikk på spillet, Egenskaper, Startvalg.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam må være lukket mens innstillingen skrives, fordi Steam lagrer sin egen kopi når det avsluttes. Avinstallerer du denne starteren, settes innstillingen tilbake.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Ditt nåværende startvalg for dette spillet er: {0}. Det erstattes bare hvis du velger den første knappen.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Lukk Steam og sett det</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopier linjen i stedet</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Ikke spør igjen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Ferdig. Steams Spill-knapp åpner nå denne starteren. Starte Steam igjen?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Denne starteren ble ikke installert med installasjonsprogrammet (en utviklings- eller utpakket kopi), så den kan ikke sette Steams startvalg for deg.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Starteren kunne ikke lese Steams innstillingsfil for dette spillet på en trygg måte og lot den være uendret.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam ble ikke lukket i tide. Lukk det selv og prøv igjen.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam må være lukket for at spillets startvalg skal kunne settes tilbake. Lukke Steam nå? Velg Nei for å la valget stå som det er.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Språk</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spillinnstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skjermbilder</value></data>

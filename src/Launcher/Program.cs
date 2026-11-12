@@ -23,8 +23,17 @@ static class Program
             .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
             .OnFirstRun(_ => FirstRun = true)
-            .OnBeforeUninstallFastCallback(_ => Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
-                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
+            .OnBeforeUninstallFastCallback(_ =>
+            {
+                // the hook is stopped after 30 seconds: the hosts block, the certificate and the link first, Steam's launch option last (it may wait for the player and for Steam)
+                var steam = SteamOption.Uninstall(Prefs.DefaultPath, Settings.Load(), Steam.Running,
+                    () => MessageBox.Show(Kit.S("Steam.UninstallClose"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes
+                        && Steam.Shutdown(TimeSpan.FromSeconds(20)));
+                Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
+                    () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes);
+                try { steam?.Invoke(); }
+                catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { }
+            })
             .Run();
 
         var app = new App();

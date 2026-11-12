@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoindstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spiladministration</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-startindstilling</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Brug Steams Afspil-knap</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Indsæt denne linje i spillets startindstillinger i Steam (Egenskaber), så spillet starter via denne launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiér</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Start spillet fra Steams Afspil-knap</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>De officielle servere er lukket. Spillets egen launcher, som Steam åbner, når du trykker på Afspil, kan ikke længere nå en server selv: den har brug for denne launcher, som bærer din forbindelse til community-serveren.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>For at Afspil bliver ved med at virke, kan denne launcher bede Steam åbne den i stedet. Den ændrer én indstilling for dette spil i Steam (startindstillingerne) og intet andet: ikke dine andre spil, ikke Steam selv, ikke spillets filer. Du kan se den i Steam: højreklik på spillet, Egenskaber, Startindstillinger.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam skal være lukket, mens indstillingen skrives, fordi Steam gemmer sin egen kopi, når det afsluttes. Afinstallerer du denne launcher, sættes indstillingen tilbage.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Din nuværende startindstilling for dette spil er: {0}. Den erstattes kun, hvis du vælger den første knap.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Luk Steam og indstil</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Kopiér linjen i stedet</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Spørg ikke igen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Færdig. Steams Afspil-knap åbner nu denne launcher. Start Steam igen?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Start Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Denne launcher blev ikke installeret med installationsprogrammet (en udviklings- eller udpakket kopi), så den kan ikke sætte Steams startindstilling for dig.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Launcheren kunne ikke læse Steams indstillingsfil for dette spil sikkert og lod den være uændret.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam blev ikke lukket i tide. Luk det selv, og prøv igen.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam skal være lukket for at sætte spillets startindstilling tilbage. Luk Steam nu? Vælg Nej for at lade indstillingen være, som den er.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Sprog</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spilindstillinger</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Skærmbilleder</value></data>

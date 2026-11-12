@@ -5,6 +5,7 @@
 @inject ModalService Modal
 @inject IKitService Kit
 @inject ICleanupService Cleanup
+@inject ISteamOptionService SteamOption
 @inject Branding Brand
 
 <PageTitle>@L["Splash.Loading"]</PageTitle>
@@ -19,11 +20,11 @@
     [SupplyParameterFromQuery] public string? Error { get; set; }
 
     // the old launcher shows a local splash before the signup page loads; here it is the first paint of the start (mock start:hold keeps it for the comparison)
-    // On the way the player kit starts: its setup dialog opens over the next page when this PC still needs setup. After an install an "older setup found" dialog comes first.
+    // On the way the player kit starts: its setup dialog opens over the next page when this PC still needs setup, and after it the one for Steam's Play button. After an install an "older setup found" dialog comes first.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender || Error is not null) return;
-        await Modal.OfferCleanupAsync(Cleanup, Kit);
+        await Modal.OfferCleanupAsync(Cleanup, Kit, SteamOption);
         if (Mode.Mock != "start:hold") Nav.NavigateTo("/signup/start", replace: true);
     }
 }

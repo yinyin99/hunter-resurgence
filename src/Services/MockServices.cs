@@ -29,5 +29,6 @@ public static class MockServices
         .AddSingleton<IRestoreService, MockRestoreService>()
         .AddSingleton<ILauncherBridge, MockLauncherBridge>()
         .AddSingleton<IKitService, MockKitService>()
-        .AddSingleton<ICleanupService, MockCleanupService>();
+        .AddSingleton<ICleanupService, MockCleanupService>()
+        .AddSingleton<ISteamOptionService, MockSteamOptionService>();
 }

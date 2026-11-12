@@ -34,6 +34,8 @@ static class LauncherServices
         services.AddSingleton<IKitService>(new LauncherKit(server));
         // the first start after the install looks for what an older setup left (docs/launcher.md#install-and-uninstall)
         services.AddSingleton<ICleanupService>(sp => new LauncherCleanup(() => sp.GetRequiredService<LauncherEnv>().Install, Environment.ProcessPath, Program.FirstRun));
+        // Steam's Play button opens the launcher: the launch option, written with the player's OK (docs/launcher.md#start-it-from-steam)
+        services.AddSingleton<ISteamOptionService>(sp => mock is null ? new LauncherSteamOption(sp.GetRequiredService<LauncherEnv>(), SteamOption.StableExe) : new MockSteamOptionService());
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));

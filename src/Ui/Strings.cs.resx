@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavení účtu</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Správa hry</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Možnost spuštění ve Steamu</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Použít tlačítko Hrát ve Steamu</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Vložte tento řádek do Možností spuštění hry ve Steamu (Vlastnosti), aby se hra spouštěla přes tento launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopírovat</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Spustit hru tlačítkem Hrát ve Steamu</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Oficiální servery jsou zavřené. Vlastní launcher hry, který Steam otevře po stisku Hrát, už sám žádný server nezastihne: potřebuje tento launcher, který nese vaše připojení ke komunitnímu serveru.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Aby Hrát dál fungovalo, může tento launcher požádat Steam, aby otevíral jeho. Mění jediné nastavení této hry ve Steamu (volby spouštění) a nic jiného: ne vaše ostatní hry, ne samotný Steam, ne soubory hry. Uvidíte ho ve Steamu: klikněte na hru pravým tlačítkem, Vlastnosti, Volby spouštění.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam musí být při zápisu nastavení zavřený, protože při ukončení ukládá vlastní kopii. Odinstalování tohoto launcheru nastavení vrátí.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Vaše současná volba spouštění této hry je: {0}. Nahradí se jen tehdy, když zvolíte první tlačítko.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Zavřít Steam a nastavit</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Místo toho zkopírovat řádek</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Už se neptat</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Hotovo. Tlačítko Hrát ve Steamu nyní otevírá tento launcher. Spustit Steam znovu?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Spustit Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Tento launcher nebyl nainstalován instalátorem (vývojová nebo rozbalená kopie), takže za vás nemůže nastavit volbu spouštění ve Steamu.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Launcher nemohl bezpečně přečíst soubor nastavení Steamu pro tuto hru a nechal ho beze změny.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam se nezavřel včas. Zavřete ho sami a zkuste to znovu.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam musí být zavřený, aby se vrátila volba spouštění hry. Zavřít Steam nyní? Zvolte Ne, aby volba zůstala, jaká je.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jazyk</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavení hry</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshoty</value></data>

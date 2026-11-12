@@ -170,30 +170,35 @@ The tests (`tests/Resurgence.Tests/LauncherApp`: `HostsTests`, `PkiTests`, `Forw
 
 | File | Who writes it | Content |
 |---|---|---|
-| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, and whether game settings were saved once (`game_settings_saved`: the first game start no longer asks). A missing or damaged file means the defaults. |
+| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, whether game settings were saved once (`game_settings_saved`: the first game start no longer asks), and Steam's Play button (`steam_option_set`, `steam_option_before`, `steam_option_file`, `steam_option_asked`, `steam_option_never`). A missing or damaged file means the defaults. |
 | the game's graphics file | Game settings, on Save | fullscreen, resolution and refresh rate, scene complexity, texture, shadow, anti-aliasing, anisotropic filtering, vertical sync |
 | the game's options file | Game settings, on Save | volume, gamma, mouse and controller options, speeds, interface switches, scope quality |
 | `%APPDATA%\hunter-resurgence\session.dat` | Sign-in, with `server_url` | the community server's session cookie, protected by Windows DPAPI for this Windows user; deleted by Sign out |
 | the Windows hosts file | Player kit setup (an elevated copy of the launcher), removed by Remove and by the uninstall | the marked block that points the game's server names at this PC |
 | `Hunter Resurgence local CA` in the current user's trust list | Player kit setup | the name-constrained local authority; removed by Remove and by the uninstall |
 | `%LOCALAPPDATA%\hunter-resurgence-play\leaf.cer` and the key `hunter-resurgence-play-leaf` in the user's key store | Player kit setup | the certificate the forwarder answers with and its non-exportable key; removed by Remove and by the uninstall |
+| `<Steam>\userdata\<account>\config\localconfig.vdf` and `localconfig.vdf.launcher-backup` | Steam's Play button, on OK | the one `LaunchOptions` value of the game; the backup is a copy of the file made before the first write, never overwritten; the value goes back on the uninstall |
 | `<file>.resurgence-backup` | Game settings, once | settings copy of each of those two files made before the first write; never overwritten |
 | `%LocalAppData%\HunterResurgence\` | the Setup and the updates | the installed launcher (`current\`) and the downloaded packages (Velopack); removed by the uninstall |
 | `HKCU\Software\Classes\hunter-resurgence` | the Setup | the link `hunter-resurgence://`; removed by the uninstall |
 
 Game settings changes only the values you edit. Every other byte of both files stays as it was, and no line is ever added. A file with an unknown format is left alone. The game reads both files once at start and rewrites them itself, so Save is refused while the game runs. A missing file shows "Start the game once so it creates this file" and is read-only.
 
-Nothing else is read from or written to the game's folders. Steam's registry keys and the Steam library files are only read.
+Nothing else is read from or written to the game's folders. Steam's registry keys and the Steam library files are only read; the one write into Steam's files is the game's launch option, with the player's OK ([Start it from Steam](#start-it-from-steam)).
 
 ## Start it from Steam
 
-Install the launcher with `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest). It installs for your user only (no admin prompt) into `%LocalAppData%\HunterResurgence`, adds shortcuts and an Add/Remove programs entry, and registers the link `hunter-resurgence://` for your user. Windows may warn that the Setup is not code-signed: choose **More info**, then **Run anyway**. In Steam, right-click the game, choose Properties, and paste this into Launch options with the real path (the installed exe is `%LocalAppData%\HunterResurgence\current\resurgence-launcher.exe`):
+Install the launcher with `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest). It installs for your user only (no admin prompt) into `%LocalAppData%\HunterResurgence`, adds shortcuts and an Add/Remove programs entry, and registers the link `hunter-resurgence://` for your user. Windows may warn that the Setup is not code-signed: choose **More info**, then **Run anyway**. To remove it: Windows Settings, Apps, Installed apps, Uninstall; or `%LocalAppData%\HunterResurgence\Update.exe --uninstall`.
 
-```
-"C:\path\to\resurgence-launcher.exe" %command%
-```
+**Steam's Play button** (`SteamOption.cs`, `SteamVdf.cs`, `SteamOptionModal.razor`). The official servers are closed and the game's own launcher, which Steam opens on Play, cannot reach a server by itself: it needs this launcher. With the player's OK the launcher tells Steam to open it instead: it changes one setting of this game in Steam (its launch options), nothing else: not other games, not Steam itself, not the game's files. The player can see it in Steam: right-click the game, Properties, Launch options. Steam must be closed while the setting is written, because Steam saves its own copy when it exits. Uninstalling the launcher puts the setting back.
 
-The launcher's Settings menu has **Steam launch option** with this line filled in with its own exe path and a Copy button (launcher window only).
+- **The line** is `"<install folder>\<exe>" %command%` with the exe at the root of the Velopack install folder (`VelopackLocator.Current.RootAppDir`), which stays the same across updates, not the one in `current\`. A launcher that the Setup did not install (a development or unpacked copy) says so and offers the Copy line only.
+- **Where**: `<Steam>\userdata\<account>\config\localconfig.vdf` of the signed-in user (`ActiveProcess\ActiveUser`), else of the user whose file changed last; key `LaunchOptions` directly in the app's block (`steam_app_id`) under `UserLocalConfigStore/Software/Valve/Steam/apps`; the key is inserted when absent, the app's block too. It is a text edit of that one value: every other byte of the file stays. A copy of the original, `localconfig.vdf.launcher-backup`, is kept next to it before the first write. A file that does not parse (quotes, braces, key/value pairs, UTF-8) or has no `apps` block is left alone and the dialog says so with the Copy line.
+- **Steam running**: the dialog asks to close it; the launcher runs `steam.exe -shutdown`, waits up to 30 seconds and never kills Steam (it then says to close Steam by hand). After the write the dialog offers to start Steam again (`steam.exe -silent`).
+- **At every start** (the Splash, after the older-setup and player-kit dialogs) the launcher reads the option. When it is not ours (never set, or Steam or the player changed it) the dialog opens, at most once per 24 hours; its **Don't ask again** check box, with **Not now** or **Copy the line instead**, stops the offers for good (`launcher.json`: `steam_option_never`, `steam_option_asked`). The Settings item **Use Steam's Play button** opens the same dialog at any time. A launch option of the player's own is shown in the dialog and only replaced by **Close Steam and set it**; the dialog's **Copy the line instead** shows the line with a Copy button.
+- **Uninstall** (Velopack's before-uninstall hook, after the other steps because it may wait for the player and for Steam): when the option is still our line it is replaced by the previous one (`steam_option_before` in `launcher.json`, in the file noted in `steam_option_file`) or removed when there was none; a changed option is left alone. A running Steam is closed first after a Yes/No question (default No: then the option stays and the player removes it in Steam).
+
+Tests: `SteamOptionTests` (temporary vdf files: write, other bytes and other apps unchanged, insert, restore, unparseable file left alone).
 
 Press Play in Steam. The game's own files stay untouched. On its first start the launcher asks to set up this PC for the community server ([The player kit](#the-player-kit)); keep it open while you play.
 

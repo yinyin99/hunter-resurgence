@@ -15,6 +15,33 @@ public static class Steam
 
     public static string SteamId64(uint account) => (76561197960265728UL + account).ToString();
 
+    /// <summary>Steam's settings file of the signed-in <paramref name="account"/>, else of the user whose file changed last; null when there is none.</summary>
+    public static string? LocalConfig(string? steamPath, uint account)
+    {
+        if (steamPath is null || !Directory.Exists(Path.Combine(steamPath, "userdata"))) return null;
+        string File(string dir) => Path.Combine(dir, "config", "localconfig.vdf");
+        var own = File(Path.Combine(steamPath, "userdata", account.ToString()));
+        if (account != 0 && System.IO.File.Exists(own)) return own;
+        return Directory.EnumerateDirectories(Path.Combine(steamPath, "userdata")).Select(File).Where(System.IO.File.Exists).OrderByDescending(System.IO.File.GetLastWriteTimeUtc).FirstOrDefault();
+    }
+
+    public static bool Running() => System.Diagnostics.Process.GetProcessesByName("steam").Length > 0;
+
+    /// <summary>Asks Steam to exit (<c>steam.exe -shutdown</c>) and waits for it up to <paramref name="timeout"/>; never kills it. True when Steam is not running.</summary>
+    public static bool Shutdown(TimeSpan timeout)
+    {
+        if (!Running()) return true;
+        if (InstallPath() is not { } dir || Path.Combine(dir, "steam.exe") is var exe && !File.Exists(exe)) return false;
+        try { using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe, "-shutdown") { WorkingDirectory = dir }); }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return false; }
+        for (var end = DateTime.UtcNow + timeout; DateTime.UtcNow < end;)
+        {
+            Thread.Sleep(500);
+            if (!Running()) return true;
+        }
+        return false;
+    }
+
     /// <summary>Starts Steam minimized, false when it is not installed or does not start.</summary>
     public static bool StartSilent()
     {

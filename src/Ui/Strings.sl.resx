@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavitve računa</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Upravljanje igre</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Možnost zagona v Steamu</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Uporabi gumb Igraj v Steamu</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Prilepite to vrstico v zagonske možnosti igre v Steamu (Lastnosti), da se igra zažene prek tega zaganjalnika:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiraj</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Zagon igre z gumbom Igraj v Steamu</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Uradni strežniki so zaprti. Lasten zaganjalnik igre, ki ga Steam odpre ob pritisku na Igraj, sam ne more več doseči strežnika: potrebuje ta zaganjalnik, ki nosi vašo povezavo s strežnikom skupnosti.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Da bi Igraj še naprej deloval, lahko ta zaganjalnik Steamu naroči, naj odpre njega. Spremeni eno samo nastavitev te igre v Steamu (možnosti zagona) in nič drugega: ne vaših drugih iger, ne samega Steama, ne datotek igre. Vidite jo v Steamu: desni klik na igro, Lastnosti, Možnosti zagona.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam mora biti zaprt, medtem ko se nastavitev zapisuje, ker Steam ob izhodu shrani svojo kopijo. Z odstranitvijo tega zaganjalnika se nastavitev vrne.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Vaša trenutna možnost zagona te igre je: {0}. Zamenja se le, če izberete prvi gumb.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Zapri Steam in nastavi</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Namesto tega kopiraj vrstico</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Ne vprašaj več</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Končano. Gumb Igraj v Steamu zdaj odpre ta zaganjalnik. Znova zaženem Steam?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Zaženi Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Ta zaganjalnik ni bil nameščen z namestitvenim programom (razvojna ali razpakirana kopija), zato ne more namesto vas nastaviti možnosti zagona v Steamu.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Zaganjalnik ni mogel varno prebrati datoteke z nastavitvami Steama za to igro in jo je pustil nespremenjeno.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam se ni pravočasno zaprl. Zaprite ga sami in poskusite znova.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam mora biti zaprt, da se možnost zagona igre vrne. Naj zaprem Steam? Izberite Ne, če želite možnost pustiti, kot je.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Nastavitve igre</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Posnetki zaslona</value></data>

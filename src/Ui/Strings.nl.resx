@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spelbeheer</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Steam-startoptie</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Steams Spelen-knop gebruiken</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Plak deze regel in de startopties van het spel in Steam (Eigenschappen) om het spel via deze launcher te starten:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiëren</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Het spel starten via Steams Spelen-knop</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>De officiële servers zijn gesloten. De eigen launcher van het spel, die Steam opent wanneer je op Spelen drukt, kan zelf geen server meer bereiken: hij heeft deze launcher nodig, die jouw verbinding met de communityserver draagt.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Zodat Spelen blijft werken, kan deze launcher Steam vertellen hem in plaats daarvan te openen. Hij wijzigt één instelling van dit spel in Steam (de startopties) en niets anders: niet je andere spellen, niet Steam zelf, niet de bestanden van het spel. Je ziet het in Steam: klik met de rechtermuisknop op het spel, Eigenschappen, Startopties.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam moet gesloten zijn terwijl de instelling wordt geschreven, omdat Steam bij het afsluiten een eigen kopie opslaat. Bij het verwijderen van deze launcher wordt de instelling teruggezet.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Je huidige startoptie voor dit spel is: {0}. Ze wordt alleen vervangen als je de eerste knop kiest.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Steam sluiten en instellen</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>De regel liever kopiëren</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Niet meer vragen</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Klaar. Steams Spelen-knop opent nu deze launcher. Steam opnieuw starten?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam starten</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Deze launcher is niet met de Setup geïnstalleerd (een ontwikkel- of uitgepakte kopie), dus hij kan de startoptie van Steam niet voor je instellen.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>De launcher kon het instellingenbestand van Steam voor dit spel niet veilig lezen en heeft het ongewijzigd gelaten.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam sloot niet op tijd af. Sluit het zelf af en probeer het opnieuw.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam moet gesloten zijn om de startoptie van het spel terug te zetten. Steam nu sluiten? Kies Nee om de optie te laten zoals ze is.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Taal</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Spelinstellingen</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Screenshots</value></data>

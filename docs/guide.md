@@ -40,10 +40,12 @@ Do not hunt on the community server before that.
 The launcher signs you in, sets up your PC for the community server (the player kit) and starts the game. It never changes the game's files.
 
 1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt) and adds a shortcut. Windows may warn that it is not code-signed: choose **More info**, then **Run anyway**.
-2. In Steam, right-click the game, choose **Properties**, and paste `"%LocalAppData%\HunterResurgence\current\resurgence-launcher.exe" %command%` into **Launch options**, with `%LocalAppData%` written out (`C:\Users\<you>\AppData\Local`).
+2. The launcher is installed in `%LocalAppData%\HunterResurgence` (`C:\Users\<you>\AppData\Local\HunterResurgence`). On its first start it asks to **Start the game from Steam's Play button**. The official servers are closed. The game's own launcher, which Steam opens when you press Play, can no longer reach a server by itself: it needs this launcher, which carries your connection to the community server. So that Play keeps working, this launcher can tell Steam to open it instead. It changes one setting of this game in Steam (its launch options), nothing else: not your other games, not Steam itself, not the game's files. You can see it in Steam: right-click the game, Properties, Launch options. Steam must be closed while the setting is written, because Steam saves its own copy when it exits. Uninstalling this launcher puts the setting back. Choose **Close Steam and set it** (or **Copy the line instead** and paste it into Launch options yourself). The same dialog is in the launcher's Settings, **Use Steam's Play button**.
 3. Press **Play** in Steam. The first time, the launcher lists what it changes and asks you to set up. Choose **Set up**. Windows asks twice: install the certificate (**Yes**), and let the launcher change the hosts file as administrator (**Yes**).
-4. Sign in with the code link the launcher shows (the same Steam account as in step 2), choose a reserve and a start, and press **Start**.
+4. Sign in with the code link the launcher shows (the same Steam account as in Steam), choose a reserve and a start, and press **Start**.
 5. The first time the game starts, Windows Firewall asks about the game: choose **Allow**. Without it the game cannot hunt.
+
+**To uninstall the launcher**: Windows Settings, Apps, Installed apps, Uninstall (or `%LocalAppData%\HunterResurgence\Update.exe --uninstall`). It puts Steam's launch option back.
 
 **Keep the launcher open** while you play: it answers the game. Next time: press **Play** in Steam and sign in.
 

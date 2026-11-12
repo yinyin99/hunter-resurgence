@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Configuración de la cuenta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Administración del juego</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Opción de inicio de Steam</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Usar el botón Jugar de Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Pega esta línea en las opciones de lanzamiento del juego en Steam (Propiedades) para iniciarlo con este launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Iniciar el juego desde el botón Jugar de Steam</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Los servidores oficiales están cerrados. El lanzador propio del juego, que Steam abre al pulsar Jugar, ya no puede llegar a ningún servidor por sí solo: necesita este lanzador, que lleva tu conexión al servidor de la comunidad.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Para que Jugar siga funcionando, este lanzador puede indicar a Steam que lo abra a él en su lugar. Cambia un solo ajuste de este juego en Steam (sus opciones de lanzamiento) y nada más: ni tus otros juegos, ni Steam, ni los archivos del juego. Puedes verlo en Steam: clic derecho en el juego, Propiedades, Opciones de lanzamiento.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam debe estar cerrado mientras se escribe el ajuste, porque Steam guarda su propia copia al salir. Al desinstalar este lanzador, el ajuste vuelve a como estaba.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Tu opción de lanzamiento actual para este juego es: {0}. Solo se sustituye si eliges el primer botón.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Cerrar Steam y aplicarlo</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiar la línea en su lugar</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>No volver a preguntar</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Listo. El botón Jugar de Steam ahora abre este lanzador. ¿Volver a iniciar Steam?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Iniciar Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Este lanzador no se instaló con el instalador (copia de desarrollo o descomprimida), así que no puede establecer la opción de lanzamiento de Steam por ti.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>El lanzador no pudo leer con seguridad el archivo de ajustes de Steam para este juego y lo dejó sin cambios.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam no se cerró a tiempo. Ciérralo tú y vuelve a intentarlo.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam debe estar cerrado para restaurar la opción de lanzamiento del juego. ¿Cerrar Steam ahora? Elige No para dejar la opción como está.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Configuración del juego</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturas</value></data>

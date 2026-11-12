@@ -44,9 +44,23 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Setări cont</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionarea jocului</value></data>
-  <data name="Settings.SteamOption" xml:space="preserve"><value>Opțiune de lansare Steam</value></data>
+  <data name="Settings.SteamOption" xml:space="preserve"><value>Folosește butonul Joacă din Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Lipește această linie în opțiunile de lansare ale jocului din Steam (Proprietăți) pentru a porni jocul prin acest launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiază</value></data>
+  <data name="Steam.Title" xml:space="preserve"><value>Pornește jocul din butonul Joacă din Steam</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Serverele oficiale sunt închise. Launcherul propriu al jocului, pe care Steam îl deschide când apeși Joacă, nu mai poate ajunge singur la un server: are nevoie de acest launcher, care poartă conexiunea ta la serverul comunității.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Ca Joacă să continue să funcționeze, acest launcher poate cere Steam să îl deschidă pe el în loc. Schimbă o singură setare a acestui joc în Steam (opțiunile de lansare) și nimic altceva: nu celelalte jocuri ale tale, nu Steam în sine, nu fișierele jocului. O poți vedea în Steam: clic dreapta pe joc, Proprietăți, Opțiuni de lansare.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam trebuie să fie închis cât timp se scrie setarea, pentru că Steam își salvează propria copie la ieșire. Dezinstalarea acestui launcher repune setarea.</value></data>
+  <data name="Steam.Current" xml:space="preserve"><value>Opțiunea ta curentă de lansare pentru acest joc este: {0}. Este înlocuită doar dacă alegi primul buton.</value></data>
+  <data name="Steam.Set" xml:space="preserve"><value>Închide Steam și setează</value></data>
+  <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiază în schimb linia</value></data>
+  <data name="Steam.Never" xml:space="preserve"><value>Nu mai întreba</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Gata. Butonul Joacă din Steam deschide acum acest launcher. Pornești din nou Steam?</value></data>
+  <data name="Steam.StartSteam" xml:space="preserve"><value>Pornește Steam</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Acest launcher nu a fost instalat cu programul de instalare (copie de dezvoltare sau dezarhivată), deci nu poate seta opțiunea de lansare din Steam pentru tine.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Launcherul nu a putut citi în siguranță fișierul de setări Steam pentru acest joc și l-a lăsat neschimbat.</value></data>
+  <data name="Steam.NoClose" xml:space="preserve"><value>Steam nu s-a închis la timp. Închide-l tu și încearcă din nou.</value></data>
+  <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam trebuie să fie închis pentru a repune opțiunea de lansare a jocului. Închizi Steam acum? Alege Nu pentru a lăsa opțiunea așa cum este.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Limba</value></data>
   <data name="Settings.GameSettings" xml:space="preserve"><value>Setările de joc</value></data>
   <data name="Settings.Screenshots" xml:space="preserve"><value>Capturi de ecran</value></data>
