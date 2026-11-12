@@ -12,13 +12,6 @@
     <meta property="og:title" content="@L["Landing.Heading"]" />
     <meta property="og:description" content="@L["App.Description"]" />
     @if (Http is not null) { <meta property="og:image" content="@($"{Http.Request.Scheme}://{Http.Request.Host}/{Assets["apple-touch-icon.png"]}")" /> }
-    @* one URL per page and language, and its other languages (docs/website.md#search-engines); none on a 404 or another error page *@
-    @if (Http is { Response.StatusCode: 200 } page)
-    {
-        <link rel="canonical" href="@Seo.Url(page.Request, Languages.Match(System.Globalization.CultureInfo.CurrentUICulture.Name)?.Code ?? "en")" />
-        @foreach (var l in Languages.All) { <link rel="alternate" hreflang="@l.Code" href="@Seo.Url(page.Request, l.Code)" /> }
-        <link rel="alternate" hreflang="x-default" href="@Seo.Url(page.Request, "en")" />
-    }
     <base href="/" />
     <link rel="stylesheet" href="@Assets["Resurgence.Web.styles.css"]" />
     <link rel="stylesheet" href="@Assets["_content/Resurgence.Ui/theme.css"]" />

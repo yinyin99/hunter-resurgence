@@ -170,19 +170,53 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
         Assert.DoesNotContain("rel=\"canonical\"", await Html(r));
     }
 
+    // a route that exists for a handle the server does not know: the profile's Nav.NotFound drops the links too
     [Fact]
-    public async Task TheSitemapListsTheOpenPagesTheStoreAndTheProfiles()
+    public async Task AnUnknownProfileHasNoCanonicalLink()
     {
-        var r = await Get(Client(), "/sitemap.xml");
-        var xml = System.Xml.Linq.XDocument.Parse(await Html(r));
-        var locs = xml.Descendants("{http://www.sitemaps.org/schemas/sitemap/0.9}loc").Select(l => l.Value).ToList();
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
+            .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => new ServerStub("""{"error": "not found"}""", HttpStatusCode.NotFound))));
+        using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+        var r = await Get(client, "/profile/Nobody");
+
+        Assert.Equal(HttpStatusCode.NotFound, r.StatusCode);
+        var html = await Html(r);
+        Assert.DoesNotContain("rel=\"canonical\"", html);
+        Assert.DoesNotContain("hreflang=", html);
+    }
+
+    /// <summary>The server's store and hunterscore board, each asked with the website's host (the server answers them for its web host only).</summary>
+    sealed class ListsServer : HttpMessageHandler
+    {
+        public readonly List<string?> Hosts = [];
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            lock (Hosts) Hosts.Add(request.Headers.Host);
+            var body = request.RequestUri!.AbsolutePath.StartsWith(ServerSessionApi.Hunters, StringComparison.Ordinal)
+                ? """{"page": 1, "pages": 1, "total": 1, "rows": [{"rank": 1, "handle": "Fox", "hunterscore": 5}]}"""
+                : """{"categories": [{"key": "0", "name": "Weapons", "children": []}], "items": [{"id": 7, "name": "Test Rifle", "variant": "", "description": "", "category": "0", "ems": 50, "was": null, "gms": 0, "buyable": true}], "bundles": [{"id": 3, "name": "Kit", "description": "", "price": 10, "buyable": true, "items": []}]}""";
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") });
+        }
+    }
+
+    [Fact]
+    public async Task TheSitemapListsTheOpenPagesTheServersStoreAndItsProfiles()
+    {
+        var server = new ListsServer();
+        using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
+            .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => server)));
+        using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+        var r = await Get(client, "/sitemap.xml");
+
         Assert.Equal("application/xml", r.Content.Headers.ContentType?.MediaType);
-        Assert.Contains("http://localhost/", locs);
-        Assert.Contains("http://localhost/help", locs);
-        Assert.Contains(locs, l => l.StartsWith("http://localhost/store/item/", StringComparison.Ordinal));
-        Assert.Contains(locs, l => l.StartsWith("http://localhost/store/bundle/", StringComparison.Ordinal));
-        Assert.Contains(locs, l => l.StartsWith("http://localhost/profile/", StringComparison.Ordinal));
-        Assert.Equal(locs.Count, locs.Distinct().Count());
+        var locs = System.Xml.Linq.XDocument.Parse(await Html(r)).Descendants("{http://www.sitemaps.org/schemas/sitemap/0.9}loc").Select(l => l.Value).ToList();
+        string[] expected = ["/", "/store", "/store/bundles", "/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough", "/download", "/help", "/your-data",
+            "/store/0", "/store/item/7", "/store/bundle/3", "/profile/Fox"];  // no sales: no item has a struck-through price
+        Assert.Equal(expected.Select(p => "http://localhost" + p).Order(), locs.Order());
+        Assert.NotEmpty(server.Hosts);
+        Assert.All(server.Hosts, h => Assert.Equal("localhost", h));
     }
 
     static object Resolve(WebApplicationFactory<Resurgence.Web.WebLanguageSwitcher> f, Type service)
