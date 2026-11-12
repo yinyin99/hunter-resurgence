@@ -6,11 +6,11 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Launcher;
 
 /// <summary>The launcher's bridge: StartGame is real, the rest is still the mock's.</summary>
-public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId) : ILauncherBridge
+public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null) : ILauncherBridge
 {
-    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log) : this(() => env.Install, new MockLauncherBridge(log),
+    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
-        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId)
+        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart)
     { }
 
     /// <summary>The client's arguments: the server, a random number with bit 128 clear, and the Steam flag.</summary>
@@ -21,7 +21,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public void ClearCache(string kind) => rest.ClearCache(kind);
     public void OpenExternal(string url) => rest.OpenExternal(url);
     public void ToggleDevTools() => rest.ToggleDevTools();
-    public void RestartLauncher() => rest.RestartLauncher();
+    /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
+    public void RestartLauncher() { if (restart?.Invoke() != true) rest.RestartLauncher(); }
 
     public Result StartGame(string url)
     {

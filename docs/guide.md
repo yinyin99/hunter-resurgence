@@ -39,8 +39,8 @@ Do not hunt on the community server before that.
 
 The launcher signs you in, sets up your PC for the community server (the player kit) and starts the game. It never changes the game's files.
 
-1. Download `launcher-win-x64.zip`, unpack it and keep `resurgence-launcher.exe`, `settings.json` and the `wwwroot` folder together. Windows may warn that the files are not code-signed: choose **More info**, then **Run anyway**.
-2. In Steam, right-click the game, choose **Properties**, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into **Launch options**, with the real path.
+1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt) and adds a shortcut. Windows may warn that it is not code-signed: choose **More info**, then **Run anyway**.
+2. In Steam, right-click the game, choose **Properties**, and paste `"%LocalAppData%\HunterResurgence\current\resurgence-launcher.exe" %command%` into **Launch options**, with `%LocalAppData%` written out (`C:\Users\<you>\AppData\Local`).
 3. Press **Play** in Steam. The first time, the launcher lists what it changes and asks you to set up. Choose **Set up**. Windows asks twice: install the certificate (**Yes**), and let the launcher change the hosts file as administrator (**Yes**).
 4. Sign in with the code link the launcher shows (the same Steam account as in step 2), choose a reserve and a start, and press **Start**.
 5. The first time the game starts, Windows Firewall asks about the game: choose **Allow**. Without it the game cannot hunt.

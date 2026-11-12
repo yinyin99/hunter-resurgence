@@ -35,10 +35,10 @@ What it saves and what it does not: [docs/backup.md](docs/backup.md). What it ke
 
 ## For players: the launcher
 
-The launcher signs you in, starts the game and, on its first start, sets up your PC so that the game reaches the community server (the "player kit" is part of it). Download `launcher-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest), unpack it (keep `resurgence-launcher.exe`, `settings.json` and `wwwroot` together) and start `resurgence-launcher.exe`. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
+The launcher signs you in, starts the game and, on its first start, sets up your PC so that the game reaches the community server (the "player kit" is part of it). Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and an Add/Remove programs entry, and the launcher then updates itself from the later releases. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
 
 1. The first time, the launcher lists what it will change and asks to set up. A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder inside the launcher, and trusts a local certificate that is good only for those names. Windows asks twice: install the certificate (Yes) and allow the launcher to edit the hosts file as administrator (Yes). **Make your backup first**: while the setup is in place the game talks only to the community server, and the backup tool needs the official servers.
-2. In Steam, right-click the game, choose Properties, and paste `"C:\path\to\resurgence-launcher.exe" %command%` into Launch options, with the real path. Steam's Play button then opens the launcher. Keep it open while you play: the forwarder runs inside it.
+2. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher. Keep it open while you play: the forwarder runs inside it.
 3. Sign in with the code link the sign-in page shows (the same account as on the website). The launcher starts the game for you.
 4. The game's files are never changed. Settings, **Remove the setup** undoes everything and gives the official servers back.
 

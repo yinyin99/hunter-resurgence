@@ -79,7 +79,20 @@ jobs:
       - name: Publish and zip
         shell: cmd
         run: tools\backup\publish.cmd "%RUNNER_TEMP%\settings.json" ${{ env.VERSION }}
-      - name: Publish and zip the launcher
+      # the launcher is packed with Velopack: Setup.exe, the full package, a delta against the latest release, releases.win.json (src/Launcher/publish.cmd)
+      - name: Install vpk
+        if: env.LAUNCHER == '1'
+        run: dotnet tool install -g vpk --version 1.2.161
+      # the earlier releases give the delta; without one (the first release) the packages are the full one alone
+      - name: Download the earlier releases
+        if: env.LAUNCHER == '1'
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GITHUB_TOKEN --outputDir "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\releases"
+          if ($LASTEXITCODE -ne 0) { Write-Host "no earlier release to download: full package only"; $global:LASTEXITCODE = 0 }
+      - name: Publish and pack the launcher
         if: env.LAUNCHER == '1'
         shell: cmd
         run: src\Launcher\publish.cmd "%RUNNER_TEMP%\launcher-settings.json" ${{ env.VERSION }}
@@ -96,7 +109,7 @@ jobs:
         uses: actions/attest@v4
         with:
           subject-path: |
-            src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/launcher-win-x64.zip
+            src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/releases/HunterResurgence-win-Setup.exe
             src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/publish/resurgence-launcher.exe
       - name: Release
         shell: pwsh
@@ -105,10 +118,11 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           $zip = "tools\backup\bin\Release\net10.0-windows\win-x64\backup-win-x64.zip"
-          $launcherZip = "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\launcher-win-x64.zip"
+          $releases = "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64\releases"
+          $setup = "$releases\HunterResurgence-win-Setup.exe"
           $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $launcher = $env:LAUNCHER -eq '1'
-          if ($launcher) { $launcherSha = (Get-FileHash $launcherZip -Algorithm SHA256).Hash.ToLower() }
+          if ($launcher) { $launcherSha = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLower() }
           # checkout may turn an annotated tag into a lightweight one: fetch the real tag object, then use its message if there is one
           git fetch --force origin "refs/tags/${env:TAG}:refs/tags/${env:TAG}"
           $notes = ""
@@ -116,8 +130,8 @@ jobs:
             $msg = (git tag -l --format='%(contents)' $env:TAG) -join "`n"
             $notes = "## Changes`n`n$($msg.Trim())`n`n"
           }
-          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($launcher) { "SHA-256 of launcher-win-x64.zip:`n`n$launcherSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded zip with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
-          if ($launcher) { $notes += " settings.json in the launcher zip holds the community server's address, the game's identity and file names, and the host names the launcher points at that server; the other keys are placeholders." }
+          $notes += "SHA-256 of backup-win-x64.zip:`n`n$sha`n`n$(if ($launcher) { "SHA-256 of HunterResurgence-win-Setup.exe:`n`n$launcherSha`n`n" })The exes are not code-signed: Windows SmartScreen shows `"Unknown publisher`" (More info -> Run anyway). Compare the SHA-256 of the downloaded file with the value above (PowerShell: Get-FileHash backup-win-x64.zip).`n`nsettings.json in the backup zip holds the official service's host names, the game's exe name and the website's public consumer key in plain text: the app needs them to reach the official servers."
+          if ($launcher) { $notes += " To install the launcher, run HunterResurgence-win-Setup.exe: it installs for your user only (no admin), adds a shortcut and an Add/Remove programs entry, and the installed launcher updates itself from the later releases (the .nupkg files and releases.win.json are what it downloads). Its settings.json holds the community server's address, the game's identity and file names, and the host names the launcher points at that server; the other keys are placeholders." }
           $notes | Set-Content notes.md
           $flags = @(); if ($env:TAG.Contains("-")) { $flags += "--prerelease" }
           # draft first, asset second, publish last: an immutable release is locked the moment it is published, so it must already be complete
@@ -125,7 +139,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit 1 }
           gh release upload $env:TAG $zip
           if ($LASTEXITCODE -ne 0) { exit 1 }
-          if ($launcher) { gh release upload $env:TAG $launcherZip }
+          if ($launcher) { gh release upload $env:TAG $setup (Get-ChildItem "$releases\*-$env:VERSION-*.nupkg").FullName "$releases\releases.win.json" }
           if ($LASTEXITCODE -ne 0) { exit 1 }
           gh release edit $env:TAG --draft=false
           if ($LASTEXITCODE -ne 0) { exit 1 }

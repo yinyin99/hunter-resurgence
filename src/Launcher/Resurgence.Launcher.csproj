@@ -9,6 +9,8 @@
     <RootNamespace>Resurgence.Launcher</RootNamespace>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <Version>0.0.0-dev</Version>
+    <!-- our own Main (Program.cs) runs Velopack's hooks before WPF starts -->
+    <StartupObject>Resurgence.Launcher.Program</StartupObject>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -25,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.120" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
     <!-- the WPF SDK drops System.IO from the implicit usings -->
     <Using Include="System.IO" />
   </ItemGroup>
@@ -37,6 +40,11 @@
   <ItemGroup>
     <!-- placeholders only; build output only; a real settings.json is never committed (git-ignored) -->
     <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,12 @@ Bundled in the backup tool's exe (`tools/backup`):
 |---|---|---|
 | [WPF-UI](https://github.com/lepoco/wpfui) (NuGet `WPF-UI`) | 4.3.0 | MIT, copyright 2021-2025 Leszek Pomianowski and WPF UI Contributors |
 
+Bundled in the launcher (`src/Launcher`):
+
+| What | Version | Licence |
+|---|---|---|
+| [Velopack](https://github.com/velopack/velopack) (NuGet `Velopack`; the Setup and Update programs inside the release packages are Velopack's too) | 1.2.161 | MIT, copyright 2021 Caelan Sayler, 2024 Velopack Ltd. |
+
 Bundled with the server (`server/Server`; NuGet packages, direct and transitive; checked against the package metadata, and all are permissive licences that the GNU AGPL-3.0 can include):
 
 | What | Version | Licence |
