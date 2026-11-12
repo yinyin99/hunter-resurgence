@@ -42,29 +42,33 @@ static class SteamOption
         if (current == line) return;
         var edited = SteamVdf.Set(text, appId, line);
         if (current != prefs.SteamOptionSet) prefs.SteamOptionBefore = current;
-        prefs.SteamOptionSet = line;
+        (prefs.SteamOptionSet, prefs.SteamOptionFile) = (line, vdf);
         save();
         if (!File.Exists(vdf + BackupSuffix)) File.Copy(vdf, vdf + BackupSuffix);
         Write(vdf, edited);
     }
 
-    /// <summary>Puts the previous option back (or removes ours) only while the option still is the line we wrote; either way the note in <paramref name="prefs"/> is cleared.</summary>
-    public static void Restore(string vdf, string appId, Prefs prefs, Action save)
+    /// <summary>Puts the previous option back (or removes ours) in the file we wrote, only while the option still is the line we wrote; either way the note in <paramref name="prefs"/> is cleared.</summary>
+    public static void Restore(string appId, Prefs prefs, Action save)
     {
-        if (prefs.SteamOptionSet is not { } ours) return;
+        if (prefs.SteamOptionSet is not { } ours || prefs.SteamOptionFile is not { } vdf) return;
         var text = Read(vdf);
         if (SteamVdf.Get(text, appId) == ours) Write(vdf, SteamVdf.Set(text, appId, prefs.SteamOptionBefore));
-        (prefs.SteamOptionSet, prefs.SteamOptionBefore) = (null, null);
+        (prefs.SteamOptionSet, prefs.SteamOptionBefore, prefs.SteamOptionFile) = (null, null, null);
         save();
     }
 
-    /// <summary>Velopack's uninstall step. Steam saves its own copy when it exits, so a running Steam (<paramref name="steamRunning"/>) is closed first by <paramref name="closeSteam"/> (true: it is closed); without that the option stays.</summary>
-    public static void Uninstall(string prefsPath, Settings settings, string? steamPath, uint account, bool steamRunning, Func<bool> closeSteam)
+    /// <summary>Velopack's uninstall step, in two parts so that it can run last (it may wait for the player and for Steam, and the hook is stopped after 30 seconds): this loads what was noted and returns the restore
+    /// (null: nothing was written). Steam saves its own copy when it exits, so a running Steam is closed first by <paramref name="closeSteam"/> (true: it is closed); without that the option stays.</summary>
+    public static Action? Uninstall(string prefsPath, Settings settings, Func<bool> steamRunning, Func<bool> closeSteam)
     {
         var prefs = Prefs.Load(prefsPath);
-        if (prefs.SteamOptionSet is null || settings.SteamAppId is not { } id || Steam.LocalConfig(steamPath, account) is not { } vdf) return;
-        if (steamRunning && !closeSteam()) return;
-        Restore(vdf, id, prefs, () => prefs.Save(prefsPath));
+        if (prefs.SteamOptionSet is null || settings.SteamAppId is not { } id) return null;
+        return () =>
+        {
+            if (steamRunning() && !closeSteam()) return;
+            Restore(id, prefs, () => { if (File.Exists(prefsPath)) prefs.Save(prefsPath); }); // the data folder may be gone by now: never make it again
+        };
     }
 }
 
@@ -90,6 +94,7 @@ sealed class LauncherSteamOption(LauncherEnv env, Func<string?> stableExe) : ISt
     public Task<Result> SetAsync() => Task.Run(() =>
     {
         var info = Info();
+        if (info.Ours) return Result.Success; // nothing to write, Steam stays open
         if (!info.CanSet || Vdf() is not { } vdf) return Result.Fail(Kit.S("Steam.Unreadable"));
         if (info.Running && !Steam.Shutdown(TimeSpan.FromSeconds(30))) return Result.Fail(Kit.S("Steam.NoClose"));
         try { SteamOption.Set(vdf, env.Settings.SteamAppId!, info.Line, env.Prefs, env.Save); return Result.Success; }

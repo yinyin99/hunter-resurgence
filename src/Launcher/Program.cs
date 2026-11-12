@@ -25,16 +25,14 @@ static class Program
             .OnFirstRun(_ => FirstRun = true)
             .OnBeforeUninstallFastCallback(_ =>
             {
-                // first: the launch option goes back while launcher.json (what was there before) still exists; a failure must not stop the rest of the uninstall
-                try
-                {
-                    SteamOption.Uninstall(Prefs.DefaultPath, Settings.Load(), Steam.InstallPath(), Steam.ActiveAccount(), Steam.Running(),
-                        () => MessageBox.Show(Kit.S("Steam.UninstallClose"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes
-                            && Steam.Shutdown(TimeSpan.FromSeconds(20)));
-                }
-                catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { }
+                // the hook is stopped after 30 seconds: the hosts block, the certificate and the link first, Steam's launch option last (it may wait for the player and for Steam)
+                var steam = SteamOption.Uninstall(Prefs.DefaultPath, Settings.Load(), Steam.Running,
+                    () => MessageBox.Show(Kit.S("Steam.UninstallClose"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes
+                        && Steam.Shutdown(TimeSpan.FromSeconds(20)));
                 Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
-                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes);
+                    () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes);
+                try { steam?.Invoke(); }
+                catch (Exception e) when (e is FormatException or IOException or UnauthorizedAccessException) { }
             })
             .Run();
 

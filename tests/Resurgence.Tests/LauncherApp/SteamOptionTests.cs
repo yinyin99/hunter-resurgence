@@ -65,14 +65,14 @@ public class SteamOptionTests
         var withOld = Vdf(Pair("-mine"));
         var (vdf, prefs, save, _) = Setup(temp, withOld);
         SteamOption.Set(vdf, Id, Line, prefs, save);
-        SteamOption.Restore(vdf, Id, prefs, save);
+        SteamOption.Restore(Id, prefs, save);
         Assert.Equal(withOld, File.ReadAllText(vdf));
         Assert.Null(prefs.SteamOptionSet);
 
         var none = Vdf("");
         var (vdf2, prefs2, save2, _) = Setup(temp, none);
         SteamOption.Set(vdf2, Id, Line, prefs2, save2);
-        SteamOption.Restore(vdf2, Id, prefs2, save2);
+        SteamOption.Restore(Id, prefs2, save2);
         Assert.Equal(none, File.ReadAllText(vdf2)); // ours removed again, byte for byte
 
         // Steam or the player changed it meanwhile: left as it is
@@ -80,7 +80,7 @@ public class SteamOptionTests
         SteamOption.Set(vdf3, Id, Line, prefs3, save3);
         File.WriteAllText(vdf3, File.ReadAllText(vdf3).Replace(Line.Replace("\\", "\\\\").Replace("\"", "\\\""), "-theirs"));
         var changed = File.ReadAllText(vdf3);
-        SteamOption.Restore(vdf3, Id, prefs3, save3);
+        SteamOption.Restore(Id, prefs3, save3);
         Assert.Equal(changed, File.ReadAllText(vdf3));
     }
 
@@ -96,10 +96,15 @@ public class SteamOptionTests
         var prefsPath = Path.Combine(temp.Path, "launcher.json");
         var prefs = new Prefs();
         SteamOption.Set(vdf, Id, Line, prefs, () => prefs.Save(prefsPath));
-        SteamOption.Uninstall(prefsPath, new Settings(Id, "x.exe"), steam, 7, false, () => false);
+        SteamOption.Uninstall(prefsPath, new Settings(Id, "x.exe"), () => false, () => false)!();
         Assert.Equal(original, File.ReadAllText(vdf));
         Assert.Null(Prefs.Load(prefsPath).SteamOptionSet);
         Assert.Equal(vdf, Steam.LocalConfig(steam, 0));
+        // a running Steam that is not closed: the option stays, and so does the note
+        SteamOption.Set(vdf, Id, Line, prefs, () => prefs.Save(prefsPath));
+        SteamOption.Uninstall(prefsPath, new Settings(Id, "x.exe"), () => true, () => false)!();
+        Assert.Equal(Line, SteamOption.Current(vdf, Id));
+        Assert.NotNull(Prefs.Load(prefsPath).SteamOptionSet);
     }
 
     [Theory]

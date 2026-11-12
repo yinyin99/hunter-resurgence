@@ -19,6 +19,8 @@ public sealed class Prefs
     /// <summary>The launch option line the launcher wrote into Steam, and what was there before (null: nothing). The uninstall puts it back only while the line is still there.</summary>
     public string? SteamOptionSet { get; set; }
     public string? SteamOptionBefore { get; set; }
+    /// <summary>The localconfig.vdf that was written: the uninstall restores in that file, whoever is signed in to Steam then.</summary>
+    public string? SteamOptionFile { get; set; }
     /// <summary>When the Steam dialog last opened by itself (at most once a day) and whether the player said "don't ask again".</summary>
     public DateTimeOffset? SteamOptionAsked { get; set; }
     public bool SteamOptionNever { get; set; }

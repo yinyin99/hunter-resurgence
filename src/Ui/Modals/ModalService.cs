@@ -64,7 +64,7 @@ public sealed class ModalService
     /// <summary>Steam's Play button opens the launcher: the dialog opens when the launch option is not set (at most once a day, never after "don't ask again").</summary>
     async Task OfferSteamAsync(ISteamOptionService steam)
     {
-        if (await steam.DueAsync()) Show<SteamOptionModal>();
+        if (Type is null && await steam.DueAsync()) Show<SteamOptionModal>(); // not over another dialog (the kit's "done" notice): it comes at the next start
     }
 
     /// <summary>On the first start after the install: what an older setup left, if any (the "Older setup found" dialog), then the player kit as <see cref="OfferKitAsync"/>. The dialog answers by itself; the start does not wait for it.</summary>
