@@ -17,7 +17,7 @@ public static class AuthPages
 
     static string E(string s) => WebUtility.HtmlEncode(s);
 
-    /// <summary>The page the launcher shows (both states also link the new launcher). Signed out: sign in with Steam in the player's own browser (the launcher's
+    /// <summary>The page the launcher shows (both states also link the launcher that replaces it). Signed out: sign in with Steam in the player's own browser (the launcher's
     /// cannot load Steam's pages) or, as a second link, in this window. Signed in: Play, which asks the server for a
     /// launch URL and hands it to the launcher.</summary>
     public static string Start(string? handle, string page = "/") => Page((handle is null
