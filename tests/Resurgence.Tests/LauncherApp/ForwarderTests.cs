@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
-using Play;
+using Resurgence.Launcher;
 
-namespace Resurgence.Tests.PlayKit;
+namespace Resurgence.Tests.LauncherApp;
 
 public class ForwarderTests
 {

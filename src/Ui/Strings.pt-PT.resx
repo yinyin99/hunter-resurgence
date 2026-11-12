@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Confirme o código {0} no seu navegador.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>O início de sessão não foi confirmado a tempo. Tente novamente.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Não foi possível contactar o servidor. Tente novamente.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json não é um JSON válido.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: defina "{0}" (em falta ou ainda um exemplo).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" tem de ser um endereço https sem parâmetros.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" não é um nome de anfitrião.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>A configuração altera três coisas neste PC e nada mais (os ficheiros do jogo nunca são tocados):
+1. O ficheiro hosts do Windows ({3}): {0} nomes de servidor do jogo apontam para este PC, entre duas linhas marcadas.
+2. A sua lista de confiança do Windows (só o seu utilizador): uma autoridade de certificação local chamada "{1}". Só pode garantir esses {0} nomes; a chave é apagada assim que a configuração termina e nunca é guardada.
+3. Um certificado para esses nomes. A chave não pode ser exportada e fica no seu perfil do Windows; o ficheiro do certificado está em {2}.
+Desfaça tudo a qualquer momento: Definições, Remover a configuração.
+Os nomes:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>O Windows vai perguntar se deve confiar na autoridade de certificação. Escolha Sim.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Depois o Windows vai pedir permissão de administrador para editar o ficheiro hosts (uma janela própria). Escolha Sim. Só essa edição corre como administrador.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>O ficheiro hosts não foi alterado (permissão recusada ou bloqueado por um programa de segurança). Configure de novo para tentar outra vez; Remover a configuração, nas Definições, desfaz o que foi feito.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Concluído. Deixe o launcher aberto enquanto joga: envia o jogo para o servidor da comunidade. Na primeira vez que o jogo iniciar, a Firewall do Windows pergunta por ele: clique em Permitir.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Bloco do hosts, autoridade de certificação e certificado removidos. O jogo volta a falar com os próprios servidores.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Nenhum certificado encontrado: este PC ainda não está configurado.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>O certificado expirou. Configure de novo: cria um novo.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>O ficheiro hosts não tem o bloco da configuração (não feita ou removida), por isso o jogo continua a falar com os próprios servidores.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Não foi possível escutar na porta 80 ou 443: {0}
+Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e inicie o launcher de novo.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Configurar</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Agora não</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Remover a configuração? O bloco do hosts, a autoridade de certificação e o certificado são removidos, e o jogo volta a falar com os próprios servidores.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Configurar para o servidor da comunidade</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Remover a configuração</value></data>
 </root>

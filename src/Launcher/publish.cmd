@@ -11,5 +11,5 @@ if not "%~2"=="" set VER=-p:Version=%~2
 if not "%~2"=="" set PACKVER=%~2
 dotnet publish "%~dp0Resurgence.Launcher.csproj" -p:PublishProfile=win-x64 %VER% || exit /b
 copy /y "%~1" "%OUT%\publish\settings.json" >nul || exit /b
-vpk pack --packId HunterResurgence --packTitle "Hunter Resurgence" --packVersion %PACKVER% --packDir "%OUT%\publish" --mainExe resurgence-launcher.exe --icon "%~dp0wwwroot\favicon.ico" --outputDir "%OUT%\releases" || exit /b
+vpk pack --packId HunterResurgence --packTitle "Hunter Resurgence" --packVersion %PACKVER% --runtime win-x64 --packDir "%OUT%\publish" --mainExe resurgence-launcher.exe --icon "%~dp0wwwroot\favicon.ico" --outputDir "%OUT%\releases" || exit /b
 echo exe, settings.json and wwwroot in %OUT%\publish, Velopack release in %OUT%\releases

@@ -5,6 +5,8 @@
   "options_file": "<options-file>",
   "options_key_prefix": "<key-prefix>",
   "server_url": "<url>",
+  "game_web_host": "<game-web-host>",
+  "crash_host": "<crash-host>",
   "game_name": "<game-name>",
   "game_full": "<game-name-with-edition>",
   "link_forum": "<url>",

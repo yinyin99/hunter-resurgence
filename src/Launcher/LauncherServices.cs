@@ -30,6 +30,8 @@ static class LauncherServices
         var updater = mock is null ? LauncherUpdater.Create() : null;
         if (updater is not null) { services.AddSingleton(updater); _ = updater.CheckAsync(); }
         services.AddSingleton<IPatchService>(updater ?? (IPatchService)new MockPatchService(server is null ? mock : null));
+        // the player kit: setup, removal and the forwarder (live only with an https server_url)
+        services.AddSingleton<IKitService>(new LauncherKit(server));
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
             : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));

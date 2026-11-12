@@ -545,7 +545,7 @@
     <value>no accesible (caído, o sin red)</value>
   </data>
   <data name="Check_redirected" xml:space="preserve">
-    <value>redirigido: el kit de jugador, u otra entrada del archivo hosts, envía los nombres del juego a este PC. Quita el kit de jugador (3-remove.cmd) antes de una copia de seguridad.</value>
+    <value>redirigido: el launcher, u otra entrada del archivo hosts, envía los nombres del juego a este PC. Quita la configuración del launcher (Ajustes) antes de una copia de seguridad.</value>
   </data>
   <data name="Check_unset" xml:space="preserve">
     <value>no definido</value>

@@ -33,6 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- the player kit's forwarder is a Kestrel server inside the launcher -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- placeholders only; build output only; a real settings.json is never committed (git-ignored) -->
     <None Include="settings.example.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

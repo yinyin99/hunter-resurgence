@@ -29,18 +29,6 @@ jobs:
           $names = ($zip.Entries.FullName | Sort-Object) -join ","
           $zip.Dispose()
           if ($names -ne "backup.exe,settings.json") { throw "zip holds: $names" }
-      # the player kit's release zip, the same way (tools/play)
-      - name: Publish the player kit
-        shell: cmd
-        run: tools\play\publish.cmd tools\play\settings.example.json 0.0.0-ci
-      - name: Check the player kit's release zip
-        shell: pwsh
-        run: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "tools\play\bin\Release\net10.0-windows\win-x64\play-win-x64.zip"))
-          $names = ($zip.Entries.FullName | Sort-Object) -join ","
-          $zip.Dispose()
-          if ($names -ne "1-setup.cmd,2-run.cmd,3-remove.cmd,play.exe,settings.json") { throw "zip holds: $names" }
       # the launcher: the exe, its settings and the page it shows (the exe loads wwwroot at start), packed with Velopack
       - name: Install vpk
         run: dotnet tool install -g vpk --version 1.2.161

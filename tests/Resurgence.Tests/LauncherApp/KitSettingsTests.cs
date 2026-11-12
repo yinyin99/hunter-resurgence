@@ -1,15 +1,15 @@
-using Play;
+using Resurgence.Launcher;
 
-namespace Resurgence.Tests.PlayKit;
+namespace Resurgence.Tests.LauncherApp;
 
-public class SettingsTests
+public class KitSettingsTests
 {
     const string Good = """{"server_url":"https://server.example.test/","api_host":"API.example.test","web_host":"www.example.test","photo_host":"api.example.test","note":"x"}""";
 
     [Fact]
     public void HostsAreTheHostKeysLowercasedDedupedWithTheBareNameOfWww()
     {
-        var s = Settings.Parse(Good);
+        var s = KitSettings.Parse(Good);
         Assert.Equal("https://server.example.test/", s.ServerUrl.AbsoluteUri);
         Assert.Equivalent(new[] { "api.example.test", "www.example.test", "example.test" }, s.Hosts);
     }
@@ -31,12 +31,12 @@ public class SettingsTests
     [InlineData("[]")]
     [InlineData("null")]
     [InlineData("not json")]
-    public void BadSettingsAreRefused(string json) => Assert.Throws<InvalidOperationException>(() => Settings.Parse(json));
+    public void BadSettingsAreRefused(string json) => Assert.Throws<InvalidOperationException>(() => KitSettings.Parse(json));
 
     [Fact]
     public void ExampleFileIsOnlyPlaceholders()
     {
-        var e = Assert.Throws<InvalidOperationException>(() => Settings.Parse(File.ReadAllText(Repo.Path("tools", "play", "settings.example.json"))));
+        var e = Assert.Throws<InvalidOperationException>(() => KitSettings.Parse(File.ReadAllText(Repo.Path("src", "Launcher", "settings.example.json"))));
         Assert.Contains("server_url", e.Message);
     }
 }

@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Play;
+using Resurgence.Launcher;
 
-namespace Resurgence.Tests.PlayKit;
+namespace Resurgence.Tests.LauncherApp;
 
 public class PkiTests
 {

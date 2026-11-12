@@ -545,7 +545,7 @@
     <value>not reachable (down, or no network)</value>
   </data>
   <data name="Check_redirected" xml:space="preserve">
-    <value>redirected: the player kit, or another hosts-file entry, sends the game's names to this PC. Remove the player kit (3-remove.cmd) before a backup.</value>
+    <value>redirected: the launcher's setup, or another hosts-file entry, sends the game's names to this PC. Remove the launcher's setup (Settings) before a backup.</value>
   </data>
   <data name="Check_unset" xml:space="preserve">
     <value>not set</value>

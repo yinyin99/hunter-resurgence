@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Confirmă codul {0} în browser.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Autentificarea nu a fost confirmată la timp. Încearcă din nou.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Serverul nu poate fi contactat. Încearcă din nou.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json nu este un JSON valid.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: setează "{0}" (lipsește sau este încă un exemplu).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" trebuie să fie o adresă https fără interogare.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" nu este un nume de gazdă.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Configurarea schimbă trei lucruri pe acest PC și nimic altceva (fișierele jocului nu sunt atinse niciodată):
+1. Fișierul hosts din Windows ({3}): {0} nume de servere ale jocului arată spre acest PC, între două linii marcate.
+2. Lista de încredere din Windows (doar utilizatorul tău): o autoritate de certificare locală numită "{1}". Poate garanta doar pentru aceste {0} nume; cheia ei este ștearsă imediat ce se termină configurarea și nu este salvată niciodată.
+3. Un certificat pentru aceste nume. Cheia lui nu poate fi exportată și rămâne în profilul tău Windows; fișierul certificatului este în {2}.
+Anulează totul oricând: Setări, Elimină configurarea.
+Numele:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows va întreba acum dacă să aibă încredere în autoritatea de certificare. Alege Da.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Apoi Windows va cere permisiunea de administrator pentru a edita fișierul hosts (o fereastră separată). Alege Da. Doar această editare rulează ca administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Fișierul hosts nu a fost modificat (permisiune refuzată sau blocat de un program de securitate). Configurează din nou pentru a reîncerca; Elimină configurarea, din Setări, anulează ce s-a făcut.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Gata. Ține launcherul deschis cât joci: trimite jocul către serverul comunității. Prima dată când pornește jocul, Windows Firewall întreabă despre el: apasă Permite.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Blocul hosts, autoritatea de certificare și certificatul au fost eliminate. Jocul vorbește din nou cu serverele lui.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Niciun certificat găsit: acest PC nu este încă configurat.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Certificatul a expirat. Configurează din nou: se creează unul nou.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Fișierul hosts nu are blocul configurării (nerulată sau eliminată), deci jocul vorbește în continuare cu serverele lui.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Nu s-a putut asculta pe portul 80 sau 443: {0}
+Închide programul care îl folosește (alt server sau o a doua copie a launcherului) și pornește din nou launcherul.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Configurează</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Nu acum</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Elimini configurarea? Blocul hosts, autoritatea de certificare și certificatul sunt eliminate, iar jocul vorbește din nou cu serverele lui.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Configurează pentru serverul comunității</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Elimină configurarea</value></data>
 </root>

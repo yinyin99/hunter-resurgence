@@ -23,7 +23,7 @@ The backup tool is a small Windows app that saves your profile (statistics, inve
 2. Start `backup.exe`. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.
 3. Tick what to save, press Start. The result is a backup folder and a backup zip in `Documents\game-backup` ([names](docs/backup.md#what-is-saved)). Keep that backup zip private.
 
-"Check connection" says whether the official servers answer. If it says "redirected", the [player kit](#for-players-the-player-kit) is installed: remove it (`3-remove.cmd`) before a backup, because the backup tool needs the official servers.
+"Check connection" says whether the official servers answer. If it says "redirected", the launcher's setup is in place: remove it (launcher Settings, Remove the setup) before a backup, because the backup tool needs the official servers.
 
 **Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
 
@@ -33,25 +33,16 @@ Why a hunt: for your own account, the backup tool borrows the game's sign-in, an
 
 What it saves and what it does not: [docs/backup.md](docs/backup.md). What it keeps and sends: [privacy](docs/backup.md#privacy).
 
-## For players: the player kit
-
-The player kit connects your game to the community server over the internet. Download `play-win-x64.zip` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest).
-
-- A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder on your PC, and trusts a local certificate that is good only for those names. The forwarder stays open while you play and passes everything on to the community server.
-- It never changes the game's files. One script in the kit, `3-remove.cmd`, undoes everything and gives the official servers back.
-- While it is installed, the game talks only to the community server. **Make your backup first**: the backup tool needs the official servers.
-
-Steps, what it changes and what to do when something fails: [docs/play.md](docs/play.md). The whole way from backup to playing: [the player guide](docs/guide.md).
-
 ## For players: the launcher
 
-Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and an Add/Remove programs entry, and the launcher then updates itself from the later releases. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
+The launcher signs you in, starts the game and, on its first start, sets up your PC so that the game reaches the community server (the "player kit" is part of it). Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and an Add/Remove programs entry, and the launcher then updates itself from the later releases. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
 
-1. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher.
-2. Sign in with the code link the sign-in page shows (the same account as on the website).
-3. The launcher starts the game for you. **You still need the [player kit](#for-players-the-player-kit)**: it is what points the game at the community server.
+1. The first time, the launcher lists what it will change and asks to set up. A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder inside the launcher, and trusts a local certificate that is good only for those names. Windows asks twice: install the certificate (Yes) and allow the launcher to edit the hosts file as administrator (Yes). **Make your backup first**: while the setup is in place the game talks only to the community server, and the backup tool needs the official servers.
+2. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher. Keep it open while you play: the forwarder runs inside it.
+3. Sign in with the code link the sign-in page shows (the same account as on the website). The launcher starts the game for you.
+4. The game's files are never changed. Settings, **Remove the setup** undoes everything and gives the official servers back.
 
-Details and the files it writes: [docs/launcher.md](docs/launcher.md).
+Steps, what it changes and what to do when something fails: [docs/launcher.md](docs/launcher.md#the-player-kit). The whole way from backup to playing: [the player guide](docs/guide.md). The files it writes: [docs/launcher.md](docs/launcher.md).
 
 ## No money, ever
 
@@ -59,16 +50,16 @@ This project and the community server run by its maintainer take no donations (n
 
 ## Roadmap
 
-Released today: the backup tool, the launcher, and the player kit, which lets you play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
+Released today: the backup tool, and the launcher, which also sets up your PC to play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
 
 1. **Profile backup** (available now; run it before 2026-11-11): the [backup tool](#for-players-the-backup-tool).
-2. **Community server, accounts and restore** (online now, early: play on it with the [player kit](#for-players-the-player-kit); see [docs/server.md](docs/server.md)).
+2. **Community server, accounts and restore** (online now, early: play on it with the [launcher](#for-players-the-launcher); see [docs/server.md](docs/server.md)).
    - Sign in with a Steam account (email sign-in may follow).
    - Restore: upload your backup zip on the website. Once the operator (the person who runs the server) approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically.
    - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions and leaderboards may be missing at first, and there is no seasonal event by default.
    - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The [claim key](docs/backup.md#claim-key) in a backup is a hint that it is yours, not proof.
 3. **Offline play** (planned): the same server on your own PC or local network.
-4. **Remote play** (available now, early): playing on the community server over the internet, with the [player kit](#for-players-the-player-kit).
+4. **Remote play** (available now, early): playing on the community server over the internet, with the [launcher](#for-players-the-launcher).
 5. **New launcher** (download in the release, early; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. See [For players: the launcher](#for-players-the-launcher).
 6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards, every player's profile with all its tabs, and, for the signed-in player, the wallet history, the missions (the daily ones too), the friends and the messages (read only); competitions, seasons and the bank are not offered.
 7. **Later**: the bait-site pages inside the game, multiplayer, competitions.
@@ -89,7 +80,7 @@ Released today: the backup tool, the launcher, and the player kit, which lets yo
 
 ## Help wanted: translators
 
-Native speakers can check the translations of the backup tool (5 languages besides English), the player kit (5) and the launcher and website (18). Open an issue or a pull request. How the texts work: [backup tool](docs/backup.md#languages), [player kit](docs/play.md#languages), [launcher and website](docs/launcher.md#languages).
+Native speakers can check the translations of the backup tool (5 languages besides English), the launcher with its player kit, and the website (18). Open an issue or a pull request. How the texts work: [backup tool](docs/backup.md#languages), [launcher and website](docs/launcher.md#languages).
 
 ## For contributors
 
@@ -99,8 +90,7 @@ One document per part:
 
 - [docs/guide.md](docs/guide.md): the player guide, from backup to playing on the community server.
 - [docs/backup.md](docs/backup.md): the backup tool.
-- [docs/play.md](docs/play.md): the player kit.
-- [docs/launcher.md](docs/launcher.md): the launcher.
+- [docs/launcher.md](docs/launcher.md): the launcher and its player kit.
 - [docs/website.md](docs/website.md): the website and the shared UI library.
 - [docs/restore.md](docs/restore.md): the restore library.
 - [docs/server.md](docs/server.md): the server (local and community).
