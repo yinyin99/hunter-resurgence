@@ -1,11 +1,11 @@
 .steam-opt { position: absolute; top: 83px; left: calc(50% - 310px); box-sizing: border-box; width: var(--w-gamesettings); max-height: min(600px, calc(100vh - 103px)); padding: 20px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--fg-muted-3) transparent; }
-h1 { margin: 0 0 12px; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
+h1 { margin: 0 0 16px; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
 p, li { font-size: 16px; line-height: 22px; color: var(--text-2); }
 p { margin: 0 0 20px; }
 .changes { margin: 0 0 20px; padding: 14px 16px; border-radius: var(--r-2); background: var(--surface-6); }
 .changes p { margin: 0 0 8px; }
 .changes ul { margin: 0; padding-inline-start: 20px; }
-.changes li + li { margin-top: 6px; }
+.changes li + li { margin-top: 8px; }
 .note { padding-inline-start: 12px; border-inline-start: 3px solid var(--launcher-accent); overflow-wrap: anywhere; }
 .error { color: var(--su-error); white-space: pre-line; }
 .line { display: block; width: 100%; margin: 0 0 20px; padding: 10px 12px; font: 15px/20px Consolas, monospace; }
@@ -13,10 +13,10 @@ p { margin: 0 0 20px; }
 .btn { min-height: 42px; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }
 .btn-inverse { background-color: var(--surface-5); }
 .quiet { background: transparent; color: var(--text-2); }
-.later { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.later { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
 .never { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 22px; color: var(--text-2); cursor: pointer; }
-.never .tick:not(:checked) { border-color: var(--text-4); }
+.never .tick:not(:checked):not(:hover) { border-color: var(--text-4); }
 @media (hover: hover) {
     .btn-inverse:hover { background-color: var(--surface-4); }
-    .quiet:hover { background-color: rgba(255, 255, 255, .08); color: #fff; }
+    .quiet:hover { background-color: var(--tint-2); color: #fff; }
 }
