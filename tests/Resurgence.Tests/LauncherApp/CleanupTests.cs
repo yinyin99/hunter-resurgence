@@ -31,9 +31,11 @@ public sealed class CleanupTests : IDisposable
         tmp.Dispose();
     }
 
+    // the first Open is Untrust's, the second is the certificate prompt: the player says No there
     sealed record Declining(string Dir, string KeyName, string Store) : Pki.Place(Dir, KeyName, Store)
     {
-        public override X509Store Open() => throw new CryptographicException("the player said No");
+        int opens;
+        public override X509Store Open() => ++opens < 2 ? base.Open() : throw new CryptographicException("the player said No");
     }
 
     [Fact]
@@ -80,7 +82,7 @@ public sealed class CleanupTests : IDisposable
 
         var logs = Cleanup.Logs(new GameInstall(root, exe));
         Assert.Equal(3, logs.Length);
-        Assert.Empty(Cleanup.Delete(logs));
+        Assert.Empty(Cleanup.Delete(logs, false));
 
         Assert.Equal(["game", "keep.txt"], Directory.GetFileSystemEntries(root).Select(Path.GetFileName).Order());
         Assert.True(File.Exists(Path.Combine(root, "game", "own.netlog")));
@@ -115,6 +117,10 @@ public sealed class CleanupTests : IDisposable
         Assert.NotNull(Pki.Check(Names, Now.AddDays(800), place)); // expired
         Hosts.Apply(hosts, ["api.example.test"]);
         Assert.False(Cleanup.KitKept(hosts, Names, place, Now)); // an old block for other names
+
+        Hosts.Apply(hosts, [.. Names.AsEnumerable().Reverse()]); // another order, and a tool's lines after the block: still this setup
+        File.AppendAllText(hosts, "10.0.0.9 other\r\n");
+        Assert.True(Cleanup.KitKept(hosts, Names, place, Now));
     }
 
     [Fact]
@@ -151,7 +157,9 @@ public sealed class CleanupTests : IDisposable
             LinkScheme.Register(root, @"C:\app\launcher.exe");
             Assert.NotEqual(before, File.ReadAllBytes(hosts));
 
-            Cleanup.Uninstall(hosts, place, root);
+            var data = Path.Combine(tmp.Path, "data").Also(d => Files.Touch(Path.Combine(d, "launcher.json")));
+            Cleanup.Uninstall(hosts, place, root, data, () => true);
+            Assert.False(Directory.Exists(data));
 
             Assert.Equal(before, File.ReadAllBytes(hosts));
             Assert.False(Pki.Installed(place));
@@ -167,8 +175,23 @@ public sealed class CleanupTests : IDisposable
         var before = File.ReadAllBytes(hosts);
         var key = @"Software\resurgence-test-" + Guid.NewGuid().ToString("N");
         using var root = Registry.CurrentUser.CreateSubKey(key);
-        try { Cleanup.Uninstall(hosts, place, root); }
+        try { Cleanup.Uninstall(hosts, place, root, Path.Combine(tmp.Path, "nodata"), () => throw new InvalidOperationException("no data, no question")); }
         finally { Registry.CurrentUser.DeleteSubKeyTree(key, false); }
         Assert.Equal(before, File.ReadAllBytes(hosts));
+    }
+
+    [Fact]
+    public void TheDataFolderStaysWhenThePlayerSaysNoAndWhenAnotherStepFails()
+    {
+        var data = Path.Combine(tmp.Path, "data").Also(d => Files.Touch(Path.Combine(d, "launcher.json")));
+        var key = @"Software\resurgence-test-" + Guid.NewGuid().ToString("N");
+        using var root = Registry.CurrentUser.CreateSubKey(key);
+        try
+        {
+            var bad = Path.Combine(tmp.Path, "not-a-hosts-file"); // a step that throws must not stop the others
+            Cleanup.Uninstall(bad, place, root, data, () => false);
+            Assert.True(File.Exists(Path.Combine(data, "launcher.json")));
+        }
+        finally { Registry.CurrentUser.DeleteSubKeyTree(key, false); }
     }
 }

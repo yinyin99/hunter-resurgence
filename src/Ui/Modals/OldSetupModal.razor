@@ -1,3 +1,4 @@
+@implements IDisposable
 @inject ModalService Modal
 @inject ICleanupService Cleanup
 
@@ -13,35 +14,31 @@
         @if (Found.Programs.Count + Found.Folders.Count + Found.Logs.Count > 0)
         {
             <button type="button" class="btn btn-primary" id="old-delete" disabled="@busy" @onclick="Run">@L["Cleanup.Delete"]</button>
-            <button type="button" class="btn btn-inverse" disabled="@busy" @onclick="Close">@L["Kit.NotNow"]</button>
+            <button type="button" class="btn btn-inverse" disabled="@busy" @onclick="Modal.Close">@L["Kit.NotNow"]</button>
         }
         else
         {
-            <button type="button" class="btn btn-primary" id="old-ok" @onclick="Close">@L["Alert.Ok"]</button>
+            <button type="button" class="btn btn-primary" id="old-ok" @onclick="Modal.Close">@L["Alert.Ok"]</button>
         }
     </div>
 </div>
 
 @code {
     [Parameter, EditorRequired] public OldSetup Found { get; set; } = null!;
-    /// <summary>Set after the dialog has closed: the player kit's dialog follows.</summary>
+    /// <summary>Set when the dialog goes away, however it was closed or replaced: the player kit's dialog follows.</summary>
     [Parameter, EditorRequired] public TaskCompletionSource Done { get; set; } = null!;
 
     bool busy;
     string? error;
 
-    void Close()
-    {
-        Modal.Close();
-        Done.TrySetResult();
-    }
+    public void Dispose() => Done.TrySetResult();
 
     async Task Run()
     {
         (busy, error) = (true, null);
         var r = await Cleanup.CleanAsync(Found);
         busy = false;
-        if (!r.Ok) { error = r.Error; return; } // stays open: the list shows what is left, Not now closes it
-        Close();
+        if (!r.Ok) { error = r.Error; return; } // stays open with the message (the list is what was found); Not now closes it
+        Modal.Close();
     }
 }

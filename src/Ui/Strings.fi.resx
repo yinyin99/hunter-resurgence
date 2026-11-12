@@ -1332,4 +1332,5 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Pelaajapaketin vanhempi asennus on tällä tietokoneella ja sopii yhä: se jää ennalleen.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Pelaajapaketin vanhempi asennus on tällä tietokoneella mutta ei sovi: seuraava ikkuna korvaa sen yhdellä kertaa.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Poista</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Poistetaanko myös käynnistimen tiedot (kieli, pelikansio ja tallennettu kirjautuminen kansiossa %APPDATA%\hunter-resurgence)? Valitse Ei säilyttääksesi ne.</value></data>
 </root>

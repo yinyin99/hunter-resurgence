@@ -1332,4 +1332,5 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Bu bilgisayarda oyuncu setinin eski bir kurulumu var ve hâlâ uygun: olduğu gibi kalır.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Bu bilgisayarda oyuncu setinin eski bir kurulumu var ama uygun değil: sonraki pencere onu tek adımda değiştirir.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Sil</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Başlatıcı verileri de silinsin mi (%APPDATA%\hunter-resurgence içindeki dil, oyun klasörü ve kayıtlı oturum)? Saklamak için Hayır'ı seçin.</value></data>
 </root>

@@ -1332,4 +1332,5 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lan
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Une ancienne configuration du kit joueur est sur ce PC et convient encore : elle reste telle quelle.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Une ancienne configuration du kit joueur est sur ce PC mais ne convient pas : la fenêtre suivante la remplace en une étape.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Supprimer aussi les données du lanceur (langue, dossier du jeu et connexion enregistrée dans %APPDATA%\hunter-resurgence) ? Choisissez Non pour les garder.</value></data>
 </root>

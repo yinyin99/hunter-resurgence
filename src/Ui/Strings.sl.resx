@@ -1332,4 +1332,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Starejša nastavitev kompleta igralca je v tem računalniku in še ustreza: ostane nespremenjena.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starejša nastavitev kompleta igralca je v tem računalniku, vendar ne ustreza: naslednje okno jo zamenja v enem koraku.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Izbriši</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Izbrišem tudi podatke zaganjalnika (jezik, mapo igre in shranjeno prijavo v %APPDATA%\hunter-resurgence)? Izberite Ne, če jih želite obdržati.</value></data>
 </root>

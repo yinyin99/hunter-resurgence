@@ -1332,4 +1332,5 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Een oudere instelling van de spelerskit staat op deze pc en past nog: ze blijft zoals ze is.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Een oudere instelling van de spelerskit staat op deze pc maar past niet: het volgende venster vervangt ze in één stap.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ook de gegevens van de launcher verwijderen (taal, spelmap en opgeslagen aanmelding in %APPDATA%\hunter-resurgence)? Kies Nee om ze te bewaren.</value></data>
 </root>

@@ -1332,4 +1332,5 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Cleanup.KitKept" xml:space="preserve"><value>En äldre konfiguration av spelarkitet finns på den här datorn och passar fortfarande: den lämnas som den är.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>En äldre konfiguration av spelarkitet finns på den här datorn men passar inte: nästa fönster ersätter den i ett steg.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Ta bort</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ta även bort launcherns data (språk, spelmapp och sparad inloggning i %APPDATA%\hunter-resurgence)? Välj Nej för att behålla dem.</value></data>
 </root>

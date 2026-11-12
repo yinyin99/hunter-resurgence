@@ -23,7 +23,8 @@ static class Program
             .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
             .OnFirstRun(_ => FirstRun = true)
-            .OnBeforeUninstallFastCallback(_ => Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser))
+            .OnBeforeUninstallFastCallback(_ => Cleanup.Uninstall(Hosts.DefaultPath, Pki.Place.Default, Registry.CurrentUser, Path.GetDirectoryName(Prefs.DefaultPath)!,
+                () => MessageBox.Show(Kit.S("Uninstall.DeleteData"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
             .Run();
 
         var app = new App();

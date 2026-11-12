@@ -1332,4 +1332,5 @@
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Прежняя настройка набора игрока есть на этом ПК и ещё подходит: она остаётся без изменений.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Прежняя настройка набора игрока есть на этом ПК, но не подходит: следующее окно заменит её за один шаг.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Удалить также данные лаунчера (язык, папку игры и сохранённый вход в %APPDATA%\hunter-resurgence)? Выберите «Нет», чтобы сохранить их.</value></data>
 </root>

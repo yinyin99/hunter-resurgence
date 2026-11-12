@@ -1332,4 +1332,5 @@ Numele:</value></data>
   <data name="Cleanup.KitKept" xml:space="preserve"><value>O configurare mai veche a kitului jucătorului este pe acest PC și încă se potrivește: rămâne neschimbată.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>O configurare mai veche a kitului jucătorului este pe acest PC, dar nu se potrivește: fereastra următoare o înlocuiește într-un singur pas.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Ștergere</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Ștergeți și datele launcherului (limba, folderul jocului și autentificarea salvată în %APPDATA%\hunter-resurgence)? Alegeți Nu pentru a le păstra.</value></data>
 </root>

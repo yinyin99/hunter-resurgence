@@ -1332,4 +1332,5 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Cleanup.KitKept" xml:space="preserve"><value>En ældre opsætning af spillerkittet findes på denne pc og passer stadig: den bliver som den er.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>En ældre opsætning af spillerkittet findes på denne pc, men passer ikke: det næste vindue erstatter den i ét trin.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Slet</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Slet også launcherens data (sprog, spilmappe og gemt login i %APPDATA%\hunter-resurgence)? Vælg Nej for at beholde dem.</value></data>
 </root>

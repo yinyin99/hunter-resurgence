@@ -45,17 +45,18 @@ static class Cleanup
         return [.. found.Distinct(StringComparer.OrdinalIgnoreCase)];
     }
 
-    /// <summary>Asks the programs at <paramref name="exes"/> to close and stops those that do not within a few seconds.</summary>
+    /// <summary>Asks the programs at <paramref name="exes"/> to close and stops those that do not within a few seconds. One that cannot be stopped is skipped: its folder then fails to delete and is reported.</summary>
     public static void Stop(IReadOnlyCollection<string> exes)
     {
         foreach (var p in Candidates())
             using (p)
-            {
-                if (PathOf(p) is not { } exe || !exes.Contains(exe, StringComparer.OrdinalIgnoreCase)) continue;
-                if (p.HasExited) continue;
-                if (!p.CloseMainWindow() || !p.WaitForExit(3000)) p.Kill();
-                p.WaitForExit(5000); // its folder is locked until it is gone
-            }
+                try
+                {
+                    if (PathOf(p) is not { } exe || !exes.Contains(exe, StringComparer.OrdinalIgnoreCase) || p.HasExited) continue;
+                    if (!p.CloseMainWindow() || !p.WaitForExit(3000)) p.Kill();
+                    p.WaitForExit(5000); // its folder is locked until it is gone
+                }
+                catch (Exception e) when (e is Win32Exception or InvalidOperationException) { }
     }
 
     /// <summary>Old unpacked zip folders directly in <paramref name="roots"/>, each with its exe still inside; never the folder of <paramref name="self"/>.</summary>
@@ -91,14 +92,14 @@ static class Cleanup
         return [.. found];
     }
 
-    /// <summary>Deletes what <see cref="Folders"/> and <see cref="Logs"/> found (a path that is already gone counts as done). The messages of what could not be deleted.</summary>
-    public static string[] Delete(IEnumerable<string> paths)
+    /// <summary>Deletes what <see cref="Folders"/> (<paramref name="recursive"/>) or <see cref="Logs"/> found, a path that is already gone counts as done. A folder of the logs is only ever deleted when empty. The messages of what could not be deleted.</summary>
+    public static string[] Delete(IEnumerable<string> paths, bool recursive)
     {
         var failed = new List<string>();
         foreach (var path in paths)
             try
             {
-                if (Directory.Exists(path)) Directory.Delete(path, true);
+                if (Directory.Exists(path)) Directory.Delete(path, recursive);
                 else File.Delete(path);
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException) { failed.Add(e.Message); }
@@ -113,15 +114,17 @@ static class Cleanup
         return Hosts.Matches(text, hosts) && Pki.Check(hosts, now, place) is null;
     }
 
-    /// <summary>Velopack's uninstall step: the hosts block, the authority, the leaf and its key, and the link scheme. Each step alone: one that fails (a Windows prompt the player refused)
-    /// does not stop the others. The player's data in <c>%APPDATA%\hunter-resurgence</c> stays: the step has no window to ask in.</summary>
-    public static void Uninstall(string hostsFile, Pki.Place place, RegistryKey root)
+    /// <summary>Velopack's uninstall step: the hosts block, the leaf and its key, the authority, the link scheme and, when <paramref name="deleteData"/> says yes, <paramref name="dataDir"/>
+    /// (<c>%APPDATA%\hunter-resurgence</c>; the question has a default of No and the hook is stopped after 30 seconds, so no answer keeps the data). Each step alone: one that fails
+    /// (a Windows prompt the player refused) does not stop the others.</summary>
+    public static void Uninstall(string hostsFile, Pki.Place place, RegistryKey root, string dataDir, Func<bool> deleteData)
     {
         Action[] steps =
         [
             () => { if (Hosts.Has(Hosts.Read(hostsFile))) Kit.SetHosts(false, null, hostsFile); }, // the one place that may ask for administrator rights, and only when there is a block
             () => Pki.Uninstall(place),
             () => LinkScheme.Remove(root),
+            () => { if (Directory.Exists(dataDir) && deleteData()) Directory.Delete(dataDir, true); },
         ];
         foreach (var step in steps)
             try { step(); }
@@ -142,7 +145,7 @@ sealed class LauncherCleanup(Func<GameInstall?> game, string? self, bool firstRu
             var running = Cleanup.Running(self);
             bool? kit = null;
             try { kit = Cleanup.KitKept(Hosts.DefaultPath, KitSettings.Load().Hosts, Pki.Place.Default, DateTimeOffset.UtcNow); }
-            catch (InvalidOperationException) { } // no usable server_url: no player kit here
+            catch (Exception e) when (e is InvalidOperationException or IOException or UnauthorizedAccessException) { } // no usable server_url (no player kit here), or a hosts file that cannot be read
             var found = new OldSetup(running, Cleanup.Folders(Cleanup.Roots(running), self), Cleanup.Logs(game()), kit);
             return found.Any ? found : null;
         }
@@ -154,7 +157,7 @@ sealed class LauncherCleanup(Func<GameInstall?> game, string? self, bool firstRu
         try
         {
             Cleanup.Stop([.. found.Programs]);
-            var failed = Cleanup.Delete(found.Folders.Concat(found.Logs));
+            var failed = Cleanup.Delete(found.Folders, true).Concat(Cleanup.Delete(found.Logs, false)).ToArray();
             return failed.Length == 0 ? Result.Success : Result.Fail(string.Join("\n", failed));
         }
         catch (Exception e) when (e is Win32Exception or InvalidOperationException)

@@ -1332,4 +1332,5 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Eine ältere Einrichtung des Spieler-Kits ist auf diesem PC und passt noch: sie bleibt unverändert.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Eine ältere Einrichtung des Spieler-Kits ist auf diesem PC, passt aber nicht: das nächste Fenster ersetzt sie in einem Schritt.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Löschen</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Auch Ihre Launcher-Daten löschen (Sprache, Spielordner und gespeicherte Anmeldung in %APPDATA%\hunter-resurgence)? Wählen Sie Nein, um sie zu behalten.</value></data>
 </root>

@@ -1332,4 +1332,5 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Cleanup.KitKept" xml:space="preserve"><value>A játékoskészlet régebbi beállítása megvan ezen a gépen, és még megfelel: változatlanul marad.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>A játékoskészlet régebbi beállítása megvan ezen a gépen, de nem felel meg: a következő ablak egy lépésben lecseréli.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Törlés</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Törli az indító adatait is (nyelv, játékmappa és mentett bejelentkezés itt: %APPDATA%\hunter-resurgence)? A megtartásukhoz válassza a Nemet.</value></data>
 </root>

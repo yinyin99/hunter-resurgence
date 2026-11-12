@@ -1332,4 +1332,5 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Starší nastavení balíčku hráče je na tomto počítači a stále vyhovuje: zůstane beze změny.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Starší nastavení balíčku hráče je na tomto počítači, ale nevyhovuje: další okno ho nahradí jedním krokem.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Smazat</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Smazat také data launcheru (jazyk, složku hry a uložené přihlášení v %APPDATA%\hunter-resurgence)? Zvolte Ne, pokud je chcete zachovat.</value></data>
 </root>

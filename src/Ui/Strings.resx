@@ -1332,4 +1332,5 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Cleanup.KitKept" xml:space="preserve"><value>An older player kit setup is on this PC and still fits: it stays as it is.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>An older player kit setup is on this PC but does not fit: the next window replaces it in one step.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Also delete your launcher data (language, game folder and saved sign-in in %APPDATA%\hunter-resurgence)? Choose No to keep it.</value></data>
 </root>

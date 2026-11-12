@@ -116,13 +116,13 @@ static class Pki
         File.WriteAllBytes(p.LeafFile, leaf.RawData);
     }
 
-    /// <summary>The authority, the leaf's key and its folder. Safe when nothing is installed.</summary>
+    /// <summary>The leaf's key, its folder and the authority. Safe when nothing is installed. The authority goes last: Windows asks for it, and a No there (an exception) must not keep the rest.</summary>
     public static void Uninstall(Place? place = null)
     {
         var p = place ?? Place.Default;
-        Untrust(p);
         if (CngKey.Exists(p.KeyName)) using (var k = CngKey.Open(p.KeyName)) k.Delete();
         if (Directory.Exists(p.Dir)) Directory.Delete(p.Dir, true);
+        Untrust(p);
     }
 
     static X509Certificate2Collection Authorities(X509Store store) => store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, CaSubject, false);
