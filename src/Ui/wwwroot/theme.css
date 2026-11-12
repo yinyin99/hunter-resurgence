@@ -253,6 +253,7 @@ a { transition: color var(--t-fast) var(--ease); }
 /* the grey card of the small dialogs (alert, buy) and the x of every modal */
 .dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes dialog-fade { from { opacity: 0; } }
 .close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
 .close:hover { opacity: 1; }
 
@@ -277,6 +278,7 @@ a { transition: color var(--t-fast) var(--ease); }
 
 @media (prefers-reduced-motion: reduce) {
     *, .hover-tint::after, .servers li::after { transition-duration: 0s !important; }
+    .dialog-card { animation-name: dialog-fade; }
 }
 
 /* h2.page-title of the old pages */

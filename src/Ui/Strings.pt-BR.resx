@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Iniciar o jogo pelo botão Jogar do Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Os servidores oficiais estão fechados. O iniciador do próprio jogo, que o Steam abre quando você aperta Jogar, não consegue mais alcançar um servidor sozinho: ele precisa deste iniciador, que leva sua conexão ao servidor da comunidade.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Para que o Jogar continue funcionando, este iniciador pode dizer ao Steam para abri-lo no lugar. Ele muda uma única configuração deste jogo no Steam (as opções de inicialização) e nada mais: nem seus outros jogos, nem o Steam em si, nem os arquivos do jogo. Você pode ver no Steam: clique com o botão direito no jogo, Propriedades, Opções de inicialização.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>O Steam precisa estar fechado enquanto a configuração é gravada, porque o Steam salva a própria cópia ao sair. Desinstalar este iniciador restaura a configuração.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Para que o Jogar continue funcionando, este iniciador pode dizer ao Steam para abri-lo no lugar.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Ele muda uma única configuração deste jogo no Steam (as opções de inicialização) e nada mais: nem seus outros jogos, nem o Steam em si, nem os arquivos do jogo.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Você pode ver no Steam: clique com o botão direito no jogo, Propriedades, Opções de inicialização.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>O Steam precisa estar fechado enquanto a configuração é gravada, porque o Steam salva a própria cópia ao sair.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Desinstalar este iniciador restaura a configuração.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Sua opção de inicialização atual para este jogo é: {0}. Ela só é substituída se você escolher o primeiro botão.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Fechar o Steam e configurar</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copiar a linha em vez disso</value></data>

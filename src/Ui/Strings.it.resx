@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Copia</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Avviare il gioco dal pulsante Gioca di Steam</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>I server ufficiali sono chiusi. Il launcher del gioco, che Steam apre quando premi Gioca, non riesce più a raggiungere un server da solo: ha bisogno di questo launcher, che porta la tua connessione al server della community.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Perché Gioca continui a funzionare, questo launcher può dire a Steam di aprire lui al suo posto. Cambia una sola impostazione di questo gioco in Steam (le opzioni di avvio) e nient'altro: non gli altri tuoi giochi, non Steam stesso, non i file del gioco. La vedi in Steam: clic destro sul gioco, Proprietà, Opzioni di avvio.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam deve essere chiuso mentre l'impostazione viene scritta, perché Steam salva la propria copia quando si chiude. Disinstallando questo launcher l'impostazione torna com'era.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Perché Gioca continui a funzionare, questo launcher può dire a Steam di aprire lui al suo posto.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Cambia una sola impostazione di questo gioco in Steam (le opzioni di avvio) e nient'altro: non gli altri tuoi giochi, non Steam stesso, non i file del gioco.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>La vedi in Steam: clic destro sul gioco, Proprietà, Opzioni di avvio.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam deve essere chiuso mentre l'impostazione viene scritta, perché Steam salva la propria copia quando si chiude.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Disinstallando questo launcher l'impostazione torna com'era.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>La tua opzione di avvio attuale per questo gioco è: {0}. Viene sostituita solo se scegli il primo pulsante.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Chiudi Steam e imposta</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copia invece la riga</value></data>

@@ -17,10 +17,10 @@
     }
     else if (copy || !info.CanSet)
     {
-        @if (!info.Installed) { <p>@L["Steam.NotInstalled"]</p> }
-        else if (!info.CanSet) { <p>@L["Steam.Unreadable"]</p> }
+        @if (!info.Installed) { <p class="note">@L["Steam.NotInstalled"]</p> }
+        else if (!info.CanSet) { <p class="note">@L["Steam.Unreadable"]</p> }
         <p>@L["Steam.Help"]</p>
-        <input id="steam-line" class="line" readonly value="@info.Line" />
+        <input id="steam-line" class="field line" readonly value="@info.Line" />
         <div class="buttons">
             <button type="button" class="btn btn-primary" id="steam-copy" autofocus @onclick="Copy">@L["Steam.Copy"]</button>
             <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
@@ -29,15 +29,24 @@
     else
     {
         <p>@L["Steam.Why"]</p>
-        <p>@L["Steam.What"]</p>
-        <p>@L["Steam.Closed"]</p>
-        @if (info.Current is { Length: > 0 } && !info.Ours) { <p id="steam-current">@L["Steam.Current", info.Current]</p> }
+        <div class="changes">
+            <p>@L["Steam.What"]</p>
+            <ul>
+                <li>@L["Steam.Changes"]</li>
+                <li>@L["Steam.Where"]</li>
+                <li>@L["Steam.Undo"]</li>
+            </ul>
+        </div>
+        <p class="note">@L["Steam.Closed"]</p>
+        @if (info.Current is { Length: > 0 } && !info.Ours) { <p class="note" id="steam-current">@L["Steam.Current", info.Current]</p> }
         @if (error is not null) { <p class="error" role="alert">@error</p> }
-        <label class="never"><input type="checkbox" id="steam-never" @bind="never" /> @L["Steam.Never"]</label>
         <div class="buttons">
             <button type="button" class="btn btn-primary" id="steam-set" autofocus disabled="@busy" @onclick="Set">@L["Steam.Set"]</button>
             <button type="button" class="btn btn-inverse" id="steam-copy-line" disabled="@busy" @onclick="() => copy = true">@L["Steam.CopyInstead"]</button>
-            <button type="button" class="btn btn-inverse" id="steam-not-now" disabled="@busy" @onclick="Modal.Close">@L["Kit.NotNow"]</button>
+        </div>
+        <div class="later">
+            <label class="never"><input type="checkbox" class="tick" id="steam-never" @bind="never" /> @L["Steam.Never"]</label>
+            <button type="button" class="btn quiet" id="steam-not-now" disabled="@busy" @onclick="Modal.Close">@L["Kit.NotNow"]</button>
         </div>
     }
 </div>

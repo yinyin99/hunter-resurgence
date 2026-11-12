@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Kopieren</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Das Spiel über Steams Play-Taste starten</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>Die offiziellen Server sind geschlossen. Der eigene Launcher des Spiels, den Steam bei Play öffnet, erreicht von allein keinen Server mehr: Er braucht diesen Launcher, der Ihre Verbindung zum Community-Server herstellt.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Damit Play weiter funktioniert, kann dieser Launcher Steam anweisen, stattdessen ihn zu öffnen. Dabei wird eine einzige Einstellung dieses Spiels in Steam geändert (die Startoptionen), sonst nichts: nicht Ihre anderen Spiele, nicht Steam selbst, nicht die Dateien des Spiels. Sie sehen sie in Steam: Rechtsklick auf das Spiel, Eigenschaften, Startoptionen.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>Steam muss geschlossen sein, während die Einstellung geschrieben wird, weil Steam beim Beenden seine eigene Kopie speichert. Beim Deinstallieren dieses Launchers wird die Einstellung zurückgesetzt.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Damit Play weiter funktioniert, kann dieser Launcher Steam anweisen, stattdessen ihn zu öffnen.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>Dabei wird eine einzige Einstellung dieses Spiels in Steam geändert (die Startoptionen), sonst nichts: nicht Ihre anderen Spiele, nicht Steam selbst, nicht die Dateien des Spiels.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>Sie sehen sie in Steam: Rechtsklick auf das Spiel, Eigenschaften, Startoptionen.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>Steam muss geschlossen sein, während die Einstellung geschrieben wird, weil Steam beim Beenden seine eigene Kopie speichert.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Beim Deinstallieren dieses Launchers wird die Einstellung zurückgesetzt.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Ihre aktuelle Startoption für dieses Spiel lautet: {0}. Sie wird nur ersetzt, wenn Sie die erste Schaltfläche wählen.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Steam schließen und einstellen</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Stattdessen die Zeile kopieren</value></data>

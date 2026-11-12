@@ -49,8 +49,11 @@
   <data name="Steam.Copy" xml:space="preserve"><value>Másolás</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>A játék indítása a Steam Játék gombjáról</value></data>
   <data name="Steam.Why" xml:space="preserve"><value>A hivatalos szerverek bezártak. A játék saját indítója, amelyet a Steam a Játék gomb megnyomásakor megnyit, már nem ér el szervert egyedül: szüksége van erre az indítóra, amely a közösségi szerverhez viszi a kapcsolatodat.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Hogy a Játék gomb továbbra is működjön, ez az indító megkérheti a Steamet, hogy helyette őt nyissa meg. A játék egyetlen beállítását módosítja a Steamben (az indítási beállításokat), semmi mást: sem a többi játékodat, sem magát a Steamet, sem a játék fájljait. A Steamben megnézheted: jobb kattintás a játékon, Tulajdonságok, Indítási beállítások.</value></data>
-  <data name="Steam.Closed" xml:space="preserve"><value>A Steamnek zárva kell lennie, amíg a beállítás íródik, mert a Steam kilépéskor elmenti a saját másolatát. Az indító eltávolítása visszaállítja a beállítást.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Hogy a Játék gomb továbbra is működjön, ez az indító megkérheti a Steamet, hogy helyette őt nyissa meg.</value></data>
+  <data name="Steam.Changes" xml:space="preserve"><value>A játék egyetlen beállítását módosítja a Steamben (az indítási beállításokat), semmi mást: sem a többi játékodat, sem magát a Steamet, sem a játék fájljait.</value></data>
+  <data name="Steam.Where" xml:space="preserve"><value>A Steamben megnézheted: jobb kattintás a játékon, Tulajdonságok, Indítási beállítások.</value></data>
+  <data name="Steam.Closed" xml:space="preserve"><value>A Steamnek zárva kell lennie, amíg a beállítás íródik, mert a Steam kilépéskor elmenti a saját másolatát.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>Az indító eltávolítása visszaállítja a beállítást.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>A játék jelenlegi indítási beállítása: {0}. Csak akkor cserélődik le, ha az első gombot választod.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Steam bezárása és beállítás</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Inkább a sor másolása</value></data>
