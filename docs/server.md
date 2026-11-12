@@ -111,7 +111,7 @@ The server's own answers for this build:
 | Application catalogue (`species`, `items`, `reserves`, `locations`) | the recorded `Application/application` | `species.json` and `item.json` of the archives | reserves, lodge positions and the enum tables (`types`, `groups`, `categories`, `client_types`) |
 | `populations` and `species_ammo` of a reserve | the newest connect after a `Launch/start` of that reserve | - | `reserves[].populations` and `species`; the ammo of a species is its entry of the connect's `ethical`, also over a recorded connect (a recorded one may hold a seasonal event's ammo) |
 | Kill page labels and texture names | the recorded locale and web scripts | - | `labels`, `textures` |
-| Item definitions of update 10 | the recorded connect's | `game/json_inventory.json`, then the catalogue above | - |
+| Item definitions of update 10 | the recorded connect's | `game/json_inventory.json`, then the catalogue above, then the install's item definitions | - |
 | Discounts, the player's skill list | recorded only (without them: no discounts, fresh skills) | - | - |
 | The avatar list (`Avatar/getAvatars`) | recorded only: a restore picks the profile's avatar from it ([docs/restore.md](restore.md#storing-the-model)); without it every restored account has the default avatar, unreported | - | - |
 | Animal ids, score families | - | - | `animals`, `families` (always) |
@@ -124,7 +124,7 @@ With recordings that cover every input, the replies are the ones the recordings 
 
 **The `infos` of the connect reply** are the definitions of the account's own items, one per distinct `item_id`, in order of first appearance, as the game's server sends them. A list longer than `items` stops the game right after `connect`, so the recorded connect's `infos` are only a source of definitions, never sent whole.
 
-A definition not in the samples is built from the catalogue; an ammo's is completed with the `extra.ammo` ballistics of the install's item definitions, which the game needs to get past `connect` for an account that owns such an ammo.
+A definition not in the samples is built from the catalogue; an ammo's is completed with the `extra.ammo` ballistics of the install's item definitions, which the game needs to get past `connect` for an account that owns such an ammo. An item the catalogue does not list (a restored inventory may keep one the store no longer sells) has its definition built from the install's item definitions the same way; the store still shows only the catalogue's items. An owned item without any definition is left out of `infos`, and the game closes after `connect`.
 
 Still answered only from recordings (without them: a miss, `null` under `/v1/`): the launcher and website pages and their assets, the sign-up host, the avatar and photo hosts, news, `Launch/start` (its tokens), `User/jwt`, the lists that wrap a recorded base reply (`Me/poll`, `Expedition/list`, `Public_user/expedition`, `Splash/list_active`) and the profile, statistics, mission, challenge, leaderboard and friend pages. `coverage --no-recordings` prints the exact list.
 
