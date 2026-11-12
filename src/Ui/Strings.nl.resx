@@ -1300,6 +1300,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ik begrijp het, verwijder alles</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>De gegevens konden niet worden verwijderd. Probeer het opnieuw.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Claim je oude profiel</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Je oude jagersnaam</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Zoeken</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>We hebben geen profiel onder deze naam bewaard.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Vandaag te veel zoekopdrachten, probeer het morgen opnieuw.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>De server antwoordde niet.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Voorwerpen: {0}, trofeeën: {1}, jachthutten: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Vaardigheden: {0}, statistieken: {1}, prestaties: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>nee</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Mijn oude naam gebruiken</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Dit vervangt je voorwerpen, vaardigheden, prestaties, trofeeën en jachthutten op deze server door het oude profiel. Jachten, afschotten en foto's die je hier maakte blijven. Je kunt maar één profiel claimen.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Dit profiel claimen</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Je claim voor {0} (gedaan op {1}) wacht op een operator.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Je oude profiel {0} is hersteld ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Je claim voor {0} (gedaan op {1}) is afgewezen.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Je oude profiel is hersteld.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Een operator controleert deze claim; je krijgt een bericht in je inbox.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Jouw gegevens</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Wat deze server over jou bewaart en hoe je het kunt laten verwijderen.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Wat er wordt opgeslagen</value></data>

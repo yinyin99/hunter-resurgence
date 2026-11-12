@@ -1300,6 +1300,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Megértettem, töröljön mindent</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Adataim törlése</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Az adatok törlése nem sikerült. Próbáld újra.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Régi profilod igénylése</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>A régi vadászneved</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Keresés</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Ezen a néven nem őriztünk profilt.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Ma túl sok keresés, próbáld újra holnap.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>A szerver nem válaszolt.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Tárgyak: {0}, trófeák: {1}, vadászházak: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Képességek: {0}, statisztikák: {1}, teljesítmények: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>igen</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>nem</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Régi nevem használata</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Ez a régi profilra cseréli a tárgyaidat, képességeidet, teljesítményeidet, trófeáidat és vadászházaidat ezen a szerveren. Az itt végzett vadászatok, lövések és fotók megmaradnak. Csak egy profilt igényelhetsz.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Profil igénylése</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>A(z) {0} profilra (igényelve: {1}) vonatkozó kérésed operátorra vár.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>A régi profilod ({0}) vissza lett állítva ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>A(z) {0} profilra (igényelve: {1}) vonatkozó kérésedet elutasították.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>A régi profilod vissza lett állítva.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Egy operátor ellenőrzi a kérést; üzenetet kapsz a postaládádba.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Adataid</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Mit tart nyilván rólad ez a szerver, és hogyan szabadulhatsz meg tőle.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Mi van tárolva</value></data>

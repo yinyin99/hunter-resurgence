@@ -119,4 +119,64 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
             return false;
         }
     }
+
+    public async Task<ArchiveStatus?> ArchiveStatusAsync()
+    {
+        if (cookie.Value is null) return null;
+        try
+        {
+            using var request = Request(HttpMethod.Get, ServerAccountApi.Archive);
+            using var response = await http.SendAsync(request);
+            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ArchiveStatus>(new JsonSerializerOptions(JsonSerializerDefaults.Web)) : null;
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.Archive, e.Message);
+            return null;
+        }
+    }
+
+    sealed record FindJson(bool Found, string? Handle, long Hunterscore, int Items, int Trophies, int Lodges, bool Skills, bool Statistics, bool Achievements, bool NameFree);
+
+    public async Task<ArchiveFind> FindArchivedAsync(string name)
+    {
+        try
+        {
+            using var request = Request(HttpMethod.Get, ServerAccountApi.Archive + "?name=" + Uri.EscapeDataString(name));
+            using var response = await http.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.TooManyRequests) return new("limit");
+            if (!response.IsSuccessStatusCode) return new("unavailable");
+            var json = await response.Content.ReadFromJsonAsync<FindJson>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            if (json is null) return new("unavailable");
+            return json.Found
+                ? new("found", new(json.Handle ?? "", json.Hunterscore, json.Items, json.Trophies, json.Lodges, json.Skills, json.Statistics, json.Achievements, json.NameFree))
+                : new("notfound");
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.Archive, e.Message);
+            return new("unavailable");
+        }
+    }
+
+    public async Task<RestoreResult> ClaimArchivedAsync(string oldName, bool useOldName)
+    {
+        try
+        {
+            using var request = Request(HttpMethod.Post, ServerAccountApi.Archive + "/claim");
+            // the card's warning is the player's confirmation
+            request.Content = new FormUrlEncodedContent([KeyValuePair.Create("name", oldName), KeyValuePair.Create("old_name", useOldName ? "1" : "0"), KeyValuePair.Create("confirm", "overwrite")]);
+            using var response = await http.SendAsync(request);
+            ResultJson? json = null;
+            try { json = await response.Content.ReadFromJsonAsync<ResultJson>(new JsonSerializerOptions(JsonSerializerDefaults.Web)); }
+            catch (JsonException) { }
+            if (json?.Status is { Length: > 0 } status) return new(status, json.Message ?? "");
+            return response.StatusCode == HttpStatusCode.Unauthorized ? new("signed_out", "Sign in first.") : new("unavailable", "The server did not answer.");
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.Archive, e.Message);
+            return new("unavailable", "The server did not answer.");
+        }
+    }
 }

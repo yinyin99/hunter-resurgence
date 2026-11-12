@@ -1300,6 +1300,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Я понимаю, удалить всё</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Удалить мои данные</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Не удалось удалить данные. Попробуйте ещё раз.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Верните старый профиль</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Ваше старое имя охотника</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Найти</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Под этим именем мы профиль не сохранили.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Сегодня слишком много поисков, попробуйте завтра.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Сервер не ответил.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, домики: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Навыки: {0}, статистика: {1}, достижения: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>да</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>нет</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Использовать моё старое имя</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и домики на этом сервере старым профилем. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Вернуть этот профиль</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Ваша заявка на {0} (подана {1}) ждёт оператора.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Ваш старый профиль {0} восстановлен ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Ваша заявка на {0} (подана {1}) отклонена.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Ваш старый профиль восстановлен.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Оператор проверит заявку; вы получите сообщение во входящих.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Ваши данные</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Что этот сервер хранит о вас и как это удалить.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Что хранится</value></data>

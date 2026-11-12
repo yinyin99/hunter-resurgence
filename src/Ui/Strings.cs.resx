@@ -1300,6 +1300,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumím, smazat vše</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Smazat mé údaje</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Údaje se nepodařilo smazat. Zkuste to znovu.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Získejte zpět starý profil</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Vaše staré jméno lovce</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Hledat</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Pod tímto jménem jsme profil neuchovali.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Dnes příliš mnoho hledání, zkuste to zítra.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Server neodpověděl.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Předměty: {0}, trofeje: {1}, chaty: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Dovednosti: {0}, statistiky: {1}, úspěchy: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>ano</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>ne</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Použít mé staré jméno</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Tím se vaše předměty, dovednosti, úspěchy, trofeje a chaty na tomto serveru nahradí starým profilem. Lovy, zásahy a fotky vytvořené zde zůstanou. Získat zpět můžete jen jeden profil.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Získat tento profil</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Vaše žádost o {0} (podaná {1}) čeká na operátora.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Váš starý profil {0} byl obnoven ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Vaše žádost o {0} (podaná {1}) byla zamítnuta.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Váš starý profil je obnoven.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Operátor žádost zkontroluje; zprávu dostanete do schránky.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Vaše údaje</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Co o vás tento server uchovává a jak se toho zbavit.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Co se ukládá</value></data>

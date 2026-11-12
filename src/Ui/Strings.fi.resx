@@ -1300,6 +1300,25 @@
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ymmärrän, poista kaikki</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Poista tietoni</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Tietoja ei voitu poistaa. Yritä uudelleen.</value></data>
+  <data name="Claim.Title" xml:space="preserve"><value>Lunasta vanha profiilisi</value></data>
+  <data name="Claim.Name" xml:space="preserve"><value>Vanha metsästäjänimesi</value></data>
+  <data name="Claim.Find" xml:space="preserve"><value>Hae</value></data>
+  <data name="Claim.Find.notfound" xml:space="preserve"><value>Tällä nimellä ei ole säilytettyä profiilia.</value></data>
+  <data name="Claim.Find.limit" xml:space="preserve"><value>Liikaa hakuja tänään, yritä huomenna uudelleen.</value></data>
+  <data name="Claim.Find.unavailable" xml:space="preserve"><value>Palvelin ei vastannut.</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Esineet: {0}, trofeet: {1}, majat: {2}</value></data>
+  <data name="Claim.Flags" xml:space="preserve"><value>Taidot: {0}, tilastot: {1}, saavutukset: {2}</value></data>
+  <data name="Claim.Yes" xml:space="preserve"><value>kyllä</value></data>
+  <data name="Claim.No" xml:space="preserve"><value>ei</value></data>
+  <data name="Claim.UseName" xml:space="preserve"><value>Käytä vanhaa nimeäni</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Tämä korvaa esineesi, taitosi, saavutuksesi, trofeesi ja majasi tällä palvelimella vanhalla profiililla. Täällä tekemäsi metsästykset, kaadot ja kuvat säilyvät. Voit lunastaa vain yhden profiilin.</value></data>
+  <data name="Claim.Button" xml:space="preserve"><value>Lunasta tämä profiili</value></data>
+  <data name="Claim.State.waiting" xml:space="preserve"><value>Pyyntösi ({0}, tehty {1}) odottaa operaattoria.</value></data>
+  <data name="Claim.State.restored" xml:space="preserve"><value>Vanha profiilisi {0} palautettiin ({1}).</value></data>
+  <data name="Claim.State.rejected" xml:space="preserve"><value>Pyyntösi ({0}, tehty {1}) hylättiin.</value></data>
+  <data name="Claim.Result.restored" xml:space="preserve"><value>Vanha profiilisi on palautettu.</value></data>
+  <data name="Claim.Result.review" xml:space="preserve"><value>Operaattori tarkistaa pyynnön; saat viestin saapuneisiin.</value></data>
   <data name="Data.Title" xml:space="preserve"><value>Tietosi</value></data>
   <data name="Data.Intro" xml:space="preserve"><value>Mitä tämä palvelin säilyttää sinusta ja miten pääset niistä eroon.</value></data>
   <data name="Data.Stored.Title" xml:space="preserve"><value>Mitä tallennetaan</value></data>

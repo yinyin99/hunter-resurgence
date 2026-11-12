@@ -8,6 +8,9 @@ public static class ServerAccountApi
     public const string Restore = "/account/restore";
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>confirm=delete</c>: deletes the account and all its data.</summary>
     public const string Delete = "/account/delete";
+    /// <summary>GET with the cookie: <c>{enabled, claimed: null | {state, handle, ts}}</c>; with <c>?name=</c>: <c>{found, handle, hunterscore, items, trophies, lodges, skills, statistics, achievements, nameFree}</c> or 429 for more than 5 searches a day.
+    /// POST with <c>X-Requested-With</c> to <c>/claim</c> and the form <c>name</c> (the old name), <c>old_name</c> (1 or 0), <c>confirm=overwrite</c>: <c>{status, message}</c>.</summary>
+    public const string Archive = "/account/archive";
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>bundle=1</c> for a bundle: buys with em$ at the store's price; 200 <c>{status, ems}</c>,
     /// or 409 for something not for sale or a balance too low.</summary>
     public const string Buy = "/account/buy";
