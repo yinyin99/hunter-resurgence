@@ -625,7 +625,7 @@
   <data name="Store.Own" xml:space="preserve"><value>Omistat:</value></data>
   <data name="Store.Owned" xml:space="preserve"><value>Omistuksessa</value></data>
   <data name="Store.Expires" xml:space="preserve"><value>Vanhenee:</value></data>
-  <data name="Store.LicenseUntil" xml:space="preserve"><value>Sinulla on voimassaoleva lupa asti:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Lupa päättyy:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Sinulla on rajoittamaton lupa</value></data>
   <data name="Store.Or" xml:space="preserve"><value>tai</value></data>
   <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>

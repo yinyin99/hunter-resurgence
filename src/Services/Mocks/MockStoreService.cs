@@ -100,9 +100,9 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
 
     public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult(Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault());
 
-    // the request takes a moment, so the pending state of the buy dialog can be seen
     public void RefreshOwned() { }
 
+    // the request takes a moment, so the pending state of the buy dialog can be seen
     public async Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1)
     {
         await Task.Delay(400);

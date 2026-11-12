@@ -2,7 +2,7 @@
 @if (Expires is { } end)
 {
     @if (end == 0) { <p class="own">@L["Store.UnlimitedLicense"]</p> }
-    else if (end > DateTimeOffset.UtcNow.ToUnixTimeSeconds()) { <p class="own">@(Full ? L["Store.LicenseUntil"] : L["Store.Expires"]) @DateTimeOffset.FromUnixTimeSeconds(end).ToString("yyyy-MM-dd")</p> }
+    else if (end > DateTimeOffset.UtcNow.ToUnixTimeSeconds()) { <p class="own">@(Full ? L["Store.LicenseUntil"] : L["Store.Expires"]) @DateTimeOffset.FromUnixTimeSeconds(Math.Min(end, 253402300799)).ToString("yyyy-MM-dd")</p> }
 }
 else if (DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
 else if (Owned == 1 && !Counted) { <p class="own">@L["Store.Owned"]</p> }

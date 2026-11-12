@@ -1338,7 +1338,7 @@ public sealed partial class State
                 titles[Py.Str(s!["id"])] = C(s["title"]);
         using var con = Con(account);
         var rows = con.Rows("SELECT item_id, slot, units, json_extract(metadata, '$.expires') FROM items WHERE account_id = $a ORDER BY guid")
-            .Select(r => (Id: (long)r[0], Slot: (long)r[1], Units: Py.FromSql(r[2]), Expires: r[3] is long or double ? Py.FromSql(r[3]) : null, Item: items.GetValueOrDefault((long)r[0])));
+            .Select(r => (Id: (long)r[0], Slot: (long)r[1], Units: Py.FromSql(r[2]), Expires: r[3] is long or double ? (JsonNode)(long)Math.Floor(Convert.ToDouble(r[3])) : null, Item: items.GetValueOrDefault((long)r[0])));
         if (AllLicenses)  // owned without end: the account's own license rows give way to one row of each
             rows = rows.Where(r => !IsLicense(r.Item ?? installItems.GetValueOrDefault(r.Id)))
                        .Concat(Licenses.Select(l => (Id: Py.L(l["id"]), Slot: 0L, Units: (JsonNode?)null, Expires: (JsonNode?)0L, Item: (JsonObject?)l)));

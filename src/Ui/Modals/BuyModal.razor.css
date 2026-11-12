@@ -6,5 +6,5 @@ h2 { margin: 0 0 16px; font-size: 24px; line-height: 30px; font-weight: 400; }
 select { height: 30px; margin: 0 0 20px; padding: 0 8px; }
 h5 { margin: 0 0 8px; font-size: 16px; line-height: 22px; font-weight: 400; }
 .lines { margin: 0 0 20px; padding: 0; list-style: none; font-size: 14px; line-height: 22px; }
-.own { margin: 0 0 20px; font-size: 14px; line-height: 20px; color: var(--text-3); }
+.buy ::deep .own { margin: 0 0 20px; font-size: 14px; line-height: 20px; color: var(--text-3); }
 .lines .own { margin: 0; }

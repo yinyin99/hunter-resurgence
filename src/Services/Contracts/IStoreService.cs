@@ -44,8 +44,8 @@ public interface IStoreService
     Task<bool> HasSalesAsync();
     Task<StoreItem?> ItemAsync(int id);
     Task<StoreBundle?> BundleAsync(int id);
-    /// <summary>Buys <paramref name="count"/> of an item, or a bundle, with em$ or gm$ (bundles only with em$).</summary>
     /// <summary>Forget what the player owns, so the next read asks again; a page does this when it opens (a purchase does it itself).</summary>
     void RefreshOwned();
+    /// <summary>Buys <paramref name="count"/> of an item, or a bundle, with em$ or gm$ (bundles only with em$).</summary>
     Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1);
 }
