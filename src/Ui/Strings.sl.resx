@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Potrdite kodo {0} v brskalniku.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Strežnik ni dosegljiv. Poskusite znova.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ni veljaven JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: nastavite "{0}" (manjka ali je še vedno vzorec).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" mora biti naslov https brez poizvedbe.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" ni ime gostitelja.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Nastavitev spremeni tri stvari na tem računalniku in nič drugega (datotek igre se nikoli ne dotakne):
+1. Datoteka hosts v sistemu Windows ({3}): {0} imen strežnikov igre kaže na ta računalnik, med dvema označenima vrsticama.
+2. Vaš seznam zaupanja Windows (samo vaš uporabnik): lokalni overitelj potrdil z imenom "{1}". Lahko jamči samo za teh {0} imen; njegov ključ se izbriše takoj, ko se nastavitev konča, in se nikoli ne shrani.
+3. Potrdilo za ta imena. Njegovega ključa ni mogoče izvoziti in ostane v vašem profilu Windows; datoteka potrdila je v {2}.
+Vse lahko kadar koli razveljavite: Nastavitve, Odstrani nastavitev.
+Imena:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows bo zdaj vprašal, ali naj zaupa overitelju potrdil. Izberite Da.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Nato bo Windows zahteval skrbniško dovoljenje za urejanje datoteke hosts (ločeno okno). Izberite Da. Kot skrbnik se izvede samo to urejanje.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Datoteka hosts ni bila spremenjena (dovoljenje zavrnjeno ali jo je blokiral varnostni program). Nastavite znova, da poskusite še enkrat; Odstrani nastavitev v Nastavitvah razveljavi, kar je bilo narejeno.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Končano. Naj bo launcher med igranjem odprt: igro pošilja na skupnostni strežnik. Ob prvem zagonu igre vas bo Windows Firewall vprašal zanjo: kliknite Dovoli.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Blok hosts, overitelj potrdil in potrdilo so odstranjeni. Igra spet govori z lastnimi strežniki.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Potrdila ni bilo mogoče najti: ta računalnik še ni nastavljen.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Potrdilo je poteklo. Nastavite znova: ustvari se novo.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Datoteka hosts nima bloka nastavitve (ni bila izvedena ali je odstranjena), zato igra še vedno govori z lastnimi strežniki.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Poslušanje na vratih 80 ali 443 ni uspelo: {0}
+Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), in znova zaženite launcher.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Nastavi</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Ne zdaj</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Odstranim nastavitev? Blok hosts, overitelj potrdil in potrdilo bodo odstranjeni, igra pa bo spet govorila z lastnimi strežniki.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Nastavi za skupnostni strežnik</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Odstrani nastavitev</value></data>
 </root>

@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Erősítsd meg a(z) {0} kódot a böngésződben.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>A bejelentkezést nem erősítették meg időben. Próbáld újra.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>A szerver nem érhető el. Próbáld újra.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>A settings.json nem érvényes JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: add meg a(z) "{0}" értékét (hiányzik, vagy még mintaérték).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: a(z) "{0}" értéke https cím kell legyen, lekérdezés nélkül.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: a(z) "{0}" nem gazdagépnév.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>A beállítás három dolgot módosít ezen a gépen, mást semmit (a játék fájljaihoz soha nem nyúl):
+1. A Windows hosts fájlja ({3}): a játék {0} szervernevét erre a gépre irányítja két megjelölt sor között.
+2. A Windows megbízható listája (csak a te felhasználód): egy "{1}" nevű helyi hitelesítésszolgáltató. Csak erre a {0} névre kezeskedhet; a kulcsát a beállítás végeztével törli a rendszer, és sosem menti el.
+3. Tanúsítvány ezekhez a nevekhez. A kulcsa nem exportálható, és a Windows-profilodban marad; a tanúsítványfájl itt van: {2}.
+Bármikor visszavonhatod az egészet: Beállítások, Beállítás eltávolítása.
+A nevek:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>A Windows mindjárt megkérdezi, megbízzon-e a hitelesítésszolgáltatóban. Válaszd az Igen lehetőséget.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Ezután a Windows rendszergazdai engedélyt kér a hosts fájl szerkesztéséhez (külön ablak). Válaszd az Igen lehetőséget. Csak ez a szerkesztés fut rendszergazdaként.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>A hosts fájl nem változott (az engedélyt megtagadták, vagy egy biztonsági program blokkolta). Állítsd be újra a próbálkozáshoz; a Beállításokban a Beállítás eltávolítása visszavonja, ami történt.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Kész. Hagyd nyitva az indítót játék közben: ő küldi a játékot a közösségi szerverre. Amikor a játék először elindul, a Windows tűzfal rákérdez: kattints az Engedélyezés gombra.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>A hosts blokk, a hitelesítésszolgáltató és a tanúsítvány eltávolítva. A játék újra a saját szervereivel beszél.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Nem található tanúsítvány: ez a gép még nincs beállítva.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>A tanúsítvány lejárt. Állítsd be újra: újat készít.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>A hosts fájlban nincs a beállítás blokkja (nem futott le, vagy eltávolították), ezért a játék még mindig a saját szervereivel beszél.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Nem lehet figyelni a 80-as vagy 443-as porton: {0}
+Zárd be a programot, amely használja (másik szerver vagy az indító második másolata), majd indítsd újra az indítót.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Beállítás</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Most nem</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Eltávolítod a beállítást? A hosts blokk, a hitelesítésszolgáltató és a tanúsítvány törlődik, és a játék újra a saját szervereivel beszél.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Beállítás a közösségi szerverhez</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Beállítás eltávolítása</value></data>
 </root>

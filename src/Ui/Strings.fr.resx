@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Confirmez le code {0} dans votre navigateur.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>La connexion n'a pas été confirmée à temps. Veuillez réessayer.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Le serveur est injoignable. Veuillez réessayer.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json n'est pas du JSON valide.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json : renseignez "{0}" (absent ou encore un exemple).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json : "{0}" doit être une adresse https sans paramètres.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json : "{0}" n'est pas un nom d'hôte.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>La configuration change trois choses sur ce PC, rien d'autre (les fichiers du jeu ne sont jamais touchés) :
+1. Le fichier hosts de Windows ({3}) : {0} noms de serveurs du jeu pointent vers ce PC, entre deux lignes repérées.
+2. Votre liste de confiance Windows (votre utilisateur seulement) : une autorité de certification locale nommée "{1}". Elle ne peut garantir que ces {0} noms ; sa clé est supprimée dès la fin de la configuration et n'est jamais enregistrée.
+3. Un certificat pour ces noms. Sa clé ne peut pas être exportée et reste dans votre profil Windows ; le fichier du certificat est dans {2}.
+Annulez tout à tout moment : Paramètres, Supprimer la configuration.
+Les noms :</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows va demander s'il faut faire confiance à l'autorité de certification. Choisissez Oui.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Windows va ensuite demander l'autorisation administrateur pour modifier le fichier hosts (une fenêtre à part). Choisissez Oui. Seule cette modification s'exécute en administrateur.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Le fichier hosts n'a pas été modifié (autorisation refusée, ou bloqué par un programme de sécurité). Configurez de nouveau pour réessayer ; Supprimer la configuration, dans les paramètres, annule ce qui a été fait.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Terminé. Laissez le lanceur ouvert pendant que vous jouez : il envoie le jeu vers le serveur communautaire. La première fois que le jeu démarre, le pare-feu Windows pose une question à son sujet : cliquez sur Autoriser.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Bloc hosts, autorité de certification et certificat supprimés. Le jeu parle de nouveau à ses propres serveurs.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Aucun certificat trouvé : ce PC n'est pas encore configuré.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Le certificat a expiré. Configurez de nouveau : cela en crée un nouveau.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Le fichier hosts n'a pas le bloc de la configuration (non faite, ou supprimée) : le jeu parle donc toujours à ses propres serveurs.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Impossible d'écouter sur le port 80 ou 443 : {0}
+Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lanceur), puis relancez le lanceur.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Configurer</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Pas maintenant</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Supprimer la configuration ? Le bloc hosts, l'autorité de certification et le certificat sont supprimés, et le jeu parle de nouveau à ses propres serveurs.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Configurer pour le serveur communautaire</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Supprimer la configuration</value></data>
 </root>

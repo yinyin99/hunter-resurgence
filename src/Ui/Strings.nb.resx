@@ -1298,4 +1298,29 @@
   <data name="Signin.Link" xml:space="preserve"><value>Bekreft koden {0} i nettleseren din.</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Innloggingen ble ikke bekreftet i tide. Prøv igjen.</value></data>
   <data name="Signin.LinkFailed" xml:space="preserve"><value>Kunne ikke nå serveren. Prøv igjen.</value></data>
+  <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json er ikke gyldig JSON.</value></data>
+  <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: angi "{0}" (mangler eller er fortsatt et eksempel).</value></data>
+  <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" må være en https-adresse uten spørring.</value></data>
+  <data name="Kit.SettingsHost" xml:space="preserve"><value>settings.json: "{0}" er ikke et vertsnavn.</value></data>
+  <data name="Kit.Plan" xml:space="preserve"><value>Oppsettet endrer tre ting på denne PC-en og ingenting annet (spillfiler røres aldri):
+1. Windows' hosts-fil ({3}): {0} av spillets servernavn peker til denne PC-en, mellom to merkede linjer.
+2. Din Windows-tillitsliste (bare brukeren din): en lokal sertifikatutsteder som heter "{1}". Den kan bare stå inne for disse {0} navnene; nøkkelen slettes så snart oppsettet er ferdig og lagres aldri.
+3. Et sertifikat for disse navnene. Nøkkelen kan ikke eksporteres og blir i Windows-profilen din; sertifikatfilen ligger i {2}.
+Angre alt når som helst: Innstillinger, Fjern oppsettet.
+Navnene:</value></data>
+  <data name="Kit.Trust" xml:space="preserve"><value>Windows spør nå om sertifikatutstederen skal stoles på. Velg Ja.</value></data>
+  <data name="Kit.Elevate" xml:space="preserve"><value>Deretter ber Windows om administratortillatelse for å endre hosts-filen (en egen dialog). Velg Ja. Bare den endringen kjører som administrator.</value></data>
+  <data name="Kit.HostsFailed" xml:space="preserve"><value>Hosts-filen ble ikke endret (tillatelse nektet, eller et sikkerhetsprogram blokkerte den). Sett opp på nytt for å prøve igjen; Fjern oppsettet i Innstillinger angrer det som er gjort.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Ferdig. La launcheren være åpen mens du spiller: den sender spillet til community-serveren. Første gang spillet starter, spør Windows-brannmuren om det: klikk Tillat.</value></data>
+  <data name="Kit.Removed" xml:space="preserve"><value>Hosts-blokken, sertifikatutstederen og sertifikatet er fjernet. Spillet snakker med sine egne servere igjen.</value></data>
+  <data name="Kit.NoLeaf" xml:space="preserve"><value>Fant ikke noe sertifikat: denne PC-en er ikke satt opp ennå.</value></data>
+  <data name="Kit.LeafExpired" xml:space="preserve"><value>Sertifikatet er utløpt. Sett opp på nytt: det lages et nytt.</value></data>
+  <data name="Kit.NoHosts" xml:space="preserve"><value>Hosts-filen har ingen blokk fra oppsettet (ikke kjørt eller fjernet), så spillet snakker fortsatt med sine egne servere.</value></data>
+  <data name="Kit.PortBusy" xml:space="preserve"><value>Kunne ikke lytte på port 80 eller 443: {0}
+Lukk programmet som bruker den (en annen server eller en andre kopi av launcheren), og start launcheren på nytt.</value></data>
+  <data name="Kit.SetUp" xml:space="preserve"><value>Sett opp</value></data>
+  <data name="Kit.NotNow" xml:space="preserve"><value>Ikke nå</value></data>
+  <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Fjerne oppsettet? Hosts-blokken, sertifikatutstederen og sertifikatet fjernes, og spillet snakker med sine egne servere igjen.</value></data>
+  <data name="Settings.KitSetup" xml:space="preserve"><value>Sett opp for community-serveren</value></data>
+  <data name="Settings.KitRemove" xml:space="preserve"><value>Fjern oppsettet</value></data>
 </root>
