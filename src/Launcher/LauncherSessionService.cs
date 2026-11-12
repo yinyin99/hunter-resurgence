@@ -94,30 +94,34 @@ public sealed class LauncherSessionService : ISessionService
         while (true)
         {
             using var client = await listener.AcceptTcpClientAsync(ct);
-            var stream = client.GetStream();
-            var buf = new byte[4096];
-            var n = 0;
-            using (var limit = CancellationTokenSource.CreateLinkedTokenSource(ct))
-            {
-                limit.CancelAfter(TimeSpan.FromSeconds(5));
-                try
-                {
-                    while (n < buf.Length && !Encoding.ASCII.GetString(buf, 0, n).Contains("\r\n\r\n", StringComparison.Ordinal))
-                        if (await stream.ReadAsync(buf.AsMemory(n), limit.Token) is var read and > 0) n += read; else break;
-                }
-                catch (OperationCanceledException) when (!ct.IsCancellationRequested) { } // a silent connection (a browser's spare one)
-            }
-            var line = Encoding.ASCII.GetString(buf, 0, n).Split("\r\n")[0].Split(' ');
             string? code = null;
-            if (line is ["GET", var target, _] && Uri.TryCreate("http://127.0.0.1" + target, UriKind.Absolute, out var url) && url.AbsolutePath == "/")
+            try
             {
-                var q = HttpUtility.ParseQueryString(url.Query);
-                if (q["state"] is { } given && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(given), Encoding.ASCII.GetBytes(state))) code = q["code"];
+                var stream = client.GetStream();
+                var buf = new byte[4096];
+                var n = 0;
+                using (var limit = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                {
+                    limit.CancelAfter(TimeSpan.FromSeconds(5));
+                    try
+                    {
+                        while (n < buf.Length && !Encoding.ASCII.GetString(buf, 0, n).Contains("\r\n\r\n", StringComparison.Ordinal))
+                            if (await stream.ReadAsync(buf.AsMemory(n), limit.Token) is var read and > 0) n += read; else break;
+                    }
+                    catch (OperationCanceledException) when (!ct.IsCancellationRequested) { } // a silent connection (a browser's spare one)
+                }
+                var line = Encoding.ASCII.GetString(buf, 0, n).Split("\r\n")[0].Split(' ');
+                if (line is ["GET", var target, _] && Uri.TryCreate("http://127.0.0.1" + target, UriKind.Absolute, out var url) && url.AbsolutePath == "/")
+                {
+                    var q = HttpUtility.ParseQueryString(url.Query);
+                    if (q["state"] is { } given && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(given), Encoding.ASCII.GetBytes(state))) code = q["code"];
+                }
+                var (status, text) = code is { Length: > 0 } ? ("200 OK", "Signed in, you can close this tab.") : ("400 Bad Request", "This is not the sign-in the app started.");
+                var page = Encoding.UTF8.GetBytes($"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Hunter Resurgence</title></head><body><p>{text}</p></body></html>");
+                await stream.WriteAsync(Encoding.ASCII.GetBytes($"HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {page.Length}\r\nCache-Control: no-store\r\nReferrer-Policy: no-referrer\r\nConnection: close\r\n\r\n"), ct);
+                await stream.WriteAsync(page, ct);
             }
-            var (status, text) = code is { Length: > 0 } ? ("200 OK", "Signed in, you can close this tab.") : ("400 Bad Request", "This is not the sign-in the app started.");
-            var page = Encoding.UTF8.GetBytes($"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Hunter Resurgence</title></head><body><p>{text}</p></body></html>");
-            await stream.WriteAsync(Encoding.ASCII.GetBytes($"HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {page.Length}\r\nCache-Control: no-store\r\nReferrer-Policy: no-referrer\r\nConnection: close\r\n\r\n"), ct);
-            await stream.WriteAsync(page, ct);
+            catch (IOException) { } // a connection that dropped before the answer (a probe, an aborted request): the wait goes on, unless the request already gave the code
             if (code is { Length: > 0 }) return code;
         }
     }

@@ -147,6 +147,30 @@ public sealed class SendTests : IDisposable
     }
 
     [Fact]
+    public async Task AConnectionThatDropsBeforeTheAnswerDoesNotEndTheWait()
+    {
+        var res = await Run(url =>
+        {
+            var q = HttpUtility.ParseQueryString(new Uri(url).Query);
+            challenge = q["challenge"]!;
+            var port = int.Parse(q["port"]!);
+            browser = Task.Run(async () =>
+            {
+                for (var i = 0; i < 20; i++)
+                {
+                    using var probe = new TcpClient { LingerState = new LingerOption(true, 0) };
+                    await probe.ConnectAsync(IPAddress.Loopback, port);
+                    await probe.GetStream().WriteAsync("GET /favicon.ico HTTP/1.1\r\nHost: x\r\n\r\n"u8.ToArray());
+                } // each one is closed with a reset before the answer
+                using var http = new HttpClient();
+                (await http.GetAsync($"http://127.0.0.1:{port}/?code={Code}&state={q["state"]}")).Dispose();
+            });
+        });
+        await browser;
+        Assert.Equal("review", res.Kind);
+    }
+
+    [Fact]
     public async Task ALargerZipIsSentInPartsAndAFailedPartIsSentAgain()
     {
         failOnce = 1;

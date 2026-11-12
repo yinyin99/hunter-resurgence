@@ -400,7 +400,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     }
 
     /// <summary>POST /auth/app/exchange (form `code` and `verifier`): the session cookie, once, for the app whose verifier hashes to the challenge the code is bound to. The code is spent
-    /// by the first try, right or wrong, so a guess costs the code; every failure gives the same answer.</summary>
+    /// by the first try with a well-formed verifier, right or wrong, so a guess costs the code; every failure gives the same answer.</summary>
     public Reply ExchangeApp(Req r)
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
