@@ -16,7 +16,11 @@
 
     async Task Copy()
     {
-        await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
-        await shell.InvokeVoidAsync("copy", Line);
+        try
+        {
+            await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            await shell.InvokeVoidAsync("copy", Line);
+        }
+        catch (JSException) { } // the clipboard refused: the line stays selectable in the box
     }
 }
