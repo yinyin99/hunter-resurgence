@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Не продаётся</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Войти, чтобы купить</value></data>
   <data name="Store.Own" xml:space="preserve"><value>У вас есть:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Куплено</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Истекает:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>У вас есть действующая лицензия до:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>У вас неограниченная лицензия</value></data>
   <data name="Store.Or" xml:space="preserve"><value>или</value></data>
   <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>

@@ -15,7 +15,7 @@ public sealed class ServerInventoryService(HttpClient http, ServerCookie cookie,
             using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.Inventory);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerInventory>() is { Items: { } items })
-                return [.. items.Select(i => new InventoryItem(i.Id, i.Name, i.Variant, i.Category, i.CategoryName, i.Units, i.Equipped))];
+                return [.. items.Select(i => new InventoryItem(i.Id, i.Name, i.Variant, i.Category, i.CategoryName, i.Units, i.Equipped, i.Expires))];
             log.LogWarning("The server answered {Path} with {Status}: no items", ServerAccountApi.Inventory, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Nu este de vânzare</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Conectați-vă pentru a cumpăra</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Dețineți:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Deţinut</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Expiră:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Aveţi un permis valabil până la:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Aveţi un permis permanent</value></data>
   <data name="Store.Or" xml:space="preserve"><value>sau</value></data>
   <data name="Store.Days" xml:space="preserve"><value>zile</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTĂ</value></data>

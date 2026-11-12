@@ -1,0 +1,16 @@
+@* what the player owns of a store item, as the original's store shows it: a license's end (or "unlimited"), the days of a timed item, the amount, "Owned" for one single item; nothing for none *@
+@if (Item.Expires is { } end)
+{
+    <p class="own">@(end == 0 ? L["Store.UnlimitedLicense"] : Full ? L["Store.LicenseUntil"] + " " + Date(end) : L["Store.Expires"] + " " + Date(end))</p>
+}
+else if (Item.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
+else if (Item.Owned > 0 && !Item.Counted && Item.Owned == 1) { <p class="own">@L["Store.Owned"]</p> }
+else if (Item.Owned > 0) { <p class="own">@L["Store.Own"] @Item.Owned</p> }
+
+@code {
+    [Parameter, EditorRequired] public StoreItem Item { get; set; } = null!;
+    /// <summary>The item's page words a license in full; the list says when it expires.</summary>
+    [Parameter] public bool Full { get; set; }
+
+    static string Date(long unix) => DateTimeOffset.FromUnixTimeSeconds(unix).ToString("yyyy-MM-dd");
+}

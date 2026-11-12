@@ -31,7 +31,10 @@ public class AccountInventoryTests : StateTestBase
         Assert.True(state.GrantItems(ME, 0));
         Assert.True(state.GrantItems(ME, 2));
         using (var con = state.Store.Open(ME))
+        {
             con.Exec("UPDATE items SET slot = 4 WHERE account_id = $a AND item_id = 0");
+            con.Exec("UPDATE items SET metadata = json_set(metadata, '$.expires', 1800000000) WHERE account_id = $a AND item_id = 2");
+        }
         var other = state.Store.NextServerId();
         state.CreateAccount(other, "Other", "76561190000001000");
         string Cookie(long id) => $"{SignIn.SessionCookie}={state.Store.CreateWebSession(id, TimeSpan.FromHours(1))}";
@@ -39,8 +42,8 @@ public class AccountInventoryTests : StateTestBase
 
         Assert.Equal(401, (await Get()).Status);
         var mine = JsonNode.Parse((await Get(("Cookie", Cookie(ME)))).Body)!["items"]!.AsArray();
-        Assert.Equal(["0 Test Rifle Blue 4 Rifles  4 true", "2 Test Refill  5 Refills 3 0 false"],
-            mine.TakeLast(2).Select(i => $"{i!["id"]} {i["name"]} {i["variant"]} {i["category"]} {i["categoryName"]} {i["units"]} {i["slot"]} {i["equipped"]}"));
+        Assert.Equal(["0 Test Rifle Blue 4 Rifles  4 true ", "2 Test Refill  5 Refills 3 0 false 1800000000"],
+            mine.TakeLast(2).Select(i => $"{i!["id"]} {i["name"]} {i["variant"]} {i["category"]} {i["categoryName"]} {i["units"]} {i["slot"]} {i["equipped"]} {i["expires"]}"));
         // a new account has its starter items only: none of the two granted to ME
         var theirs = JsonNode.Parse((await Get(("Cookie", Cookie(other)))).Body)!["items"]!.AsArray();
         Assert.DoesNotContain(theirs, i => (long)i!["id"]! is 0 or 2);

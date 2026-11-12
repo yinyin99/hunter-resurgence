@@ -1,15 +1,19 @@
 namespace Resurgence.Ui;
 
-/// <summary>Routes the website does not serve: those only the launcher has, and those that need a signed-in player. Both go back to the feed.</summary>
+/// <summary>Routes the website does not serve: those only the launcher has and those that need a signed-in player. Both go back to the feed.</summary>
 public static class LauncherGuard
 {
     static readonly string[] LauncherOnly = ["dashboard", "launch-map", "servers", "tutorials"];
+    // pages that exist but are turned off, in the launcher too: the store shows what the player owns
+    static readonly string[] Off = ["inventory"];
     // the old "V" routes: signed-in players only (the inventory lists missions, wallet, messages, settings, dashboard, welcome and more)
-    static readonly string[] SignedIn = ["missions", "wallet", "bank", "messages", "inventory", "new-message", "settings", "game-management", "invite-friends", "welcome", "community-league", "community_league", "steam_callback", "restore"];
+    static readonly string[] SignedIn = ["missions", "wallet", "bank", "messages", "new-message", "settings", "game-management", "invite-friends", "welcome", "community-league", "community_league", "steam_callback", "restore"];
     // the routes whose data is still the mock's: the website with a community server does not serve them (HostMode.Live). Competitions have no
-    // source there: the only recorded ones ended weeks ago (docs/website.md#sign-in). The wallet, the messages, the inventory and the missions (the daily ones too) are the server's
+    // source there: the only recorded ones ended weeks ago (docs/website.md#sign-in). The wallet, the messages and the missions (the daily ones too) are the server's
     // (the wallet's bank tab is the page's to hide)
-    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions", "inventory"]), "competitions"];
+    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions"]), "competitions"];
+
+    public static bool Disabled(string path) => Starts(path, Off);
 
     public static bool Blocks(string path) => Starts(path, LauncherOnly);
 

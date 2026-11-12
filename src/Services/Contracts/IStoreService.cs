@@ -17,11 +17,12 @@ public sealed record EthicalRow(string Species, IReadOnlyList<bool> Permitted);
 /// An item; <see cref="WasEms"/> is the struck-through price of an item on sale, <see cref="Category"/> the key of its (sub)category.
 /// <see cref="DaysLeft"/> is set for an item that is owned for a time (less than one day is 0.5); <see cref="OwnLimit"/> is 0 for no limit;
 /// <see cref="Banner"/> is premium, limited, new or community; <see cref="MultiBuy"/> items (ammunition) are bought in amounts.
-/// <see cref="Capacity"/> is the inventory weight.
+/// <see cref="Capacity"/> is the inventory weight. <see cref="Owned"/> is a count of copies, or the units of a <see cref="Counted"/> item; <see cref="Expires"/> is the end of an owned license in unix seconds, 0 when unlimited.
 /// </summary>
 public sealed record StoreItem(int Id, string Name, string Variant, string Category, int Ems, int? WasEms, int Gms, int Owned, bool Buyable, int Capacity, string Description,
     double? DaysLeft = null, int OwnLimit = 0, bool DisabledByServices = false, string? Banner = null, bool MultiBuy = false,
-    IReadOnlyList<ItemFit>? Fits = null, EthicalMatrix? Ethics = null)
+    IReadOnlyList<ItemFit>? Fits = null, EthicalMatrix? Ethics = null,
+    bool Counted = false, long? Expires = null)
 {
     public bool LimitReached => OwnLimit > 0 && Owned >= OwnLimit;
 }

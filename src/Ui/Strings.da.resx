@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Kan ikke købes</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Log ind for at købe</value></data>
   <data name="Store.Own" xml:space="preserve"><value>Du ejer:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>Ejet</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Udløber:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Du har en gyldig licens indtil:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Du har en ubegrænset licens</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>

@@ -66,7 +66,7 @@ public sealed class LiveSiteTests : UiContext
         var http = new HttpClient(new Buying(code)) { BaseAddress = new Uri("http://server.test") };
         var cookie = new ServerCookie { Value = "secret" };
         Services.AddSingleton<IWalletService>(new ServerWalletService(http, cookie, new MockWalletService(new MockWalletState()), NullLogger<ServerWalletService>.Instance));
-        Services.AddSingleton<IStoreService>(new ServerStoreService(http, cookie, new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
+        Services.AddSingleton<IStoreService>(new ServerStoreService(http, cookie, new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance));
         Live(true);
         var cut = Render<Resurgence.Ui.Modals.BuyModal>(p => p.Add(m => m.Id, 7).Add(m => m.Name, "Hat").Add(m => m.Ems, 30));
 
@@ -81,7 +81,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string reply = """{"categories": [{"key": "0", "name": "Weapons", "children": [{"key": "0", "name": "Rifles"}, {"key": "1", "name": "Handguns"}]}], "items": [], "bundles": []}""";
         Services.AddSingleton<IStoreService>(new ServerStoreService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
-            new ServerCookie(), new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
+            new ServerCookie(), new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance));
 
         var cut = Render<Resurgence.Ui.Components.StoreFrame>(p => p.Add(f => f.Active, "0"));
 

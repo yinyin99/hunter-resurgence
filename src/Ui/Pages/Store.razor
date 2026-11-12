@@ -29,11 +29,7 @@
                         @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
-                @if (!Mode.Live)
-                {
-                    @if (i.DaysLeft is { } days) { <p class="own">@L["Store.Own"] @Fmt.DaysLeft(days) @L["Store.Days"]</p> }
-                    else if (i.Owned > 0) { <p class="own">@L["Store.Own"] @i.Owned</p> }
-                }
+                <OwnedLine Item="i" />
                 @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }

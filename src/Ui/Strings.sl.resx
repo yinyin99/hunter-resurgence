@@ -623,6 +623,10 @@
   <data name="Store.NotBuyable" xml:space="preserve"><value>Ni naprodaj</value></data>
   <data name="Store.Login" xml:space="preserve"><value>Prijavi se za nakup</value></data>
   <data name="Store.Own" xml:space="preserve"><value>V lasti:</value></data>
+  <data name="Store.Owned" xml:space="preserve"><value>V lasti</value></data>
+  <data name="Store.Expires" xml:space="preserve"><value>Poteče:</value></data>
+  <data name="Store.LicenseUntil" xml:space="preserve"><value>Imaš licenco, veljavno do:</value></data>
+  <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Imaš neomejeno licenco</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ali</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>

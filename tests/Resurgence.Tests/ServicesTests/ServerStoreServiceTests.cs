@@ -31,8 +31,8 @@ public class ServerStoreServiceTests
                      {"id": 10, "name": "Test Gone Pack", "description": "", "price": 0, "buyable": false, "items": [{"id": 77, "name": "Gone"}]}]}
         """;
 
-    static ServerStoreService Make(HttpMessageHandler handler, ServerCache<ServerStore>? cache = null, string? host = "site.test") =>
-        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = "secret", Host = host }, cache ?? new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance);
+    static ServerStoreService Make(HttpMessageHandler handler, ServerCache<ServerStore>? cache = null, string? host = "site.test", IInventoryService? items = null) =>
+        new(new HttpClient(handler) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = "secret", Host = host }, cache ?? new ServerCache<ServerStore>(), items ?? new NoItems(), NullLogger<ServerStoreService>.Instance);
 
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
@@ -85,6 +85,25 @@ public class ServerStoreServiceTests
         var item = await Ok().ItemAsync(1);
         Assert.Equal(("Test Rifle", "Blue", 50, 100, 2000, 0, true, 0), (item!.Name, item.Variant, item.Ems, item.WasEms, item.Gms, item.Owned, item.Buyable, item.Capacity));
         Assert.Null(await Ok().ItemAsync(404));
+    }
+
+    sealed class Items(params InventoryItem[] items) : IInventoryService
+    {
+        public Task<IReadOnlyList<InventoryItem>> ItemsAsync() => Task.FromResult<IReadOnlyList<InventoryItem>>(items);
+    }
+
+    // units are summed over a counted item's copies, otherwise the copies are counted; a license carries its end (0 unlimited); an item the player lacks is 0
+    [Fact]
+    public async Task WhatThePlayerOwnsComesFromTheInventory()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, Store)), items: new Items(
+            new(1, "Test Rifle", "Blue", "0", "Rifles", null, false), new(1, "Test Rifle", "Blue", "0", "Rifles", null, true),
+            new(2, "Test Pistol", "", "1", "Handguns", 3, false), new(2, "Test Pistol", "", "1", "Handguns", 4, false),
+            new(3, "Test Scope", "Silver", "5", "Rifle Sights", null, false, 1800000000)));
+        var rows = (await service.ItemsAsync("all", "", 1)).Rows;
+        Assert.Equal([(2, false, null), (7, true, null), (1, false, 1800000000)], rows.Select(r => (r.Owned, r.Counted, r.Expires)).Select(t => t));
+        Assert.Equal(0, (await Make(new Fake(_ => Json(HttpStatusCode.OK, Store))).ItemAsync(1))!.Owned);
+        Assert.Equal(2, (await service.ItemAsync(1))!.Owned);
     }
 
     [Fact]
@@ -206,7 +225,7 @@ public class ServerStoreServiceTests
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, "{}"));
         var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = null, Host = "site.test" },
-            new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance);
+            new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance);
         Assert.False((await service.BuyAsync(1, false, gms)).Ok);
         Assert.Empty(fake.Seen);
     }

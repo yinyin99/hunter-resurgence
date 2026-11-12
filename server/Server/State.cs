@@ -1329,14 +1329,14 @@ public sealed partial class State
         using var con = Con(account);
         return new JsonObject
         {
-            ["items"] = new JsonArray([.. con.Rows("SELECT item_id, slot, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
+            ["items"] = new JsonArray([.. con.Rows("SELECT item_id, slot, units, json_extract(metadata, '$.expires') FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
             {
                 var item = items.GetValueOrDefault((long)r[0]);
                 var key = item?["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
                 return (JsonNode?)new JsonObject
                 {
                     ["id"] = (long)r[0], ["name"] = C(item?["name"]) ?? "", ["variant"] = C(item is null ? null : G(item, "variationname", null)) ?? "",
-                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0,
+                    ["category"] = key, ["categoryName"] = C(titles.GetValueOrDefault(key)) ?? "", ["units"] = Py.FromSql(r[2]), ["slot"] = (long)r[1], ["equipped"] = (long)r[1] > 0, ["expires"] = r[3] is long or double ? Py.FromSql(r[3]) : null,
                 };
             })]),
         };

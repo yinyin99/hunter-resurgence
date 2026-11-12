@@ -40,7 +40,7 @@ public sealed class LauncherBuyFlowTests : UiContext
         var cookie = new ServerCookie { Value = "secret" };
         Services.AddSingleton<ISessionService>(new ServerSessionService(http, cookie, NullLogger<ServerSessionService>.Instance));
         Services.AddSingleton<IWalletService>(new ServerWalletService(http, cookie, new Resurgence.Services.Mocks.MockWalletService(new Resurgence.Services.Mocks.MockWalletState()), NullLogger<ServerWalletService>.Instance));
-        Services.AddSingleton<IStoreService>(new ServerStoreService(http, cookie, new ServerCache<ServerStore>(), NullLogger<ServerStoreService>.Instance));
+        Services.AddSingleton<IStoreService>(new ServerStoreService(http, cookie, new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance));
         var mode = Services.GetRequiredService<HostMode>();
         (mode.Launcher, mode.Live) = (true, true);
         return server;
