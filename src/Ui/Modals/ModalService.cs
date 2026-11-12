@@ -76,6 +76,12 @@ public sealed class ModalService
         _ = done.Task.ContinueWith(_ => OfferKitAsync(kit, steam), TaskScheduler.Default); // the kit's dialog opens only after this one is closed
     }
 
+    /// <summary>After a sign-in: the one-time Discord invitation (the "Join the Discord" dialog) the first time the account is asked, never over another dialog (the launcher's first-start dialogs come first).</summary>
+    public async Task OfferDiscordAsync(IDiscordInviteService invite)
+    {
+        if (Type is null && await invite.FirstAsync() && Type is null) Show<DiscordInviteModal>();
+    }
+
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
     /// <summary>The old app opens "Done hunting for now?" five seconds after a game was started or joined, whatever else is open then.</summary>

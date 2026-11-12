@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Chiudi Steam e imposta</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copia invece la riga</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Non chiedere più</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Unisciti a noi su Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>La community si ritrova su Discord: novità, aiuto e altri cacciatori. Vieni a salutare!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Unisciti al Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Più tardi</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Fatto. Il pulsante Gioca di Steam ora apre questo launcher. Riavviare Steam?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Avvia Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Questo launcher non è stato installato con il programma di installazione (copia di sviluppo o non installata), quindi non può impostare l'opzione di avvio di Steam per te.</value></data>

@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Steam schließen und einstellen</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Stattdessen die Zeile kopieren</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Nicht mehr fragen</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Besuche uns auf Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Die Community trifft sich auf Discord: Neuigkeiten, Hilfe und andere Jäger. Schau vorbei und sag Hallo!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Dem Discord beitreten</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Später</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Fertig. Steams Play-Taste öffnet jetzt diesen Launcher. Steam wieder starten?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Steam starten</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Dieser Launcher wurde nicht mit dem Setup installiert (Entwicklungs- oder entpackte Kopie), deshalb kann er die Startoption von Steam nicht für Sie setzen.</value></data>

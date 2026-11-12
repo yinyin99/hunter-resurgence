@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Zapri Steam in nastavi</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Namesto tega kopiraj vrstico</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Ne vprašaj več</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Pridruži se nam na Discordu</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Skupnost se zbira na Discordu: novice, pomoč in drugi lovci. Pridi pozdravit!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Pridruži se Discordu</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Pozneje</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Končano. Gumb Igraj v Steamu zdaj odpre ta zaganjalnik. Znova zaženem Steam?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Zaženi Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Ta zaganjalnik ni bil nameščen z namestitvenim programom (razvojna ali razpakirana kopija), zato ne more namesto vas nastaviti možnosti zagona v Steamu.</value></data>

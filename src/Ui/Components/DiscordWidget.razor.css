@@ -1,0 +1,2 @@
+.discord { display: flex; flex-direction: column; gap: 10px; width: 350px; }
+.discord ::deep .join { box-sizing: border-box; width: 100%; padding: 10px 19px; font-size: 17.5px; line-height: 22px; text-align: center; }

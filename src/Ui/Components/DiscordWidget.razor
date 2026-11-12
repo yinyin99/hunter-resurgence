@@ -1,9 +1,17 @@
 @inject INewsService News
+@inject Branding Brand
 
-@if (guild is not null)
+@* the invite button (link_discord) above Discord's own frame; each one shows only when there is something behind it *@
+@if (guild is not null || Brand.Link("discord") is not null)
 {
-    <iframe src="https://discord.com/widget?id=@Uri.EscapeDataString(guild)&theme=dark" title="Discord" width="350" height="500" loading="lazy" allowtransparency="true" frameborder="0"
-            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    <div class="discord">
+        @if (Brand.Link("discord") is not null) { <ExternalLink Key="discord" Class="btn btn-primary join">@L["Discord.Join"]</ExternalLink> }
+        @if (guild is not null)
+        {
+            <iframe src="https://discord.com/widget?id=@Uri.EscapeDataString(guild)&theme=dark" title="Discord" width="350" height="500" loading="lazy" allowtransparency="true" frameborder="0"
+                    sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+        }
+    </div>
 }
 
 @code {

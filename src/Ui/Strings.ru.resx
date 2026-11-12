@@ -63,6 +63,10 @@
   <data name="Steam.Set" xml:space="preserve"><value>Закрыть Steam и задать</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Вместо этого скопировать строку</value></data>
   <data name="Steam.Never" xml:space="preserve"><value>Больше не спрашивать</value></data>
+  <data name="Discord.Title" xml:space="preserve"><value>Присоединяйтесь к нам в Discord</value></data>
+  <data name="Discord.Text" xml:space="preserve"><value>Сообщество собирается в Discord: новости, помощь и другие охотники. Заходите поздороваться!</value></data>
+  <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
+  <data name="Discord.Later" xml:space="preserve"><value>Позже</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Готово. Кнопка «Играть» в Steam теперь открывает этот лаунчер. Запустить Steam снова?</value></data>
   <data name="Steam.StartSteam" xml:space="preserve"><value>Запустить Steam</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Этот лаунчер установлен не программой установки (копия для разработки или распакованная), поэтому он не может задать параметр запуска в Steam за вас.</value></data>
