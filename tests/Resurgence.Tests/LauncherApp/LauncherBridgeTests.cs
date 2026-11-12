@@ -83,15 +83,13 @@ public class LauncherBridgeTests
     public void SteamIsStartedAndWaitedForUnlessSomebodyIsSignedIn()
     {
         var calls = 0;
-        var signedIn = false;
-        Assert.True(Steam.SignedIn(() => signedIn ? 1u : 0, () => { calls++; return true; }, TimeSpan.Zero, TimeSpan.Zero) is false);
+        Assert.False(Steam.SignedIn(() => 0, () => { calls++; return true; }, TimeSpan.Zero, TimeSpan.Zero));
         Assert.Equal(1, calls); // started, nobody signed in before the timeout
 
         var polls = 0;
         Assert.True(Steam.SignedIn(() => ++polls > 2 ? 7u : 0, () => { calls++; return true; }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(1)));
         Assert.Equal(2, calls); // waited until it signed in
 
-        signedIn = true;
         Assert.True(Steam.SignedIn(() => 1, () => throw new InvalidOperationException(), TimeSpan.Zero, TimeSpan.Zero)); // already up: not started again
         Assert.False(Steam.SignedIn(() => 0, () => false, TimeSpan.FromSeconds(5), TimeSpan.Zero)); // not installed
     }
