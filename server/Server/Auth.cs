@@ -127,7 +127,7 @@ public sealed class GameTokens(Store store, string webHost)
 /// player start the sign-in again), the accounts and the cookie sessions are in the database.</summary>
 /// <param name="siteHost">Our website's domain, and gameWebHost the game's own web host: the launcher page there sends the player's browser
 /// to our site for Steam (the browser trusts our certificate; it does not reach the game's host), and learns the result by polling.</param>
-public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null, Action<string>? signupAlert = null)
+public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null, string? discord = null, Action<string>? signupAlert = null)
 {
     public const string SessionCookie = "hr_session";
     const string LoginCookie = "hr_login";
@@ -371,7 +371,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             || (login.Link is { } code && !links.ContainsKey(code)))
             return Problem(400, "This sign-in ran out of time. Start again from the launcher or the backup tool.");
         if (r.Method == "GET")
-            return Html(200, login.Link is { } c ? AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(c)) : AuthPages.ConfirmApp(login.Id, Store.HandleOf(account) ?? ""));
+            return Html(200, login.Link is { } c ? AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(c), discord) : AuthPages.ConfirmApp(login.Id, Store.HandleOf(account) ?? "", discord));
         if (!OwnPost(r) || (Py.ParseQs(Encoding.UTF8.GetString(r.Body)).TryGetValue("csrf", out var csrf) ? csrf[0] : "") != login.Id)
             return Problem(400, "This form is not from this server.");
         if (!logins.TryRemove(login.Id, out _)) return Problem(400, "This sign-in was already confirmed."); // a double click makes one code
@@ -386,7 +386,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             return Redirect($"http://127.0.0.1:{app.Port}/?code={appCode}&state={app.State}", Clear(LoginCookie, "/auth"));
         }
         if (links.TryGetValue(login.Link!, out var entry)) entry.Account = account;
-        return Html(200, AuthPages.Done(), Clear(LoginCookie, "/auth"));
+        return Html(200, AuthPages.Done(discord), Clear(LoginCookie, "/auth"));
     }
 
     // ---- the launcher waits for the player's browser
@@ -490,5 +490,5 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     /// <summary>GET / on the signup host: the launcher's start page.</summary>
     public Reply StartPage(Req r) =>
-        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null, r.Path));
+        Html(200, AuthPages.Start(Account(r) is { } account ? Store.HandleOf(account) : null, r.Path, discord));
 }
