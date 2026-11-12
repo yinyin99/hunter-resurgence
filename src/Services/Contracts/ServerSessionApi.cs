@@ -128,7 +128,7 @@ public sealed record ServerWalletItem(string? Name);
 /// <summary>The totals of <see cref="ServerAccountApi.Wallet"/>/spent: em$ and gm$ paid.</summary>
 public sealed record ServerSpent(double Spent, [property: System.Text.Json.Serialization.JsonPropertyName("silver_spent")] double SilverSpent);
 
-/// <summary>One page of a hunter's hunt history of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> is Unix seconds, <c>Lodge</c> the lodge's id as "#id" ("" without one).</summary>
+/// <summary>One page of a hunter's hunt history of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> is Unix seconds, <c>Lodge</c> the name of the hunt's start ("" without one).</summary>
 public sealed record ServerHunts(int Page, int Pages, int Total, ServerHuntRow[] Rows);
 
 public sealed record ServerHuntRow(long Id, long Start, long Seconds, string Reserve, string Lodge, int Collectables, int Kills);

@@ -1,6 +1,6 @@
 @* the statistics of one expedition: the last hunt of a hunter, or one expedition of the history *@
 <div class="head">
-    <span class="where">@Hunt.Reserve</span>
+    <span class="where">@Hunt.Reserve@(Hunt.Lodge is { Length: > 0 } lodge ? " - " + lodge : "")</span>
     <span class="when">@Hunt.Start.ToString("yyyy-MM-dd HH:mm") UTC - @(Hunt.End is { } e ? e.ToString("yyyy-MM-dd HH:mm") + " UTC" : L["Stat.Ongoing"])</span>
 </div>
 @if (Hunt.End is null)

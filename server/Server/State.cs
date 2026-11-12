@@ -1460,6 +1460,22 @@ public sealed partial class State
         ["LODGE"] = ("lodge", "Lodge"), ["CAMPSITE"] = ("campsite", "Campsite"), ["HUNTING_TOWER"] = ("tower", "Tower"), ["INTEREST"] = ("interest", "Point of interest"),
     };
 
+    Dictionary<long, string>? placeTexts;
+
+    /// <summary>A start's own name: the catalogue's `name`, else the game's text for it (`locations_descr` of the connect, which the game's own screens read by location id); null with neither.</summary>
+    string? PlaceName(JsonObject l)
+    {
+        if (Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0)
+            return (string)l["name"]!;
+        if (placeTexts is null)
+        {
+            placeTexts = [];
+            foreach (var d in Arr(G(connect, "locations_descr", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _) && Py.IsStr(d["name"]) && ((string)d["name"]!).Length > 0))
+                placeTexts[Py.L(d["id"])] = (string)d["name"]!;
+        }
+        return placeTexts.GetValueOrDefault(Py.L(l["id"]));
+    }
+
     /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are
     /// percent of the reserve's map: the catalogue has no map bounds, so the map is the square around the reserve's starts with 10% left free on each side, world x to
     /// the right and z down. ponytail: bounds of the starts only; per-reserve map bounds (facts file) when the launcher draws the real maps.</summary>
@@ -1482,7 +1498,7 @@ public sealed partial class State
                 seen[kind] = seen.GetValueOrDefault(kind) + 1;
                 return (JsonNode?)new JsonObject
                 {
-                    ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0 ? (string)l["name"]! : $"{word} {seen[kind]}",
+                    ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = PlaceName(l) ?? $"{word} {seen[kind]}",
                     ["x"] = Percent(Py.D(l["pos"]!["x"]), xs), ["y"] = Percent(Py.D(l["pos"]!["z"]), zs),
                 };
             }).ToArray());
