@@ -44,6 +44,11 @@ jobs:
           GRAPHICS_FILE: ${{ secrets.GRAPHICS_FILE }}
           OPTIONS_FILE: ${{ secrets.OPTIONS_FILE }}
           OPTIONS_KEY_PREFIX: ${{ secrets.OPTIONS_KEY_PREFIX }}
+          LINK_DISCORD: ${{ secrets.LINK_DISCORD }}
+          LINK_BACKUP: ${{ secrets.LINK_BACKUP }}
+          LINK_SOURCE: ${{ secrets.LINK_SOURCE }}
+          GAME_NAME: ${{ secrets.GAME_NAME }}
+          GAME_FULL: ${{ secrets.GAME_FULL }}
         run: |
           $s = [ordered]@{
             client_exe         = $env:CLIENT_EXE
@@ -72,6 +77,11 @@ jobs:
               $v = "$([Environment]::GetEnvironmentVariable($m[1]))".Trim()
               if (-not $v) { throw "repository secret for $($m[1]) is missing or blank" }
               $l.($m[0]) = $v
+            }
+            # optional: the links and names; an unset secret leaves the example's placeholder, i.e. not configured
+            foreach ($m in @(@("link_discord", "LINK_DISCORD"), @("link_backup", "LINK_BACKUP"), @("link_source", "LINK_SOURCE"), @("game_name", "GAME_NAME"), @("game_full", "GAME_FULL"))) {
+              $v = "$([Environment]::GetEnvironmentVariable($m[1]))".Trim()
+              if ($v) { $l.($m[0]) = $v }
             }
             $l | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\launcher-settings.json"
             "LAUNCHER=1" >> $env:GITHUB_ENV

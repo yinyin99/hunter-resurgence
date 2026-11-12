@@ -40,6 +40,9 @@ jobs:
         run: |
           $out = "src\Launcher\bin\Release\net10.0-windows10.0.17763.0\win-x64"
           foreach ($n in "resurgence-launcher.exe", "settings.json", "wwwroot\index.html", "wwwroot\_framework\blazor.webview.js") { if (-not (Test-Path "$out\publish\$n")) { throw "publish lacks $n" } }
+          # the keys the release fills from secrets (names only, never values) are in the settings
+          $keys = (Get-Content "$out\publish\settings.json" -Raw | ConvertFrom-Json).PSObject.Properties.Name
+          foreach ($k in "link_discord", "link_backup", "link_source", "game_name", "game_full") { if ($keys -notcontains $k) { throw "settings.json lacks $k" } }
           foreach ($n in "HunterResurgence-win-Setup.exe", "HunterResurgence-0.0.1-ci-full.nupkg", "releases.win.json") { if (-not (Test-Path "$out\releases\$n")) { throw "releases lack $n" } }
       # the Setup itself: installs for the CI user with no prompt, the install hook writes the link scheme, the uninstall hook removes it
       - name: Install and uninstall the launcher
