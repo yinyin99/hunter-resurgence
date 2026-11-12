@@ -1,9 +1,15 @@
+using System.Buffers.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
+using System.Web;
 
 namespace Backup;
 
-/// <summary>"Send to the community server": signs in with the server's code-link flow (docs/server.md#sign-in: the tool shows a code, the player signs in with Steam in the browser, the tool polls),
-/// then uploads a saved zip in parts with that session (POST /account/restore/start, /&lt;id&gt;/&lt;part&gt;, /&lt;id&gt;/finish). Runs only when the player presses the button.</summary>
+/// <summary>"Send to the community server": signs in by the native-app flow (RFC 8252 loopback redirect, RFC 7636 PKCE; docs/server.md, "The loopback sign-in": the tool listens once on 127.0.0.1, the player signs in with Steam in the browser,
+/// the browser comes back to the tool with a one-time code, which only this tool can trade for the session), then uploads a saved zip in parts with that session (POST /account/restore/start, /&lt;id&gt;/&lt;part&gt;, /&lt;id&gt;/finish). Runs only when the player presses the button.</summary>
 static class Send
 {
     /// <summary>The server's limit for one zip (Uploads.MaxZipBytes): a larger file is not sent at all.</summary>
@@ -18,9 +24,9 @@ static class Send
     /// <summary>Kind: the server's status (review, already, taken, invalid, busy, too_large, signed_out) or the tool's own: timeout, error. Message: the server's reason, English, or the network error.</summary>
     public sealed record Result(string Kind, string Message = "");
 
-    /// <summary>showCode gets the code the player compares and the address to open in the browser; sending gets the part being sent and the number of parts, from 1.
+    /// <summary>open gets the address to open in the player's browser (the sign-in), giveUp is how long the player has to sign in there (5 minutes); sending gets the part being sent and the number of parts, from 1.
     /// Not-ok results are returned, never thrown; cancellation throws.</summary>
-    public static async Task<Result> Run(HttpClient http, string server, string zipPath, Action<string, string> showCode, CancellationToken ct, TimeSpan? interval = null, TimeSpan? giveUp = null,
+    public static async Task<Result> Run(HttpClient http, string server, string zipPath, Action<string> open, CancellationToken ct, TimeSpan? interval = null, TimeSpan? giveUp = null,
         Action<int, int>? sending = null, int partBytes = PartBytes)
     {
         try
@@ -29,24 +35,8 @@ static class Send
             if (size > MaxZipBytes) return new("too_large", "A backup zip is at most 1 GiB.");
             var root = server.TrimEnd('/');
 
-            var (_, link, _) = await Call(http, HttpMethod.Post, root + "/auth/link", null, null, ct);
-            if (Str(link, "code") is not { Length: > 0 } code || Str(link, "userCode") is not { } userCode || Str(link, "url") is not { } url
-                || !Uri.TryCreate(url, UriKind.Absolute, out var u) || u.Host != new Uri(root).Host) // the address to open must be the server's own
-                return new("error", "The server did not give a sign-in code.");
-            showCode(userCode, url);
-
-            var wait = TimeSpan.FromSeconds(link!.TryGetValue("expires", out var ex) && ex.TryGetInt64(out var s) ? s : 300);
-            if (giveUp is { } g && g < wait) wait = g;
-            var until = DateTime.UtcNow + wait;
-            string? cookie = null;
-            while (cookie == null)
-            {
-                if (DateTime.UtcNow >= until) return new("timeout");
-                await Task.Delay(interval ?? TimeSpan.FromSeconds(2), ct);
-                var (status, body, set) = await Call(http, HttpMethod.Get, root + "/auth/link/" + code, null, null, ct);
-                if (status == 404) return new("timeout"); // the code ran out on the server
-                if (Str(body, "status") == "ok") cookie = set ?? throw new HttpRequestException("the server did not set a session");
-            }
+            var cookie = await SignIn(http, root, open, giveUp ?? TimeSpan.FromMinutes(5), ct);
+            if (cookie == null) return new("timeout");
 
             var (_, started, _) = await Call(http, HttpMethod.Post, root + "/account/restore/start", cookie, null, ct);
             if (Str(started, "status") != "started" || Str(started, "id") is not { Length: > 0 } id) return Outcome(started);
@@ -78,6 +68,64 @@ static class Send
         catch (Exception e) when (!ct.IsCancellationRequested && e is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or UriFormatException)
         {
             return new("error", e.Message);
+        }
+    }
+
+    /// <summary>The session cookie of the player who signed in in the browser, or null when the time ran out. The server redirects the browser to 127.0.0.1 on our port with the one-time code and our state;
+    /// the code is worth nothing without the verifier, which never leaves this PC except in the exchange.</summary>
+    static async Task<string?> SignIn(HttpClient http, string root, Action<string> open, TimeSpan wait, CancellationToken ct)
+    {
+        using var limit = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        limit.CancelAfter(wait);
+        var listener = new TcpListener(IPAddress.Loopback, 0);
+        try
+        {
+            listener.Start();
+            var verifier = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
+            var state = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(16));
+            var challenge = Base64Url.EncodeToString(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+            open($"{root}/auth/app/start?challenge={challenge}&port={((IPEndPoint)listener.LocalEndpoint).Port}&state={state}");
+
+            var code = await WaitForBrowser(listener, state, limit.Token);
+            var form = new FormUrlEncodedContent(new Dictionary<string, string> { ["code"] = code, ["verifier"] = verifier });
+            var (_, _, set) = await Call(http, HttpMethod.Post, root + "/auth/app/exchange", null, form, ct);
+            return set ?? throw new HttpRequestException("the server did not sign the tool in");
+        }
+        catch (OperationCanceledException) when (limit.IsCancellationRequested && !ct.IsCancellationRequested) { return null; }
+        finally { listener.Stop(); }
+    }
+
+    /// <summary>The browser's way back: serves 127.0.0.1 until a request carries our <paramref name="state"/> and a code (any other request, a stray one or a page that guesses the port, gets a refusal and changes nothing).</summary>
+    static async Task<string> WaitForBrowser(TcpListener listener, string state, CancellationToken ct)
+    {
+        while (true)
+        {
+            using var client = await listener.AcceptTcpClientAsync(ct);
+            var stream = client.GetStream();
+            var buf = new byte[4096];
+            var n = 0;
+            using (var limit = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            {
+                limit.CancelAfter(TimeSpan.FromSeconds(5));
+                try
+                {
+                    while (n < buf.Length && !Encoding.ASCII.GetString(buf, 0, n).Contains("\r\n\r\n", StringComparison.Ordinal))
+                        if (await stream.ReadAsync(buf.AsMemory(n), limit.Token) is var read and > 0) n += read; else break;
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested) { } // a silent connection (a browser's spare one)
+            }
+            var line = Encoding.ASCII.GetString(buf, 0, n).Split("\r\n")[0].Split(' ');
+            string? code = null;
+            if (line is ["GET", var target, _] && Uri.TryCreate("http://127.0.0.1" + target, UriKind.Absolute, out var url) && url.AbsolutePath == "/")
+            {
+                var q = HttpUtility.ParseQueryString(url.Query);
+                if (q["state"] is { } given && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(given), Encoding.ASCII.GetBytes(state))) code = q["code"];
+            }
+            var (status, text) = code is { Length: > 0 } ? ("200 OK", "Signed in, you can close this tab.") : ("400 Bad Request", "This is not the sign-in the app started.");
+            var page = Encoding.UTF8.GetBytes($"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Hunter Resurgence</title></head><body><p>{text}</p></body></html>");
+            await stream.WriteAsync(Encoding.ASCII.GetBytes($"HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {page.Length}\r\nCache-Control: no-store\r\nReferrer-Policy: no-referrer\r\nConnection: close\r\n\r\n"), ct);
+            await stream.WriteAsync(page, ct);
+            if (code is { Length: > 0 }) return code;
         }
     }
 

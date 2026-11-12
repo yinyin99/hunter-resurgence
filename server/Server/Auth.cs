@@ -1,5 +1,6 @@
 // Sign-in with Steam on the website's host and on the signup host (the launcher's start page), the cookie session that
 // follows it, and the tokens the game is given (session, access, refresh, the JWT of User/jwt). docs/server.md#sign-in-and-tokens.
+using System.Buffers.Text;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,6 +28,8 @@ public static class Lifetimes
     public static readonly TimeSpan Login = TimeSpan.FromMinutes(15);
     /// <summary>The launcher waits this long for the player's browser.</summary>
     public static readonly TimeSpan Link = TimeSpan.FromMinutes(10);
+    /// <summary>A code the loopback sign-in gave the app (its redirect) lives this long: the app exchanges it at once.</summary>
+    public static readonly TimeSpan AppCode = TimeSpan.FromMinutes(3);
 }
 
 public static class Handles
@@ -130,15 +133,22 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
-    /// account exists (first sign-in: after the name). Link: the launcher waiting for it, if any.</summary>
-    sealed class Login(string id, string next, string? link, DateTimeOffset expires)
+    /// account exists (first sign-in: after the name). Link: the launcher waiting for it, if any. App: the app on this PC that asked for it, if any.</summary>
+    sealed class Login(string id, string next, string? link, AppRequest? app, DateTimeOffset expires)
     {
         public readonly string Id = id, Next = next;
         public readonly string? Link = link;
+        public readonly AppRequest? App = app;
         public DateTimeOffset Expires = expires;
         public string? Steam;
         public long? Account;
     }
+
+    /// <summary>What an app (the launcher or the backup tool) sent to the start route: SHA-256 of its secret verifier, the port it listens on at 127.0.0.1, and its random state.</summary>
+    sealed record AppRequest(byte[] Challenge, int Port, string State);
+
+    /// <summary>The one-time code that the redirect to the app carries: the player confirmed, the exchange needs the verifier of this challenge.</summary>
+    sealed record AppCodeEntry(long Account, byte[] Challenge, DateTimeOffset Expires);
 
     /// <summary>A launcher that asked to be signed in: Account is set once the player confirmed in the browser.</summary>
     sealed class LinkEntry(DateTimeOffset expires)
@@ -150,6 +160,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     readonly Func<DateTimeOffset> now = clock ?? (() => DateTimeOffset.UtcNow);
     readonly ConcurrentDictionary<string, Login> logins = new();
     readonly ConcurrentDictionary<string, LinkEntry> links = new();
+    readonly ConcurrentDictionary<string, AppCodeEntry> appCodes = new();
     readonly Lock create = new();  // the next user id and the insert are one step: one server process (ADR 0001)
     const int MaxPending = 10_000;
 
@@ -215,6 +226,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     {
         foreach (var (id, l) in logins) if (l.Expires <= now()) logins.TryRemove(id, out _);
         foreach (var (id, l) in links) if (l.Expires <= now()) links.TryRemove(id, out _);
+        foreach (var (id, c) in appCodes) if (c.Expires <= now()) appCodes.TryRemove(id, out _);
     }
 
     // ---- the Steam round trip
@@ -226,10 +238,38 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         var link = q.TryGetValue("link", out var l) ? l[0] : null;
         if (link is not null && !(links.TryGetValue(link, out var entry) && entry.Expires > now()))
             return Problem(400, "This sign-in link ran out of time. Start again from the launcher or the backup tool.");
+        return BeginLogin(r, SafeNext(q.TryGetValue("next", out var n) ? n[0] : null), link, null);
+    }
+
+    /// <summary>GET /auth/app/start?challenge=&amp;port=&amp;state=: an app on this PC asks to be signed in (RFC 8252 loopback redirect, RFC 7636 PKCE). Nothing but a well-formed request starts a sign-in; the answer
+    /// can only go to 127.0.0.1 on that port, so a link sent to someone else gives the sender nothing.</summary>
+    public Reply StartApp(Req r)
+    {
+        var q = Py.ParseQs(r.Query);
+        string Q(string k) => q.TryGetValue(k, out var v) ? v[0] : "";
+        if (!Challenge(Q("challenge"), out var challenge) || !Token(Q("state"), 16, 128)
+            || !int.TryParse(Q("port"), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var port) || port is < 1024 or > 65535)
+            return Problem(400, "This sign-in link is not valid. Start again from the launcher or the backup tool.");
+        return BeginLogin(r, "/", null, new AppRequest(challenge, port, Q("state")));
+    }
+
+    /// <summary>A challenge is the SHA-256 of the verifier in base64url without padding: 43 characters, 32 bytes.</summary>
+    static bool Challenge(string s, out byte[] hash)
+    {
+        hash = new byte[32];
+        return s.Length == 43 && Token(s, 43, 43) && Base64Url.TryDecodeFromChars(s, hash, out var n) && n == 32;
+    }
+
+    /// <summary>The characters of an RFC 7636 verifier (also the state and the challenge), a length range.</summary>
+    static bool Token(string s, int min, int max) =>
+        s.Length >= min && s.Length <= max && s.All(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '.' or '_' or '~');
+
+    Reply BeginLogin(Req r, string next, string? link, AppRequest? app)
+    {
         Purge();
         if (logins.Count >= MaxPending) // full: the one that expires first goes, so a flood cannot lock the players out
             logins.TryRemove(logins.MinBy(kv => kv.Value.Expires).Key, out _);
-        var login = new Login(Rand(), SafeNext(q.TryGetValue("next", out var n) ? n[0] : null), link, now() + Lifetimes.Login);
+        var login = new Login(Rand(), next, link, app, now() + Lifetimes.Login);
         logins[login.Id] = login;
         return Redirect(SteamOpenId.LoginUrl(ReturnTo(r, login.Id), Origin(r) + "/"), Set(LoginCookie, login.Id, "/auth", Lifetimes.Login));
     }
@@ -250,10 +290,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return Store.AccountBySteam(steamId) is { } account ? Finish(login, account) : Redirect("/auth/handle");
     }
 
-    /// <summary>The account is known: a launcher waits (ask the player to confirm), or this browser gets its cookie.</summary>
+    /// <summary>The account is known: a launcher or an app waits (ask the player to confirm), or this browser gets its cookie.</summary>
     Reply Finish(Login login, long account)
     {
-        if (login.Link is not null)
+        if (login.Link is not null || login.App is not null)
         {
             login.Account = account;
             return Redirect("/auth/confirm");
@@ -300,17 +340,28 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return error is null ? Finish(login, account) : Html(200, AuthPages.Handle(login.Id, handle, error));
     }
 
-    /// <summary>GET and POST /auth/confirm: the player's browser says the launcher that shows the code may be signed in.</summary>
+    /// <summary>GET and POST /auth/confirm: the player's browser says the launcher that shows the code, or the app on this PC, may be signed in. The app gets a one-time code at 127.0.0.1.</summary>
     public Reply Confirm(Req r)
     {
-        if (Current(r) is not { Link: { } code, Account: { } account } login || !links.TryGetValue(code, out var entry))
+        if (Current(r) is not { Account: { } account } login || (login.Link is null && login.App is null)
+            || (login.Link is { } code && !links.ContainsKey(code)))
             return Problem(400, "This sign-in ran out of time. Start again from the launcher or the backup tool.");
         if (r.Method == "GET")
-            return Html(200, AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(code)));
-        if (!OwnPost(r) || (Py.ParseQs(Encoding.UTF8.GetString(r.Body)).TryGetValue("csrf", out var c) ? c[0] : "") != login.Id)
+            return Html(200, login.Link is { } c ? AuthPages.Confirm(login.Id, Store.HandleOf(account) ?? "", UserCode(c)) : AuthPages.ConfirmApp(login.Id, Store.HandleOf(account) ?? ""));
+        if (!OwnPost(r) || (Py.ParseQs(Encoding.UTF8.GetString(r.Body)).TryGetValue("csrf", out var csrf) ? csrf[0] : "") != login.Id)
             return Problem(400, "This form is not from this server.");
-        entry.Account = account;
-        logins.TryRemove(login.Id, out _);
+        if (!logins.TryRemove(login.Id, out _)) return Problem(400, "This sign-in was already confirmed."); // a double click makes one code
+        if (login.App is { } app)
+        {
+            Purge();
+            if (appCodes.Count >= MaxPending)
+                appCodes.TryRemove(appCodes.MinBy(kv => kv.Value.Expires).Key, out _);
+            var appCode = Rand(32);
+            appCodes[appCode] = new AppCodeEntry(account, app.Challenge, now() + Lifetimes.AppCode);
+            // the redirect goes to 127.0.0.1 and nowhere else: the host is a literal, the port a validated number, the state url-safe
+            return Redirect($"http://127.0.0.1:{app.Port}/?code={appCode}&state={app.State}", Clear(LoginCookie, "/auth"));
+        }
+        if (links.TryGetValue(login.Link!, out var entry)) entry.Account = account;
         return Html(200, AuthPages.Done(), Clear(LoginCookie, "/auth"));
     }
 
@@ -345,6 +396,21 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             return Json(200, new JsonObject { ["status"] = "pending" });
         links.TryRemove(code, out _);
         var cookie = Store.CreateWebSession(account, Lifetimes.Cookie);
+        return Json(200, new JsonObject { ["status"] = "ok" }, Set(SessionCookie, cookie, "/", Lifetimes.Cookie));
+    }
+
+    /// <summary>POST /auth/app/exchange (form `code` and `verifier`): the session cookie, once, for the app whose verifier hashes to the challenge the code is bound to. The code is spent
+    /// by the first try, right or wrong, so a guess costs the code; every failure gives the same answer.</summary>
+    public Reply ExchangeApp(Req r)
+    {
+        if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
+        var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
+        string F(string k) => form.TryGetValue(k, out var v) ? v[0] : "";
+        var (code, verifier) = (F("code"), F("verifier"));
+        if (!Token(verifier, 43, 128) || !appCodes.TryRemove(code, out var entry) || entry.Expires <= now()
+            || !CryptographicOperations.FixedTimeEquals(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)), entry.Challenge))
+            return Json(400, new JsonObject { ["status"] = "invalid" });
+        var cookie = Store.CreateWebSession(entry.Account, Lifetimes.Cookie);
         return Json(200, new JsonObject { ["status"] = "ok" }, Set(SessionCookie, cookie, "/", Lifetimes.Cookie));
     }
 

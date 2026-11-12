@@ -467,7 +467,7 @@
     <value>Entre no site do servidor</value>
   </data>
   <data name="Send_Code_Text" xml:space="preserve">
-    <value>Seu navegador abre a página de login. Confira se ela mostra o código {0}, entre com a Steam e confirme. Aperte Cancelar para parar de esperar.</value>
+    <value>Seu navegador abre a página de login. Entre lá com a Steam e confirme. Aperte Cancelar para parar de esperar.</value>
   </data>
   <data name="Send_Sending_Title" xml:space="preserve">
     <value>Enviando o backup</value>
