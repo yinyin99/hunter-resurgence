@@ -1473,9 +1473,9 @@ public sealed partial class State
         return placeTexts.GetValueOrDefault(Py.L(l["id"]));
     }
 
-    /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are
-    /// percent of the reserve's map: the catalogue has no map bounds, so the map is the square around the reserve's starts with 10% left free on each side, world x to
-    /// the right and z down. ponytail: bounds of the starts only; per-reserve map bounds (facts file) when the launcher draws the real maps.</summary>
+    /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are percent
+    /// (two decimals) of the reserve's map picture, world x to the right and z down: the picture covers the box of the facts file's `reserves[].map`; a reserve without one is
+    /// the square around its starts with 10% left free on each side.</summary>
     public JsonObject LaunchCatalogue()
     {
         var starts = Arr(G(application, "locations", null)).OfType<JsonObject>()
@@ -1486,8 +1486,16 @@ public sealed partial class State
         {
             var list = starts.GetValueOrDefault(reserve) ?? [];
             var (xs, zs) = (list.Select(l => Py.D(l["pos"]!["x"])).ToList(), list.Select(l => Py.D(l["pos"]!["z"])).ToList());
-            var size = list.Count == 0 ? 0 : Math.Max(xs.Max() - xs.Min(), zs.Max() - zs.Min());
-            long Percent(double v, List<double> all) => size == 0 ? 50 : (long)Math.Round(50 + (v - (all.Min() + all.Max()) / 2) / size * 80);
+            var (left, top, right, bottom) = (0d, 0d, 1d, 1d);
+            if (facts.Map(reserve) is [var l0, var t0, var r0, var b0])
+                (left, top, right, bottom) = (l0, t0, r0, b0);
+            else if (list.Count > 0)
+            {
+                var spread = Math.Max(xs.Max() - xs.Min(), zs.Max() - zs.Min());
+                var side = spread > 0 ? spread / .8 : 1;
+                (left, top) = ((xs.Min() + xs.Max() - side) / 2, (zs.Min() + zs.Max() - side) / 2);
+                (right, bottom) = (left + side, top + side);
+            }
             var seen = new Dictionary<string, int>();
             return new(list.Select(l =>
             {
@@ -1496,7 +1504,7 @@ public sealed partial class State
                 return (JsonNode?)new JsonObject
                 {
                     ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = PlaceName(l) ?? $"{word} {seen[kind]}",
-                    ["x"] = Percent(Py.D(l["pos"]!["x"]), xs), ["y"] = Percent(Py.D(l["pos"]!["z"]), zs),
+                    ["x"] = Math.Round((Py.D(l["pos"]!["x"]) - left) / (right - left) * 100, 2), ["y"] = Math.Round((Py.D(l["pos"]!["z"]) - top) / (bottom - top) * 100, 2),
                 };
             }).ToArray());
         }

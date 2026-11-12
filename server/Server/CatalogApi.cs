@@ -26,7 +26,7 @@ public static class CatalogApi
                 : Json(404, new JsonObject { ["error"] = "no reserves" }))
             .WithName("LaunchCatalogue").WithSummary("The reserves with their starts and the tutorials, for the launcher's map")
             .WithDescription("`{reserves: [{id, name, starts: [{id, kind, name, x, y}]}], tutorials: [{id, name, reserve}]}` from the application catalogue the server loaded; `kind` is lodge, campsite, tower or interest, `id` the number `POST /auth/launch` takes as `lodge`, "
-                             + "`x` and `y` whole percent of the reserve's map (the square around the reserve's starts with a tenth of margin, world x to the right and z down). 404 when the catalogue has no reserves.")
+                             + "`x` and `y` percent (two decimals) of the reserve's map picture, from its left and top: world x to the right and z down over the square the facts file gives the reserve's map. 404 when the catalogue has no reserves.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }
 }

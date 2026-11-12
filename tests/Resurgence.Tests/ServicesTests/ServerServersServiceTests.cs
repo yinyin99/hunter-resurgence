@@ -35,7 +35,7 @@ public class ServerServersServiceTests
     const string Reserves = """
         {"reserves": [
            {"id": 2, "name": "Test Reserve", "starts": [
-              {"id": 101, "kind": "lodge", "name": "Lodge 1", "x": 10, "y": 80}, {"id": 102, "kind": "tower", "name": "Tower 1", "x": 50, "y": 20},
+              {"id": 101, "kind": "lodge", "name": "Lodge 1", "x": 10.25, "y": 79.5}, {"id": 102, "kind": "tower", "name": "Tower 1", "x": 50, "y": 20},
               {"id": 103, "kind": "campsite", "name": "Campsite 1", "x": 60, "y": 60}, {"id": 104, "kind": "interest", "name": "Old Mill", "x": 90, "y": 20},
               {"id": 105, "kind": "stash", "name": "Not on the map", "x": 1, "y": 1}]},
            {"id": 1, "name": "First Reserve", "starts": []}],
@@ -64,8 +64,8 @@ public class ServerServersServiceTests
         var service = Make(fake, new Bridge());
         Assert.Equal([(2, "Test Reserve"), (1, "First Reserve")], (await service.ReservesAsync()).Select(r => (r.Id, r.Name)));
         // a start of a kind the map does not draw is left out
-        Assert.Equal(["101 Lodge Lodge 1 10,80", "102 Tower Tower 1 50,20", "103 Campsite Campsite 1 60,60", "104 Interest Old Mill 90,20"],
-            (await service.MarkersAsync(2)).Select(m => $"{m.Id} {m.Kind} {m.Name} {m.X},{m.Y}"));
+        Assert.Equal(["101 Lodge Lodge 1 10.25,79.5", "102 Tower Tower 1 50,20", "103 Campsite Campsite 1 60,60", "104 Interest Old Mill 90,20"],
+            (await service.MarkersAsync(2)).Select(m => FormattableString.Invariant($"{m.Id} {m.Kind} {m.Name} {m.X},{m.Y}")));
         Assert.Empty(await service.MarkersAsync(1));
         Assert.Empty(await service.MarkersAsync(99));
         Assert.Equal([(1, "Test One", 2), (2, "Test Two", 1)], (await service.TutorialsAsync()).Select(t => (t.Id, t.Title, t.Reserve)));

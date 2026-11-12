@@ -10,7 +10,7 @@ The website and the launcher draw every picture of the original screens in a *sl
 - `/images.json` lists the pictures for the launcher: `{"<file>": "<version>"}`, where the version is the file's `?v=`. It is read with the folder, once at start; `{}` without `IMAGES_DIR`.
 - The website reads the folder once at start: restart `web` after changing files (`docker compose restart web`).
 - A slot without a file shows its labelled box, and so does every slot without `IMAGES_DIR`: the public repository, `dotnet run`, CI. The CI smoke test checks both cases, `/images.json` and `/images-missing.json`.
-- The map is drawn from `map-<NN>` (the reserve, two digits) on the launch and join maps, and `map-bg` on the score sheet's map; it zooms and pans with the markers.
+- The map is drawn from `map-<NN>` (the reserve, two digits) on the launch and join maps, and `map-bg` on the score sheet's map; it zooms and pans with the markers. Each marker is the slot `marker-<kind>` (`kind` is `lodge`, `tent`, `campsite`, `tower`, `interest`, `bait`, `feeder`, `treestand` or `groundblind`), 24×24, and the selected or hovered one `marker-<kind>-active` when that file exists; a kind without a file is drawn as its icon and listed in `/images-missing.json` like any slot. The server gives each start's place as a percent of the `map-<NN>` picture ([server.md](server.md#the-launch-map)), so a picture and the server's square for that reserve must be the same cut.
 - The launcher renders `src/Ui` itself, so it asks the website. At each start it reads `/images.json` from `server_url` of its `settings.json` ([launcher.md](launcher.md#settingsjson)) and waits 5 s at most; its slots then load `/images/<file>?v=…` from there, and WebView2 caches them until the version changes. Without `server_url`, or on no answer or an error, the launcher shows the labelled boxes.
 
 ## Missing pictures
@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 661 distinct keys; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 661 distinct keys, and the 8 `marker-<kind>` of the launch map (the mock without tents) on top; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|
@@ -86,7 +86,9 @@ With the values the mock services give, the slots have 661 distinct keys; a patt
 | `recruit-hero` | 940×310 | InviteFriends | yes |
 | `bait-barrel` | 80×100 | GameManagement | yes |
 | `reserve-<NN>` | 70×70 | LaunchMap | 12 of 12: the launch map's reserve badges (coloured row of the original's permit sprite, in reserve id order) |
-| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border, scaled to 1500 px at most. The boxes of the join map (704×608) stretch it |
+| `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border (6% margin, a square near the world's edge slid inward), scaled to 1500 px at most; the same square is the facts file's `reserves[].map`, the server's marker positions are percent of it. The boxes of the join map (704×608) stretch it |
+| `marker-<kind>` (MapPlaceholder) | 24×24 | LaunchMap, JoinMapModal (the reserve maps; the score sheet's map keeps icons) | 9 of 9: the original's map marker sprite, one 32×32 picture a kind (the feeder is the sprite's broadcast feeder, the bait the barrel). Only lodge, campsite, tower and interest are the server's starts; tent, bait, feeder, treestand and groundblind are the mock's |
+| `marker-<kind>-active` (MapPlaceholder) | 24×24 | LaunchMap (the selected or hovered marker) | 9 of 9: the sprite's second row, the red one. Optional: without it the selected marker keeps its picture, and it is not listed in `/images-missing.json` |
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
 | `rank-<animals, weapons, collectables>` | 114×114, 40×40 | RanksTab (the mock; the live site draws `rank-<id>` in the rows) | 3 of 3 (the overview rows show them at 40×40) |

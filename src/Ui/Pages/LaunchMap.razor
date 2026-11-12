@@ -89,7 +89,7 @@ else
     <MapPlaceholder Markers="markers" Reserve="reserve" Height="750" Selected="marker" Hover="hover" Centre="centre" OnPick="m => marker = m.Id">
         @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
         {
-            <span class="start-label" style="left:@(at.X)%;top:@(at.Y)%">@L["Launch.StartingAt", at.Name]</span>
+            <span class="start-label" style="left:@MapPlaceholder.Pc(at.X)%;top:@MapPlaceholder.Pc(at.Y)%">@L["Launch.StartingAt", at.Name]</span>
         }
     </MapPlaceholder>
 </div>

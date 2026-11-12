@@ -24,9 +24,9 @@ public sealed record ServerLaunchCatalogue(ServerReserve[] Reserves, ServerTutor
 public sealed record ServerReserve(int Id, string Name, ServerStart[] Starts);
 
 /// <param name="Kind">lodge, campsite, tower or interest.</param>
-/// <param name="X">Percent of the reserve's map, from the left.</param>
-/// <param name="Y">Percent of the reserve's map, from the top.</param>
-public sealed record ServerStart(int Id, string Kind, string Name, int X, int Y);
+/// <param name="X">Percent of the reserve's map picture, from the left (two decimals).</param>
+/// <param name="Y">Percent of the reserve's map picture, from the top (two decimals).</param>
+public sealed record ServerStart(int Id, string Kind, string Name, double X, double Y);
 
 public sealed record ServerTutorial(int Id, string Name, int Reserve);
 
