@@ -266,7 +266,7 @@ public sealed class Uploads(State state, string dataDir)
         {
             // the handle is the zip's own text: only plain name characters go into the alert
             var name = Regex.Replace(handle ?? "", @"[^A-Za-z0-9_.-]", "");
-            Alert($"Backup waiting for review: id {n}, account {account}, backup user id {uid}, handle {(name.Length > 32 ? name[..32] : name)}. Run: review list");
+            Alert($"Backup waiting for review: id {n}, account {account}, backup user id {uid}, handle {(name.Length > 32 ? name[..32] : name)}, {Alerts.Steam(Store.SteamId64(account))}. Run: review list");
         }
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
