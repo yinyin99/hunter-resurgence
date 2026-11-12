@@ -6,8 +6,10 @@
         @foreach (var m in Markers)
         {
             var pickable = m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
-            <button type="button" class="marker @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@(m.X)%;top:@(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
-                <Icon Name="@IconOf(m.Kind)" />
+            var slot = SlotOf(m);
+            <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
+                @if (slot is not null) { <AssetSlot Name="@slot" Width="@MarkerSize" Height="@MarkerSize" /> }
+                else { <Icon Name="@IconOf(m.Kind)" /> }
             </button>
         }
         @foreach (var (p, i) in Players.Select((p, i) => (p, i)))
@@ -20,7 +22,7 @@
         }
         @if (Markers.FirstOrDefault(m => m.Id == Hover) is { } at)
         {
-            <span class="popup" style="left:@(at.X)%;top:@(at.Y)%">@at.Name</span>
+            <span class="popup" style="left:@Pc(at.X)%;top:@Pc(at.Y)%">@at.Name</span>
         }
     </div>
     @if (Bg is null) { <span class="slot">@BgKey</span> }
@@ -59,7 +61,7 @@
     /// <summary>The reserve whose map picture is drawn (<c>map-&lt;NN&gt;</c>); none: <c>map-bg</c>.</summary>
     [Parameter] public int? Reserve { get; set; }
 
-    string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({50 - m.X}%, {50 - m.Y}%)" : "";
+    string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({Pc(50 - m.X)}%, {Pc(50 - m.Y)}%)" : "";
     string BgKey => Reserve is { } r ? $"map-{r:00}" : "map-bg";
     string? Bg => Images.Url(BgKey);
 
@@ -69,6 +71,25 @@
         if (Centre is null || Centre == centred) return;
         centred = Centre;
         if (Zoom && zoomLevel == 0) zoomLevel = 1;
+    }
+
+    const int MarkerSize = 24;
+
+    /// <summary>A percent as the style wants it: a point for the decimals in every culture.</summary>
+    public static string Pc(double percent) => percent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+
+    static string Name(MarkerKind kind) => kind.ToString().ToLowerInvariant();
+
+    /// <summary>The picture slot of a marker on a reserve map, <c>marker-&lt;kind&gt;</c> (<c>-active</c> for the selected or hovered one, when the operator has that picture), or null: the score sheet's map, or no picture of the kind, and the marker is its icon.</summary>
+    string? SlotOf(MapMarker m)
+    {
+        if (Reserve is null) return null;
+        var slot = "marker-" + Name(m.Kind);
+        if (m.Id == Selected || m.Id == Hover)
+            if (Images.Url(slot + "-active") is not null) return slot + "-active";
+        if (Images.Url(slot) is not null) return slot;
+        Images.NoteMissing(slot, new Uri(Nav.Uri).AbsolutePath);
+        return null;
     }
 
     static string IconOf(MarkerKind kind) => kind switch

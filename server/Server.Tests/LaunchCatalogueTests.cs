@@ -10,14 +10,16 @@ public class LaunchCatalogueTests : StateTestBase
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
 
-    // fictional values: reserve 1 has two lodges and a tower on a 1000 x 1000 square, reserve 2 a lodge and a named point of interest, reserve 3 no start;
-    // a start of another type (a stash) is not offered; item 811 is the loadout slot of the store
+    // fictional values: reserve 1 has three lodges and a tower, its map the 2000 x 2000 square from (-500, -500); reserve 2 a lodge and a named point of interest, its map empty
+    // (so the square around the starts); reserve 3 no start; a start of another type (a stash) is not offered; item 811 is the loadout slot of the store
+    static readonly Facts MapFacts = Facts.Parse("""{"format": 1, "reserves": [{"id": 1, "name": "First Reserve", "map": [-500, -500, 1500, 1500]}, {"id": 2, "name": "Test Reserve", "map": [5, 5, 5, 9]}]}""");
     static JsonObject Catalogue()
     {
         var app = APP;
         app["reserves"] = JsonNode.Parse("""[{"id": 2, "name": "Test Reserve"}, {"id": 1, "name": "First Reserve"}, {"id": 3, "name": "Empty Reserve"}]""");
         app["locations"] = JsonNode.Parse("""
-            [{"id": 12, "pos": {"x": 500, "y": 1, "z": 1000}, "type": "HUNTING_TOWER", "reserve": 1},
+            [{"id": 13, "pos": {"x": 333, "y": 1, "z": -77}, "type": "LODGE", "reserve": 1},
+             {"id": 12, "pos": {"x": 500, "y": 1, "z": 1000}, "type": "HUNTING_TOWER", "reserve": 1},
              {"id": 11, "pos": {"x": 1000, "y": 1, "z": 500}, "type": "LODGE", "reserve": 1},
              {"id": 10, "pos": {"x": 0, "y": 1, "z": 0}, "type": "LODGE", "reserve": 1},
              {"id": 101, "pos": {"x": -6420, "y": 150, "z": 3310}, "type": "LODGE", "reserve": 2},
@@ -32,9 +34,9 @@ public class LaunchCatalogueTests : StateTestBase
         return app;
     }
 
-    async Task<Loopback> Start(JsonObject? app = null, bool offline = false)
+    async Task<Loopback> Start(JsonObject? app = null, bool offline = false, Facts? facts = null)
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app ?? Catalogue(), LOCALE, TEXTURES, offline: offline);
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app ?? Catalogue(), LOCALE, TEXTURES, offline: offline, facts: facts);
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
         return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
@@ -42,23 +44,23 @@ public class LaunchCatalogueTests : StateTestBase
 
     async Task<Reply> Reserves(JsonObject? app = null, bool offline = false)
     {
-        await using var server = await Start(app, offline);
+        await using var server = await Start(app, offline, MapFacts);
         return await server.SendAsync("GET", "web.test", "/catalog/reserves", []);
     }
 
     [Fact]
-    public async Task TheReservesAreListedWithTheirStartsAsPercentOfTheirMap()
+    public async Task TheReservesAreListedWithTheirStartsAsPercentOfTheirMapPicture()
     {
         var reply = await Reserves();
         Assert.Equal(200, reply.Status);
         var catalogue = JsonNode.Parse(reply.Body)!;
         var reserves = catalogue["reserves"]!.AsArray();
         Assert.Equal(["2:Test Reserve", "1:First Reserve", "3:Empty Reserve"], reserves.Select(r => $"{r!["id"]}:{r["name"]}"));  // the catalogue's order
-        // the map is the square of the reserve's starts with a tenth of margin, world x to the right and z down; a start without a name is its kind and its number
-        Assert.Equal("""[{"id":10,"kind":"lodge","name":"Lodge 1","x":10,"y":10},{"id":11,"kind":"lodge","name":"Lodge 2","x":90,"y":50},{"id":12,"kind":"tower","name":"Tower 1","x":50,"y":90}]""",
+        // a start is at its percent of the facts file's map square, world x to the right and z down, two decimals; a start without a name is its kind and its number
+        Assert.Equal("""[{"id":10,"kind":"lodge","name":"Lodge 1","x":25.0,"y":25.0},{"id":11,"kind":"lodge","name":"Lodge 2","x":75.0,"y":50.0},{"id":12,"kind":"tower","name":"Tower 1","x":50.0,"y":75.0},{"id":13,"kind":"lodge","name":"Lodge 3","x":41.65,"y":21.15}]""",
             reserves[1]!["starts"]!.ToJsonString());
-        // a named start keeps its name; the stash is not offered
-        Assert.Equal("""[{"id":101,"kind":"lodge","name":"Lodge 1","x":10,"y":80},{"id":102,"kind":"interest","name":"Old Mill","x":90,"y":20}]""", reserves[0]!["starts"]!.ToJsonString());
+        // a named start keeps its name; the stash is not offered; no usable map square: the square around the starts with a tenth of margin
+        Assert.Equal("""[{"id":101,"kind":"lodge","name":"Lodge 1","x":10.0,"y":79.52},{"id":102,"kind":"interest","name":"Old Mill","x":90.0,"y":20.48}]""", reserves[0]!["starts"]!.ToJsonString());
         Assert.Empty(reserves[2]!["starts"]!.AsArray());
         Assert.Equal(["1:Test One:2", "2:Test Two:4", "3:Test Three:1", "4:Test Four:10", "5:Test Five:2"],
             catalogue["tutorials"]!.AsArray().Select(t => $"{t!["id"]}:{t["name"]}:{t["reserve"]}"));
