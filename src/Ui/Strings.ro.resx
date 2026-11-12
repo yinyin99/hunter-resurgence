@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Datele dvs.</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Restaurați backup-ul</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Încărcați zip-ul creat de instrumentul de backup. Un operator îl verifică manual și, dacă totul este în regulă, vă restaurează pe acest server inventarul, portofelul, abilitățile, statisticile, realizările și trofeele.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Încărcați backup-ul înainte de prima vânătoare aici: un backup poate fi restaurat doar pe un cont care nu a jucat încă.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Încărcarea unui backup vă înlocuiește profilul de pe acest server: obiectele, portofelul, abilitățile, statisticile, realizările, trofeele și cabanele. Vânătorile jucate aici rămân.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Folosiți un backup creat în modul „My account”. Operatorului i se arată dacă a fost creat pentru contul Steam cu care v-ați conectat; este un indiciu, nu o dovadă.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Un backup poate fi restaurat o singură dată. Dacă nu ați jucat încă pe acest server, contul dvs. preia apoi ID-ul de utilizator și numele din backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Fiecare zip este păstrat pentru ca un operator să îl verifice manual. Nimic nu este restaurat automat, așa că poate dura ceva timp.</value></data>

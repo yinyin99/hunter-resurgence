@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Dine data</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Gendan din backup</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Upload den zip, som backupværktøjet har lavet. En operatør tjekker den manuelt og gendanner, hvis alt er i orden, dit inventar, din tegnebog, dine færdigheder, din statistik, dine milepæle og dine trofæer på denne server.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Upload din backup, før du går på din første jagt her: en backup kan kun gendannes på en konto, der endnu ikke har spillet.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Når du uploader en backup, erstatter den din profil på denne server: inventar, tegnebog, færdigheder, statistik, milepæle, trofæer og jagthytter. Jagter, du har spillet her, bliver.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Brug en backup lavet i tilstanden »My account«. Operatøren kan se, om den er lavet til den Steam-konto, du loggede ind med; det er et fingerpeg, ikke et bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En backup kan kun gendannes én gang. Hvis du endnu ikke har spillet på denne server, overtager din konto så backuppens bruger-id og navn.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Hver zip gemmes, så en operatør kan tjekke den manuelt. Intet gendannes automatisk, så det kan tage et stykke tid.</value></data>

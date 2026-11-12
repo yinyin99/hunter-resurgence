@@ -458,7 +458,7 @@
     <value>Enviar ao servidor da comunidade</value>
   </data>
   <data name="Send_Ask" xml:space="preserve">
-    <value>Isto envia {0} para {1}: todo o backup do seu perfil, incluindo o id da sua conta Steam e o claim.key. Nada é enviado até você apertar Enviar. Primeiro você entra com a Steam no site do servidor. O servidor guarda o arquivo para o operador conferir; ele só é restaurado em uma conta que ainda não jogou, e uma única vez.</value>
+    <value>Isto envia {0} para {1}: todo o backup do seu perfil, incluindo o id da sua conta Steam e o claim.key. Nada é enviado até você apertar Enviar. Primeiro você entra com a Steam no site do servidor. O servidor guarda o arquivo para o operador conferir; ele substitui o seu perfil no servidor (as caçadas que você jogou lá permanecem), e uma única vez.</value>
   </data>
   <data name="Send_Go" xml:space="preserve">
     <value>Enviar</value>
@@ -479,7 +479,7 @@
     <value>Recebido: aguardando revisão</value>
   </data>
   <data name="Send_review_Text" xml:space="preserve">
-    <value>O servidor tem o seu backup. Um operador o confere antes de restaurar, o que pode demorar. Um backup só é restaurado em uma conta que ainda não jogou.</value>
+    <value>O servidor tem o seu backup. Um operador o confere antes de restaurar, o que pode demorar. A restauração substitui o seu perfil no servidor; as caçadas que você jogou lá permanecem.</value>
   </data>
   <data name="Send_already_Title" xml:space="preserve">
     <value>Recusado: já restaurado</value>

@@ -458,7 +458,7 @@
     <value>Envoyer au serveur de la communauté</value>
   </data>
   <data name="Send_Ask" xml:space="preserve">
-    <value>Ceci envoie {0} à {1} : toute la sauvegarde de ton profil, y compris l'identifiant de ton compte Steam et claim.key. Rien n'est envoyé tant que tu n'appuies pas sur Envoyer. Tu te connectes d'abord avec Steam sur le site du serveur. Le serveur garde le fichier pour que son opérateur le vérifie ; il ne se restaure que sur un compte qui n'a pas encore joué, et une seule fois.</value>
+    <value>Ceci envoie {0} à {1} : toute la sauvegarde de ton profil, y compris l'identifiant de ton compte Steam et claim.key. Rien n'est envoyé tant que tu n'appuies pas sur Envoyer. Tu te connectes d'abord avec Steam sur le site du serveur. Le serveur garde le fichier pour que son opérateur le vérifie ; il remplace ton profil sur le serveur (les chasses jouées là-bas restent), et une seule fois.</value>
   </data>
   <data name="Send_Go" xml:space="preserve">
     <value>Envoyer</value>
@@ -479,7 +479,7 @@
     <value>Reçue : en attente de vérification</value>
   </data>
   <data name="Send_review_Text" xml:space="preserve">
-    <value>Le serveur a ta sauvegarde. Un opérateur la vérifie avant de la restaurer, ce qui peut prendre du temps. Une sauvegarde ne se restaure que sur un compte qui n'a pas encore joué.</value>
+    <value>Le serveur a ta sauvegarde. Un opérateur la vérifie avant de la restaurer, ce qui peut prendre du temps. La restauration remplace ton profil sur le serveur ; les chasses jouées là-bas restent.</value>
   </data>
   <data name="Send_already_Title" xml:space="preserve">
     <value>Refusée : déjà restaurée</value>

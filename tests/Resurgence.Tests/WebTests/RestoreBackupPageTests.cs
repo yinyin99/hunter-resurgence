@@ -22,11 +22,11 @@ public sealed class RestoreBackupPageTests : UiContext
     [Fact]
     public void AKeptZipShowsItsTimeAndTheServersReason()
     {
-        Services.AddSingleton<IRestoreService>(new Fixed(new(null, [new KeptZip(At, "The account has already played, so its user id cannot change.")], [])));
+        Services.AddSingleton<IRestoreService>(new Fixed(new(null, [new KeptZip(At, "This backup has a user id this server does not accept.")], [])));
         var cut = Render<RestoreBackup>();
         var kept = Assert.Single(cut.FindAll("ul.kept li"));
         Assert.Contains("2023-11-14 22:13 UTC", kept.TextContent);
-        Assert.Contains("The account has already played, so its user id cannot change.", kept.TextContent);
+        Assert.Contains("This backup has a user id this server does not accept.", kept.TextContent);
     }
 
     [Fact]

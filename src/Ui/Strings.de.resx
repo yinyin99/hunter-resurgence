@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Ihre Daten</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Ihr Backup wiederherstellen</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Laden Sie das Zip hoch, das das Backup-Tool erstellt hat. Ein Betreiber prüft es von Hand und stellt, wenn alles in Ordnung ist, Ihr Inventar, Ihren Kontostand, Ihre Fertigkeiten, Statistiken, Errungenschaften und Trophäen auf diesem Server wieder her.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Laden Sie Ihr Backup vor Ihrer ersten Jagd hier hoch: Ein Backup kann nur auf einem Konto wiederhergestellt werden, das noch nicht gespielt hat.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Das Hochladen eines Backups ersetzt Ihr Profil auf diesem Server: Gegenstände, Kontostand, Fertigkeiten, Statistiken, Errungenschaften, Trophäen und Hütten. Jagden, die Sie hier gespielt haben, bleiben.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Verwenden Sie ein Backup, das im Modus „Mein Konto“ erstellt wurde. Dem Betreiber wird angezeigt, ob es für das Steam-Konto erstellt wurde, mit dem Sie angemeldet sind; das ist ein Hinweis, kein Beweis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Ein Backup kann einmal wiederhergestellt werden. Wenn Sie auf diesem Server noch nicht gespielt haben, übernimmt Ihr Konto dann die Benutzer-ID und den Namen aus dem Backup.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Jedes Zip wird aufbewahrt, damit ein Betreiber es von Hand prüfen kann. Nichts wird automatisch wiederhergestellt, daher kann es eine Weile dauern.</value></data>

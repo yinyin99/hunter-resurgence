@@ -121,7 +121,7 @@ After a run that made a backup zip, the result bar has a "Send to the community 
 3. The tool uploads the zip with the session the sign-in gave it, in parts of at most 90 MiB so that every request fits a proxy's 100 MB limit (`POST /account/restore/start`, each part, then `/finish`: [docs/server.md](server.md#upload-a-backup-zip)). A zip is at most 1 GiB; a larger one is not sent at all. The result bar shows the part being sent ("part 2 of 5"); a part that fails on the way is sent again, up to 3 tries. The session lives in memory only and is not saved.
 4. The result bar says what the server answered: received and waiting for the operator's review; refused because the profile was restored before, another account holds it, the file is not a usable backup (the server's reason follows), or it is too large; the server is busy (try later); or the server could not be reached. A failed or timed-out send changes nothing: press the button again: the send starts over (the server drops the unfinished upload, and deletes one nobody restarts after 30 minutes).
 
-A received backup is not restored by itself. An operator approves it, and it restores only onto an account that has not played yet, once per profile: do not play on the community server before then. The result bar says so.
+A received backup is not restored by itself. An operator approves it, and it replaces your profile on the community server (your hunts played there stay), once per profile. The result bar says so.
 
 ## What is not saved
 

@@ -213,11 +213,10 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestARefusalAfterPlayIsTheZipsNoteAndTheAccountIsToldOnce()
+    public async Task TestARefusalIsTheZipsNoteAndTheAccountIsToldOnce()
     {
-        var id = await Keep(TestZip.Own(), "played.zip", player, cookie);
+        var id = await Keep(TestZip.Own(uid: "2000000500"), "refused.zip", player, cookie);  // a user id this server does not accept
         Assert.Equal("waiting for the operator", Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!["note"]!.ToString());
-        state.ConnectReply(player);  // a hunt was opened: the account has played
         var refused = Operator.Approve(id);
         Assert.Equal((409, "refused"), (refused.Status, refused.Kind));
         var kept = Assert.Single((await RestoreStatusOf(cookie))["review"]!.AsArray())!;
@@ -343,25 +342,35 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTheUserIdChangesOnlyBeforeTheAccountHasPlayed()
+    public async Task TestAnAccountThatHasPlayedIsRestoredAndKeepsItsIdAndItsHunts()
     {
         var id = await Keep(TestZip.Own(), "played.zip", player, cookie);
         state.ConnectReply(player);  // a hunt was opened: the account has played
         Assert.True(state.Store.Played(player));
-        var refused = Operator.Approve(id);
-        Assert.Equal((409, "refused"), (refused.Status, refused.Kind));
-        Assert.Contains("already played", refused.Message);
-        Assert.True(state.Store.AccountExists(player));
+        var hunts = Count(player, "expeditions");
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+        Assert.True(state.Store.AccountExists(player));  // the account keeps its own user id, not the backup's
         Assert.False(state.Store.AccountExists(1001));
-        Assert.Null(state.Store.RestoredBy(1001));
-        Assert.Equal(1L, Count(player, "uploads"));  // still kept: the operator rejects it
-        // one id from the server's range is not a backup's
-        var (fresh, freshCookie) = SignedIn("fresh", "76561190000000009");
-        Assert.False(state.Store.Played(fresh));
-        var high = await Keep(TestZip.Own(uid: "2000000500", steam: "76561190000000009"), "high.zip", fresh, freshCookie);
+        Assert.Equal(hunts, Count(player, "expeditions"));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(player));
+        Assert.Equal("sample", state.Store.HandleOf(player));
+        Assert.Equal(player, state.Store.RestoredBy(1001));  // the backup's user id is still used up
+        Assert.Equal(0L, Count(player, "uploads"));
+        var done = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("restored", player), ((string)done["kind"]!, (long)done["userId"]!));
+        Assert.Contains($"Your user id is {player} and your name is sample.", Assert.Single(Notices(player)));
+        var again = await Upload(TestZip.Own(), "again.zip");
+        Assert.Equal((409, "already"), (again.Reply.Status, Status(again.Body)));  // once per game user id still holds
+    }
+
+    [Fact]
+    public async Task TestAUserIdOutsideTheBackupRangeIsRefused()
+    {
+        var high = await Keep(TestZip.Own(uid: "2000000500"), "high.zip", player, cookie);
         var notAccepted = Operator.Approve(high);
         Assert.Equal("refused", notAccepted.Kind);
         Assert.Contains("user id this server does not accept", notAccepted.Message);
+        Assert.Null(state.Store.RestoredBy(2000000500));
     }
 
     [Fact]

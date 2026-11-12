@@ -458,7 +458,7 @@
     <value>Send to the community server</value>
   </data>
   <data name="Send_Ask" xml:space="preserve">
-    <value>This sends {0} to {1}: your whole profile backup, including your Steam account id and claim.key. Nothing is sent until you press Send. First you sign in with Steam on the server's website. The server keeps the file for its operator to check; it restores only onto an account that has not played yet, and only once.</value>
+    <value>This sends {0} to {1}: your whole profile backup, including your Steam account id and claim.key. Nothing is sent until you press Send. First you sign in with Steam on the server's website. The server keeps the file for its operator to check; it replaces your profile on the server (hunts you played there stay), and only once.</value>
   </data>
   <data name="Send_Go" xml:space="preserve">
     <value>Send</value>
@@ -479,7 +479,7 @@
     <value>Received: waiting for review</value>
   </data>
   <data name="Send_review_Text" xml:space="preserve">
-    <value>The server has your backup. An operator checks it before it is restored, which can take a while. A backup restores only onto an account that has not played yet.</value>
+    <value>The server has your backup. An operator checks it before it is restored, which can take a while. The restore replaces your profile on the server; hunts you played there stay.</value>
   </data>
   <data name="Send_already_Title" xml:space="preserve">
     <value>Refused: restored before</value>

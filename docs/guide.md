@@ -2,7 +2,7 @@
 
 Five steps, in this order. Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
 
-**The order matters.** A backup can only be restored onto an account that has not played yet. Hunt on the community server before your backup is restored and it can no longer be restored onto that account. Do steps 2 to 4 before your first hunt there.
+**Uploading your backup replaces your profile on the community server** (items, wallet, skills, statistics, achievements, trophies and lodges). Hunts you played there before stay. A backup can be restored once.
 
 ## 1. Back up your profile
 
@@ -20,7 +20,7 @@ Only a backup made in My account mode can be restored with your wallet. Each run
 
 Open [hunter-resurgence.com](https://hunter-resurgence.com), choose **Already a hunter? Sign in** and sign in with Steam. The first time, you choose a name; the restore in step 4 replaces it with your profile's name. Use the Steam account you play the game with: it is your account on the community server, on the website and in the game.
 
-## 3. Send your backup, before your first hunt
+## 3. Send your backup
 
 Either way works; do one of them once:
 
@@ -31,9 +31,7 @@ A backup zip is at most 1 GiB. "Not a usable backup" means the file is not a bac
 
 ## 4. Wait for the operator
 
-Nothing is restored automatically: the operator (the person who runs the server) checks every backup by hand, so it can take a while. Open **Restore your backup** on the website to see where it stands. Each backup waiting for review is listed with the time it was kept and, under it, the operator's reason if the restore was refused (in English). When the operator has decided you get a message in the game's inbox (the server's notice thread) and the page says what happened: restored, with your user id and name (and whether your name stayed because the one in the backup is not allowed or belongs to another player), or rejected, with the operator's reason. Your account then has the name and user id of your profile, with its inventory, wallet, skills, statistics, achievements and trophies.
-
-Do not hunt on the community server before that.
+Nothing is restored automatically: the operator (the person who runs the server) checks every backup by hand, so it can take a while. Open **Restore your backup** on the website to see where it stands. Each backup waiting for review is listed with the time it was kept and, under it, the operator's reason if the restore was refused (in English). When the operator has decided you get a message in the game's inbox (the server's notice thread) and the page says what happened: restored, with your user id and name (and whether your name stayed because the one in the backup is not allowed or belongs to another player), or rejected, with the operator's reason. Your account then has the name of your profile (and its user id, unless you had already hunted on the server), with its inventory, wallet, skills, statistics, achievements and trophies.
 
 ## 5. Play with the launcher
 
@@ -60,6 +58,6 @@ More: [launcher](launcher.md#the-player-kit).
 - **"Could not listen on port 80 or 443"** when the launcher starts: another program uses that port (a web server, a second launcher). Close it and start the launcher again.
 - **The game cannot connect**: the launcher must be open, and the game allowed in Windows Firewall.
 - **The game still reaches the official servers**: the launcher offers the setup again at its start. Some antivirus programs block edits of the hosts file.
-- **You hunted before the restore**: the backup can no longer be restored onto that account, and the restore page shows that reason under the waiting backup. Open **Restore your backup** on the website, tick **I understand, delete everything** and press **Delete my data**, then sign in again (a new account) and send the backup again. This deletes the account's game data, its kept backups and anything it bought.
+- **You hunted before the restore**: nothing to do. The restore replaces your profile and keeps the hunts you played on the server; your account keeps its user id.
 
 More detail on each tool: [backup tool](backup.md), [launcher](launcher.md), [website](website.md#restore-and-your-data).

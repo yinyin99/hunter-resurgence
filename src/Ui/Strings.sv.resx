@@ -1296,7 +1296,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Dina uppgifter</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Återställ din säkerhetskopia</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Ladda upp zip-filen som säkerhetskopieringsverktyget skapade. En operatör granskar den manuellt och återställer, om allt ser bra ut, ditt inventarie, din plånbok, dina färdigheter, din statistik, dina prestationer och dina troféer på den här servern.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Ladda upp din säkerhetskopia innan din första jakt här: en säkerhetskopia kan bara återställas till ett konto som inte har spelat än.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Att ladda upp en säkerhetskopia ersätter din profil på den här servern: föremål, plånbok, färdigheter, statistik, prestationer, troféer och jaktstugor. Jakter du har spelat här finns kvar.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Använd en säkerhetskopia som gjorts i läget ”My account”. Operatören ser om den gjordes för det Steam-konto du loggade in med; det är en ledtråd, inte ett bevis.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>En säkerhetskopia kan återställas en gång. Om du inte har spelat på den här servern än tar ditt konto sedan över användar-id och namn från säkerhetskopian.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Varje zip-fil sparas så att en operatör kan granska den manuellt. Inget återställs automatiskt, så det kan ta en stund.</value></data>
