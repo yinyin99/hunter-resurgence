@@ -58,6 +58,7 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var offline) => offline,
             _ => throw new InvalidDataException("offline_mode: true or false"),
         };
+        cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");

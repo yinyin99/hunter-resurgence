@@ -24,6 +24,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets |
 | `offline_mode` | Default `true`: a request that no token resolves is the local account's (a player's own PC). `false` on a community server: it gets the reply of an expired token, see [Accounts](#accounts) |
+| `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) the server posts `{"content": "..."}` there: the review id, the account id, the backup's user id and its handle, nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
 | `listeners` | Required: a list of `{address, port}`; add `cert` and `key` (PEM files) for HTTPS. Plain HTTP is a listener without them. `"admin": true` (loopback addresses only) makes it serve the admin API, see below. Every listener speaks HTTP/1.1 only |
 | `trusted_proxies` | Addresses or `address/prefix` of the proxies in front of the server (default none) |
 | `host_header` | Default `X-Game-Host`, see below |
@@ -500,6 +501,8 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | A user id that was restored before (by this account or any other) | Refused, nothing kept: "a backup can be restored once" | `already` |
 | A user id another account holds | Refused, nothing kept | `taken` |
 | Any other zip | Kept as `restores/<account id>/<SHA-256>.zip`, a row in `uploads`; nothing is restored. The player is told that an operator will check it | `review` |
+
+When a zip is kept, the server also sends one message to the `review_webhook` of the settings file, if set.
 
 Every outcome of an upload except a received part writes one console line, `upload of account <id>: <status>: <message>`: a refused zip keeps nothing, so this line is its only record (the reader's reason for `invalid`, which of the three `busy` cases). On the VPS the console goes to the host journal ([deploy.md](deploy.md#logs)).
 
