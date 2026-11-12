@@ -115,4 +115,33 @@ public class HarvestScoreTests : StateTestBase
         Eq("21.8896", Scoring.Score(2, Scoring.Features(2, new JsonObject(), O("""{"event": 22, "beard": 100000, "left_spur": 10000, "right_spur": 20000}"""), 1.0), 1000, null).Score);
         Eq("220.4623", Scoring.Score(10, Scoring.Features(10, new JsonObject(), new JsonObject(), 1.0), 100000, null).Score);
     }
+
+    [Fact]
+    public void RescoreScoresAndPaysAnUnpaidHarvestOnceAndLeavesARefusedOneAndADryRunWritesNothing()
+    {
+        Harvest(17, 1);          // scorable
+        Harvest(17, 0, 11);      // disqualified: ammunition the connect does not list
+        using (var con = state.Store.Open(ME))  // as a harvest made before the scoring fix: no score, no gm$
+        {
+            con.Exec("UPDATE harvests SET body = json_set(body, '$.score', 0, '$.score_type', '') WHERE account_id = $a");
+            con.Exec("DELETE FROM wallet_log WHERE account_id = $a AND summary LIKE 'CSS Reward%'");
+        }
+        var before = state.Wallet(ME)["gm"]!.GetValue<double>();
+        string Pages() { using var con = state.Store.Open(ME); return string.Join("|", con.Rows("SELECT body FROM harvests WHERE account_id = $a ORDER BY kill_id").Select(r => (string)r[0])); }
+        var pages = Pages();
+
+        var (_, rescored, paid, gms) = Assert.Single(state.Rescore(ME, dryRun: true));
+        Assert.True(rescored == 1 && paid == 1 && gms > 0);
+        Assert.True(pages == Pages() && before == state.Wallet(ME)["gm"]!.GetValue<double>());
+
+        Assert.Equal((rescored, paid, gms), Assert.Single(state.Rescore(ME, dryRun: false)) is var (_, r, p, g) ? (r, p, g) : default);
+        Assert.Equal(before + gms, state.Wallet(ME)["gm"]!.GetValue<double>());
+        Assert.NotEqual(pages, Pages());
+        using (var con = state.Store.Open(ME))
+            Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM wallet_log WHERE account_id = $a AND summary LIKE 'CSS Reward (Animal Id: %'"));
+        var again = Pages();
+        var second = Assert.Single(state.Rescore(ME, dryRun: false));
+        Assert.Equal((0, 0, 0L), (second.Rescored, second.Paid, second.Gms));
+        Assert.Equal(again, Pages());
+    }
 }
