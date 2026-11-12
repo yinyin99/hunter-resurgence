@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Społeczność spotyka się na Discordzie: nowości, pomoc i inni myśliwi. Wpadnij się przywitać!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Dołącz do Discorda</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Później</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Gotowe. Przycisk Graj w Steam otwiera teraz ten launcher. Uruchomić Steam ponownie?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Uruchom Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Gotowe. Przycisk Graj w Steam otwiera teraz ten launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam uruchamia się ponownie.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Ten launcher nie został zainstalowany programem instalacyjnym (kopia deweloperska lub rozpakowana), więc nie może ustawić opcji uruchamiania w Steam za Ciebie.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Launcher nie mógł bezpiecznie odczytać pliku ustawień Steam dla tej gry i zostawił go bez zmian.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam nie zamknął się na czas. Zamknij go sam i spróbuj ponownie.</value></data>

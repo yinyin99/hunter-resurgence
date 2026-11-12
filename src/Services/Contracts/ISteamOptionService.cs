@@ -10,11 +10,8 @@ public interface ISteamOptionService
 {
     Task<SteamOptionInfo> ReadAsync();
 
-    /// <summary>Asks a running Steam to exit and waits (never kills it), then writes the option. A failure's <see cref="Result.Error"/> is a message for the player.</summary>
-    Task<Result> SetAsync();
-
-    /// <summary>Starts Steam again after <see cref="SetAsync"/>; false when it does not start.</summary>
-    bool StartSteam();
+    /// <summary>Asks a running Steam to exit and waits (never kills it), then writes the option and, when it had to close Steam, starts it again. A failure's <see cref="Result.Error"/> is a message for the player; <c>Restarted</c>: Steam was closed and started again.</summary>
+    Task<(Result Result, bool Restarted)> SetAsync();
 
     /// <summary>At the launcher's start: true when the dialog should open now (the option is not ours, the player did not say "don't ask again" and it was not offered in the last day); counts as offered.</summary>
     Task<bool> DueAsync();

@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Gemenskapen träffas på Discord: nyheter, hjälp och andra jägare. Kom och säg hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Gå med i Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senare</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Klart. Steams Spela-knapp öppnar nu det här startprogrammet. Starta Steam igen?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Starta Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Klart. Steams Spela-knapp öppnar nu det här startprogrammet.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam startar igen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Det här startprogrammet installerades inte med installationsprogrammet (en utvecklings- eller uppackad kopia), så det kan inte ställa in Steams startalternativ åt dig.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Startprogrammet kunde inte läsa Steams inställningsfil för det här spelet på ett säkert sätt och lämnade den oförändrad.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam stängdes inte i tid. Stäng det själv och försök igen.</value></data>

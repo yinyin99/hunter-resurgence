@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Skupnost se zbira na Discordu: novice, pomoč in drugi lovci. Pridi pozdravit!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Pridruži se Discordu</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Pozneje</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Končano. Gumb Igraj v Steamu zdaj odpre ta zaganjalnik. Znova zaženem Steam?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Zaženi Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Končano. Gumb Igraj v Steamu zdaj odpre ta zaganjalnik.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam se znova zaganja.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Ta zaganjalnik ni bil nameščen z namestitvenim programom (razvojna ali razpakirana kopija), zato ne more namesto vas nastaviti možnosti zagona v Steamu.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Zaganjalnik ni mogel varno prebrati datoteke z nastavitvami Steama za to igro in jo je pustil nespremenjeno.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam se ni pravočasno zaprl. Zaprite ga sami in poskusite znova.</value></data>

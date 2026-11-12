@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>Comunitatea se întâlnește pe Discord: noutăți, ajutor și alți vânători. Vino să saluți!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Intră pe Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Mai târziu</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Gata. Butonul Joacă din Steam deschide acum acest launcher. Pornești din nou Steam?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Pornește Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Gata. Butonul Joacă din Steam deschide acum acest launcher.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>Steam pornește din nou.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Acest launcher nu a fost instalat cu programul de instalare (copie de dezvoltare sau dezarhivată), deci nu poate seta opțiunea de lansare din Steam pentru tine.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Launcherul nu a putut citi în siguranță fișierul de setări Steam pentru acest joc și l-a lăsat neschimbat.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam nu s-a închis la timp. Închide-l tu și încearcă din nou.</value></data>

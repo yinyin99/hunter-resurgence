@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>A közösség a Discordon találkozik: hírek, segítség és más vadászok. Gyere, köszönj be!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Csatlakozás a Discordhoz</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Később</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Kész. A Steam Játék gombja most ezt az indítót nyitja meg. Újraindítod a Steamet?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Steam indítása</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Kész. A Steam Játék gombja most ezt az indítót nyitja meg.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>A Steam újraindul.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Ezt az indítót nem a telepítővel telepítették (fejlesztői vagy kicsomagolt példány), ezért nem tudja helyetted beállítani a Steam indítási beállítását.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>Az indító nem tudta biztonságosan beolvasni a Steam ehhez a játékhoz tartozó beállításfájlját, ezért változatlanul hagyta.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>A Steam nem záródott be időben. Zárd be magad, majd próbáld újra.</value></data>

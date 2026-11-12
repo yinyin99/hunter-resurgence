@@ -67,8 +67,8 @@
   <data name="Discord.Text" xml:space="preserve"><value>A comunidade se reúne no Discord: novidades, ajuda e outros caçadores. Venha dizer oi!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Entrar no Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Depois</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Pronto. O botão Jogar do Steam agora abre este iniciador. Iniciar o Steam novamente?</value></data>
-  <data name="Steam.StartSteam" xml:space="preserve"><value>Iniciar o Steam</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Pronto. O botão Jogar do Steam agora abre este iniciador.</value></data>
+  <data name="Steam.Restarted" xml:space="preserve"><value>O Steam está iniciando novamente.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Este iniciador não foi instalado com o instalador (cópia de desenvolvimento ou descompactada), então não pode definir a opção de inicialização do Steam para você.</value></data>
   <data name="Steam.Unreadable" xml:space="preserve"><value>O iniciador não conseguiu ler com segurança o arquivo de configurações do Steam para este jogo e o deixou como estava.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>O Steam não fechou a tempo. Feche-o você mesmo e tente de novo.</value></data>
