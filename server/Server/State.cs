@@ -1467,12 +1467,9 @@ public sealed partial class State
     {
         if (Py.IsStr(l["name"]) && ((string)l["name"]!).Length > 0)
             return (string)l["name"]!;
-        if (placeTexts is null)
-        {
-            placeTexts = [];
-            foreach (var d in Arr(G(connect, "locations_descr", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _) && Py.IsStr(d["name"]) && ((string)d["name"]!).Length > 0))
-                placeTexts[Py.L(d["id"])] = (string)d["name"]!;
-        }
+        // built whole before it is shared: a request on another thread never reads a half-filled table
+        placeTexts ??= Arr(G(connect, "locations_descr", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _) && Py.IsStr(d["name"]) && ((string)d["name"]!).Length > 0)
+            .GroupBy(d => Py.L(d["id"])).ToDictionary(g => g.Key, g => (string)g.Last()["name"]!);
         return placeTexts.GetValueOrDefault(Py.L(l["id"]));
     }
 
