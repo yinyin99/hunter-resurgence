@@ -32,7 +32,7 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>Called with the text for the operator when a zip is kept (the server sets it to the review webhook).</summary>
     public Action<string> Alert { get; init; } = _ => { };
 
-    static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
+    internal static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
 
     readonly ConcurrentDictionary<long, bool> inFlight = new();
     readonly SemaphoreSlim slots = new(MaxAtOnce);
@@ -363,7 +363,7 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>A message in the account's inbox from the server's notice sender (the thread Chat/conversations lists).</summary>
-    static void Notify(Db con, string text) =>
+    internal static void Notify(Db con, string text) =>
         con.Exec("INSERT INTO messages (account_id, sender, content, ts) VALUES ($a, ?, ?, ?)", State.SYSTEM_SENDER, text, Store.Now());
 
     /// <summary>The operator's reject: delete the kept zip and its row, keep the reason (may be empty) and tell the player. False: no such id.</summary>

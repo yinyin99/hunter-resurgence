@@ -22,7 +22,7 @@ public static class AuthApi
     {
         var state = game.State!;
         var steam = app.Services.GetRequiredService<SteamOpenId>();
-        var auth = new SignIn(state, steam, siteHost: game.Web, gameWebHost: game.GameWeb);
+        var auth = new SignIn(state, steam, siteHost: game.Web, gameWebHost: game.GameWeb, claims: app.Services.GetService<Claims>());
 
         var group = app.MapGroup("/auth").RequireHost(game.Web, game.Signup, game.GameWeb).WithGroupName("game").WithTags("Sign-in (web_host, signup_host, game_web_host)");
         group.MapGet("/steam/login", Do(game, auth.Start)).WithName("SteamLogin").WithSummary("Send the browser to Steam")

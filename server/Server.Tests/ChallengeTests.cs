@@ -290,6 +290,8 @@ public class ChallengeTests : StateTestBase
         {
             con.Exec("DROP TABLE challenges");
             con.Exec("DROP TABLE daily_missions");
+            con.Exec("DROP TABLE claim_lookups");
+            con.Exec("DROP TABLE claims");
             con.Exec("ALTER TABLE events DROP COLUMN ts");
             con.Exec("PRAGMA user_version = 13");
         }

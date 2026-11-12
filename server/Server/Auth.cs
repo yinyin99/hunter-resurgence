@@ -127,7 +127,7 @@ public sealed class GameTokens(Store store, string webHost)
 /// player start the sign-in again), the accounts and the cookie sessions are in the database.</summary>
 /// <param name="siteHost">Our website's domain, and gameWebHost the game's own web host: the launcher page there sends the player's browser
 /// to our site for Steam (the browser trusts our certificate; it does not reach the game's host), and learns the result by polling.</param>
-public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null)
+public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, string? gameWebHost = null, Claims? claims = null)
 {
     public const string SessionCookie = "hr_session";
     const string LoginCookie = "hr_login";
@@ -315,13 +315,28 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             return Problem(400, "This sign-in ran out of time. Start again.");
         if (Store.AccountBySteam(steamId) is { } existing)  // another tab of this sign-in was faster
             return Finish(login, existing);
-        if (r.Method == "GET") return Html(200, AuthPages.Handle(login.Id, "", null));
+        var offer = claims is { Enabled: true };
+        if (r.Method == "GET") return Html(200, AuthPages.Handle(login.Id, "", null, offer));
         var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
         string F(string k) => form.TryGetValue(k, out var v) ? v[0] : "";
         if (!OwnPost(r) || F("csrf") != login.Id) return Problem(400, "This form is not from this server.");
         var handle = F("handle").Trim();
-        var error = Handles.Problem(handle);
+        var old = F("old").Trim();
+        var restore = offer && F("kind") == "old";
+        string? error = null;
+        ArchivedPlayer? player = null;
+        if (restore)  // the lookup is free here: there is no account yet, and each try is one POST of one sign-in
+        {
+            player = claims!.Peek(old);
+            if (player is null) error = "We did not keep a profile under this name.";
+            else if (handle == "")
+            {
+                if (Handles.Problem(player.Handle) is null && Store.AccountByHandle(player.Handle) is null) handle = player.Handle;
+                else error = "Choose a name: the old one is taken.";
+            }
+        }
         long account = 0;
+        error ??= Handles.Problem(handle);
         if (error is null)
             lock (create)
             {
@@ -337,7 +352,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
                         error = "This name is taken.";
                     }
             }
-        return error is null ? Finish(login, account) : Html(200, AuthPages.Handle(login.Id, handle, error));
+        if (error is not null) return Html(200, AuthPages.Handle(login.Id, handle, error, offer, old, restore));
+        if (player is not null) claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);  // restored or kept for review: the player's inbox says which
+        return Finish(login, account);
     }
 
     /// <summary>GET and POST /auth/confirm: the player's browser says the launcher that shows the code, or the app on this PC, may be signed in. The app gets a one-time code at 127.0.0.1.</summary>

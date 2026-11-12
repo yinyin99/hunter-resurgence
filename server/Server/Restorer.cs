@@ -59,20 +59,20 @@ public static class Restorer
     /// <summary>Write the model into the account `current` (created when it does not exist) and keep the zip. finalId: the id
     /// the account has afterwards (a restore that adopts the zip's user id; every row, token and session moves with it).
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
-    /// (the local rule; a community server keeps the zip as the way back instead).</summary>
-    internal static Result Apply(State state, string zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
+    /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.</summary>
+    internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
                                  bool backupDatabase, string dataDir, Action<Db>? within)
     {
         var model = read.Model;
         var store = state.Store;
         var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle);
         var kept = Path.Combine(dataDir, "restores", finalId.ToString(), sha + ".zip");
-        var copied = !File.Exists(kept);
+        var copied = zipPath is not null && !File.Exists(kept);
         var backup = exists && backupDatabase ? store.Backup() : null;
         if (copied)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
-            File.Copy(zipPath, kept);
+            File.Copy(zipPath!, kept);
         }
         var report = "";
         State.Unpacking? pictures = null;

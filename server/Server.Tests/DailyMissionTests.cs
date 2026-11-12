@@ -364,6 +364,8 @@ public class DailyMissionTests : StateTestBase
         using (var con = store.Open())
         {
             con.Exec("ALTER TABLE expeditions DROP COLUMN start_time");
+            con.Exec("DROP TABLE claim_lookups");
+            con.Exec("DROP TABLE claims");
             con.Exec("PRAGMA user_version = 15");
         }
         using var migrated = new Store(file).Open();
@@ -379,6 +381,8 @@ public class DailyMissionTests : StateTestBase
         using (var con = store.Open())
         {
             con.Exec("DROP TABLE daily_missions");
+            con.Exec("DROP TABLE claim_lookups");
+            con.Exec("DROP TABLE claims");
             con.Exec("PRAGMA user_version = 14");
         }
         using var migrated = new Store(file).Open();

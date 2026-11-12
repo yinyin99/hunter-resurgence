@@ -1,4 +1,4 @@
-// Entry point: serve (default), admin, import, review, coverage, backup. Every command reads settings.json: --settings <file>, else the
+// Entry point: serve (default), admin, import, review, claim, coverage, backup. Every command reads settings.json: --settings <file>, else the
 // SERVER_SETTINGS environment variable, else settings.json in the current folder (docs/server.md).
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
@@ -29,14 +29,26 @@ const string ImportUsage = """
     """;
 
 const string ReviewUsage = """
-    The backup zips players uploaded: every one is kept for an operator and never restored automatically.
+    The backup zips and the archive claims players sent: every one is kept for an operator and never restored automatically.
 
     Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> [--keep-handle] | review reject <id> [reason]
+    An id is a number for a zip, or c<number> for a claim (c12).
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
-    approve restores it by the community rules (once per game user id, never a user id another account holds, the account's user id
+    A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note.
+    approve restores a zip by the community rules (once per game user id, never a user id another account holds, the account's user id
     changes only before it has played) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
     --keep-handle leaves the account its own name instead of the backup's.
-    reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. Both leave the player a notice in the game.
+    approve c<id> restores the archived profile onto the claiming account (its user id never changes); --keep-handle leaves the account its own name.
+    reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. A rejected claim stays as a row with its reason.
+    Both leave the player a notice in the game.
+    """;
+
+const string ClaimUsage = """
+    Restore an archived public profile onto an account at once: no lookup limit, no review, no confirmation, whatever the hunterscore.
+
+    Usage (repo root): dotnet run --project server/Server -- claim <account: user id or handle> <archived handle or user id> [--keep-handle]
+    The account keeps its user id, hunts, kills and photos; its items, skills, achievements, trophies and lodges are replaced.
+    --keep-handle leaves the account its own name instead of the archived one. An earlier claim row of the account is replaced.
     """;
 
 var words = args.ToList();
@@ -60,12 +72,13 @@ switch (cmd)
     case "admin": Admin([.. words.Skip(1)]); break;
     case "import": Import([.. words.Skip(1)]); break;
     case "review": Review([.. words.Skip(1)]); break;
+    case "claim": ClaimCommand([.. words.Skip(1)]); break;
     case "coverage": await Coverage(words.Contains("--no-recordings")); break;
     case "backup":
         if (words.Count is not (2 or 3)) Die("usage: backup <folder> [keep, default 7]");
         DbBackup.Run(settings.DataDir, words[1], words.Count == 3 ? int.Parse(words[2], CultureInfo.InvariantCulture) : 7);
         break;
-    default: Die($"unknown command {cmd}: serve | admin | import | review | coverage | backup"); break;
+    default: Die($"unknown command {cmd}: serve | admin | import | review | claim | coverage | backup"); break;
 }
 return 0;
 
@@ -149,32 +162,72 @@ void Import(string[] a)
 void Review(string[] a)
 {
     long id = 0;
+    var isClaim = false;
     var reason = "";
-    if (a is ["reject", var r, .. var rest] && long.TryParse(r, out id)) reason = string.Join(' ', rest);
-    else if (!(a is ["list"] || (a is ["approve", var n, .. var opt] && opt is [] or ["--keep-handle"] && long.TryParse(n, out id)))) Die(ReviewUsage);
+    bool Id(string s)  // 12 is a kept zip, c12 a claim
+    {
+        isClaim = s.Length > 1 && (s[0] is 'c' or 'C');
+        return long.TryParse(isClaim ? s[1..] : s, out id);
+    }
+    if (a is ["reject", var r, .. var rest] && Id(r)) reason = string.Join(' ', rest);
+    else if (!(a is ["list"] || (a is ["approve", var n, .. var opt] && opt is [] or ["--keep-handle"] && Id(n)))) Die(ReviewUsage);
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
     var uploads = new Uploads(state, settings.DataDir);
+    var claims = OpenClaims(state);
     switch (a[0])
     {
         case "list":
             var kept = uploads.List();
             foreach (var p in kept)
                 Console.WriteLine($"{p.Id}\taccount {p.Account}\tuser id {p.UserId}\thandle {p.Handle ?? "(unreadable)"}\t{DateTimeOffset.FromUnixTimeSeconds(p.Ts):u}\t{(p.SteamMatch ? "steam id matches" : "steam id does not match")}\t{p.Note}");
-            if (kept.Count == 0) Console.WriteLine("nothing waits for review");
+            var waiting = claims.Waiting();
+            foreach (var c in waiting)
+                Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{c.Note}");
+            if (kept.Count + waiting.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":
-            var done = uploads.Approve(id, keepHandle: a is [_, _, "--keep-handle"]);
+            var keep = a is [_, _, "--keep-handle"];
+            if (isClaim)
+            {
+                var claimed = claims.Approve(id, keep);
+                if (claimed.Kind != "restored") Die($"refused: {claimed.Message}");
+                Console.WriteLine(claimed.Message);
+                break;
+            }
+            var done = uploads.Approve(id, keepHandle: keep);
             if (done.Kind != "restored") Die($"refused: {done.Message}");
             Console.WriteLine(done.Message);
             Console.Write(done.Report);
             break;
         default:
+            if (isClaim)
+            {
+                if (!claims.Reject(id, reason)) Die($"no waiting claim c{id}");
+                Console.WriteLine($"rejected c{id}: the player has the reason in the inbox");
+                break;
+            }
             if (!uploads.Reject(id, reason)) Die($"no kept zip {id}");
             Console.WriteLine($"rejected {id}: the zip and its row are deleted");
             break;
     }
+}
+
+Claims OpenClaims(State state) => new(state, new Archive((string)settings.Cfg["archive_db"]!), settings.DataDir);
+
+void ClaimCommand(string[] a)
+{
+    var keep = a is [_, _, "--keep-handle"];
+    if (!(a.Length == 2 || keep)) Die(ClaimUsage);
+    Directory.CreateDirectory(settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+    if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+    var account = AdminApi.ResolveAccount(state, a[0]);
+    if (account is null) Die($"no account {a[0]}");
+    var done = OpenClaims(state).Claim(account!.Value, a[1], useOldName: !keep, confirmOverwrite: true, byOperator: true);
+    if (done.Kind != "restored") Die($"refused: {done.Message}");
+    Console.WriteLine(done.Message);
 }
 
 // Replay every recorded request on a redirected host through the server and list what it can't answer faithfully.
