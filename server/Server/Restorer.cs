@@ -65,7 +65,8 @@ public static class Restorer
     {
         var model = read.Model;
         var store = state.Store;
-        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle);
+        var avatarUrl = state.RestoredAvatarUrl(read, finalId);
+        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl);
         var kept = Path.Combine(dataDir, "restores", finalId.ToString(), sha + ".zip");
         var copied = zipPath is not null && !File.Exists(kept);
         var backup = exists && backupDatabase ? store.Backup() : null;
@@ -79,7 +80,7 @@ public static class Restorer
         void Write(Db con)
         {
             pictures = state.PreparePictures(con, read);
-            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report);
+            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl);
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, model.Extras);
@@ -147,8 +148,8 @@ public static class Restorer
     }
 
     /// <summary>The connect reply's `account` object: base (the account's own, or the recorded one for a new account) with the
-    /// profile's fields and the importer's defaults. No e-mail, Facebook id or Steam id of the zip.</summary>
-    static JsonObject AccountObject(JsonObject baseAccount, PlayerModel m, long id, string handle)
+    /// profile's fields and the importer's defaults, and `avatarUrl` (<see cref="State.RestoredAvatarUrl"/>). No e-mail, Facebook id or Steam id of the zip.</summary>
+    static JsonObject AccountObject(JsonObject baseAccount, PlayerModel m, long id, string handle, string avatarUrl)
     {
         var a = (JsonObject)baseAccount.DeepClone();
         var p = m.Profile;
@@ -164,7 +165,7 @@ public static class Restorer
         a["facebook_enabled"] = m.Account.FacebookEnabled;
         a["share_on_facebook"] = m.Account.ShareOnFacebook != 0;
         Put(a, "hostname", p.Hostname);
-        Put(a, "avatar_url", p.AvatarUrl);
+        a["avatar_url"] = avatarUrl;
         return a;
     }
 
@@ -200,7 +201,7 @@ public static class Restorer
 
     /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row;
     /// returns the report.</summary>
-    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures)
+    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl)
     {
         PlayerRows.ClearModel(con);
         var lines = new List<string>();
@@ -217,7 +218,7 @@ public static class Restorer
         Put(me, "hostname", p.Hostname);
         me["gender"] = p.Gender;
         me["hunterscore"] = p.Hunterscore;
-        Put(me, "avatar", p.AvatarUrl);
+        me["avatar"] = avatarUrl;
         Put(me, "membershipType", p.MembershipType);
         Put(me, "uuid", p.Uuid);
         Put(me, "locale", p.Locale);

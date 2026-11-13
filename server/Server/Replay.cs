@@ -328,7 +328,7 @@ public static class Replay
             if (facts.ReserveConnect(r, ethical) is { } body) reserves[r] = body;
         foreach (var (r, rec) in table.Connects)
             reserves[int.Parse(r)] = rec.Body;
-        return new State(System.IO.Path.Combine(workDir, "state.db"), connect, $"https://{S(cfg, "game_web_host")}",
+        var state = new State(System.IO.Path.Combine(workDir, "state.db"), connect, $"https://{S(cfg, "game_web_host")}",
             $"https://{S(cfg, "game_web_host")}{ProtocolLiterals.IconPath}",
             app != null ? (JsonObject)JsonNode.Parse(app.Body)! : Install.Application(S(cfg, "install_dir"), facts, item), locale,
             web.Length > 0 ? ScorePage.TextureNames(Encoding.UTF8.GetString(web)) : facts.Textures,
@@ -342,6 +342,8 @@ public static class Replay
             avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null,
             challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null,
             seasonal: SeasonalEvent.Parse(cfg["event"])) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false };
+        if (!offline) state.MigrateAvatars();  // a community server: the pictures its accounts imported before the avatars were served
+        return state;
     }
 
     public static List<string> BodyKeys(string ctype, byte[] body)

@@ -481,13 +481,40 @@ public sealed class Store
     }
 
     /// <summary>One page of the hunterscore board (the order of Rank) and how many accounts are on it.</summary>
-    public (List<(long Rank, string Handle, long Hunterscore)> Rows, long Total) Board(long? excluded, int offset, int limit)
+    public (List<(long Rank, long Id, string Handle, long Hunterscore)> Rows, long Total) Board(long? excluded, int offset, int limit)
     {
         using var con = Open();
-        var rows = con.Rows("SELECT handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
+        var rows = con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
                             + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
-            .Select((r, i) => (offset + i + 1L, (string)r[0], Convert.ToInt64(r[1]))).ToList();
+            .Select((r, i) => (offset + i + 1L, (long)r[0], (string)r[1], Convert.ToInt64(r[2]))).ToList();
         return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
+    }
+
+    /// <summary>The account's `avatar_url`; null when it has none.</summary>
+    public string? AvatarUrl(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT json_extract(account, '$.avatar_url') FROM accounts WHERE id = ?", id) as string;
+    }
+
+    /// <summary>The `avatar_url` of every account that has one, by user id.</summary>
+    public List<(long Id, string Url)> AvatarUrls()
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT id, json_extract(account, '$.avatar_url') FROM accounts WHERE json_extract(account, '$.avatar_url') IS NOT NULL").Select(r => ((long)r[0], (string)r[1]))];
+    }
+
+    /// <summary>Point the account's picture at `url`: its `avatar_url` and the `avatar` of its restored profile. A `face` also sets the account's `face`, `avatar` and `avatar_id` (the last two where it has them), as a restore does.</summary>
+    public void SetAvatar(long id, string url, long? face)
+    {
+        using (var con = Open())
+        {
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar_url', ?) WHERE id = ?", url, id);
+            if (face is { } f)
+                con.Exec("UPDATE accounts SET account = json_replace(json_set(account, '$.face', ?1), '$.avatar', ?1, '$.avatar_id', ?1) WHERE id = ?2", f, id);
+        }
+        using var mine = Open(id);
+        mine.Exec("UPDATE profile SET body = json_set(body, '$.avatar', ?) WHERE account_id = $a", url);
     }
 
     /// <summary>The minigames' boards by kind: the game id of heartbeat event 17 (<see cref="RestoredReads.BestScore"/>).</summary>
@@ -497,18 +524,18 @@ public sealed class Store
     /// <summary>A minigame's whole board (a kind of <see cref="GameIds"/>): the accounts with a score above 0, highest first, equal scores in account id order; the caller pages it.
     /// ponytail: statistics is a per-player table, so each account is read on its own connection (Db refuses a cross-account read); two queries per account
     /// on every page view, fine for the accounts of a community server. Copy the scores to the accounts row if that gets slow.</summary>
-    public List<(string Handle, long Score)> GameBoard(string kind, long? excluded)
+    public List<(long Id, string Handle, long Score)> GameBoard(string kind, long? excluded)
     {
         var game = GameIds[kind];
         List<(long Id, string Handle)> accounts;
         using (var con = Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", excluded).Select(r => ((long)r[0], (string)r[1]))];
-        var scored = new List<(string Handle, long Score)>();
+        var scored = new List<(long Id, string Handle, long Score)>();
         foreach (var (id, handle) in accounts)
         {
             using var con = Open(id);
             if (RestoredReads.BestScore(con, game) is { } score and > 0)
-                scored.Add((handle, score));
+                scored.Add((id, handle, score));
         }
         return [.. scored.OrderByDescending(s => s.Score)];  // a stable sort: equal scores keep the account id order
     }
