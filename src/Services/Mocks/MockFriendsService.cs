@@ -23,10 +23,10 @@ public sealed class MockFriendsService(string? mock = null) : IFriendsService
     public Task<IReadOnlyList<Friend>> SearchAsync(string text) =>
         Task.FromResult<IReadOnlyList<Friend>>(Everyone.Where(h => h != Own && h.Contains(text, StringComparison.OrdinalIgnoreCase)).Select(h => new Friend(h, false)).ToList());
 
-    public Task<IReadOnlyList<string>> RequestsAsync()
+    public Task<IReadOnlyList<Friend>> RequestsAsync()
     {
         if (mock == "friends:incoming" && !arrived && DateTime.UtcNow - started > TimeSpan.FromSeconds(5)) { arrived = true; requests.Add("Pine_Walker"); }
-        return Task.FromResult<IReadOnlyList<string>>(requests.ToList());
+        return Task.FromResult<IReadOnlyList<Friend>>(requests.Select(h => new Friend(h, false)).ToList());
     }
 
     public Task<IReadOnlyList<string>> PendingAsync() => Task.FromResult<IReadOnlyList<string>>(pending.ToList());

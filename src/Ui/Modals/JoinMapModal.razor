@@ -26,7 +26,7 @@
         @foreach (var (p, i) in Server.Roster.Select((p, i) => (p, i)))
         {
             <div class="player" style="border-color:@(i % 2 == 0 ? "#c0396b" : "#8e87d6")" @onmouseenter="() => hoverPlayer = p.Handle" @onmouseleave="() => hoverPlayer = null">
-                <AssetSlot Name="avatar-default" Width="50" Height="50" />
+                <AssetSlot Name="@p.Avatar" Width="50" Height="50" />
                 <a href="/profile/@p.Handle" @onclick="Modal.Close">@p.Handle</a>
                 <span class="score"><Icon Name="paw" /> @p.HunterScore</span>
             </div>

@@ -30,9 +30,9 @@ public class ServerLeaderboardsServiceTests
     [Fact]
     public async Task HunterscoreBoardIsTheServersPage()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 3, "total": 61, "rows": [{"rank": 31, "handle": "Owl", "hunterscore": 2000}, {"rank": 32, "handle": "Fox", "hunterscore": 1234}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 3, "total": 61, "rows": [{"rank": 31, "handle": "Owl", "hunterscore": 2000, "avatar": "https://web.test/media/avatar/256/1000005.png"}, {"rank": 32, "handle": "Fox", "hunterscore": 1234, "avatar": null}]}"""));
         var page = await Make(fake).RowsAsync("hunterscore", 0, 2);
-        Assert.Equal([new Ranked(31, "Owl", 2000), new Ranked(32, "Fox", 1234)], page.Rows);
+        Assert.Equal([new Ranked(31, "Owl", 2000, Avatar: "avatar-1000005"), new Ranked(32, "Fox", 1234)], page.Rows);
         Assert.Equal((2, 3, 61), (page.Number, page.Pages, page.Total));
         var request = Assert.Single(fake.Seen);
         Assert.Equal("/hunters?page=2", request.RequestUri!.PathAndQuery);

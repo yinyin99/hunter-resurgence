@@ -20,11 +20,11 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
     {
         if (kind == Hunterscore)
             return await GetAsync<ServerBoard>($"{ServerSessionApi.Hunters}?page={page}") is { Rows: not null } b
-                ? new Page<Ranked>([.. b.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Hunterscore))], b.Page, b.Pages, b.Total)
+                ? new Page<Ranked>([.. b.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Hunterscore, Avatar: Avatars.Slot(r.Avatar)))], b.Page, b.Pages, b.Total)
                 : new Page<Ranked>([], 1, 1);
         if (kind is "lanebandit" or "bustthrough")
             return await GetAsync<ServerGameBoard>($"{ServerSessionApi.Leaderboards}/{kind}?page={page}") is { Rows: not null } g
-                ? new Page<Ranked>([.. g.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Value))], g.Page, g.Pages, g.Total)
+                ? new Page<Ranked>([.. g.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Value, Avatar: Avatars.Slot(r.Avatar)))], g.Page, g.Pages, g.Total)
                 : new Page<Ranked>([], 1, 1);
         return new Page<Ranked>([], 1, 1);
     }
@@ -33,7 +33,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
     {
         if (kind != Hunterscore) return null;  // the server keeps no place on the other boards
         if (cookie.Value is null) return null;
-        return await GetAsync<ServerAccount>(ServerSessionApi.Me) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore) : null;
+        return await GetAsync<ServerAccount>(ServerSessionApi.Me) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar)) : null;
     }
 
     /// <summary>The JSON of a 200; null for any other answer or none (a 401, an expired cookie, is not worth a warning).</summary>

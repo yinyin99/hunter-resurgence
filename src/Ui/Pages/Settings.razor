@@ -5,6 +5,7 @@
 @inject ModalService Modal
 @inject ILanguageSwitcher Language
 @inject NavigationManager Nav
+@inject HostMode Mode
 
 <PageTitle>@L["Set.Title"]</PageTitle>
 
@@ -14,7 +15,7 @@
         <nav class="menu">
             <h3>@handle</h3>
             <ul>
-                @foreach (var (key, label) in tabs)
+                @foreach (var (key, label) in shown)
                 {
                     <li class="@(key == tab ? "on" : "")"><a href="/settings/@key">@L[label]</a></li>
                 }
@@ -29,7 +30,7 @@
                     case "avatar":
                         <p class="info">@L["Set.AvatarInfo"]</p>
                         <h5>@L["Set.AvatarCurrent"]</h5>
-                        <div class="cur"><AssetSlot Name="@(account?.Avatar ?? "avatar-default")" Width="150" Height="150" /></div>
+                        <div class="cur"><AssetSlot Name="@(account?.Avatar ?? Avatars.Default)" Width="150" Height="150" /></div>
                         <h5>@L["Set.AvatarSelect"]</h5>
                         <div class="avatars">
                             @foreach (var a in avatars.Where(a => !a.Locked))
@@ -134,7 +135,9 @@
     bool ok, codeSent;
 
     [Parameter] public string? Tab { get; set; }
-    string tab => tabs.Any(t => t.Key == Tab) ? Tab! : "avatar";
+    // the live site offers the avatar only: the other settings are the mock's (HostMode.Live)
+    IEnumerable<(string Key, string Label)> shown => Mode.Live ? tabs.Where(t => t.Key == "avatar") : tabs;
+    string tab => shown.Any(t => t.Key == Tab) ? Tab! : "avatar";
     string Title => tab switch { "avatar" => "Set.AvatarTitle", "email" => "Set.EmailTitle", "language" => "Set.TabLocale", "purchases" => "Set.PurchasesTitle", "bans" => "Set.BansTitle", "facebook" => "Set.TabFacebook", "steam" => "Set.SteamTitle", _ => "Set.TabProfile" };
     RenderFragment Link(string href, string text) => @<a href="@href">@text</a>;
     RenderFragment Strong(string text) => @<b>@text</b>;

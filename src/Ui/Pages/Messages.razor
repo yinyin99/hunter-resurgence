@@ -27,7 +27,7 @@
                 @foreach (var c in conversations)
                 {
                     <li class="@(c.Handle == current ? "on" : "")">
-                        <a class="hover-tint" href="/messages/@c.Handle"><AssetSlot Name="avatar-default" Width="40" Height="40" Class="av" /><span class="who">@c.Handle</span><span class="last">@c.Last</span>@if (c.Unread) { <i class="dot"></i> }</a>
+                        <a class="hover-tint" href="/messages/@c.Handle"><AssetSlot Name="@c.Avatar" Width="40" Height="40" Class="av" /><span class="who">@c.Handle</span><span class="last">@c.Last</span>@if (c.Unread) { <i class="dot"></i> }</a>
                     </li>
                 }
             </ul>
@@ -52,7 +52,7 @@
                     {
                         <div class="@(m.Mine ? "me" : "you")">
                             <a href="/profile/@(m.Mine ? me : current)" class="h">@(m.Mine ? me : current)</a>
-                            <div class="body"><AssetSlot Name="avatar-default" Width="60" Height="60" Class="av" /><div class="msg"><p>@m.Text</p><small>@L["Msg.Sent", Fmt.Ago(L, m.Ago)]</small></div></div>
+                            <div class="body"><AssetSlot Name="@(m.Mine ? meAvatar : partnerAvatar)" Width="60" Height="60" Class="av" /><div class="msg"><p>@m.Text</p><small>@L["Msg.Sent", Fmt.Ago(L, m.Ago)]</small></div></div>
                         </div>
                     }
                 </div>
@@ -66,16 +66,18 @@
     IReadOnlyList<Conversation> conversations = [];
     IReadOnlyList<Friend> friends = [];
     IReadOnlyList<Message> thread = [];
-    string text = "", recipient = "", me = "", current = "";
+    string text = "", recipient = "", me = "", meAvatar = Avatars.Default, current = "";
     bool onlyFriends, savingOnly, sending;
 
     [Parameter] public string? Handle { get; set; }
     bool composing => Nav.Uri.Contains("/new-message");
+    string partnerAvatar => conversations.FirstOrDefault(c => c.Handle == current)?.Avatar ?? Avatars.Default;
     bool canSend => text.Trim().Length is > 0 and <= 1024 && (!composing || recipient.Trim().Length > 0);
 
     protected override async Task OnInitializedAsync()
     {
-        (conversations, me) = (await Service.ConversationsAsync(), (await Sessions.CurrentAsync())?.Handle ?? "");
+        var session = await Sessions.CurrentAsync();
+        (conversations, me, meAvatar) = (await Service.ConversationsAsync(), session?.Handle ?? "", session?.Avatar ?? Avatars.Default);
         friends = await Friends.FriendsAsync();
         _ = Poll();
     }

@@ -68,7 +68,7 @@
 
     Profile? profile;
     bool signedIn;
-    string header = "recent", avatar = "avatar-default";
+    string header = "recent", avatar = Avatars.Default;
     string? banner;
 
     [Parameter] public string Handle { get; set; } = "";
@@ -90,7 +90,7 @@
         signedIn = await Session.CurrentAsync() is not null;
         // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here); a player of the server has their own avatar
         if (profile is { Own: true, Tabs: null }) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
-        else (header, avatar) = ("recent", profile.Avatar ?? "avatar-default");
+        else (header, avatar) = ("recent", profile.Avatar ?? Avatars.Default);
         banner = Mode.Live ? (profile.Background is { } background ? "profile-bg-" + background : null) : header == "none" ? null : header == "recent" ? "profile-banner" : header;
     }
 

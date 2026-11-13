@@ -77,7 +77,7 @@
             <h5 class="players-title">@L["Servers.PlayerList", s.Players, s.Max]</h5>
             @foreach (var p in s.Roster)
             {
-                <div class="player"><AssetSlot Name="avatar-default" Width="50" Height="50" /><a href="/profile/@p.Handle">@p.Handle</a><span class="score"><Icon Name="paw" /> @p.HunterScore</span></div>
+                <div class="player"><AssetSlot Name="@p.Avatar" Width="50" Height="50" /><a href="/profile/@p.Handle">@p.Handle</a><span class="score"><Icon Name="paw" /> @p.HunterScore</span></div>
             }
         </aside>
     }

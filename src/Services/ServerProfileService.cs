@@ -30,7 +30,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                 var (friend, pending) = !own && cookie.Value is not null && friends is not null
                     ? ((await friends.FriendsAsync()).Any(f => string.Equals(f.Handle, h.Handle, StringComparison.OrdinalIgnoreCase)), (await friends.PendingAsync()).Contains(h.Handle, StringComparer.OrdinalIgnoreCase))
                     : (false, false);
-                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: AvatarSlot(h.Avatar),
+                return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: Avatars.Slot(h.Avatar),
                     Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null);
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
@@ -41,10 +41,6 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return null;
     }
-
-    /// <summary>The slot of a game avatar picture (<c>…/&lt;id&gt;.png</c> → <c>avatar-&lt;id&gt;</c>, docs/images.md); <c>avatar-default</c> for any other URL.</summary>
-    public static string AvatarSlot(string? url) =>
-        Path.GetFileNameWithoutExtension(url) is { Length: > 0 } id && id.All(char.IsAsciiDigit) ? "avatar-" + id : "avatar-default";
 
     /// <summary><c>GET /hunters/&lt;handle&gt;/ranks</c>: for "overview" the hunterscore and the three categories as bars of what the rows add up to (each row counts to the cap), else
     /// the rows of the kind (animals, weapons or collectables) by name, each with its count (up to the cap) as level and as the way to the cap. A failed answer is no bars.</summary>
@@ -246,7 +242,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerFriendsPage>() is { } f)
-                return new([.. (f.Rows ?? []).Select(r => new ProfileFriend(r.Handle, r.Hunterscore))], f.Page, f.Pages, f.Total);
+                return new([.. (f.Rows ?? []).Select(r => new ProfileFriend(r.Handle, r.Hunterscore, Avatars.Slot(r.Avatar)))], f.Page, f.Pages, f.Total);
             log.LogWarning("The server answered {Path} with {Status}: no friends", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

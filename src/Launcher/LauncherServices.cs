@@ -85,6 +85,11 @@ static class LauncherServices
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
         services.AddSingleton<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>()));
+        // the avatar (settings, sign-up) is the server's; the rest of the account settings is the mock's, which the live pages do not offer
+        services.AddSingleton<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
+            new MockAccountService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerAccountService>>()));
+        services.AddSingleton<ISignupService>(sp => new ServerSignupService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
+            new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>()));
         services.AddSingleton<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<IInventoryService>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
         // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL

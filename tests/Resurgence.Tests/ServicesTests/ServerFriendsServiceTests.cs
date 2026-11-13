@@ -22,15 +22,15 @@ public class ServerFriendsServiceTests
 
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
-    const string Own = """{"friends":[{"handle":"Birch","online":true},{"handle":"Elm","online":false}],"requests":[{"handle":"Oak","online":false}],"pending":[{"handle":"Ash","online":false}]}""";
+    const string Own = """{"friends":[{"handle":"Birch","online":true,"avatar":"https://site.test/photos/7/avatar.jpg"},{"handle":"Elm","online":false,"avatar":"https://web.test/media/avatar/256/1000005.png"}],"requests":[{"handle":"Oak","online":false,"avatar":null}],"pending":[{"handle":"Ash","online":false}]}""";
 
     [Fact]
     public async Task TheListsAreTheAccountsOnTheServer()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Own));
         var service = Make(fake);
-        Assert.Equal([new Friend("Birch", true), new Friend("Elm", false)], await service.FriendsAsync());
-        Assert.Equal(["Oak"], await service.RequestsAsync());
+        Assert.Equal([new Friend("Birch", true, "https://site.test/photos/7/avatar.jpg"), new Friend("Elm", false, "avatar-1000005")], await service.FriendsAsync());  // a picture the player imported is a link, a game avatar a slot
+        Assert.Equal([new Friend("Oak", false)], await service.RequestsAsync());  // no avatar: the default one
         Assert.Equal(["Ash"], await service.PendingAsync());
         var (request, _) = fake.Seen[0];
         Assert.Equal("/account/friends", request.RequestUri!.AbsolutePath);

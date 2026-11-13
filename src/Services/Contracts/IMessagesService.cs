@@ -1,6 +1,7 @@
 namespace Resurgence.Services;
 
-public sealed record Conversation(string Handle, string Last, DateTime When, bool Unread);
+/// <param name="Avatar">The slot or link of the partner's picture (<see cref="Avatars.Slot"/>).</param>
+public sealed record Conversation(string Handle, string Last, DateTime When, bool Unread, string Avatar = Avatars.Default);
 
 /// <summary>One message of a thread, newest first; <see cref="Ago"/> is how long ago it was sent.</summary>
 public sealed record Message(bool Mine, string Text, TimeSpan Ago);

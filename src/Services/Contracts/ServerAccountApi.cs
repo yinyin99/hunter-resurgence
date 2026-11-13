@@ -34,6 +34,10 @@ public static class ServerAccountApi
     public const string Messages = "/account/messages";
     /// <summary>GET with the cookie and <c>?handle=</c>: 200 <see cref="ServerThread"/>, one of the conversations newest first, or 404 for a handle that is none of them.</summary>
     public const string MessagesThread = "/account/messages/thread";
+    /// <summary>GET with the cookie: 200 <see cref="ServerAvatars"/>.</summary>
+    public const string AvatarChoices = "/account/avatars";
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c> (an id of <see cref="ServerAvatars.Ids"/>, or <c>imported</c>): chooses the player's avatar, 200 <see cref="ServerAvatars"/>, or 404 for an id that is none of the choices.</summary>
+    public const string SetAvatar = "/account/avatar";
     /// <summary>GET with the cookie: <c>/ems</c> and <c>/gms</c> (query <c>offset</c>) 200 a page of <see cref="ServerWalletRow"/>, newest first, 50 at most; <c>/spent</c> 200 <see cref="ServerSpent"/>.</summary>
     public const string Wallet = "/account/wallet";
     /// <summary>GET with the cookie: 200 the player's saved loadouts, <see cref="ServerLoadout"/>, ascending by id.</summary>
@@ -52,7 +56,7 @@ public static class ServerAccountApi
 }
 
 /// <summary>A conversation of <see cref="ServerAccountApi.Messages"/>: <c>Ts</c> is unix seconds.</summary>
-public sealed record ServerConversation(string Handle, string Preview, long Ts, bool Unread);
+public sealed record ServerConversation(string Handle, string Preview, long Ts, bool Unread, string? Avatar = null);
 
 public sealed record ServerConversations(ServerConversation[] Conversations);
 
@@ -111,3 +115,6 @@ public sealed record ServerMissions(ServerMission[] Missions, ServerMissionGroup
     [property: System.Text.Json.Serialization.JsonPropertyName("auto_mission_activate")] bool Auto,
     [property: System.Text.Json.Serialization.JsonPropertyName("activate_only_favourite")] bool OnlyFavourite,
     [property: System.Text.Json.Serialization.JsonPropertyName("hide_completed_favourite")] bool HideCompletedFavourite);
+
+/// <summary><see cref="ServerAccountApi.AvatarChoices"/>: <c>Current</c> the player's avatar URL (null for none), <c>Ids</c> the game's avatars, <c>Imported</c> the link of the picture imported from the player's backup (null without one).</summary>
+public sealed record ServerAvatars(string? Current, long[]? Ids, string? Imported);

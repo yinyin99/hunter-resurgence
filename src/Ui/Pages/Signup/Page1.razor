@@ -90,7 +90,7 @@
         if (!ok) return;
         // the name can be taken between the check and this call: the page then says so and stays
         if (!(await Sessions.SetHandleAsync(name)).Ok) { available = false; return; }
-        await Account.SetAvatarAsync(avatars[sel]);
+        if (avatars.Count > 0) await Account.SetAvatarAsync(avatars[sel]);
         Nav.NavigateTo("/signup/page2");
     }
 

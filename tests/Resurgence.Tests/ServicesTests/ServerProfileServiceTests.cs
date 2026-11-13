@@ -63,12 +63,6 @@ public class ServerProfileServiceTests
     public async Task AnUnknownHandleIsNoProfile(string handle) =>
         Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"error": "not found"}"""))).ProfileAsync(handle));
 
-    [Theory]
-    [InlineData("https://web.test/media/avatar/256/1000005.png", "avatar-1000005")]
-    [InlineData("https://avatars.test/uploads/a.jpg", "avatar-default")]
-    [InlineData(null, "avatar-default")]
-    public void TheAvatarSlotIsNamedByThePicturesId(string? url, string slot) => Assert.Equal(slot, ServerProfileService.AvatarSlot(url));
-
     // PL20: a visitor-typed handle goes into the request path
     [Fact]
     public async Task TheHandleIsEscapedIntoOnePathSegment()
@@ -348,12 +342,12 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task FriendsAreTheServersPageOfTheHandle()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":45,"rows":[{"handle":"Birch","hunterscore":120}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":45,"rows":[{"handle":"Birch","hunterscore":120,"avatar":"https://web.test/media/avatar/256/1000005.png"}]}"""));
         var page = await Make(fake).FriendsAsync("fox", 2);
         Assert.Equal("/hunters/fox/friends", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
         Assert.Equal("page=2", fake.Seen[0].RequestUri!.Query.TrimStart('?'));
         Assert.Equal((2, 3), (page.Number, page.Pages));
-        Assert.Equal(new ProfileFriend("Birch", 120), Assert.Single(page.Rows));
+        Assert.Equal(new ProfileFriend("Birch", 120, "avatar-1000005"), Assert.Single(page.Rows));
     }
 
     [Theory]
@@ -412,7 +406,7 @@ public class ServerProfileServiceTests
     {
         public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult<IReadOnlyList<Friend>>([.. friends.Select(h => new Friend(h, false))]);
         public Task<IReadOnlyList<Friend>> SearchAsync(string text) => throw new NotSupportedException();
-        public Task<IReadOnlyList<string>> RequestsAsync() => throw new NotSupportedException();
+        public Task<IReadOnlyList<Friend>> RequestsAsync() => throw new NotSupportedException();
         public Task<IReadOnlyList<string>> PendingAsync() => Task.FromResult<IReadOnlyList<string>>(pending);
         public Task<Result> SendRequestAsync(string handle) => throw new NotSupportedException();
         public Task<Result> AcceptAsync(string handle) => throw new NotSupportedException();

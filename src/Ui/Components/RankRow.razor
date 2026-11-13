@@ -1,6 +1,6 @@
 <tr class="@(Small ? "small" : "")">
     @if (!Small) { <td class="rank">@R.Rank</td> }
-    <td class="avatar"><AssetSlot Name="avatar-default" Width="@(Small ? 52 : 60)" Height="@(Small ? 52 : 60)" /></td>
+    <td class="avatar"><AssetSlot Name="@R.Avatar" Width="@(Small ? 52 : 60)" Height="@(Small ? 52 : 60)" /></td>
     <td class="handle"><a href="/profile/@R.Handle">@R.Handle</a></td>
     <td class="value @(Kind == "hunterscore" ? "mid" : "")">
         @if (R.Sheet > 0) { <a href="/profile/@R.Handle/score/@R.Sheet">@Fmt.Board(Kind, R.Value)</a> }

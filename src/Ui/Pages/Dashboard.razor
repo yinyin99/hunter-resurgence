@@ -6,6 +6,7 @@
 @inject IFriendsService Friends
 @inject IProfileService Profiles
 @inject IServersService Servers
+@inject ISessionService Sessions
 
 <PageTitle>@L["Hunt.Go"]</PageTitle>
 
@@ -34,7 +35,7 @@
                 else
                 {
                     <p>@L["Hunt.FriendsOnline"]</p>
-                    <p class="names">@foreach (var f in online) { <a href="/profile/@f.Handle" class="friend" data-tip="@f.Handle"><AssetSlot Name="avatar-default" Width="34" Height="34" /></a> }</p>
+                    <p class="names">@foreach (var f in online) { <a href="/profile/@f.Handle" class="friend" data-tip="@f.Handle"><AssetSlot Name="@f.Avatar" Width="34" Height="34" /></a> }</p>
                 }
             </div>
             <div class="action group">
@@ -50,7 +51,7 @@
             else
             {
                 <div class="who">
-                    <AssetSlot Name="avatar-default" Width="80" Height="80" />
+                    <AssetSlot Name="@avatar" Width="80" Height="80" />
                     <div>
                         <p class="score">@L["Hunt.HunterScore"]</p>
                         <div class="bar" role="progressbar" aria-valuenow="@progress.Score" aria-valuemax="@progress.Max"><i style="width:@(Percent)%"></i></div>
@@ -108,6 +109,7 @@
     IReadOnlyList<Mission>? missions;
     IReadOnlyList<Friend>? online;
     Progress? progress;
+    string avatar = Avatars.Default;
     IReadOnlyList<GameServer>? games;
     Dictionary<int, string> reserves = [];
 
@@ -126,6 +128,7 @@
         await Task.WhenAll(Fill(async () => missions = await Missions.ActiveAsync()),
             Fill(async () => online = (await Friends.FriendsAsync()).Where(f => f.Online).Take(20).ToList()),
             Fill(async () => progress = await Profiles.ProgressAsync()),
+            Fill(async () => avatar = (await Sessions.CurrentAsync())?.Avatar ?? Avatars.Default),
             Fill(async () =>
             {
                 reserves = (await Servers.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);

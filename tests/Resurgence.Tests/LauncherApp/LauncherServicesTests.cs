@@ -43,6 +43,9 @@ public class LauncherServicesTests
         Assert.IsType<Resurgence.Services.ServerRestoreService>(live.GetRequiredService<Resurgence.Services.IRestoreService>());
         Assert.IsType<Resurgence.Services.ServerSeasonalEventsService>(live.GetRequiredService<Resurgence.Services.ISeasonalEventsService>());
         Assert.IsType<Resurgence.Services.Mocks.MockSeasonalEventsService>(mock.GetRequiredService<Resurgence.Services.ISeasonalEventsService>());
+        Assert.IsType<Resurgence.Services.ServerAccountService>(live.GetRequiredService<Resurgence.Services.IAccountService>());
+        Assert.IsType<Resurgence.Services.ServerSignupService>(live.GetRequiredService<Resurgence.Services.ISignupService>());
+        Assert.IsType<Resurgence.Services.Mocks.MockAccountService>(mock.GetRequiredService<Resurgence.Services.IAccountService>());
         Assert.True(live.GetRequiredService<Resurgence.Ui.HostMode>().Live);
         Assert.Equal(Resurgence.Services.PatchState.Ready, live.GetRequiredService<Resurgence.Services.IPatchService>().StatusAsync().Result.State);
         Assert.Same(live.GetRequiredService<Resurgence.Services.ServerCookie>(), live.GetRequiredService<Resurgence.Services.ServerCookie>());
@@ -52,7 +55,7 @@ public class LauncherServicesTests
     [Theory]
     [InlineData("/competitions", true)]
     [InlineData("/bank", true)]
-    [InlineData("/settings", true)]
+    [InlineData("/settings", false)]  // the live settings page is the server's avatar
     [InlineData("/game-management", true)]
     [InlineData("/feed", false)]
     public void LiveLauncherHidesTheMockOnlyPages(string path, bool hidden) => Assert.Equal(hidden, Resurgence.Ui.LauncherGuard.MockOnly(path));

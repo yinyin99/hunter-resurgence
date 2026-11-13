@@ -17,7 +17,7 @@
             <span class="hunter c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"></span>
             @if (p.Handle == HoverPlayer)
             {
-                <span class="hunter-label c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"><AssetSlot Name="avatar-default" Width="24" Height="24" /> @p.Handle</span>
+                <span class="hunter-label c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"><AssetSlot Name="@p.Avatar" Width="24" Height="24" /> @p.Handle</span>
             }
         }
         @if (Markers.FirstOrDefault(m => m.Id == Hover) is { } at)
