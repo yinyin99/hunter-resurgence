@@ -30,6 +30,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 
 - Ubuntu 24.04, Docker Engine and the Compose plugin from [Docker's apt repository](https://docs.docker.com/engine/install/ubuntu/).
 - A non-root user for deploys (`deploy` below) in the `docker` group, with the public half of the deploy key in `~/.ssh/authorized_keys`. Never root.
+- That user in `systemd-journal`, once, as root, so it can read the [Logs](#logs) without sudo: `sudo usermod -aG systemd-journal deploy` (applies from its next login).
 - The shared network, once: `docker network create edge`.
 - The journal's retention, once, as root ([Logs](#logs)):
 
