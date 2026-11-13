@@ -282,7 +282,8 @@ public class RestoreTests : StateTestBase
         var skills = reply["skills"]!;
         Eq("""{"200": 10, "300": 4}""", skills["weapon"]);
         Eq("[59, 59, 1, 2]", T(skills["tracking"]!.AsArray().Count, skills["spotting"]!.AsArray().Count, skills["tracking"]![0], skills["spotting"]![0]));
-        Eq("""["9001", "9101"]""", new JsonArray(reply["inventory"]!["items"]!.AsArray().Select(i => At(i, "guid")).ToArray()));
+        // the restored rows first, then the starting items the zip lacks (a restore leaves at least a new account's kit)
+        Eq("""["9001", "9101"]""", new JsonArray(reply["inventory"]!["items"]!.AsArray().Take(2).Select(i => At(i, "guid")).ToArray()));
         Eq("""{"x": 3144645, "y": -999, "z": 10001}""", reply["inventory"]!["items"]![1]!["position"]);
         // hunterscore: the computed value, the zip's statistics hold no ethical kills
         Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://avatar.test/256/1000000.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
