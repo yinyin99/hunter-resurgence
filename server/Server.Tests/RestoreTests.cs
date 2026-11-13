@@ -95,6 +95,17 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void AnUploadedPictureSavedUnderItsOtherAddressIsTheImportedAvatar()
+    {
+        state = StateWithAvatars("uploaded.db", "https://other.test/b.png");
+        var zip = TestZip.Own(avatar: "https://site.example/media/avatar/uploads/thumb/242x242/12345.jpg?v=3")  // the profile's address; the backup saved the lists' one
+            .Media($"images/{Importer.CleanName("avatars.example/uploads/thumb/242x242/12345.jpg")}", Uploaded);
+        Restorer.Import(state, Zip(zip), null, tmp);
+        Assert.Equal($"{BASE}/photos/1001/avatar.jpg", (string)Connect(1001)["account"]!["avatar_url"]!);
+        Assert.Equal(Uploaded, File.ReadAllBytes(state.PhotoFile("/photos/1001/avatar.jpg")!));
+    }
+
+    [Fact]
     public void AnAvatarOfTheListStaysTheZipsAddressEvenWithItsPicture()
     {
         state = StateWithAvatars("listed.db", "https://other.test/a.png");  // the zip's picture /a.png is the avatar 1000042
@@ -120,7 +131,7 @@ public class RestoreTests : StateTestBase
     public void AnUploadedPictureOfAnEarlierRestoreBecomesTheImportedAvatarAtStart()
     {
         state = StateWithAvatars("migrate.db", "https://other.test/b.png");
-        const string Upload = "https://avatars.example/uploads/thumb/242x242/12345.jpg?v=3";
+        const string Upload = "https://site.example/media/avatar/uploads/thumb/242x242/12345.jpg?v=3";  // the profile's address; the copy is named after the lists' one
         foreach (var id in new[] { 15, 16, 17 })
             state.CreateAccount(id, $"old{id}");
         var copy = $"images_{Importer.CleanName("avatars.example/uploads/thumb/242x242/12345.jpg")}";
