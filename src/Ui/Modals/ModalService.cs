@@ -13,7 +13,7 @@ public sealed class ModalService
 
     // a click on the backdrop closes these (as in the old app); the language, alert and legal dialogs do not (D-SHELL-5), nor the game settings.
     // The join map has a full-window layer of its own inside the dialog.
-    static readonly Type[] CloseOnBackdrop = [typeof(BankModal), typeof(BuyModal), typeof(VideoModal)];
+    static readonly Type[] CloseOnBackdrop = [typeof(BankModal), typeof(BuyModal), typeof(VideoModal), typeof(GameStartedModal)];
 
     public bool ClosesOnBackdrop => Type is not null && CloseOnBackdrop.Contains(Type);
 
@@ -84,8 +84,9 @@ public sealed class ModalService
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
-    /// <summary>The old app opens "Done hunting for now?" five seconds after a game was started or joined, whatever else is open then.</summary>
-    public void GameStarted() => _ = Task.Delay(5000).ContinueWith(_ => Show<GameStartedModal>(), TaskScheduler.Default);
+    /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then.
+    /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>
+    public void GameStarted(ILauncherBridge bridge) => _ = bridge.WhenGameExitsAsync().ContinueWith(_ => Show<GameStartedModal>(), TaskScheduler.Default);
 
     /// <summary>Yes/No dialog; true for Yes.</summary>
     public Task<bool> Confirm(string text)

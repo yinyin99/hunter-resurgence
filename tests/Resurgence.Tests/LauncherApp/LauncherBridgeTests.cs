@@ -18,6 +18,16 @@ public class LauncherBridgeTests
     }
 
     [Fact]
+    public async Task TheDoneWindowWaitsForTheGameToAppearAndThenToClose()
+    {
+        // the game shows up two checks after the start (Steam starts it) and runs for three: the wait ends only after it is gone
+        var checks = new Queue<bool>([false, false, true, true, true, false]);
+        var b = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => checks.Count > 0 && checks.Dequeue(), _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1));
+        await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Empty(checks);
+    }
+
+    [Fact]
     public void StartsTheExeInItsFolderUnlessItAlreadyRuns()
     {
         var dir = Directory.CreateTempSubdirectory().FullName;

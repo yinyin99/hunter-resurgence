@@ -1,8 +1,9 @@
 @inject ModalService Modal
 @inject ISessionService Sessions
 
-@* the old "Done hunting for now?" window, opened five seconds after a game was started (ModalService.GameStarted) *@
-<div class="done" role="dialog" aria-modal="true">
+@* the old "Done hunting for now?" window, opened once the started game has closed (ModalService.GameStarted); Escape, the × and a click beside it close it *@
+<div class="done" role="dialog" aria-modal="true" tabindex="-1" @onkeydown="Key" @ref="box">
+    <button type="button" class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
     <h2>@L["Done.Title"]</h2>
     <a class="btn btn-primary btn-large" href="/profile/@handle/statistics" @onclick="Modal.Close">@L["Done.Stats"]</a>
     <p>@L.Frag("Done.Next", Link("/dashboard", L["Done.HuntNow"].Value))</p>
@@ -18,6 +19,12 @@
 
 @code {
     string handle = "";
+    ElementReference box;
+
+    void Key(KeyboardEventArgs e) { if (e.Key == "Escape") Modal.Close(); }
+
+    // the window takes the focus, so Escape reaches it
+    protected override async Task OnAfterRenderAsync(bool firstRender) { if (firstRender) await box.FocusAsync(); }
 
     // the links inside the text close the window, as the old ones did
     RenderFragment Link(string href, string text) => @<a href="@href" @onclick="Modal.Close">@text</a>;

@@ -7,6 +7,7 @@
 @inject ISeasonalEventsService Events
 @inject AssetImages Images
 @inject ModalService Modal
+@inject ILauncherBridge Bridge
 
 <PageTitle>@L[single ? "Launch.TitleSingle" : "Launch.TitleMulti"]</PageTitle>
 
@@ -174,6 +175,6 @@ else
             ? await Service.StartSingleAsync(reserve, marker, hour * 60, loadout)
             : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
                 limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60, loadout);
-        if (result.Ok) Modal.GameStarted(); else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
+        if (result.Ok) Modal.GameStarted(Bridge); else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
     }
 }
