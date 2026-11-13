@@ -165,6 +165,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     static readonly (string, string)[] Json = [("Content-Type", "application/json")];
+    const string Default = "https://avatar.test/256/1000000.png";  // a new account's picture: the first of the list below, on the avatar base of the fixture's account
+    static JsonArray AvatarList() => (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png"}, {"id": 1000001, "url": "https://avatar.test/256/1000001.png"}]""")!;
     readonly FakeSteam fake = new();
     Loopback server = null!;
 
@@ -175,7 +177,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     async Task StartAsync(bool offline, params (string Method, string Host, string Path, string Body)[] recorded)
     {
         if (server is not null) await server.DisposeAsync();
-        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS, offline: offline);
+        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS, offline: offline, avatars: AvatarList());
         var table = new HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Hit(2, "", 200, [], "{}"u8.ToArray());
         foreach (var (method, host, path, body) in recorded)
@@ -286,7 +288,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         }
         var board = JsonNode.Parse((await Get("web.test", "/hunters")).Body)!;
         // equal hunterscores: the lower account id first
-        Eq("""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70}, {"rank": 2, "handle": "one", "hunterscore": 50}, {"rank": 3, "handle": "two", "hunterscore": 50}]}""", board);
+        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{Default}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{Default}}"}]}""", board);
         Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
         var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
         Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
@@ -512,6 +514,89 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(401, (await Get("web.test", "/account/messages/thread?handle=Fern")).Status);
     }
 
+    const string Picked = "https://avatar.test/256/1000001.png";
+
+    Task<Reply> ChooseAvatar(string form, params (string, string)[] headers) =>
+        server.SendAsync("POST", "web.test", "/account/avatar", [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes(form));
+
+    [Fact]
+    public async Task TestThePlayerChoosesAnAvatarOfTheGamesList()
+    {
+        var cookie = await SignIn("99999999999999991", "one");
+        var ck = Ck("hr_session", cookie);
+        var me = state.Store.Listed("one", null)!.Value;
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar', 1000000, '$.avatar_id', 1000000) WHERE id = ?", me);  // an account that has these copies of its avatar
+        var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
+        Eq($$"""{"current": "{{Default}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Assert.Equal(401, (await Get("web.test", "/account/avatars")).Status);
+        Assert.Equal(400, (await ChooseAvatar("id=1000001", ck)).Status);  // not from a page of this server
+        Assert.Equal(401, (await ChooseAvatar("id=1000001", ("X-Requested-With", "XMLHttpRequest"))).Status);
+        foreach (var refused in new[] { "id=5", "id=imported", "id=", "id=-1000001", "" })  // none of the list; no imported picture
+            Assert.Equal(404, (await ChooseAvatar(refused, xhr)).Status);
+        Assert.Equal(Default, state.Store.AvatarUrl(me));  // nothing changed
+
+        var picked = await ChooseAvatar("id=1000001", xhr);
+        Assert.Equal(200, picked.Status);
+        Eq($$"""{"current": "{{Picked}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse(picked.Body));
+        // what the game reads at its next connect, and what the pages show right away
+        var account = state.Store.AccountJson(me);
+        Eq($$"""["{{Picked}}", 1000001, 1000001, 1000001]""", T(account["avatar_url"], account["face"], account["avatar"], account["avatar_id"]));
+        Assert.Equal(Picked, (string)JsonNode.Parse((await Get("web.test", "/hunters/one")).Body)!["avatar"]!);
+        Assert.Equal(Picked, (string)(await Me(cookie))!["avatar"]!);
+    }
+
+    [Fact]
+    public async Task TestTheImportedPictureIsAnAvatarTheGameAndTheWebsiteShow()
+    {
+        var cookie = await SignIn("99999999999999991", "one");
+        var ck = Ck("hr_session", cookie);
+        var me = state.Store.Listed("one", null)!.Value;
+        var picture = "the picture the player uploaded"u8.ToArray();
+        Restorer.Import(state, TestZip.Own(handle: "one").Media("images/avatars.example_a.png", picture).Write(tmp), me, tmp);
+        var link = $"https://web.test/photos/{me}/avatar.jpg";
+        var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
+        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        var photo = await Get("web.test", $"/photos/{me}/avatar.jpg");  // the stable link, on the website's host
+        Assert.Equal(200, photo.Status);
+        Assert.Equal(picture, photo.Body);
+        Assert.Equal(link, (string)JsonNode.Parse((await Get("web.test", "/hunters/one")).Body)!["avatar"]!);
+        Assert.Equal(link, (string)(await Me(cookie))!["avatar"]!);
+        Assert.Equal($"{BASE}/photos/{me}/avatar.jpg", (string)state.Store.AccountJson(me)["avatar_url"]!);  // the game's link, on its host
+
+        // a game avatar replaces it; the imported picture stays a choice
+        Assert.Equal(200, (await ChooseAvatar("id=1000001", xhr)).Status);
+        Eq($$"""{"current": "{{Picked}}", "ids": [1000000, 1000001], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Assert.Equal(200, (await ChooseAvatar("id=imported", xhr)).Status);
+        var account = state.Store.AccountJson(me);
+        Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000000]""", T(account["avatar_url"], account["face"]));
+        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+    }
+
+    [Fact]
+    public async Task TestEveryListThatNamesPlayersCarriesTheirAvatars()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        var me = state.Store.Listed("one", null)!.Value;
+        state.CreateAccount(9, "Third");
+        state.CreateAccount(10, "Fourth");
+        state.Store.SetAvatar(9, Picked, 1000001);
+        state.Store.SetAvatar(10, "https://avatar.test/256/1.png", null);  // an address that is none of the list
+        foreach (var friend in new long[] { 9, 10 }) { state.Store.AddFriend(friend, me); state.Store.AddFriend(me, friend); }
+        const string List = """[{"handle": "Third", "user_id": 9, "read": 0, "ts": 1700000200, "preview": "see you"}, {"handle": "Gone", "user_id": 501, "read": 1, "ts": 1700000100, "preview": "hello"}]""";
+        using (var con = state.Store.Open(me))
+            PlayerRows.SetExtra(con, "Chat_conversations.json", JsonNode.Parse(List));
+        string?[] Avatars(JsonNode? list) => [.. list!.AsArray().Select(r => (string?)r!["avatar"])];
+        async Task<JsonNode?> Read(string path, params (string, string)[] headers) => JsonNode.Parse((await Get("web.test", path, headers)).Body);
+
+        Assert.Equal([null, Picked], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
+        Assert.Equal([Picked], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
+        Assert.Equal([null, Picked], Avatars((await Read("/hunters/one/friends"))!["rows"]));
+        Assert.Equal([Picked, null, Default], Avatars((await Read("/hunters"))!["rows"]));  // by account id: Third, Fourth, one
+        Assert.Equal([Picked, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
+        Assert.Null((await Read("/hunters/fourth"))!["avatar"]);
+    }
+
     [Fact]
     public async Task TestTheWebsitesFriendsAreReadAndChangedByTheSignedInPlayer()
     {
@@ -632,9 +717,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             RestoredReads.Connect(con, reply, new JsonObject(), null);
         Eq("[70, 0]", T(reply["user_stats"]!["bust_through_score"], reply["user_stats"]!["lane_bandit_score"]));
         // equal scores: the lower account id first (fourth restored 300, fifth played 300); a 0, no score and a banned account are not on it
-        Eq("""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500}, {"rank": 2, "handle": "fourth", "value": 300}, {"rank": 3, "handle": "fifth", "value": 300}]}""",
+        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{Default}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{Default}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
-        Eq("""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70}, {"rank": 2, "handle": "fourth", "value": 40}]}""",
+        Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{Default}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
         Assert.Equal(404, (await Get("web.test", "/leaderboards/score")).Status);
     }
@@ -792,11 +877,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var http = new HttpClient(new Via(server.Http)) { BaseAddress = new Uri("http://web.test/") };
         var browser = new Resurgence.Services.ServerCookie { Value = cookie, Host = "web.test" };
         var sessions = new Resurgence.Services.ServerSessionService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerSessionService>.Instance);
-        Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served), await sessions.CurrentAsync());
+        Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served, Avatar: "avatar-1000000"), await sessions.CurrentAsync());
 
         var boards = new Resurgence.Services.ServerLeaderboardsService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerLeaderboardsService>.Instance);
         var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1)).Rows);
-        Assert.Equal(new Resurgence.Services.Ranked(1, "Hunter_One", served), row);
+        Assert.Equal(new Resurgence.Services.Ranked(1, "Hunter_One", served, Avatar: "avatar-1000000"), row);
 
         var profiles = new Resurgence.Services.ServerProfileService(http, browser, sessions, new Resurgence.Services.Mocks.MockProfileService(),
             Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerProfileService>.Instance);

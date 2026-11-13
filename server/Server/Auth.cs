@@ -490,7 +490,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         {
             ["userId"] = account, ["handle"] = Store.HandleOf(account),
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
-            ["rank"] = Store.Rank(account, state.LocalAccount),
+            ["rank"] = Store.Rank(account, state.LocalAccount), ["avatar"] = state.AvatarUrl(account, siteHost is not null ? "https://" + siteHost : Origin(r)),
             ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
         });
     }

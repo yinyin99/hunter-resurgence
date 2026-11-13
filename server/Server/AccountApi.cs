@@ -48,6 +48,7 @@ public static class AccountApi
     {
         if (app.Services.GetService<Uploads>() is not { } uploads || app.Services.GetService<Claims>() is not { } claims) return;
         var state = game.State!;
+        var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
         long? Account(HttpContext ctx) => SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } c ? state.Store.ResolveWebSession(c) : null;
@@ -296,25 +297,47 @@ public static class AccountApi
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
-                ? Json(200, state.WebFriends(account))
+                ? Json(200, state.WebFriends(account, site))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountFriends").WithSummary("The player's friends, the players who asked to be friends and those the player asked")
-            .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online}` by handle (upper case, ordinal).")
+            .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online, avatar}` by handle (upper case, ordinal); `avatar` as in `GET /hunters/<handle>` (docs/server.md#avatars).")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/friends/search", (HttpContext ctx) => Account(ctx) is { } account
-                ? Json(200, state.WebFriendSearch(account, ctx.Request.Query["text"].ToString()))
+                ? Json(200, state.WebFriendSearch(account, ctx.Request.Query["text"].ToString(), site))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountFriendSearch").WithSummary("Players whose handle contains the text (query `text`)")
-            .WithDescription($"`{{hunters: [{{handle, online}}]}}`, by handle, at most {State.FriendSearchLimit}; never the player itself.")
+            .WithDescription($"`{{hunters: [{{handle, online, avatar}}]}}`, by handle, at most {State.FriendSearchLimit}; never the player itself.")
             .QueryParams(("text", "A part of the handle, any case"))
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/messages", (HttpContext ctx) => Account(ctx) is { } account
-                ? Json(200, state.WebConversations(account))
+                ? Json(200, state.WebConversations(account, site))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountMessages").WithSummary("The player's own conversations: the server's notices and the restored ones")
-            .WithDescription("`{conversations: [{handle, preview, ts, unread}]}`, read only; `ts` is unix seconds.")
+            .WithDescription("`{conversations: [{handle, preview, ts, unread, avatar}]}`, read only; `ts` is unix seconds; `avatar` is the partner's as in `GET /hunters/<handle>`, null for the server's notices.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/avatars", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.AvatarChoices(account, site))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountAvatars").WithSummary("The player's avatar and the ones to choose from")
+            .WithDescription("`{current, ids, imported}`: `current` the player's avatar as in `GET /hunters/<handle>` (null for none), `ids` the game's avatars in the order of its list (docs/server.md#avatars), "
+                             + "`imported` the link of the picture imported from the player's backup, null without one.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/avatar", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                var id = form.TryGetValue("id", out var v) ? v[0] : "";
+                return (id == "imported" ? state.SetAvatar(account, null) : long.TryParse(id, NumberStyles.None, CultureInfo.InvariantCulture, out var listed) && state.SetAvatar(account, listed))
+                    ? Json(200, state.AvatarChoices(account, site))
+                    : Refuse(404, "invalid", "This is none of the avatars you can choose.");
+            })
+            .WithName("AccountAvatar").WithSummary("Choose the player's avatar (form `id`: a game avatar's id, or `imported`)")
+            .WithDescription("The game sees it at its next start (`avatar_url`, `face`, `avatar`, `avatar_id`). 200 like `GET /account/avatars`; 404 `invalid` for an id that is not in the game's list, or `imported` without an imported picture.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/messages/thread", (HttpContext ctx) => Account(ctx) is not { } account
