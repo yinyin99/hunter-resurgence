@@ -7,7 +7,7 @@ public interface IItemCatalogue
 {
     bool HasUnits(int itemId);
 
-    /// <summary>The id of the avatar of the list whose picture address is <paramref name="address"/> (the same path, any host); null for no match or no list.</summary>
+    /// <summary>The id of the avatar of the list whose picture address is <paramref name="address"/> (its path ends with the list's path, any host); null for no match or no list.</summary>
     int? AvatarId(string? address) => null;
 
     /// <summary>True when the catalogue holds an avatar list (without one, no address is reported as unmatched).</summary>

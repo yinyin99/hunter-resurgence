@@ -716,13 +716,16 @@ public sealed partial class State
 
         public bool HasUnits(int itemId) => items.TryGetValue(itemId, out var item) && item["units"] is JsonObject;
 
+        /// <summary>The id of the listed avatar whose picture <paramref name="address"/> names: its path ends with the list's path (an account names it on the web host,
+        /// under a longer path, `…/media/avatar/256/&lt;id&gt;.png`, where the list has `…/256/&lt;id&gt;.png`); null for none.</summary>
         public int? AvatarId(string? address)
         {
             static string? PathOf(string? url) =>
                 Uri.TryCreate(url?.StartsWith("//") == true ? "https:" + url : url, UriKind.Absolute, out var u) && u.Scheme is "http" or "https" ? u.AbsolutePath : null;
             var path = PathOf(address);
             return path is null ? null
-                : avatars.OfType<JsonObject>().FirstOrDefault(a => a["url"] is JsonValue v && v.TryGetValue<string>(out var s) && PathOf(s) == path) is { } hit
+                : avatars.OfType<JsonObject>().FirstOrDefault(a => a["url"] is JsonValue v && v.TryGetValue<string>(out var s) && PathOf(s) is { } listed
+                    && path.EndsWith(listed, StringComparison.Ordinal)) is { } hit
                   && hit["id"] is JsonValue id && id.TryGetValue<int>(out var n) ? n : null;
         }
     }

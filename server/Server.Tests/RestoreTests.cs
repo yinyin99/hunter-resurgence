@@ -128,6 +128,17 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void AnAvatarOfTheListNamedOnTheWebHostIsShownToThePages()
+    {
+        state = StateWithAvatars("webhost.db");
+        state.CreateAccount(5, "old");
+        state.Store.SetAvatar(5, "https://site.test/media/avatar/256/1000000.png", null);  // the list names it https://avatar.test/256/1000000.png
+        Assert.Equal("https://site.test/media/avatar/256/1000000.png", state.AvatarUrl(5, "https://web.test"));
+        state.Store.SetAvatar(5, "https://site.test/media/avatar/256/11000000.png", null);  // no avatar of the list
+        Assert.Null(state.AvatarUrl(5, "https://web.test"));
+    }
+
+    [Fact]
     public void AnUploadedPictureOfAnEarlierRestoreBecomesTheImportedAvatarAtStart()
     {
         state = StateWithAvatars("migrate.db", "https://other.test/b.png");
