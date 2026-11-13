@@ -128,6 +128,22 @@ jobs:
           check web https://site.test/profile/someone
           check web https://site.test/
           echo routes ok
+          # a deploy recreates a container: a request sent while it is gone waits for the new one instead of a 502 (docs/deploy.md, "Deploys")
+          docker rm -f proxy-ci-server proxy-ci-web > /dev/null
+          docker run -d --name proxy-ci-probe-post --network proxy-ci curlimages/curl:8.11.1 -sk -o /dev/null -w '%{http_code} %{time_total}' \
+            -X POST -H 'X-Game-Host: game.test' https://site.test/json/heartbeat > /dev/null
+          docker run -d --name proxy-ci-probe-get --network proxy-ci curlimages/curl:8.11.1 -sk -o /dev/null -w '%{http_code} %{time_total}' https://site.test/ > /dev/null
+          sleep 5
+          for name in server web; do
+            docker run -d --name "proxy-ci-$name" --network proxy-ci --network-alias "$name" caddy:2.11 caddy respond --listen :8080 --body "$name" > /dev/null
+          done
+          for probe in post get; do
+            docker wait "proxy-ci-probe-$probe" > /dev/null
+            got=$(docker logs "proxy-ci-probe-$probe")
+            echo "$probe during the restart: $got"
+            [ "${got%% *}" = 200 ] || { echo "$probe got ${got%% *}, want 200"; exit 1; }
+          done
+          echo restart ok
   # the website's container image (deploy/): builds, starts, serves the banner, the import map of shell.js and the search engine tags, lists Linux time zones, serves robots.txt, sends the security headers, and shows the operator's pictures from IMAGES_DIR
   docker:
     runs-on: ubuntu-latest

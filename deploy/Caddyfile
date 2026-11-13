@@ -1,15 +1,19 @@
 # The website and the community server on one domain (SITE_DOMAIN in .env), behind Cloudflare with an origin certificate.
 # The server's address is server:8080, on the internal network only; it believes X-Game-Host only from this Caddy's fixed address (docs/deploy.md).
 
-# the client of Cloudflare: trustworthy because the firewall lets only Cloudflare reach 80 and 443
-(client_ip) {
+# every proxied request: the client of Cloudflare (trustworthy because the firewall lets only Cloudflare reach 80 and 443), and a wait while a deploy
+# recreates the container (about 12 s): Caddy dials again until the new one answers, instead of a 502. Only a failed dial is retried for a
+# POST, so a heartbeat or a purchase that reached the old container is never sent twice
+(upstream) {
 	header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+	lb_try_duration 30s
+	lb_try_interval 500ms
 }
 
 # the server on the website's domain: the browser's Host decides here, never a header a visitor set
 (to_server) {
 	reverse_proxy server:8080 {
-		import client_ip
+		import upstream
 		header_up -X-Game-Host
 	}
 }
@@ -32,7 +36,7 @@
 
 	handle @game {
 		reverse_proxy server:8080 {
-			import client_ip
+			import upstream
 		}
 	}
 	handle @server_paths {
@@ -43,7 +47,7 @@
 	}
 	handle {
 		reverse_proxy web:8080 {
-			import client_ip
+			import upstream
 			header_up -X-Game-Host
 			# SignalR fallbacks (server-sent events, long polling) unbuffered
 			flush_interval -1
