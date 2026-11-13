@@ -65,6 +65,8 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
 
         Player(3002, "Bravo", 12000);
         Reply(3002, "Inventory_dict__user_id=3002.json", "/v1/Inventory/dict", """{"500":[{"id":9501,"slot":1,"units":1,"metadata":{}}]}""", ("user_id", "3002"));
+        Player(3003, "Charlie", 0);
+        Reply(3003, "Inventory_dict__user_id=3003.json", "/v1/Inventory/dict", "{}", ("user_id", "3003"));
     }
 
     /// <summary>An account the way the first sign-in makes it and its cookie.</summary>
@@ -134,6 +136,33 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal("restored", Make().Claim(player, "alpha", false, false).Kind);
         Assert.Equal(Restorer.GmFloor, (double)state.Wallet(player)["gm"]!);
         Assert.Equal("player", state.Store.HandleOf(player));  // useOldName false: the account's own name
+    }
+
+    [Fact]
+    public void TestAClaimLeavesTheStartingKitOnceEachItemId()
+    {
+        var (player, _) = SignedIn("player");
+        Assert.Equal("restored", Make().Claim(player, "alpha", false, false).Kind);
+        var kit = state.StartItems().Select(i => Py.L(i!["item_id"])).ToHashSet();
+        using var con = state.Store.Open(player);
+        var ids = con.Rows("SELECT item_id FROM items WHERE account_id = $a").Select(r => Convert.ToInt64(r[0])).ToList();
+        Assert.Equal(ids.Count, ids.Distinct().Count());
+        Assert.Equal(kit.Union([500L, 610L]).Order(), ids.Order());  // alpha's two items plus the kit, no duplicate
+    }
+
+    [Fact]
+    public void TestAClaimWithoutItemsLeavesExactlyTheStartingKit()
+    {
+        var (player, _) = SignedIn("player");
+        var (fresh, _) = SignedIn("fresh");
+        Assert.Equal("restored", Make().Claim(player, "charlie", false, false).Kind);
+        List<(long, long?)> Kit(long account)
+        {
+            using var con = state.Store.Open(account);
+            return con.Rows("SELECT item_id, units FROM items WHERE account_id = $a ORDER BY item_id").Select(r => (Convert.ToInt64(r[0]), r[1] is DBNull ? (long?)null : Convert.ToInt64(r[1]))).ToList();
+        }
+        Assert.Equal(Kit(fresh), Kit(player));
+        Assert.NotEmpty(Kit(player));
     }
 
     [Fact]
