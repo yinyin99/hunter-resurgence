@@ -6,7 +6,7 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Launcher;
 
 /// <summary>The launcher's bridge: StartGame is real, the rest is still the mock's.</summary>
-public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null) : ILauncherBridge
+public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null) : ILauncherBridge
 {
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
@@ -35,6 +35,18 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var info = new ProcessStartInfo(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
         if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
         return start(info) ? Result.Success : Result.Fail("Launch.StartFailed");
+    }
+
+    /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
+    /// to a minute (false: it never appeared), then until it is gone (true). ponytail: polls every <c>poll</c> (1 s), a process handle would need the start to keep it.</summary>
+    public async Task<bool> WhenGameExitsAsync()
+    {
+        if (install() is not { } g) return false;
+        var step = poll ?? TimeSpan.FromSeconds(1);
+        for (var waited = TimeSpan.Zero; !isRunning(g.ClientExe) && waited < (appearWithin ?? TimeSpan.FromMinutes(1)); waited += step) await Task.Delay(step);
+        if (!isRunning(g.ClientExe)) return false;
+        while (isRunning(g.ClientExe)) await Task.Delay(step);
+        return true;
     }
 
     static bool Start(ProcessStartInfo i)

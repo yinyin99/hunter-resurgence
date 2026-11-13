@@ -1,4 +1,5 @@
-.done { position: absolute; top: 80px; left: calc(50% - 310px); width: 620px; color: var(--text-1); }
+.done { position: absolute; top: 80px; left: calc(50% - 310px); width: 620px; color: var(--text-1); outline: none; }
+.close { position: absolute; right: -40px; top: 0; font-size: 32px; line-height: 56px; color: #fff; }
 h2 { margin: 0 0 20px; font-size: 38.5px; line-height: 56px; font-weight: 200; color: #fff; text-transform: uppercase; }
 .done > p { margin: 20px 0; line-height: 20px; }
 h4 { margin: 20px 0 8px; color: #fff; }
