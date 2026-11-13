@@ -106,10 +106,18 @@ public static class RestoredReads
             foreach (var (k, v) in o)
                 Add(sub, k, v);
         }
+        // a collectable's `sum` is a text (three decimals) and its `max` the best; a weapon's `distance` is its longest hit
+        else if (key == "sum")
+            into[key] = (Decimal(into[key]) + Decimal(value)).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         else
             into[key] = !Py.IsNum(into[key]) ? value?.DeepClone()
-                : Number(key == "distance" ? Math.Max(Py.D(into[key]), Py.D(value)) : Py.D(into[key]) + Py.D(value));
+                : Number(key is "distance" or "max" ? Math.Max(Py.D(into[key]), Py.D(value)) : Py.D(into[key]) + Py.D(value));
     }
+
+    /// <summary>A number, or a text that holds one (a collectable's `sum`); 0 otherwise.</summary>
+    static double Decimal(JsonNode? n) =>
+        Py.IsNum(n) ? Py.D(n) : n is JsonValue v && v.TryGetValue(out string? s)
+            && double.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : 0;
 
     /// <summary>A whole number as an integer, the way the API sends distance and duration.</summary>
     static JsonNode Number(double d) => d == Math.Floor(d) && Math.Abs(d) < 1e15 ? (long)d : d;

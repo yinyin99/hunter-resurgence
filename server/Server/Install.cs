@@ -22,6 +22,10 @@ public static class Install
     /// <summary>The item definitions the game keeps in its archives (item.json); empty when the install has none.</summary>
     public static JsonArray ItemDefinitions(string installDir) => ArchiveJson(installDir, "item.json") ?? [];
 
+    /// <summary>The collectable definitions the game keeps in its archives (collectable.json: `id`, `cat`, `score: {min, max}`) by id; empty when the install has none.</summary>
+    public static Dictionary<long, JsonObject> CollectableDefinitions(string installDir) =>
+        (ArchiveJson(installDir, "collectable.json") ?? []).OfType<JsonObject>().Where(d => d["id"] is JsonValue).ToDictionary(d => Py.L(d["id"]), d => d);
+
     /// <summary>`species`, `items`, `reserves` and `locations` of the application catalogue (what State reads of
     /// Application/application): species and items from the install's archives, reserves and start positions from the
     /// facts file.</summary>

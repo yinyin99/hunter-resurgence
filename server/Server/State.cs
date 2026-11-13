@@ -162,7 +162,7 @@ public sealed partial class State
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
-                                      Action<Db, JsonObject, JsonArray> mission)
+                                      Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -176,7 +176,7 @@ public sealed partial class State
         {
             if (node is not JsonObject e) continue;
             JsonNode? species = null;
-            con.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, ?, ?, ?)", e["event"], Py.Dumps(e), now);
+            var eventId = con.Insert("INSERT INTO events (account_id, event, body, ts) VALUES ($a, ?, ?, ?)", e["event"], Py.Dumps(e), now);
             if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
             {
                 var row = con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ?"
@@ -282,8 +282,10 @@ public sealed partial class State
                 // a pickup in a hunt that already closed (a heartbeat after its close): its statistics are counted again
                 con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND end_ts IS NOT NULL"
                          + " AND id = (SELECT MAX(id) FROM expeditions WHERE account_id = $a)");
-                // ponytail: the score is always 0, no rule for a collectable's score is known; Expedition/list counts the pickups of every hunt on each call
-                updates.Add(new JsonObject { ["collectable_id"] = C(e["collectable_id"]), ["score"] = 0, ["update"] = 7 });
+                // the score goes with the stored event, for the hunt's statistics; the game reads update 7's `score` as a text and closes on a number
+                var (score, text) = pickupScore(e, Is(e["event"], 36));
+                con.Exec("UPDATE events SET body = json_set(body, '$.score', ?) WHERE account_id = $a AND id = ?", score, eventId);
+                updates.Add(new JsonObject { ["collectable_id"] = C(e["collectable_id"]), ["score"] = text, ["update"] = 7 });
             }
             mission(con, e, updates);
         }
@@ -382,20 +384,51 @@ public sealed partial class State
     public static long LastEvent(Db con) => (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a")!;
 
     /// <summary>The pickups (event 24) and shed antlers (event 36, type 2000 + species) of the hunt whose events lie after
-    /// firstEvent up to untilEvent, one per collectable_id (the game repeats an event until its update 7 arrives).</summary>
-    public static List<(JsonObject Body, long Type, bool Antler)> Pickups(Db con, JsonNode? firstEvent, long untilEvent)
+    /// firstEvent up to untilEvent, one per collectable_id (the game repeats an event until its update 7 arrives), with the event's row id and time.</summary>
+    public static List<(JsonObject Body, long Type, bool Antler, long Id, long Ts)> Pickups(Db con, JsonNode? firstEvent, long untilEvent)
     {
         var seen = new HashSet<string>();
-        var list = new List<(JsonObject, long, bool)>();
-        foreach (var r in con.Rows("SELECT event, body FROM events WHERE account_id = $a AND id > ? AND id <= ? AND event IN (24, 36) ORDER BY id",
+        var list = new List<(JsonObject, long, bool, long, long)>();
+        foreach (var r in con.Rows("SELECT event, body, id, ts FROM events WHERE account_id = $a AND id > ? AND id <= ? AND event IN (24, 36) ORDER BY id",
                                    firstEvent, untilEvent))
         {
             var (antler, e) = (Is(Py.FromSql(r[0]), 36), Parse(r[1]));
-            var id = antler ? e["species_id"] : e["type"];
-            if (!TryKey(id, out var key) || !seen.Add(Py.Dumps(e["collectable_id"]))) continue;  // a type that is no 64-bit whole number counts 0
-            list.Add((e, antler ? 2000 + key % 100 : key, antler));  // a variant (species 100 and up) is its species' type
+            if (PickupType(e, antler) is not { } type || !seen.Add(Py.Dumps(e["collectable_id"]))) continue;
+            list.Add((e, type, antler, (long)r[2], (long)Convert.ToDouble(r[3])));
         }
         return list;
+    }
+
+    /// <summary>The collectable type of a pickup: its `type`, or 2000 + species for a shed antler (a variant, species 100 and up, is its species'
+    /// type); null for a type that is no 64-bit whole number.</summary>
+    static long? PickupType(JsonObject e, bool antler) =>
+        TryKey(antler ? e["species_id"] : e["type"], out var key) ? antler ? 2000 + key % 100 : key : null;
+
+    /// <summary>The install's collectable definitions (collectable.json) by type id: `cat` and `score: {min, max}`. Empty: every pickup scores 0.</summary>
+    public IReadOnlyDictionary<long, JsonObject> Collectables { get; init; } = new Dictionary<long, JsonObject>();
+
+    /// <summary>A pickup's score and the text of update 7, which the HunterMate shows as is. The score is min + (max - min) * f in the
+    /// type's range, f the share the game drew for this pickup: `scale` / 100 (event 24) or `antlers_score_percentage` (event 36). The
+    /// original servers' scores of restored hunts spread over the range as the game's scale does. The text follows the site's
+    /// collectableScore: grams for a mushroom, millimetres for a feather, years for an artifact or fossil, points for event items.</summary>
+    public (double Score, string Text) PickupScore(JsonObject e, bool antler)
+    {
+        var def = PickupType(e, antler) is { } type ? Collectables.GetValueOrDefault(type) : null;
+        var (min, max) = (Py.D(G(def?["score"] as JsonObject ?? [], "min", 0)), Py.D(G(def?["score"] as JsonObject ?? [], "max", 0)));
+        var f = antler ? (Py.IsNum(e["antlers_score_percentage"]) ? Py.D(e["antlers_score_percentage"]) : 0) : (Py.IsNum(e["scale"]) ? Py.D(e["scale"]) / 100 : 0);
+        var score = Math.Round(min + (max - min) * Math.Clamp(f, 0, 1), 3);
+        var n = Math.Round(score, MidpointRounding.AwayFromZero);
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        return (score, (string?)def?["cat"] switch
+        {
+            "MUSHROOM" => string.Create(inv, $"{n}g / {score * 0.0352739619:0.00}oz"),
+            "FEATHER" => string.Create(inv, $"{n}mm / {score * 0.0393701:0.00}in"),
+            "ARTIFACT" or "RECENT_FOSSIL" => string.Create(inv, $"{n}y"),
+            "OLD_FOSSIL" => string.Create(inv, $"{n}m.y"),
+            "ANTLER" => score.ToString("0.##", inv),
+            "EASTER_EGG" or "PUMPKIN" or "SKULL" or "PRESENT" => n == 1 ? "1 point" : string.Create(inv, $"{n} points"),
+            _ => n.ToString(inv),
+        });
     }
 
     /// <summary>Public_user/expedition `stats` (the Statistics/total shape the site's formatStats/formatAnimals read), as
@@ -405,7 +438,7 @@ public sealed partial class State
     /// kills: [(species, hits, ethical)] of the expedition. Events after first_event up to untilEvent (the next expedition's
     /// first_event): 1 = hit, 21 = miss (matches the client's disconnect totals); 11 = spot and 12 = track clue, counted as
     /// distinct animals per species (Statistics/total `spots`/`tracks`; event 13, the identified track, does not count).
-    /// `collectables.<type>.collected` counts the hunt's pickups (<see cref="Pickups"/>).</summary>
+    /// `collectables.<type>` holds the hunt's pickups (<see cref="Pickups"/>): `collected`, `max` and `sum` of their scores.</summary>
     public static JsonObject HuntStats(Db con, JsonNode? firstEvent, long untilEvent, List<(JsonNode? Sp, List<JsonObject> Hits, bool Ethical)> kills,
                                        long duration, JsonNode? distance)
     {
@@ -441,9 +474,16 @@ public sealed partial class State
                     Inc(Species(Py.FromSql(row[0])), Is(ev, 11) ? "spots" : "tracks");
             }
         }
+        // per type, as the original servers: the count, the best score and the scores' sum (a text there, three decimals)
         var collectables = new JsonObject();
-        foreach (var (_, type, _) in Pickups(con, firstEvent, untilEvent))
-            Inc(SetDefault(collectables, type.ToString(), () => new JsonObject { ["collected"] = 0 }), "collected");
+        foreach (var (body, type, _, _, _) in Pickups(con, firstEvent, untilEvent))
+        {
+            var c = SetDefault(collectables, type.ToString(), () => new JsonObject { ["collected"] = 0, ["max"] = 0, ["sum"] = "0" });
+            var score = Py.IsNum(body["score"]) ? Py.D(body["score"]) : 0;  // a pickup stored before scores were kept counts 0
+            Inc(c, "collected");
+            c["max"] = Math.Max(Py.D(c["max"]), score);
+            c["sum"] = (double.Parse((string)c["sum"]!, System.Globalization.CultureInfo.InvariantCulture) + score).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        }
         foreach (var (sp, hits, ethical) in kills)
             foreach (var s in hits.Count > 0 ? new[] { Species(sp), Ammo(hits[^1]) } : [Species(sp)])
             {
@@ -1730,7 +1770,7 @@ public sealed partial class State
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); });
+                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore);
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
@@ -1791,7 +1831,7 @@ public sealed partial class State
         object[] row;
         JsonArray kills;
         JsonNode? stats = null;
-        List<(JsonObject Body, long Type, bool Antler)> pickups;
+        List<(JsonObject Body, long Type, bool Antler, long Id, long Ts)> pickups;
         using (var con = Con(account))
         {
             con.Begin();
@@ -1830,7 +1870,12 @@ public sealed partial class State
             ["start_ts"] = closed ? JsonValue.Create((long)Convert.ToDouble(row[3])) : Py.FromSql(row[3]),
             ["id"] = Py.FromSql(row[0]), ["reserve"] = Py.FromSql(row[1]),
         };
-        var antlers = new JsonArray(pickups.Where(p => p.Antler).Select(p => (JsonNode?)p.Body.DeepClone()).ToArray());
+        // as the original servers list them: the site's formatAntlerCollectables reads `species`, `ts` and `type` (its first letter upper-cased)
+        var antlers = new JsonArray(pickups.Where(p => p.Antler).Select(p => (JsonNode?)new JsonObject
+        {
+            ["id"] = p.Id, ["species"] = C(p.Body["species_id"]), ["score"] = C(p.Body["score"]) ?? 0,
+            ["type"] = Py.Truthy(p.Body["double_antler"]) ? "double" : "single", ["ts"] = p.Ts,
+        }).ToArray());
         return Py.DumpBytes(new JsonObject { ["stats"] = stats, ["antler_collectables"] = antlers, ["kills"] = kills, ["expedition"] = expedition });
     }
 
