@@ -64,10 +64,11 @@ sealed class TestZip
 
     /// <summary>My-account zip: the profile (with an e-mail, a name and an address that must not be stored), a wallet, items
     /// (one placed), skills, statistics, achievements, a trophy, a lodge and a few replies kept as extras.</summary>
-    public static TestZip Own(string wallet = "\"ems\":12.5,\"gms\":20000.25", string uid = "1001", string? steam = "76561190000000000", string handle = "sample") =>
+    public static TestZip Own(string wallet = "\"ems\":12.5,\"gms\":20000.25", string uid = "1001", string? steam = "76561190000000000", string handle = "sample",
+        string avatar = "https://avatars.example/a.png") =>
         new TestZip(true, uid, steam, handle).Common()
         .Reply("Me_me.json", "/v1/Me/me", $$"""
-            {"id":{{uid}},"handle":"{{handle}}","hostname":"sample","gender":1,"hunterscore":1234,"avatar":"https://avatars.example/a.png","membershipType":"freeplay",
+            {"id":{{uid}},"handle":"{{handle}}","hostname":"sample","gender":1,"hunterscore":1234,"avatar":"{{avatar}}","membershipType":"freeplay",
              "uuid":"00000000-0000-0000-0000-000000000001","locale":"en_US","timezone":"UTC","country":"XX","memberSince":1500000000,"user_group":7,"rank":3,
              {{wallet}},"records":{"best":9},"worlditems":[],"email":"{{Email}}","first_name":"Test","last_name":"Person","address":"1 Test Street"}
             """)

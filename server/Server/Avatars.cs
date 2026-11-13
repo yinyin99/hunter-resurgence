@@ -19,10 +19,15 @@ public sealed partial class State
 
     bool HasImportedAvatar(long account) => File.Exists(Path.Combine(AccountPhotos(account), ImportedAvatar));
 
+    /// <summary>How the name of the backup's copy of the player's own picture ends (<see cref="Importer.MediaPath"/>). An uploaded picture has two addresses on different hosts
+    /// (the profile's and the friends lists'), and the backup tool saved it under one of them: for such an address only its path from `/uploads/` on counts.</summary>
+    static string? ImportedAvatarEnd(string url) => Importer.MediaPath("images", url) is { } path
+        ? path.IndexOf("_uploads_", StringComparison.Ordinal) is var i and >= 0 ? path[i..] : path : null;
+
     /// <summary>The picture of the zip's avatar when it is the player's own (an address that is no avatar of the game's list) and the zip holds it; null otherwise.</summary>
     internal MediaFile? ImportedAvatarOf(Restored read) =>
-        read.Model.Profile.AvatarUrl is { } url && !IsListedAvatar(url) && Importer.MediaPath("images", url) is { } path
-            ? read.Media.FirstOrDefault(m => m.Path == path) : null;
+        read.Model.Profile.AvatarUrl is { } url && !IsListedAvatar(url) && ImportedAvatarEnd(url) is { } end
+            ? read.Media.FirstOrDefault(m => m.Path.StartsWith("images/", StringComparison.Ordinal) && m.Path.EndsWith(end, StringComparison.Ordinal)) : null;
 
     /// <summary>The `avatar_url` an account has after a restore: the zip's address for an avatar of the game's list, the imported picture's link when the zip holds it, else the default avatar.</summary>
     internal string RestoredAvatarUrl(Restored read, long account) =>
@@ -60,8 +65,8 @@ public sealed partial class State
     public void MigrateAvatars()
     {
         foreach (var (account, url) in Store.AvatarUrls())
-            if (!IsListedAvatar(url) && Importer.MediaPath("images", url) is { } path
-                && Path.Combine(AccountPhotos(account), Importer.CleanName(path)) is var file && File.Exists(file))
+            if (!IsListedAvatar(url) && ImportedAvatarEnd(url) is { } end && Directory.Exists(AccountPhotos(account))
+                && Directory.EnumerateFiles(AccountPhotos(account), "images_*").FirstOrDefault(f => Path.GetFileName(f).EndsWith(Importer.CleanName(end), StringComparison.Ordinal)) is { } file)
             {
                 File.Copy(file, Path.Combine(AccountPhotos(account), ImportedAvatar), overwrite: true);
                 Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), null);
