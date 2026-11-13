@@ -134,6 +134,8 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
 2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `LINK_DISCORD`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
 
+While `server` or `web` is recreated (about 12 s), Caddy holds a request and dials again every 500 ms for up to 30 s (`lb_try_duration` in the Caddyfile's `upstream` snippet), so a player who is hunting or browsing sees a slow reply, not a 502. Only a failed dial is retried for a request other than `GET`: a heartbeat, an inventory move or a purchase that reached the old container is never sent twice. A restart longer than 30 s still gives 502. The `scripts` job of `ci` checks this: it removes the stub backends, sends a `POST` and a `GET`, and starts the backends again 5 s later.
+
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
 | Secret | Value |
