@@ -54,7 +54,7 @@ public sealed record DogSkill(string Skill, string Title, string Type, int Level
 /// <param name="Percent">Experience on the way to the next level.</param>
 /// <param name="Ribbons">The ribbon trophies reached.</param>
 public sealed record Dog(int Id, string Name, string Type, string? Variation, int Level, int Percent, IReadOnlyList<DogSkill> Skills, int Ribbons);
-public sealed record ProfileFriend(string Handle, int HunterScore);
+public sealed record ProfileFriend(string Handle, int HunterScore, string Avatar = Avatars.Default);
 
 /// <summary>A line of a scoring sheet; the three values sit in the columns of the sheet kind (null stays empty).</summary>
 public sealed record SheetRow(string Label, double? A, double? B, double? C);

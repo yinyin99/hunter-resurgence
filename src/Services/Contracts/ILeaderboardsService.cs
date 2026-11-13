@@ -1,7 +1,8 @@
 namespace Resurgence.Services;
 
 /// <param name="Sheet">Id of the kill (or antler) sheet the value links to; 0 for the boards without one.</param>
-public sealed record Ranked(int Rank, string Handle, double Value, int Sheet = 0);
+/// <param name="Avatar">The slot or link of the hunter's picture (<see cref="Avatars.Slot"/>).</param>
+public sealed record Ranked(int Rank, string Handle, double Value, int Sheet = 0, string Avatar = Avatars.Default);
 
 /// <summary>One group of an overview: a species (or an antler type) and its best players.</summary>
 public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);

@@ -8,7 +8,7 @@
 }
 else if (src is not null)
 {
-    <img class="asset-slot has-image @Class" src="@src" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="@Name" />
+    <img class="asset-slot has-image @Class" src="@src" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="@(src == Name ? "" : Name)" />
 }
 else
 {
@@ -26,7 +26,7 @@ else
 
     protected override void OnParametersSet()
     {
-        src = Images.Url(Name);
+        src = Name.StartsWith("https://", StringComparison.Ordinal) ? Name : Images.Url(Name);  // a link is a picture the player imported (Avatars.Slot), drawn as it is
         if (src is null) Images.NoteMissing(Name, new Uri(Nav.Uri).AbsolutePath);
     }
 

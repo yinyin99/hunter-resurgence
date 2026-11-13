@@ -24,7 +24,7 @@
 </div>
 
 @code {
-    string handle = "", avatar = "avatar-default";
+    string handle = "", avatar = Avatars.Default;
     RenderFragment Profile() => @<a href="/profile/@handle">@handle</a>;
 
     protected override async Task OnInitializedAsync()

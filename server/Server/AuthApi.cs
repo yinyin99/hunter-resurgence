@@ -43,7 +43,7 @@ public static class AuthApi
              .QueryParams(("challenge", "base64url SHA-256 of the verifier"), ("port", "1024 to 65535"), ("state", "random value"));
         group.MapPost("/app/exchange", Do(game, auth.ExchangeApp)).WithName("AppExchange").WithSummary("The app trades the code and its verifier for the session cookie")
              .WithDescription("Form `code` and `verifier` (needs `X-Requested-With` or a same-origin `Origin`). The code is one-time and lives 3 minutes; a wrong verifier spends it. 200 `{status: ok}` with the cookie, else 400 `{status: invalid}`.");
-        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms}` or 401");
+        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms, avatar}` or 401");
         group.MapPost("/signout", Do(game, auth.SignOut)).WithName("AuthSignOut").WithSummary("End the session (needs `X-Requested-With` or a same-origin `Origin`)");
         group.MapPost("/launch", Do(game, r => auth.Launch(r, game.Tokens!))).WithName("AuthLaunch").WithSummary("A launch URL with fresh tokens, for the start page");
 

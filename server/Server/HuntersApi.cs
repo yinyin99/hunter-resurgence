@@ -15,6 +15,7 @@ public static class HuntersApi
     public static void MapHunters(this WebApplication app, Game game)
     {
         var state = game.State!;
+        var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         if (!state.Online) return;
         var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
 
@@ -28,11 +29,11 @@ public static class HuntersApi
                 return Json(200, new JsonObject
                 {
                     ["page"] = page, ["pages"] = pages, ["total"] = total,
-                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["hunterscore"] = r.Hunterscore })]),
+                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["hunterscore"] = r.Hunterscore, ["avatar"] = state.AvatarUrl(r.Id, site) })]),
                 });
             })
             .WithName("HuntersBoard").WithSummary("One page of the hunterscore board")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, hunterscore}}]}}`, {PageSize} rows a page, highest first; equal hunterscores in account id order. Banned accounts are not on it.")
+            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, hunterscore, avatar}}]}}`, {PageSize} rows a page, highest first; equal hunterscores in account id order. Banned accounts are not on it. `avatar` is the picture of the player's page (docs/server.md#avatars), null for none.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json");
 
@@ -40,12 +41,12 @@ public static class HuntersApi
                 ? Json(200, new JsonObject
                 {
                     ["handle"] = p["handle"]?.DeepClone(), ["hunterscore"] = p["hunterscore"]?.DeepClone(), ["rank"] = p["rank"]?.DeepClone(),
-                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = p["avatar"]?.DeepClone(), ["background"] = state.ProfileBackground(id),
+                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = state.AvatarUrl(id, site), ["background"] = state.ProfileBackground(id),
                 })
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership, avatar and header picture")
             .WithDescription("`{handle, hunterscore, rank, membership, avatar, background}` (the handle as the account spells it, the membership's title, \"\" without one, "
-                             + "the avatar's picture URL, the header picture the player chose as the restored profile names it, null without one); 404 for a handle that is unknown or banned.")
+                             + "the avatar's picture URL (docs/server.md#avatars, null for none), the header picture the player chose as the restored profile names it, null without one); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/statistics", (string handle) => state.PublicAccount(handle) is { } id
@@ -109,10 +110,10 @@ public static class HuntersApi
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
-                ? Json(200, state.PublicFriends(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))
+                ? Json(200, state.PublicFriends(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, site))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterFriends").WithSummary("One page of a hunter's friends")
-            .WithDescription($"`{{page, pages, total, rows: [{{handle, hunterscore}}]}}`, {State.FriendsPageSize} rows a page, by handle (upper case, ordinal): the friends of docs/server.md#friends. "
+            .WithDescription($"`{{page, pages, total, rows: [{{handle, hunterscore, avatar}}]}}`, {State.FriendsPageSize} rows a page, by handle (upper case, ordinal): the friends of docs/server.md#friends. "
                              + "404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
@@ -169,15 +170,15 @@ public static class HuntersApi
                 var total = board.Count;
                 var pages = Math.Max(1, (total + PageSize - 1) / PageSize);
                 page = Math.Min(page, pages);
-                var rows = board.Skip((page - 1) * PageSize).Take(PageSize).Select((r, i) => (Rank: (page - 1) * PageSize + i + 1, r.Handle, r.Score));
+                var rows = board.Skip((page - 1) * PageSize).Take(PageSize).Select((r, i) => (Rank: (page - 1) * PageSize + i + 1, r.Id, r.Handle, r.Score));
                 return Json(200, new JsonObject
                 {
                     ["page"] = page, ["pages"] = pages, ["total"] = total,
-                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Score })]),
+                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Score, ["avatar"] = state.AvatarUrl(r.Id, site) })]),
                 });
             })
             .WithName("GameBoard").WithSummary("One page of a minigame's board: lanebandit or bustthrough")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
+            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value, avatar}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
     }

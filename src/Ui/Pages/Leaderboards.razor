@@ -41,7 +41,7 @@
                         <h6>@L["Board.Score"]</h6>
                         @if (h.Score.Handle.Length > 0)
                         {
-                            <AssetSlot Name="avatar-default" Width="160" Height="160" />
+                            <AssetSlot Name="@h.Score.Avatar" Width="160" Height="160" />
                             <a href="/profile/@h.Score.Handle">@h.Score.Handle</a>
                             <a href="/profile/@h.Score.Handle/score/@h.Score.Sheet" class="v">@Fmt.Board("score", h.Score.Value)</a>
                         }
@@ -49,7 +49,7 @@
                         <h6>@L["Board.Range"]</h6>
                         @if (h.Range.Handle.Length > 0)
                         {
-                            <AssetSlot Name="avatar-default" Width="160" Height="160" />
+                            <AssetSlot Name="@h.Range.Avatar" Width="160" Height="160" />
                             <a href="/profile/@h.Range.Handle">@h.Range.Handle</a>
                             <a href="/profile/@h.Range.Handle/score/@h.Range.Sheet" class="v">@Fmt.Board("range", h.Range.Value)</a>
                         }

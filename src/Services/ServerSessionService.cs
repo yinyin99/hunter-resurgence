@@ -42,7 +42,7 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
             var me = await response.Content.ReadFromJsonAsync<ServerAccount>();
-            return me is { Handle.Length: > 0 } ? new Session(me.Handle, me.Hunterscore) : null;
+            return me is { Handle.Length: > 0 } ? new Session(me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar)) : null;
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

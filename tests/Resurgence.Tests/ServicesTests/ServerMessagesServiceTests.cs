@@ -23,9 +23,9 @@ public class ServerMessagesServiceTests
     [Fact]
     public async Task TheConversationsAndTheThreadAreTheAccountsOnTheServer()
     {
-        var fake = new Fake(HttpStatusCode.OK, """{"conversations":[{"handle":"Fern","preview":"see you","ts":1700000200,"unread":true}],"messages":[{"mine":true,"content":"where?","ts":1700000150}]}""");
+        var fake = new Fake(HttpStatusCode.OK, """{"conversations":[{"handle":"Fern","preview":"see you","ts":1700000200,"unread":true,"avatar":"https://site.test/photos/9/avatar.jpg"}],"messages":[{"mine":true,"content":"where?","ts":1700000150}]}""");
         var service = Make(fake);
-        Assert.Equal([new Conversation("Fern", "see you", new(2023, 11, 14, 22, 16, 40, DateTimeKind.Utc), true)], await service.ConversationsAsync());
+        Assert.Equal([new Conversation("Fern", "see you", new(2023, 11, 14, 22, 16, 40, DateTimeKind.Utc), true, "https://site.test/photos/9/avatar.jpg")], await service.ConversationsAsync());
         var thread = Assert.Single(await service.ThreadAsync("Fern & co"));
         Assert.Equal((true, "where?"), (thread.Mine, thread.Text));
         Assert.Equal(["/account/messages", "/account/messages/thread?handle=Fern%20%26%20co"], fake.Seen.Select(r => r.RequestUri!.PathAndQuery));

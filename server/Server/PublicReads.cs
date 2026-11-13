@@ -114,8 +114,8 @@ public sealed partial class State
     public const int FriendSearchLimit = 20;
 
     /// <summary>What a profile page's friends tab shows of an account, `GET /hunters/&lt;handle&gt;/friends`: one page of its friends by handle,
-    /// `{page, pages, total, rows: [{handle, hunterscore}]}`.</summary>
-    public JsonObject PublicFriends(long account, int page)
+    /// `{page, pages, total, rows: [{handle, hunterscore, avatar}]}` (`avatar` as <see cref="AvatarUrl"/>, on `site`).</summary>
+    public JsonObject PublicFriends(long account, int page, string site)
     {
         var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends);
         var pages = Math.Max(1, (all.Count + FriendsPageSize - 1) / FriendsPageSize);
@@ -123,23 +123,23 @@ public sealed partial class State
         return new JsonObject
         {
             ["page"] = page, ["pages"] = pages, ["total"] = all.Count,
-            ["rows"] = new JsonArray([.. all.Skip((page - 1) * FriendsPageSize).Take(FriendsPageSize).Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["hunterscore"] = C(e["hunterscore"]) })]),
+            ["rows"] = new JsonArray([.. all.Skip((page - 1) * FriendsPageSize).Take(FriendsPageSize).Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["hunterscore"] = C(e["hunterscore"]), ["avatar"] = AvatarUrl(Py.L(e["id"]), site) })]),
         };
     }
 
-    static JsonArray Hunters(IEnumerable<JsonNode?> entries) => new([.. entries.Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["online"] = C(e["online"]) })]);
+    JsonArray Hunters(IEnumerable<JsonNode?> entries, string site) => new([.. entries.Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["online"] = C(e["online"]), ["avatar"] = AvatarUrl(Py.L(e["id"]), site) })]);
 
-    /// <summary>The signed-in website player's friends, `GET /account/friends`: `{friends: [{handle, online}], requests: [{handle, online}], pending: [{handle, online}]}`,
-    /// each by handle (`requests` asked the account, `pending` were asked by it).</summary>
-    public JsonObject WebFriends(long account)
+    /// <summary>The signed-in website player's friends, `GET /account/friends`: `{friends: [{handle, online, avatar}], requests: [same], pending: [same]}`,
+    /// each by handle (`requests` asked the account, `pending` were asked by it); `avatar` as <see cref="AvatarUrl"/>, on `site`.</summary>
+    public JsonObject WebFriends(long account, string site)
     {
         var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
-        return new JsonObject { ["friends"] = Hunters(FriendEntries(friends)), ["requests"] = Hunters(FriendEntries(requests)), ["pending"] = Hunters(FriendEntries(pending)) };
+        return new JsonObject { ["friends"] = Hunters(FriendEntries(friends), site), ["requests"] = Hunters(FriendEntries(requests), site), ["pending"] = Hunters(FriendEntries(pending), site) };
     }
 
-    /// <summary>`GET /account/friends/search?text=`: the players whose handle contains the text, never the account itself, `{hunters: [{handle, online}]}`.</summary>
-    public JsonObject WebFriendSearch(long account, string text) =>
-        new() { ["hunters"] = Hunters(FriendEntries(Store.SearchHandles(text, account, LocalAccount, FriendSearchLimit))) };
+    /// <summary>`GET /account/friends/search?text=`: the players whose handle contains the text, never the account itself, `{hunters: [{handle, online, avatar}]}`.</summary>
+    public JsonObject WebFriendSearch(long account, string text, string site) =>
+        new() { ["hunters"] = Hunters(FriendEntries(Store.SearchHandles(text, account, LocalAccount, FriendSearchLimit)), site) };
 
     /// <summary>`POST /account/friends/add` (ask, or accept the other's request) or `/remove` (decline, cancel, remove) of a player by handle (any case);
     /// false, and nothing changed, for the account's own handle or one that is not a player here.</summary>

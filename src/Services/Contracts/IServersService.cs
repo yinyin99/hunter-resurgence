@@ -5,7 +5,7 @@ public enum MarkerKind { Lodge, Tent, Campsite, Tower, Interest, Bait, Feeder, T
 /// <summary>A place on a reserve map; X and Y are percent of the map pane (the reserve's map picture).</summary>
 public sealed record MapMarker(int Id, MarkerKind Kind, string Name, double X, double Y);
 /// <summary>A hunter in a game; X and Y are percent of the reserve map, where the join map draws the hunter.</summary>
-public sealed record GamePlayer(string Handle, int HunterScore, int X = 50, int Y = 50);
+public sealed record GamePlayer(string Handle, int HunterScore, int X = 50, int Y = 50, string Avatar = Avatars.Default);
 /// <summary>A saved equipment set the player can start with. The choice "last used equipment" (id 0) is not listed.</summary>
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }

@@ -9,7 +9,7 @@ namespace Resurgence.Services;
 public sealed class ServerMessagesService(HttpClient http, ServerCookie cookie, ILogger<ServerMessagesService> log) : IMessagesService
 {
     public async Task<IReadOnlyList<Conversation>> ConversationsAsync() =>
-        [.. (await GetAsync<ServerConversations>(ServerAccountApi.Messages))?.Conversations?.Select(c => new Conversation(c.Handle, c.Preview, When(c.Ts), c.Unread)) ?? []];
+        [.. (await GetAsync<ServerConversations>(ServerAccountApi.Messages))?.Conversations?.Select(c => new Conversation(c.Handle, c.Preview, When(c.Ts), c.Unread, Avatars.Slot(c.Avatar))) ?? []];
 
     public async Task<IReadOnlyList<Message>> ThreadAsync(string handle) =>
         [.. (await GetAsync<ServerThread>(ServerAccountApi.MessagesThread, $"?handle={Uri.EscapeDataString(handle)}"))?.Messages?.Select(m => new Message(m.Mine, m.Content, DateTime.UtcNow - When(m.Ts))) ?? []];

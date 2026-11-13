@@ -14,7 +14,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
     public async Task<IReadOnlyList<Friend>> SearchAsync(string text) =>
         [.. (await GetAsync<ServerPlayers>($"{ServerAccountApi.FriendSearch}?text={Uri.EscapeDataString(text)}"))?.Hunters?.Select(ToFriend) ?? []];
 
-    public async Task<IReadOnlyList<string>> RequestsAsync() => [.. (await ListAsync())?.Requests.Select(p => p.Handle) ?? []];
+    public async Task<IReadOnlyList<Friend>> RequestsAsync() => [.. (await ListAsync())?.Requests.Select(ToFriend) ?? []];
 
     public async Task<IReadOnlyList<string>> PendingAsync() => [.. (await ListAsync())?.Pending.Select(p => p.Handle) ?? []];
 
@@ -24,7 +24,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
     public Task<Result> DeclineAsync(string handle) => ChangeAsync("remove", handle);
     public Task<Result> RemoveAsync(string handle) => ChangeAsync("remove", handle);
 
-    static Friend ToFriend(ServerPlayer p) => new(p.Handle, p.Online);
+    static Friend ToFriend(ServerPlayer p) => new(p.Handle, p.Online, Avatars.Slot(p.Avatar));
 
     async Task<ServerFriends?> ListAsync() => await GetAsync<ServerFriends>(ServerAccountApi.Friends) is { Friends: not null, Requests: not null, Pending: not null } f ? f : null;
 

@@ -10,8 +10,8 @@ public static class LauncherGuard
     static readonly string[] SignedIn = ["missions", "wallet", "bank", "messages", "new-message", "settings", "game-management", "invite-friends", "welcome", "community-league", "community_league", "steam_callback", "restore"];
     // the routes whose data is still the mock's: the website with a community server does not serve them (HostMode.Live). Competitions have no
     // source there: the only recorded ones ended weeks ago (docs/website.md#sign-in). The wallet, the messages and the missions (the daily ones too) are the server's
-    // (the wallet's bank tab is the page's to hide)
-    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions"]), "competitions"];
+    // (the wallet's bank tab is the page's to hide). The settings page is the server's for the avatar, its only tab on the live site
+    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions", "settings"]), "competitions"];
 
     public static bool Disabled(string path) => Starts(path, Off);
 

@@ -57,9 +57,9 @@ With the values the mock services give, the slots have 661 distinct keys, and th
 | `gift-shotgun`, `gift-licenses`, `gift-membership` | 467×99, 476×193, 441×149 | Signup Page2, Page3, Page4 | yes: the original's signup pages 2, 3 and 4 showed `gift_shotgun`, `gift_licenses` and `gift_gun_membership`; their sizes are the slots' |
 | `paper-notice` | set by the page | Paper | yes |
 | `coin-ems`, `icon-store` | 46×46 | MenuBar | yes |
-| `avatar-default` | 24 to 160 square | MapPlaceholder, RankRow, JoinMapModal, Dashboard, Leaderboards, Messages, Servers, StatusBar, FriendsTab, FriendsDropdown, HunterProfile, Settings, Welcome | yes |
-| `avatar-<NN>`, `avatar-locked` | 34 to 171 | Settings, StatusBar, Welcome, HunterProfile, Signup Page1 | 55 of 55 |
-| `avatar-<id>` | 171×171 | HunterProfile (the live site: a player's avatar, by the id in its picture's file name, `…/256/<id>.png`; another URL shows `avatar-default`) | no: the game's avatar list |
+| `avatar-default` | 24 to 160 square | every place that draws a player: MapPlaceholder, RankRow, JoinMapModal, Dashboard, Leaderboards, Messages, Servers, StatusBar, FriendsTab, FriendsDropdown, HunterProfile, Settings, Welcome (the live site: a player with no avatar the pages can draw, an address that is no avatar of the game's list) | yes |
+| `avatar-<NN>`, `avatar-locked` | 34 to 171 | Settings, StatusBar, Welcome, HunterProfile, Signup Page1 (the mock, without a community server: the live site draws `avatar-<id>`) | 55 of 55 |
+| `avatar-<id>` | 24 to 171 square | everywhere a player is drawn, with the live site (the game's avatars: the Settings choices, the sign-up carousel, and a player's avatar by the id in its picture's file name, `…/256/<id>.png`, [website.md](website.md#avatars)); the id is one of the server's avatar list (`Avatar/getAvatars`) | 54 files, all of the game's list, which the operator uploads ([#453](https://github.com/yinyin99/hunter-resurgence/issues/453)): `avatar-1000000` to `avatar-1000017`, `avatar-1001000` to `avatar-1001017` and `avatar-1002000` to `avatar-1002017`; an id without its file shows the labelled box |
 | `profile-banner` | 940×200 | HunterProfile (the mock) | no: player content (the player's latest kill) |
 | `profile-bg-<name>` | 940×200 | HunterProfile (the live site: the header picture the player chose, the restored profile's `background` without its extension, `profile-bg-exploration_3` for `exploration_3.png`; no slot without one) | 19 files: `exploration_1` to `6`, `species_1` to `6`, `weapons_1` to `6` and a holiday banner |
 | `polaroid-back`, `polaroid-front` | 239×288 | HunterProfile (the avatar is drawn between them, turned -5°, as the original's `#profile-image-container`; a missing `polaroid-front` is not drawn, so its box does not cover the avatar) | yes |
@@ -110,3 +110,5 @@ With the values the mock services give, the slots have 661 distinct keys, and th
 | `sheet-medal` | 84×84 | SheetTab | no: none of the 1,241 saved score pages shows a medal |
 | `sheet-sponsor` | 116×82 | SheetTab | yes |
 | `antler-diagram-<species>`, `antler-guide-<species>` | 380×220, 560×460 | SheetTab | 1 of 1, 1 of 1 |
+
+A player's own picture, imported from their backup, is no slot: the page draws the link the server gives (`https://<site>/photos/<account id>/avatar.jpg`) as an image, so it is never in this folder ([server.md](server.md#avatars)).

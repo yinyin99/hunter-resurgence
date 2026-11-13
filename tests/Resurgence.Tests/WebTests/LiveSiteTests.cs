@@ -92,8 +92,8 @@ public sealed class LiveSiteTests : UiContext
 
     [Theory]
     [InlineData(false, 2)]
-    [InlineData(true, 0)]
-    public void TheSettingsMenuKeepsRestoreAndLanguageOnly(bool live, int accountLinks)
+    [InlineData(true, 1)]
+    public void TheLiveSettingsMenuHasTheAvatarSettingsButNoGameManagement(bool live, int accountLinks)
     {
         Live(live);
         var cut = Render<SettingsMenu>();

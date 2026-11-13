@@ -7,7 +7,8 @@
 <div class="friends-dropdown">
     @if (requests.Count > 0)
     {
-        var handle = requests[Math.Min(active, requests.Count - 1)];
+        var request = requests[Math.Min(active, requests.Count - 1)];
+        var handle = request.Handle;
         <div class="requests">
             <div class="top cycle-bar">
                 <button type="button" class="cycle left" aria-label="@L["Friends.Previous"]" @onclick="() => Cycle(-1)"><Icon Name="caret-right" /></button>
@@ -15,7 +16,7 @@
                 <button type="button" class="cycle right" aria-label="@L["Friends.Next"]" @onclick="() => Cycle(1)"><Icon Name="caret-right" /></button>
             </div>
             <div class="request">
-                <AssetSlot Name="avatar-default" Width="40" Height="40" />
+                <AssetSlot Name="@request.Avatar" Width="40" Height="40" />
                 <span class="handle">@handle</span>
                 <div class="content">@L.Frag("Friends.WantsToBe", HandleLink(handle))</div>
                 <div class="answer">
@@ -35,7 +36,7 @@
             @foreach (var f in friends)
             {
                 <li>
-                    <AssetSlot Name="avatar-default" Width="40" Height="40" />
+                    <AssetSlot Name="@f.Avatar" Width="40" Height="40" />
                     <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
                     @if (f.Online) { <span class="online" aria-hidden="true"></span> }
                     <span class="buttons">
@@ -56,7 +57,7 @@
                 @foreach (var f in found)
                 {
                     <li>
-                        <AssetSlot Name="avatar-default" Width="40" Height="40" />
+                        <AssetSlot Name="@f.Avatar" Width="40" Height="40" />
                         <a href="/profile/@f.Handle" class="handle">@f.Handle</a>
                         <span class="buttons">
                             @if (friends.Any(x => x.Handle == f.Handle))
@@ -86,7 +87,8 @@
     CancellationTokenSource? typing;
     IReadOnlyList<Friend> friends = [];
     IReadOnlyList<Friend>? found;
-    IReadOnlyList<string> requests = [], pending = [];
+    IReadOnlyList<Friend> requests = [];
+    IReadOnlyList<string> pending = [];
     int active;
 
     /// <summary>Raised after a request is answered, so the status bar's count follows.</summary>

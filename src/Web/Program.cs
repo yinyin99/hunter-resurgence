@@ -92,6 +92,11 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>())));
     // the one-time Discord invitation is remembered with the account
     builder.Services.Replace(ServiceDescriptor.Scoped<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>())));
+    // the player's avatar and the choices of the settings and the sign-up page are the server's (docs/website.md#avatars); the rest of the account settings is the mock's, and the live site does not offer it
+    builder.Services.Replace(ServiceDescriptor.Scoped<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
+        new MockAccountService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerAccountService>>())));
+    builder.Services.Replace(ServiceDescriptor.Scoped<ISignupService>(sp => new ServerSignupService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
+        new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>())));
     // the inventory is the account's, read again on every open of its page
     builder.Services.Replace(ServiceDescriptor.Scoped<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, with em$ or gm$

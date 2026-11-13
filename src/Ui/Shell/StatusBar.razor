@@ -81,7 +81,7 @@
     Balances balances = new(0, 0, null, null);
     int unread, requests, friendsKey;
     bool shut;
-    string avatar = "avatar-default";
+    string avatar = Avatars.Default;
 
     string FriendsTip => requests > 0 ? L["Tip.FriendsNew", requests] : L["Tip.Friends"];
     string MessagesTip => unread > 0 ? L["Tip.MessagesNew", unread] : L["Tip.Messages"];
@@ -110,7 +110,7 @@
         Account.Changed += Picked;
         // a purchase's dialog closes after it: the balances show the new amounts at once, not at the next poll
         Modal.Changed += modalChanged = () => _ = InvokeAsync(async () => { balances = await Wallet.BalancesAsync(); StateHasChanged(); });
-        if (!Mode.Live) avatar = (await Account.AccountAsync()).Avatar;  // the account's avatar is the mock's
+        avatar = Mode.Live ? Session?.Avatar ?? Avatars.Default : (await Account.AccountAsync()).Avatar;  // the live site's avatar came with the session; the account's is the mock's
         await Refresh();
         _ = Poll();
     }

@@ -690,7 +690,7 @@ public sealed partial class State
         account["handle"] = handle;
         foreach (var (key, value) in new (string, JsonNode)[]
                  {
-                     ("account_id", id), ("hostname", handle.ToLowerInvariant()), ("avatar_url", $"{avatarBase}/256/{DefaultAvatar}.png"),
+                     ("account_id", id), ("hostname", handle.ToLowerInvariant()), ("avatar_url", ListedAvatarUrl(DefaultAvatar)),
                      ("avatar", DefaultAvatar), ("avatar_id", DefaultAvatar), ("face", DefaultAvatar), ("fullbody_avatar", 0),
                      ("gender", 0), ("membership", 0), ("hunterscore", 0),
                  })
@@ -1080,11 +1080,13 @@ public sealed partial class State
     static string Plain(JsonNode? n) => n is JsonValue v ? v.ToString() : "";
     static long Time(JsonNode? n) => Py.IsNum(n) ? Py.L(n) : 0;
 
-    /// <summary>`GET /account/messages`: `{conversations: [{handle, preview, ts, unread}]}`, the notice sender's first, then the restored ones as saved.</summary>
-    public JsonObject WebConversations(long account) =>
+    /// <summary>`GET /account/messages`: `{conversations: [{handle, preview, ts, unread, avatar}]}`, the notice sender's first, then the restored ones as saved; `avatar` is the partner's
+    /// (<see cref="AvatarUrl"/>, on `site`) when they have an account here, else null.</summary>
+    public JsonObject WebConversations(long account, string site) =>
         new() { ["conversations"] = new JsonArray([.. Conversations(account).Select(c => (JsonNode?)new JsonObject
         {
             ["handle"] = Plain(c?["handle"]), ["preview"] = Plain(c?["preview"]), ["ts"] = Time(c?["ts"]), ["unread"] = !Py.Truthy(c?["read"]),
+            ["avatar"] = long.TryParse(Plain(c?["user_id"]), out var partner) && PublicAccount(partner) is { } other ? AvatarUrl(other, site) : null,
         })]) };
 
     /// <summary>`GET /account/messages/thread?handle=`: `{messages: [{mine, content, ts}]}` newest first, read only; null for a handle that is no conversation.

@@ -67,6 +67,79 @@ public class RestoreTests : StateTestBase
         Assert.Equal((1000042, 1000042), ((int)account["avatar"]!, (int)account["avatar_id"]!));
     }
 
+    static readonly byte[] Uploaded = "the picture the player uploaded"u8.ToArray();
+
+    State StateWithAvatars(string name, string url = "https://other.test/a.png") =>
+        new(Path.Combine(tmp, name), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false,
+            avatars: (JsonArray)JsonNode.Parse($$"""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png"}, {"id": 1000042, "url": "{{url}}"}]""")!);
+
+    [Fact]
+    public void APictureTheZipHoldsIsTheImportedAvatarAtAStableLink()
+    {
+        state = StateWithAvatars("imported.db", "https://other.test/b.png");
+        Restorer.Import(state, Zip(TestZip.Own().Media("images/avatars.example_a.png", Uploaded)), null, tmp);  // the zip's picture is /a.png: no avatar of the list
+        var link = $"{BASE}/photos/1001/avatar.jpg";
+        var account = Connect(1001)["account"]!;
+        Eq($$"""["{{link}}", 1000000]""", T(account["avatar_url"], account["face"]));  // the game's values: the picture's link, the default avatar
+        Assert.Equal(Uploaded, File.ReadAllBytes(state.PhotoFile("/photos/1001/avatar.jpg")!));
+        using (var con = state.Store.Open(1001))
+            Assert.Equal(link, (string)RestoredReads.Me(con)!["avatar"]!);  // the restored profile follows
+        Assert.Equal("https://web.test/photos/1001/avatar.jpg", state.AvatarUrl(1001, "https://web.test"));
+        Assert.Equal("https://web.test/photos/1001/avatar.jpg", (string)state.AvatarChoices(1001, "https://web.test")["imported"]!);
+
+        // a restore again that holds no picture: the default avatar, and the imported picture is gone
+        Restorer.Import(state, Zip(TestZip.Own(), "again.zip"), null, tmp);
+        Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));
+        Assert.Equal("https://avatar.test/256/1000000.png", (string)Connect(1001)["account"]!["avatar_url"]!);
+        Assert.Equal("https://avatar.test/256/1000000.png", state.AvatarUrl(1001, "https://web.test"));
+    }
+
+    [Fact]
+    public void AnAvatarOfTheListStaysTheZipsAddressEvenWithItsPicture()
+    {
+        state = StateWithAvatars("listed.db", "https://other.test/a.png");  // the zip's picture /a.png is the avatar 1000042
+        Restorer.Import(state, Zip(TestZip.Own().Media("images/avatars.example_a.png", Uploaded)), null, tmp);
+        var account = Connect(1001)["account"]!;
+        Eq("""["https://avatars.example/a.png", 1000042]""", T(account["avatar_url"], account["face"]));
+        Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));  // not the player's own picture
+        Assert.Equal("https://avatars.example/a.png", state.AvatarUrl(1001, "https://web.test"));
+    }
+
+    [Fact]
+    public void AnAddressOfNoAvatarOfTheListShowsNoAvatarToThePages()
+    {
+        state = StateWithAvatars("unknown.db", "https://other.test/b.png");
+        state.CreateAccount(5, "old");
+        state.Store.SetAvatar(5, "https://avatar.test/256/1.png", null);
+        Assert.Null(state.AvatarUrl(5, "https://web.test"));
+        state.Store.SetAvatar(5, $"{BASE}/photos/5/avatar.jpg", null);  // an imported picture that is gone
+        Assert.Null(state.AvatarUrl(5, "https://web.test"));
+    }
+
+    [Fact]
+    public void AnUploadedPictureOfAnEarlierRestoreBecomesTheImportedAvatarAtStart()
+    {
+        state = StateWithAvatars("migrate.db", "https://other.test/b.png");
+        const string Upload = "https://avatars.example/uploads/thumb/242x242/12345.jpg?v=3";
+        foreach (var id in new[] { 15, 16, 17 })
+            state.CreateAccount(id, $"old{id}");
+        var copy = $"images_{Importer.CleanName("avatars.example/uploads/thumb/242x242/12345.jpg")}";
+        Directory.CreateDirectory(Path.Combine(tmp, "photos", "15"));
+        File.WriteAllBytes(Path.Combine(tmp, "photos", "15", copy), Uploaded);  // account 15 kept its picture, 16 did not, 17 has an avatar of the list
+        state.Store.SetAvatar(15, Upload, null);
+        state.Store.SetAvatar(16, Upload, null);
+        state.Store.SetAvatar(17, "https://avatar.test/256/1000000.png", null);
+
+        state.MigrateAvatars();
+        state.MigrateAvatars();  // once is enough: a second start changes nothing
+        Assert.Equal($"{BASE}/photos/15/avatar.jpg", state.Store.AvatarUrl(15));
+        Assert.Equal(Uploaded, File.ReadAllBytes(state.PhotoFile("/photos/15/avatar.jpg")!));
+        Assert.Equal("https://web.test/photos/15/avatar.jpg", state.AvatarUrl(15, "https://web.test"));
+        Assert.Equal(Upload, state.Store.AvatarUrl(16));  // no copy: nothing to show
+        Assert.Null(state.AvatarUrl(16, "https://web.test"));
+        Assert.Equal("https://avatar.test/256/1000000.png", state.Store.AvatarUrl(17));
+    }
+
     [Fact]
     public void TestALocalServerKeepsTheRankOfTheRestoredProfile()
     {
@@ -201,7 +274,7 @@ public class RestoreTests : StateTestBase
         Eq("""["9001", "9101"]""", new JsonArray(reply["inventory"]!["items"]!.AsArray().Select(i => At(i, "guid")).ToArray()));
         Eq("""{"x": 3144645, "y": -999, "z": 10001}""", reply["inventory"]!["items"]![1]!["position"]);
         // hunterscore: the computed value, the zip's statistics hold no ethical kills
-        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://avatars.example/a.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
+        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://avatar.test/256/1000000.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
            reply["account"]);
         var stats = reply["user_stats"]!;
         Eq("""{"collectables": {}, "weapon": {}, "animal": {"5": {"kills": 2}}, "daily_missions": {}, "distance": 12.5, "duration": 3600}""", stats["user_stats"]);

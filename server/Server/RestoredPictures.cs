@@ -47,6 +47,7 @@ public sealed partial class State
         }
         var others = media.Values.Where(m => StoredFolders.Any(f => m.Path.StartsWith(f + "/", StringComparison.Ordinal))).ToList();
         files.AddRange(others.Select(m => (Importer.CleanName(m.Path), m.Entry)));
+        if (ImportedAvatarOf(read) is { } avatar) files.Add((ImportedAvatar, avatar.Entry));  // the player's own picture, again at its stable link
         var report = $"pictures stored: gallery {gallery}, kill photos and score pages {others.Count(m => m.Path.StartsWith("kills/", StringComparison.Ordinal))}, "
                      + $"avatar and background pictures {others.Count(m => m.Path.StartsWith("images/", StringComparison.Ordinal))}"
                      + (listed > gallery ? $"; {listed - gallery} gallery entr{(listed - gallery == 1 ? "y" : "ies")} without a picture in the zip" : "");
@@ -64,6 +65,7 @@ public sealed partial class State
                 File.Delete(Path.Combine(dir, name));
             foreach (var f in Directory.EnumerateFiles(dir).Where(f => StoredFolders.Any(s => Path.GetFileName(f).StartsWith(s + "_", StringComparison.Ordinal))))
                 File.Delete(f);
+            File.Delete(Path.Combine(dir, ImportedAvatar));
         }
         if (u.Files.Count == 0)
             return;

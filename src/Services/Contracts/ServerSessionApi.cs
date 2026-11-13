@@ -41,10 +41,10 @@ public static class ServerSessionApi
 }
 
 /// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet.</summary>
-public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0);
+public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0, string? Avatar = null);
 
 /// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
-public sealed record ServerHunter(int Rank, string Handle, int Hunterscore);
+public sealed record ServerHunter(int Rank, string Handle, int Hunterscore, string? Avatar = null);
 
 /// <summary>A hunter's profile header of <see cref="ServerSessionApi.Hunters"/>: <c>membership</c> is its title ("" without one), <c>avatar</c> the URL of its picture,
 /// <c>background</c> the file name of the header picture the player chose (null without one).</summary>
@@ -54,7 +54,7 @@ public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, str
 public sealed record ServerBoard(int Page, int Pages, int Total, ServerHunter[] Rows);
 
 /// <summary>A hunter's best score on a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
-public sealed record ServerGameRow(int Rank, string Handle, long Value);
+public sealed record ServerGameRow(int Rank, string Handle, long Value, string? Avatar = null);
 
 /// <summary>One page of a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
 public sealed record ServerGameBoard(int Page, int Pages, int Total, ServerGameRow[] Rows);
@@ -102,7 +102,7 @@ public sealed record ServerAchievement(string Title, string Description, string 
 /// <summary>One page of a hunter's friends of <see cref="ServerSessionApi.FriendsSuffix"/>.</summary>
 public sealed record ServerFriendsPage(int Page, int Pages, int Total, ServerFriendRow[] Rows);
 
-public sealed record ServerFriendRow(string Handle, int Hunterscore);
+public sealed record ServerFriendRow(string Handle, int Hunterscore, string? Avatar = null);
 
 /// <summary>A hunter's all-time personal bests of <see cref="ServerSessionApi.BestSuffix"/>, one row per species.</summary>
 public sealed record ServerBest(ServerBestRow[] Rows);
@@ -115,8 +115,8 @@ public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPho
 
 public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail);
 
-/// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open.</summary>
-public sealed record ServerPlayer(string Handle, bool Online);
+/// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open; <c>Avatar</c> the URL of their picture (null for none).</summary>
+public sealed record ServerPlayer(string Handle, bool Online, string? Avatar = null);
 
 /// <summary>The signed-in player's friends of <see cref="ServerAccountApi.Friends"/>: <c>Requests</c> asked them to be friends, <c>Pending</c> were asked by them.</summary>
 public sealed record ServerFriends(ServerPlayer[] Friends, ServerPlayer[] Requests, ServerPlayer[] Pending);
