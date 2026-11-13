@@ -341,7 +341,8 @@ public static class Replay
             startBody: recorded ? neutral : null,
             avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null,
             challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null,
-            seasonal: SeasonalEvent.Parse(cfg["event"])) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false };
+            seasonal: SeasonalEvent.Parse(cfg["event"])) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
+                Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")) };
         if (!offline) state.MigrateAvatars();  // a community server: the pictures its accounts imported before the avatars were served
         return state;
     }

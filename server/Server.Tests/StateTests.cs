@@ -712,20 +712,34 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
-    public void TestPickupsGetUpdate7AndCountOncePerHunt()
+    public void TestPickupsGetTheirScoreAsTextAndCountOncePerHunt()
     {
+        // a mushroom of 3 to 78 g and a shed antler of 25 to 215 points: the game reads update 7's score as a text (a number closed it)
+        state = new State(Path.Combine(tmp, "pickups.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES)
+        {
+            Collectables = new Dictionary<long, JsonObject>
+            {
+                [9] = O("""{"id": 9, "cat": "MUSHROOM", "score": {"min": 3, "max": 78}}"""),
+                [2005] = O("""{"id": 2005, "cat": "ANTLER", "score": {"min": 25, "max": 215}}"""),
+            },
+        };
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        var pickup = O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}""");
-        var antler = O("""{"event": 36, "collectable_id": 78, "species_id": 5, "double_antler": 0, "x": 1, "y": 2, "z": 3}""");
-        var updates = Hb(pickup, antler).Where(u => Py.Eq(u!["update"], 7)).ToList();
-        Eq("""[{"collectable_id": 77, "score": 0, "update": 7}, {"collectable_id": 78, "score": 0, "update": 7}]""", new JsonArray(updates.Select(u => C(u)).ToArray()));
+        var pickup = O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 35}""");
+        var antler = O("""{"event": 36, "collectable_id": 78, "species_id": 105, "double_antler": 1, "antlers_score_percentage": 0.5, "x": 1, "y": 2, "z": 3}""");
+        var unknown = O("""{"event": 24, "collectable_id": 80, "type": 4444, "x": 1, "y": 2, "z": 3, "scale": 50}""");
+        var updates = Hb(pickup, antler, unknown).Where(u => Py.Eq(u!["update"], 7)).ToList();
+        Eq("""
+           [{"collectable_id": 77, "score": "29g / 1.03oz", "update": 7}, {"collectable_id": 78, "score": "120", "update": 7},
+            {"collectable_id": 80, "score": "0", "update": 7}]
+           """, new JsonArray(updates.Select(u => C(u)).ToArray()));
         Assert.Single(Hb(C(pickup)!), u => Py.Eq(u!["update"], 7));  // the game repeats an event until its update arrives: answered again, counted once
         Hb(O("""{"event": 24, "collectable_id": 79, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""));
-        var antlers = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["antler_collectables"]!.AsArray();
-        Eq("78", Assert.Single(antlers)!["collectable_id"]);
-        Eq("3", Reply(state.ExpeditionListReply(ME, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()))["expeditions"]![0]!["collectables"]);
+        var shed = Assert.Single(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["antler_collectables"]!.AsArray())!;
+        Eq("""{"species": 105, "score": 120, "type": "double"}""", new JsonObject { ["species"] = C(shed["species"]), ["score"] = C(shed["score"]), ["type"] = C(shed["type"]) });
+        Eq("4", Reply(state.ExpeditionListReply(ME, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()))["expeditions"]![0]!["collectables"]);
         state.Disconnect(ME, """{"distance_travelled": 1, "shots_fired": 0, "shots_hit": 0}"""u8.ToArray());
-        Eq("""{"9": {"collected": 2}, "2005": {"collected": 1}}""", Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!["data"]!["collectables"]);
+        Eq("""{"9": {"collected": 2, "max": 78, "sum": "107.25"}, "2005": {"collected": 1, "max": 120, "sum": "120"}, "4444": {"collected": 1, "max": 0, "sum": "0"}}""",
+           Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!["data"]!["collectables"]);
     }
 
     [Fact]

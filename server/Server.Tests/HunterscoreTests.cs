@@ -280,15 +280,21 @@ public class HunterscoreTests : StateTestBase
     [Fact]
     public void TestAHuntsPickupsCountInTheStatisticsOnceItCloses()
     {
-        state = Online();
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: Ranks)
+        {
+            Collectables = new Dictionary<long, JsonObject> { [9] = O("""{"id": 9, "cat": "MUSHROOM", "score": {"min": 3, "max": 78}}""") },
+        };
         state.CreateAccount(B, "second");
+        using (var con = state.Store.Open(B))  // a restored base: the original servers keep `sum` as a text
+            PlayerRows.SetStatistics(con, O("""{"collectables": {"9": {"collected": 1, "max": 12.373, "sum": "12.373", "max_id": 5}}}"""), 0, 0, null, null);
         state.ConnectReply(B);
         state.HeartbeatReply(B, Events(
             O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
             O("""{"event": 36, "collectable_id": 78, "species_id": 5, "double_antler": 0, "x": 1, "y": 2, "z": 3}""")));
-        Eq("{}", Total(B)["data"]!["collectables"]);  // an open hunt counts nothing yet
+        Eq("""{"9": {"collected": 1, "max": 12.373, "sum": "12.373", "max_id": 5}}""", Total(B)["data"]!["collectables"]);  // an open hunt counts nothing yet
         state.Disconnect(B, "{}"u8.ToArray());
-        const string counted = """{"9": {"collected": 1}, "2005": {"collected": 1}}""";
+        // counts add up, the best score is the larger and the sums add as a text; an antler type without a definition scores 0
+        const string counted = """{"9": {"collected": 2, "max": 78, "sum": "90.373", "max_id": 5}, "2005": {"collected": 1, "max": 0, "sum": "0"}}""";
         Eq(counted, Total(B)["data"]!["collectables"]);
         Eq(counted, ConnectStats(B)["collectables"]);
     }
@@ -532,7 +538,7 @@ public class HunterscoreTests : StateTestBase
             O("""{"event": 24, "collectable_id": 2, "type": "x", "x": 1, "y": 2, "z": 3, "scale": 100}"""),
             O("""{"event": 24, "collectable_id": 3, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
         state.Disconnect(B, "{}"u8.ToArray());
-        Eq("""{"2005": {"collected": 1}}""", Total(B)["data"]!["collectables"]);
+        Eq("""{"2005": {"collected": 1, "max": 0, "sum": "0"}}""", Total(B)["data"]!["collectables"]);
         Assert.NotNull(Reply(state.ExpeditionReply(B, "{}"u8.ToArray()))["stats"]);
         Eq("1", Reply(state.ExpeditionListReply(B, "{}"u8.ToArray(), "limit=10&offset=0"u8.ToArray()))["expeditions"]![0]!["collectables"]);
     }
@@ -547,7 +553,7 @@ public class HunterscoreTests : StateTestBase
         state.HeartbeatReply(B, Events(
             O("""{"event": 24, "collectable_id": 1, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
             O("""{"event": 24, "collectable_id": 2, "type": 100000000000000000000000000000, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
-        Eq("""{"9": {"collected": 1}}""", Total(B)["data"]!["collectables"]);
+        Eq("""{"9": {"collected": 1, "max": 0, "sum": "0"}}""", Total(B)["data"]!["collectables"]);
     }
 
     [Fact]
