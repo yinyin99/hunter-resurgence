@@ -23,8 +23,13 @@ public class LauncherBridgeTests
         // the game shows up two checks after the start (Steam starts it) and runs for three: the wait ends only after it is gone
         var checks = new Queue<bool>([false, false, true, true, true, false]);
         var b = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => checks.Count > 0 && checks.Dequeue(), _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1));
-        await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
         Assert.Empty(checks);
+
+        // a game that never appears opens no window; no game folder neither
+        var never = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => false, _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1), appearWithin: TimeSpan.FromMilliseconds(20));
+        Assert.False(await never.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.False(await new LauncherBridge(() => null, Rest, _ => false, _ => true, () => true, null).WhenGameExitsAsync());
     }
 
     [Fact]

@@ -84,9 +84,9 @@ public sealed class ModalService
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
-    /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then.
+    /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.
     /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>
-    public void GameStarted(ILauncherBridge bridge) => _ = bridge.WhenGameExitsAsync().ContinueWith(_ => Show<GameStartedModal>(), TaskScheduler.Default);
+    public void GameStarted(ILauncherBridge bridge) => _ = bridge.WhenGameExitsAsync().ContinueWith(ran => { if (ran.Result) Show<GameStartedModal>(); }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
 
     /// <summary>Yes/No dialog; true for Yes.</summary>
     public Task<bool> Confirm(string text)

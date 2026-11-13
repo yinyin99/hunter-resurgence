@@ -27,7 +27,7 @@ public class ServerServersServiceTests
         public void OpenExternal(string url) { }
         public Result Next = Result.Success;
         public Result StartGame(string url) { Started.Add(url); return Next; }
-        public Task WhenGameExitsAsync() => Task.CompletedTask;
+        public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
     }
