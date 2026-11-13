@@ -80,7 +80,7 @@ public static class Restorer
         void Write(Db con)
         {
             pictures = state.PreparePictures(con, read);
-            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl);
+            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, model.Extras);
@@ -201,7 +201,7 @@ public static class Restorer
 
     /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row;
     /// returns the report.</summary>
-    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl)
+    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit)
     {
         PlayerRows.ClearModel(con);
         var lines = new List<string>();
@@ -248,6 +248,22 @@ public static class Restorer
             if (i.WebReserve is { } reserve) metadata[State.RESERVE] = reserve;
             PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
         }
+
+        // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
+        var owned = m.Items.Select(i => i.ItemId).ToHashSet();
+        var slots = m.Items.Select(i => i.Slot).ToHashSet();
+        var guid = m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max();
+        var added = 0;
+        foreach (var k in kit)
+        {
+            var itemId = (int)Py.L(k!["item_id"]);
+            if (!owned.Add(itemId)) continue;
+            var slot = (int)Py.L(k["slot"]);
+            if (slot > 1 && !slots.Add(slot)) slot = 0;
+            PlayerRows.AddItem(con, ++guid, itemId, slot, k["units"] is { } u ? Py.L(u) : null, []);
+            added++;
+        }
+        if (added > 0) lines.Add($"start items added: {added}");
 
         var skills = 0;
         void Skill(string kind, long key, double number)

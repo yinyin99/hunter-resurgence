@@ -699,6 +699,9 @@ public sealed partial class State
         return account;
     }
 
+    /// <summary>The inventory rows a new account starts with (connect reply shape).</summary>
+    public JsonArray StartItems() => start["inventory"]!["items"]!.AsArray();
+
     /// <summary>A new account with the server's starting data (the neutral start, never the recorded connect). id is the game's user id; throws when the
     /// id, the handle or the Steam id is taken.</summary>
     public void CreateAccount(long id, string handle, string? steamId64 = null) =>
