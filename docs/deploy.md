@@ -17,7 +17,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | `.github/workflows/ci.yml` | the `server-ubuntu` job runs the server's tests on Ubuntu ([server.md](server.md#tests)); the Windows run of them is part of the `build` job |
 | `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing, that `/robots.txt` is served ([website.md](website.md#build-and-run)), and that `/feed` and a 404 carry the security headers ([website.md](website.md#security-headers)) |
 | `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh`, and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules); the `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
-| `.github/workflows/deploy.yml` | build, push and roll out after a green `ci` on `main` |
+| `.github/workflows/deploy.yml` | build, push and roll out on a `server-X.Y.Z` tag of a commit of `main` whose `ci` passed |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK or NuGet pull request |
 | `.github/actions/setup-sdk/action.yml` | installs exactly the SDK of `global.json` for `ci`, `release` and `dependabot-locks`: it reads `sdk.version`, turns `rollForward` off in the runner's copy of `global.json` (never committed), runs `setup-dotnet` with that version and prints `dotnet --version` |
 
@@ -129,7 +129,15 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 
 ## Deploys
 
-`.github/workflows/deploy.yml` runs when the `ci` workflow succeeds for a push to `main` (never for pull requests, so forks get no secrets). Deploys run one at a time. When a deploy starts, if its commit is no longer the head of `main`, it ends with a notice and rolls nothing out: the newer commit's deploy does. Two pushes close together would otherwise deploy in the order their `ci` runs end, and the older commit could go out last. A re-run of an older deploy is skipped the same way: roll back with a revert on `main`, or on the host ([Rollback](#rollback)). Otherwise the deploy:
+`.github/workflows/deploy.yml` runs when a tag `server-MAJOR.MINOR.PATCH` is pushed. The website and the community server have this version of their own, separate from the launcher's `vX.Y.Z` (`release.yml`): a merge to `main` deploys nothing, a launcher release deploys nothing, and a server tag releases no launcher. Patch: fixes only; minor: anything new; major: a change that needs the operator (a new setting, a file on the host). The first is `server-1.0.0`.
+
+```
+git checkout main && git pull
+git tag -a server-1.1.0 -m "What changed, one line per change"
+git push origin server-1.1.0
+```
+
+`git log server-1.0.0..main --oneline` lists what the next deploy takes. The run first checks, and fails without rolling anything out, that the tag has that form, that its commit is on `main` (a commit of an unmerged branch is refused), and that the `ci` run of that commit's push to `main` succeeded; a tag pushed while that `ci` still runs waits for it, up to 30 minutes. Deploys run one at a time, in the order the tags were pushed: push one tag at a time. Forks get no secrets. Then the deploy:
 
 1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
 2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `LINK_DISCORD`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
@@ -160,13 +168,17 @@ An unset secret removes its line; spaces and line breaks around a value are trim
 
 ## Rollback
 
-The running versions are the `WEB_TAG` and `SERVER_TAG` lines of `~/web/.env`. Every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
+Tag an older commit of `main` with the next version and push it: `git tag -a server-1.1.1 <older sha> -m "Roll back to server-1.0.0"`. The deploy rolls that commit out like any other (its image is rebuilt from the commit). A tag is never moved or reused.
+
+For a rollback that cannot wait for a run, the running versions are the `WEB_TAG` and `SERVER_TAG` lines of `~/web/.env`, and every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
 
 ```
 ssh deploy@<vps> "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' -e 's/^SERVER_TAG=.*/SERVER_TAG=<older sha>/' .env && docker compose up -d"
 ```
 
 The next deploy sets the tag again.
+
+A deploy that changes the database schema migrates it at the server's first start, and the older server refuses a newer schema: before such a deploy, copy the database (`docker compose exec -T server-backup dotnet server.dll backup /backups 7`, [Backups](#backups)), since rolling back then means restoring that copy.
 
 ## The community server
 
@@ -301,4 +313,5 @@ What the live site (the website with `SERVER_URL`) does not do yet, and why. [we
   - The price a page shows can be up to 5 minutes old (the website's copy); the server charges today's.
 - **The news** is the project's two posts (the backup tool and the project in development), the same as on the mock website. The posts' slides show two of the operator's competition pictures (`competition-hero-170031`, `competition-hero-170026`).
 - **The Lane Bandit and Bust Through boards** list each account's best: the higher of the score restored from a backup and the best the server's hunts reported (heartbeat event 17). Each page view reads every account.
-- **A red `ci` on `main` skips the deploy** (the deploy runs only after a green one), and an older green commit still queued skips too, since it is no longer `main`'s head ([Deploys](#deploys)). A flaky test there holds the live site back until `ci` is run again or the test is fixed ([#219](https://github.com/yinyin99/hunter-resurgence/issues/219) is flaky locally).
+- **A red `ci` on `main` blocks a deploy tag of that commit** (the deploy needs the green `ci` of the tagged commit's push). A flaky test there holds the deploy back until `ci` is run again or the test is fixed ([#219](https://github.com/yinyin99/hunter-resurgence/issues/219) is flaky locally).
+- **Merged is not live**: what is on `main` reaches players only with the next `server-X.Y.Z` tag ([Deploys](#deploys)).

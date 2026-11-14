@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
-  # also on dependabot-locks.yml's lock-file commit, once a maintainer approves the held run; never deploys (deploy.yml: push only)
+  # also on dependabot-locks.yml's lock-file commit, once a maintainer approves the held run; never deploys (deploy.yml: server-* tags only)
   workflow_dispatch:
 permissions:
   contents: read
