@@ -35,13 +35,16 @@ public class WatcherTests
         Assert.True(Watcher.ParseToken("C:\\g\\launcher.exe") == null, "launcher command line has no token");
     }
 
-    /// <summary>Starts a renamed copy of cmd.exe as fakeclient.exe and reads the token from its command line. Nothing but those fake processes is touched.</summary>
+    /// <summary>Starts a renamed copy of cmd.exe as a fake client and reads the token from its command line. Nothing but those fake processes is touched.
+    /// The watcher finds the client by process name, so the name carries a fresh guid: a fixed name made concurrent test runs (CI jobs, several local runs) see each other's fake clients and fail the first or the last assertion.
+    /// Before the fix 2 of 9 loaded runs failed; after it this test passed in 10 rounds of 3 full suites running at once.</summary>
     [Fact]
     public void WatcherReadsTheTokenFromAFakeProcess()
     {
         using var temp = new TempDir("backup-test-game-");
         var dir = temp.Path;
         var procs = new List<Process>();
+        var name = $"fakeclient-{Guid.NewGuid():N}.exe";
         try
         {
             // a renamed copy of cmd.exe (the 32-bit one, like the real client, when present) that sleeps with the fake argument after `rem`
@@ -50,13 +53,13 @@ public class WatcherTests
             Process Spawn(string sub, string tok)
             {
                 Directory.CreateDirectory(Path.Combine(dir, sub));
-                var exe = Path.Combine(dir, sub, "fakeclient.exe");
+                var exe = Path.Combine(dir, sub, name);
                 File.Copy(src, exe);
                 var p = Process.Start(new ProcessStartInfo(exe, $"/c ping -n 40 127.0.0.1 >nul & rem /connect:hunt://fake.invalid/{new string('1', 40)}/lang/en_US/access_token/{tok}/refresh_token/{new string('d', 40)} /param:1 /steam") { UseShellExecute = false, CreateNoWindow = true })!;
                 procs.Add(p);
                 return p;
             }
-            var w = new Watcher("fakeclient.exe");
+            var w = new Watcher(name);
             Assert.True(!w.Scan() && w.Token == null, "no token without the game");
             string t1 = new('c', 40), t2 = new('e', 40);
             Spawn("one", t1);
