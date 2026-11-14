@@ -1,86 +1,134 @@
-# Hunter Resurgence: community server for theHunter Classic
+# Hunter Resurgence: play theHunter Classic after the shutdown
 
-**Website: [hunter-resurgence.com](https://hunter-resurgence.com)** (sign-in with Steam, the store, backup restore and deleting your data are real; some pages still show sample data: [what works](#website))
+**Hunter Resurgence is a free, open-source community server that lets you keep playing theHunter Classic, on all 12 reserves and with your old profile, after its official servers closed on November 11, 2026.**
+
+**[Play now](docs/guide.md)** · **[Discord](https://discord.gg/bRHPJ474Ce)** · **[Website](https://hunter-resurgence.com)** · **[Download](https://github.com/yinyin99/hunter-resurgence/releases/latest)**
 
 [![ci](https://github.com/yinyin99/hunter-resurgence/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yinyin99/hunter-resurgence/actions/workflows/ci.yml) [![release](https://img.shields.io/github/v/release/yinyin99/hunter-resurgence)](https://github.com/yinyin99/hunter-resurgence/releases/latest) [![license](https://img.shields.io/github/license/yinyin99/hunter-resurgence)](LICENSE)
 
-Unofficial community server, launcher, website and profile backup tool for theHunter Classic, whose official servers close on 2026-11-11.
+Also searched as theHunter (2009), the Hunter Classic, theHunter private server.
 
-After that date the game stops working, even for a single-player hunt, because it needs those servers. This project is building a community server so you can keep playing, with your profile (statistics, inventory, trophies and more) brought back from a backup. Running the same server on your own PC for offline play is planned; hunting with other players comes later. You need your own copy of the game: this project contains no game files.
+## Status
 
-> [!IMPORTANT]
-> **Save your profile with the [backup tool](#for-players-the-backup-tool) before 2026-11-11** (download it from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest)). It needs the official servers, so after that date it cannot save anything, and a restore can only bring back what a backup saved. Keep the game installed: you will play with your copy, on the community server or on a server on your own PC.
+**2026-11-14: online, early.** You can hunt on the community server today, [for free](#is-it-free). You need Windows 10 or 11, Steam and your own copy of the game: this project contains no game files.
 
-**New here? [The player guide](docs/guide.md) takes you from backup to playing on the community server, step by step.**
+## Open source, so it can't shut down again
 
-## For players: the backup tool
+- All the code (server, launcher, website) is in this repository, under the [GNU AGPL-3.0](LICENSE).
+- If this server ever stops, anyone can run their own from this code. Offline play on your own PC is planned.
+- Every copy and fork must stay open source.
 
-The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up. It only reads; it changes nothing on the server. Your backup stays on your PC: the tool sends it to the community server only if you press "Send to the community server" after a backup ([how](docs/backup.md#send-to-the-community-server)). Its window follows your Windows language (English, French, Spanish, Portuguese, German or Russian).
+![The launcher](docs/img/launcher.png)
 
-![The backup tool's window](docs/img/backup.png)
+*Placeholder pictures and sample data: the repository holds no game pictures.*
 
-1. Download `backup-win-x64.zip` from the latest release and unpack it. Keep `backup.exe` and `settings.json` in the same folder.
-2. Start `backup.exe`. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.
-3. Tick what to save, press Start. The result is a backup folder and a backup zip in `Documents\game-backup` ([names](docs/backup.md#what-is-saved)). Keep that backup zip private.
+## How to play
 
-"Check connection" says whether the official servers answer. If it says "redirected", the launcher's setup is in place: remove it (launcher Settings, Remove the setup) before a backup, because the backup tool needs the official servers.
+1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it. Windows may say "Windows protected your PC": choose **More info**, then **Run anyway** (the exe is not code-signed).
+2. Press **Play** in Steam. The first time, the launcher lists what it changes and asks you to set up; answer **Yes** to Windows' two questions.
+3. Sign in with Steam, pick a reserve, a start and the time of day, and press **Start Game**. The first time, choose **Allow** when Windows Firewall asks about the game. Keep the launcher open while you play.
 
-**Windows SmartScreen.** The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose **More info**, then **Run anyway**.
+The game's files are never changed; Settings, **Remove the setup** undoes everything. Step by step, with fixes for common problems: [the player guide](docs/guide.md).
 
-The source is public, and you can check in a minute that your download is the real one: compare its checksum, as in [checking the download](docs/backup.md#checking-the-download).
+## What works today
 
-Why a hunt: for your own account, the backup tool borrows the game's sign-in, and the game has one only once a hunt has started. A handle is a player's name in the game.
+| Works now | Not yet |
+|---|---|
+| Sign in with Steam: one account for the launcher, website and game | Offline / LAN play on your own PC |
+| Hunt on all 12 reserves; pick the start on a map and the time of day | Multiplayer |
+| Every species licensed for every player, for now | Competitions and season boards |
+| Kills, harvest, score sheets, gold and XP | Bait-site pages in the game |
+| Tutorial for new players | Full in-game map tiles |
+| Store: buy with em$ and gm$, in the game and on the website; it shows what you already own | |
+| Loadouts, saved and chosen at launch | |
+| Placed items, pick-ups and stack transfers | |
+| Skills, statistics, achievements, ranks, milestones and personal bests | |
+| Hunterscore and minigame boards | |
+| Lodges you can edit, trophies, gallery, dogs and their level rewards | |
+| Avatars you can choose | |
+| Friends and friend requests, messages (read only), wallet history | |
+| Public player profiles with hunt history and score sheets, in the game and on the website | |
+| Halloween 2026 event on its 5 reserves, on or off per player on the hunt start screen (its missions and trophies are not in yet) | |
+| Get your old profile back ([below](#get-your-old-profile-back)); delete your data | |
+| Launcher that installs and updates itself; Steam's Play button opens it | |
+| Website and launcher in 19 languages | |
 
-What it saves and what it does not: [docs/backup.md](docs/backup.md). What it keeps and sends: [privacy](docs/backup.md#privacy).
+Missions, daily missions and challenges are in the server but haven't been tested in play.
 
-## For players: the launcher
+## Get your old profile back
 
-The launcher signs you in, starts the game and, on its first start, sets up your PC so that the game reaches the community server (the "player kit" is part of it). Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it: it installs for your user only (no admin prompt), adds a shortcut and an Add/Remove programs entry, and the launcher then updates itself from the later releases. It needs the Microsoft Edge WebView2 runtime (part of Windows 11).
+Sign in on [the website](https://hunter-resurgence.com/restore) with the Steam account you play with, then:
 
-1. The first time, the launcher lists what it will change and asks to set up. A one-time setup edits the Windows hosts file so that the game's server names lead to a small forwarder inside the launcher, and trusts a local certificate that is good only for those names. Windows asks twice: install the certificate (Yes) and allow the launcher to edit the hosts file as administrator (Yes). **Make your backup first**: while the setup is in place the game talks only to the community server, and the backup tool needs the official servers.
-2. In Steam, right-click the game, choose Properties, and paste `"C:\Users\<you>\AppData\Local\HunterResurgence\current\resurgence-launcher.exe" %command%` into Launch options, with your user name. Steam's Play button then opens the launcher. Keep it open while you play: the forwarder runs inside it.
-3. Press "Sign in with Steam" and sign in in the browser that opens (the same account as on the website). The launcher starts the game for you.
-4. The game's files are never changed. Settings, **Remove the setup** undoes everything and gives the official servers back.
+- **No backup?** Look up your old in-game name. If your profile is found, claim it: it brings back your items, skills, achievements, trophies, lodges, loadouts, missions and statistics, but not your wallet. Players with over 500 hunterscore are the most likely to be found. One claim per account. Very high scores (10,000 or more) are checked by the operator first.
+- **Have a backup zip?** Upload it. The operator (the person who runs the server) checks it by hand; a backup made in "My account" mode also brings back your wallet.
 
-Steps, what it changes and what to do when something fails: [docs/launcher.md](docs/launcher.md#the-player-kit). The whole way from backup to playing: [the player guide](docs/guide.md). The files it writes: [docs/launcher.md](docs/launcher.md).
-
-## No money, ever
-
-This project and the community server run by its maintainer take no donations (not even for hosting), have no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
+Either way works even if you already hunted on the community server: hunts, kills and photos made here stay. Details: [the player guide](docs/guide.md#3-claim-your-old-profile-or-send-your-backup).
 
 ## Roadmap
 
-Released today: the backup tool, and the launcher, which also sets up your PC to play on the community server while it is still being built. There are no dates, and the order can change when a step turns out easier or harder than expected.
+Planned, with no dates:
 
-1. **Profile backup** (available now; run it before 2026-11-11): the [backup tool](#for-players-the-backup-tool).
-2. **Community server, accounts and restore** (online now, early: play on it with the [launcher](#for-players-the-launcher); see [docs/server.md](docs/server.md)).
-   - Sign in with a Steam account (email sign-in may follow).
-   - Restore: upload your backup zip on the website. Once the operator (the person who runs the server) approves it, you get your inventory, trophies, statistics, skills and wallet back. Nothing is restored automatically.
-   - What works: hunting, kills, harvest, score, gold and XP. Missions, competitions and leaderboards may be missing at first, and there is no seasonal event by default.
-   - A restore brings back only what the backup saved ([what is not saved](docs/backup.md#what-is-not-saved)). The [claim key](docs/backup.md#claim-key) in a backup is a hint that it is yours, not proof.
-3. **Offline play** (planned): the same server on your own PC or local network.
-4. **Remote play** (available now, early): playing on the community server over the internet, with the [launcher](#for-players-the-launcher).
-5. **New launcher** (download in the release, early; [screenshot below](#launcher-preview)): sign in, choose a server, start a hunt, change the game settings. See [For players: the launcher](#for-players-the-launcher).
-6. **New website** (online, partly real): sign-in with Steam, the restore upload, deleting your account and data, the store with buying in em$, the news, the hunterscore and minigame boards, every player's profile with all its tabs, and, for the signed-in player, the wallet history, the missions (the daily ones too), the friends and the messages (read only); competitions, seasons and the bank are not offered.
-7. **Later**: the bait-site pages inside the game, multiplayer, competitions.
+- Halloween 2026 missions and trophies
+- Competitions and seasons
+- The remaining in-game pages (bait sites, map tiles)
+- Offline / LAN play
+- Multiplayer
 
-### Website
+## Get involved
 
-[hunter-resurgence.com](https://hunter-resurgence.com) is the new website. The real parts: sign-in with Steam; the store, with buying in em$ for a signed-in player; the news; the hunterscore and minigame boards; every player's profile (ranks, achievements, skills, statistics, gallery, trophies, dogs and friends); for the signed-in player the wallet history, the missions, the friends and the messages; the restore page, where a signed-in player can upload a backup zip for the operator's review; and "Delete my data", which deletes the account and everything stored with it. The server keeps your Steam id, your handle, your purchases and every zip you upload; the "Your data" page in the footer says what it keeps and how to delete it. Pages without a source on the server are hidden ([known limits](docs/deploy.md#known-limits)), and pictures are the operator's own where it has them, labelled boxes elsewhere (the repository holds none; [docs/images.md](docs/images.md)). Works in a current Chrome or Edge. Details: [docs/website.md](docs/website.md).
+The best way to help:
 
-![The website, signed out](docs/img/website.png)
+1. **[Join the Discord](https://discord.gg/bRHPJ474Ce).**
+2. **Play** on the community server.
+3. **Give feedback on Discord**: what works, what breaks, what is missing.
+4. **Share it**: tell other hunters, on Reddit, Steam forums, your group.
 
-*The website: sample data, placeholder images.*
+Native speakers can also check the translations (backup tool: [how](docs/backup.md#languages); launcher and website: [how](docs/launcher.md#languages)) with an issue or a pull request. Code: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### Launcher preview
+## FAQ
 
-![The new launcher, work in progress](docs/img/launcher.png)
+### Is theHunter Classic still playable?
 
-*The new launcher: sample data, placeholder images.*
+Yes. The official servers closed on November 11, 2026, and the game needs a server even for a single-player hunt. Hunter Resurgence is that server: install the launcher and [play](#how-to-play).
 
-## Help wanted: translators
+### Is it free?
 
-Native speakers can check the translations of the backup tool (5 languages besides English), the launcher with its player kit, and the website (18). Open an issue or a pull request. How the texts work: [backup tool](docs/backup.md#languages), [launcher and website](docs/launcher.md#languages).
+Yes. Playing on the community server is free: no paid tier, no ads, no sales of items or currency and no perks. The only currency is the in-game one.
+
+### Do I need to buy licenses?
+
+No. Every species is licensed for every player for now. Licenses may come back later, bought with in-game money only.
+
+### Do I need to own the game?
+
+Yes, on Steam. This repository contains no game files or game data.
+
+### Is it safe? Does it change my game?
+
+The game's files are never changed. The launcher edits the Windows hosts file and trusts a local certificate good only for the game's server names, so the game reaches the community server; Settings, **Remove the setup** undoes both. The source is here for anyone to read. What it changes: [docs/launcher.md](docs/launcher.md#the-player-kit).
+
+### Can I get my old profile back?
+
+Often, yes: by your old in-game name or from a backup zip. See [Get your old profile back](#get-your-old-profile-back).
+
+### Can I hunt with friends?
+
+Not yet. Multiplayer is on the [roadmap](#roadmap); friends, messages and profiles already work.
+
+### What if this server shuts down too?
+
+The code is open source: anyone can run it. See [Open source](#open-source-so-it-cant-shut-down-again).
+
+### Is this official?
+
+No. It is an unofficial fan project, see the [disclaimer](#disclaimer-and-license).
+
+## Backup tool (archived)
+
+> [!WARNING]
+> **The backup tool no longer works.** It saved a profile from the official servers, which closed on 2026-11-11. Backup zips it made before then can still be [restored](#get-your-old-profile-back).
+
+It was a small Windows app that saved a player's profile (statistics, inventory, trophies, hunt history and more) as a zip on their PC. It stays in the releases (`backup-win-x64.zip`) and its source stays here. What it saved, and how to check a download: [docs/backup.md](docs/backup.md).
 
 ## For contributors
 
@@ -88,7 +136,7 @@ Build, test, the repository's rules and releases: [CONTRIBUTING.md](CONTRIBUTING
 
 One document per part:
 
-- [docs/guide.md](docs/guide.md): the player guide, from backup to playing on the community server.
+- [docs/guide.md](docs/guide.md): the player guide, from your old profile to playing on the community server.
 - [docs/backup.md](docs/backup.md): the backup tool.
 - [docs/launcher.md](docs/launcher.md): the launcher and its player kit.
 - [docs/website.md](docs/website.md): the website and the shared UI library.
