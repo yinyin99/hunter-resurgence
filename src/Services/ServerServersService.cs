@@ -15,7 +15,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     public async Task<IReadOnlyList<Reserve>> ReservesAsync() => [.. (await LoadAsync()).Reserves.Select(r => new Reserve(r.Id, r.Name))];
 
     public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
-        [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>()];
+        [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
 
     public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>([]);
 
@@ -39,8 +39,37 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return [];
     }
 
+    /// <summary>The player's own placed tents, callers, blinds and stands in a reserve (<see cref="ServerAccountApi.Placed"/>); none when signed out or when the server does not answer.</summary>
+    async Task<MapMarker[]> PlacedAsync(int reserve)
+    {
+        if (cookie.Value is null) return [];
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.Placed);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerPlaced>() is { Items: not null } placed)
+                return [.. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>()];
+            log.LogWarning("The server answered {Path} with {Status}: no placed items", ServerAccountApi.Placed, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no placed items", ServerAccountApi.Placed, e.Message);
+        }
+        return [];
+    }
+
+    /// <summary>A placed item's marker id is its negated guid, which no location number is.</summary>
+    static MapMarker? Placed(ServerPlacedItem i) => i.Kind switch
+    {
+        "tent" => new MapMarker(-(int)i.Id, MarkerKind.Tent, i.Name, i.X, i.Y),
+        "caller" => new MapMarker(-(int)i.Id, MarkerKind.Caller, i.Name, i.X, i.Y),
+        "groundblind" => new MapMarker(-(int)i.Id, MarkerKind.GroundBlind, i.Name, i.X, i.Y),
+        "treestand" => new MapMarker(-(int)i.Id, MarkerKind.TreeStand, i.Name, i.X, i.Y),
+        _ => null,
+    };
+
     public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) =>
-        LaunchAsync([("reserve", $"{reserve}"), ("lodge", $"{marker}"), ("time", $"{minutes}"), ("loadout", $"{loadout}")]);
+        LaunchAsync([("reserve", $"{reserve}"), marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}"), ("time", $"{minutes}"), ("loadout", $"{loadout}")]);
 
     public Task<Result> StartTutorialAsync(int id) => LaunchAsync([("tutorial", $"{id}")]);
 

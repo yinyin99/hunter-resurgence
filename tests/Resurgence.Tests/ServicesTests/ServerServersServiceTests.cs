@@ -70,9 +70,36 @@ public class ServerServersServiceTests
         Assert.Empty(await service.MarkersAsync(1));
         Assert.Empty(await service.MarkersAsync(99));
         Assert.Equal([(1, "Test One", 2), (2, "Test Two", 1)], (await service.TutorialsAsync()).Select(t => (t.Id, t.Title, t.Reserve)));
-        // one read for all of it, for everyone: the host of the website and no cookie
-        var read = Assert.Single(fake.Seen);
+        // one read of the catalogue for all of it, for everyone: the host of the website and no cookie (the player's placed items are asked apart, with the cookie)
+        var read = Assert.Single(fake.Seen, s => s.Path == ServerCatalogApi.Reserves);
         Assert.Equal((HttpMethod.Get, ServerCatalogApi.Reserves, null), (read.Method, read.Path, read.Cookie));
+    }
+
+    const string PlacedItems = """
+        {"items": [{"id": 501, "reserve": 2, "kind": "tent", "name": "Test Tent", "x": 50, "y": 60.5},
+                   {"id": 502, "reserve": 2, "kind": "treestand", "name": "Test Stand", "x": 20, "y": 30},
+                   {"id": 503, "reserve": 2, "kind": "caller", "name": "Caller", "x": 70, "y": 80},
+                   {"id": 504, "reserve": 2, "kind": "groundblind", "name": "Test Blind", "x": 5, "y": 6},
+                   {"id": 505, "reserve": 1, "kind": "tent", "name": "Tent of another reserve", "x": 1, "y": 2},
+                   {"id": 506, "reserve": 2, "kind": "decoy", "name": "Not on the map", "x": 1, "y": 1}]}
+        """;
+
+    static HttpResponseMessage AnswerWithPlaced(HttpRequestMessage r) => r.RequestUri!.AbsolutePath == ServerAccountApi.Placed ? Json(HttpStatusCode.OK, PlacedItems) : Answer(r);
+
+    [Fact]
+    public async Task ThePlayersPlacedItemsOfTheReserveAreMarkersAndTheirIdIsTheNegatedGuid()
+    {
+        var fake = new Fake(AnswerWithPlaced);
+        Assert.Equal(["101 Lodge Lodge 1 10.25,79.5", "102 Tower Tower 1 50,20", "103 Campsite Campsite 1 60,60", "104 Interest Old Mill 90,20",
+                      "-501 Tent Test Tent 50,60.5", "-502 TreeStand Test Stand 20,30", "-503 Caller Caller 70,80", "-504 GroundBlind Test Blind 5,6"],
+            (await Make(fake, new Bridge()).MarkersAsync(2)).Select(m => FormattableString.Invariant($"{m.Id} {m.Kind} {m.Name} {m.X},{m.Y}")));
+        Assert.Equal("hr_session=secret", fake.Seen.Single(s => s.Path == ServerAccountApi.Placed).Cookie);
+        Assert.Equal(["-505"], (await Make(new Fake(AnswerWithPlaced), new Bridge()).MarkersAsync(1)).Select(m => m.Id.ToString()));
+        // signed out, or a server that does not answer: the starts only, and signed out asks nothing
+        var signedOut = new Fake(AnswerWithPlaced);
+        Assert.Equal(4, (await Make(signedOut, new Bridge(), session: null).MarkersAsync(2)).Count);
+        Assert.DoesNotContain(signedOut.Seen, s => s.Path == ServerAccountApi.Placed);
+        Assert.Equal(4, (await Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Placed ? Json(HttpStatusCode.InternalServerError, "{}") : Answer(r)), new Bridge()).MarkersAsync(2)).Count);
     }
 
     [Fact]
@@ -103,6 +130,14 @@ public class ServerServersServiceTests
         Assert.Equal(["game://play.test/session"], bridge.Started);
         var post = Assert.Single(fake.Seen);
         Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret", "reserve=2&lodge=101&time=480&loadout=4"), (post.Method, post.Path, post.Cookie, post.Body));
+    }
+
+    [Fact]
+    public async Task APlacedTentStartsBySendingItsGuidAsTheTent()
+    {
+        var fake = new Fake(Answer);
+        Assert.True((await Make(fake, new Bridge()).StartSingleAsync(2, -501, 480, 4)).Ok);  // the marker id of a placed item is its negated guid
+        Assert.Equal("reserve=2&tent=501&time=480&loadout=4", Assert.Single(fake.Seen).Body);
     }
 
     [Fact]

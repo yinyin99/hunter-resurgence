@@ -297,14 +297,14 @@ public sealed partial class State
     static long? ItemGuid(JsonNode? item) => Py.IsDigit(Py.Str(item)) && long.TryParse(Py.Str(item), out var guid) ? guid : null;
 
     /// <summary>`{prefix}_x/y/z` of an event as {x, y, z} whole numbers (millimetres or x 1000, as the client sends them), null
-    /// unless the three are numbers within the restore's limit of 2,000,000.</summary>
+    /// unless the three are numbers within the restore's limit, 2,000,000 metres, in millimetres: 2,000,000,000.</summary>
     static JsonObject? Vec(JsonObject e, string prefix)
     {
         var v = new JsonObject();
         foreach (var axis in "xyz")
         {
             var n = e[$"{prefix}_{axis}"];
-            if (!Py.IsNum(n) || Math.Abs(Py.D(n)) > 2_000_000) return null;
+            if (!Py.IsNum(n) || Math.Abs(Py.D(n)) > 2_000_000_000) return null;
             v[axis.ToString()] = (long)Math.Round(Py.D(n), MidpointRounding.AwayFromZero);
         }
         return v;
@@ -1168,6 +1168,7 @@ public sealed partial class State
         var inventory = connect["inventory"]!.AsObject();
         JsonArray rows;
         JsonNode? expeditionId, locationId, reserve, startTime = null;
+        JsonObject? tent = null;  // the metadata of the placed tent the hunt starts at
         using (var con = Con(account))
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
@@ -1194,7 +1195,7 @@ public sealed partial class State
             // bought or granted between hunts: this reply carries the items; the balance (update 15) still comes
             // with the first heartbeat
             con.Exec("DELETE FROM pending WHERE account_id = $a AND json_extract(body, '$.update') = 10");
-            var row = con.Rows("SELECT id, location_id, reserve, start_time FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
+            var row = con.Rows("SELECT id, location_id, reserve, start_time, tent FROM expeditions WHERE account_id = $a AND end_ts IS NULL"
                                + " ORDER BY id DESC LIMIT 1").FirstOrDefault();
             if (tutorial is not null)  // a tutorial opens no expedition
                 (expeditionId, locationId, reserve) = (0L, (Py.L(tutorial["reserve_id"]) - 1) * 100, C(tutorial["reserve_id"]));
@@ -1207,14 +1208,19 @@ public sealed partial class State
                                           lodge, Py.Now(), LastEvent(con));
                 (locationId, reserve) = (C(lodge), null);
             }
+            // a tent picked up since the launch is no start any more: the hunt then starts at its location
+            if (tutorial is null && row?[4] is long tentGuid)
+                tent = con.Rows($"SELECT metadata FROM items WHERE account_id = $a AND guid = ? AND slot = {PLACED_SLOT}", tentGuid).FirstOrDefault() is { } placed ? Parse(placed[0]) : null;
             con.Commit();
             if (closed)
                 UpdateHunterscore(con, account);
         }
-        var (x, y, z) = StartPosition(locationId);
-        var lodgeOut = TryKey(locationId, out var lid) && locations.ContainsKey(lid) ? C(locationId) : C(connect["expedition"]!["lodge"]);
-        // ponytail: dir_x/dir_z stay the recorded lodge's; not in `locations`.
-        // Non-lodge starts (Launch/start loctype other than LODGE) are untested: their id goes into `lodge` too
+        var (x, y, z) = tent?[POSITION] is JsonObject at
+            ? (Py.D(at["x"]) / 1000, Py.D(at["y"]) / 1000, Py.D(at["z"]) / 1000)  // millimetres stored, metres sent
+            : StartPosition(locationId);
+        // a tent's `lodge` is its reserve's first location number: the game reads its reserve as lodge / 100
+        var lodgeOut = tent is not null || TryKey(locationId, out var lid) && locations.ContainsKey(lid) ? C(locationId) : C(connect["expedition"]!["lodge"]);
+        // ponytail: dir_x/dir_z stay the recorded lodge's; not in `locations`. A tent gives its own.
         var expedition = (JsonObject)connect["expedition"]!.DeepClone();
         expedition["expedition_id"] = expeditionId;
         expedition["x"] = x;
@@ -1223,6 +1229,8 @@ public sealed partial class State
         expedition["lodge"] = lodgeOut;
         if (startTime is not null)
             expedition["start_time"] = startTime;
+        if (tent?[DIRECTION] is JsonObject facing)
+            (expedition["dir_x"], expedition["dir_y"], expedition["dir_z"]) = (C(facing["x"]), C(facing["y"]), C(facing["z"]));  // x 1000 stored, per mille sent
         if (tutorial is not null)
         {
             expedition["mode"] = 1;
@@ -1694,29 +1702,38 @@ public sealed partial class State
         return placeTexts.GetValueOrDefault(Py.L(l["id"]));
     }
 
+    /// <summary>The catalogue's start locations (<see cref="StartKinds"/>, with a position) by reserve, ascending by id.</summary>
+    Dictionary<long, List<JsonObject>> StartLocations() => Arr(G(application, "locations", null)).OfType<JsonObject>()
+        .Where(l => TryKey(l["id"], out _) && TryKey(l["reserve"], out _) && Py.IsStr(l["type"]) && StartKinds.ContainsKey((string)l["type"]!)
+                    && l["pos"] is JsonObject p && Py.IsNum(p["x"]) && Py.IsNum(p["z"]))
+        .GroupBy(l => Py.L(l["reserve"])).ToDictionary(g => g.Key, g => g.OrderBy(l => Py.L(l["id"])).ToList());
+
+    /// <summary>The world box (left, top, right, bottom: x and z) of a reserve's map picture: the facts file's `reserves[].map`; a reserve without one is the square around its starts
+    /// with 10% left free on each side.</summary>
+    (double Left, double Top, double Right, double Bottom) MapBox(long reserve, List<JsonObject> starts)
+    {
+        if (facts.Map(reserve) is [var l0, var t0, var r0, var b0])
+            return (l0, t0, r0, b0);
+        if (starts.Count == 0)
+            return (0, 0, 1, 1);
+        var (xs, zs) = (starts.Select(l => Py.D(l["pos"]!["x"])).ToList(), starts.Select(l => Py.D(l["pos"]!["z"])).ToList());
+        var spread = Math.Max(xs.Max() - xs.Min(), zs.Max() - zs.Min());
+        var side = spread > 0 ? spread / .8 : 1;
+        var (left, top) = ((xs.Min() + xs.Max() - side) / 2, (zs.Min() + zs.Max() - side) / 2);
+        return (left, top, left + side, top + side);
+    }
+
+    static double Percent(double world, double from, double to) => Math.Round((world - from) / (to - from) * 100, 2);
+
     /// <summary>`GET /catalog/reserves`: the catalogue's reserves, each with its starts of <see cref="StartKinds"/> by id, and its tutorials. A start's `x` and `y` are percent
-    /// (two decimals) of the reserve's map picture, world x to the right and z down: the picture covers the box of the facts file's `reserves[].map`; a reserve without one is
-    /// the square around its starts with 10% left free on each side.</summary>
+    /// (two decimals) of the reserve's map picture, world x to the right and z down (<see cref="MapBox"/>).</summary>
     public JsonObject LaunchCatalogue()
     {
-        var starts = Arr(G(application, "locations", null)).OfType<JsonObject>()
-            .Where(l => TryKey(l["id"], out _) && TryKey(l["reserve"], out _) && Py.IsStr(l["type"]) && StartKinds.ContainsKey((string)l["type"]!)
-                        && l["pos"] is JsonObject p && Py.IsNum(p["x"]) && Py.IsNum(p["z"]))
-            .GroupBy(l => Py.L(l["reserve"])).ToDictionary(g => g.Key, g => g.OrderBy(l => Py.L(l["id"])).ToList());
+        var starts = StartLocations();
         JsonArray Starts(long reserve)
         {
             var list = starts.GetValueOrDefault(reserve) ?? [];
-            var (xs, zs) = (list.Select(l => Py.D(l["pos"]!["x"])).ToList(), list.Select(l => Py.D(l["pos"]!["z"])).ToList());
-            var (left, top, right, bottom) = (0d, 0d, 1d, 1d);
-            if (facts.Map(reserve) is [var l0, var t0, var r0, var b0])
-                (left, top, right, bottom) = (l0, t0, r0, b0);
-            else if (list.Count > 0)
-            {
-                var spread = Math.Max(xs.Max() - xs.Min(), zs.Max() - zs.Min());
-                var side = spread > 0 ? spread / .8 : 1;
-                (left, top) = ((xs.Min() + xs.Max() - side) / 2, (zs.Min() + zs.Max() - side) / 2);
-                (right, bottom) = (left + side, top + side);
-            }
+            var (left, top, right, bottom) = MapBox(reserve, list);
             var seen = new Dictionary<string, int>();
             return new(list.Select(l =>
             {
@@ -1725,7 +1742,7 @@ public sealed partial class State
                 return (JsonNode?)new JsonObject
                 {
                     ["id"] = Py.L(l["id"]), ["kind"] = kind, ["name"] = PlaceName(l) ?? $"{word} {seen[kind]}",
-                    ["x"] = Math.Round((Py.D(l["pos"]!["x"]) - left) / (right - left) * 100, 2), ["y"] = Math.Round((Py.D(l["pos"]!["z"]) - top) / (bottom - top) * 100, 2),
+                    ["x"] = Percent(Py.D(l["pos"]!["x"]), left, right), ["y"] = Percent(Py.D(l["pos"]!["z"]), top, bottom),
                 };
             }).ToArray());
         }
@@ -1736,6 +1753,64 @@ public sealed partial class State
             ["tutorials"] = new JsonArray([.. Arr(G(application, "tutorials", null)).OfType<JsonObject>().Where(t => TryKey(t["id"], out _) && TryKey(t["reserve_id"], out _))
                 .Select(t => (JsonNode?)new JsonObject { ["id"] = Py.L(t["id"]), ["name"] = Py.IsStr(t["name"]) ? (string)t["name"]! : "", ["reserve"] = Py.L(t["reserve_id"]) })]),
         };
+    }
+
+    /// <summary>A tent's catalogue `define`: `TENT` and digits (`TENT06`). It is also the `loctype` a hunt at a placed tent is started with.</summary>
+    static readonly System.Text.RegularExpressions.Regex TentDefine = new(@"^TENT\d*$");
+
+    /// <summary>The placed items the launcher's map shows, by catalogue define (the first pattern that matches): the word a placed item with no catalogue name is called by.</summary>
+    static readonly (string Kind, string Word, System.Text.RegularExpressions.Regex Rx)[] PlacedKinds =
+    [
+        ("tent", "Tent", TentDefine), ("caller", "Caller", new("ELECTRONIC_CALLER")), ("groundblind", "Blind", new("GROUND_BLIND|WATERFOWL_BLIND")),
+        ("treestand", "Stand", new("TREE_STAND|TRIPOD_STAND|DEPLOYABLE_HUNTING_TOWER")),
+    ];
+
+    /// <summary>The map kind of a catalogue item (or an install definition), or null for an item the map does not show.</summary>
+    (string Kind, string Word)? PlacedKind(long itemId)
+    {
+        if ((items.GetValueOrDefault(itemId) ?? installItems.GetValueOrDefault(itemId))?["define"] is not { } define || !Py.IsStr(define))
+            return null;
+        foreach (var (kind, word, rx) in PlacedKinds)
+            if (rx.IsMatch((string)define!))
+                return (kind, word);
+        return null;
+    }
+
+    /// <summary>`GET /account/placed`: the player's own placed tents, callers, blinds and stands that have a position and a reserve, `{items: [{id, reserve, kind, name, x, y}]}`: `id` the
+    /// item's guid, `reserve` the web's number, `kind` `tent`, `caller`, `groundblind` or `treestand`, `name` the catalogue's (else the kind's word), `x` and `y` percent of the reserve's
+    /// map picture as in <see cref="LaunchCatalogue"/>.</summary>
+    public JsonObject PlacedItems(long account)
+    {
+        List<object[]> rows;
+        using (var con = Con(account))
+            rows = con.Rows($"SELECT guid, item_id, metadata FROM items WHERE account_id = $a AND slot = {PLACED_SLOT} ORDER BY guid");
+        var (starts, boxes, placed) = (StartLocations(), new Dictionary<long, (double Left, double Top, double Right, double Bottom)>(), new JsonArray());
+        foreach (var r in rows)
+        {
+            var metadata = Parse(r[2]);
+            if (PlacedKind((long)r[1]) is not { } shown || metadata[POSITION] is not JsonObject at || !TryKey(metadata[RESERVE], out var reserve))
+                continue;  // not shown on a map, or placed with no position or reserve
+            if (!boxes.TryGetValue(reserve, out var box))
+                boxes[reserve] = box = MapBox(reserve, starts.GetValueOrDefault(reserve) ?? []);
+            var name = (items.GetValueOrDefault((long)r[1]) ?? installItems.GetValueOrDefault((long)r[1]))?["name"];
+            placed.Add(new JsonObject
+            {
+                ["id"] = (long)r[0], ["reserve"] = reserve, ["kind"] = shown.Kind, ["name"] = Py.IsStr(name) && ((string)name!).Length > 0 ? (string)name! : shown.Word,
+                ["x"] = Percent(Py.D(at["x"]) / 1000, box.Left, box.Right), ["y"] = Percent(Py.D(at["z"]) / 1000, box.Top, box.Bottom),  // millimetres stored
+            });
+        }
+        return new JsonObject { ["items"] = placed };
+    }
+
+    /// <summary>Whether `guid` is a tent of the account's placed in `reserve` (the web's number): the only kind of item a hunt starts at.</summary>
+    bool TentAt(Db con, long guid, long reserve) =>
+        con.Rows($"SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND slot = {PLACED_SLOT} AND json_extract(metadata, '$.{RESERVE}') = ?", guid, reserve)
+            .FirstOrDefault() is { } row && PlacedKind((long)row[0])?.Kind == "tent";
+
+    public bool IsPlacedTent(long account, long guid, long reserve)
+    {
+        using var con = Con(account);
+        return TentAt(con, guid, reserve);
     }
 
     /// <summary>start_tutorial: the session opens that tutorial, and the account's latest launch is a tutorial until the next hunt starts.</summary>
@@ -1777,21 +1852,30 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
     }
 
-    /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`.</summary>
+    /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`. With a tent's define (<see cref="TentDefine"/>) as `loctype` `start` is the guid of
+    /// one of the account's placed tents in that reserve: the hunt records the tent, and its location is the reserve's first location number (the game's `lodge`, of which it
+    /// reads the reserve as `lodge / 100`); a `start` that is no such tent opens the hunt with no location.</summary>
     public void NoteLaunch(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         latestTutorial.TryRemove(account, out _);
         var time = Form1(form, "time");
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
+        var tentStart = TentDefine.IsMatch(Form1(form, "loctype"));  // a placed tent's loctype is its define: TENT, TENT06 ...
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();
         var closed = con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
-        con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event, start_time) VALUES ($a, ?, ?, ?, ?, ?)",
-                 Py.IsDigit(reserve) ? long.Parse(reserve) : null, Py.IsDigit(start) ? long.Parse(start) : null, now, LastEvent(con),
-                 Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null);  // out of one day: the recorded time stays
-        MissionLaunch(con, Py.IsDigit(start) && long.TryParse(start, out var lodge) ? lodge : null);
+        var tent = tentStart && Py.IsDigit(start) && long.TryParse(start, out var guid) && Py.IsDigit(reserve) && long.TryParse(reserve, out var web) && TentAt(con, guid, web) ? guid : (long?)null;
+        long? location = null;
+        if (tent is not null)
+            location = (long.Parse(reserve) - 1) * 100;
+        else if (!tentStart && Py.IsDigit(start) && long.TryParse(start, out var lodge))
+            location = lodge;
+        con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event, start_time, tent) VALUES ($a, ?, ?, ?, ?, ?, ?)",
+                 Py.IsDigit(reserve) ? long.Parse(reserve) : null, location, now, LastEvent(con),
+                 Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null, tent);  // out of one day: the recorded time stays
+        MissionLaunch(con, tent is null ? location : null);  // a tent is no lodge: no `Start at` objective
         ApplyLoadout(con, Form1(form, "loadout_id"));
         con.Commit();
         if (closed)

@@ -22,9 +22,9 @@ public sealed class LaunchMapTests : UiContext
     sealed class Recording : IServersService
     {
         public (int Reserve, int Marker)? Started;
+        public IReadOnlyList<MapMarker> Markers = [new(300, MarkerKind.Tower, "Tower 1", 50, 20), new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20)];
         public Task<IReadOnlyList<Reserve>> ReservesAsync() => Task.FromResult<IReadOnlyList<Reserve>>([new(2, "Test Reserve")]);
-        public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
-            Task.FromResult<IReadOnlyList<MapMarker>>([new(300, MarkerKind.Tower, "Tower 1", 50, 20), new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20)]);
+        public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => Task.FromResult(Markers);
         public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>([]);
         public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>([]);
         public Task<IReadOnlyList<Loadout>> LoadoutsAsync() => Task.FromResult<IReadOnlyList<Loadout>>([]);
@@ -45,6 +45,22 @@ public sealed class LaunchMapTests : UiContext
         cut.WaitForAssertion(() => Assert.Null(cut.Find("button.go").GetAttribute("disabled")));
         cut.Find("button.go").Click();
         cut.WaitForAssertion(() => Assert.Equal((2, 101), service.Started));
+    }
+
+    // the player's placed items are markers of the reserve: a tent is listed and can be picked as the start, a stand or a caller is only shown
+    [Fact]
+    public void APlacedTentIsPickedAsTheStartAndTheOtherPlacedItemsAreOnlyShown()
+    {
+        var service = new Recording { Markers = [new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(-501, MarkerKind.Tent, "Test Tent", 50, 50), new(-502, MarkerKind.TreeStand, "Test Stand", 20, 20), new(-503, MarkerKind.Caller, "Test Caller", 70, 70)] };
+        Services.AddSingleton<IServersService>(service);
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.Null(cut.Find("button.go").GetAttribute("disabled")));
+        Assert.Equal(["Test Stand", "Test Caller"], cut.FindAll("button.marker[disabled]").Select(b => b.GetAttribute("aria-label")));  // shown, not a start
+        Assert.Empty(cut.FindAll("p.no-tents"));
+        cut.FindAll("a").Single(a => a.TextContent == "Test Tent").Click();
+        cut.Find("button.go").Click();
+        cut.WaitForAssertion(() => Assert.Equal((2, -501), service.Started));
     }
 
     sealed class Events(SeasonalEvents state) : ISeasonalEventsService

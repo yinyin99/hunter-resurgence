@@ -59,7 +59,7 @@ public class PlacedItemsTests : StateTestBase
     public void TestAnItemWithoutAPositionOrWithABadOneIsNotPlaced()
     {
         Beat(ME, O("""{"event": 25, "item": "100", "position_x": 1, "position_y": 2}"""),
-             O("""{"event": 25, "item": "100", "position_x": 1, "position_y": 2, "position_z": 3000000}"""),
+             O("""{"event": 25, "item": "100", "position_x": 1, "position_y": 2, "position_z": 3000000000}"""),
              O("""{"event": 25, "item": "x", "position_x": 1, "position_y": 2, "position_z": 3}"""));
         Assert.False(Row(Inventory(state, ME), "100").ContainsKey("position"));
         // without a hunt there is no reserve; a placement with no direction drops the old one
@@ -68,6 +68,16 @@ public class PlacedItemsTests : StateTestBase
         var item = Row(Inventory(state, ME), "100");
         Eq("""[{"x": 4, "y": 5, "z": 6}, null]""", T(item["position"], item["direction"]));
         Eq("""{"reserve": null, "pos": {"x": 0.004, "y": 0.005, "z": 0.006}}""", Listed(state, ME, 100)["location"]);
+    }
+
+    [Fact]
+    public void TestAPlacementFarFromTheOriginIsKept()
+    {
+        // the game sends whole millimetres: a tent 6.8 km west of the origin is -6800000
+        state.NoteLaunch(ME, "reserve=2"u8.ToArray());
+        Beat(ME, O("""{"event": 25, "item": "100", "position_x": -6800000, "position_y": 230000, "position_z": 870000, "direction_x": -600, "direction_y": 0, "direction_z": 800}"""),
+             O("""{"event": 8, "item": "100", "slot": 23}"""));
+        Eq("""{"reserve": 2, "pos": {"x": -6800, "y": 230, "z": 870}, "dir": {"x": -0.6, "y": 0, "z": 0.8}}""", Listed(Reopen(), ME, 100)["location"]);
     }
 
     [Fact]

@@ -9,8 +9,8 @@ public static class ServerCatalogApi
     public const string Reserves = "/catalog/reserves";
 }
 
-/// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id),
-/// <c>time</c> (minutes) and <c>loadout</c> (an id, 0 for the last equipment), or of <c>tutorial</c>: 200 <see cref="ServerLaunch"/>, 400 for a refused start, 401 when signed out.</summary>
+/// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)
+/// or <c>tent</c> (the id of a tent of <see cref="ServerAccountApi.Placed"/>), <c>time</c> (minutes) and <c>loadout</c> (an id, 0 for the last equipment), or of <c>tutorial</c>: 200 <see cref="ServerLaunch"/>, 400 for a refused start, 401 when signed out.</summary>
 public static class ServerLaunchApi
 {
     public const string Launch = "/auth/launch";

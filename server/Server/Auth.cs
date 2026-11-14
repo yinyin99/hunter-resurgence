@@ -503,8 +503,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return new(204, [("Cache-Control", "no-store"), ("Set-Cookie", Clear(SessionCookie, "/"))], [], "auth");
     }
 
-    /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` (and `time` in minutes,
-    /// `loadout`, a number each) first opens the hunt there as start_single_player does; a form with `tutorial` opens that tutorial's session instead; 400 for anything else.</summary>
+    /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` or `tent` (the guid of one of the
+    /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; a form with `tutorial`
+    /// opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve.</summary>
     public Reply Launch(Req r, GameTokens tokens)
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
@@ -520,12 +521,15 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             state.NoteTutorial(account, session, id);
             return Url(session);
         }
-        var (reserve, lodge, time, loadout) = (F("reserve"), F("lodge"), F("time"), F("loadout"));
-        if (reserve + lodge + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
+        var (reserve, lodge, tent, time, loadout) = (F("reserve"), F("lodge"), F("tent"), F("time"), F("loadout"));
+        if (reserve + lodge + tent + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
         static bool Whole(string s, bool optional = false) => s == "" ? optional : long.TryParse(s, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _);  // digits that fit a long
-        if (!Whole(reserve) || !Whole(lodge) || !Whole(time, true) || !Whole(loadout, true))
-            return Json(400, new JsonObject { ["error"] = "reserve and lodge are needed, time and loadout are numbers" });
-        state.NoteLaunch(account, Encoding.UTF8.GetBytes($"reserve={reserve}&lodge_id={lodge}&time={time}&loadout_id={loadout}"));
+        if (!Whole(reserve) || !Whole(lodge, tent != "") || !Whole(tent, lodge != "") || (lodge != "" && tent != "") || !Whole(time, true) || !Whole(loadout, true))
+            return Json(400, new JsonObject { ["error"] = "reserve and a lodge or a tent are needed, time and loadout are numbers" });
+        if (tent != "" && !state.IsPlacedTent(account, long.Parse(tent), long.Parse(reserve)))
+            return Json(400, new JsonObject { ["error"] = "that is not a tent of yours in this reserve" });
+        var start = tent != "" ? $"start={tent}&loctype=TENT" : $"lodge_id={lodge}";
+        state.NoteLaunch(account, Encoding.UTF8.GetBytes($"reserve={reserve}&{start}&time={time}&loadout_id={loadout}"));
         return Url();
     }
 

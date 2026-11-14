@@ -115,7 +115,7 @@ else
 
     // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
     bool ready => Status.State is PatchState.Ready or PatchState.Done;
-    static readonly MarkerKind[] strips = [MarkerKind.Tower, MarkerKind.Campsite, MarkerKind.Interest, MarkerKind.Bait, MarkerKind.Feeder, MarkerKind.TreeStand, MarkerKind.GroundBlind];
+    static readonly MarkerKind[] strips = [MarkerKind.Tower, MarkerKind.Campsite, MarkerKind.Interest, MarkerKind.Bait, MarkerKind.Feeder, MarkerKind.TreeStand, MarkerKind.GroundBlind, MarkerKind.Caller];
 
     /// <summary>Lodges or tents of the reserve as a list; hovering shows the marker's label on the map.</summary>
     RenderFragment Starts(MarkerKind kind) => @<ul>
