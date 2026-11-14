@@ -284,7 +284,6 @@ public static class Scoring
 
     // ---- features --------------------------------------------------------------------------------------------
 
-    // ponytail: elk crown points `i` are not mapped yet
     /// <summary>Server `features` from the kill's event 7 (spawn) and event 22 (trophy); null where the kill has nothing to score (an animal with no antlers, no species row).</summary>
     public static JsonNode? Features(int species, JsonObject e7, JsonObject e22, JsonNode? scale)
     {
@@ -447,6 +446,9 @@ public static class Scoring
             // abnormal points: `e`, only on a side that has any
             var abnormal = Arr(a, "abnormals").Select(p => L(Mm(Py.D(p!["length"])))).ToArray();
             if (abnormal.Length > 0) side["e"] = new JsonArray(abnormal);
+            // elk crown points: `i`, only on a side that has any
+            var crown = Arr(a, "crown_points").Select(p => L(Mm(Py.D(p!["length"])))).ToArray();
+            if (fam == "elk" && crown.Length > 0) side["i"] = new JsonArray(crown);
             return side;
         }
         return new JsonObject
