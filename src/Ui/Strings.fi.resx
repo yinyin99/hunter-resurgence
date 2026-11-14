@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Ei laukauksia</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Tällä retkellä ei ammuttu laukauksia.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Tällä retkellä ei ollut eläinkohtaamisia.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Tällä retkellä ei kerätty keräiltäviä.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Tällä retkellä ei saatu saavutuksia.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Tällä retkellä ei kerätty keräiltäviä sarvia.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Tällä retkellä ei ollut varmistettuja kaatoja.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Tämä metsästäjä ei ole vielä tehnyt yhtään retkeä.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Aloitus</value></data>

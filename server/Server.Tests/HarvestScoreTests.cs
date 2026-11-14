@@ -117,6 +117,22 @@ public class HarvestScoreTests : StateTestBase
     }
 
     [Fact]
+    public void ElkCrownPointsAddTheirLengthInInchesToTheScoreAndSoToTheGms()
+    {
+        double Total(string? crown)
+        {
+            var left = Antler();
+            if (crown is not null) left["crown_points"] = new JsonArray(O(crown));
+            var e22 = O("""{"event": 22, "greatest_spread": 900, "tip_to_tip_spread": 800, "inside_spread_of_main_beams": 700}""");
+            (e22["left_antler"], e22["right_antler"]) = (left, Antler());
+            return Py.D(Scoring.Score(3, Scoring.Features(3, new JsonObject(), e22, 1.0), 200000, null).Score);
+        }
+        var (with, without) = (Total("""{"length": 1270}"""), Total(null));
+        Assert.Equal(50.0, Math.Round(with - without, 4));  // 1270 mm = 50 in
+        Assert.True(Py.RoundInt(Scoring.Css(3, with)) > Py.RoundInt(Scoring.Css(3, without)));  // the gm$ paid is round(css)
+    }
+
+    [Fact]
     public void RescoreScoresAndPaysAnUnpaidHarvestOnceAndLeavesARefusedOneAndADryRunWritesNothing()
     {
         Harvest(17, 1);          // scorable

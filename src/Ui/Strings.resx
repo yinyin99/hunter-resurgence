@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>No shots fired</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>No shots fired during this expedition.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>No animal interactions during this expedition.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>No collectables collected during this expedition.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>No achievements taken during this expedition.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>No antler collectables collected during this expedition.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>No confirmed kills during this expedition.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>This hunter hasn't been on any expeditions.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

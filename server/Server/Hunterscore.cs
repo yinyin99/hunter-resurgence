@@ -126,14 +126,13 @@ public sealed partial class State
     }
 
     /// <summary>Award the achievements the account's statistics reach: for every definition of the connect reply's
-    /// `achievements` (`value` path, `triggers` thresholds), store the current time for each threshold at most its value
+    /// `achievements` (`value` path, `triggers` thresholds), store `now` (the close of the hunt that earned it, else the current time) for each threshold at most its value
     /// (<see cref="AchievementValue"/>) that has no time yet (a stored 0 is none), and that value (a stored larger one stays), in the account's
     /// achievement row (made when the value is above 0). Times already stored, a restore's too, are kept. Call it inside a transaction.
     /// ponytail: one query per definition (a few hundred) at every close and, for every account, at every start; read the
     /// account's rows once if that gets slow.</summary>
-    void AwardAchievements(Db con, JsonObject stats)
+    void AwardAchievements(Db con, JsonObject stats, long now)
     {
-        var now = (long)Clock();
         foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>())
         {
             if (!TryKey(def["id"], out var id) || !Py.IsStr(def["value"]))
@@ -162,6 +161,8 @@ public sealed partial class State
     public void UpdateHunterscore(Db con, long account)
     {
         con.Begin();
+        // the hunts closed since the last time carry their close as the earn time, so a hunt's page lists what it earned (several closed at once share the latest)
+        var closedAt = con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL");
         StoreHuntStats(con, account);
         if (Online && account != LocalAccount)
         {
@@ -169,7 +170,7 @@ public sealed partial class State
             var score = Score(facts, (JsonObject)stats["data"]!);
             con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
             con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
-            AwardAchievements(con, stats);
+            AwardAchievements(con, stats, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
         }
         con.Commit();
     }

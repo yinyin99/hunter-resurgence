@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Nie oddano strzałów</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Nie oddano strzałów podczas tej wyprawy.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Brak interakcji ze zwierzętami podczas tej wyprawy.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Brak zebranych przedmiotów podczas tej wyprawy.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Nie odblokowano osiągnięć podczas tej wyprawy.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Brak zebranych zrzutów poroża podczas tej wyprawy.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Nie potwierdzono zdobyczy podczas tej wyprawy.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Ten myśliwy nie był jeszcze na żadnych wyprawach.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

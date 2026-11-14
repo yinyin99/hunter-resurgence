@@ -144,6 +144,19 @@ public class ServerProfileServiceTests
         Assert.Equal("/hunters/fox/hunts/latest", fake.Seen[1].RequestUri!.AbsolutePath);
     }
 
+    [Fact]
+    public async Task AHuntListsItsPickupsAndTheAchievementsItEarned()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, """
+            {"id":12,"reserve":"Reserve","lodge":"","start":1700000100,"end":1700003700,"weapons":[],"animals":[],"distanceKm":0,"seconds":3600,"kills":[],
+             "collectables":[{"name":"Fungus","score":12.5,"ts":1700000500}],"antlers":[{"species":"Deer","double":true,"score":40.25}],"achievements":[{"title":"Walker","description":"Walk 10 km"}]}
+            """)));
+        var hunt = await service.ExpeditionAsync("fox", 12);
+        Assert.Equal(new Pickup("Fungus", 12.5, new DateTime(2023, 11, 14, 22, 21, 40, DateTimeKind.Utc)), Assert.Single(hunt!.Collectables));
+        Assert.Equal(new ShedAntler("Deer", true, 40.25), Assert.Single(hunt.Antlers));
+        Assert.Equal(new Achievement("Walker", "Walk 10 km", new DateOnly(2023, 11, 14)), Assert.Single(hunt.Achievements));
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.NotFound, "{}")]
     [InlineData(HttpStatusCode.OK, "<html>")]

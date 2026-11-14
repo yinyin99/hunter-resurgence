@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Niciun foc tras</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Niciun foc tras în această expediție.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Nicio interacțiune cu animalele în această expediție.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Niciun colectibil adunat în această expediție.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Nicio realizare obținută în această expediție.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Niciun corn de colecție adunat în această expediție.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Nicio doborâre confirmată în această expediție.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Acest vânător nu a participat la nicio expediție.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Aucun tir</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Aucun coup de feu n’a été tiré durant cette chasse.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Il n’y a eu aucune interaction avec des animaux durant cette chasse.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Aucun objet ni aucun champignon n’a été collecté durant cette chasse.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Aucun succès n’a été déverrouillé durant cette chasse.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Aucun bois n’a été collecté durant cette chasse.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Aucun prélèvement n’a été confirmé durant cette chasse.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Ce chasseur n’a pas encore chassé.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Départ</value></data>

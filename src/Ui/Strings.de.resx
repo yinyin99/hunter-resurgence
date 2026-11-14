@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Keine Schüsse abgegeben</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Bei dieser Jagd wurde nicht geschossen.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Bei dieser Jagd gab es keine Begegnung mit Wild.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Bei dieser Jagd wurden keine Sammelobjekte gefunden.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Bei dieser Jagd wurden keine Errungenschaften erzielt.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Bei dieser Jagd wurden keine Abwurfstangen gefunden.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Bei dieser Jagd wurde kein Abschuss bestätigt.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Dieser Jäger war noch auf keiner Jagd.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

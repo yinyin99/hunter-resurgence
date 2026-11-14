@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Brez strelov</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Med to odpravo ni bilo oddanih strelov.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Med to odpravo ni bilo stikov z živalmi.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Med to odpravo ni bilo zbranih zbirateljskih predmetov.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Med to odpravo ni bilo pridobljenih dosežkov.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Med to odpravo ni bilo zbranih zbirateljskih rogov.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Med to odpravo ni bilo potrjenih odstrelov.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Ta lovec še ni bil na nobeni odpravi.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Začetek</value></data>

@@ -743,6 +743,23 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
+    public void TestAPickupTypeWithItsRangeOnlyInTheFactsFileScoresFromIt()
+    {
+        // invented ranges: type 7 only in the facts file (an antler), type 9 in both (the install's range wins)
+        var facts = Facts.Parse("""{"format": 1, "collectables": {"7": {"score": {"min": 10, "max": 20}}, "2007": {"cat": "ANTLER", "score": {"min": 40, "max": 90}}, "9": {"score": {"min": 500, "max": 900}}}}""");
+        state = new State(Path.Combine(tmp, "facts-score.db"), Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, facts: facts)
+        {
+            Collectables = new Dictionary<long, JsonObject> { [9] = O("""{"id": 9, "cat": "MUSHROOM", "score": {"min": 3, "max": 78}}""") },
+        };
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        var updates = Hb(O("""{"event": 24, "collectable_id": 1, "type": 7, "x": 1, "y": 2, "z": 3, "scale": 50}"""),
+                         O("""{"event": 36, "collectable_id": 2, "species_id": 7, "antlers_score_percentage": 0.5, "x": 1, "y": 2, "z": 3}"""),
+                         O("""{"event": 24, "collectable_id": 3, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}""")).Where(u => Py.Eq(u!["update"], 7));
+        Eq("""[{"collectable_id": 1, "score": "15", "update": 7}, {"collectable_id": 2, "score": "65", "update": 7}, {"collectable_id": 3, "score": "78g / 2.75oz", "update": 7}]""",
+           new JsonArray(updates.Select(u => C(u)).ToArray()));
+    }
+
+    [Fact]
     public void TestHuntEndsAtLastHeartbeatWithoutDisconnect()
     {
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
