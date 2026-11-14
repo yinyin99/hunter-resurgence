@@ -36,7 +36,7 @@ public class WatcherTests
     }
 
     /// <summary>Starts a renamed copy of cmd.exe as a fake client and reads the token from its command line. Nothing but those fake processes is touched.
-    /// The watcher finds the client by process name, so the name carries a fresh guid: a fixed name made concurrent test runs (CI jobs, several local runs) see each other's fake clients and fail the first or the last assertion.
+    /// The watcher finds the client by process name, so the name carries a fresh guid: a fixed name made concurrent test runs (CI jobs, several local runs) see each other's fake clients and fail the assertions.
     /// Before the fix 2 of 9 loaded runs failed; after it this test passed in 10 rounds of 3 full suites running at once.</summary>
     [Fact]
     public void WatcherReadsTheTokenFromAFakeProcess()
