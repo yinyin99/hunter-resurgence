@@ -104,7 +104,8 @@ public static class GameApi
                     return s.Online ? new(200, JsonAnyOrigin(), Py.DumpBytes(game.Tokens!.Launch(a)), "state") : null;  // offline: the recorded reply
                 }))
                .WithName("LaunchStart").WithSummary("Launch a hunt in a reserve")
-               .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one). Reply: `{access_token, refresh_token, "
+               .WithDescription("Opens a new expedition at `start` in `reserve` (closing any open one); with a tent's define as `loctype`, `start` is the guid of one of the account's tents placed in `reserve` and the "
+                                + "connect spawns there. Reply: `{access_token, refresh_token, "
                                 + "session, status}` with fresh tokens of the player; a local server replays the recorded one. A non-zero `loadout_id` of one of the account's loadouts sets its item slots first.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, START_SINGLE_PLAYER, r => Own(game, r, a =>
@@ -664,8 +665,8 @@ public static class GameApi
     public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);
 
     public sealed record LaunchStartForm(
-        [property: Description("Start location id (a lodge)")] long start,
-        [property: Description("`LODGE`")] string loctype, long reserve,
+        [property: Description("Start location id (a lodge), or the guid of a placed tent")] long start,
+        [property: Description("`LODGE`, or a placed tent's define (`TENT`, `TENT06`, `HEATED_TENT`...): then `start` is the tent's guid")] string loctype, long reserve,
         [property: Description("Start time of day, minutes")] long time,
         [property: Description("One of the account's loadouts, put on before the connect; 0: the equipment last saved")] long loadout_id, string? oauth_access_token);
 

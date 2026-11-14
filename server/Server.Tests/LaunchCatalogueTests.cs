@@ -31,8 +31,18 @@ public class LaunchCatalogueTests : StateTestBase
              "image": "x", "variationname": null, "units": null, "fit": {}, "inventory": {"slots": [0, 1, 8], "capacity": 0, "weight": 1},
              "price": 10, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 0}, "hidden": 0}
             """));
+        foreach (var gear in new[] { Gear(901, "TENT02", "Test Tent"), Gear(902, "TREE_STAND01", "Test Stand"), Gear(903, "ELECTRONIC_CALLER", ""), Gear(904, "GROUND_BLIND01", "Test Blind"),
+                                     Gear(905, "CLIMBING_GEAR_01", "Test Climbing Gear") })
+            app["items"]!.AsArray().Add(gear);
         return app;
     }
+
+    /// <summary>An item that can be placed (slot 23), with an invented name and define.</summary>
+    static JsonNode Gear(int id, string define, string name) => JsonNode.Parse($$"""
+        {"id": {{id}}, "name": "{{name}}", "description": "", "define": "{{define}}", "type": 41, "group": 13, "cat": 41, "client_type": 4,
+         "image": "x", "variationname": null, "units": null, "fit": {}, "inventory": {"slots": [0, 23], "capacity": 0, "weight": 1},
+         "price": 10, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 0}, "hidden": 0}
+        """)!;
 
     async Task<Loopback> Start(JsonObject? app = null, bool offline = false, Facts? facts = null)
     {
@@ -211,5 +221,118 @@ public class LaunchCatalogueTests : StateTestBase
         var rows = state.PublicHunts(ME, 1)["rows"]!.AsArray();
         Eq("""["", "Old Mill", "Border Lodge", "Lodge 1"]""", new JsonArray(rows.Select(r => (JsonNode?)r!["lodge"]!.DeepClone()).ToArray()));
         Eq("""["", "Old Mill", "Border Lodge", "Lodge 1"]""", new JsonArray(rows.Select(r => (JsonNode?)state.PublicHunt(ME, (long)r!["id"]!)!["lodge"]!.DeepClone()).ToArray()));
+    }
+
+    // ---- placed items and tents
+
+    /// <summary>The game's way of placing: the player owns the item in slot 0, has a hunt in the reserve, then heartbeat event 25 (millimetres, direction x 1000) and event 8 into slot 23.</summary>
+    void Place(long guid, long itemId, long reserve, long mmX, long mmZ)
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            PlayerRows.AddItem(con, guid, itemId, 0, null, new JsonObject());
+            con.Commit();
+        }
+        state.NoteLaunch(ME, Encoding.ASCII.GetBytes($"reserve={reserve}"));
+        state.HeartbeatReply(ME, Events(O($$"""{"event": 25, "item": "{{guid}}", "position_x": {{mmX}}, "position_y": 1000, "position_z": {{mmZ}}, "direction_x": 500, "direction_y": 0, "direction_z": -500}"""),
+                                        O($$"""{"event": 8, "item": "{{guid}}", "slot": 23}""")));
+    }
+
+    [Fact]
+    public async Task ThePlacedTentsCallersBlindsAndStandsOfThePlayerAreListedAtTheirPlace()
+    {
+        await using var server = await Start(facts: MapFacts);
+        Place(501, 901, 1, 500_000, 500_000);        // a tent in the middle of the first reserve's map
+        Place(502, 902, 1, -500_000, 1_500_000);     // a stand at its left edge, at the bottom
+        Place(503, 903, 1, 1_500_000, -500_000);     // a caller the catalogue has no name for, at the right edge, at the top
+        Place(504, 904, 2, -6_420_000, 3_310_000);   // a blind where the second reserve's lodge is
+        Place(505, 905, 1, 0, 0);                    // climbing gear is not on the map
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            PlayerRows.AddItem(con, 506, 901, 0, null, new JsonObject());                                       // a tent that is not placed
+            PlayerRows.AddItem(con, 507, 901, 23, null, O("""{"__position": {"x": 1, "y": 2, "z": 3}}"""));   // a placed one with no reserve
+            con.Commit();
+        }
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/account/placed", [])).Status);
+        var reply = await server.SendAsync("GET", "web.test", "/account/placed", [cookie]);
+        Assert.Equal(200, reply.Status);
+        var lodge = JsonNode.Parse(Py.DumpBytes(state.LaunchCatalogue()))!["reserves"]!.AsArray().Single(r => (int)r!["id"]! == 2)!["starts"]!.AsArray().Single(s => (int)s!["id"]! == 101)!;
+        Eq($$"""
+            {"items": [{"id": 501, "reserve": 1, "kind": "tent", "name": "Test Tent", "x": 50, "y": 50},
+                       {"id": 502, "reserve": 1, "kind": "treestand", "name": "Test Stand", "x": 0, "y": 100},
+                       {"id": 503, "reserve": 1, "kind": "caller", "name": "Caller", "x": 100, "y": 0},
+                       {"id": 504, "reserve": 2, "kind": "groundblind", "name": "Test Blind", "x": {{lodge["x"]}}, "y": {{lodge["y"]}}}]}
+            """, JsonNode.Parse(reply.Body));  // the second reserve's map is the square round its starts, so the blind has the lodge's own percent
+    }
+
+    [Fact]
+    public async Task AReserveAndAPlacedTentOpenTheHuntAndTheGameSpawnsAtTheTent()
+    {
+        var reply = await Launch("reserve=1&tent=501&time=480", prepare: () => Place(501, 901, 1, 500_000, 500_000));
+        Assert.Equal(200, reply.Status);
+        Assert.Equal("1:0", Open());  // the hunt is at the reserve's first location number
+        var expedition = JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!;  // lodge 0: the game reads reserve 1 from it (lodge / 100)
+        Eq("[0, 500.0, 1.0, 500.0, 500, 0, -500, 480]", T(expedition["lodge"], expedition["x"], expedition["y"], expedition["z"], expedition["dir_x"], expedition["dir_y"], expedition["dir_z"], expedition["start_time"]));
+        Eq("[0, 500.0]", T(JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!["lodge"], JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!["x"]));  // a second connect of the hunt starts there too
+
+        // the tent is picked up: the hunt starts at its location, which the catalogue does not list, so at the recorded start
+        state.HeartbeatReply(ME, Events(O("""{"event": 8, "item": "501", "slot": 0}""")));
+        var recorded = JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!;
+        Eq("[100, -9150.0]", T(recorded["lodge"], recorded["x"]));
+    }
+
+    [Theory]
+    [InlineData("reserve=2&tent=501")]                // a tent of another reserve
+    [InlineData("reserve=1&tent=502")]                // a stand, not a tent
+    [InlineData("reserve=1&tent=999")]                // no item of the player's
+    [InlineData("reserve=1&tent=506")]                // a tent that is not placed
+    [InlineData("reserve=1&tent=501&lodge=11")]       // two starts
+    [InlineData("reserve=1&tent=x")]
+    public async Task OnlyAPlacedTentOfThePlayerInThatReserveIsATentStart(string form)
+    {
+        var reply = await Launch(form, prepare: () =>
+        {
+            Place(501, 901, 1, 500_000, 500_000);
+            Place(502, 902, 1, 0, 0);
+            using var con = state.Store.Open(ME);
+            con.Begin();
+            PlayerRows.AddItem(con, 506, 901, 0, null, new JsonObject());
+            con.Commit();
+        });
+        Assert.Equal(400, reply.Status);
+        Assert.Equal("1:", Open());  // still the hunt the placing opened: nothing new
+    }
+
+    [Fact]
+    public void LaunchStartWithATentLoctypeStartsAtTheTentAndAnythingElseAtNoStart()
+    {
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES);
+        Place(501, 901, 1, 500_000, 500_000);
+        state.NoteLaunch(ME, "start=501&loctype=TENT02&reserve=1&time=540"u8.ToArray());  // the original sent the item's define as the loctype
+        var expedition = JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!;
+        Eq("[0, 500.0, 540]", T(expedition["lodge"], expedition["x"], expedition["start_time"]));
+        state.NoteLaunch(ME, "start=501&loctype=HEATED_TENT&reserve=2"u8.ToArray());  // not placed in reserve 2: no start, as with any start that is nothing
+        Assert.Equal("2:", Open());
+        state.NoteLaunch(ME, "start=501&loctype=LODGE&reserve=1"u8.ToArray());  // a lodge number, never an item guid
+        Assert.Equal("1:501", Open());
+    }
+
+    [Fact]
+    public void TheTentColumnIsAddedToAnOlderDatabase()
+    {
+        var file = Path.Combine(tmp, "v20.db");
+        var store = new Store(file);
+        store.CreateAccount(5, "old", new JsonObject());
+        using (var con = store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN tent");
+            con.Exec("PRAGMA user_version = 20");
+        }
+        using var check = new Store(file).Open();
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'tent'"));
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
 }

@@ -1,8 +1,9 @@
 namespace Resurgence.Services;
 
 public sealed record Reserve(int Id, string Name);
-public enum MarkerKind { Lodge, Tent, Campsite, Tower, Interest, Bait, Feeder, TreeStand, GroundBlind }
-/// <summary>A place on a reserve map; X and Y are percent of the map pane (the reserve's map picture).</summary>
+public enum MarkerKind { Lodge, Tent, Campsite, Tower, Interest, Bait, Feeder, TreeStand, GroundBlind, Caller }
+/// <summary>A place on a reserve map; X and Y are percent of the map pane (the reserve's map picture). A start's Id is the catalogue's location number; a placed item of the player
+/// (tent, caller, blind, stand) has the negated guid of the item, so no two markers of a map share an Id.</summary>
 public sealed record MapMarker(int Id, MarkerKind Kind, string Name, double X, double Y);
 /// <summary>A hunter in a game; X and Y are percent of the reserve map, where the join map draws the hunter.</summary>
 public sealed record GamePlayer(string Handle, int HunterScore, int X = 50, int Y = 50, string Avatar = Avatars.Default);

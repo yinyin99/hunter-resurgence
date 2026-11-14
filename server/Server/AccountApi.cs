@@ -256,6 +256,15 @@ public static class AccountApi
             .WithDescription("`{items: [{id, name, variant, category, categoryName, units, slot, equipped, expires}]}`, one row per owned copy, oldest first: name, variant and the store's sub-category are the catalogue's, `units` is null for an item that is not counted, `equipped` is a slot above 0, `expires` is the end of a license or timed item in unix seconds (0 for an unlimited one), null for an item with none.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/placed", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.PlacedItems(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountPlaced").WithSummary("The player's own placed tents, callers, blinds and stands, for the launcher's map")
+            .WithDescription("`{items: [{id, reserve, kind, name, x, y}]}`: `id` is the item's guid (the number `POST /auth/launch` takes as `tent` for a tent), `reserve` the web's reserve number, `kind` one of "
+                             + "`tent`, `caller`, `groundblind`, `treestand`, `name` the catalogue's, `x` and `y` percent of the reserve's map picture, as the starts of `GET /catalog/reserves`. "
+                             + "Only items in slot 23 with a position and a reserve.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/events", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.EventStatus(account))
                 : Refuse(401, "signed_out", "Sign in first."))

@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 20;
+    public const int Version = 21;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -196,7 +196,8 @@ public sealed class Store
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
             first_event INTEGER, distance INTEGER, last_seen REAL,
             stats TEXT,   -- a closed hunt's statistics (State.HuntStats), stored at its close
-            start_time INTEGER);  -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
+            start_time INTEGER,   -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
+            tent INTEGER);        -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -319,6 +320,8 @@ public sealed class Store
             if (version < 19) con.Script(CommunityProgress);
             if (version < 20 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'discord_invited'")! == 0)
                 con.Script("ALTER TABLE accounts ADD COLUMN discord_invited INTEGER NOT NULL DEFAULT 0");
+            if (version < 21 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'tent'")! == 0)
+                con.Script("ALTER TABLE expeditions ADD COLUMN tent INTEGER");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
