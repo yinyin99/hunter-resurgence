@@ -2,6 +2,7 @@ name: dependabot-locks
 # A Dependabot update needs every packages.lock.json it affects, or the locked restore fails (NU1004): an SDK update (global.json, src/Web/Dockerfile, server/Server/Dockerfile) changes all of them,
 # a NuGet update (a .csproj) those of the projects that reference the bumped one too, which Dependabot leaves alone (server/Server.Tests references server/Server).
 # This regenerates them on the pull request's branch and commits them; workflow_dispatch does the same for a branch by hand (docs/deploy.md).
+# The pull_request run of ci on that commit waits for a maintainer's approval (a commit by github-actions[bot]); once approved, its checks count for the pull request.
 on:
   pull_request:
     paths: [global.json, src/Web/Dockerfile, server/Server/Dockerfile, '**/*.csproj', '**/packages.lock.json']
@@ -13,7 +14,6 @@ jobs:
     runs-on: windows-latest # as ci: the backup tool is a Windows project
     permissions:
       contents: write # push the lock files
-      actions: write # start ci for that commit
     env:
       BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
@@ -34,7 +34,6 @@ jobs:
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "build: regenerate lock files"
           echo "committed=true" >> "$GITHUB_OUTPUT"
       - name: Push the lock files
-        id: push
         if: steps.commit.outputs.committed == 'true'
         shell: bash
         env:
@@ -43,10 +42,3 @@ jobs:
           auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
           echo "::add-mask::$auth" # the token is masked in logs, its base64 form is not
           git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" push origin "HEAD:$BRANCH"
-          echo "pushed=true" >> "$GITHUB_OUTPUT"
-      # a push made with GITHUB_TOKEN starts no workflow; workflow_dispatch does, and its checks land on the new commit
-      - if: steps.push.outputs.pushed == 'true'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run ci.yml --ref "$BRANCH"
