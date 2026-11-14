@@ -36,8 +36,9 @@ static class Forwarder
             k.Limits.MaxRequestBodySize = null;
             k.RequestHeaderEncodingSelector = _ => Encoding.Latin1;
             k.ResponseHeaderEncodingSelector = _ => Encoding.Latin1;
-            // HTTP/1.1 only: ALPN would move the game's embedded browser to HTTP/2
-            if (tls is not null) k.Listen(IPAddress.Loopback, httpsPort, l => { l.Protocols = HttpProtocols.Http1; l.UseHttps(tls); });
+            // HTTP/1.1 only: ALPN would move the game's embedded browser to HTTP/2.
+            // Only this PC's game connects, so Kestrel's 10 s handshake limit (made against slow strangers) only drops a handshake on a busy PC.
+            if (tls is not null) k.Listen(IPAddress.Loopback, httpsPort, l => { l.Protocols = HttpProtocols.Http1; l.UseHttps(tls, o => o.HandshakeTimeout = TimeSpan.FromMinutes(1)); });
             k.Listen(IPAddress.Loopback, httpPort, l => l.Protocols = HttpProtocols.Http1);
         });
         var app = builder.Build();
