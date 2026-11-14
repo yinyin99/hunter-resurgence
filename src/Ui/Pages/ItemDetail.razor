@@ -66,7 +66,7 @@
                     <section class="ethics">
                         <h4>@L["Store.Ethical"]</h4>
                         <table class="tbl tbl-c">
-                            <thead><tr><th></th>@foreach (var c in ethics.Columns) { <th>@if (ethics.Columns.Count == 1) { <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="46" Height="34" Class="thumb" /> } else { @c }</th> }</tr></thead>
+                            <thead><tr><th></th>@foreach (var c in ethics.Columns) { <th title="@c" aria-label="@c">@if (ethics.Columns.Count == 1 && c == item.Name) { <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="46" Height="34" Class="thumb" /> } else { @c }</th> }</tr></thead>
                             <tbody>
                                 @foreach (var (name, r) in ethics.Rows.Select(r => (L.Term("species", r.Id, r.Species), r)).OrderBy(x => x.Item1, StringComparer.CurrentCultureIgnoreCase))
                                 {

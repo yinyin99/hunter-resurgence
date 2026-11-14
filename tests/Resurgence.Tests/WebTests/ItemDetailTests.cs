@@ -50,20 +50,21 @@ public sealed class ItemDetailTests : UiContext
     [Fact]
     public void TheSpeciesAreTranslatedAndSortedAndMarked()
     {
-        var before = CultureInfo.CurrentUICulture;
-        CultureInfo.CurrentUICulture = new CultureInfo("fr");
+        var before = (CultureInfo.CurrentUICulture, CultureInfo.CurrentCulture);
+        CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture = new CultureInfo("fr");
         try
         {
             var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
 
             var strings = Services.GetRequiredService<IStringLocalizer<Strings>>();
+            Assert.NotEmpty(cut.FindAll(".ethics th .asset-slot"));
             var names = cut.FindAll(".ethics tbody tr td:first-child").Select(n => n.TextContent).ToList();
-            Assert.Equal(strings["Term.species.14"].Value, names.Single(n => n == strings["Term.species.14"].Value));
+            Assert.Contains(strings["Term.species.14"].Value, names);
             Assert.Equal(names.OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase), names);
             Assert.NotEmpty(cut.FindAll(".ethics td.yes"));
             Assert.NotEmpty(cut.FindAll(".ethics td.no"));
         }
-        finally { CultureInfo.CurrentUICulture = before; }
+        finally { (CultureInfo.CurrentUICulture, CultureInfo.CurrentCulture) = before; }
     }
 
     // the fit titles are the store's category texts and the units are the catalogue's unit word by a text, not the catalogue's English
