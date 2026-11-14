@@ -1,6 +1,6 @@
 # Profile backup tool
 
-Historical: the official servers closed on 2026-11-11, so the official-servers mode below can no longer reach them and is kept only as a record of what the tool did. `tools/backup/` is a Windows desktop app that saves a player's profile from the official servers as raw replies, before they shut down on 2026-11-11. It only reads: it never changes anything on the server.
+Historical: the official servers closed on 2026-11-11, so the official-servers mode described here can no longer reach them and is kept as a record of what the tool did. `tools/backup/` is a Windows desktop app that saves a player's profile from the official servers as raw replies. It only reads: it never changes anything on the server.
 
 ## How it works, in short
 
