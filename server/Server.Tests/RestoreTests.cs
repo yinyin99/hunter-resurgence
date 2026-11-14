@@ -455,6 +455,23 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void ImportPicturesAddsOnlyThePicturesAndTheAvatarToAnAccountThatHasPlayedSince()
+    {
+        Restorer.Import(state, Zip(TestZip.Own()), null, tmp);  // restored before pictures were stored
+        state.Give(1001, "em", 5);
+        var wallet = state.Wallet(1001)!.ToJsonString();
+        Assert.Empty(Gallery(1001));
+        var (report, avatar) = Restorer.ImportPictures(state, Zip(TestZip.Own().Pictures().Media("images/avatars.example_a.png", Uploaded), "pictures.zip"), 1001, tmp);  // the picture named by the profile's address (Pictures() holds another one)
+        Assert.Contains("pictures stored: gallery 2", report);
+        Assert.Equal($"{BASE}/photos/1001/avatar.jpg", avatar);
+        Assert.Equal(wallet, state.Wallet(1001)!.ToJsonString());
+        Assert.Equal(2, Gallery(1001).Count);
+        Assert.Equal($"{BASE}/photos/1001/avatar.jpg", (string)Connect(1001)["account"]!["avatar_url"]!);
+        Assert.Equal(7, Directory.GetFiles(Path.Combine(tmp, "photos", "1001")).Length);  // two gallery pictures, a kill photo, a score page, two images_ pictures, the avatar
+        Assert.Throws<RestoreException>(() => Restorer.ImportPictures(state, Zip(TestZip.Own(), "x.zip"), 555, tmp));
+    }
+
+    [Fact]
     public void TestADatabaseOfSchema9GetsTheSavedColumnOfThePhotos()
     {
         var file = Path.Combine(tmp, "old9.db");

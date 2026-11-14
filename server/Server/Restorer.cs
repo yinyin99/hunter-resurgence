@@ -50,6 +50,47 @@ public static class Restorer
         return Apply(state, zipPath, sha, read, id, id, handle, exists, backupDatabase: true, dataDir, null);
     }
 
+    /// <summary>Restore only the pictures of the zip onto an existing account (<see cref="State.PreparePictures"/>) and its avatar; nothing else of the account changes.
+    /// Returns the pictures report and the avatar link.</summary>
+    /// <exception cref="RestoreException">The zip is refused or the account does not exist.</exception>
+    public static (string Report, string Avatar) ImportPictures(State state, string zipPath, long id, string dataDir)
+    {
+        var read = Importer.Read(zipPath, state.Catalogue);
+        var store = state.Store;
+        if (!store.AccountExists(id)) throw new RestoreException($"account {id} does not exist");
+        var kept = Path.Combine(dataDir, "restores", id.ToString(), Sha256(zipPath) + ".zip");
+        var copied = !File.Exists(kept);
+        if (copied)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
+            File.Copy(zipPath, kept);
+        }
+        var avatar = state.RestoredAvatarUrl(read, id);
+        State.Unpacking pictures;
+        try
+        {
+            using var con = store.Open(id);
+            con.Begin();
+            pictures = state.PreparePictures(con, read);
+            var account = store.AccountJson(id);
+            SetAvatar(account, read.Model, avatar);
+            con.Exec("UPDATE accounts SET account = ? WHERE id = ?", Py.Dumps(account), id);
+            if (con.Scalar("SELECT body FROM profile WHERE account_id = $a") is string body && JsonNode.Parse(body) is JsonObject me)
+            {
+                me["avatar"] = avatar;
+                PlayerRows.SetProfile(con, me);
+            }
+            con.Commit();
+        }
+        catch
+        {
+            if (copied) File.Delete(kept);
+            throw;
+        }
+        state.Unpack(id, kept, pictures);
+        return (pictures.Report, avatar);
+    }
+
     public static string Sha256(string path)
     {
         using var f = File.OpenRead(path);
@@ -159,14 +200,20 @@ public static class Restorer
         a["membership"] = p.MembershipInt;
         a["gender"] = p.Gender;
         a["hunterscore"] = p.Hunterscore;
-        a["face"] = m.Account.Face;
-        foreach (var key in new[] { "avatar", "avatar_id" })  // the account's own copies of the chosen avatar
-            if (a.ContainsKey(key)) a[key] = m.Account.Face;
+        SetAvatar(a, m, avatarUrl);
         a["facebook_enabled"] = m.Account.FacebookEnabled;
         a["share_on_facebook"] = m.Account.ShareOnFacebook != 0;
         Put(a, "hostname", p.Hostname);
-        a["avatar_url"] = avatarUrl;
         return a;
+    }
+
+    /// <summary>The account's own copies of the chosen avatar: `face`, `avatar`, `avatar_id` (where it has them) and `avatar_url`.</summary>
+    static void SetAvatar(JsonObject a, PlayerModel m, string avatarUrl)
+    {
+        a["face"] = m.Account.Face;
+        foreach (var key in new[] { "avatar", "avatar_id" })
+            if (a.ContainsKey(key)) a[key] = m.Account.Face;
+        a["avatar_url"] = avatarUrl;
     }
 
     static void Put(JsonObject o, string key, JsonNode? value)

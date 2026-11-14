@@ -23,9 +23,11 @@ const string ImportUsage = """
     Restore a backup zip into an account of state.db in the data folder (the zip's reader is src/Restore).
 
     Usage (repo root): dotnet run --project server/Server -- import backup <zip> [--account <id>]
+                       dotnet run --project server/Server -- import pictures <zip> --account <id>
     Any zip is accepted. The account's profile (items, wallet, skills, profile, statistics, achievements, trophies, lodges) is
     replaced, not merged; hunt history stays; the old database is copied beside it first. Without --account the account is the zip's
     user id (created when it does not exist), on a local server (offline_mode true) the local account. The zip is kept in the data folder.
+    import pictures restores only the zip's pictures (gallery, kill photos, score pages, avatar) onto an existing account and leaves everything else as it is.
     """;
 
 const string ReviewUsage = """
@@ -143,6 +145,21 @@ void Admin(string[] a)
 void Import(string[] a)
 {
     long? account = null;
+    if (a is ["pictures", var zip, "--account", var who] && long.TryParse(who, out var target) && target > 0)
+    {
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        try
+        {
+            var (report, avatar) = Restorer.ImportPictures(loaded, zip, target, settings.DataDir);
+            Console.WriteLine(report);
+            Console.WriteLine($"avatar: {avatar}");
+        }
+        catch (RestoreException e) { Die($"refused: {e.Message}"); }
+        catch (IOException e) { Die($"cannot read: {e.Message}"); }
+        return;
+    }
     if (a.Length is not (2 or 4) || a[0] != "backup" || (a.Length == 4 && (a[2] != "--account" || !long.TryParse(a[3], out var id) || id < 1)))
         Die(ImportUsage);
     if (a.Length == 4) account = long.Parse(a[3]);
