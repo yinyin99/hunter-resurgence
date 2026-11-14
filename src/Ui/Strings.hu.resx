@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Eseménytárgyak</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trófeacsarnokok</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Járművek</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Puskák</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Puskalőszer</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrieverek</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Szagcsalik</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Dzsekik és ingek</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Készlet</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optikák</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Magasleshelyek és leshelyek</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Elrendezések</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Parkőrök</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Állatok</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Pisztolyok</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Sörétes puskák</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Íjak és számszeríjak</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Elöltöltős fegyverek</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Elöltöltős pisztolyok</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Fejlett lőfegyverek</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Pisztolylőszer</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Sörétes lőszer</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Íj- és számszeríjlőszer</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Elöltöltős lőszer</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Kutyafelszerelés</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Kutyafogyóeszközök</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Vérebek</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Német vizslák</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Hívók</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Csalétkek</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Csalimadarak</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Elektronikus hívó</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Nadrágok</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Kalapok</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Kesztyűk</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Lábbelik</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Arcvédők</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Szemüvegek</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Hátizsákok</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatarok</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Vadász</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>HunterMate alkalmazások</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Fogyóeszközök</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Telepíthető eszközök</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Egyéb</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Telepíthető célpontok</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Sátrak</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Csalétkes helyek</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Ünnepek</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Nyári fiesta</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Hosszú éjszaka</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Stílusok</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Fegyvertartók</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Benzin</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Puskairányzékok</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Pisztolyirányzékok</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Sörétespuska-irányzékok</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Íj- és számszeríj-irányzékok</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Elöltöltő-irányzékok</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Keresés</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>VÁSÁRLÁS</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>NEM VÁSÁROLHATÓ</value></data>

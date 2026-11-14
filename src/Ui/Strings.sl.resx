@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Za dogodke</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trofejne koče</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Vozila</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Puške</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Naboji za puške</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Prinašalci</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Vonjalne vabe</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Jakne in srajce</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Zaloga</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optika</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Preže in skrivališča</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Postavitve</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Čuvaji parka</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Živali</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Pištole</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Šibrovke</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Loki in samostreli</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Orožje na sprednje polnjenje</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Pištole na sprednje polnjenje</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Napredno strelno orožje</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Naboji za pištole</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Naboji za šibrovke</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Puščice za loke in samostrele</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Streljivo za orožje na sprednje polnjenje</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Oprema za pse</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Potrošni material za pse</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Krvosledci</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Nemški ptičarji</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Vabilniki</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Hrana za vabo</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Makete</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Elektronski vabilnik</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Hlače</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Klobuki</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Rokavice</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Obutev</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Zaščita obraza</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Očala</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Nahrbtniki</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatarji</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Lovec</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>Aplikacije HunterMate</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Potrošni material</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Postavljiva oprema</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Razno</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Postavljive tarče</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Šotori</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Mesta za vabe</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Prazniki</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Poletna fiesta</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Dolga noč</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Slogi</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Stojala za orožje</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Bencin</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Optika za puške</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Optika za pištole</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Optika za sačmarice</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Optika za lok in samostrel</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Optika za prednjače</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Iskanje</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KUPI</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Ni naprodaj</value></data>
