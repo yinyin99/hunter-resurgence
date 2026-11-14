@@ -101,14 +101,14 @@ static class LauncherServices
             sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreService>>()));
     }
 
-    /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after 5 s.</summary>
-    internal static async Task<AssetImages> LoadImages(Uri? server)
+    /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after <paramref name="timeout"/> (5 s; only a test passes another).</summary>
+    internal static async Task<AssetImages> LoadImages(Uri? server, TimeSpan? timeout = null)
     {
         if (server is null)
             return new AssetImages(new Dictionary<string, string>());
         try
         {
-            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            using var http = new HttpClient { Timeout = timeout ?? TimeSpan.FromSeconds(5) };
             var index = await http.GetFromJsonAsync<Dictionary<string, string>>(new Uri(server, "/images.json"));
             return new AssetImages(index ?? new Dictionary<string, string>(), server.GetLeftPart(UriPartial.Authority));
         }
