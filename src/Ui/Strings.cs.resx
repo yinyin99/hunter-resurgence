@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Předměty událostí</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trofejní myslivny</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Vozidla</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Pušky</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Náboje do pušky</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrieveři</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Pachové návnady</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Bundy a košile</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Inventář</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optika</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Posedy a kryty</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Rozvržení</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Správci parku</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Zvířata</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Pistole</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Brokovnice</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Luky a kuše</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Zbraně s předním nabíjením</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Pistole s předním nabíjením</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Pokročilé střelné zbraně</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Náboje do pistole</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Náboje do brokovnice</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Šípy do luku a kuše</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Střelivo pro zbraně s předním nabíjením</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Vybavení pro psy</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Spotřební zboží pro psy</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Barváři</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Němečtí ohaři</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Přivolávače</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Návnady</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Atrapy</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Elektronický přivolávač</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Kalhoty</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Klobouky</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Rukavice</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Obuv</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Ochrana obličeje</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Brýle</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Batohy</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatary</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Lovec</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>Aplikace HunterMate</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Spotřební zboží</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Rozmístitelné vybavení</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Různé</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Rozmístitelné terče</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Stany</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Návnadová místa</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Svátky</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Letní fiesta</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Dlouhá noc</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Styly</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Stojany na zbraně</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Benzín</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Mířidla na pušky</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Mířidla na pistole</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Mířidla na brokovnice</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Mířidla na luky a kuše</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Mířidla na předovky</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Hledat</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KOUPIT</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Nelze koupit</value></data>

@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Event Items</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trophy Lodges</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Vehicles</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Rifles</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Rifle Ammo</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrievers</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Scent Lures</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Jackets &amp; Shirts</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Inventory</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optics</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Stands &amp; Blinds</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Layouts</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Park Rangers</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Animals</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Handguns</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Shotguns</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Bows &amp; Crossbows</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Muzzleloaders</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Muzzleloading Pistols</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Advanced Firearms</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Handgun Ammo</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Shotgun Ammo</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Bow &amp; Crossbow Ammo</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Muzzleloader Ammo</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Dog Equipment</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Dog Consumables</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Scent Hounds</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>German Pointers</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Callers</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Bait</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Decoys</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Electronic Caller</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Pants</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Hats</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Gloves</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Footwear</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Facewear</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Eyewear</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Backpacks</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatars</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Hunter</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>HunterMate Apps</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Consumables</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Deployables</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Miscellaneous</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Deployable Targets</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Tents</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Bait Sites</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Holidays</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Summer Fiesta</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Long Night</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Styles</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Gun Racks</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Gasoline</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Rifle Sights</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Handgun Sights</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Shotgun Sights</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Bow &amp; Crossbow Sights</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Muzzleloader Sights</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Search</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>BUY</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Not buyable</value></data>
