@@ -36,7 +36,9 @@ public sealed partial class State
                      .Where(p => Py.IsStr(p["url"]) && seen.Add((string)p["url"]!)).Reverse())
         {
             listed++;
-            if (Importer.MediaPath("photos", (string)p["url"]!) is not { } path || !media.TryGetValue(path, out var file))
+            // the first backup tool saved a gallery picture under `kills/` where later ones use `photos/`
+            if (Importer.MediaPath("photos", (string)p["url"]!) is not { } path
+                || !(media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)))
                 continue;
             long? type = Py.IsNum(p["type"]) ? Py.L(p["type"]) : Py.IsStr(p["type"]) && long.TryParse((string)p["type"]!, out var t) ? t : null;
             var id = con.Insert("INSERT INTO photos (account_id, photo_type, saved) VALUES ($a, ?, ?)", type, Py.Dumps(new JsonObject { ["label"] = Text(p["label"]), ["animal"] = Text(p["animal"]) }));
