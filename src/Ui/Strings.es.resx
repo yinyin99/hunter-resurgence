@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>No hubo disparos</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>No se efectuaron disparos durante esta expedición.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Sin interacción con animales durante esta expedición.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>No se recogió ningún coleccionable durante esta expedición.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Ningún logro conseguido durante esta expedición.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>No se recogió ninguna cornamenta coleccionable durante esta expedición.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ninguna muerte confirmada durante esta expedición.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Este cazador no ha realizado ninguna expedición.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Inicio</value></data>

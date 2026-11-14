@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Выстрелов не было</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>За эту охоту не сделано ни одного выстрела.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>За эту охоту не было контактов с животными.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>За эту охоту не собрано ни одного предмета.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>За эту охоту не получено достижений.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>За эту охоту не собрано ни одного рога.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>За эту охоту нет подтверждённых трофеев.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Этот охотник ещё не ходил на охоту.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Старт</value></data>

@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Geen schoten gelost</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Geen schoten gelost tijdens deze expeditie.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Geen interacties met dieren tijdens deze expeditie.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Geen verzamelobjecten verzameld tijdens deze expeditie.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Geen prestaties behaald tijdens deze expeditie.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Geen verzamelbare geweien verzameld tijdens deze expeditie.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Geen bevestigd afschot tijdens deze expeditie.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Deze jager heeft nog geen expedities gedaan.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

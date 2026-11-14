@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Inga skott avfyrade</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Inga skott avfyrades under den här expeditionen.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Inga djurinteraktioner under den här expeditionen.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Inga samlarföremål samlades in under den här expeditionen.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Inga prestationer uppnåddes under den här expeditionen.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Inga horn samlades in under den här expeditionen.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Inga fällningar bekräftades under den här expeditionen.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Den här jägaren har inte varit ute på några expeditioner.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

@@ -68,9 +68,9 @@ public sealed partial class State
 
     /// <summary>What a profile page's hunt page shows, `GET /hunters/&lt;handle&gt;/hunts/&lt;id&gt;` (`latest` for the newest): `{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}`
     /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats (none while the hunt is open);
-    /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup has none),
-    /// `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` the thresholds earned when the hunt closed `{title, description}`
-    /// (the connect definitions' texts; a hunt made here only, so never one a restore or a server start earned). `kills` are
+    /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
+    /// per-type sums, no pickups), `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` `{title, description}` of the thresholds the hunt earned
+    /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists. `kills` are
     /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. Null for an unknown hunt.</summary>
     public JsonObject? PublicHunt(long account, long? id)
     {
@@ -80,6 +80,11 @@ public sealed partial class State
         var collectables = new JsonArray();
         var achievements = new JsonArray();
         long start = Integer(e["start_ts"]), end = Integer(e["end_ts"]);
+        void Earned(long achievement, string threshold)
+        {
+            if (Arr(G(connect, "achievements", null)).OfType<JsonObject>().FirstOrDefault(d => TryKey(d["id"], out var k) && k == achievement) is { } def)
+                achievements.Add(new JsonObject { ["title"] = Texted(def["title"], threshold), ["description"] = Texted(def["description"], threshold) });
+        }
         using (var con = Con(account))
         {
             sheets = [.. con.Rows("SELECT kill_id FROM kills WHERE account_id = $a").Select(r => (long)r[0])];
@@ -90,14 +95,16 @@ public sealed partial class State
                 foreach (var p in Pickups(con, Py.FromSql(made[0]), next).Where(p => !p.Antler))
                     collectables.Add(new JsonObject { ["name"] = CollectableName(p.Type), ["score"] = Real(p.Body["score"]), ["ts"] = p.Ts });
                 if (Py.IsNum(e["end_ts"]))
-                {
-                    var times = con.Rows("SELECT id, triggers FROM achievements WHERE account_id = $a").ToDictionary(r => Convert.ToInt64(r[0]), r => Parse(r[1]));
-                    foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _)))
-                        foreach (var t in Arr(def["triggers"]).Where(Py.IsNum))
-                            if (times.GetValueOrDefault(Py.L(def["id"]))?[Py.Str(t)] is { } time && Py.IsNum(time) && (long)Py.D(time) == end)
-                                achievements.Add(new JsonObject { ["title"] = Texted(def["title"], t), ["description"] = Texted(def["description"], t) });
-                }
+                    foreach (var r in con.Rows("SELECT id, triggers FROM achievements WHERE account_id = $a ORDER BY id"))
+                        foreach (var (threshold, time) in Parse(r[1]))
+                            if (Py.IsNum(time) && (long)Py.D(time) == end)
+                                Earned(Convert.ToInt64(r[0]), threshold);
             }
+            else if (reply["stats"]?["data"]?["achievements"] is JsonArray saved)
+                foreach (var a in saved.OfType<JsonObject>().Where(a => TryKey(a["id"], out _) && a["triggers"] is JsonObject))
+                    foreach (var (threshold, time) in (JsonObject)a["triggers"]!)
+                        if (Py.IsNum(time) && Py.D(time) > 0)
+                            Earned(Py.L(a["id"]), threshold);
         }
         var antlers = new JsonArray([.. (reply["antler_collectables"] as JsonArray ?? []).OfType<JsonObject>().Select(a => (JsonNode?)new JsonObject
         {

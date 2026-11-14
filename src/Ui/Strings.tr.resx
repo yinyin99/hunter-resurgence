@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Hiç atış yapılmadı</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Bu avda hiç atış yapılmadı.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Bu avda hayvanlarla hiçbir etkileşim olmadı.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Bu avda hiçbir koleksiyon eşyası toplanmadı.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Bu avda hiçbir başarı kazanılmadı.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Bu avda hiçbir boynuz koleksiyonu toplanmadı.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Bu avda hiçbir hayvan avlanmadı.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Bu avcı henüz hiç ava çıkmadı.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Başlangıç</value></data>

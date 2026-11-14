@@ -303,7 +303,7 @@ public class HunterscoreTests : StateTestBase
     public void TestAHuntsDetailsListItsPickupsAndTheAchievementsEarnedAtItsClose()
     {
         var (connect, app) = (CONNECT, APP);
-        connect["achievements"] = JsonNode.Parse("""[{"id": 25, "category": 2, "group": 0, "title": "Walker", "description": "Walk %d km", "value": "distance", "triggers": [10, 42]}]""");
+        connect["achievements"] = JsonNode.Parse("""[{"id": 25, "category": 2, "group": 0, "title": "Picker", "description": "Pick %d up", "value": "collectable.*.collected", "triggers": [1, 5]}]""");
         app["collectables"] = JsonNode.Parse("""[{"id": 9, "cat": "MUSHROOM", "name": "Test Fungus"}]""");
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: Ranks)
         {
@@ -316,21 +316,32 @@ public class HunterscoreTests : StateTestBase
         state.HeartbeatReply(B, Events(
             O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
             O("""{"event": 36, "collectable_id": 78, "species_id": 1, "double_antler": 1, "x": 1, "y": 2, "z": 3}""")));
-        state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
-        long first;
-        using (var con = state.Store.Open(B))  // the close and the award are one instant
-            first = (long)con.Scalar("UPDATE expeditions SET end_ts = ? WHERE account_id = $a RETURNING id", (long)now)!;
-        var hunt = state.PublicHunt(B, first)!;
-        Eq("""[{"name": "Test Fungus", "score": 78, "ts": %TS%}]""".Replace("%TS%", hunt["collectables"]![0]!["ts"]!.ToJsonString()), hunt["collectables"]);
-        Eq("""[{"species": "Test Deer", "double": true, "score": 0}]""", hunt["antlers"]);
-        Eq("""[{"title": "Walker", "description": "Walk 10 km"}]""", hunt["achievements"]);
-        // the next hunt picks up nothing and earns nothing new
+        state.Disconnect(B, "{}"u8.ToArray());  // the first hunt closes at the disconnect: its two pickups earn the threshold 1
+        var firstId = (long)state.PublicHunts(B, 1)["rows"]![0]!["id"]!;
+        var first = state.PublicHunt(B, firstId)!;
+        Eq("""[{"name": "Test Fungus", "score": 78, "ts": 1700000000}]""", first["collectables"]);
+        Eq("""[{"species": "Test Deer", "double": true, "score": 0}]""", first["antlers"]);
+        Eq("""[{"title": "Picker", "description": "Pick 1 up"}]""", first["achievements"]);
+        // the second hunt is closed by the timer, at its last heartbeat, and its three more pickups earn the threshold 5
+        now += 100;
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 24, "collectable_id": 79, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 24, "collectable_id": 80, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 24, "collectable_id": 81, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
+        now += State.HEARTBEAT_TIMEOUT + 10;
+        var secondId = (long)state.PublicHunts(B, 1)["rows"]![0]!["id"]!;
+        var second = state.PublicHunt(B, secondId)!;
+        Eq("[3, 0]", T(second["collectables"]!.AsArray().Count, second["antlers"]!.AsArray().Count));
+        Eq("""[{"title": "Picker", "description": "Pick 5 up"}]""", second["achievements"]);
+        // the third picks up nothing and earns nothing; the first still lists only its own
         now += 100;
         state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
         state.Disconnect(B, "{}"u8.ToArray());
-        var second = state.PublicHunt(B, null)!;
-        Assert.NotEqual(first, (long)second["id"]!);
-        Eq("[[], [], []]", T(second["collectables"], second["antlers"], second["achievements"]));
+        var third = state.PublicHunt(B, null)!;
+        Assert.NotEqual(secondId, (long)third["id"]!);
+        Eq("[[], [], []]", T(third["collectables"], third["antlers"], third["achievements"]));
+        Eq("""[{"title": "Picker", "description": "Pick 1 up"}]""", state.PublicHunt(B, firstId)!["achievements"]);
     }
 
     [Fact]
@@ -616,7 +627,7 @@ public class HunterscoreTests : StateTestBase
         Kill(B, 81, 1, 10);
         Assert.Equal(2, JsonNode.Parse(state.AchievementReply(B, "user_id=8"u8.ToArray())!)!.AsArray().Count);  // mid-hunt: nothing new yet
         using (var con = state.Store.Open(B))  // a hunt of 3700 s: past one hour
-            con.Exec("UPDATE expeditions SET start_ts = start_ts - 3700 WHERE account_id = $a AND end_ts IS NULL");
+            con.Exec("UPDATE expeditions SET start_ts = ? WHERE account_id = $a AND end_ts IS NULL", now - 3700);
         state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
         // the restored time and its larger value stay; the weapon, the distance (12 km), the duration (1 h) and the listed species
         // are earned now; the total keeps its count without a time (50 not reached); the rabbit has nothing

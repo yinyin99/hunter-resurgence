@@ -1688,7 +1688,7 @@ public sealed partial class State
         }
         using var con = Con(account);
         con.Begin();
-        var closed = con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Py.Now(), distance) > 0;
+        var closed = con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Clock(), distance) > 0;
         con.Commit();
         if (closed)
             UpdateHunterscore(con, account);

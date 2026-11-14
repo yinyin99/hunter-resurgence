@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Nenhum tiro disparado</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Nenhum tiro disparado durante esta expedição.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Nenhuma interação com animais durante esta expedição.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Nenhum colecionável recolhido durante esta expedição.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Nenhuma conquista obtida durante esta expedição.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Nenhuma galhada colecionável recolhida durante esta expedição.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Nenhum abate confirmado durante esta expedição.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Este caçador ainda não fez nenhuma expedição.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Início</value></data>
