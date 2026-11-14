@@ -300,6 +300,40 @@ public class HunterscoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestAHuntsDetailsListItsPickupsAndTheAchievementsEarnedAtItsClose()
+    {
+        var (connect, app) = (CONNECT, APP);
+        connect["achievements"] = JsonNode.Parse("""[{"id": 25, "category": 2, "group": 0, "title": "Walker", "description": "Walk %d km", "value": "distance", "triggers": [10, 42]}]""");
+        app["collectables"] = JsonNode.Parse("""[{"id": 9, "cat": "MUSHROOM", "name": "Test Fungus"}]""");
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: Ranks)
+        {
+            Collectables = new Dictionary<long, JsonObject> { [9] = O("""{"id": 9, "cat": "MUSHROOM", "score": {"min": 3, "max": 78}}""") },
+        };
+        double now = 1700000000;
+        state.Clock = () => now;
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        state.HeartbeatReply(B, Events(
+            O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}"""),
+            O("""{"event": 36, "collectable_id": 78, "species_id": 1, "double_antler": 1, "x": 1, "y": 2, "z": 3}""")));
+        state.Disconnect(B, """{"distance_travelled": 12000}"""u8.ToArray());
+        long first;
+        using (var con = state.Store.Open(B))  // the close and the award are one instant
+            first = (long)con.Scalar("UPDATE expeditions SET end_ts = ? WHERE account_id = $a RETURNING id", (long)now)!;
+        var hunt = state.PublicHunt(B, first)!;
+        Eq("""[{"name": "Test Fungus", "score": 78, "ts": %TS%}]""".Replace("%TS%", hunt["collectables"]![0]!["ts"]!.ToJsonString()), hunt["collectables"]);
+        Eq("""[{"species": "Test Deer", "double": true, "score": 0}]""", hunt["antlers"]);
+        Eq("""[{"title": "Walker", "description": "Walk 10 km"}]""", hunt["achievements"]);
+        // the next hunt picks up nothing and earns nothing new
+        now += 100;
+        state.NoteLaunch(B, "start=101&reserve=2"u8.ToArray());
+        state.Disconnect(B, "{}"u8.ToArray());
+        var second = state.PublicHunt(B, null)!;
+        Assert.NotEqual(first, (long)second["id"]!);
+        Eq("[[], [], []]", T(second["collectables"], second["antlers"], second["achievements"]));
+    }
+
+    [Fact]
     public void TestAnyAccountsStatisticsAreReadByAnotherUserIdAndShownAsATab()
     {
         state = Online();
