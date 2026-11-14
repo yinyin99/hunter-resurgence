@@ -696,8 +696,8 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             }
             for (int n = 0; ; n++)
             {
-                var wait = lane.Last.AddMilliseconds(PaceMs) - DateTime.UtcNow;
-                if (wait > TimeSpan.Zero) await Task.Delay(wait, ct);
+                TimeSpan wait;
+                while ((wait = lane.Last.AddMilliseconds(PaceMs) - DateTime.UtcNow) > TimeSpan.Zero) await Task.Delay(wait, ct); // a timer can fire a little early: ask the clock again
                 ct.ThrowIfCancellationRequested(); // the last check before a request leaves
                 lane.Last = DateTime.UtcNow;
                 string err;
