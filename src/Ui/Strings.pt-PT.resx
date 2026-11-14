@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Sem Limite</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Preço do pacote</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Custo de capacidade</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Contém:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} utilizações</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} cartuchos</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} cartuchos de caçadeira</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} unidades</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} setas</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} dias</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} meses</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} mês</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Permitida para</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>É ético usar {0} ao caçar: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Não é ético usar {0} ao caçar: {1}</value></data>

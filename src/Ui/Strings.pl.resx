@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Nigdy</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Cena zestawu</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Koszt pojemności</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Zawiera:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} × użycia</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} × naboje</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} × naboje śrutowe</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} × jednostki</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} × strzały</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} × dni</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} × miesiące</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} × miesiąc</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Dozwolone dla</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Używanie {0} podczas polowania jest etyczne: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Używanie {0} podczas polowania nie jest etyczne: {1}</value></data>

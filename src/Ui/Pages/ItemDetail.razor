@@ -30,7 +30,13 @@
             </div>
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
-            @if (item.Capacity > 0) { <p class="cap">@L["Store.Capacity"] @item.Capacity</p> }
+            @if (item.Capacity > 0 || item.Contents is not null)
+            {
+                <div class="data">
+                    @if (item.Capacity > 0) { <p>@L["Store.Capacity"] @item.Capacity</p> }
+                    @if (item.Contents is { } contents) { <p>@L["Store.Contains"] @Units(contents)</p> }
+                </div>
+            }
             <OwnedLine Owned="item.Owned" Counted="item.Counted" Expires="item.Expires" DaysLeft="item.DaysLeft" Full />
             @if (!Mode.Live)
             {
@@ -43,8 +49,8 @@
                 <section class="fits">
                     @foreach (var f in fits)
                     {
-                        <h4>@f.Title</h4>
-                        <table class="tbl"><tbody>@foreach (var x in f.Items) { <tr><td><a href="/store/item/@x.Id">@x.Name</a></td></tr> }</tbody></table>
+                        <h4>@Title(f)</h4>
+                        <table class="tbl"><tbody>@foreach (var x in f.Items) { <tr><td><AssetSlot Name="@Mode.ItemSlot(x.Id)" Width="54" Height="40" Class="thumb" /><a href="/store/item/@x.Id">@x.Name</a>@if (x.Variant.Length > 0) { <text> (@x.Variant)</text> }</td></tr> }</tbody></table>
                     }
                 </section>
             }
@@ -81,6 +87,12 @@
 
     // the corner banner: premium, then sale, then limited, new or community
     string? banner => item is null ? null : item.Banner == "premium" ? "premium" : item.WasEms is not null ? "sale" : item.Banner;
+
+    // the texts of the store's own categories, as StoreFrame has them; an unknown one keeps the catalogue's title
+    string Title(ItemFit f) => L["Store.Cat." + f.Key] is { ResourceNotFound: false } s ? s.Value : f.Title;
+
+    // "10 cartridges" in the player's language by the catalogue's unit word; a word with no text stays as the catalogue gives it
+    string Units(StoreContents c) => L["Store.Unit." + c.Unit, c.Count] is { ResourceNotFound: false } s ? s.Value : $"{c.Count} {c.Unit}";
 
     [Parameter] public int Id { get; set; }
 

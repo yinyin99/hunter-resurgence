@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Neomezené</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Cena balíčku</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Zabere kapacitu</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Obsahuje:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} × použití</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} × náboje</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} × brokové náboje</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} × jednotky</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} × šípy</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} × dny</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} × měsíce</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} × měsíc</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Povoleno pro</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Je etické používat {0} při lovu: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Není etické používat {0} při lovu: {1}</value></data>

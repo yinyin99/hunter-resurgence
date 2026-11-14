@@ -1,9 +1,12 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services;
 
 /// <summary>The store of the community server (<see cref="ServerCatalogApi.Store"/>): the original's items, prices, sales and bundles. A server that does not answer is an empty store,
-/// never the mock's. What the signed-in player owns comes from <paramref name="inventory"/> (<c>Owned</c>, <c>Expires</c>); it knows nothing of the limits of owning or a capacity cost. Buying is the server's
+/// never the mock's. What the signed-in player owns comes from <paramref name="inventory"/> (<c>Owned</c>, <c>Expires</c>); it knows nothing of the limits of owning. An item's page adds what the list lacks
+/// (<see cref="ServerCatalogApi.Item"/>: capacity, contents, what fits it, the permitted species); the server not answering leaves the page without it. Buying is the server's
 /// (<see cref="ServerAccountApi.Buy"/>), with em$ or gm$.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is the same for everyone and is asked without the
@@ -56,8 +59,34 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     {
         var s = await LoadAsync();
         var own = await OwnAsync();
-        return s.Items.Where(i => i.Id == id).Select(i => Item(i, own)).FirstOrDefault();
+        return s.Items.FirstOrDefault(i => i.Id == id) is { } i ? WithPage(Item(i, own), await PageAsync(id)) : null;
     }
+
+    // a request of its own: the list holds a thousand items, and these (the weapons that fire an ammunition, a table of species) belong to one
+    async Task<ServerItemPage?> PageAsync(int id)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"{ServerCatalogApi.Item}{id}");
+            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<ServerItemPage>();
+            log.LogWarning("The server answered {Path}{Id} with {Status}: the item shows without its details", ServerCatalogApi.Item, id, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException)
+        {
+            log.LogWarning("The server did not answer {Path}{Id} ({Reason}): the item shows without its details", ServerCatalogApi.Item, id, e.Message);
+        }
+        return null;
+    }
+
+    static StoreItem WithPage(StoreItem item, ServerItemPage? page) => page is null ? item : item with
+    {
+        Capacity = page.Capacity,
+        Contents = page.Contents is { } c ? new StoreContents(c.Count, c.Name) : null,
+        Fits = page.Fits?.Select(f => new ItemFit(f.Title, [.. f.Items.Select(x => new StoreFit(x.Id, x.Name, x.Variant))], f.Key)).ToList(),
+        Ethics = page.Ethical is { } e ? new EthicalMatrix(e.Ammo, [.. e.Species.Select(x => new EthicalRow(x.Name, x.Permitted))]) : null,
+    };
 
     public async Task<StoreBundle?> BundleAsync(int id)
     {

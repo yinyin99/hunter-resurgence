@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Obegränsade</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paketpris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapacitetskostnad</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Innehåller:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} användningar</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} patroner</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} hagelpatroner</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} enheter</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} pilar</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} dagar</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} månader</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} månad</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Tillåten för</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Det är etiskt att använda {0} vid jakt på: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Det är inte etiskt att använda {0} vid jakt på: {1}</value></data>

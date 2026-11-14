@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Korlátlan</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Csomag ára</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Helyigény</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Tartalma:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} használat</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} töltény</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} sörétes töltény</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} egység</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} nyílvessző</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} nap</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} hónap</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} hónap</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Megengedett</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Nem etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>

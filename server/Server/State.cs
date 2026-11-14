@@ -803,14 +803,17 @@ public sealed partial class State
         return s == "" ? null : s;
     }
 
+    /// <summary>The permitted ammo of a species by its id (a non-typical id uses the typical one's list): its connect `ethical` list; null if it has none (the dogs): no rule.</summary>
+    JsonArray? Allowed(JsonNode? sp) => sp is not null && Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
+
+    /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>; the event's silver ammunition is permitted on every species. The one rule the kills are judged by and the store shows.</summary>
+    bool Permits(JsonArray allowed, JsonNode? ammo) => allowed.Concat(eventAmmo).Any(a => Py.Eq(a, ammo));
+
     /// <summary>(toast update, notice message) for a hit with ammo outside the species' connect `ethical` list; null if
-    /// permitted or the species has no list. The event's silver ammunition is permitted on every species.</summary>
+    /// permitted or the species has no list.</summary>
     public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp)
     {
-        var allowed = sp is not null && Mod100(sp) < ethicalAmmo.Count ? ethicalAmmo[(int)Mod100(sp)] : null;
-        if (!Py.Truthy(allowed))  // empty list (dogs): no rule
-            return null;
-        if (allowed!.AsArray().Concat(eventAmmo).Any(a => Py.Eq(a, hit["ammunition_id"])))
+        if (Allowed(sp) is not { } allowed || Permits(allowed, hit["ammunition_id"]))
             return null;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
@@ -820,7 +823,7 @@ public sealed partial class State
             ["colour"] = COLOUR, ["destination"] = $"{avatarBase}/doc_64.jpg", ["update"] = 3, ["timer"] = -1, ["type"] = 100,
         };
         // ponytail: one message template for every species
-        var names = string.Join(", ", allowed.AsArray().Select(i => Lookup(items, i) is { } item ? Py.Str(G(item, "name", "")) : ""));
+        var names = string.Join(", ", allowed.Select(i => Lookup(items, i) is { } item ? Py.Str(G(item, "name", "")) : ""));
         var message = $"Wrong ammunition for {name}. Permitted: {names}.";
         return (toast, message);
     }
@@ -1378,8 +1381,8 @@ public sealed partial class State
     /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
     /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
     /// today's prices (<see cref="Price"/>; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
-    /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's, and no field the
-    /// catalogue gives without a unit (the inventory weight) is passed on.</summary>
+    /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's; what belongs to one item
+    /// (the inventory weight, what fits it) is <see cref="StoreItemPage"/>'s.</summary>
     public JsonObject StoreCatalogue()
     {
         var items = new JsonArray();
@@ -1420,6 +1423,45 @@ public sealed partial class State
                 ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
             });
         return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
+    }
+
+    /// <summary>What an item's page shows beyond the list (GET /catalog/item/{id}): `capacity` (the catalogue's inventory weight divided by 1000, the number the store shows as the capacity cost, which has no unit; 0 for none), `contents` (`{count, name}` of an item the catalogue gives units, else null),
+    /// `fits` (`[{title, key, items: [{id, name, variant}]}]`: what fits it, the catalogue's `fit` lists by group under the title and store key of the group's category, the items the store shows) and `ethical`
+    /// (`{ammo: [name], species: [{name, permitted: [bool]}]}` for a weapon, over the ammunition that fits it, and for an ammunition, over itself; else null). A species row says whether the ammo is
+    /// permitted by <see cref="Permits"/>, the rule the kills are judged by; a species with no list (the dogs) has no row. Null for an item the store does not show.</summary>
+    public JsonObject? StoreItemPage(long id)
+    {
+        if (!items.TryGetValue(id, out var item) || Py.Truthy(G(item, "hidden", null))) return null;
+        var categories = new Dictionary<string, JsonNode>();
+        foreach (var c in Arr(G(application, "categories", null)))
+            categories[Py.Str(c!["id"])] = c;
+        var fit = item["fit"] as JsonObject ?? [];
+        // the catalogue's own entry of each fitting item, so a hidden one is left out and the names are the store's
+        JsonObject[] Fitting(JsonNode? list) => [.. Arr(list).Select(f => items.GetValueOrDefault(Py.L(f!["id"]))).OfType<JsonObject>().Where(i => !Py.Truthy(G(i, "hidden", null)))];
+        var fits = new JsonArray();
+        foreach (var (group, list) in fit)
+            if (Fitting(list) is { Length: > 0 } shown)
+                fits.Add(new JsonObject
+                {
+                    ["title"] = C(categories.GetValueOrDefault(group)?["title"]) ?? "",
+                    ["key"] = categories.GetValueOrDefault(group)?["default"] is { } key ? Py.Str(key) : "",  // the store's key of the category, as `GET /catalog/store` names it
+                    ["items"] = new JsonArray([.. shown.Select(i => (JsonNode?)new JsonObject { ["id"] = C(i["id"]), ["name"] = C(i["name"]), ["variant"] = C(G(i, "variationname", null)) ?? "" })]),
+                });
+        // category 1 is the weapons, 3 the ammunition (the groups of `fit` are the categories'): a weapon lists its ammunition (group 3)
+        JsonObject[] ammo = Is(item["cat"], 1) ? Fitting(fit["3"]) : Is(item["cat"], 3) ? [item] : [];
+        var rows = new JsonArray();
+        if (ammo.Length > 0)
+            foreach (var sp in Arr(G(application, "species", null)))
+                if (Allowed(sp!["id"]) is { } allowed)
+                    rows.Add(new JsonObject { ["name"] = C(sp["name"]), ["permitted"] = new JsonArray([.. ammo.Select(a => (JsonNode?)Permits(allowed, a["id"]))]) });
+        var weight = (item["inventory"] as JsonObject)?["weight"];
+        return new JsonObject
+        {
+            ["capacity"] = Py.IsNum(weight) ? Math.Round(Py.D(weight) / 1000, 3) : 0,
+            ["contents"] = item["units"] is JsonObject { } u && Py.Truthy(u["count"]) ? new JsonObject { ["count"] = C(u["count"]), ["name"] = C(u["name"]) ?? "" } : null,
+            ["fits"] = fits,
+            ["ethical"] = rows.Count > 0 ? new JsonObject { ["ammo"] = new JsonArray([.. ammo.Select(a => (JsonNode?)C(a["name"]))]), ["species"] = rows } : null,
+        };
     }
 
     /// <summary>The signed-in player's own items, `GET /account/inventory`: `{items: [{id, name, variant, category, categoryName, units, slot, equipped}]}`, a row per owned copy oldest first.

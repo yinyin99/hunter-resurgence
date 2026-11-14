@@ -706,6 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Sınırsız</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paket fiyatı</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasite maliyeti</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>İçeriği:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} kullanım</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} fişek</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} saçma fişeği</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} birim</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} ok</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} gün</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} ay</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} ay</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Avlanma İzinleri</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>{1} avlarken {0} kullanmak etiktir</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>{1} avlarken {0} kullanmak etik değildir</value></data>
