@@ -326,11 +326,15 @@ public sealed class LiveSiteTests : UiContext
         protected override object? Invoke(System.Reflection.MethodInfo? method, object?[]? args)
         {
             var result = method!.Invoke(Inner, args);
-            return method.Name == nameof(IProfileService.ProfileAsync) ? ((Task<Profile?>)result!).ContinueWith(t => t.Result! with { Tabs = Tabs }) : result;
+            return method.Name == nameof(IProfileService.ProfileAsync) ? Shown((Task<Profile?>)result!) : result;
         }
+
+        // an await, not ContinueWith: a continuation on the thread pool needs a free thread, so the page waited for one and bUnit's one-second wait ran out when the pool was busy
+        async Task<Profile?> Shown(Task<Profile?> profile) => (await profile)! with { Tabs = Tabs };
     }
 
     // each tab is hidden on its own until it has a server source; an address of a hidden tab opens the first shown one
+    // (TabsOf awaits instead of hopping to the thread pool: 30 full-suite runs, 10 rounds of 3 at once, passed; before, the three cases failed under load)
     [Theory]
     [InlineData(null)]
     [InlineData("ranks")]
