@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Nessun colpo sparato</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Nessun colpo sparato durante questa spedizione.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Nessuna interazione con gli animali durante questa spedizione.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Nessun collezionabile raccolto durante questa spedizione.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Nessun risultato ottenuto durante questa spedizione.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Nessun palco collezionabile raccolto durante questa spedizione.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Nessun abbattimento confermato durante questa spedizione.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Questo cacciatore non ha ancora fatto nessuna spedizione.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Inizio</value></data>

@@ -1009,9 +1009,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Ingen skudd avfyrt</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Ingen skudd avfyrt på denne jaktturen.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Ingen møter med dyr på denne jaktturen.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Ingen samleobjekter plukket opp på denne jaktturen.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Ingen prestasjoner oppnådd på denne jaktturen.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Ingen fallgevir samlet på denne jaktturen.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ingen bekreftede fellinger på denne jaktturen.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Denne jegeren har ikke vært på noen jaktturer.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>
