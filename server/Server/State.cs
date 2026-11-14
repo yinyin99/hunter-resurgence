@@ -1249,6 +1249,11 @@ public sealed partial class State
         reply["expedition"] = expedition;
         reply["account"] = Store.AccountJson(account);
         reply["wallet"] = Wallet(account);
+        // a boost is on when the account owns its item (any slot) or its hunterscore reaches the item's level
+        var owned = inventory["items"]!.AsArray().Select(r => Py.L(r!["item_id"])).ToHashSet();
+        var score = Py.IsNum(reply["account"]!["hunterscore"]) ? Py.L(reply["account"]!["hunterscore"]) : 0;
+        foreach (var o in (reply["boost"]?["boost"] as JsonArray ?? []).OfType<JsonObject>())
+            o["own"] = o["item"] is JsonObject boosted && (owned.Contains(Py.L(boosted["id"])) || Py.IsNum(boosted["hunterscoreGiveLevel"]) && score >= Py.L(boosted["hunterscoreGiveLevel"]));
         reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
         using (var con = Con(account))
         {
