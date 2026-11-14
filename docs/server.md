@@ -96,7 +96,7 @@ The server's own answers for this build:
 | `POST` or `GET /v1/challenge/get_user_challenges` | `{}`; a community server answers from the account's rows, without a token ([Challenges](#challenges)) | per player, empty reply |
 | `POST /v1/network/list` | `[]` | per player, empty reply |
 | `POST /v1/inventory/move_multiple2`, `inventory/buy`, `me/me`, `me/poll` (adds `active_campaign`, `campaign_stylesheet`, `community_campaign_stylesheet`, `last_hunt_update_ts`), `expedition/list` (`has_more` next to `total`) | The old handlers | per player, from the database |
-| `/client`, `/static/...`, `/content/...`, `/media/...` | The mirror | global |
+| `/client`, `/static/...`, `/content/...`, `/media/...` | The mirror; a map tile `/content/map/v7/tiles/<z>/<x>/<y>.jpg` (zoom 1 to 5, x and y below 2^z) that the game host's folder lacks is read from the map host's folder (`<mirror_dir>/<map_host>/v7/tiles/...`) | global |
 
 **Recordings of the current build** are found too: `NewBuild.Alias` adds, for every recorded request to `game_web_host` that the rewrite would move, the key of the moved request (the original stays).
 

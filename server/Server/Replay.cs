@@ -414,6 +414,13 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
+        static readonly Regex TileUrl = new(@"^/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)$", RegexOptions.CultureInvariant);
+
+        /// <summary>The game web host asks for map tiles under /content/map/; its own folder holds only some, so a tile inside the zoom's grid (2^z per side) is read from the map host's folder.</summary>
+        string? MapTile(Req r) =>
+            r.Host == GameWeb && TileUrl.Match(r.Path) is { Success: true } m && int.Parse(m.Groups[3].Value) < 1 << int.Parse(m.Groups[2].Value) && int.Parse(m.Groups[4].Value) < 1 << int.Parse(m.Groups[2].Value)
+                ? MirrorPath(MirrorDir, S(Cfg, "map_host").ToLowerInvariant(), "/" + m.Groups[1].Value) : null;
+
         /// <summary>Everything the player state does not answer, in order: archive file pinned to the URL's directory,
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
         /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
@@ -435,7 +442,7 @@ public static class Replay
             }
             if (get)
             {
-                var f = MirrorPath(MirrorDir, r.Host, r.Path);
+                var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r);
                 if (f != null) return new(200, [("Content-Type", ContentType(System.IO.Path.GetFileName(f)))], File.ReadAllBytes(f), "mirror");
                 data = ArchiveFile(Cfg, r.Host, r.Path, exact: false);
                 if (data != null) return new(200, [("Content-Type", ContentType(r.Path))], data, "archive");
