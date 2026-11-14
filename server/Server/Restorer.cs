@@ -297,19 +297,7 @@ public static class Restorer
         }
 
         // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
-        var owned = m.Items.Select(i => i.ItemId).ToHashSet();
-        var slots = m.Items.Select(i => i.Slot).ToHashSet();
-        var guid = m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max();
-        var added = 0;
-        foreach (var k in kit)
-        {
-            var itemId = (int)Py.L(k!["item_id"]);
-            if (!owned.Add(itemId)) continue;
-            var slot = (int)Py.L(k["slot"]);
-            if (slot > 1 && !slots.Add(slot)) slot = 0;
-            PlayerRows.AddItem(con, ++guid, itemId, slot, k["units"] is { } u ? Py.L(u) : null, []);
-            added++;
-        }
+        var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max());
         if (added > 0) lines.Add($"start items added: {added}");
 
         var skills = 0;

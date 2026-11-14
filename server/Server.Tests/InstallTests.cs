@@ -133,6 +133,19 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void TheShippedStartKitIsTheOriginalsFreeStartAndItsFreeAmmunitionIsThreeBoxes()
+    {
+        var (items, _) = Facts.Default.Start();
+        foreach (var id in new long[] { 257, 5, 14, 10, 69, 113, 1, 497, 498, 499, 512, 525, 513 })  // both weapons, their ammunition, the binoculars, the blue Arctic set
+            Assert.Contains(id, items);
+        Assert.Equal(items.Length, items.Distinct().Count());
+        var (ammo, boxes) = Facts.Default.FreeAmmo();
+        Assert.Equal([10L, 14, 69, 113], ammo);
+        Assert.Equal(3, boxes);
+        Assert.All(ammo, id => Assert.Contains(id, items));
+    }
+
+    [Fact]
     public void NoSampleInTheInstallIsNoTemplate()
     {
         File.Delete(Path.Combine(install, "game", Install.ConnectSample));

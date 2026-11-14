@@ -22,6 +22,29 @@ public static class PlayerRows
         con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                  guid, itemId, slot, Py.Dumps(metadata), units);
 
+    /// <summary>Adds each start item (<paramref name="kit"/>: the rows a new account gets) the account does not own, as a new account gets it: in its slot unless
+    /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.</summary>
+    public static int AddMissingStart(Db con, JsonArray kit, IEnumerable<(long ItemId, long Slot)> have, long guid)
+    {
+        var (owned, slots) = (new HashSet<long>(), new HashSet<long>());
+        foreach (var (itemId, slot) in have)
+        {
+            owned.Add(itemId);
+            slots.Add(slot);
+        }
+        var added = 0;
+        foreach (var k in kit)
+        {
+            var id = Py.L(k!["item_id"]);
+            if (!owned.Add(id)) continue;
+            var slot = Py.L(k["slot"]);
+            if (slot > 1 && !slots.Add(slot)) slot = 0;
+            AddItem(con, ++guid, id, slot, k["units"] is { } u ? Py.L(u) : null, []);
+            added++;
+        }
+        return added;
+    }
+
     public static void SetWallet(Db con, string currency, double amount) =>
         con.Exec("INSERT OR REPLACE INTO wallet (account_id, currency, amount) VALUES ($a, ?, ?)", currency, amount);
 
