@@ -26,7 +26,7 @@ Also searched as theHunter (2009), the Hunter Classic, theHunter private server.
 
 1. Download `HunterResurgence-win-Setup.exe` from the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest) and run it. Windows may say "Windows protected your PC": choose **More info**, then **Run anyway** (the exe is not code-signed).
 2. Press **Play** in Steam. The first time, the launcher lists what it changes and asks you to set up; answer **Yes** to Windows' two questions.
-3. Sign in with Steam, pick a reserve, a start and the time of day, and press **Start Game**. Keep the launcher open while you play.
+3. Sign in with Steam, pick a reserve, a start and the time of day, and press **Start Game**. The first time, choose **Allow** when Windows Firewall asks about the game. Keep the launcher open while you play.
 
 The game's files are never changed; Settings, **Remove the setup** undoes everything. Step by step, with fixes for common problems: [the player guide](docs/guide.md).
 
@@ -39,17 +39,16 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Every species licensed for every player, for now | Competitions and season boards |
 | Kills, harvest, score sheets, gold and XP | Bait-site pages in the game |
 | Tutorial for new players | Full in-game map tiles |
-| Store: buy with em$ and gm$, in the game and on the website | |
-| Your inventory, in the launcher and on the website | |
+| Store: buy with em$ and gm$, in the game and on the website; it shows what you already own | |
 | Loadouts, saved and chosen at launch | |
 | Placed items, pick-ups and stack transfers | |
 | Skills, statistics, achievements, ranks, milestones and personal bests | |
 | Hunterscore and minigame boards | |
 | Lodges you can edit, trophies, gallery, dogs and their level rewards | |
 | Avatars you can choose | |
-| Friends and friend requests, messages, wallet history | |
+| Friends and friend requests, messages (read only), wallet history | |
 | Public player profiles with hunt history and score sheets, in the game and on the website | |
-| Halloween 2026 event on every reserve, on or off per player on the hunt start screen (its missions and trophies are not in yet) | |
+| Halloween 2026 event on its 5 reserves, on or off per player on the hunt start screen (its missions and trophies are not in yet) | |
 | Get your old profile back ([below](#get-your-old-profile-back)); delete your data | |
 | Launcher that installs and updates itself; Steam's Play button opens it | |
 | Website and launcher in 19 languages | |
@@ -61,7 +60,7 @@ Missions, daily missions and challenges are in the server but haven't been teste
 Sign in on [the website](https://hunter-resurgence.com/restore) with the Steam account you play with, then:
 
 - **No backup?** Look up your old in-game name. If your profile is found, claim it: it brings back your items, skills, achievements, trophies, lodges, loadouts, missions and statistics, but not your wallet. Players with over 500 hunterscore are the most likely to be found. One claim per account. Very high scores (10,000 or more) are checked by the operator first.
-- **Have a backup zip?** Upload it. The operator (the person who runs the server) checks it by hand; it also brings back your wallet.
+- **Have a backup zip?** Upload it. The operator (the person who runs the server) checks it by hand; a backup made in "My account" mode also brings back your wallet.
 
 Either way works even if you already hunted on the community server: hunts, kills and photos made here stay. Details: [the player guide](docs/guide.md#3-claim-your-old-profile-or-send-your-backup).
 
