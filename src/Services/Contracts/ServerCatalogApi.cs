@@ -52,7 +52,7 @@ public sealed record ServerItemPage(double Capacity, ServerContents? Contents, S
 /// <summary>An item sold by the pack: <c>10 cartridges</c>.</summary>
 public sealed record ServerContents(int Count, string Name);
 
-public sealed record ServerFits(string Title, ServerFit[] Items);
+public sealed record ServerFits(string Title, string Key, ServerFit[] Items);
 
 public sealed record ServerFit(int Id, string Name, string Variant);
 

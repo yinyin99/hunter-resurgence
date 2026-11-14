@@ -83,8 +83,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     static StoreItem WithPage(StoreItem item, ServerItemPage? page) => page is null ? item : item with
     {
         Capacity = page.Capacity,
-        Contents = page.Contents is { } c ? $"{c.Count} {c.Name}" : null,
-        Fits = page.Fits?.Select(f => new ItemFit(f.Title, [.. f.Items.Select(x => new StoreFit(x.Id, x.Name, x.Variant))])).ToList(),
+        Contents = page.Contents is { } c ? new StoreContents(c.Count, c.Name) : null,
+        Fits = page.Fits?.Select(f => new ItemFit(f.Title, [.. f.Items.Select(x => new StoreFit(x.Id, x.Name, x.Variant))], f.Key)).ToList(),
         Ethics = page.Ethical is { } e ? new EthicalMatrix(e.Ammo, [.. e.Species.Select(x => new EthicalRow(x.Name, x.Permitted))]) : null,
     };
 

@@ -1422,16 +1422,16 @@ public sealed partial class State
         return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
     }
 
-    /// <summary>What an item's page shows beyond the list (GET /catalog/item/{id}): `capacity` (the catalogue's inventory weight divided by 1000, the number the store shows as the capacity cost, which has no unit; 0 for none), `contents` (`{count, name}` of an item sold by the pack, else null),
-    /// `fits` (`[{title, items: [{id, name, variant}]}]`: what fits it, the catalogue's `fit` lists by group under the title of the group's category, the items the store shows) and `ethical`
+    /// <summary>What an item's page shows beyond the list (GET /catalog/item/{id}): `capacity` (the catalogue's inventory weight divided by 1000, the number the store shows as the capacity cost, which has no unit; 0 for none), `contents` (`{count, name}` of an item the catalogue gives units, else null),
+    /// `fits` (`[{title, key, items: [{id, name, variant}]}]`: what fits it, the catalogue's `fit` lists by group under the title and store key of the group's category, the items the store shows) and `ethical`
     /// (`{ammo: [name], species: [{name, permitted: [bool]}]}` for a weapon, over the ammunition that fits it, and for an ammunition, over itself; else null). A species row says whether the ammo is
     /// permitted by <see cref="Permits"/>, the rule the kills are judged by; a species with no list (the dogs) has no row. Null for an item the store does not show.</summary>
     public JsonObject? StoreItemPage(long id)
     {
         if (!items.TryGetValue(id, out var item) || Py.Truthy(G(item, "hidden", null))) return null;
-        var titles = new Dictionary<string, JsonNode?>();
+        var categories = new Dictionary<string, JsonNode>();
         foreach (var c in Arr(G(application, "categories", null)))
-            titles[Py.Str(c!["id"])] = C(c["title"]);
+            categories[Py.Str(c!["id"])] = c;
         var fit = item["fit"] as JsonObject ?? [];
         // the catalogue's own entry of each fitting item, so a hidden one is left out and the names are the store's
         JsonObject[] Fitting(JsonNode? list) => [.. Arr(list).Select(f => items.GetValueOrDefault(Py.L(f!["id"]))).OfType<JsonObject>().Where(i => !Py.Truthy(G(i, "hidden", null)))];
@@ -1440,7 +1440,8 @@ public sealed partial class State
             if (Fitting(list) is { Length: > 0 } shown)
                 fits.Add(new JsonObject
                 {
-                    ["title"] = C(titles.GetValueOrDefault(group)) ?? "",
+                    ["title"] = C(categories.GetValueOrDefault(group)?["title"]) ?? "",
+                    ["key"] = categories.GetValueOrDefault(group)?["default"] is { } key ? Py.Str(key) : "",  // the store's key of the category, as `GET /catalog/store` names it
                     ["items"] = new JsonArray([.. shown.Select(i => (JsonNode?)new JsonObject { ["id"] = C(i["id"]), ["name"] = C(i["name"]), ["variant"] = C(G(i, "variationname", null)) ?? "" })]),
                 });
         // category 1 is the weapons, 3 the ammunition (the groups of `fit` are the categories'): a weapon lists its ammunition (group 3)

@@ -706,7 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Nelimitat</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prețul pachetului</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Cost capacitate</value></data>
-  <data name="Store.Contains" xml:space="preserve"><value>Conține</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Conține:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} × utilizări</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} × cartușe</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} × cartușe de șrot</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} × unități</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} × săgeți</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} × zile</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} × luni</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} × lună</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Acceptat(ă) pentru</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Este etic să folosiți {0} la vânătoarea de: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Nu este etic să folosiți {0} la vânătoarea de: {1}</value></data>

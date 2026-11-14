@@ -706,7 +706,15 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Ubegrenset</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Pakkepris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasitetskostnad</value></data>
-  <data name="Store.Contains" xml:space="preserve"><value>Inneholder</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Inneholder:</value></data>
+  <data name="Store.Unit.uses" xml:space="preserve"><value>{0} bruk</value></data>
+  <data name="Store.Unit.cartridges" xml:space="preserve"><value>{0} patroner</value></data>
+  <data name="Store.Unit.shotshells" xml:space="preserve"><value>{0} haglepatroner</value></data>
+  <data name="Store.Unit.units" xml:space="preserve"><value>{0} enheter</value></data>
+  <data name="Store.Unit.arrows" xml:space="preserve"><value>{0} piler</value></data>
+  <data name="Store.Unit.days" xml:space="preserve"><value>{0} dager</value></data>
+  <data name="Store.Unit.months" xml:space="preserve"><value>{0} måneder</value></data>
+  <data name="Store.Unit.month" xml:space="preserve"><value>{0} måned</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Tillatt for</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Det er etisk å bruke {0} når man jakter på: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Det er ikke etisk å bruke {0} når man jakter på: {1}</value></data>

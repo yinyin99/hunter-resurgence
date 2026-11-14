@@ -1,3 +1,4 @@
+using System.Globalization;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -38,11 +39,28 @@ public sealed class ItemDetailTests : UiContext
         var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
 
         var contains = Services.GetRequiredService<IStringLocalizer<Strings>>()["Store.Contains"].Value;
-        Assert.Contains($"{contains}: 10 cartridges", cut.Find(".data").TextContent);
+        Assert.Contains($"{contains} 10 cartridges", cut.Find(".data").TextContent);
         var weapons = cut.FindAll(".fits tr");
         Assert.Equal(3, weapons.Count);
         Assert.All(weapons, w => Assert.NotNull(w.QuerySelector(".asset-slot")));
         Assert.Equal(5, cut.FindAll(".ethics tbody tr").Count);
+    }
+
+    // the fit titles are the store's category texts and the units are the catalogue's unit word by a text, not the catalogue's English
+    [Fact]
+    public void TheFitTitlesAndTheContentsAreInThePlayersLanguage()
+    {
+        var before = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = new CultureInfo("fr");
+        try
+        {
+            var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
+
+            var strings = Services.GetRequiredService<IStringLocalizer<Strings>>();
+            Assert.Equal(strings["Store.Cat.0"].Value, cut.Find(".fits h4").TextContent);
+            Assert.Equal("Contient : 10 cartouches", cut.FindAll(".data p")[1].TextContent);
+        }
+        finally { CultureInfo.CurrentUICulture = before; }
     }
 
     // the live site buys from the server, with em$ and gm$, and has no bank to send a player short of em$ to

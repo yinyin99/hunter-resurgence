@@ -246,7 +246,7 @@ public class CatalogTests : StateTestBase
         Assert.Equal(3.25, (double)page["capacity"]!);
         Assert.Null(page["contents"]);
         var fits = page["fits"]!.AsArray();
-        Assert.Equal(["Sights", "Ammo"], fits.Select(f => (string)f!["title"]!));
+        Assert.Equal([("Sights", "5"), ("Ammo", "10")], fits.Select(f => ((string)f!["title"]!, (string)f["key"]!)));  // the key is the store's, the one its category texts are by
         Assert.Equal(["Test Scope"], fits[0]!["items"]!.AsArray().Select(i => (string)i!["name"]!));
         Assert.Equal(["Test Shot A", "Test Slug"], fits[1]!["items"]!.AsArray().Select(i => (string)i!["name"]!));  // the hidden one is left out
         var ethical = page["ethical"]!;
@@ -262,7 +262,7 @@ public class CatalogTests : StateTestBase
         var page = await Page(14);
         Assert.Equal((0.85, 30L, "shotshells"), ((double)page["capacity"]!, (long)page["contents"]!["count"]!, (string)page["contents"]!["name"]!));
         var fit = page["fits"]![0]!;
-        Assert.Equal(("Weapons", "Test Rifle", "Blue"), ((string)fit["title"]!, (string)fit["items"]![0]!["name"]!, (string)fit["items"]![0]!["variant"]!));
+        Assert.Equal(("Weapons", "0", "Test Rifle", "Blue"), ((string)fit["title"]!, (string)fit["key"]!, (string)fit["items"]![0]!["name"]!, (string)fit["items"]![0]!["variant"]!));
         Assert.Equal(["Test Shot A"], page["ethical"]!["ammo"]!.AsArray().Select(a => (string)a!));
         Assert.All(page["ethical"]!["species"]!.AsArray(), s => Assert.Equal([true], s!["permitted"]!.AsArray().Select(p => (bool)p!)));
     }

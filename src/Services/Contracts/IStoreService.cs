@@ -3,8 +3,8 @@ namespace Resurgence.Services;
 /// <summary>A store category; <see cref="Key"/> is the address part (sales, all, bundles or a number).</summary>
 public sealed record StoreCategory(string Key, string Name, IReadOnlyList<StoreCategory> Children);
 
-/// <summary>Attachments that fit an item, under the title of their category.</summary>
-public sealed record ItemFit(string Title, IReadOnlyList<StoreFit> Items);
+/// <summary>Attachments that fit an item, under the title of their category; <see cref="Key"/> is the store's key of that category (the text `Store.Cat.{key}` translates), "" when unknown.</summary>
+public sealed record ItemFit(string Title, IReadOnlyList<StoreFit> Items, string Key = "");
 
 public sealed record StoreFit(int Id, string Name, string Variant = "");
 
@@ -17,16 +17,19 @@ public sealed record EthicalRow(string Species, IReadOnlyList<bool> Permitted);
 /// An item; <see cref="WasEms"/> is the struck-through price of an item on sale, <see cref="Category"/> the key of its (sub)category.
 /// <see cref="DaysLeft"/> is set for an item that is owned for a time (less than one day is 0.5); <see cref="OwnLimit"/> is 0 for no limit;
 /// <see cref="Banner"/> is premium, limited, new or community; <see cref="MultiBuy"/> items (ammunition) are bought in amounts.
-/// <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Contents"/> is what an item sold by the pack holds ("10 cartridges"). <see cref="Owned"/> is a count of copies, or the units of a <see cref="Counted"/> item; <see cref="Expires"/> is the end of an owned license in unix seconds, 0 when unlimited.
+/// <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Contents"/> is what an item that has units holds. <see cref="Owned"/> is a count of copies, or the units of a <see cref="Counted"/> item; <see cref="Expires"/> is the end of an owned license in unix seconds, 0 when unlimited.
 /// </summary>
 public sealed record StoreItem(int Id, string Name, string Variant, string Category, int Ems, int? WasEms, int Gms, int Owned, bool Buyable, double Capacity, string Description,
     double? DaysLeft = null, int OwnLimit = 0, bool DisabledByServices = false, string? Banner = null, bool MultiBuy = false,
     IReadOnlyList<ItemFit>? Fits = null, EthicalMatrix? Ethics = null,
-    bool Counted = false, long? Expires = null, string? Contents = null)
+    bool Counted = false, long? Expires = null, StoreContents? Contents = null)
 {
     /// <summary>No more to buy: the own limit is reached, or the player has a license without end.</summary>
     public bool LimitReached => Expires == 0 || (OwnLimit > 0 && Owned >= OwnLimit);
 }
+
+/// <summary>What an item holds: <see cref="Count"/> of <see cref="Unit"/>, the catalogue's word for it (cartridges, arrows, uses, ...).</summary>
+public sealed record StoreContents(int Count, string Unit);
 
 /// <summary>A bundle line; <see cref="OwnLimit"/> is 0 for unlimited.</summary>
 public sealed record BundleLine(int ItemId, string Name, int Count, int Owned, int Value, string Variant = "", int OwnLimit = 0);
