@@ -100,10 +100,10 @@ public sealed partial class State
                             if (Py.IsNum(time) && (long)Py.D(time) == end)
                                 Earned(Convert.ToInt64(r[0]), threshold);
             }
-            else if (reply["stats"]?["data"]?["achievements"] is JsonArray saved)
+            else if (reply["stats"] is JsonObject savedStats && savedStats["data"] is JsonObject savedData && savedData["achievements"] is JsonArray saved)  // only the thresholds earned during the hunt
                 foreach (var a in saved.OfType<JsonObject>().Where(a => TryKey(a["id"], out _) && a["triggers"] is JsonObject))
                     foreach (var (threshold, time) in (JsonObject)a["triggers"]!)
-                        if (Py.IsNum(time) && Py.D(time) > 0)
+                        if (Py.IsNum(time) && Py.D(time) >= start && Py.D(time) <= end)
                             Earned(Py.L(a["id"]), threshold);
         }
         var antlers = new JsonArray([.. (reply["antler_collectables"] as JsonArray ?? []).OfType<JsonObject>().Select(a => (JsonNode?)new JsonObject
