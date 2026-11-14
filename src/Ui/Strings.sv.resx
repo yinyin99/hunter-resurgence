@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Eventföremål</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trophy Lodges</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Fordon</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Gevär</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Gevärsammunition</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrievers</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Doftlockmedel</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Jackor &amp; skjortor</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Förråd</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optik</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Pass &amp; gömslen</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Planlösningar</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Parkvakter</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Djur</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Pistoler</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Hagelgevär</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Pilbågar &amp; armborst</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Mynningsladdare</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Mynningsladdarpistoler</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Avancerade skjutvapen</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Pistolammunition</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Hagelammunition</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Pil- &amp; armborstammunition</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Mynningsladdarammunition</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Hundutrustning</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Hundförbrukningsvaror</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Drivande hundar</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Tyska stående hundar</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Lockrop</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Bete</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Lockfåglar</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Elektroniskt lockrop</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Byxor</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Hattar</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Handskar</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Skor</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Ansiktsskydd</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Glasögon</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Ryggsäckar</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatarer</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Jägare</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>HunterMate-appar</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Förbrukningsvaror</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Utplacerbar utrustning</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Diverse</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Utplacerbara mål</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Tält</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Betesplatser</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Högtider</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Sommarfiesta</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Långa natten</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Stilar</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Gevärsställ</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Bensin</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Gevärssikten</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Handvapensikten</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Hagelgevärssikten</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Pilbågs- och armborstsikten</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Mynningsladdarsikten</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Sök</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>KÖP</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Går ej att köpa</value></data>

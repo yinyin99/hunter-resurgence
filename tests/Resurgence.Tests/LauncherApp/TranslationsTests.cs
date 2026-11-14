@@ -30,7 +30,7 @@ public class TranslationsTests
     }
 
     /// <summary>Keys whose English text is right in every language: names.</summary>
-    static readonly HashSet<string> NamesKeptInEnglish = ["App.Name", "Dialog.Tutorial.Msaa", "Board.LaneBandit", "Board.BustThrough", "Set.SteamTitle"];
+    static readonly HashSet<string> NamesKeptInEnglish = ["App.Name", "Dialog.Tutorial.Msaa", "Board.LaneBandit", "Board.BustThrough", "Set.SteamTitle", "Store.Sub.57", "Store.Cat.76", "Store.Cat.104", "Store.Cat.111"];
 
     /// <summary>A key whose English text is in every translation was copied, not translated (#197). One language may share a word with English
     /// ("Details", "Online") or keep the original site's English, so only all of them together count.</summary>

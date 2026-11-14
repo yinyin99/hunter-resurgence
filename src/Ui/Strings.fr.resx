@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Articles événementiels</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Loges des trophées</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Véhicules</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Carabines</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Munitions carabine</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrievers</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Leurres olfactifs</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Vestes et chemises</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Inventaire</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optiques</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Affûts et caches</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Plans</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Gardes forestiers</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Animaux</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Armes de poing</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Fusils</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Arcs et arbalètes</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Armes à chargement par la bouche</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Pistolets à chargement par la bouche</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Armes à feu avancées</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Munitions arme de poing</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Munitions fusil</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Munitions arc &amp; arbalète</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Munitions arme à chargement par la bouche</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Équipement pour chien</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Consommables pour chien</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Chiens courants</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Braques allemands</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Appeaux</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Appâts</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Leurres</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Appeau électronique</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Pantalons</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Chapeaux</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Gants</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Chaussures</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Accessoires de visage</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Lunettes</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Sacs à dos</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatars</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Chasseur</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>Applications HunterMate</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Consommables</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Équipements déployables</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Divers</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Cibles déployables</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Tentes</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Sites d’appâtage</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Halloween</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Fêtes</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Fiesta d’été</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Longue Nuit</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Styles</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Râteliers</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Essence</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Viseurs de carabine</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Viseurs d’arme de poing</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Viseurs de fusil</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Viseurs d’arc et arbalète</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Viseurs pour armes à chargement par la bouche</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Rechercher</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>ACHETER</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Non achetable</value></data>

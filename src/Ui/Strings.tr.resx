@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Etkinlik Ürünleri</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Trofe Kulübeleri</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Araçlar</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Tüfekler</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Tüfek Mühimmatı</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Retrieverlar</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Koku Yemleri</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Ceketler ve Gömlekler</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Envanter</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Optikler</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Gözetleme Kuleleri ve Gizlenme Yerleri</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Düzenler</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Park Korucuları</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Hayvanlar</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Tabancalar</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Av Tüfekleri</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Yaylar ve Arbaletler</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Ağızdan Dolma Silahlar</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Ağızdan Dolma Tabancalar</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Gelişmiş Ateşli Silahlar</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Tabanca Mühimmatı</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Av Tüfeği Mühimmatı</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Yay ve Arbalet Okları</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Ağızdan Dolma Silah Mühimmatı</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Köpek Ekipmanı</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Köpek Sarf Malzemeleri</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>İz Köpekleri</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Alman Pointerlar</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Çağrı Aletleri</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Yem</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Sahte Hayvanlar</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Elektronik Çağrı Aleti</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Pantolonlar</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Şapkalar</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Eldivenler</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Ayakkabılar</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Yüz Koruyucular</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Gözlükler</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Sırt Çantaları</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Avatarlar</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Avcı</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>HunterMate Uygulamaları</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Sarf Malzemeleri</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Kurulabilir Ekipman</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Çeşitli</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Kurulabilir Hedefler</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Çadırlar</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Yem Alanları</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Cadılar Bayramı</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Tatiller</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Yaz Fiestası</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Uzun Gece</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Stiller</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Silah Rafları</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Benzin</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Tüfek Nişangahları</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Tabanca Nişangahları</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Av Tüfeği Nişangahları</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Yay ve Tatar Yayı Nişangahları</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Ağızdan Dolma Tüfek Nişangahları</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Ara</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>SATIN AL</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Satın alınamaz</value></data>
