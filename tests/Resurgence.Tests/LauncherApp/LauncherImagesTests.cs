@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ namespace Resurgence.Tests.LauncherApp;
 /// <summary>The launcher's pictures come from the website's /images.json; any failure leaves the labelled boxes (docs/images.md).</summary>
 public class LauncherImagesTests
 {
+    // #209: it failed in full runs when the product's 5 s timeout expired under load (and a freed port could be bound by a parallel test); since the two fixes below it passed 10 full solution test runs in a row.
     [Fact]
     public async Task TheWebsitesListGivesItsPicturesAndAFailureTheBoxes()
     {
@@ -33,7 +35,8 @@ public class LauncherImagesTests
         });
         await app.StartAsync(TestContext.Current.CancellationToken);
         var origin = new Uri(app.Urls.Single());
-        async Task<string?> LogoBar(Uri? server) => (await LauncherServices.LoadImages(server)).Url("logo-bar");
+        // a loaded machine can take longer than the product's 5 s for the first request (#209); a refusal or a break ends the call without waiting for the timeout, so only a hang waits this long
+        async Task<string?> LogoBar(Uri? server) => (await LauncherServices.LoadImages(server, TimeSpan.FromMinutes(2))).Url("logo-bar");
 
         // only the scheme, host and port of server_url count
         Assert.Equal(origin.GetLeftPart(UriPartial.Authority) + "/images/logo-bar.png?v=1f", await LogoBar(new Uri(origin, "/some/path")));
@@ -44,10 +47,9 @@ public class LauncherImagesTests
             Assert.Null(await LogoBar(origin));
         }
 
-        var dead = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
-        dead.Start();
-        var port = ((IPEndPoint)dead.LocalEndpoint).Port;
-        dead.Stop();
-        Assert.Null(await LogoBar(new Uri($"http://127.0.0.1:{port}"))); // nothing listens
+        // bound and never listening: the port stays ours (a parallel test cannot bind it) and a connect is refused
+        using var dead = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        dead.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        Assert.Null(await LogoBar(new Uri($"http://127.0.0.1:{((IPEndPoint)dead.LocalEndPoint!).Port}"))); // nothing listens
     }
 }
