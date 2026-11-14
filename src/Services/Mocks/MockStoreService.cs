@@ -46,12 +46,12 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     static readonly StoreItem[] Weapons = Items.Where(i => i.Category == "0").Take(3).ToArray();
 
     // weapons list the sights and ammunition that fit, ammunition the weapons that fire it; weapons and ammunition show for which species each ammunition is permitted
-    static readonly EthicalMatrix Ethics = new(Ammo.Select(a => a.Name).ToList(), Species.Select((s, r) => new EthicalRow(s.Id, s.Name, Ammo.Select((_, c) => (r + c) % 3 != 0).ToList())).ToList());
+    static readonly EthicalMatrix Ethics = new(Ammo.Select(a => new StoreFit(a.Id, a.Name, a.Variant)).ToList(), Species.Select((s, r) => new EthicalRow(s.Id, s.Name, Ammo.Select((_, c) => (r + c) % 3 != 0).ToList())).ToList());
 
     static StoreItem Extras(StoreItem i) => i.Category switch
     {
         "0" => i with { Fits = [new("Sights", Sights.Select(s => new StoreFit(s.Id, s.Name)).ToList(), "5"), new("Ammo", Ammo.Select(a => new StoreFit(a.Id, a.Name)).ToList(), "10")], Ethics = Ethics },
-        "10" => i with { Contents = new(10, "cartridges"), Fits = [new("Weapons", Weapons.Select(w => new StoreFit(w.Id, w.Name, w.Variant)).ToList(), "0")], Ethics = new([i.Name], Ethics.Rows.Select(r => r with { Permitted = [r.Permitted[0]] }).ToList()) },
+        "10" => i with { Contents = new(10, "cartridges"), Fits = [new("Weapons", Weapons.Select(w => new StoreFit(w.Id, w.Name, w.Variant)).ToList(), "0")], Ethics = new([new(i.Id, i.Name, i.Variant)], Ethics.Rows.Select(r => r with { Permitted = [r.Permitted[0]] }).ToList()) },
         _ => i,
     };
 

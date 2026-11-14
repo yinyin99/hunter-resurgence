@@ -19,10 +19,12 @@ h4 { margin: 0 0 12px; padding: 0 0 0 10px; font-size: 18px; line-height: 26px; 
 .fit { display: block; padding: 8px 5px 6px; border-top: 1px solid var(--surface-2, #2a2a2a); font-size: 14px; line-height: 20px; color: var(--fg-muted-2); text-decoration: none; }
 .fit:hover { color: #fff; }
 .fit ::deep .thumb { display: block; margin: 0 0 4px; }
-.ethics table { width: 100%; max-width: 270px; font-size: 14px; }
+.ethics table { width: 100%; font-size: 14px; }
 .ethics td, .ethics th { padding: 4px 5px; line-height: 20px; border-top: 1px solid var(--surface-2, #2a2a2a); }
-.ethics td:not(:first-child), .ethics th { text-align: right; }
-.ethics ::deep .thumb { display: inline-block; vertical-align: middle; }
+.ethics td:not(:first-child) { text-align: center; }
+.ethics th { width: 92px; padding-bottom: 6px; font-size: 12px; line-height: 16px; text-align: center; vertical-align: bottom; }
+.ethics th .nm { display: block; overflow-wrap: break-word; }
+.ethics ::deep .thumb { display: block; margin: 0 auto 4px; }
 .ethics ::deep .icon { width: 14px; height: 14px; }
 .ethics .yes { color: #7cc22a; }
 .ethics .no { color: var(--fg-muted-2); }

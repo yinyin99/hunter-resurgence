@@ -57,7 +57,11 @@ public sealed class ItemDetailTests : UiContext
             var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
 
             var strings = Services.GetRequiredService<IStringLocalizer<Strings>>();
-            Assert.NotEmpty(cut.FindAll(".ethics th .asset-slot"));
+            Assert.Single(cut.FindAll(".ethics th .asset-slot"));
+            Assert.Equal("Rifle Ammo A (Black)", cut.Find(".ethics th .nm").TextContent);
+            var weapon = Render<ItemDetail>(p => p.Add(i => i.Id, 1226));
+            Assert.Equal(3, weapon.FindAll(".ethics th .asset-slot").Count);
+            Assert.All(weapon.FindAll(".ethics th .nm"), s => Assert.StartsWith("Rifle Ammo", s.TextContent));
             var names = cut.FindAll(".ethics tbody tr td:first-child").Select(n => n.TextContent).ToList();
             Assert.Contains(strings["Term.species.14"].Value, names);
             Assert.Equal(names.OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase), names);
