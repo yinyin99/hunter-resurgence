@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 21;
+    public const int Version = 22;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -157,6 +157,7 @@ public sealed class Store
             banned INTEGER NOT NULL DEFAULT 0,
             seasonal_events INTEGER NOT NULL DEFAULT 1,       -- 0: the player opted out of seasonal events
             discord_invited INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher showed the player the Discord invite once
+            start_kit INTEGER NOT NULL DEFAULT 0,             -- 1: the account has the start kit (a new account is seeded with it; an older one gets it once, at the first start of the server that has it)
             account TEXT NOT NULL);                          -- the connect reply's `account` object
         CREATE TABLE tokens (
             hash TEXT PRIMARY KEY,                           -- SHA-256 of the token, hex
@@ -322,6 +323,8 @@ public sealed class Store
                 con.Script("ALTER TABLE accounts ADD COLUMN discord_invited INTEGER NOT NULL DEFAULT 0");
             if (version < 21 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'tent'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN tent INTEGER");
+            if (version < 22 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'start_kit'")! == 0)
+                con.Script("ALTER TABLE accounts ADD COLUMN start_kit INTEGER NOT NULL DEFAULT 0");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -566,7 +569,7 @@ public sealed class Store
     {
         using var con = Open(id);
         con.Begin();
-        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, account) VALUES (?, ?, ?, ?, ?)",
+        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, start_kit, account) VALUES (?, ?, ?, ?, 1, ?)",
                  id, steamId64, handle, Now(), Py.Dumps(account));
         seed?.Invoke(con);
         con.Commit();

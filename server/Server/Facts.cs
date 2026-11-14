@@ -227,4 +227,11 @@ public sealed class Facts
         var start = Obj("start");
         return ([.. (start["items"] as JsonArray ?? []).Select(Py.L)], (JsonObject)(start["wallet"] as JsonObject ?? []).DeepClone());
     }
+
+    /// <summary>The free ammunition every hunt starts with, <c>start.free_ammo</c>: its item ids and how many full boxes of each the player has at least.</summary>
+    public (long[] Items, long Boxes) FreeAmmo()
+    {
+        var free = Obj("start")["free_ammo"] as JsonObject ?? [];
+        return ([.. (free["items"] as JsonArray ?? []).Select(Py.L)], free["boxes"] is { } b ? Py.L(b) : 0);
+    }
 }

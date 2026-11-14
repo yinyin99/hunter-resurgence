@@ -705,11 +705,23 @@ public sealed partial class State
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
             Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
-        // every closed hunt has its statistics, and the stored hunterscores follow the rank table and the counts of today, also
-        // after a server update
+        // an account from before the start kit (schema 22) gets the start items it lacks, once (not a banned one: it gets them at its first start after the ban is lifted)
         List<long> ids;
         using (var all = Store.Open())
+        {
+            foreach (var id in all.Rows("SELECT id FROM accounts WHERE start_kit = 0 AND banned = 0 ORDER BY id").Select(r => (long)r[0]).ToList())
+                using (var con = Store.Open(id))
+                {
+                    con.Begin();
+                    PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
+                                               (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
+                    con.Exec("UPDATE accounts SET start_kit = 1 WHERE id = ?", id);
+                    con.Commit();
+                }
             ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+        }
+        // every closed hunt has its statistics, and the stored hunterscores follow the rank table and the counts of today, also
+        // after a server update
         foreach (var id in ids)
             using (var con = Store.Open(id))
                 UpdateHunterscore(con, id);
@@ -1877,9 +1889,34 @@ public sealed partial class State
                  Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null, tent);  // out of one day: the recorded time stays
         MissionLaunch(con, tent is null ? location : null);  // a tent is no lodge: no `Start at` objective
         ApplyLoadout(con, Form1(form, "loadout_id"));
+        RefillAmmo(con);
         con.Commit();
         if (closed)
             UpdateHunterscore(con, account);
+    }
+
+    /// <summary>At every hunt's start: the free ammunition (<see cref="Facts.FreeAmmo"/>) is topped up to its full boxes, a box being the item's stack size. A stack the player has used is filled
+    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. The rows are in the connect that follows.</summary>
+    void RefillAmmo(Db con)
+    {
+        var (ammo, boxes) = facts.FreeAmmo();
+        foreach (var id in ammo)
+        {
+            if (ItemInfo(id)?["units"] is not { } u || !Py.IsNum(u) || Py.L(u) <= 0)
+                continue;
+            var box = Py.L(u);
+            var rows = con.Rows("SELECT guid, units FROM items WHERE account_id = $a AND item_id = ? AND units IS NOT NULL ORDER BY guid", id)
+                .Select(r => (Guid: Convert.ToInt64(r[0]), Units: Math.Max(0, Convert.ToInt64(r[1])))).ToList();
+            var missing = box * boxes - rows.Sum(r => r.Units);
+            foreach (var (guid, units) in rows.Where(r => r.Units < box))
+            {
+                var add = Math.Min(box - units, Math.Max(0, missing));
+                if (add > 0) con.Exec("UPDATE items SET units = ? WHERE account_id = $a AND guid = ?", units + add, guid);
+                missing -= add;
+            }
+            for (; missing > 0; missing -= box)
+                con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", NextId(con, "items", "guid"), id, Math.Min(box, missing));
+        }
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()

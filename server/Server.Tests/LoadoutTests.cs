@@ -242,13 +242,13 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         var launch = await Launch(Api, "/v1/Launch/start", "application/x-www-form-urlencoded", $"start=100&loctype=LODGE&reserve=2&time=480&loadout_id={ids[0]}", owner);
         Assert.Equal(("state", 200), (launch.Source, launch.Status));
         // the entry for a third rifle is skipped; the placed item stays; the dog of the guid is on, the other one is off
-        Eq("""{"100": 0, "200": 8, "301": 2, "302": 3, "303": 5, "304": 29, "305": 0, "306": 23, "307": 0}""", JsonNode.Parse(Slots()));
+        Eq("""{"100": 0, "200": 8, "301": 2, "302": 3, "303": 5, "304": 29, "305": 0, "306": 23, "307": 0, "310": 0, "311": 0}""", JsonNode.Parse(Slots()));  // 310 and 311: the launch's refill of the owner's ammunition
 
         // the current build's start of a session, the loadout id in its JSON body
         var session = await Launch(Web, "/v1/session/start_single_player?locale=en_US", "application/json",
             $$"""{"oauth_access_token": "{{owner}}", "time": 480, "loadout_id": {{ids[1]}}, "lodge_id": 101, "reserve": 2}""", owner);
         Assert.Equal(("state", 200), (session.Source, session.Status));
-        Eq("""{"100": 0, "200": 0, "301": 4, "302": 0, "303": 0, "304": 0, "305": 0, "306": 23, "307": 0}""", JsonNode.Parse(Slots()));
+        Eq("""{"100": 0, "200": 0, "301": 4, "302": 0, "303": 0, "304": 0, "305": 0, "306": 23, "307": 0, "310": 0, "311": 0}""", JsonNode.Parse(Slots()));
     }
 
     [Fact]
@@ -260,6 +260,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, state.SaveLoadout(VIEWER, theirs, Encoding.UTF8.GetBytes(Items("""{"slot_id": 2, "item_id": 5}"""))).Status);
         var mine = Ids(OWNER)[0];
         Assert.Equal(200, state.SaveLoadout(OWNER, mine, Encoding.UTF8.GetBytes(Items("""{"slot_id": 2, "item_id": 5}"""))).Status);
+        state.NoteLaunch(OWNER, "start=100&reserve=2"u8.ToArray());  // the first launch refills the owner's ammunition: its rows are in `before`
         var before = Slots();
         var viewerBefore = Slots(VIEWER);
         foreach (var form in new[] { "", "loadout_id=", "loadout_id=0", "loadout_id=abc", $"loadout_id={theirs}", $"loadout_id={mine + 1000}", "loadout_id=99999999999999999999", "loadout_id=-1" })
@@ -293,7 +294,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
             con.Exec("UPDATE loadouts SET entries = ? WHERE account_id = $a AND id = ?",
                      """[{"slot_id": 23, "item_id": 5}, {"slot_id": 0, "item_id": 5}, {"slot_id": -2, "item_id": 5}, {"slot_id": 4, "item_id": 5}]""", id);
         state.NoteLaunch(OWNER, Encoding.ASCII.GetBytes($"start=100&reserve=2&loadout_id={id}"));
-        Eq("""{"100": 0, "200": 0, "301": 4, "302": 0, "303": 0, "304": 0, "305": 0, "306": 23, "307": 0}""", JsonNode.Parse(Slots()));  // only the placed item is in slot 23
+        Eq("""{"100": 0, "200": 0, "301": 4, "302": 0, "303": 0, "304": 0, "305": 0, "306": 23, "307": 0, "309": 0, "310": 0}""", JsonNode.Parse(Slots()));  // only the placed item is in slot 23; 309 and 310 are the refilled ammunition
     }
 
     [Fact]
@@ -306,7 +307,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
             """{"slot_id": 2, "item_id": 404}""", """{"slot_id": 29, "item_id": 700, "item_guid": 999}""", """{"slot_id": 30, "item_id": 700, "item_guid": 303}""",
             """{"slot_id": 5, "item_id": 2}""", """{"slot_id": 6, "item_id": 2}"""))).Status);
         state.NoteLaunch(OWNER, Encoding.ASCII.GetBytes($"start=100&reserve=2&loadout_id={id}"));
-        Eq("""{"100": 0, "200": 0, "301": 0, "302": 0, "303": 5, "304": 0, "305": 0, "306": 23, "307": 0}""", JsonNode.Parse(Slots()));
+        Eq("""{"100": 0, "200": 0, "301": 0, "302": 0, "303": 5, "304": 0, "305": 0, "306": 23, "307": 0, "309": 0, "310": 0}""", JsonNode.Parse(Slots()));
     }
 
     [Fact]
