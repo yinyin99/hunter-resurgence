@@ -12,13 +12,35 @@ public static class ServerCatalogApi
 }
 
 /// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)
-/// or <c>tent</c> (the id of a tent of <see cref="ServerAccountApi.Placed"/>), <c>time</c> (minutes) and <c>loadout</c> (an id, 0 for the last equipment), or of <c>tutorial</c>: 200 <see cref="ServerLaunch"/>, 400 for a refused start, 401 when signed out.</summary>
+/// or <c>tent</c> (the id of a tent of <see cref="ServerAccountApi.Placed"/>), <c>time</c> (minutes) and <c>loadout</c> (an id, 0 for the last equipment), or of <c>tutorial</c>: 200 <see cref="ServerLaunch"/>, 400 for a refused start, 401 when signed out.
+/// A multiplayer hunt adds <c>mp=host</c> with <c>name</c>, <c>description</c>, <c>public_game</c> (1 anyone, 0 friends only), <c>free_players</c> (1), <c>hs_min</c> and <c>hs_max</c> (only when the Hunter Score is limited),
+/// <c>password</c> (only when set) and <c>max_players</c>; or <c>mp=join</c> with <c>network_id</c> (<see cref="ServerGame.Id"/>), <c>lodge</c> or <c>tent</c>, <c>loadout</c> and <c>password</c> (only when set; no reserve, no time: the game has them).
+/// A refused join is 400 <see cref="ServerRefusal"/> with <c>password</c>, <c>full</c>, <c>not_allowed</c> or <c>host_not_ready</c>.</summary>
 public static class ServerLaunchApi
 {
     public const string Launch = "/auth/launch";
+    /// <summary>GET, no cookie: the open games, a JSON array of <see cref="ServerGame"/>.</summary>
+    public const string Games = "/v1/Network/list";
 }
 
 public sealed record ServerLaunch(string Url);
+
+public sealed record ServerRefusal(string? Error);
+
+/// <summary>A game of <see cref="ServerLaunchApi.Games"/>, as the original's list has it (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
+/// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one), <c>Country</c> is missing on a community server.</summary>
+public sealed record ServerGame(
+    long Id, string? Name, string? Handle, string? Description, bool Password,
+    [property: System.Text.Json.Serialization.JsonPropertyName("hs_min")] int? Min,
+    [property: System.Text.Json.Serialization.JsonPropertyName("hs_max")] int? MaxScore,
+    [property: System.Text.Json.Serialization.JsonPropertyName("max_players")] int Max,
+    [property: System.Text.Json.Serialization.JsonPropertyName("start_ts")] long Started,
+    [property: System.Text.Json.Serialization.JsonPropertyName("country_code")] string? Country,
+    ServerGamePlayer[]? Clients, ServerGameReserve? Reserve);
+
+public sealed record ServerGamePlayer(string? Handle, int Hunterscore, string? Avatar);
+
+public sealed record ServerGameReserve(int Id);
 
 /// <summary>The JSON of <see cref="ServerCatalogApi.Reserves"/>.</summary>
 public sealed record ServerLaunchCatalogue(ServerReserve[] Reserves, ServerTutorial[] Tutorials);

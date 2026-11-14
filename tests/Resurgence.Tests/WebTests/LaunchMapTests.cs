@@ -30,7 +30,7 @@ public sealed class LaunchMapTests : UiContext
         public Task<IReadOnlyList<Loadout>> LoadoutsAsync() => Task.FromResult<IReadOnlyList<Loadout>>([]);
         public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) { Started = (reserve, marker); return Task.FromResult(Result.Success); }
         public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Task.FromResult(Result.Fail("Launch.Failed"));
-        public Task<Result> JoinAsync(int server, int marker, string? password, int loadout) => Task.FromResult(Result.Fail("Launch.Failed"));
+        public Task<Result> JoinAsync(long server, int marker, string? password, int loadout) => Task.FromResult(Result.Fail("Launch.Failed"));
         public Task<Result> StartTutorialAsync(int id) => Task.FromResult(Result.Success);
     }
 

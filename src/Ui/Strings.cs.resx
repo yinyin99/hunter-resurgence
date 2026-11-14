@@ -259,6 +259,9 @@
   <data name="Join.Go" xml:space="preserve"><value>Připojit se</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Zavřít</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Špatné heslo. Zkuste to prosím znovu.</value></data>
+  <data name="Join.Full" xml:space="preserve"><value>Tato hra je plná. Zkus prosím jinou hru.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Do této hry se nemůžeš připojit: je jen pro přátele hostitele, nebo je tvé lovecké skóre mimo jeho limity.</value></data>
+  <data name="Join.HostNotReady" xml:space="preserve"><value>Hostitel ještě není připraven. Zkus to prosím za chvíli znovu.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Už jste skončili s lovem?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Zobrazit statistiky lovu</value></data>
   <data name="Done.HuntNow" xml:space="preserve"><value>LOVIT</value></data>

@@ -5,7 +5,8 @@ namespace Resurgence.Services;
 
 /// <summary>The launch map of the community server: the reserves, their starts and the tutorials are its catalogue (<see cref="ServerCatalogApi.Reserves"/>), the loadouts are the player's
 /// (<see cref="ServerAccountApi.Loadouts"/>), and a start asks the server to open the hunt (<see cref="ServerLaunchApi.Launch"/>) and hands the launch URL it answers to
-/// <see cref="ILauncherBridge.StartGame"/>. The server has no multiplayer: no game is listed and creating or joining one fails. A server that does not answer is an empty map, never the mock's.</summary>
+/// <see cref="ILauncherBridge.StartGame"/>. The open multiplayer games are the server's list (<see cref="ServerLaunchApi.Games"/>); hosting and joining one are starts with <c>mp=host</c> and <c>mp=join</c>, and a
+/// refused join fails with the message of its reason. A server that does not answer is an empty map and no games, never the mock's.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The catalogue is the same for everyone and is asked without the session cookie; the loadouts and a start carry it.</param>
 public sealed class ServerServersService(HttpClient http, ServerCookie cookie, ServerCache<ServerLaunchCatalogue> cache, ILauncherBridge bridge, ILogger<ServerServersService> log) : IServersService
@@ -17,7 +18,31 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
         [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
 
-    public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>([]);
+    /// <summary>The open games of the server (<see cref="ServerLaunchApi.Games"/>); none when the server does not answer. The players of a game are not placed on its map (the list has world coordinates).</summary>
+    public async Task<IReadOnlyList<GameServer>> ServersAsync()
+    {
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerLaunchApi.Games);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGame[]>() is { } games)
+            {
+                var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                return [.. games.Where(g => g.Reserve is not null).Select(g => Game(g, now))];
+            }
+            log.LogWarning("The server answered {Path} with {Status}: no games", ServerLaunchApi.Games, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no games", ServerLaunchApi.Games, e.Message);
+        }
+        return [];
+    }
+
+    /// <summary>The host is the first of the game's hunters; the game's age is the time since it was created. No Hunter Score limit is 0 to 99999, as the list shows it.</summary>
+    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", g.Reserve!.Id, g.Clients?.Length ?? 0, g.Max, g.Handle ?? "", g.Password, g.Country ?? "", Distance.Short,
+        (int)Math.Clamp(now - g.Started, 0, int.MaxValue), g.Min ?? 0, g.MaxScore ?? 99999,
+        [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", c.Hunterscore, null, null, Avatars.Slot(c.Avatar)))]);
 
     public async Task<IReadOnlyList<Tutorial>> TutorialsAsync() => [.. (await LoadAsync()).Tutorials.Select(t => new Tutorial(t.Id, t.Name, "", t.Reserve))];
 
@@ -69,13 +94,31 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     };
 
     public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) =>
-        LaunchAsync([("reserve", $"{reserve}"), marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}"), ("time", $"{minutes}"), ("loadout", $"{loadout}")]);
+        LaunchAsync([("reserve", $"{reserve}"), Start(marker), ("time", $"{minutes}"), ("loadout", $"{loadout}")]);
 
     public Task<Result> StartTutorialAsync(int id) => LaunchAsync([("tutorial", $"{id}")]);
 
-    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Task.FromResult(Result.Fail(Failed));
+    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout)
+    {
+        List<(string, string)> form = [("mp", "host"), ("reserve", $"{reserve}"), Start(marker), ("time", $"{minutes}"), ("loadout", $"{loadout}"),
+            ("name", game.Name), ("description", game.Description), ("public_game", game.FriendsOnly ? "0" : "1"), ("free_players", "1"), ("max_players", $"{game.MaxPlayers}")];
+        if (game.MinScore is { } min && game.MaxScore is { } max) form.AddRange([("hs_min", $"{min}"), ("hs_max", $"{max}")]);
+        if (game.Password is { Length: > 0 } password) form.Add(("password", password));
+        return LaunchAsync([.. form]);
+    }
 
-    public Task<Result> JoinAsync(int server, int marker, string? password, int loadout) => Task.FromResult(Result.Fail(Failed));
+    /// <summary>The game has its reserve and start time, so a join sends neither.</summary>
+    public Task<Result> JoinAsync(long server, int marker, string? password, int loadout)
+    {
+        List<(string, string)> form = [("mp", "join"), ("network_id", $"{server}"), Start(marker), ("loadout", $"{loadout}")];
+        if (password is { Length: > 0 }) form.Add(("password", password));
+        return LaunchAsync([.. form]);
+    }
+
+    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady" };
+
+    /// <summary>A placed tent's marker id is its negated guid (<see cref="Placed"/>).</summary>
+    static (string, string) Start(int marker) => marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}");
 
     static MapMarker? Marker(ServerStart s) => s.Kind switch
     {
@@ -99,6 +142,9 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
                 // off the UI thread: the launcher may wait for Steam to sign in
                 return await Task.Run(() => bridge.StartGame(launch.Url));
             log.LogWarning("The server refused {Path} ({Status})", ServerLaunchApi.Launch, (int)response.StatusCode);
+            // a refused join says why; any other refusal is the generic failure
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest && await response.Content.ReadFromJsonAsync<ServerRefusal>() is { Error: { } why } && Refusals.TryGetValue(why, out var key))
+                return Result.Fail(key);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

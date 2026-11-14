@@ -259,6 +259,9 @@
   <data name="Join.Go" xml:space="preserve"><value>Beitreten</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Falsches Passwort. Bitte versuche es erneut.</value></data>
+  <data name="Join.Full" xml:space="preserve"><value>Dieses Spiel ist voll. Bitte versuche ein anderes Spiel.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Es ist nur für Freunde des Gastgebers, oder dein Hunter-Score liegt außerhalb seiner Grenzen.</value></data>
+  <data name="Join.HostNotReady" xml:space="preserve"><value>Der Gastgeber ist noch nicht bereit. Bitte versuche es gleich noch einmal.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Schon fertig mit der Jagd?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Jagdstatistik ansehen</value></data>
   <data name="Done.HuntNow" xml:space="preserve"><value>JETZT JAGEN</value></data>

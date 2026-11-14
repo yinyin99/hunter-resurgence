@@ -165,7 +165,7 @@ else
     static string Digits(object? value, string fallback)
     {
         var run = System.Text.RegularExpressions.Regex.Match(value?.ToString() ?? "", @"\d+").Value;
-        return run.Length > 0 ? run : fallback;
+        return run.Length > 0 ? run[..Math.Min(run.Length, 5)] : fallback;  // at most 99999, the game's "no limit"
     }
 
     async Task Go()

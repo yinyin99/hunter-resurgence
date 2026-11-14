@@ -141,10 +141,10 @@
         _ = Refresh();
     }
 
-    /// <summary>The old list asks the network again every five minutes.</summary>
+    /// <summary>The old list asks the network again every five minutes; a community server's games come and go faster, so this one asks every 30 seconds.</summary>
     async Task Refresh()
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
         try
         {
             while (await timer.WaitForNextTickAsync(stop.Token)) await InvokeAsync(async () => { await Load(); StateHasChanged(); });

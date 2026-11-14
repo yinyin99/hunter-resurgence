@@ -52,7 +52,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     /// <summary>The password of every protected game of the mock is <see cref="Secret"/>; anything else is turned down like the server does.</summary>
     public const string Secret = "letmein";
 
-    public Task<Result> JoinAsync(int server, int marker, string? password, int loadout) =>
+    public Task<Result> JoinAsync(long server, int marker, string? password, int loadout) =>
         Servers.FirstOrDefault(s => s.Id == server) is { Password: true } && password != Secret
             ? Task.FromResult(Result.Fail("Join.WrongPassword"))
             : Launch($"join game {server} at marker {marker}, loadout {loadout}");
