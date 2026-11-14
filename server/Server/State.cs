@@ -1755,10 +1755,13 @@ public sealed partial class State
         };
     }
 
+    /// <summary>A tent's catalogue `define`: `TENT` and digits (`TENT06`). It is also the `loctype` a hunt at a placed tent is started with.</summary>
+    static readonly System.Text.RegularExpressions.Regex TentDefine = new(@"^TENT\d*$");
+
     /// <summary>The placed items the launcher's map shows, by catalogue define (the first pattern that matches): the word a placed item with no catalogue name is called by.</summary>
     static readonly (string Kind, string Word, System.Text.RegularExpressions.Regex Rx)[] PlacedKinds =
     [
-        ("tent", "Tent", new(@"^TENT\d*$")), ("caller", "Caller", new("ELECTRONIC_CALLER")), ("groundblind", "Blind", new("GROUND_BLIND|WATERFOWL_BLIND")),
+        ("tent", "Tent", TentDefine), ("caller", "Caller", new("ELECTRONIC_CALLER")), ("groundblind", "Blind", new("GROUND_BLIND|WATERFOWL_BLIND")),
         ("treestand", "Stand", new("TREE_STAND|TRIPOD_STAND|DEPLOYABLE_HUNTING_TOWER")),
     ];
 
@@ -1849,7 +1852,7 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
     }
 
-    /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`. With `loctype` TENT or HEATED_TENT `start` is the guid of
+    /// <summary>Launch/start: close any open expedition and open a new one at form `start` (location) in `reserve`. With a tent's define (<see cref="TentDefine"/>) as `loctype` `start` is the guid of
     /// one of the account's placed tents in that reserve: the hunt records the tent, and its location is the reserve's first location number (the game's `lodge`, of which it
     /// reads the reserve as `lodge / 100`); a `start` that is no such tent opens the hunt with no location.</summary>
     public void NoteLaunch(long account, byte[] formBody)
@@ -1858,7 +1861,7 @@ public sealed partial class State
         latestTutorial.TryRemove(account, out _);
         var time = Form1(form, "time");
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
-        var tentStart = System.Text.RegularExpressions.Regex.IsMatch(Form1(form, "loctype"), @"^(HEATED_)?TENT\d*$");  // a placed tent's loctype is its define: TENT, TENT06, HEATED_TENT...
+        var tentStart = TentDefine.IsMatch(Form1(form, "loctype"));  // a placed tent's loctype is its define: TENT, TENT06 ...
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();

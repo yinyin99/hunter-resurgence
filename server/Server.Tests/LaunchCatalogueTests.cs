@@ -314,7 +314,7 @@ public class LaunchCatalogueTests : StateTestBase
         state.NoteLaunch(ME, "start=501&loctype=TENT02&reserve=1&time=540"u8.ToArray());  // the original sent the item's define as the loctype
         var expedition = JsonNode.Parse(state.ConnectReply(ME))!["expedition"]!;
         Eq("[0, 500.0, 540]", T(expedition["lodge"], expedition["x"], expedition["start_time"]));
-        state.NoteLaunch(ME, "start=501&loctype=HEATED_TENT&reserve=2"u8.ToArray());  // not placed in reserve 2: no start, as with any start that is nothing
+        state.NoteLaunch(ME, "start=501&loctype=TENT09&reserve=2"u8.ToArray());  // not placed in reserve 2: no start, as with any start that is nothing
         Assert.Equal("2:", Open());
         state.NoteLaunch(ME, "start=501&loctype=LODGE&reserve=1"u8.ToArray());  // a lodge number, never an item guid
         Assert.Equal("1:501", Open());

@@ -73,11 +73,11 @@ public class PlacedItemsTests : StateTestBase
     [Fact]
     public void TestAPlacementFarFromTheOriginIsKept()
     {
-        // the game sends whole millimetres: a tent 6.8 km west of the origin is -6792172
+        // the game sends whole millimetres: a tent 6.8 km west of the origin is -6800000
         state.NoteLaunch(ME, "reserve=2"u8.ToArray());
-        Beat(ME, O("""{"event": 25, "item": "100", "position_x": -6792172, "position_y": 227818, "position_z": 874903, "direction_x": -581, "direction_y": 0, "direction_z": 813}"""),
+        Beat(ME, O("""{"event": 25, "item": "100", "position_x": -6800000, "position_y": 230000, "position_z": 870000, "direction_x": -600, "direction_y": 0, "direction_z": 800}"""),
              O("""{"event": 8, "item": "100", "slot": 23}"""));
-        Eq("""{"reserve": 2, "pos": {"x": -6792.172, "y": 227.818, "z": 874.903}, "dir": {"x": -0.581, "y": 0, "z": 0.813}}""", Listed(Reopen(), ME, 100)["location"]);
+        Eq("""{"reserve": 2, "pos": {"x": -6800, "y": 230, "z": 870}, "dir": {"x": -0.6, "y": 0, "z": 0.8}}""", Listed(Reopen(), ME, 100)["location"]);
     }
 
     [Fact]

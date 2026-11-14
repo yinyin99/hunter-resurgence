@@ -666,7 +666,7 @@ public static class GameApi
 
     public sealed record LaunchStartForm(
         [property: Description("Start location id (a lodge), or the guid of a placed tent")] long start,
-        [property: Description("`LODGE`, or a placed tent's define (`TENT`, `TENT06`, `HEATED_TENT`...): then `start` is the tent's guid")] string loctype, long reserve,
+        [property: Description("`LODGE`, or a placed tent's define (`TENT`, `TENT06` ...): then `start` is the tent's guid")] string loctype, long reserve,
         [property: Description("Start time of day, minutes")] long time,
         [property: Description("One of the account's loadouts, put on before the connect; 0: the equipment last saved")] long loadout_id, string? oauth_access_token);
 
