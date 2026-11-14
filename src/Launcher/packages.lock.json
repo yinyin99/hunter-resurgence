@@ -4,12 +4,12 @@
     "net10.0-windows10.0.17763": {
       "Microsoft.AspNetCore.Components.WebView.Wpf": {
         "type": "Direct",
-        "requested": "[10.0.120, )",
-        "resolved": "10.0.120",
-        "contentHash": "V8aGHB6GLTho+YH/yt5GBj5AhbXCkaCqETc+sZerH+5PMQiP6/o2mOY1ffve3NVYdoYDUVy7ByUVr0QfjeFw7w==",
+        "requested": "[10.0.130, )",
+        "resolved": "10.0.130",
+        "contentHash": "YtgpHvdYsegsSsmBl5oC67BgRbdGb6s6t8oe6dcvg77EgJTcyQ58c4dGb1r55K2jhYcfjlJZkKbFJDGrGy/15g==",
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebView": "10.0.0",
-          "Microsoft.Web.WebView2": "1.0.4258.31"
+          "Microsoft.Web.WebView2": "1.0.4314.35"
         }
       },
       "Microsoft.NET.ILLink.Tasks": {
@@ -32,25 +32,79 @@
           "Microsoft.Extensions.FileProviders.Embedded": "10.0.0"
         }
       },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "a2c4Kp55miXT6G+DSb75pczXQJHgNMzPyZEyMxrrKxuQrgvctcDWJWD9fVe/uGbQdu4Z0c3B7AVKp1DXmD64nQ=="
+      },
       "Microsoft.Extensions.FileProviders.Embedded": {
         "type": "Transitive",
         "resolved": "10.0.0",
         "contentHash": "ECaTMB4NdV9W1es9J6tN0yoXRPUHKMi5+2L7hcVZ5k9zVdxccIx6+vMllwEYcdTaO0mCETEmdH4F0KxCqgnPaw=="
       },
+      "Microsoft.Extensions.Localization": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "MX+smARJdqr/vYuVPLnZi7n9jD2liSqh8rf1nFzeCiqhZaOM3Z5K7zpUueY2Xdmu0bQ3I1M9z1hQuyUVq+ByTw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "11.0.0",
+          "Microsoft.Extensions.Localization.Abstractions": "11.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "11.0.0",
+          "Microsoft.Extensions.Options": "11.0.0"
+        }
+      },
+      "Microsoft.Extensions.Localization.Abstractions": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "sz8QmmJO4W/oo5ydej7LDbfD8p0HS+5oAATWQf7C9HEctoCmKDk3a/Prnz6MaRDOQ9V2wDNYq2fr4sE2gLDNIw=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "MTMO2V1eT9Dm5VIpJGLNwIjAjoBErUlfuB+DEaZ0tb8J+Nf/Xlj8he5AztK9p1iOJPIyuBeOrVy2u/CSdsfzPw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "11.0.0",
+          "System.Diagnostics.DiagnosticSource": "11.0.0"
+        }
+      },
+      "Microsoft.Extensions.Options": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "AaNswJ3NqdNCNqQVlU7iTkvrrrzqrSSxkOC3bLlrwv/CPN7YRz3HoJk7o4ey5v6U8bOHocHsyYoJ7ihK1KUWyQ==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "11.0.0",
+          "Microsoft.Extensions.Primitives": "11.0.0"
+        }
+      },
+      "Microsoft.Extensions.Primitives": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "HH2akbW2HeY/xeZJA5UceuQQX+1Pv/Kxrz/x4XPoH6wYDtgPIlBeOTZlQXlT+b50b1Ym/xfP+WJCX9FW4uLBXQ=="
+      },
       "Microsoft.Web.WebView2": {
         "type": "Transitive",
-        "resolved": "1.0.4258.31",
-        "contentHash": "sHVZ2MQrHT1J3q5/6csn0fIP27rzpTO/RRC+wPQDrZheB7T4t2n+vVbY6SdCKr4WRV9s/gmBM3PPMWWJtoDzMg=="
+        "resolved": "1.0.4314.35",
+        "contentHash": "x5MFf2W03xueU1mMNvivXfHSsQ+ODo7vJ36qw/dLtU5Gs+8d7+7N7zzmNNDoT3ffosmcvZNBtUnlzyiDUuBkSQ=="
+      },
+      "System.Diagnostics.DiagnosticSource": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "+boRR9uSKiIPtFeRLGwO5xylhDF80xpwM+dmk5jgIqqeUKLbujGkGICMTKqQrBzKO6fIp8BU8DV6YZkQukqo3A=="
       },
       "resurgence.restore": {
         "type": "Project"
       },
       "resurgence.services": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[11.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[11.0.0, )"
+        }
       },
       "resurgence.ui": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.Localization": "[11.0.0, )",
           "Resurgence.Services": "[1.0.0, )"
         }
       }
@@ -58,8 +112,8 @@
     "net10.0-windows10.0.17763/win-x64": {
       "Microsoft.Web.WebView2": {
         "type": "Transitive",
-        "resolved": "1.0.4258.31",
-        "contentHash": "sHVZ2MQrHT1J3q5/6csn0fIP27rzpTO/RRC+wPQDrZheB7T4t2n+vVbY6SdCKr4WRV9s/gmBM3PPMWWJtoDzMg=="
+        "resolved": "1.0.4314.35",
+        "contentHash": "x5MFf2W03xueU1mMNvivXfHSsQ+ODo7vJ36qw/dLtU5Gs+8d7+7N7zzmNNDoT3ffosmcvZNBtUnlzyiDUuBkSQ=="
       }
     }
   }
