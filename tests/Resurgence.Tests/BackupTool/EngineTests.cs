@@ -164,9 +164,14 @@ public class EngineTests
         var fp = new Fake(tok);
         var ep = Hosts.Make(fp, key);
         ep.PaceMs = 120;
+        var begun = DateTime.UtcNow;
         await ep.Run(tmp, "", () => tok, new HashSet<string> { "profile", "friends" }, false, false, TestContext.Current.CancellationToken);
-        var gaps = fp.Starts.Where(h => h.Value.Count > 1).Select(h => h.Value.Zip(h.Value.Skip(1), (a, b) => (b - a).TotalMilliseconds).Min()).ToList();
-        Assert.True(gaps.Count == 1 && gaps[0] >= 100, $"the web host is paced (smallest gap {string.Join(" and ", gaps.Select(g => (int)g + " ms"))} for 120 ms)");
+        // The engine stamps a request just before sending it; the fake sees it a little later, and that delay differs from request to request (the first one pays for JIT),
+        // so the gap between two arrivals can be shorter than PaceMs. What always holds: the stamps are PaceMs apart and the first is after the start of the run,
+        // so the last request cannot arrive earlier than (requests - 1) * PaceMs after it.
+        var web = fp.Starts["web.test"];
+        Assert.True(web.Count > 10 && fp.Starts.Count(h => h.Value.Count > 1) == 1 && (web[^1] - begun).TotalMilliseconds >= (web.Count - 1) * 120,
+            $"the web host is paced ({web.Count} requests arrived over {(int)(web[^1] - begun).TotalMilliseconds} ms, at least {(web.Count - 1) * 120} ms for 120 ms apart)");
     }
 
     [Fact]
