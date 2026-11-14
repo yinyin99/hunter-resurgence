@@ -70,7 +70,7 @@ public sealed partial class State
     /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats (none while the hunt is open);
     /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
     /// per-type sums, no pickups), `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` `{title, description}` of the thresholds the hunt earned
-    /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists. `kills` are
+    /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists as earned between its start and its end. `kills` are
     /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. Null for an unknown hunt.</summary>
     public JsonObject? PublicHunt(long account, long? id)
     {
