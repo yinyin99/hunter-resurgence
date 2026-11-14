@@ -12,6 +12,8 @@ using Resurgence.Web;
 using Resurgence.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+// the framework's request, routing, static-file and HTTP-client lines at Info filled the host journal in hours (docs/deploy.md#logs); the server logs each request once
+builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning).AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 // LINK_BACKUP, LINK_SOURCE, LINK_DISCORD, GAME_NAME, GAME_FULL: set by the deploy (docs/deploy.md); each wins over its key in settings.json
