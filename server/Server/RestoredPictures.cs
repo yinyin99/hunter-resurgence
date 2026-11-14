@@ -36,7 +36,7 @@ public sealed partial class State
                      .Where(p => Py.IsStr(p["url"]) && seen.Add((string)p["url"]!)).Reverse())
         {
             listed++;
-            // the first backup tool saved a gallery picture under `kills/` where later ones use `photos/`
+            // a zip of backup tool 0.9.0 held a listed gallery picture only under `kills/`
             if (Importer.MediaPath("photos", (string)p["url"]!) is not { } path
                 || !(media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)))
                 continue;
