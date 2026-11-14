@@ -82,6 +82,7 @@
     int unread, requests, friendsKey;
     bool shut;
     string avatar = Avatars.Default;
+    Session? avatarOf;
 
     string FriendsTip => requests > 0 ? L["Tip.FriendsNew", requests] : L["Tip.Friends"];
     string MessagesTip => unread > 0 ? L["Tip.MessagesNew", unread] : L["Tip.Messages"];
@@ -104,13 +105,21 @@
     // another avatar in the settings shows here at once
     void Picked() => _ = InvokeAsync(async () => { avatar = (await Account.AccountAsync()).Avatar; StateHasChanged(); });
 
-        protected override async Task OnInitializedAsync()
+    // the live site's avatar comes with the session, which the launcher's shell reads after this bar first showed (without one): take it whenever the session is another
+    protected override void OnParametersSet()
+    {
+        if (!Mode.Live || ReferenceEquals(Session, avatarOf)) return;
+        avatarOf = Session;
+        avatar = Session?.Avatar ?? Avatars.Default;
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         if (Minimal) return;
         Account.Changed += Picked;
         // a purchase's dialog closes after it: the balances show the new amounts at once, not at the next poll
         Modal.Changed += modalChanged = () => _ = InvokeAsync(async () => { balances = await Wallet.BalancesAsync(); StateHasChanged(); });
-        avatar = Mode.Live ? Session?.Avatar ?? Avatars.Default : (await Account.AccountAsync()).Avatar;  // the live site's avatar came with the session; the account's is the mock's
+        if (!Mode.Live) avatar = (await Account.AccountAsync()).Avatar;  // the account's is the mock's
         await Refresh();
         _ = Poll();
     }

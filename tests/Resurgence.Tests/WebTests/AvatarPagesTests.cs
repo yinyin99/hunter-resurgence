@@ -56,6 +56,18 @@ public sealed class AvatarPagesTests : UiContext
         Assert.Equal(Imported, cut.Find("a[href='/profile/Fox'] img").GetAttribute("src"));
     }
 
+    // the launcher shows the bar before its shell has read the session (a restart), then gives it the session: the avatar follows; a player without one shows the default
+    [Fact]
+    public void TheStatusBarTakesTheAvatarOfASessionThatComesAfterItsFirstRender()
+    {
+        Services.GetRequiredService<HostMode>().Live = true;
+        var cut = Render<StatusBar>();
+        cut.Render(p => p.Add(b => b.Session, new Session("Fox", 5, Avatar: Imported)));
+        Assert.Equal(Imported, cut.Find("a[href='/profile/Fox'] img").GetAttribute("src"));
+        cut.Render(p => p.Add(b => b.Session, new Session("Fern", 5)));
+        Assert.Equal("avatar-default", cut.Find("a[href='/profile/Fern'] .asset-slot").GetAttribute("aria-label"));
+    }
+
     [Fact]
     public void TheFriendsListShowsEachFriendsAvatar()
     {
