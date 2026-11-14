@@ -219,7 +219,7 @@ A harvest (heartbeat event 3) is scored from the kill's spawn (event 7), its tro
 | `turkey` | turkey 2 | the weight in pounds, plus 10 times the spurs, plus 2 times the beard (inches) | the weight (event 22 is all zeros) |
 | `pheasant` | pheasant 7 | the tail plus the spurs in inches (event 22 `tail`, `left_spur`, `right_spur`) | the tail |
 | `bc_deer` | whitetail 0, mule deer 1, blacktail 6, sitka 26, and the non-typical 100, 101, 106 | B&C typical or non-typical total | no antlers: no score |
-| `elk` | Roosevelt 3, Rocky Mountain 38 | the typical total (the crown points are not counted yet) | no score |
+| `elk` | Roosevelt 3, Rocky Mountain 38 | the typical total plus the crown points of both antlers (event 22 `crown_points` lengths) | no score |
 | `moose`, `cic_roe`, `cic_red`, `cic_fallow`, `tines` | moose 8; roe 11, red 12, fallow 55; rusa 44, sambar 45, axis 54 | the family's total from the antlers | no antlers: no score |
 | `caribou`, `bovid`, `sheep`, `cic_horn` | reindeer 18; bison 24, water buffalo 42, banteng 46; bighorn 39, Dall 41; alpine ibex 19, feral goat 40 | the family's total from the horns | scores when the animal carries horns (event 22 has a main-beam point) |
 
