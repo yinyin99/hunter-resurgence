@@ -1424,7 +1424,7 @@ public sealed partial class State
 
     /// <summary>What an item's page shows beyond the list (GET /catalog/item/{id}): `capacity` (the catalogue's inventory weight divided by 1000, the number the store shows as the capacity cost, which has no unit; 0 for none), `contents` (`{count, name}` of an item the catalogue gives units, else null),
     /// `fits` (`[{title, key, items: [{id, name, variant}]}]`: what fits it, the catalogue's `fit` lists by group under the title and store key of the group's category, the items the store shows) and `ethical`
-    /// (`{ammo: [name], species: [{name, permitted: [bool]}]}` for a weapon, over the ammunition that fits it, and for an ammunition, over itself; else null). A species row says whether the ammo is
+    /// (`{ammo: [name], species: [{id, name, permitted: [bool]}]}` for a weapon, over the ammunition that fits it, and for an ammunition, over itself; else null). A species row says whether the ammo is
     /// permitted by <see cref="Permits"/>, the rule the kills are judged by; a species with no list (the dogs) has no row. Null for an item the store does not show.</summary>
     public JsonObject? StoreItemPage(long id)
     {
@@ -1450,7 +1450,7 @@ public sealed partial class State
         if (ammo.Length > 0)
             foreach (var sp in Arr(G(application, "species", null)))
                 if (Allowed(sp!["id"]) is { } allowed)
-                    rows.Add(new JsonObject { ["name"] = C(sp["name"]), ["permitted"] = new JsonArray([.. ammo.Select(a => (JsonNode?)Permits(allowed, a["id"]))]) });
+                    rows.Add(new JsonObject { ["id"] = C(sp["id"]), ["name"] = C(sp["name"]), ["permitted"] = new JsonArray([.. ammo.Select(a => (JsonNode?)Permits(allowed, a["id"]))]) });
         var weight = (item["inventory"] as JsonObject)?["weight"];
         return new JsonObject
         {

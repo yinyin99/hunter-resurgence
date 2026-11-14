@@ -253,6 +253,7 @@ public class CatalogTests : StateTestBase
         Assert.Equal(["Test Shot A", "Test Slug"], ethical["ammo"]!.AsArray().Select(a => (string)a!));
         // 14 is in species 17's list, 300 is not; species 1 has none and no row
         Assert.Equal(["Test Rabbit", "Test Rabbit (Non-Typical)"], ethical["species"]!.AsArray().Select(s => (string)s!["name"]!));
+        Assert.Equal([17, 117], ethical["species"]!.AsArray().Select(s => (int)s!["id"]!));
         Assert.All(ethical["species"]!.AsArray(), s => Assert.Equal([true, false], s!["permitted"]!.AsArray().Select(p => (bool)p!)));
     }
 

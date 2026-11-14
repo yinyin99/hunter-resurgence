@@ -90,7 +90,7 @@ public class ServerStoreServiceTests
     const string Page = """
         {"capacity": 0.45, "contents": {"count": 10, "name": "cartridges"},
          "fits": [{"title": "Weapons", "key": "0", "items": [{"id": 1, "name": "Test Rifle", "variant": "Blue"}]}],
-         "ethical": {"ammo": ["Test Cartridge"], "species": [{"name": "Test Fox", "permitted": [true]}, {"name": "Test Moose", "permitted": [false]}]}}
+         "ethical": {"ammo": ["Test Cartridge"], "species": [{"id": 14, "name": "Test Fox", "permitted": [true]}, {"id": 8, "name": "Test Moose", "permitted": [false]}]}}
         """;
 
     // the list holds a thousand items, so what belongs to one (capacity, contents, fits, the species table) is the server's item route, asked without the cookie
@@ -103,7 +103,7 @@ public class ServerStoreServiceTests
         var fit = Assert.Single(item.Fits!);
         Assert.Equal(("Weapons", "0", 1, "Test Rifle", "Blue"), (fit.Title, fit.Key, fit.Items[0].Id, fit.Items[0].Name, fit.Items[0].Variant));
         Assert.Equal(["Test Cartridge"], item.Ethics!.Columns);
-        Assert.Equal([("Test Fox", true), ("Test Moose", false)], item.Ethics.Rows.Select(r => (r.Species, r.Permitted[0])));
+        Assert.Equal([(14, "Test Fox", true), (8, "Test Moose", false)], item.Ethics.Rows.Select(r => (r.Id, r.Species, r.Permitted[0])));
         var request = fake.Seen[^1];
         Assert.Equal(("/catalog/item/1", "site.test", false), (request.RequestUri!.AbsolutePath, request.Headers.Host, request.Headers.Contains("Cookie")));
     }

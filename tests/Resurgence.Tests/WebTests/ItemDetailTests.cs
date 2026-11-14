@@ -40,10 +40,30 @@ public sealed class ItemDetailTests : UiContext
 
         var contains = Services.GetRequiredService<IStringLocalizer<Strings>>()["Store.Contains"].Value;
         Assert.Contains($"{contains} 10 cartridges", cut.Find(".data").TextContent);
-        var weapons = cut.FindAll(".fits tr");
+        var weapons = cut.FindAll(".fits .fit");
         Assert.Equal(3, weapons.Count);
         Assert.All(weapons, w => Assert.NotNull(w.QuerySelector(".asset-slot")));
         Assert.Equal(5, cut.FindAll(".ethics tbody tr").Count);
+    }
+
+    // the species names are the player's language's texts, sorted by them, and a permitted species has a tick
+    [Fact]
+    public void TheSpeciesAreTranslatedAndSortedAndMarked()
+    {
+        var before = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = new CultureInfo("fr");
+        try
+        {
+            var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
+
+            var strings = Services.GetRequiredService<IStringLocalizer<Strings>>();
+            var names = cut.FindAll(".ethics tbody tr td:first-child").Select(n => n.TextContent).ToList();
+            Assert.Equal(strings["Term.species.14"].Value, names.Single(n => n == strings["Term.species.14"].Value));
+            Assert.Equal(names.OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase), names);
+            Assert.NotEmpty(cut.FindAll(".ethics td.yes"));
+            Assert.NotEmpty(cut.FindAll(".ethics td.no"));
+        }
+        finally { CultureInfo.CurrentUICulture = before; }
     }
 
     // the fit titles are the store's category texts and the units are the catalogue's unit word by a text, not the catalogue's English

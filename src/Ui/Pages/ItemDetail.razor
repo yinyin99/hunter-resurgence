@@ -44,37 +44,45 @@
                 else if (item.LimitReached) { <p class="own">@L["Store.AlreadyOwn"]</p> }
             }
             <p class="text">@item.Description</p>
-            @if (item.Fits is { Count: > 0 } fits)
-            {
-                <section class="fits">
-                    @foreach (var f in fits)
-                    {
-                        <h4>@Title(f)</h4>
-                        <table class="tbl"><tbody>@foreach (var x in f.Items) { <tr><td><AssetSlot Name="@Mode.ItemSlot(x.Id)" Width="54" Height="40" Class="thumb" /><a href="/store/item/@x.Id">@x.Name</a>@if (x.Variant.Length > 0) { <text> (@x.Variant)</text> }</td></tr> }</tbody></table>
-                    }
-                </section>
-            }
-            @if (item.Ethics is { } ethics)
-            {
-                <section class="ethics">
-                    <h4>@L["Store.Ethical"]</h4>
-                    <table class="tbl tbl-c">
-                        <thead><tr><th></th>@foreach (var c in ethics.Columns) { <th>@c</th> }</tr></thead>
-                        <tbody>
-                            @foreach (var r in ethics.Rows)
+            <div class="cols">
+                @if (item.Fits is { Count: > 0 } fits)
+                {
+                    <section class="fits">
+                        @foreach (var f in fits)
+                        {
+                            <h4>@Title(f)</h4>
+                            @foreach (var x in f.Items)
                             {
-                                <tr>
-                                    <td>@r.Species</td>
-                                    @foreach (var (c, ok) in ethics.Columns.Zip(r.Permitted))
-                                    {
-                                        <td title="@L[ok ? "Store.Ethical.Yes" : "Store.Ethical.No", c, r.Species]"><Icon Name="@(ok ? "check" : "xmark")" /></td>
-                                    }
-                                </tr>
+                                <a class="fit" href="/store/item/@x.Id">
+                                    <AssetSlot Name="@Mode.ItemSlot(x.Id)" Width="260" Height="70" Class="thumb" />
+                                    <span>@x.Name@if (x.Variant.Length > 0) { <text> (@x.Variant)</text> }</span>
+                                </a>
                             }
-                        </tbody>
-                    </table>
-                </section>
-            }
+                        }
+                    </section>
+                }
+                @if (item.Ethics is { } ethics)
+                {
+                    <section class="ethics">
+                        <h4>@L["Store.Ethical"]</h4>
+                        <table class="tbl tbl-c">
+                            <thead><tr><th></th>@foreach (var c in ethics.Columns) { <th>@if (ethics.Columns.Count == 1) { <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="46" Height="34" Class="thumb" /> } else { @c }</th> }</tr></thead>
+                            <tbody>
+                                @foreach (var (name, r) in ethics.Rows.Select(r => (L.Term("species", r.Id, r.Species), r)).OrderBy(x => x.Item1, StringComparer.CurrentCultureIgnoreCase))
+                                {
+                                    <tr>
+                                        <td>@name</td>
+                                        @foreach (var (c, ok) in ethics.Columns.Zip(r.Permitted))
+                                        {
+                                            <td class="@(ok ? "yes" : "no")" title="@L[ok ? "Store.Ethical.Yes" : "Store.Ethical.No", c, name]"><Icon Name="@(ok ? "check" : "xmark")" /></td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </section>
+                }
+            </div>
         </article>
     }
     else if (loaded) { <p class="text">@L["Store.None"]</p> }
