@@ -404,7 +404,7 @@ public sealed partial class State
     static long? PickupType(JsonObject e, bool antler) =>
         TryKey(antler ? e["species_id"] : e["type"], out var key) ? antler ? 2000 + key % 100 : key : null;
 
-    /// <summary>The install's collectable definitions (collectable.json) by type id: `cat` and `score: {min, max}`. Empty: every pickup scores 0.</summary>
+    /// <summary>The install's collectable definitions (collectable.json) by type id: `cat` and `score: {min, max}`. A type it gives no score is scored from the facts file's `collectables`; a type with neither scores 0.</summary>
     public IReadOnlyDictionary<long, JsonObject> Collectables { get; init; } = new Dictionary<long, JsonObject>();
 
     /// <summary>A pickup's score and the text of update 7, which the HunterMate shows as is. The score is min + (max - min) * f in the
