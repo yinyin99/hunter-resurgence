@@ -1,12 +1,12 @@
-# Player guide: from backup to playing on the community server
+# Player guide: from your old profile to playing on the community server
 
-Five steps, in this order. Steps 1 to 4 bring your profile to the community server; step 5 plays on it. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
+Five steps, in this order. Steps 1 to 4 bring your old profile to the community server; step 5 plays on it. New players and players who don't want their old profile go straight to step 5. You need Windows, Steam and your own copy of the game, installed. The tools are in the [latest release](https://github.com/yinyin99/hunter-resurgence/releases/latest); the website is [hunter-resurgence.com](https://hunter-resurgence.com).
 
 **Uploading your backup replaces your profile on the community server** (items, wallet, skills, statistics, achievements, trophies and lodges). Hunts you played there before stay. A backup can be restored once.
 
 ## 1. Back up your profile
 
-This needs the official servers, so do it while they are up (until 2026-11-11). A restore can only bring back what a backup saved. If you already have a backup zip, go to step 2.
+**The backup tool no longer works**: it needed the official servers, which closed on 2026-11-11. If you made a backup zip before then, go to step 2. Without one, go to step 2 too and claim your old profile by name in step 3. The steps below are what the tool did, for reference.
 
 1. If the launcher's setup is in place, choose Settings, Remove the setup first: while it is installed the game, and the backup tool, cannot reach the official servers.
 2. Download `backup-win-x64.zip`, unpack it and keep `backup.exe` and `settings.json` in the same folder. Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
@@ -20,9 +20,11 @@ Only a backup made in My account mode can be restored with your wallet. Each run
 
 Open [hunter-resurgence.com](https://hunter-resurgence.com), choose **Already a hunter? Sign in** and sign in with Steam. The first time, you choose a name; the restore in step 4 replaces it with your profile's name. Use the Steam account you play the game with: it is your account on the community server, on the website and in the game.
 
-## 3. Send your backup
+## 3. Claim your old profile or send your backup
 
-Either way works; do one of them once:
+**No backup zip?** Open **Restore your backup** in the **Settings** menu. In **Claim your old profile**, type your old hunter name and press **Find** (5 searches a day). A found profile shows its hunterscore and what a claim brings back: items, trophies, lodges, skills, statistics and achievements, but not your wallet. Players with over 500 hunterscore are the most likely to be found. Tick **Use my old name** to take that name back (shown only when it is free), then press **Claim**. One claim per account. The page then says "restored", or that an operator will check the claim (a very high hunterscore, or a profile someone else claimed too); for those, go to step 4.
+
+**Have a backup zip?** Send it, either way, once:
 
 - **On the website**: open **Restore your backup** in the **Settings** menu, choose the backup zip, press **Upload**. It says "Received: an operator will check it".
 - **From the backup tool**: after a backup, press **Send to the community server** in the result bar (shown only when your copy of the tool knows the server), then **Send**. Your browser opens: sign in with Steam and confirm that the code is the one the tool shows (the page asks "Sign in the launcher?" even then: press **Yes, sign in**).

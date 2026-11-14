@@ -63,7 +63,7 @@ Sign in on [the website](https://hunter-resurgence.com/restore) with the Steam a
 - **No backup?** Look up your old in-game name. If your profile is found, claim it: it brings back your items, skills, achievements, trophies, lodges, loadouts, missions and statistics, but not your wallet. Players with over 500 hunterscore are the most likely to be found. One claim per account. Very high scores (10,000 or more) are checked by the operator first.
 - **Have a backup zip?** Upload it. The operator (the person who runs the server) checks it by hand; it also brings back your wallet.
 
-Either way works even if you already hunted on the community server: hunts, kills and photos made here stay. Details: [the player guide](docs/guide.md#3-send-your-backup).
+Either way works even if you already hunted on the community server: hunts, kills and photos made here stay. Details: [the player guide](docs/guide.md#3-claim-your-old-profile-or-send-your-backup).
 
 ## Roadmap
 
