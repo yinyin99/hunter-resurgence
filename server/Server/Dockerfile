@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build context: the repository root (docker build -f server/Server/Dockerfile .), for global.json.
 # Same SDK and runtime tags as src/Web/Dockerfile: bump all of them together (docs/deploy.md).
-FROM mcr.microsoft.com/dotnet/sdk:10.0.403 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.404 AS build
 WORKDIR /src
 COPY global.json ./
 COPY server/Server ./server/Server
@@ -11,7 +11,7 @@ COPY src/Restore ./src/Restore
 RUN dotnet restore server/Server/Server.csproj --locked-mode
 RUN dotnet publish server/Server/Server.csproj -c Release --no-restore -o /out
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.14
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.15
 WORKDIR /app
 COPY --from=build /out ./
 # data_dir of settings.json is /data and the backup sidecar writes /backups: volumes in deploy/compose.yml; a new named volume takes this folder's owner, so the app can write it
