@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Nincs leadott lövés</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Ezen a vadászaton nem adtál le lövést.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Ezen a vadászaton nem volt találkozás állatokkal.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Ezen a vadászaton nem gyűjtöttél gyűjthető tárgyat.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Ezen a vadászaton nem értél el eredményt.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Ezen a vadászaton nem gyűjtöttél gyűjthető agancsot.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ezen a vadászaton nem volt megerősített elejtés.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Ez a vadász még nem vett részt vadászaton.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Kezdés</value></data>

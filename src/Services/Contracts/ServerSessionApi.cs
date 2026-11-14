@@ -137,8 +137,13 @@ public sealed record ServerHunts(int Page, int Pages, int Total, ServerHuntRow[]
 
 public sealed record ServerHuntRow(long Id, long Start, long Seconds, string Reserve, string Lodge, int Collectables, int Kills);
 
-/// <summary>One hunt of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> and <c>End</c> are Unix seconds (<c>End</c> null while it is open); the weapons and species rows are the statistics tab's.</summary>
-public sealed record ServerHunt(long Id, string Reserve, string Lodge, long Start, long? End, WeaponStat[] Weapons, SpeciesStat[] Animals, double DistanceKm, long Seconds, ServerKill[] Kills);
+/// <summary>One hunt of <see cref="ServerSessionApi.HuntsSuffix"/>: <c>Start</c> and <c>End</c> are Unix seconds (<c>End</c> null while it is open); the weapons and species rows are the statistics tab's;
+/// the achievements have no <c>Date</c>: they were earned when the hunt ended.</summary>
+public sealed record ServerHunt(long Id, string Reserve, string Lodge, long Start, long? End, WeaponStat[] Weapons, SpeciesStat[] Animals, double DistanceKm, long Seconds, ServerKill[] Kills,
+    ServerPickup[]? Collectables = null, ShedAntler[]? Antlers = null, ServerAchievement[]? Achievements = null);
+
+/// <param name="Ts">Unix seconds.</param>
+public sealed record ServerPickup(string Name, double Score, long Ts);
 
 /// <param name="When">The harvest time, Unix seconds.</param>
 /// <param name="Sheet">Whether the kill has a score sheet to open.</param>

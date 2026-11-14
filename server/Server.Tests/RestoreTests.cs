@@ -356,11 +356,15 @@ public class RestoreTests : StateTestBase
     [Fact]
     public void TestARestoredHuntIsAPublicHuntAndItsKillHasNoSheet()
     {
+        var connect = CONNECT;
+        connect["achievements"] = JsonNode.Parse("""[{"id": 6, "category": 0, "group": 6, "title": "Marksman", "description": "Harvest %d animal", "value": "animal.*.kills", "triggers": [1, 5]}]""");
+        state = new State(Path.Combine(tmp, "saved.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
         var zip = TestZip.Own()
             .Reply("Expedition_list__user_id=1001__offset=0__limit=2.json", "/v1/Expedition/list",
                    """{"total":1,"expeditions":[{"id":9100,"kills":1,"collectables":2,"start_ts":1700000100,"end_ts":1700003700,"reserve":2,"location_id":101}]}""", ("offset", "0"), ("limit", "2"))
             .Reply("Public_user_expedition__user_id=1001__expedition_id=9100.json", "/v1/Public_user/expedition", """
-                {"stats":{"duration":3600,"distance":4000,"data":{"achievements":[],"weapon":{"5":{"10":{"hits":1,"misses":0,"kills":1,"distance":82000}}},"animal":{"1":{"kills":1}}}},
+                {"stats":{"duration":3600,"distance":4000,"data":{"achievements":[{"id":6,"category_id":0,"group_id":6,"value":1,"triggers":{"1":1700001000}}],"weapon":{"5":{"10":{"hits":1,"misses":0,"kills":1,"distance":82000}}},"animal":{"1":{"kills":1}}}},
+                 "antler_collectables":[{"id":5,"species":1,"score":40.5,"type":"double","ts":1700002000}],
                  "kills":[{"id":777,"speciesName":"Test Deer","weight":64350,"kill":{"score":120.5,"confirmTs":1700000500},"hits":[{"distance":82000,"weapon_id":5,"ammo_id":10,"organ":1}]}],
                  "expedition":{"id":9100,"reserve":2,"location_id":101,"start_ts":1700000100,"end_ts":1700003700}}
                 """, ("user_id", "1001"), ("expedition_id", "9100"));
@@ -375,6 +379,8 @@ public class RestoreTests : StateTestBase
         Eq("""[777, "Test Deer", "Test Rifle", "Test Bullet", 82.0, 120.5, 64.35, 1700000500, false]""", T(kill["id"], kill["species"], kill["weapon"], kill["ammo"], kill["distanceM"], kill["score"], kill["weightKg"], kill["when"], kill["sheet"]));
         Assert.Null(state.PublicSheet(1001, 777));  // until the saved kill page is unpacked
         Assert.Null(state.PublicHunt(1001, 9101));
+        // what the backup lists: its antlers and the achievements of its stats, no pickups
+        Eq("""[[], [{"species": "Test Deer", "double": true, "score": 40.5}], [{"title": "Marksman", "description": "Harvest 1 animal"}]]""", T(hunt["collectables"], hunt["antlers"], hunt["achievements"]));
     }
 
     JsonArray Gallery(long account) => JsonNode.Parse(state.GalleryListReply(account, []))!["photos"]!.AsArray();

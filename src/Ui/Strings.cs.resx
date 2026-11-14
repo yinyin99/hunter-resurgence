@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Žádné výstřely</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Během této výpravy nepadl jediný výstřel.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Během této výpravy nedošlo k žádnému kontaktu se zvěří.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Během této výpravy nebyly nasbírány žádné sběratelské předměty.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Během této výpravy nebyly získány žádné achievementy.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Během této výpravy nebyly nasbírány žádné shozy paroží.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Během této výpravy nebyly žádné potvrzené úlovky.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Tento lovec zatím nevyrazil na žádnou výpravu.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Začátek</value></data>

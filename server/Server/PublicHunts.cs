@@ -25,6 +25,10 @@ public sealed partial class State
     /// <summary>The name of a reserve; "#id" where the catalogue has none.</summary>
     string ReserveName(JsonNode? id) => TryKey(id, out var r) && reserves.TryGetValue(r, out var name) && name is not null ? name : Py.Truthy(id) ? "#" + Py.Str(id) : "";
 
+    /// <summary>The catalogue's name of a collectable type; "#type" where it has none.</summary>
+    string CollectableName(long type) =>
+        Arr(G(application, "collectables", null)).OfType<JsonObject>().FirstOrDefault(c => TryKey(c["id"], out var k) && k == type)?["name"] is { } n && Py.IsStr(n) ? (string)n! : "#" + type;
+
     string ItemName(JsonNode? id) => Lookup(items, id)?["name"] is { } n && Py.IsStr(n) ? (string)n! : "";
 
     Dictionary<long, string>? startNames;
@@ -64,16 +68,49 @@ public sealed partial class State
 
     /// <summary>What a profile page's hunt page shows, `GET /hunters/&lt;handle&gt;/hunts/&lt;id&gt;` (`latest` for the newest): `{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}`
     /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats (none while the hunt is open);
-    /// `end` is null for an open hunt; `collectables`, `achievements` and `antlers` are empty (the server has no names for them). `kills` are
+    /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
+    /// per-type sums, no pickups), `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` `{title, description}` of the thresholds the hunt earned
+    /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists as earned between its start and its end. `kills` are
     /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. Null for an unknown hunt.</summary>
     public JsonObject? PublicHunt(long account, long? id)
     {
         if (JsonNode.Parse(ExpeditionReply(account, "null"u8.ToArray(), id is { } i ? Encoding.UTF8.GetBytes($"expedition_id={i}") : null)) is not JsonObject reply || reply["expedition"] is not JsonObject e)
             return null;
         HashSet<long> sheets;
-        using (var con = Con(account))
-            sheets = [.. con.Rows("SELECT kill_id FROM kills WHERE account_id = $a").Select(r => (long)r[0])];
+        var collectables = new JsonArray();
+        var achievements = new JsonArray();
         long start = Integer(e["start_ts"]), end = Integer(e["end_ts"]);
+        void Earned(long achievement, string threshold)
+        {
+            if (Arr(G(connect, "achievements", null)).OfType<JsonObject>().FirstOrDefault(d => TryKey(d["id"], out var k) && k == achievement) is { } def)
+                achievements.Add(new JsonObject { ["title"] = Texted(def["title"], threshold), ["description"] = Texted(def["description"], threshold) });
+        }
+        using (var con = Con(account))
+        {
+            sheets = [.. con.Rows("SELECT kill_id FROM kills WHERE account_id = $a").Select(r => (long)r[0])];
+            var huntId = Integer(e["id"]);
+            if (con.Rows("SELECT first_event FROM expeditions WHERE account_id = $a AND id = ?", huntId).FirstOrDefault() is { } made)  // else a restored hunt
+            {
+                var next = con.Scalar("SELECT MIN(first_event) FROM expeditions WHERE account_id = $a AND id > ?", huntId) is long u ? u : long.MaxValue;
+                foreach (var p in Pickups(con, Py.FromSql(made[0]), next).Where(p => !p.Antler))
+                    collectables.Add(new JsonObject { ["name"] = CollectableName(p.Type), ["score"] = Real(p.Body["score"]), ["ts"] = p.Ts });
+                if (Py.IsNum(e["end_ts"]))
+                    foreach (var r in con.Rows("SELECT id, triggers FROM achievements WHERE account_id = $a ORDER BY id"))
+                        foreach (var (threshold, time) in Parse(r[1]))
+                            if (Py.IsNum(time) && (long)Py.D(time) == end)
+                                Earned(Convert.ToInt64(r[0]), threshold);
+            }
+            else if (reply["stats"] is JsonObject savedStats && savedStats["data"] is JsonObject savedData && savedData["achievements"] is JsonArray saved)  // only the thresholds earned during the hunt
+                foreach (var a in saved.OfType<JsonObject>().Where(a => TryKey(a["id"], out _) && a["triggers"] is JsonObject))
+                    foreach (var (threshold, time) in (JsonObject)a["triggers"]!)
+                        if (Py.IsNum(time) && Py.D(time) >= start && Py.D(time) <= end)
+                            Earned(Py.L(a["id"]), threshold);
+        }
+        var antlers = new JsonArray([.. (reply["antler_collectables"] as JsonArray ?? []).OfType<JsonObject>().Select(a => (JsonNode?)new JsonObject
+        {
+            ["species"] = Py.IsStr(a["species"]) ? Py.Str(a["species"]) : SpeciesName(a["species"]) ?? "#" + Py.Str(a["species"]),
+            ["double"] = Py.Str(a["type"]).Equals("double", StringComparison.OrdinalIgnoreCase), ["score"] = Real(a["score"]),
+        })]);
         var view = reply["stats"] is JsonObject stats && stats["data"] is JsonObject ? StatisticsView(stats) : null;
         string ItemOf(JsonObject? hit, string key) => ItemName(hit?[key]);
         JsonNode? Kill(JsonNode? node)
@@ -92,8 +129,8 @@ public sealed partial class State
         {
             ["id"] = Integer(e["id"]), ["reserve"] = ReserveName(e["reserve"]), ["lodge"] = StartName(e["location_id"]), ["start"] = start,
             ["end"] = Py.IsNum(e["end_ts"]) ? end : null,
-            ["weapons"] = C(view?["weapons"]) ?? new JsonArray(), ["animals"] = C(view?["animals"]) ?? new JsonArray(), ["collectables"] = new JsonArray(), ["achievements"] = new JsonArray(),
-            ["distanceKm"] = Real(view?["distanceKm"]), ["seconds"] = Py.IsNum(e["end_ts"]) && end > start ? end - start : 0, ["antlers"] = new JsonArray(),
+            ["weapons"] = C(view?["weapons"]) ?? new JsonArray(), ["animals"] = C(view?["animals"]) ?? new JsonArray(), ["collectables"] = collectables, ["achievements"] = achievements,
+            ["distanceKm"] = Real(view?["distanceKm"]), ["seconds"] = Py.IsNum(e["end_ts"]) && end > start ? end - start : 0, ["antlers"] = antlers,
             ["kills"] = new JsonArray([.. (reply["kills"] as JsonArray ?? []).Select(Kill)]),
         };
     }

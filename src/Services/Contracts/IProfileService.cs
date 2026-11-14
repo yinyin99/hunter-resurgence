@@ -32,9 +32,14 @@ public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<Spe
 public sealed record TaxidermyOffer(DateTime End, int Ems, int Gms);
 /// <param name="Sheet">Whether the kill has a score sheet to open (a restored kill has none yet).</param>
 public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When, TaxidermyOffer? Taxidermy = null, bool Sheet = true);
+/// <summary>A collectable picked up during an expedition.</summary>
+public sealed record Pickup(string Name, double Score, DateTime When);
+/// <summary>A shed antler picked up during an expedition: <c>Double</c> for a pair, else a single one.</summary>
+public sealed record ShedAntler(string Species, bool Double, double Score);
 /// <param name="End">Null while the expedition is not over.</param>
+/// <param name="Achievements">The thresholds earned when it ended; <c>Date</c> is the day it ended.</param>
 public sealed record Expedition(long Id, string Reserve, string Lodge, DateTime Start, DateTime? End, IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals,
-    IReadOnlyList<CollectableStat> Collectables, IReadOnlyList<string> Achievements, double DistanceKm, int Seconds, IReadOnlyList<string> Antlers, IReadOnlyList<Kill> Kills);
+    IReadOnlyList<Pickup> Collectables, IReadOnlyList<Achievement> Achievements, double DistanceKm, int Seconds, IReadOnlyList<ShedAntler> Antlers, IReadOnlyList<Kill> Kills);
 public sealed record HistoryRow(long Id, DateTime Start, int Seconds, string Reserve, string Lodge, int Collectables, int Kills);
 /// <param name="Kill">The kill sheet the row links to.</param>
 public sealed record BestRow(string Species, double Score, double Range, string Weapon, DateTime When, long Kill);

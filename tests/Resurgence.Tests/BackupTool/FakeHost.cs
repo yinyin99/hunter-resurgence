@@ -51,7 +51,7 @@ public sealed class Fake : HttpMessageHandler
     public readonly List<string> Bodies = [];
     int throttled;
     readonly object gate = new();
-    public Fake(string token) { Token = token; System.Text.Json.Nodes.JsonNode.Parse("""{"a":1}""")!.AsObject().Select(p => $"{p.Key}={p.Value}").ToList(); } // the first parse is slow: warm it up so it cannot skew the pacing tests
+    public Fake(string token) { Token = token; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
     {

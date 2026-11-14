@@ -1018,9 +1018,6 @@
   <data name="Stat.NoShots" xml:space="preserve"><value>Ingen skud affyret</value></data>
   <data name="Stat.NoShotsExp" xml:space="preserve"><value>Ingen skud affyret under denne ekspedition.</value></data>
   <data name="Stat.NoAnimalsExp" xml:space="preserve"><value>Ingen dyremøder under denne ekspedition.</value></data>
-  <data name="Stat.NoCollectExp" xml:space="preserve"><value>Ingen samleobjekter samlet under denne ekspedition.</value></data>
-  <data name="Stat.NoAchExp" xml:space="preserve"><value>Ingen milepæle opnået under denne ekspedition.</value></data>
-  <data name="Stat.NoAntlerExp" xml:space="preserve"><value>Ingen gevir-samleobjekter samlet under denne ekspedition.</value></data>
   <data name="Stat.NoKillsExp" xml:space="preserve"><value>Ingen bekræftede nedlagte dyr under denne ekspedition.</value></data>
   <data name="Stat.NoExpeditions" xml:space="preserve"><value>Denne jæger har ikke været på nogen ekspeditioner.</value></data>
   <data name="Stat.Start" xml:space="preserve"><value>Start</value></data>

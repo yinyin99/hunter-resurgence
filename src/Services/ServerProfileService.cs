@@ -254,7 +254,10 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     /// <summary><c>GET /hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: a hunt with its statistics and kills; null when the server does not know it or does not answer. A hunt that is open has no statistics yet.</summary>
     public async Task<Expedition?> ExpeditionAsync(string handle, long? id) =>
         await GetAsync<ServerHunt>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.HuntsSuffix}/{(id?.ToString() ?? "latest")}", "hunt") is { } h
-            ? new(h.Id, h.Reserve, h.Lodge, Utc(h.Start), h.End is { } end ? Utc(end) : null, h.Weapons ?? [], h.Animals ?? [], [], [], h.DistanceKm, (int)Math.Clamp(h.Seconds, 0, int.MaxValue), [],
+            ? new(h.Id, h.Reserve, h.Lodge, Utc(h.Start), h.End is { } end ? Utc(end) : null, h.Weapons ?? [], h.Animals ?? [],
+                [.. (h.Collectables ?? []).Select(p => new Pickup(p.Name, p.Score, Utc(p.Ts)))],
+                [.. (h.Achievements ?? []).Select(a => new Achievement(a.Title, a.Description, DateOnly.FromDateTime(Utc(h.End ?? h.Start))))],
+                h.DistanceKm, (int)Math.Clamp(h.Seconds, 0, int.MaxValue), h.Antlers ?? [],
                 [.. (h.Kills ?? []).Select(k => new Kill(k.Id, k.Species, k.Weapon, k.Ammo, k.DistanceM, k.Score, k.WeightKg, Utc(k.When), null, k.Sheet))])
             : null;
     /// <summary><c>GET /hunters/&lt;handle&gt;/hunts?page=n</c>: one page of 40. A failed answer is an empty page.</summary>

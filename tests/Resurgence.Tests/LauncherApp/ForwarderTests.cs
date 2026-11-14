@@ -226,19 +226,32 @@ public class ForwarderTests
     public async Task AClientThatOffersHttp2StillGetsHttp11() =>
         await OverTls(HttpVersion.Version20, HttpVersionPolicy.RequestVersionOrLower, (resp, _) => Assert.Equal(HttpVersion.Version11, resp.Version));
 
-    static async Task OverTls(Version version, HttpVersionPolicy policy, Action<HttpResponseMessage, Origin> check)
+    /// <summary>A forwarder with the leaf of a new local authority, loaded the way `run` loads it (public certificate plus the stored, non-exportable key), in front of a test origin.</summary>
+    static async Task WithTls(Func<string, X509Certificate2, Origin, Task> test)
     {
         var names = new[] { "api.example.test" };
         var keyName = "hunter-resurgence-play-test-" + Guid.NewGuid().ToString("N");
         using var ca = Pki.NewCa(names, DateTimeOffset.UtcNow);
-        using var pub = Pki.NewLeaf(ca, Pki.NewLeafKey(keyName), names, DateTimeOffset.UtcNow);
+        using var key = Pki.NewLeafKey(keyName);
+        using var pub = Pki.NewLeaf(ca, key, names, DateTimeOffset.UtcNow);
         try
         {
-            using var leaf = Pki.WithKey(pub, keyName); // the way `run` loads it: public certificate plus the stored, non-exportable key
+            using var leaf = Pki.WithKey(pub, keyName);
             await using var origin = await Origin.Start();
             await using var fwd = await StartForwarder(origin.Url, leaf);
-            var https = Forwarder.Addresses(fwd).Single(a => a.StartsWith("https"));
             using var root = X509CertificateLoader.LoadCertificate(ca.RawData);
+            await test(Forwarder.Addresses(fwd).Single(a => a.StartsWith("https")), root, origin);
+        }
+        finally
+        {
+            using var k = System.Security.Cryptography.CngKey.Open(keyName);
+            k.Delete();
+        }
+    }
+
+    static Task OverTls(Version version, HttpVersionPolicy policy, Action<HttpResponseMessage, Origin> check) =>
+        WithTls(async (https, root, origin) =>
+        {
             using var http = Client(h => h.SslOptions = new SslClientAuthenticationOptions
             {
                 TargetHost = "api.example.test",
@@ -258,13 +271,19 @@ public class ForwarderTests
             req.Headers.Host = "api.example.test";
             using var resp = await http.SendAsync(req);
             check(resp, origin);
-        }
-        finally
+        });
+
+    // a busy PC can make the game's browser slow to start its handshake; Kestrel's default 10 s limit would drop it (#514)
+    // ForwarderTests passed in 40 full-suite runs, 4 at a time, on a loaded PC
+    [Fact]
+    public async Task ASlowStartingHandshakeIsNotDropped() =>
+        await WithTls(async (https, _, _) =>
         {
-            using var k = System.Security.Cryptography.CngKey.Open(keyName);
-            k.Delete();
-        }
-    }
+            using var tcp = new System.Net.Sockets.TcpClient();
+            await tcp.ConnectAsync(IPAddress.Loopback, new Uri(https).Port);
+            await Task.Delay(TimeSpan.FromSeconds(12));
+            Assert.False(tcp.Client.Poll(0, System.Net.Sockets.SelectMode.SelectRead)); // readable without data means the server closed it
+        });
 
     // PL11
     [Fact]

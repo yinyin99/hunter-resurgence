@@ -15,20 +15,32 @@ else { <WeaponTable Weapons="Hunt.Weapons" /> }
 <h4>@L["Prof.Animals"]</h4>
 @if (Hunt.Animals.Count == 0) { <p>@L["Stat.NoAnimalsExp"]</p> }
 else { <SpeciesTable Rows="Hunt.Animals" /> }
-<h4>@L["Prof.Collectables"]</h4>
-@if (Hunt.Collectables.Count == 0) { <p>@L["Stat.NoCollectExp"]</p> }
-else { <CollectableTable Rows="Hunt.Collectables" /> }
-<h4>@L["Prof.TabAchievements"]</h4>
-@if (Hunt.Achievements.Count == 0) { <p>@L["Stat.NoAchExp"]</p> }
-else { <ul>@foreach (var a in Hunt.Achievements) { <li>@a</li> } </ul> }
+@if (Hunt.Collectables.Count > 0)
+{
+    <h4>@L["Prof.Collectables"]</h4>
+    <table class="tbl tbl-c">
+        <thead><tr><th>@L["Stat.Name"]</th><th>@L["Stat.Score"]</th><th>@L["Wal.Date"]</th></tr></thead>
+        <tbody>@foreach (var c in Hunt.Collectables) { <tr><td>@c.Name</td><td>@Fmt.Score(c.Score)</td><td>@Fmt.Utc(c.When)</td></tr> }</tbody>
+    </table>
+}
+@if (Hunt.Achievements.Count > 0)
+{
+    <h4>@L["Prof.TabAchievements"]</h4>
+    <ul>@foreach (var a in Hunt.Achievements) { <li><b>@a.Title</b> - @a.Description</li> }</ul>
+}
 <h4>@L["Stat.Misc"]</h4>
 <table class="misc tbl"><tbody>
     <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(L, Hunt.DistanceKm)</td></tr>
     <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(L, Hunt.Seconds)</td></tr>
 </tbody></table>
-<h4 class="gap">@L["Stat.Antlers"]</h4>
-@if (Hunt.Antlers.Count == 0) { <p>@L["Stat.NoAntlerExp"]</p> }
-else { <ul>@foreach (var a in Hunt.Antlers) { <li>@a</li> } </ul> }
+@if (Hunt.Antlers.Count > 0)
+{
+    <h4 class="gap">@L["Stat.Antlers"]</h4>
+    <table class="tbl tbl-c">
+        <thead><tr><th>@L["Stat.Species"]</th><th>@L["Wal.Type"]</th><th>@L["Stat.Score"]</th></tr></thead>
+        <tbody>@foreach (var a in Hunt.Antlers) { <tr><td>@L.Term(a.Species)</td><td>@L[a.Double ? "Board.Double" : "Board.Single"]</td><td>@Fmt.Score(a.Score)</td></tr> }</tbody>
+    </table>
+}
 <h4>@L["Stat.Kills"]</h4>
 @if (Hunt.Kills.Count == 0) { <p>@L["Stat.NoKillsExp"]</p> }
 else
