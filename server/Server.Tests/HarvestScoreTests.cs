@@ -127,8 +127,9 @@ public class HarvestScoreTests : StateTestBase
             (e22["left_antler"], e22["right_antler"]) = (left, Antler());
             return Py.D(Scoring.Score(3, Scoring.Features(3, new JsonObject(), e22, 1.0), 200000, null).Score);
         }
-        Assert.Equal(50.0, Math.Round(Total("""{"length": 1270}""") - Total(null), 4));  // 1270 mm = 50 in
-        Assert.True(Harvest(3, 0).Paid);  // the gm$ is paid from the score
+        var (with, without) = (Total("""{"length": 1270}"""), Total(null));
+        Assert.Equal(50.0, Math.Round(with - without, 4));  // 1270 mm = 50 in
+        Assert.True(Py.RoundInt(Scoring.Css(3, with)) > Py.RoundInt(Scoring.Css(3, without)));  // the gm$ paid is round(css)
     }
 
     [Fact]

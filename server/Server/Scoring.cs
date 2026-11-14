@@ -447,8 +447,8 @@ public static class Scoring
             var abnormal = Arr(a, "abnormals").Select(p => L(Mm(Py.D(p!["length"])))).ToArray();
             if (abnormal.Length > 0) side["e"] = new JsonArray(abnormal);
             // elk crown points: `i`, only on a side that has any
-            var crown = Arr(a, "crown_points").Select(p => L(Mm(Py.D(p!["length"])))).ToArray();
-            if (fam == "elk" && crown.Length > 0) side["i"] = new JsonArray(crown);
+            var crown = fam == "elk" ? Arr(a, "crown_points").Select(p => L(Mm(Py.D(p!["length"])))).ToArray() : [];
+            if (crown.Length > 0) side["i"] = new JsonArray(crown);
             return side;
         }
         return new JsonObject
