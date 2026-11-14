@@ -36,7 +36,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 
 ```
 sudo mkdir -p /etc/systemd/journald.conf.d
-printf '[Journal]\nStorage=persistent\nMaxRetentionSec=30day\nSystemMaxUse=2G\n' | sudo tee /etc/systemd/journald.conf.d/retention.conf
+printf '[Journal]\nStorage=persistent\nMaxRetentionSec=30day\nSystemMaxUse=5G\n' | sudo tee /etc/systemd/journald.conf.d/retention.conf
 sudo systemctl restart systemd-journald
 ```
 
@@ -248,7 +248,7 @@ journalctl CONTAINER_NAME=web-server-1 -g 'upload of account'   # every upload o
 docker compose logs server                                # the current container only
 ```
 
-The lines hold client addresses and handles, so the journal keeps them at most 30 days and 2 GB in all (the drop-in of [VPS prerequisites](#vps-prerequisites)); `journalctl --disk-usage` shows the size. Caddy writes no access log.
+The lines hold client addresses and handles, so the journal keeps them at most 30 days and 5 GB in all (the drop-in of [VPS prerequisites](#vps-prerequisites)); `journalctl --disk-usage` shows the size, `journalctl | head -1` the oldest line. An entry takes about 1 KB on disk and the server writes one per request (about 15,000 an hour in November 2026, most of them a crawler on `/hunters`), so 5 GB holds about two weeks; the size cap ends it before the 30 days. The website logs only warnings and errors of the framework's request, routing, static-file and HTTP-client categories (`src/Web/Program.cs`): at Info level they wrote about six lines per request, ten times the server's, and filled 2 GB in 10 hours. Caddy writes no access log.
 
 ## Adding another site
 
