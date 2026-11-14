@@ -187,7 +187,7 @@ public class ReplayTests : IAsyncLifetime
     [Fact]
     public async Task TestGameWebMapTilesFallBackToTheMapHostFolder()
     {
-        foreach (var (host, path, bytes) in new[] { ("map.test", "v7/tiles/2/3/3.jpg", "map"u8.ToArray()), ("map.test", "v7/tiles/2/4/0.jpg", "out"u8.ToArray()), ("game_web.test", "content/map/v7/tiles/1/0/0.jpg", "own"u8.ToArray()), ("map.test", "v7/tiles/1/0/0.jpg", "map"u8.ToArray()) })
+        foreach (var (host, path, bytes) in new[] { ("map.test", "v7/tiles/2/3/3.jpg", "map"u8.ToArray()), ("map.test", "v7/tiles/2/4/0.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/2/0/4.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/6/0/0.jpg", "out"u8.ToArray()), ("game_web.test", "content/map/v7/tiles/1/0/0.jpg", "own"u8.ToArray()), ("map.test", "v7/tiles/1/0/0.jpg", "map"u8.ToArray()) })
         {
             var f = Path.Combine(mirror, host, path);
             Directory.CreateDirectory(Path.GetDirectoryName(f)!);
@@ -196,6 +196,7 @@ public class ReplayTests : IAsyncLifetime
         Same(("map"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/content/map/v7/tiles/2/3/3.jpg"));
         Same(("own"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/content/map/v7/tiles/1/0/0.jpg"));
         Assert.Equal("miss", (await R("GET", "game_web.test", "/content/map/v7/tiles/2/4/0.jpg")).Source);
+        Assert.Equal("miss", (await R("GET", "game_web.test", "/content/map/v7/tiles/2/0/4.jpg")).Source);
         Assert.Equal("miss", (await R("GET", "game_web.test", "/content/map/v7/tiles/6/0/0.jpg")).Source);
     }
 

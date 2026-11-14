@@ -414,12 +414,16 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        static readonly Regex TileUrl = new(@"^/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)$", RegexOptions.CultureInvariant);
+        static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 
         /// <summary>The game web host asks for map tiles under /content/map/; its own folder holds only some, so a tile inside the zoom's grid (2^z per side) is read from the map host's folder.</summary>
-        string? MapTile(Req r) =>
-            r.Host == GameWeb && TileUrl.Match(r.Path) is { Success: true } m && int.Parse(m.Groups[3].Value) < 1 << int.Parse(m.Groups[2].Value) && int.Parse(m.Groups[4].Value) < 1 << int.Parse(m.Groups[2].Value)
+        string? MapTile(Req r)
+        {
+            if (r.Host != GameWeb || TileUrl.Match(r.Path) is not { Success: true } m) return null;
+            var side = 1 << int.Parse(m.Groups[2].Value);
+            return int.Parse(m.Groups[3].Value) < side && int.Parse(m.Groups[4].Value) < side
                 ? MirrorPath(MirrorDir, S(Cfg, "map_host").ToLowerInvariant(), "/" + m.Groups[1].Value) : null;
+        }
 
         /// <summary>Everything the player state does not answer, in order: archive file pinned to the URL's directory,
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
