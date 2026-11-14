@@ -295,8 +295,8 @@ public class LaunchCatalogueTests : StateTestBase
     {
         var reply = await Launch(form, prepare: () =>
         {
+            Place(502, 902, 1, 0, 0);  // first: a launch refills the player's ammunition under the next free guids, above 502 and below 506
             Place(501, 901, 1, 500_000, 500_000);
-            Place(502, 902, 1, 0, 0);
             using var con = state.Store.Open(ME);
             con.Begin();
             PlayerRows.AddItem(con, 506, 901, 0, null, new JsonObject());
