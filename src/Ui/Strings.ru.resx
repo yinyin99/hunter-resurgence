@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>неогр.</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Цена комплекта</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Занимаемое место</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Содержит</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Оружие разрешено для охоты на этих животных:</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>{0} разрешено для охоты: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>{0} не разрешено для охоты: {1}</value></data>

@@ -43,10 +43,10 @@ public class CatalogTests : StateTestBase
         return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    async Task<Reply> Get(string application, bool offline = false)
+    async Task<Reply> Get(string application, bool offline = false, string path = "/catalog/store")
     {
         await using var server = await Start(application, offline);
-        return await server.SendAsync("GET", "web.test", "/catalog/store", []);
+        return await server.SendAsync("GET", "web.test", path, []);
     }
 
     /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$) who already owns the owned items; its reply and
@@ -210,10 +210,71 @@ public class CatalogTests : StateTestBase
     }
 
     [Fact]
-    public async Task NoFieldTheCatalogueGivesWithoutAUnitIsPassedOn()
+    public async Task TheListCarriesNeitherCapacityNorWeightTheItemPageDoes()
     {
         var rifle = JsonNode.Parse((await Get(Store)).Body)!["items"]![0]!.AsObject();
         Assert.DoesNotContain(rifle, p => p.Key is "capacity" or "weight");
+    }
+
+    // fictional: a rifle (5) that takes two ammunitions (14, a pack of 30, and 300) and a scope, a hidden ammunition (99) it also lists; species 17 (the connect's) is permitted 14 and 241,
+    // species 117 is its non-typical variant, species 1 has no list (no rule)
+    const string Fitting = """
+        {"species": [{"id": 17, "name": "Test Rabbit"}, {"id": 117, "name": "Test Rabbit (Non-Typical)"}, {"id": 1, "name": "Test Deer"}], "reserves": [], "locations": [], "bundles": [],
+         "items": [
+           {"id": 5, "name": "Test Rifle", "variationname": "Blue", "cat": 1, "subcat": {"id": 0}, "price": 100, "inventory": {"weight": 3250}, "fit": {"2": [{"id": 2}], "3": [{"id": 14}, {"id": 99}, {"id": 300}]}},
+           {"id": 2, "name": "Test Scope", "cat": 2, "subcat": {"id": 5}, "price": 20, "inventory": {"weight": 0}, "fit": {"1": [{"id": 5}]}},
+           {"id": 14, "name": "Test Shot A", "cat": 3, "subcat": {"id": 10}, "price": 4, "units": {"count": 30, "name": "shotshells"}, "inventory": {"weight": 850}, "fit": {"1": [{"id": 5}]}},
+           {"id": 300, "name": "Test Slug", "cat": 3, "subcat": {"id": 10}, "price": 4, "inventory": {}, "fit": {"1": [{"id": 5}]}},
+           {"id": 99, "name": "Test Hidden Shot", "cat": 3, "hidden": 1, "price": 1, "inventory": {}, "fit": {}}],
+         "categories": [{"id": "all", "title": "All Items", "subcategories": [{"id": "all", "title": "All Items"}], "default": "all"},
+                        {"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}], "default": 0},
+                        {"id": 2, "title": "Sights", "subcategories": [{"id": 5, "title": "Rifle Sights"}], "default": 5},
+                        {"id": 3, "title": "Ammo", "subcategories": [{"id": 10, "title": "Rifle Ammo"}], "default": 10}]}
+        """;
+
+    async Task<JsonNode> Page(int id)
+    {
+        var reply = await Get(Fitting, path: $"/catalog/item/{id}");
+        Assert.Equal(200, reply.Status);
+        return JsonNode.Parse(reply.Body)!;
+    }
+
+    [Fact]
+    public async Task AWeaponsPageHasItsCapacityItsFitsAndTheSpeciesItsAmmunitionIsPermittedFor()
+    {
+        var page = await Page(5);
+        Assert.Equal(3.25, (double)page["capacity"]!);
+        Assert.Null(page["contents"]);
+        var fits = page["fits"]!.AsArray();
+        Assert.Equal(["Sights", "Ammo"], fits.Select(f => (string)f!["title"]!));
+        Assert.Equal(["Test Scope"], fits[0]!["items"]!.AsArray().Select(i => (string)i!["name"]!));
+        Assert.Equal(["Test Shot A", "Test Slug"], fits[1]!["items"]!.AsArray().Select(i => (string)i!["name"]!));  // the hidden one is left out
+        var ethical = page["ethical"]!;
+        Assert.Equal(["Test Shot A", "Test Slug"], ethical["ammo"]!.AsArray().Select(a => (string)a!));
+        // 14 is in species 17's list, 300 is not; species 1 has none and no row
+        Assert.Equal(["Test Rabbit", "Test Rabbit (Non-Typical)"], ethical["species"]!.AsArray().Select(s => (string)s!["name"]!));
+        Assert.All(ethical["species"]!.AsArray(), s => Assert.Equal([true, false], s!["permitted"]!.AsArray().Select(p => (bool)p!)));
+    }
+
+    [Fact]
+    public async Task AnAmmunitionsPageHasItsContentsTheWeaponsThatFireItAndItsOwnColumn()
+    {
+        var page = await Page(14);
+        Assert.Equal((0.85, 30L, "shotshells"), ((double)page["capacity"]!, (long)page["contents"]!["count"]!, (string)page["contents"]!["name"]!));
+        var fit = page["fits"]![0]!;
+        Assert.Equal(("Weapons", "Test Rifle", "Blue"), ((string)fit["title"]!, (string)fit["items"]![0]!["name"]!, (string)fit["items"]![0]!["variant"]!));
+        Assert.Equal(["Test Shot A"], page["ethical"]!["ammo"]!.AsArray().Select(a => (string)a!));
+        Assert.All(page["ethical"]!["species"]!.AsArray(), s => Assert.Equal([true], s!["permitted"]!.AsArray().Select(p => (bool)p!)));
+    }
+
+    [Fact]
+    public async Task AnItemThatFitsNothingHasNoTableAndAnUnlistedOneNoPage()
+    {
+        var scope = await Page(2);
+        Assert.Null(scope["ethical"]);
+        Assert.Equal(0.0, (double)scope["capacity"]!);
+        Assert.Equal(404, (await Get(Fitting, path: "/catalog/item/99")).Status);  // hidden
+        Assert.Equal(404, (await Get(Fitting, path: "/catalog/item/404")).Status);
     }
 
     [Fact]

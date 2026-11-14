@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Obegränsade</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paketpris</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapacitetskostnad</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Innehåller</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Tillåten för</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Det är etiskt att använda {0} vid jakt på: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Det är inte etiskt att använda {0} vid jakt på: {1}</value></data>

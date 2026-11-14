@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Nelimitat</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prețul pachetului</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Cost capacitate</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Conține</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Acceptat(ă) pentru</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Este etic să folosiți {0} la vânătoarea de: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Nu este etic să folosiți {0} la vânătoarea de: {1}</value></data>

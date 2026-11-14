@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Neomejeno</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Cena paketa</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Strošek kapacitete</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Vsebuje</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Dovoljeno za lov</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Uporaba {0} pri lovu je etična: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Uporaba {0} pri lovu ni etična: {1}</value></data>

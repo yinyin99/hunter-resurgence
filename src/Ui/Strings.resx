@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Unlimited</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Bundle price</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Capacity cost</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Contains</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Permitted for</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>It is ethical to use {0} when hunting {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>It is not ethical to use {0} when hunting {1}</value></data>

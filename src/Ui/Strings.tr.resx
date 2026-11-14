@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Sınırsız</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paket fiyatı</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasite maliyeti</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>İçeriği</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Avlanma İzinleri</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>{1} avlarken {0} kullanmak etiktir</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>{1} avlarken {0} kullanmak etik değildir</value></data>

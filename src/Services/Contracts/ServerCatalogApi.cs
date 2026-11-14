@@ -7,6 +7,8 @@ public static class ServerCatalogApi
     public const string Store = "/catalog/store";
     /// <summary>GET: 200 <see cref="ServerLaunchCatalogue"/>, or 404 when the server holds no reserves.</summary>
     public const string Reserves = "/catalog/reserves";
+    /// <summary>GET: this path and an item's id: 200 <see cref="ServerItemPage"/> of an item the store lists, or 404.</summary>
+    public const string Item = "/catalog/item/";
 }
 
 /// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)
@@ -42,3 +44,19 @@ public sealed record ServerItem(int Id, string Name, string Variant, string Desc
 public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items);
 
 public sealed record ServerBundleItem(int Id, string Name);
+
+/// <summary>The JSON of <see cref="ServerCatalogApi.Item"/>: what an item's page shows beyond the list. <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Fits"/> what fits it, under
+/// its category's title; <see cref="Ethical"/> the permitted species of a weapon's ammunition or of an ammunition, by the rule the server judges kills by.</summary>
+public sealed record ServerItemPage(double Capacity, ServerContents? Contents, ServerFits[]? Fits, ServerEthical? Ethical);
+
+/// <summary>An item sold by the pack: <c>10 cartridges</c>.</summary>
+public sealed record ServerContents(int Count, string Name);
+
+public sealed record ServerFits(string Title, ServerFit[] Items);
+
+public sealed record ServerFit(int Id, string Name, string Variant);
+
+/// <summary><see cref="Species"/> have one flag per name of <see cref="Ammo"/>.</summary>
+public sealed record ServerEthical(string[] Ammo, ServerEthicalSpecies[] Species);
+
+public sealed record ServerEthicalSpecies(string Name, bool[] Permitted);

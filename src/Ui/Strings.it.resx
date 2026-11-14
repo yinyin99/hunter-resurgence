@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Illimitati</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Prezzo del pacchetto</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Costo capacità</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Contiene</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Consentito per</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>È etico usare {0} quando si caccia: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Non è etico usare {0} quando si caccia: {1}</value></data>

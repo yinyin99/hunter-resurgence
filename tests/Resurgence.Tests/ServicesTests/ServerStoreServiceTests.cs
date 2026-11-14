@@ -83,8 +83,39 @@ public class ServerStoreServiceTests
     public async Task AnItemHasTodaysPriceTheOldOneAndNoOwnershipOrCapacity()
     {
         var item = await Ok().ItemAsync(1);
-        Assert.Equal(("Test Rifle", "Blue", 50, 100, 2000, 0, true, 0), (item!.Name, item.Variant, item.Ems, item.WasEms, item.Gms, item.Owned, item.Buyable, item.Capacity));
+        Assert.Equal(("Test Rifle", "Blue", 50, 100, 2000, 0, true, 0.0), (item!.Name, item.Variant, item.Ems, item.WasEms, item.Gms, item.Owned, item.Buyable, item.Capacity));
         Assert.Null(await Ok().ItemAsync(404));
+    }
+
+    const string Page = """
+        {"capacity": 0.45, "contents": {"count": 10, "name": "cartridges"},
+         "fits": [{"title": "Weapons", "items": [{"id": 1, "name": "Test Rifle", "variant": "Blue"}]}],
+         "ethical": {"ammo": ["Test Cartridge"], "species": [{"name": "Test Fox", "permitted": [true]}, {"name": "Test Moose", "permitted": [false]}]}}
+        """;
+
+    // the list holds a thousand items, so what belongs to one (capacity, contents, fits, the species table) is the server's item route, asked without the cookie
+    [Fact]
+    public async Task AnItemHasWhatTheServersItemRouteAdds()
+    {
+        var fake = new Fake(r => Json(HttpStatusCode.OK, r.RequestUri!.AbsolutePath == "/catalog/item/1" ? Page : Store));
+        var item = (await Make(fake).ItemAsync(1))!;
+        Assert.Equal((0.45, "10 cartridges"), (item.Capacity, item.Contents));
+        var fit = Assert.Single(item.Fits!);
+        Assert.Equal(("Weapons", 1, "Test Rifle", "Blue"), (fit.Title, fit.Items[0].Id, fit.Items[0].Name, fit.Items[0].Variant));
+        Assert.Equal(["Test Cartridge"], item.Ethics!.Columns);
+        Assert.Equal([("Test Fox", true), ("Test Moose", false)], item.Ethics.Rows.Select(r => (r.Species, r.Permitted[0])));
+        var request = fake.Seen[^1];
+        Assert.Equal(("/catalog/item/1", "site.test", false), (request.RequestUri!.AbsolutePath, request.Headers.Host, request.Headers.Contains("Cookie")));
+    }
+
+    [Fact]
+    public async Task AnItemShowsWithoutItsDetailsWhenTheServerDoesNotAnswerThem()
+    {
+        var item = (await Make(new Fake(r => r.RequestUri!.AbsolutePath.StartsWith("/catalog/item/") ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, Store))).ItemAsync(1))!;
+        Assert.Equal(("Test Rifle", 0.0), (item.Name, item.Capacity));
+        Assert.Null(item.Contents);
+        Assert.Null(item.Fits);
+        Assert.Null(item.Ethics);
     }
 
     sealed class Items(params InventoryItem[] items) : IInventoryService

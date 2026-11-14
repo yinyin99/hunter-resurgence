@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Korlátlan</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Csomag ára</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Helyigény</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Tartalma</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Megengedett</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>Etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>Nem etikus a(z) {0} használata a következő vadászatánál: {1}</value></data>

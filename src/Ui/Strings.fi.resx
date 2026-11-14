@@ -706,6 +706,7 @@
   <data name="Store.Unlimited" xml:space="preserve"><value>Rajoittamaton</value></data>
   <data name="Store.BundlePrice" xml:space="preserve"><value>Paketin hinta</value></data>
   <data name="Store.Capacity" xml:space="preserve"><value>Kapasiteettikustannus</value></data>
+  <data name="Store.Contains" xml:space="preserve"><value>Sisältää</value></data>
   <data name="Store.Ethical" xml:space="preserve"><value>Sallittu seuraaville lajeille</value></data>
   <data name="Store.Ethical.Yes" xml:space="preserve"><value>{0} on eettinen valinta metsästettäessä: {1}</value></data>
   <data name="Store.Ethical.No" xml:space="preserve"><value>{0} ei ole eettinen valinta metsästettäessä: {1}</value></data>

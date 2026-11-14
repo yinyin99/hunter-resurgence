@@ -471,6 +471,14 @@ A non-zero `loadout_id` of `Launch/start` or `POST /v1/session/start_single_play
 
 Only a recorded `Application/application` has categories and bundles: a catalogue built from the install alone has the items and empty lists for the others, and one with no item answers 404 `{"error": "no catalogue"}`. A recording is found by the host names of the settings (`api_host` and the others): with names that differ from the recording's, the server does not see it and falls back to the install. The reply is some 0.7 MB for a catalogue of about a thousand items, so the website keeps it for 5 minutes. It is built from the catalogue and the discounts, not replayed: a recorded discount that is still active (a free week, for example) shows as the item's price until it ends.
 
+### An item's page
+
+`GET /catalog/item/<id>` on `web_host`, community server only, public and without a cookie, for an item the store lists (a hidden or unknown one answers 404 `{"error": "no item"}`). It holds what the item's page shows beyond the list, which would make the list ten times larger if it held it for every item; the website's server and the launcher ask for it when a page opens. The answer is `{capacity, contents, fits, ethical}`:
+
+- `capacity` is the catalogue's inventory weight divided by 1000, the number the store shows as the capacity cost (it has no unit); 0 for an item without one. `contents` is `{count, name}` for an item sold by the pack (`10 cartridges`), else null.
+- `fits` is `[{title, items: [{id, name, variant}]}]`: the items of the catalogue's `fit` lists, one entry per group, under the title of the category of that number (a weapon lists its sights and its ammunition, an ammunition and a sight the weapons). A hidden item, which has no page, is left out; a catalogue built from the install alone has no `fit` lists.
+- `ethical` is `{ammo: [name], species: [{name, permitted: [bool]}]}` for a weapon (over the ammunition that fits it) and for an ammunition (over itself), else null: one row per species of the catalogue that has permitted ammunition (the dogs have none, so no row) and one flag per ammunition. The flag is the rule [kills are judged by](#scoring-and-paying-a-harvest): the ammunition is in the species' `ethical` list (a non-typical variant uses its species' list), or is one of the event's silver ammunitions, which every species permits. The page and a hit's verdict read the same code, so they cannot differ.
+
 ## The launch map
 
 `GET /catalog/reserves` on `web_host`, community server only (a local server answers the miss reply), public and without a cookie, from the application catalogue the server loaded ([Starting data](#starting-data)): the reserves and start places of the facts file, and the catalogue's tutorials. The launcher's map reads it. The answer is `{reserves: [{id, name, starts: [{id, kind, name, x, y}]}], tutorials: [{id, name, reserve}]}`; one with no reserve answers 404 `{"error": "no reserves"}`.

@@ -31,6 +31,20 @@ public sealed class ItemDetailTests : UiContext
         Assert.Single(cut.FindAll("#buy-item"));
     }
 
+    // 1225 is the mock's ammunition: it holds ten cartridges, three weapons fire it and a table says which species it is permitted for
+    [Fact]
+    public void AnAmmunitionShowsItsContentsItsWeaponsWithPicturesAndTheSpeciesTable()
+    {
+        var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
+
+        var contains = Services.GetRequiredService<IStringLocalizer<Strings>>()["Store.Contains"].Value;
+        Assert.Contains($"{contains}: 10 cartridges", cut.Find(".data").TextContent);
+        var weapons = cut.FindAll(".fits tr");
+        Assert.Equal(3, weapons.Count);
+        Assert.All(weapons, w => Assert.NotNull(w.QuerySelector(".asset-slot")));
+        Assert.Equal(5, cut.FindAll(".ethics tbody tr").Count);
+    }
+
     // the live site buys from the server, with em$ and gm$, and has no bank to send a player short of em$ to
     [Theory]
     [InlineData(false)]
