@@ -413,13 +413,16 @@ public sealed partial class State
     /// collectableScore: grams for a mushroom, millimetres for a feather, years for an artifact or fossil, points for event items.</summary>
     public (double Score, string Text) PickupScore(JsonObject e, bool antler)
     {
-        var def = PickupType(e, antler) is { } type ? Collectables.GetValueOrDefault(type) : null;
-        var (min, max) = (Py.D(G(def?["score"] as JsonObject ?? [], "min", 0)), Py.D(G(def?["score"] as JsonObject ?? [], "max", 0)));
+        var type = PickupType(e, antler);
+        var def = type is { } t ? Collectables.GetValueOrDefault(t) : null;
+        var fallback = type is { } t2 ? facts.Collectables.GetValueOrDefault(t2) : null;  // only when the install has no score for the type
+        var range = def?["score"] as JsonObject ?? fallback?["score"] as JsonObject ?? [];
+        var (min, max) = (Py.D(G(range, "min", 0)), Py.D(G(range, "max", 0)));
         var f = antler ? (Py.IsNum(e["antlers_score_percentage"]) ? Py.D(e["antlers_score_percentage"]) : 0) : (Py.IsNum(e["scale"]) ? Py.D(e["scale"]) / 100 : 0);
         var score = Math.Round(min + (max - min) * Math.Clamp(f, 0, 1), 3);
         var n = Math.Round(score, MidpointRounding.AwayFromZero);
         var inv = System.Globalization.CultureInfo.InvariantCulture;
-        return (score, (string?)def?["cat"] switch
+        return (score, ((string?)def?["cat"] ?? (string?)fallback?["cat"]) switch
         {
             "MUSHROOM" => string.Create(inv, $"{n}g / {score * 0.0352739619:0.00}oz"),
             "FEATHER" => string.Create(inv, $"{n}mm / {score * 0.0393701:0.00}in"),
