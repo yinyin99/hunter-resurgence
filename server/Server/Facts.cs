@@ -24,6 +24,8 @@ public sealed class Facts
             SpeciesAmmo[int.Parse(id, CultureInfo.InvariantCulture)] = [.. (rule!["ammo"] as JsonArray ?? []).Select(Py.L)];
         foreach (var (id, v) in Obj("variants"))
             Variants[int.Parse(id, CultureInfo.InvariantCulture)] = (Py.D(v!["min_score"]), Py.D(v["max_score"]), Py.D(v["css_multiplier"]));
+        foreach (var (id, def) in Obj("collectables"))
+            Collectables[long.Parse(id, CultureInfo.InvariantCulture)] = def!.AsObject();
         var ranks = Obj("ranks");
         RankCap = ranks["cap"] is { } cap ? Py.L(cap) : 0;
         Ranks = [.. (ranks["rows"] as JsonArray ?? []).Select(r => (string?)r!["category"] switch
@@ -63,6 +65,9 @@ public sealed class Facts
 
     /// <summary>Per variant id (the species id, or 100 and up for a non-typical one): the min and max score of its trophies and the css multiplier of its gm$ (`variants`). A species with no row is not scored (the dogs, the sasquatch).</summary>
     public readonly Dictionary<int, (double Lo, double Hi, double Mult)> Variants = [];
+
+    /// <summary>Per collectable type id (`collectables`): `{cat?, score: {min, max}}` for a type the install's collectable.json gives no score; used only then.</summary>
+    public readonly Dictionary<long, JsonObject> Collectables = [];
 
     /// <summary>A row of the hunterscore: its `id` (the game's ranks reply names it so) and `title`; `animal` (Ids = the species id), `weapon` (the weapon
     /// item ids, all ammo summed) or `collectable` (the collectable type ids). Its value counts up to <see cref="RankCap"/>.</summary>
