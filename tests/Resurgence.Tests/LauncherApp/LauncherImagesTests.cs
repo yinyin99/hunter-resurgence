@@ -35,7 +35,7 @@ public class LauncherImagesTests
         });
         await app.StartAsync(TestContext.Current.CancellationToken);
         var origin = new Uri(app.Urls.Single());
-        // a loaded machine can take longer than the product's 5 s for the first request (#209); a refusal or a break still answers at once, so only a hang would wait this long
+        // a loaded machine can take longer than the product's 5 s for the first request (#209); a refusal or a break ends the call without waiting for the timeout, so only a hang waits this long
         async Task<string?> LogoBar(Uri? server) => (await LauncherServices.LoadImages(server, TimeSpan.FromMinutes(2))).Url("logo-bar");
 
         // only the scheme, host and port of server_url count
