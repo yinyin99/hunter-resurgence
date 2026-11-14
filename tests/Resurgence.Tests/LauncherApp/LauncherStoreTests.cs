@@ -64,7 +64,11 @@ public sealed class LauncherStoreTests : IDisposable
 
         Assert.True((await store.BuyAsync(1, false, false)).Ok);
 
-        var (line, cookie, form) = Assert.Single(seen, r => r.Line.EndsWith("/account/buy"));
+        // the launcher's services fetch /images.json in the background and the server adds that request to `seen` at any time: read a copy under the same lock
+        // (before: 5 failures in 240 runs of this class, 6 at once; after: none in 240 such runs and in 30 full-suite runs, 3 at once)
+        (string Line, string Cookie, string Form)[] requests;
+        lock (seen) requests = [.. seen];
+        var (line, cookie, form) = Assert.Single(requests, r => r.Line.EndsWith("/account/buy"));
         Assert.Equal(("POST /account/buy", "hr_session=secret", "id=1&count=1&bundle=0&wallet=GOLD"), (line, cookie, form));
     }
 
