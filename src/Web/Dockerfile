@@ -10,7 +10,7 @@ COPY src ./src
 RUN dotnet restore src/Web/Resurgence.Web.csproj --locked-mode
 RUN dotnet publish src/Web/Resurgence.Web.csproj -c Release --no-restore -o /out
 
-# the runtime that SDK ships (10.0.403 = 10.0.14); the standard image listens on 8080 (ASPNETCORE_HTTP_PORTS) and has the non-root user $APP_UID
+# the runtime that SDK ships (10.0.404 = 10.0.15); the standard image listens on 8080 (ASPNETCORE_HTTP_PORTS) and has the non-root user $APP_UID
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.15
 # the account mock lists cultures, regions and time zones: fail the build if ICU or tzdata is missing
 RUN ls /usr/share/zoneinfo/Europe/Paris /usr/lib/*/libicuuc.so.* > /dev/null
