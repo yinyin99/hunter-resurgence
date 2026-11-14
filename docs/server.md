@@ -17,7 +17,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `web_host` | Required. **Our website's public domain**: the sign-in pages and the account pages are served under it (the website forwards the browser's `Host`, and the Steam return address is built from it) |
 | `game_web_host` | Required. **The game's own web host**: the one name the current build sends everything to ([The current build](#the-current-build)). It is not our domain: a player's hosts file points it to their PC, and the request reaches the server in the `host_header` header |
 | `crash_host` | The host the game's crash reports go to (answered 204). Recommended |
-| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it, and to find the recordings made of them. Left out, each is a placeholder (`<role>.invalid`) that no client asks for. The server routes by the `Host` of a request |
+| `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it, and to find the recordings made of them. Left out, each is a placeholder (`<role>.invalid`) that no client asks for; `map_host` is also needed by the current build, to fill map tiles from the map host's folder. The server routes by the `Host` of a request |
 | `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and hold the item and species definitions, and its sample files (`game/json_connect_results.json`, `game/json_inventory.json`) seed the connect reply and the item definitions ([Starting data](#starting-data)). Read only |
 | `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
 | `recordings_dir` | Default `recordings`: Optional: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
@@ -74,7 +74,7 @@ The current client build sends all its traffic to `game_web_host`, with lower-ca
 |---|---|
 | `/v1/json/<service>/<method>` (the game's RPC: `connect`, `heartbeat`, `disconnect`) | the game server's path and host; the body stays JSON. Other `/v1/json/...` paths stay on the web host (the launcher's ping) |
 | any other `/v1/<module>/<method>`, any case | the API host, the path in the case of the handlers (or the recordings'); a JSON body becomes a form (`a=1&b=2`, nested values as their JSON text), except the body of a PUT, which stays as sent (the lodge edits, [Lodges](#lodges-and-trophy-visibility)) |
-| everything else (`/client`, `/static/...`, `/content/...`, `/media/...`) | unchanged: the archive, the recordings, the mirror (`<mirror_dir>/<game_web_host>/...`) answer it |
+| everything else (`/client`, `/static/...`, `/content/...`, `/media/...`) | unchanged: the archive, the recordings, the mirror (`<mirror_dir>/<game_web_host>/...`; map tiles also the map host's folder, below) answer it |
 
 The server's own answers for this build:
 
@@ -96,7 +96,7 @@ The server's own answers for this build:
 | `POST` or `GET /v1/challenge/get_user_challenges` | `{}`; a community server answers from the account's rows, without a token ([Challenges](#challenges)) | per player, empty reply |
 | `POST /v1/network/list` | `[]` | per player, empty reply |
 | `POST /v1/inventory/move_multiple2`, `inventory/buy`, `me/me`, `me/poll` (adds `active_campaign`, `campaign_stylesheet`, `community_campaign_stylesheet`, `last_hunt_update_ts`), `expedition/list` (`has_more` next to `total`) | The old handlers | per player, from the database |
-| `/client`, `/static/...`, `/content/...`, `/media/...` | The mirror | global |
+| `/client`, `/static/...`, `/content/...`, `/media/...` | The mirror; a map tile `/content/map/v7/tiles/<z>/<x>/<y>.jpg` (zoom 1 to 5, x and y below 2^z) that the game host's folder lacks is read from the map host's folder (`<mirror_dir>/<map_host>/v7/tiles/...`) | global |
 
 **Recordings of the current build** are found too: `NewBuild.Alias` adds, for every recorded request to `game_web_host` that the rewrite would move, the key of the moved request (the original stays).
 

@@ -12,7 +12,7 @@
                 {
                     @foreach (var (x, n) in c.Children.Select((x, n) => (x, n)))
                     {
-                        <a href="/store/@x.Key" class="sub @(x.Key == Active || (c.Key == Active && n == 0 && c.Key != x.Key) ? "active" : "")">@(x.Key == c.Key && x.Name != c.Name ? x.Name : Name(x))</a>
+                        <a href="/store/@x.Key" class="sub @(x.Key == Active || (c.Key == Active && n == 0 && c.Key != x.Key) ? "active" : "")">@Name(x, x.Key == c.Key && x.Name != c.Name ? "Store.Sub." : "Store.Cat.")</a>
                     }
                 }
             }
@@ -31,6 +31,6 @@
 
     protected override async Task OnInitializedAsync() => (categories, hasSales) = (await Service.CategoriesAsync(), await Service.HasSalesAsync());
 
-    // the category texts come from the resx (incl. the Sights sub-categories); other sub-categories fall back to the name as given
-    string Name(StoreCategory c) => L["Store.Cat." + c.Key] is { ResourceNotFound: false } s ? s.Value : c.Name;
+    // the category texts come from the resx (Store.Sub for the first sub-category, which has its parent's key); a category it has none for shows the name as given
+    string Name(StoreCategory c, string prefix = "Store.Cat.") => L[prefix + c.Key] is { ResourceNotFound: false } s ? s.Value : c.Name;
 }

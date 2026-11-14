@@ -622,6 +622,67 @@
   <data name="Store.Cat.57" xml:space="preserve"><value>Предметы событий</value></data>
   <data name="Store.Cat.87" xml:space="preserve"><value>Залы трофеев</value></data>
   <data name="Store.Cat.108" xml:space="preserve"><value>Транспорт</value></data>
+  <data name="Store.Sub.0" xml:space="preserve"><value>Винтовки</value></data>
+  <data name="Store.Sub.10" xml:space="preserve"><value>Патроны для винтовок</value></data>
+  <data name="Store.Sub.59" xml:space="preserve"><value>Ретриверы</value></data>
+  <data name="Store.Sub.15" xml:space="preserve"><value>Приманки с запахом</value></data>
+  <data name="Store.Sub.18" xml:space="preserve"><value>Куртки и рубашки</value></data>
+  <data name="Store.Sub.27" xml:space="preserve"><value>Инвентарь</value></data>
+  <data name="Store.Sub.24" xml:space="preserve"><value>Оптика</value></data>
+  <data name="Store.Sub.29" xml:space="preserve"><value>Вышки и укрытия</value></data>
+  <data name="Store.Sub.57" xml:space="preserve"><value>Movember</value></data>
+  <data name="Store.Sub.87" xml:space="preserve"><value>Планировки</value></data>
+  <data name="Store.Sub.108" xml:space="preserve"><value>Егеря парка</value></data>
+  <data name="Store.Sub.114" xml:space="preserve"><value>Животные</value></data>
+  <data name="Store.Cat.1" xml:space="preserve"><value>Пистолеты</value></data>
+  <data name="Store.Cat.2" xml:space="preserve"><value>Дробовики</value></data>
+  <data name="Store.Cat.3" xml:space="preserve"><value>Луки и арбалеты</value></data>
+  <data name="Store.Cat.4" xml:space="preserve"><value>Дульнозарядное оружие</value></data>
+  <data name="Store.Cat.101" xml:space="preserve"><value>Дульнозарядные пистолеты</value></data>
+  <data name="Store.Cat.106" xml:space="preserve"><value>Усовершенствованное огнестрельное оружие</value></data>
+  <data name="Store.Cat.11" xml:space="preserve"><value>Патроны для пистолетов</value></data>
+  <data name="Store.Cat.12" xml:space="preserve"><value>Патроны для дробовиков</value></data>
+  <data name="Store.Cat.13" xml:space="preserve"><value>Стрелы для луков и арбалетов</value></data>
+  <data name="Store.Cat.14" xml:space="preserve"><value>Заряды для дульнозарядного оружия</value></data>
+  <data name="Store.Cat.60" xml:space="preserve"><value>Снаряжение для собак</value></data>
+  <data name="Store.Cat.61" xml:space="preserve"><value>Расходники для собак</value></data>
+  <data name="Store.Cat.75" xml:space="preserve"><value>Гончие</value></data>
+  <data name="Store.Cat.105" xml:space="preserve"><value>Немецкие легавые</value></data>
+  <data name="Store.Cat.16" xml:space="preserve"><value>Манки</value></data>
+  <data name="Store.Cat.17" xml:space="preserve"><value>Подкормка</value></data>
+  <data name="Store.Cat.48" xml:space="preserve"><value>Чучела</value></data>
+  <data name="Store.Cat.109" xml:space="preserve"><value>Электронный манок</value></data>
+  <data name="Store.Cat.19" xml:space="preserve"><value>Брюки</value></data>
+  <data name="Store.Cat.20" xml:space="preserve"><value>Шапки</value></data>
+  <data name="Store.Cat.21" xml:space="preserve"><value>Перчатки</value></data>
+  <data name="Store.Cat.22" xml:space="preserve"><value>Обувь</value></data>
+  <data name="Store.Cat.89" xml:space="preserve"><value>Защита лица</value></data>
+  <data name="Store.Cat.90" xml:space="preserve"><value>Очки</value></data>
+  <data name="Store.Cat.91" xml:space="preserve"><value>Рюкзаки</value></data>
+  <data name="Store.Cat.47" xml:space="preserve"><value>Аватары</value></data>
+  <data name="Store.Cat.115" xml:space="preserve"><value>Охотник</value></data>
+  <data name="Store.Cat.25" xml:space="preserve"><value>Приложения HunterMate</value></data>
+  <data name="Store.Cat.26" xml:space="preserve"><value>Расходные материалы</value></data>
+  <data name="Store.Cat.55" xml:space="preserve"><value>Устанавливаемое снаряжение</value></data>
+  <data name="Store.Cat.72" xml:space="preserve"><value>Разное</value></data>
+  <data name="Store.Cat.103" xml:space="preserve"><value>Устанавливаемые мишени</value></data>
+  <data name="Store.Cat.30" xml:space="preserve"><value>Палатки</value></data>
+  <data name="Store.Cat.31" xml:space="preserve"><value>Места подкормки</value></data>
+  <data name="Store.Cat.76" xml:space="preserve"><value>Football Jamboree 2016</value></data>
+  <data name="Store.Cat.104" xml:space="preserve"><value>Football Jamboree 2018</value></data>
+  <data name="Store.Cat.111" xml:space="preserve"><value>Football Jamboree 2014</value></data>
+  <data name="Store.Cat.112" xml:space="preserve"><value>Хэллоуин</value></data>
+  <data name="Store.Cat.113" xml:space="preserve"><value>Праздники</value></data>
+  <data name="Store.Cat.116" xml:space="preserve"><value>Летняя фиеста</value></data>
+  <data name="Store.Cat.117" xml:space="preserve"><value>Долгая ночь</value></data>
+  <data name="Store.Cat.94" xml:space="preserve"><value>Стили</value></data>
+  <data name="Store.Cat.95" xml:space="preserve"><value>Оружейные стойки</value></data>
+  <data name="Store.Cat.110" xml:space="preserve"><value>Бензин</value></data>
+  <data name="Store.Sub.5" xml:space="preserve"><value>Прицелы для винтовок</value></data>
+  <data name="Store.Cat.6" xml:space="preserve"><value>Прицелы для пистолетов</value></data>
+  <data name="Store.Cat.7" xml:space="preserve"><value>Прицелы для дробовиков</value></data>
+  <data name="Store.Cat.8" xml:space="preserve"><value>Прицелы для луков и арбалетов</value></data>
+  <data name="Store.Cat.9" xml:space="preserve"><value>Прицелы для дульнозарядных</value></data>
   <data name="Store.Search" xml:space="preserve"><value>Поиск</value></data>
   <data name="Store.Buy" xml:space="preserve"><value>КУПИТЬ</value></data>
   <data name="Store.NotBuyable" xml:space="preserve"><value>Не продаётся</value></data>
