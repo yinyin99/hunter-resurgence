@@ -57,6 +57,6 @@ public sealed record ServerFits(string Title, string Key, ServerFit[] Items);
 public sealed record ServerFit(int Id, string Name, string Variant);
 
 /// <summary><see cref="Species"/> have one flag per name of <see cref="Ammo"/>.</summary>
-public sealed record ServerEthical(string[] Ammo, ServerEthicalSpecies[] Species);
+public sealed record ServerEthical(ServerFit[] Ammo, ServerEthicalSpecies[] Species);
 
-public sealed record ServerEthicalSpecies(string Name, bool[] Permitted);
+public sealed record ServerEthicalSpecies(int Id, string Name, bool[] Permitted);

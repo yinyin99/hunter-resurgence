@@ -85,7 +85,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         Capacity = page.Capacity,
         Contents = page.Contents is { } c ? new StoreContents(c.Count, c.Name) : null,
         Fits = page.Fits?.Select(f => new ItemFit(f.Title, [.. f.Items.Select(x => new StoreFit(x.Id, x.Name, x.Variant))], f.Key)).ToList(),
-        Ethics = page.Ethical is { } e ? new EthicalMatrix(e.Ammo, [.. e.Species.Select(x => new EthicalRow(x.Name, x.Permitted))]) : null,
+        Ethics = page.Ethical is { } e ? new EthicalMatrix([.. e.Ammo.Select(a => new StoreFit(a.Id, a.Name, a.Variant))], [.. e.Species.Select(x => new EthicalRow(x.Id, x.Name, x.Permitted))]) : null,
     };
 
     public async Task<StoreBundle?> BundleAsync(int id)

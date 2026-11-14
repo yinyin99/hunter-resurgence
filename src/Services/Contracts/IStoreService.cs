@@ -9,9 +9,9 @@ public sealed record ItemFit(string Title, IReadOnlyList<StoreFit> Items, string
 public sealed record StoreFit(int Id, string Name, string Variant = "");
 
 /// <summary>Which ammunition is permitted for which species: <see cref="Rows"/> have one flag per ammunition column.</summary>
-public sealed record EthicalMatrix(IReadOnlyList<string> Columns, IReadOnlyList<EthicalRow> Rows);
+public sealed record EthicalMatrix(IReadOnlyList<StoreFit> Columns, IReadOnlyList<EthicalRow> Rows);
 
-public sealed record EthicalRow(string Species, IReadOnlyList<bool> Permitted);
+public sealed record EthicalRow(int Id, string Species, IReadOnlyList<bool> Permitted);
 
 /// <summary>
 /// An item; <see cref="WasEms"/> is the struck-through price of an item on sale, <see cref="Category"/> the key of its (sub)category.

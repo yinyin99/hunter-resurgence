@@ -40,10 +40,35 @@ public sealed class ItemDetailTests : UiContext
 
         var contains = Services.GetRequiredService<IStringLocalizer<Strings>>()["Store.Contains"].Value;
         Assert.Contains($"{contains} 10 cartridges", cut.Find(".data").TextContent);
-        var weapons = cut.FindAll(".fits tr");
+        var weapons = cut.FindAll(".fits .fit");
         Assert.Equal(3, weapons.Count);
         Assert.All(weapons, w => Assert.NotNull(w.QuerySelector(".asset-slot")));
         Assert.Equal(5, cut.FindAll(".ethics tbody tr").Count);
+    }
+
+    // the species names are the player's language's texts, sorted by them, and a permitted species has a tick
+    [Fact]
+    public void TheSpeciesAreTranslatedAndSortedAndMarked()
+    {
+        var before = (CultureInfo.CurrentUICulture, CultureInfo.CurrentCulture);
+        CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture = new CultureInfo("fr");
+        try
+        {
+            var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1225));
+
+            var strings = Services.GetRequiredService<IStringLocalizer<Strings>>();
+            Assert.Single(cut.FindAll(".ethics th .asset-slot"));
+            Assert.Equal("Rifle Ammo A (Black)", cut.Find(".ethics th .nm").TextContent);
+            var weapon = Render<ItemDetail>(p => p.Add(i => i.Id, 1226));
+            Assert.Equal(3, weapon.FindAll(".ethics th .asset-slot").Count);
+            Assert.All(weapon.FindAll(".ethics th .nm"), s => Assert.StartsWith("Rifle Ammo", s.TextContent));
+            var names = cut.FindAll(".ethics tbody tr td:first-child").Select(n => n.TextContent).ToList();
+            Assert.Contains(strings["Term.species.14"].Value, names);
+            Assert.Equal(names.OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase), names);
+            Assert.NotEmpty(cut.FindAll(".ethics td.yes"));
+            Assert.NotEmpty(cut.FindAll(".ethics td.no"));
+        }
+        finally { (CultureInfo.CurrentUICulture, CultureInfo.CurrentCulture) = before; }
     }
 
     // the fit titles are the store's category texts and the units are the catalogue's unit word by a text, not the catalogue's English
