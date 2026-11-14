@@ -1,49 +1,48 @@
 name: deploy
-# After a green ci run of a push to main: build the website and server images, push them to GHCR as <sha> and latest, roll them out on the VPS (docs/deploy.md).
+# On a server-X.Y.Z tag of a commit of main whose ci passed: build the website and server images, push them to GHCR as <sha> and latest, roll them out on the VPS (docs/deploy.md).
+# The launcher's vX.Y.Z tags are release.yml's and never deploy. A merge to main deploys nothing by itself.
 # Without the three DEPLOY_* secrets (a fork, or no VPS yet) the job ends with a notice. The repository secrets LINK_BACKUP, LINK_SOURCE, LINK_DISCORD, GAME_NAME and GAME_FULL (the ones the release uses too) become the website's links and game name.
 on:
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
-    branches: [main]
+  push:
+    tags: ["server-*"]
 permissions:
   contents: read
   packages: write
+  actions: read # gh run list: the tagged commit's ci
 jobs:
   deploy:
-    # a push to main of this repository only: pull requests (and so forks) never deploy, and no secret reaches them
-    if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
-    # on the job, not the workflow: a run whose job is skipped (a ci that was not a push to main) never holds or cancels a pending deploy
     concurrency:
       group: deploy
       cancel-in-progress: false
     runs-on: ubuntu-latest
     env:
-      SHA: ${{ github.event.workflow_run.head_sha }}
+      SHA: ${{ github.sha }}
+      TAG: ${{ github.ref_name }}
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     steps:
-      # two pushes close together deploy in the order their ci runs end, not in commit order: a commit that is no longer main's head rolls nothing out, since the newer one's deploy does (#230)
-      - name: Check the deploy secrets and that this is main's head
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the whole history: the tagged commit must be on main
+          persist-credentials: false
+      # the tag names a version, the commit is merged, and its ci on main passed; a tag of an older commit is a rollback and deploys too
+      - name: Check the tag, the commit, its ci and the deploy secrets
         id: secrets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-          if [ "$head" != "$SHA" ]; then echo "::notice::main is at $head now, not $SHA: its own deploy rolls it out; nothing deployed"
-          elif [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          [[ $TAG =~ ^server-[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::tag $TAG is not server-MAJOR.MINOR.PATCH"; exit 1; }
+          git merge-base --is-ancestor "$SHA" origin/main || { echo "::error::$SHA is not on main: merge it first"; exit 1; }
+          # a tag pushed right after the merge: wait up to 30 min for the push's ci to finish
+          for _ in $(seq 60); do
+            run=$(gh run list --workflow ci --commit "$SHA" --event push --limit 1 --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')
+            [[ $run == completed* ]] && break
+            sleep 30
+          done
+          [ "$run" = "completed success" ] || { echo "::error::ci of $SHA on main is '${run:-missing}', not a success: nothing deployed"; exit 1; }
+          if [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
           else echo "::notice::DEPLOY_HOST, DEPLOY_USER or DEPLOY_KEY is not set: nothing deployed"; fi
-      # workflow_run runs this file from the default branch without a checkout of the tested commit
-      - if: steps.secrets.outputs.ok
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          persist-credentials: false
       - name: Build and push the images
         if: steps.secrets.outputs.ok
         env:
