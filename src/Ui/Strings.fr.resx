@@ -1449,12 +1449,12 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lan
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Choisissez votre nom</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>C’est le nom que voient les autres chasseurs.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Votre nom</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 à 20 lettres, chiffres, - ou _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 à 30 lettres, chiffres, - ou _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Je suis nouveau ici</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>J’ai déjà joué : restaurer ce qui a été conservé de mon ancien profil</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Nous avons conservé une partie des profils publics : objets, trophées, pavillons, compétences, statistiques et succès. Les chasses, les photos et l’argent n’ont pas été conservés. Les profils à score élevé sont d’abord vérifiés par l’opérateur.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Laissez vide pour utiliser votre ancien nom s’il est libre.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nom comporte de 3 à 20 lettres, chiffres, - ou _ et commence par une lettre ou un chiffre.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nom comporte de 3 à 30 lettres, chiffres, - ou _ et commence par une lettre ou un chiffre.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ce nom est déjà pris.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choisissez un nom : l’ancien est déjà pris.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Connecter l’application qui affiche ce code ?</value></data>

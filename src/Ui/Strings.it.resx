@@ -1449,12 +1449,12 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Scegli il tuo nome</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>È il nome che vedono gli altri cacciatori.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Il tuo nome</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Da 3 a 20 lettere, cifre, - o _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Da 3 a 30 lettere, cifre, - o _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Sono nuovo qui</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Ho già giocato: ripristina ciò che è stato conservato del mio vecchio profilo</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Abbiamo conservato una parte dei profili pubblici: oggetti, trofei, riserve, abilità, statistiche e obiettivi. Cacce, foto e denaro non sono stati conservati. I profili con punteggio alto vengono prima controllati dall’operatore.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lascia vuoto per usare il tuo vecchio nome, se è libero.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nome ha da 3 a 20 lettere, cifre, - o _ e inizia con una lettera o una cifra.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Un nome ha da 3 a 30 lettere, cifre, - o _ e inizia con una lettera o una cifra.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Questo nome è già in uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Scegli un nome: quello vecchio è già in uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Accedere all’app che mostra questo codice?</value></data>

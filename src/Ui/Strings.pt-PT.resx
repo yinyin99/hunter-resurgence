@@ -1449,12 +1449,12 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Escolha o seu nome</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Este é o nome que os outros caçadores veem.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>O seu nome</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 a 20 letras, dígitos, - ou _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>De 3 a 30 letras, dígitos, - ou _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Sou novo aqui</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Já joguei antes: restaurar o que foi guardado do meu perfil antigo</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Guardámos parte dos perfis públicos: itens, troféus, cabanas, competências, estatísticas e conquistas. As caçadas, as fotografias e o dinheiro não foram guardados. Os perfis com pontuação alta são primeiro verificados pelo operador.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Deixe vazio para usar o seu nome antigo, se estiver livre.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Um nome tem de 3 a 20 letras, dígitos, - ou _ e começa por uma letra ou um dígito.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Um nome tem de 3 a 30 letras, dígitos, - ou _ e começa por uma letra ou um dígito.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Este nome já está em uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Escolha um nome: o antigo já está em uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Iniciar sessão na aplicação que mostra este código?</value></data>

@@ -21,12 +21,12 @@ else if (step is { Step: "handle" })
             @if (restore)
             {
                 <label for="old">@L["Claim.Name"]</label>
-                <input id="old" name="old" class="field" value="@step.Old" maxlength="20" autocomplete="off" aria-describedby="old-note" />
+                <input id="old" name="old" class="field" value="@step.Old" maxlength="50" autocomplete="off" aria-describedby="old-note" />
                 <p id="old-note" class="note">@L["SignInPage.Handle.OldNote"]</p>
             }
         }
         <label for="handle">@L["SignInPage.Handle.Label"]</label>
-        <input id="handle" name="handle" class="field" value="@step.Handle" maxlength="20" autocomplete="off" autofocus aria-describedby="handle-note" aria-invalid="@(Error is not null ? "true" : null)" />
+        <input id="handle" name="handle" class="field" value="@step.Handle" maxlength="30" autocomplete="off" autofocus aria-describedby="handle-note" aria-invalid="@(Error is not null ? "true" : null)" />
         @if (Error is { } error) { <p id="handle-note" class="error" role="alert">@L[error]</p> }
         else { <p id="handle-note" class="note">@L[restore ? "SignInPage.Handle.OldEmpty" : "SignInPage.Handle.Rule"]</p> }
         <button type="submit" class="btn btn-primary btn-large btn-block">@L["Signup.Continue"]</button>
