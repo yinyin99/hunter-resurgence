@@ -395,7 +395,7 @@ public class RestoreTests : StateTestBase
         var gallery = Gallery(1001);
         Eq("""[2, 2, "120.5", "Test Deer", 3, "", ""]""", T(JsonNode.Parse(state.GalleryListReply(1001, []))!["total"], gallery[0]!["type"], gallery[0]!["label"], gallery[0]!["animal"],
             gallery[1]!["type"], gallery[1]!["label"], gallery[1]!["animal"]));  // newest first, as saved
-        Assert.Matches(@"^/photos/1001/\d+-2\.jpg$", Link(gallery[0]!["url"]));
+        Assert.Matches(@"^/photos/1001/\d+-2-[0-9a-f]{32}\.jpg$", Link(gallery[0]!["url"]));
         Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
         Assert.Equal(TestZip.Jpeg("a"), File.ReadAllBytes(state.PhotoFile(Link(gallery[1]!["url"]))!));
         Assert.Equal(gallery[0]!["url"]!.ToString(), gallery[0]!["thumbnail"]!.ToString());  // the tool saved no thumbnail
