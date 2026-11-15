@@ -137,6 +137,18 @@ public class SectionBackupTests
         Assert.Equal(("1001", "sample", "my-account", 0, "unknown"), (m.Identity.Uid, m.Identity.Handle, m.Identity.Mode, m.Identity.Format, foreign.Report.Complete));
     }
 
+    [Fact]
+    public void AProfileSectionIsReadByItsShape()
+    {
+        var pub = new SectionZip().Section("me", Me).Section("profile", """{"handle":"sample","hostname":"sample","id":1001,"hunterscore":5}""").Read();
+        Assert.Contains("Public_user_getByHostname__hostname=sample.json", pub.Model.Extras.Keys);
+        Assert.DoesNotContain("game_user_1001_profile.json", pub.Model.Extras.Keys);
+        var v2 = new SectionZip().Section("me", Me).Section("profile", """{"hunterscore":5,"earned_achievements":2,"background":"b.png","ribbon":"r.png"}""").Read();
+        Assert.Equal("b.png", (string)v2.Model.Extras["game_user_1001_profile.json"]!["background"]!);
+        var both = Sections().Section("profile", """{"hunterscore":5,"earned_achievements":2,"background":"b.png"}""").Read();  // Sections() holds a v2_profile too: it wins
+        Assert.Equal(1, both.Model.Extras["game_user_1001_profile.json"]!["earned_achievements"]!.GetValue<int>());
+    }
+
     /// <summary>The trust rule: the format decides the parser, never the trust. A zip without our manifest has no Steam id and no claim hash, whatever its index says.</summary>
     [Fact]
     public void AZipOfAnotherToolNeverCarriesASteamIdOrAClaimHash()
