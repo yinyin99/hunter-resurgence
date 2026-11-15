@@ -54,7 +54,7 @@ public static class GameApi
         if (s != null)
         {
             gs.MapExactPost(game, CONNECT, r => Own(game, r, a =>
-                    new(200, game.Table.Entries.TryGetValue(new("POST", game.Gs, CONNECT, null), out var recorded) ? recorded.Headers : Json(), s.ConnectReply(a, r.Header("X-Hun-Session")), "state")))
+                    new(200, game.Table.Entries.TryGetValue(new("POST", game.Gs, CONNECT, null), out var recorded) ? recorded.Headers : Json(), s.ConnectReply(a, r.Header("X-Hun-Session"), r.Ip), "state")))
               .WithName("Connect").WithSummary("Start a hunt session")
               .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
@@ -108,6 +108,35 @@ public static class GameApi
                                 + "connect spawns there. Reply: `{access_token, refresh_token, "
                                 + "session, status}` with fresh tokens of the player; a local server replays the recorded one. A non-zero `loadout_id` of one of the account's loadouts sets its item slots first.")
                .Body<LaunchStartForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, LAUNCH_START_MP, r => !s.Online ? null : Own(game, r, a =>
+                {
+                    var session = s.Store.CreateToken(a, Lifetimes.Session);
+                    s.HostGame(a, session, r.Body);
+                    return new(200, JsonAnyOrigin(), Py.DumpBytes(game.Tokens!.Launch(a, session)), "state");
+                }))
+               .WithName("LaunchStartMp").WithSummary("Host a multiplayer hunt")
+               .WithDescription("Opens a session with the caller as its host and a hunt as at LaunchStart. The session is open for Launch/join once the host's game has reported its port (heartbeat event 29) and "
+                                + "ends with the host (its disconnect, or silence). Reply as LaunchStart; the `session` is the token the game connects with, and its connect reply says it is the host. Community server only.")
+               .Body<StartMpForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, LAUNCH_JOIN, r => !s.Online ? null : Own(game, r, a =>
+                {
+                    var (error, session) = s.JoinGame(a, r.Body);
+                    return new(200, JsonAnyOrigin(), Py.DumpBytes(error is null ? game.Tokens!.Launch(a, session) : new JsonObject { ["errorCode"] = 23, ["message"] = "USER_CANT_JOIN" }), "state");
+                }))
+               .WithName("LaunchJoin").WithSummary("Join a multiplayer hunt")
+               .WithDescription("Adds the caller to the session `network_id` of Network/list and opens a hunt in its reserve (at the session's time unless `time` is sent). Reply as LaunchStart; the connect of the "
+                                + "returned `session` names the host and how to reach it. HTTP 200 `{\"errorCode\": 23, \"message\": \"USER_CANT_JOIN\"}` for a wrong password, a full session, a friends-only session of a non-friend, "
+                                + "a hunterscore outside the session's range, the host's own session, an unknown session, and a session whose host has not reported its port yet. Community server only.")
+               .Body<JoinForm>(Form).Produces(200, contentType: "application/json");
+            api.MapMethods(NETWORK_LIST, ["GET", "POST"], Handle(game, r => s.Online && r.Path == NETWORK_LIST && r.Method is "GET" or "POST" ? new(200, JsonAnyOrigin(), s.NetworkListReply(), "state") : null))
+               .WithName("NetworkList").WithSummary("The open multiplayer sessions")
+               .WithDescription("No token (the original refuses one). `[{id, name, handle, host, description, password, public, singleplayer, freeplayers, hs_min, hs_max, max_players, start_ts, clients_len, "
+                                + "clients: [{user_id, handle, guid, color, avatar, x, y, z, hunterscore}], reserve: {id, define, name, species, border}}]`, oldest first; `id` is the `network_id` of Launch/join. `[]` on a local server.")
+               .Produces(200, contentType: "application/json");
+            api.MapExactPost(game, MAP_LOCATIONS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MapLocationsReply(r.Body), "state")))
+               .WithName("MapLocations").WithSummary("The locations of a multiplayer session's reserve")
+               .WithDescription("`[{id, define, name, description, reserve, type, pos, metadata}]` of the catalogue's locations in the reserve of the session `network_id` (else of `reserve`).")
+               .Body<MapLocationsForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, START_SINGLE_PLAYER, r => Own(game, r, a =>
                 {
                     s.NoteLaunch(a, r.Body);
@@ -663,6 +692,23 @@ public static class GameApi
         string? oauth_access_token);
 
     public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);
+
+    public sealed record StartMpForm(
+        [property: Description("Start location id (a lodge), or the guid of a placed tent")] long start,
+        [property: Description("`LODGE`, or a placed tent's define (`TENT`, `TENT06` ...): then `start` is the tent's guid")] string loctype, long reserve,
+        [property: Description("Start time of day, minutes")] long time,
+        [property: Description("The session's name, up to 25 characters; default `<handle>'s game`")] string? name,
+        [property: Description("Up to 255 characters")] string? description,
+        [property: Description("0: friends only; anything else: anyone")] long? public_game, long? free_players,
+        [property: Description("Hunterscore range of the players who may join")] long? hs_min, long? hs_max,
+        [property: Description("Up to 20 characters; none: open")] string? password,
+        [property: Description("2 to 8; default 8")] long? max_players,
+        long loadout_id, string? oauth_access_token);
+
+    public sealed record JoinForm(
+        [property: Description("Start location id (a lodge), or the guid of a placed tent, in the session's reserve")] long start, string loctype,
+        [property: Description("An `id` of Network/list")] long network_id, long? time, long loadout_id, string? password, string? oauth_access_token);
+    public sealed record MapLocationsForm(long? network_id, long? reserve, string? oauth_access_token);
 
     public sealed record LaunchStartForm(
         [property: Description("Start location id (a lodge), or the guid of a placed tent")] long start,

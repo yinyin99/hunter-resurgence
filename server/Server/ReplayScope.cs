@@ -59,7 +59,7 @@ public static class ReplayScope
         Own("Me/accept_license", "true"),  // the license is accepted on every new account
         Own("User/friendslist", """{"total": 0, "friends": []}"""),
         Own("Friend/(add|remove)", "false"),
-        Own("Network/list", "[]"),  // the live multiplayer games: this server has none
+        Own("Network/list", "[]"),  // the open multiplayer sessions: a community server answers them from its own (State.NetworkListReply), a local one has none
         Own("Expedition/list", """{"total": 0, "has_more": false, "expeditions": []}"""),
         Own("Expedition/animal", "null"),
         Own("Public_user/expedition", "null"),

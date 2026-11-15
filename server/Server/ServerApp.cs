@@ -41,6 +41,15 @@ public static class ServerApp
         return nets.Any(n => n.Contains(peer));
     }
 
+    /// <summary>The address a request came from, as text: the peer's, or, for a trusted proxy, the last address of its `X-Forwarded-For` (the one that proxy appended; null when it sent none, never the proxy's own). Null when it cannot be told.</summary>
+    static string? ClientIp(HttpContext ctx, IReadOnlyList<IPNetwork>? proxies)
+    {
+        var peer = ctx.Connection.RemoteIpAddress;
+        if (InAny(peer, proxies))
+            peer = IPAddress.TryParse(ctx.Request.Headers["X-Forwarded-For"].ToString().Split(',')[^1].Trim(), out var client) ? client : null;
+        return (peer is { IsIPv4MappedToIPv6: true } ? peer.MapToIPv4() : peer)?.ToString();
+    }
+
     /// <summary>The admin API, Swagger UI and the OpenAPI documents are for a person at this machine. A request qualifies
     /// when it came in on an admin listener, its peer is a loopback address (the peer address, not a header) and nothing
     /// says a proxy relayed it: a proxy on this machine is a loopback peer too, and the listener it connects to is not an
@@ -123,6 +132,7 @@ public static class ServerApp
         {
             var direct = IsDirectLocal(ctx.Connection.RemoteIpAddress, ctx.Connection.LocalIpAddress, ctx.Connection.LocalPort, ctx.Request.Headers,
                 o.HostHeader, o.AdminListeners);
+            ctx.Items[Req.IpKey] = ClientIp(ctx, o.TrustedProxies);
             // behind a proxy the game host arrives in a header; only the proxies of this server are believed
             if (InAny(ctx.Connection.RemoteIpAddress, o.TrustedProxies) && ctx.Request.Headers[o.HostHeader] is { Count: 1 } game
                 && HostName.IsMatch(game[0]!))
