@@ -179,6 +179,29 @@ public class SectionBackupTests
         Assert.Equal(2, z.Read().Model.Items.Count);
     }
 
+    /// <summary>Another tool writes the same layout under its own section names: `trophy_list` is Trophy/list, `trophies` the own trophies and harvests (an array),
+    /// `lodges` and one `lodge_&lt;id&gt;` per lodge, `loadouts`, `user_challenges`, `leaderboard_personal`, `ranks`.</summary>
+    [Fact]
+    public void TheOtherToolsSectionNamesRestoreTrophiesLodgesAndLoadouts()
+    {
+        var r = new SectionZip()
+            .Section("me", Me).Section("inventory_dict", Dict)
+            .Section("trophy_list", Trophies).Section("trophies", """[{"id":82,"harvest_id":7}]""")
+            .Section("lodges", """[{"id":61,"name":"Lodge"},{"id":62,"name":"Cabin"}]""").Section("lodge_61", """{"animal_slots":[]}""")
+            .Section("loadouts", """[{"id":5,"name":"Deer","items":[{"item_id":500,"slot_id":11}]}]""")
+            .Section("user_challenges", """{"15":{"id":1,"challenge_id":15,"completed":true}}""")
+            .Section("leaderboard_personal", """{"status":"done","data":[]}""").Section("ranks", """[{"id":1,"category_id":1,"value":5}]""")
+            .Read();
+        var m = r.Model;
+        Assert.Equal(["81", "82"], m.Trophies.Select(t => t.Id).Order(StringComparer.Ordinal));
+        Assert.Equal(["61", "61", "62"], m.Lodges.Select(l => l.Id).Order(StringComparer.Ordinal));  // the list's two rows and lodge 61's own reply
+        Assert.Contains("game_user_loadout.json", m.Extras.Keys);
+        Assert.Contains("Challenge_get_user_challenges__user_id=1001.json", m.Extras.Keys);
+        Assert.Contains("Leaderboard_personal__user_id=1001__season_no=0.json", m.Extras.Keys);
+        Assert.DoesNotContain(r.Report.Missing, x => x.StartsWith("lodges", StringComparison.Ordinal) || x.StartsWith("trophies", StringComparison.Ordinal) || x.StartsWith("loadout", StringComparison.Ordinal));
+        Assert.DoesNotContain(r.Report.Warnings, x => x.Contains("Trophy/list", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void FilesThatBreakTheIndexAreRejectedOrMissing()
     {

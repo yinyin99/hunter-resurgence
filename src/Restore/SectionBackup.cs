@@ -44,10 +44,22 @@ static partial class SectionBackup
         ["v2_ranks"] = ("/game/user/@/ranks", []),
         ["v2_lodges"] = ("/game/user/@/lodges", []),
         ["v2_backgrounds"] = ("/game/user/backgrounds", []),
+        ["v2_trophies"] = ("/game/user/trophies", []),
+        // the same layout from another tool, under its own section names
+        ["trophy_list"] = ("/v1/Trophy/list", ["user_id=@", "offset=0", "limit=100000"]),
+        ["user_challenges"] = ("/v1/Challenge/get_user_challenges", ["user_id=@"]),
+        ["leaderboard_personal"] = ("/v1/Leaderboard/personal", ["user_id=@", "season_no=0"]),
+        ["loadouts"] = ("/game/user/loadout", []),
+        ["lodges"] = ("/game/user/@/lodges", []),
+        ["ranks"] = ("/game/user/@/ranks", []),
     };
 
     [GeneratedRegex(@"^json_([A-Za-z0-9_]+)\.json$")]
     private static partial Regex SectionFile();
+
+    /// <summary>`lodge_&lt;id&gt;`: the reply of one lodge (`/game/user/&lt;uid&gt;/lodges/&lt;id&gt;`).</summary>
+    [GeneratedRegex(@"^lodge_([0-9]{1,18})$")]
+    private static partial Regex LodgeFile();
 
     /// <summary>The section a file of the folder <paramref name="prefix"/> holds (null: no section file, or in a deeper folder).</summary>
     static string? Section(ZipArchiveEntry e, string prefix) =>
@@ -97,6 +109,9 @@ static partial class SectionBackup
             if ((jsonTotal += body.Length) > lim.JsonTotalBytes) throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
             if (!BackupReader.TryParse(body, lim, out var json)) { rejected.Add(BackupReader.NotJson(name, lim)); continue; }
             if (section == "hunt_details") Hunts(uid, name, json, files, rejected);
+            // `trophies` is Trophy/list ({total, trophies}) in one tool and the own trophies and harvests (an array) in the other
+            else if (section == "trophies" && json is JsonArray) files.Add(Reply("/game/user/trophies", [], uid, json));
+            else if (LodgeFile().Match(section) is { Success: true } lodge) files.Add(Reply($"/game/user/@/lodges/{lodge.Groups[1].Value}", [], uid, json));
             else if (Known.TryGetValue(section, out var k)) files.Add(Reply(k.Endpoint, k.Params, uid, json));
             else files.Add(new(name, "", new Dictionary<string, string>(), null, json));
         }
