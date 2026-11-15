@@ -24,7 +24,8 @@ else
         }
         else
         {
-            <ExternalLink Key="steam_store" Class="hunt">@L["Menu.HuntNow"] <Icon Name="chevron-right" /></ExternalLink>
+            @* opens the launcher; without it (or without JavaScript) the download page, see shell.js launch *@
+            <a href="/download" class="hunt" data-launch="hunter-resurgence://open">@L["Menu.HuntNow"] <Icon Name="chevron-right" /></a>
         }
         @if (!Mode.Live) { <a class="ems" href="/bank/ems" data-tip="@L["Menu.GetEmsTip"]"><AssetSlot Name="coin-ems" Width="46" Height="46" Class="coin" /><span>@L["Menu.GetEms"]</span></a> }
         <a class="store" href="/store"><AssetSlot Name="icon-store" Width="46" Height="46" Class="coin" /><span>@L["Menu.Store"]</span></a>

@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Kako igrati {game} na Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Kaj potrebujete</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Računalnik z Windows 10 ali 11, Steam in lastno kopijo igre {game}, nameščeno iz knjižnice Steam. Hunter Resurgence ne vsebuje datotek igre: njegov zaganjalnik poveže vašo kopijo s skupnostnim strežnikom.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Že nameščeno? Zaženite Hunter Resurgence iz menija Start.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Prenesite zaganjalnik Hunter Resurgence in ga zaženite. Namesti se samo za vašega uporabnika (brez vprašanja za skrbnika), doda bližnjico in se sam posodablja.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Ste že igrali? Povrnite svoj profil</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Prijavite se na tem spletnem mestu in odprite {0}Obnovitev varnostne kopije{1}. Imate zip z varnostno kopijo? Naložite ga tam: operater ga ročno preveri in nato obnovi. Nimate zipa z varnostno kopijo? Tam uporabite „Zahtevajte svoj stari profil“ s svojim starim lovskim imenom.</value></data>

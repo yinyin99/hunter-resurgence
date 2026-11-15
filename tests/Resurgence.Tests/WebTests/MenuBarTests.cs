@@ -68,4 +68,16 @@ public sealed class MenuBarTests : UiContext
         var cut = Render<MenuBar>();
         Assert.Equal("/missions/daily", cut.Find("ul.items a.active, ul.items a[href^='/missions']").GetAttribute("href"));
     }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]  // the launcher's menu keeps its dashboard drop-down
+    public void OnTheWebsiteHuntNowOpensTheLauncherAndFallsBackToTheDownloadPage(bool launcher, int links)
+    {
+        Services.GetRequiredService<HostMode>().Launcher = launcher;
+        var cut = Render<MenuBar>();
+        var hunt = cut.FindAll("a.hunt");
+        Assert.Equal(links, hunt.Count);
+        Assert.All(hunt, a => { Assert.Equal("/download", a.GetAttribute("href")); Assert.Equal("hunter-resurgence://open", a.GetAttribute("data-launch")); });
+    }
 }

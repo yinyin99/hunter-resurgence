@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>How to play {game} on Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>What you need</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>A PC with Windows 10 or 11, Steam, and your own copy of {game} installed from your Steam library. Hunter Resurgence contains no game files: its launcher connects your copy to the community server.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Already installed? Start Hunter Resurgence from the Start menu.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Download the Hunter Resurgence launcher and run it. It installs for your user only (no administrator prompt), adds a shortcut and updates itself.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Played before? Get your profile back</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Sign in on this website and open {0}Restore your backup{1}. Have a backup zip? Upload it there: the operator checks it by hand, then restores it. No backup zip? Use “Claim your old profile” there with your old hunter name.</value></data>

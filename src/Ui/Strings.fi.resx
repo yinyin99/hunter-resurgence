@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Näin pelaat {game}-peliä Hunter Resurgencessa</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Mitä tarvitset</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>PC, jossa on Windows 10 tai 11, Steam ja oma kopiosi {game}-pelistä Steam-kirjastostasi asennettuna. Hunter Resurgence ei sisällä pelitiedostoja: sen käynnistin yhdistää kopiosi yhteisöpalvelimeen.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Onko se jo asennettu? Käynnistä Hunter Resurgence Käynnistä-valikosta.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Lataa Hunter Resurgencen käynnistin ja suorita se. Se asentuu vain käyttäjällesi (ilman järjestelmänvalvojan kyselyä), lisää pikakuvakkeen ja päivittyy itse.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Pelasitko ennen? Palauta profiilisi</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Kirjaudu tälle sivustolle ja avaa {0}Palauta varmuuskopiosi{1}. Onko sinulla varmuuskopion zip? Lataa se sinne: ylläpitäjä tarkistaa sen käsin ja palauttaa sen sitten. Ei varmuuskopion zip-tiedostoa? Käytä siellä kohtaa ”Lunasta vanha profiilisi” vanhalla metsästäjänimelläsi.</value></data>

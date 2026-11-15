@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Så spelar du {game} på Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Det här behöver du</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>En dator med Windows 10 eller 11, Steam och ditt eget exemplar av {game}, installerat från ditt Steam-bibliotek. Hunter Resurgence innehåller inga spelfiler: dess launcher kopplar ditt exemplar till gemenskapsservern.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Redan installerat? Starta Hunter Resurgence från Start-menyn.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Ladda ner Hunter Resurgence-launchern och kör den. Den installeras bara för din användare (ingen administratörsfråga), lägger till en genväg och uppdaterar sig själv.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Har du spelat förut? Få tillbaka din profil</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Logga in på den här webbplatsen och öppna {0}Återställ din säkerhetskopia{1}. Har du en zip med säkerhetskopia? Ladda upp den där: operatören kontrollerar den för hand och återställer den sedan. Ingen zip med säkerhetskopia? Använd ”Hämta din gamla profil” där med ditt gamla jägarnamn.</value></data>

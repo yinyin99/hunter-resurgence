@@ -23,6 +23,31 @@ export function watchScroll(ref, threshold) {
 export function unwatchScroll() {
     window.removeEventListener('scroll', handler);
     document.removeEventListener('keyup', keys);
+    document.removeEventListener('click', launch, true);
+}
+
+// "Hunt now" (a link with data-launch="<link of the launcher>", href /download): on Windows it opens the launcher's link and stays on the page.
+// A page can't ask whether the link is registered, so if neither the window blurred nor the page hid within 2 s (the browser's prompt or the
+// launcher's window took the focus), the launcher is not installed and the page goes to the href. Elsewhere, and with a modified click, the href works as usual.
+// Capture phase: Blazor's own link handling must see a click that was already handled.
+function launch(e) {
+    const a = e.target.closest?.('a[data-launch]');
+    if (!a || e.button || e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || !/Windows NT/.test(navigator.userAgent)) return;
+    e.preventDefault();
+    let opened = false;
+    const seen = () => { opened = true; };
+    window.addEventListener('blur', seen);
+    document.addEventListener('visibilitychange', seen);
+    location.href = a.dataset.launch;
+    setTimeout(() => {
+        window.removeEventListener('blur', seen);
+        document.removeEventListener('visibilitychange', seen);
+        if (!opened) location.assign(a.href);
+    }, 2000);
+}
+
+export function watchLaunch() {
+    document.addEventListener('click', launch, true);
 }
 
 // Ctrl+D in the launcher window opens or closes the developer tools, as the old launcher did (on key up); calls ref.DevTools().

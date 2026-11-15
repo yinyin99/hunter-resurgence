@@ -79,6 +79,7 @@
             module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
             await module.InvokeVoidAsync("watchScroll", self = DotNetObjectReference.Create(this), 200);
             if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
+            else await module.InvokeVoidAsync("watchLaunch");
         }
         // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, once per account (docs/website.md)
         if (!offered && !eula && session is { Handle.Length: > 0 } && Brand.Link("discord") is not null && await Sessions.LicenseAcceptedAsync())

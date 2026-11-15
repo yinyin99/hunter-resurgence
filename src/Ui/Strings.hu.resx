@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Így játszhatsz a(z) {game} játékkal a Hunter Resurgence-en</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Amire szükséged van</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Windows 10 vagy 11 rendszerű PC, Steam és a(z) {game} saját példánya, a Steam-könyvtáradból telepítve. A Hunter Resurgence nem tartalmaz játékfájlokat: az indítója köti a példányodat a közösségi szerverhez.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Már telepítve van? Indítsa el a Hunter Resurgence-t a Start menüből.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Töltsd le a Hunter Resurgence indítóját, és futtasd. Csak a te felhasználódnak települ (rendszergazdai kérdés nélkül), parancsikont hoz létre, és magától frissül.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Játszottál korábban? Szerezd vissza a profilodat</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Jelentkezz be ezen a weboldalon, és nyisd meg ezt: {0}Mentés visszaállítása{1}. Van mentés-zip? Töltsd fel ott: az üzemeltető kézzel ellenőrzi, majd visszaállítja. Nincs mentés-zip? Használd ott ezt: „Régi profilod igénylése”, a régi vadásznevedet megadva.</value></data>
