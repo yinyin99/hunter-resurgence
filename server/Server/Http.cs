@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Http.Features;
 namespace Resurgence.Server;
 
 /// <summary>A game request: method, lowercase host without port, raw path and query (not percent-decoded: recorded
-/// replies are keyed by the raw URL), headers and body.</summary>
-public sealed record Req(string Method, string Host, string Path, string Query, Func<string, string?> Header, byte[] Body, bool IsHttps)
+/// replies are keyed by the raw URL), headers and body. Ip: the address it came from (a trusted proxy's `X-Forwarded-For` counts), null if unknown.</summary>
+public sealed record Req(string Method, string Host, string Path, string Query, Func<string, string?> Header, byte[] Body, bool IsHttps, string? Ip = null)
 {
+    public const string IpKey = "client_ip";
+
     /// <summary>The request of this context, read once (the body is buffered).</summary>
     public static async Task<Req> ReadAsync(HttpContext ctx)
     {
@@ -26,7 +28,7 @@ public sealed record Req(string Method, string Host, string Path, string Query, 
         var q = target.IndexOf('?');
         var headers = ctx.Request.Headers;
         var req = new Req(ctx.Request.Method, host, q < 0 ? target : target[..q], q < 0 ? "" : target[(q + 1)..],
-                          k => headers.TryGetValue(k, out var v) && v.Count > 0 ? v[0] : null, body.ToArray(), ctx.Request.IsHttps);
+                          k => headers.TryGetValue(k, out var v) && v.Count > 0 ? v[0] : null, body.ToArray(), ctx.Request.IsHttps, ctx.Items[IpKey] as string);
         ctx.Items[typeof(Req)] = req;
         return req;
     }

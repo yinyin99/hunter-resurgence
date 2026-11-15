@@ -93,11 +93,12 @@ public sealed class GameTokens(Store store, string webHost)
         }
     }
 
-    public JsonObject Launch(long account) => new()
+    /// <summary>The game's credentials for an account: fresh tokens and, unless one is given (a session already made for a multiplayer game), a fresh session.</summary>
+    public JsonObject Launch(long account, string? session = null) => new()
     {
         ["access_token"] = store.CreateToken(account, Lifetimes.Access),
         ["refresh_token"] = store.CreateToken(account, Lifetimes.Refresh, Lifetimes.RefreshPrefix),
-        ["session"] = store.CreateToken(account, Lifetimes.Session),
+        ["session"] = session ?? store.CreateToken(account, Lifetimes.Session),
         ["status"] = "ok",
     };
 
@@ -504,8 +505,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     }
 
     /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` or `tent` (the guid of one of the
-    /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; a form with `tutorial`
-    /// opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve.</summary>
+    /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; with `mp=host` it also
+    /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
+    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "host_not_ready" | "gone"}`;
+    /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve.</summary>
     public Reply Launch(Req r, GameTokens tokens)
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
@@ -521,16 +524,33 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             state.NoteTutorial(account, session, id);
             return Url(session);
         }
-        var (reserve, lodge, tent, time, loadout) = (F("reserve"), F("lodge"), F("tent"), F("time"), F("loadout"));
-        if (reserve + lodge + tent + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
+        var (mp, reserve, lodge, tent, time, loadout) = (F("mp"), F("reserve"), F("lodge"), F("tent"), F("time"), F("loadout"));
+        if (mp + reserve + lodge + tent + time + loadout == "") return Url();  // the start page sends none: the launch URL alone
         static bool Whole(string s, bool optional = false) => s == "" ? optional : long.TryParse(s, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _);  // digits that fit a long
-        if (!Whole(reserve) || !Whole(lodge, tent != "") || !Whole(tent, lodge != "") || (lodge != "" && tent != "") || !Whole(time, true) || !Whole(loadout, true))
-            return Json(400, new JsonObject { ["error"] = "reserve and a lodge or a tent are needed, time and loadout are numbers" });
-        if (tent != "" && !state.IsPlacedTent(account, long.Parse(tent), long.Parse(reserve)))
+        var join = mp == "join";  // a joiner's reserve is the session's
+        if (mp is not ("" or "host" or "join") || !Whole(reserve, join) || !Whole(lodge, tent != "") || !Whole(tent, lodge != "") || (lodge != "" && tent != "") || !Whole(time, true) || !Whole(loadout, true))
+            return Json(400, new JsonObject { ["error"] = "reserve and a lodge or a tent are needed, time and loadout are numbers, mp is host or join" });
+        if (!join && tent != "" && !state.IsPlacedTent(account, long.Parse(tent), long.Parse(reserve)))
             return Json(400, new JsonObject { ["error"] = "that is not a tent of yours in this reserve" });
-        var start = tent != "" ? $"start={tent}&loctype=TENT" : $"lodge_id={lodge}";
-        state.NoteLaunch(account, Encoding.UTF8.GetBytes($"reserve={reserve}&{start}&time={time}&loadout_id={loadout}"));
-        return Url();
+        List<(string, string)> fields = tent != "" ? [("start", tent), ("loctype", "TENT")] : [("lodge_id", lodge)];
+        fields.AddRange([("time", time), ("loadout_id", loadout)]);
+        if (mp == "")
+        {
+            fields.Add(("reserve", reserve));
+            state.NoteLaunch(account, Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={f.Item2}"))));
+            return Url();
+        }
+        foreach (var key in join ? new[] { "network_id", "password" } : ["reserve", "name", "description", "public_game", "free_players", "hs_min", "hs_max", "password", "max_players"])
+            fields.Add((key, F(key)));
+        var body = Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={Uri.EscapeDataString(f.Item2)}")));
+        if (!join)
+        {
+            var session = Store.CreateToken(account, Lifetimes.Session);
+            state.HostGame(account, session, body);
+            return Url(session);
+        }
+        var (error, joined) = state.JoinGame(account, body);
+        return error is null ? Url(joined) : Json(400, new JsonObject { ["error"] = error });
     }
 
     /// <summary>GET / on the signup host and /launcher on the game's web host: the launcher's start page.</summary>

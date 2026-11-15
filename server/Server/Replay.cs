@@ -28,6 +28,10 @@ public static class Replay
     public const string USER_CHALLENGES = "/v1/Challenge/get_user_challenges";
     public const string SPLASH = "/v1/Splash/list_active";
     public const string LAUNCH_START = "/v1/Launch/start";
+    public const string LAUNCH_START_MP = "/v1/Launch/start_mp";
+    public const string LAUNCH_JOIN = "/v1/Launch/join";
+    public const string NETWORK_LIST = "/v1/Network/list";
+    public const string MAP_LOCATIONS = "/v1/Map/locations";
     public const string JWT = "/v1/User/jwt";
     public const string OAUTH_TOKEN = "/v1/Oauth/token";
     public const string APPLICATION = "/v1/Application/application";
