@@ -23,7 +23,7 @@ public static class Restorer
     /// that user id and the zip's handle. An existing account is copied aside first (<see cref="Store.Backup"/>) and keeps
     /// its handle when the zip's is another account's. The zip is kept as `restores/&lt;account&gt;/&lt;sha256&gt;.zip` in dataDir.</summary>
     /// <exception cref="RestoreException">The zip is refused, the target does not exist, or the new account's handle is taken.</exception>
-    public static Result Import(State state, string zipPath, long? target, string dataDir)
+    public static Result Import(State state, string zipPath, long? target, string dataDir, PictureLinks? links = null)
     {
         var sha = Sha256(zipPath);
         var read = Importer.Read(zipPath, state.Catalogue);
@@ -47,7 +47,7 @@ public static class Restorer
             var owner = zipHandle is null ? null : store.AccountByHandle(zipHandle);
             handle = zipHandle is not null && (owner is null || owner == id) ? zipHandle : (string)store.AccountJson(id)["handle"]!;
         }
-        return Apply(state, zipPath, sha, read, id, id, handle, exists, backupDatabase: true, dataDir, null);
+        return Apply(state, zipPath, sha, read, id, id, handle, exists, backupDatabase: true, dataDir, null, pictureLinks: links);
     }
 
     /// <summary>Restore only the pictures of the zip onto an existing account (<see cref="State.PreparePictures"/>) and its avatar; nothing else of the account changes, and no picture of it is removed:
@@ -71,8 +71,7 @@ public static class Restorer
         try
         {
             var linked = PicturesZip(kept);
-            if (links is not null && !File.Exists(linked) && state.MissingPictures(read) is { Count: > 0 } missing)
-                links.Fetch(missing, linked).GetAwaiter().GetResult();  // ponytail: a command line has no other work for this thread; fetched before the transaction opens
+            FetchMissing(state, read, links, linked);  // before the transaction opens
             var hashes = state.HashPictures(read, id, kept, File.Exists(linked) ? linked : null, replace: false);  // before the transaction: it holds the database for writing
             avatar = state.RestoredAvatarUrl(read, id, state.AvatarFetched(read, hashes));
             using var con = store.Open(id);
@@ -110,12 +109,21 @@ public static class Restorer
         return Convert.ToHexStringLower(SHA256.HashData(f));
     }
 
+    /// <summary>Every link the zip lacks (<see cref="State.MissingPictures"/>: the player's own avatar first, then the gallery) that the pictures zip `linked` (created when absent) lacks too, fetched into it; no `links`: nothing.
+    /// The fetch at upload time gives up at its time budget (it is part of the player's request), so every restore path (approve, `import backup`, `import pictures`) completes it, with no budget but the per-link one.
+    /// ponytail: on the caller's thread, which is the operator's command; a link that fails is tried again at each restore.</summary>
+    static void FetchMissing(State state, Restored read, PictureLinks? links, string linked)
+    {
+        if (links is not null && state.MissingPictures(read) is { Count: > 0 } missing)
+            links.Fetch(missing, linked, Timeout.InfiniteTimeSpan).GetAwaiter().GetResult();
+    }
+
     /// <summary>Write the model into the account `current` (created when it does not exist) and keep the zip. finalId: the id
     /// the account has afterwards (a restore that adopts the zip's user id; every row, token and session moves with it).
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
     /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.</summary>
     internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
-                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null)
+                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null)
     {
         var model = read.Model;
         var store = state.Store;
@@ -129,6 +137,12 @@ public static class Restorer
         }
         // the pictures fetched at upload time sit beside the kept zip: under the account's id here, or under the one it had before it adopted the zip's; an archive claim has no zip: the caller's own (`linksZip`)
         var linked = zipPath is null ? linksZip : new[] { kept, Path.Combine(dataDir, "restores", current.ToString(), sha + ".zip") }.Select(PicturesZip).FirstOrDefault(File.Exists);
+        if (zipPath is not null)  // a zip kept with some of its links not fetched (the upload's time budget, or a zip kept before): the rest are fetched now, into the pictures zip beside the kept zip
+        {
+            var target = linked ?? PicturesZip(kept);
+            FetchMissing(state, read, pictureLinks, target);
+            if (File.Exists(target)) linked = target;
+        }
         var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
         var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl);
@@ -137,7 +151,8 @@ public static class Restorer
         void Write(Db con)
         {
             pictures = state.PreparePictures(con, read, hashes, replace: true);
-            report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());
+            report = Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
+                          finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, model.Extras);
