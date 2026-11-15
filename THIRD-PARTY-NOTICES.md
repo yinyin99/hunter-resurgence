@@ -29,6 +29,8 @@ Bundled with the server (`server/Server`; NuGet packages, direct and transitive;
 | `Swashbuckle.AspNetCore.SwaggerUI` (embeds the Swagger UI files that the server's admin pages serve) | 10.3.0 | MIT; Swagger UI: Apache-2.0 |
 | `SQLitePCLRaw.bundle_e_sqlite3` (with `.core`, `.provider.e_sqlite3`, `.lib.e_sqlite3`; the native SQLite library) | 2.1.12 | Apache-2.0, copyright 2014-2024 SourceGear, LLC; SQLite itself is in the public domain |
 
+The punch-through server's image (`server/natpt`) is built from RakNet (commit `44ec8ec` of the public repository, one line of its message numbers changed at build time), copyright Oculus VR, LLC and its contributors, under the BSD 2-clause licence; RakNet's source is cloned during the build and is not in this repository.
+
 The server's tests also use `xunit.v3` (Apache-2.0) and `Microsoft.NET.Test.Sdk` (MIT); they are not shipped.
 
 Font Awesome Free 6.7.2 by [@fontawesome](https://fontawesome.com), copyright 2024 Fonticons, Inc.; the icons are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); they were cut out of the SVG files unchanged except for being merged into one sprite.

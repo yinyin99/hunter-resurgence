@@ -11,10 +11,12 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate: game requests and the server's own paths (`/auth/*`, `/account/*`, `/hunters`, `/hunters/*`, `/catalog/*`, `/photos/*`, the minigame boards under `/leaderboards/*`) to `server`, the rest to `web` ([routing](#the-community-server)); then `import sites/*.caddy` |
 | `deploy/.env.example` | the values of `.env` |
 | `server/Server/Dockerfile` | the community server's image, like the website's (same SDK and runtime tags, bumped together; build context: the repository root): non-root, listens on plain HTTP on port 8080 (the proxy's side), `SERVER_SETTINGS=/srv/settings.json`, and creates `/data` and `/backups` owned by the app user, because an empty named volume takes the owner of the folder it is mounted over |
+| `server/natpt/` | the punch-through server's image: `ptserver.cpp` (RakNet's NAT plugin, about 30 lines) and a Dockerfile that clones RakNet at commit `44ec8ec`, changes one line of its message numbers and builds only what the server needs ([Punch-through server](#punch-through-server)). Build context: `server/natpt` |
 | `deploy/firewall.sh` | ports 80 and 443 for Cloudflare only |
 | `deploy/compose.dev.yml`, `deploy/Caddyfile.dev` | local test on `https://localhost` |
 | `.github/workflows/ci.yml` | the `build` job also runs `tools\backup\publish.cmd` with `tools/backup/settings.example.json` and checks that the release zip holds exactly `backup.exe` and `settings.json` (the release's publish step, without a tag); for `src\Launcher\publish.cmd` it installs `vpk`, checks that the publish folder holds the exe, `settings.json` and `wwwroot` and that the release folder holds the Setup, the full package and `releases.win.json`, then runs the Setup silently and checks the installed exe and the link scheme, and uninstalls it and checks that the link scheme is gone |
 | `.github/workflows/ci.yml` | the `server-ubuntu` job runs the server's tests on Ubuntu ([server.md](server.md#tests)); the Windows run of them is part of the `build` job |
+| `.github/workflows/ci.yml` | the `docker-natpt` job builds `server/natpt` and checks that the server starts and logs that it listens on UDP 10000 |
 | `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), that `/settings/language` lists a time zone (`Europe/Paris`), which fails when `tzdata` is missing, that `/robots.txt` is served ([website.md](website.md#build-and-run)), and that `/feed` and a 404 carry the security headers ([website.md](website.md#security-headers)) |
 | `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh`, and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules); the `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
 | `.github/workflows/deploy.yml` | build, push and roll out on a `server-X.Y.Z` tag of a commit of `main` whose `ci` passed |
@@ -59,10 +61,12 @@ WEB_IMAGE=ghcr.io/<owner>/<repo>-web
 WEB_TAG=latest
 SERVER_IMAGE=ghcr.io/<owner>/<repo>-server
 SERVER_TAG=latest
+NATPT_IMAGE=ghcr.io/<owner>/<repo>-natpt
+NATPT_TAG=latest
 SERVER_DIR=/home/deploy/server
 ```
 
-`WEB_IMAGE` and `SERVER_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG` and `SERVER_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `LINK_DISCORD=<url>`, `LINK_SOURCE=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository secrets of the same names, the ones the release uses too (no line for an unset secret; `LINK_SOURCE` defaults to the repository the deploy runs from); compose passes them to `web`, and `LINK_DISCORD` to `server` too.
+`WEB_IMAGE`, `SERVER_IMAGE` and `NATPT_IMAGE` are in lower case. Every deploy rewrites the `WEB_TAG`, `SERVER_TAG` and `NATPT_TAG` lines with the commit sha it rolled out, so the lines have to exist. Every deploy also replaces the `LINK_BACKUP=<url>`, `LINK_DISCORD=<url>`, `LINK_SOURCE=<url>`, `GAME_NAME="<name>"` and `GAME_FULL="<name>"` lines with the repository secrets of the same names, the ones the release uses too (no line for an unset secret; `LINK_SOURCE` defaults to the repository the deploy runs from); compose passes them to `web`, and `LINK_DISCORD` to `server` too.
 
 The website's other settings are environment variables of the `web` service: `FORWARDED_TRUSTED`, `GAME_FULL`, `GAME_NAME`, `IMAGES_DIR`, `LINK_BACKUP`, `LINK_DISCORD`, `LINK_SOURCE` and `SERVER_URL`. `IMAGES_DIR` is `/images`, where compose mounts `SERVER_DIR/images` read-only: the slot pictures ([images.md](images.md)). `SERVER_URL` is the community server's address on the `internal` network (for example `http://server:8080`). With it the website signs players in through the server (see [website.md](website.md#sign-in)); without it the website keeps its mock session. The server's `web_host` setting must be the website's domain, and Caddy has to send the server's paths (`/auth/*` first, the others in [the routing table](#the-community-server)) to the server for the sign-in links and the launcher to work.
 
@@ -123,8 +127,8 @@ Test from a host that is not Cloudflare: `curl -m 5 --resolve <domain>:443:<vps-
 ## First start
 
 1. Copy `deploy/compose.yml` and `deploy/Caddyfile` to `~/web/`, create `.env`, `certs/` and `sites/` (above), and the server's folder with its `images/` subfolder, as `deploy` ([The community server](#the-community-server)); a folder that compose has to create belongs to root and `deploy` cannot copy pictures into it.
-2. Make the images public once they exist (after the first deploy run): GitHub, the packages `<repo>-web` and `<repo>-server` of `<owner>`, Package settings, Change visibility, Public. The repository is public and the images hold no secrets, so the VPS pulls without a login. (If they must stay private: `docker login ghcr.io` on the VPS with a token that has `read:packages` only.)
-3. `cd ~/web && docker compose up -d`, then `docker compose ps`: `web` and `server` healthy, `caddy` and `server-backup` running.
+2. Make the images public once they exist (after the first deploy run): GitHub, the packages `<repo>-web`, `<repo>-server` and `<repo>-natpt` of `<owner>`, Package settings, Change visibility, Public. The repository is public and the images hold no secrets, so the VPS pulls without a login. (If they must stay private: `docker login ghcr.io` on the VPS with a token that has `read:packages` only.)
+3. `cd ~/web && docker compose up -d`, then `docker compose ps`: `web` and `server` healthy, `caddy`, `natpt` and `server-backup` running.
 4. Open `https://<domain>/` through Cloudflare.
 
 ## Deploys
@@ -139,8 +143,8 @@ git push origin server-1.1.0
 
 `git log server-1.0.0..main --oneline` lists what the next deploy takes. The run first checks, and fails without rolling anything out, that the tag has that form, that its commit is on `main` (a commit of an unmerged branch is refused), and that the `ci` run of that commit's push to `main` succeeded; a tag pushed while that `ci` still runs waits for it, up to 30 minutes. Deploys run one at a time, in the order the tags were pushed: push one tag at a time. Forks get no secrets. Then the deploy:
 
-1. builds the website and server images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>` and `-server:<sha>`, each also as `:latest`;
-2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `LINK_BACKUP`, `LINK_DISCORD`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
+1. builds the website, server and punch-through images from that commit and pushes `ghcr.io/<owner>/<repo>-web:<sha>`, `-server:<sha>` and `-natpt:<sha>`, each also as `:latest`;
+2. copies `compose.yml` and `Caddyfile` to `~/web/` over SSH, writes `WEB_TAG=<sha>`, `SERVER_TAG=<sha>`, `NATPT_TAG=<sha>`, `LINK_BACKUP`, `LINK_DISCORD`, `LINK_SOURCE`, `GAME_NAME` and `GAME_FULL` into `.env`, then `docker compose pull && docker compose up -d`, reloads Caddy and removes dangling images. Compose stops the old `server` before it starts the new one, so two never write the database at once.
 
 While `server` or `web` is recreated (about 12 s), Caddy holds a request and dials again every 500 ms for up to 30 s (`lb_try_duration` in the Caddyfile's `upstream` snippet), so a player who is hunting or browsing sees a slow reply, not a 502. Only a failed dial is retried for a request other than `GET`: a heartbeat, an inventory move or a purchase that reached the old container is never sent twice. A restart longer than 30 s still gives 502. The `scripts` job of `ci` checks this: it removes the stub backends, sends a `POST` and a `GET`, and starts the backends again 5 s later.
 
@@ -170,10 +174,10 @@ An unset secret removes its line; spaces and line breaks around a value are trim
 
 Tag an older commit of `main` with the next version and push it: `git tag -a server-1.1.1 <older sha> -m "Roll back to server-1.0.0"`. The deploy rolls that commit out like any other (its image is rebuilt from the commit). A tag is never moved or reused.
 
-For a rollback that cannot wait for a run, the running versions are the `WEB_TAG` and `SERVER_TAG` lines of `~/web/.env`, and every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
+For a rollback that cannot wait for a run, the running versions are the `WEB_TAG`, `SERVER_TAG` and `NATPT_TAG` lines of `~/web/.env`, and every pushed sha stays in GHCR; find an older one in the list of `deploy` runs on GitHub, on the package page, or with `docker images` on the VPS. Then:
 
 ```
-ssh deploy@<vps> "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' -e 's/^SERVER_TAG=.*/SERVER_TAG=<older sha>/' .env && docker compose up -d"
+ssh deploy@<vps> "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' -e 's/^SERVER_TAG=.*/SERVER_TAG=<older sha>/' -e 's/^NATPT_TAG=.*/NATPT_TAG=<older sha>/' .env && docker compose up -d"
 ```
 
 The next deploy sets the tag again.
@@ -221,6 +225,15 @@ ssh deploy@<vps> "cd ~/web && docker compose restart web"
 - `trusted_proxies`: `["172.30.10.2"]`, Caddy's address; `host_header`: `X-Game-Host`.
 
 `docker compose up -d` after any change of `settings.json` (the server reads it at start). The server image is public like the website's and contains no game files.
+
+## Punch-through server
+
+The `natpt` service of `deploy/compose.yml` is the multiplayer feature's punch-through server: a RakNet `NatPunchthroughServer` on **UDP 10000**, published straight on the host (not behind Caddy: it is UDP). Players' game starts register with it, and it introduces a joiner to a host so both can open their routers without a forwarded port. It has no password and no state. `deploy.yml` builds and pushes its image (`<repo>-natpt`) with the others; `ci` builds it too (`docker-natpt`), so a broken RakNet build fails the pull request.
+
+- **First deploy:** before the first `server-X.Y.Z` tag after this feature, add `NATPT_IMAGE=ghcr.io/<owner>/<repo>-natpt` (lower case) and `NATPT_TAG=latest` to `~/web/.env`, or `docker compose pull` fails and nothing is rolled out. After the first deploy run, make the package `<repo>-natpt` public like the others (step 2 of [First start](#first-start)); later deploys rewrite the tag like the others.
+- **Firewall:** `firewall.sh` and its `DOCKER-USER` rules cover TCP ports 80 and 443 only and leave this port alone. Docker publishes the port before `ufw`'s rules, so `ufw allow 10000/udp` documents the intent but is not what opens it; the provider's firewall (UDP 10000 in), if the VPS has one, has to allow it.
+- **The name the game uses:** the server's connect reply gives players `nat_host` of `settings.json`, default `web_host` ([server.md](server.md#settings)). This stack's `web_host` is behind Cloudflare's proxy, which does not carry UDP, so set `nat_host` here: add a DNS-only (grey cloud) record for the VPS, e.g. `nat.<domain>`, and use it. That record shows the VPS address to anyone who looks it up. The name must resolve; one that does not hangs the game's start.
+- **Check:** `docker compose logs natpt` shows `NatPunchthroughServer on UDP 10000`, and the host's game start shows no 30 s wait. The Dockerfile could not be run where it was written (no Docker); the `docker-natpt` job is its test.
 
 ## Backups
 

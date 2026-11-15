@@ -303,6 +303,11 @@ public static class Replay
         var offline = (bool?)cfg["offline_mode"] ?? true;
         var connect = recorded ? gsConnect!.Body : neutral;
         if (connect is null) return null;
+        if (recorded && !offline)  // a community server: a recorded connect still names the original's punch-through server, players need ours
+        {
+            var rc = JsonNode.Parse(connect)!.AsObject();
+            if (rc["config"] is JsonObject conf) { conf["nat"] = new JsonObject { ["pt_server"] = Install.PtServer(cfg) }; connect = Encoding.UTF8.GetBytes(rc.ToJsonString()); }
+        }
         if (recorded && neutral is null && !offline)
             throw new InvalidOperationException("a community server needs the install's connect sample: new accounts never start from a recorded connect");
         e.TryGetValue(new("POST", apiHost, APPLICATION, null), out var app);
