@@ -12,6 +12,9 @@ services: # Docker Desktop has no host journal: the default log driver
     logging: { driver: json-file }
     image: server:dev
     build: { context: .., dockerfile: server/Server/Dockerfile }
+  natpt:
+    image: natpt:dev
+    build: { context: ../server/natpt }
   server-backup:
     logging: { driver: json-file }
     image: server:dev

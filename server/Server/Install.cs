@@ -82,8 +82,8 @@ public static class Install
                 ["subdomains"] = new JsonObject { ["avatar"] = $"https://{web}/media/avatar/", ["static"] = $"https://{web}/" },
             },
             ["enable_logging"] = false,
-            // multiplayer: a punch-through server (UDP 10000) on the game's own host when one runs; with none the name still resolves, so the game's start does not hang
-            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = host("gameserver_host"), ["port"] = 10000 } },
+            // multiplayer: the punch-through server (UDP 10000, server/natpt). Not the game's host name: the player kit maps that to loopback. The name must resolve, or the game's start hangs
+            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = (string?)cfg["nat_host"] ?? host("web_host"), ["port"] = 10000 } },
         };
         if (c["expedition"] is JsonObject e) e["expedition_id"] = 0;
 

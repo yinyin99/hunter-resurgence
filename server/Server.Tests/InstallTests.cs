@@ -96,7 +96,7 @@ public class InstallTests : IDisposable
                ["hunterscore"] = c["account"]!["hunterscore"]!.DeepClone(), ["membership"] = c["account"]!["membership"]!.DeepClone(),
                ["face"] = c["account"]!["face"]!.DeepClone(), ["gender"] = c["account"]!["gender"]!.DeepClone() });
         Assert.Equal("https://game_web.test/media/avatar/256/1.png", (string)c["account"]!["avatar_url"]!);
-        Eq("""{"domains": {"main": "https://game_web.test", "subdomains": {"avatar": "https://game_web.test/media/avatar/", "static": "https://game_web.test/"}}, "enable_logging": false, "nat": {"pt_server": {"ip": "gameserver.test", "port": 10000}}}""", c["config"]);
+        Eq("""{"domains": {"main": "https://game_web.test", "subdomains": {"avatar": "https://game_web.test/media/avatar/", "static": "https://game_web.test/"}}, "enable_logging": false, "nat": {"pt_server": {"ip": "web.test", "port": 10000}}}""", c["config"]);
         Eq("""{"achievement_stats": [{"category_id": 1, "group_id": 2, "id": 3, "triggers": {"a": 0}, "value": 0}], "bust_through_score": 0, "user_stats": {"animal": {}, "collectables": {}, "daily_missions": {}, "distance": 0, "duration": 0, "weapon": {}}}""", c["user_stats"]);
         Eq("""[{"item": {"id": 8}, "own": false}]""", c["boost"]!["boost"]);
         Eq("[]", c["spawn"]);
@@ -104,6 +104,13 @@ public class InstallTests : IDisposable
         Eq("""{"UNLIMITED_AMMO": 0}""", c["inventory"]!["active_services"]);
         Eq("""[{"item_id": 1, "units": -2}]""", c["inventory"]!["infos"]);  // game data stays
         Eq("[[14, 15], [15]]", c["ethical"]);
+    }
+
+    [Fact]
+    public void ThePunchThroughServerIsNatHostWhenSetAndNeverTheGameHost()
+    {
+        cfg["nat_host"] = "nat.test";
+        Assert.Equal("nat.test", (string)Template()["config"]!["nat"]!["pt_server"]!["ip"]!);
     }
 
     [Fact]

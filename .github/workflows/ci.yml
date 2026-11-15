@@ -187,6 +187,18 @@ jobs:
           docker exec web sh -c 'touch /home/app/.aspnet/DataProtection-Keys/probe && rm /home/app/.aspnet/DataProtection-Keys/probe' # the app user keeps the cookie-signing keys across deploys (src/Web/Dockerfile)
       - if: failure()
         run: docker logs web; docker logs web-img
+  # the punch-through server's image (server/natpt): RakNet builds with the one-line change, and the server starts and listens
+  docker-natpt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t natpt:ci server/natpt
+      - name: Smoke test
+        run: |
+          docker run -d --name natpt natpt:ci
+          for _ in $(seq 1 30); do docker logs natpt 2>&1 | grep -q '^NatPunchthroughServer on UDP 10000' && exit 0; sleep 1; done
+          docker logs natpt
+          exit 1
   # the community server's container image (deploy/): builds, starts on plain HTTP with an empty install, answers, may write /data, and the backup command runs
   docker-server:
     runs-on: ubuntu-latest
