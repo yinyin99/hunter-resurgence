@@ -396,11 +396,13 @@ public class AccountIsolationTests : StateTestBase
         var (status, body) = state.UploadReply(B, query, [0xff, 0xd8]);
         Assert.Equal(200, status);
         var media = new Uri((string)Reply(body)["mediaLink"]!).AbsolutePath;
-        Assert.Equal("/photos/8/1-2.jpg", media);
-        Assert.Equal(Path.Combine(tmp, "photos", "8", "1-2.jpg"), state.PhotoFile(media));
-        Assert.Null(state.PhotoFile("/photos/7/1-2.jpg"));
-        Assert.Null(state.PhotoFile("/photos/8/../7/1-2.jpg"));
-        Assert.Null(state.PhotoFile("/photos/1-2.jpg"));
+        Assert.Matches(@"\A/photos/8/1-2-[0-9a-f]{32}\.jpg\z", media);
+        var name = media["/photos/8/".Length..];
+        Assert.Equal(Path.Combine(tmp, "photos", "8", name), state.PhotoFile(media));
+        Assert.Null(state.PhotoFile("/photos/7/" + name));
+        Assert.Null(state.PhotoFile("/photos/8/../7/" + name));
+        Assert.Null(state.PhotoFile("/photos/" + name));
+        Assert.Null(state.PhotoFile("/photos/8/1-2.jpg"));  // the name before the token is no file
         // A's own photo gets its own folder
         var own = Assert.Single(Hb(A, O("""{"event": 4, "hash": 5, "photo_type": 2}""")))!;
         Assert.Equal(200, state.UploadReply(A, new Uri((string)own["url"]!).Query.TrimStart('?'), [1]).Status);
@@ -499,8 +501,9 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         var query = new Uri((string)Assert.Single(Updates(await Send("POST", "gameserver.test", Replay.HEARTBEAT, tokenB,
             """{"events": [{"event": 4, "hash": 5, "photo_type": 2}]}""")))!["url"]!).Query;
         Assert.Equal(404, (await Send("POST", "gameserver.test", State.UPLOAD_PATH + query, tokenA, "x")).Status);
-        Assert.Equal(200, (await Send("POST", "gameserver.test", State.UPLOAD_PATH + query, tokenB, "x")).Status);
-        var photo = await Send("GET", "gameserver.test", "/photos/8/2-2.jpg", null);
+        var upload = await Send("POST", "gameserver.test", State.UPLOAD_PATH + query, tokenB, "x");
+        Assert.Equal(200, upload.Status);
+        var photo = await Send("GET", "gameserver.test", new Uri((string)JsonNode.Parse(upload.Body)!["mediaLink"]!).AbsolutePath, null);
         Assert.Equal((200, "state"), (photo.Status, photo.Source));
     }
 
