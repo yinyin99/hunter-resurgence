@@ -50,6 +50,7 @@ public sealed class Settings
         // web_host (our website: sign-in, account) and game_web_host (where the current build sends everything) are required; a name left out is a placeholder that no client can ask for
         foreach (var key in Replay.HostKeys)
             cfg[key] = Text(root, key) ?? (key is "web_host" or "game_web_host" ? throw new InvalidDataException($"{key}: missing") : key[..^"_host".Length] + ".invalid");
+        cfg["nat_host"] = Text(root, "nat_host");  // optional: the punch-through server's name (Install.PtServer)
         cfg["install_dir"] = Path_("install_dir");
         // true: a request that no token resolves is the local account's (a player's own PC); false: a community server refuses it
         cfg["offline_mode"] = root["offline_mode"] switch

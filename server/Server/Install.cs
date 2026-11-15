@@ -40,14 +40,14 @@ public static class Install
         ["locations"] = facts.ApplicationLocations(),
     };
 
-    /// <summary>The connect reply a new account starts from, or null when the install has no connect sample. The
-    /// sample is a reply of a test account: everything of that account is replaced (identity, e-mail, address, stats,
-    /// inventory, wallet, skills) by the neutral start of the facts file; the game data of the reply (species, items
-    /// text, locations, store, ethical ammo, ...) stays. cfg's hosts replace the sample's domains.</summary>
     /// <summary>`config.nat.pt_server`: settings `nat_host` (empty counts as unset), else `web_host`; never the game's host name, which the player kit maps to loopback.</summary>
     public static JsonObject PtServer(JsonObject cfg) =>
         new() { ["ip"] = cfg["nat_host"] is JsonValue { } v && v.GetValue<string>() is { Length: > 0 } n ? n : (string)cfg["web_host"]!, ["port"] = 10000 };
 
+    /// <summary>The connect reply a new account starts from, or null when the install has no connect sample. The
+    /// sample is a reply of a test account: everything of that account is replaced (identity, e-mail, address, stats,
+    /// inventory, wallet, skills) by the neutral start of the facts file; the game data of the reply (species, items
+    /// text, locations, store, ethical ammo, ...) stays. cfg's hosts replace the sample's domains.</summary>
     public static byte[]? Connect(JsonObject cfg, Facts facts, JsonArray itemDefinitions)
     {
         var file = Path.Combine((string)cfg["install_dir"]!, "game", ConnectSample);

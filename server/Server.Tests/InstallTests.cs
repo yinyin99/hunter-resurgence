@@ -262,6 +262,16 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void ACommunityServerGivesARecordedConnectItsOwnPunchThroughServer()
+    {
+        var connect = Fixtures.CONNECT;
+        connect["config"] = JsonNode.Parse("""{"nat": {"pt_server": {"ip": "recorded.test", "port": 10000}}}""");
+        cfg["offline_mode"] = false;
+        var state = LoadState(cfg, Recorded(connect), tmp)!;
+        Eq("""{"ip": "web.test", "port": 10000}""", JsonNode.Parse(state.ConnectReply(Fixtures.ME))!["config"]!["nat"]!["pt_server"]);
+    }
+
+    [Fact]
     public void ANewAccountNeverStartsFromARecordedConnect()
     {
         var connect = Fixtures.CONNECT;
