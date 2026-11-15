@@ -112,6 +112,9 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
     public async Task TestAnArchivedNameLongerThanANewNameIsFoundAtTheFirstSignIn()
     {
         var login = await NewLogin("99999999999999995");
+        await Post(login, $"kind=old&old={LongName}&handle=!");  // refused: the form comes back with the whole old name, not cut to a new name's length
+        var shown = JsonNode.Parse(Body(await server.SendAsync("GET", "web.test", "/auth/pending", [("Cookie", "hr_login=" + login), ("X-Requested-With", "XMLHttpRequest")])))!;
+        Assert.Equal(LongName, (string)shown["old"]!);
         var done = await Post(login, $"kind=old&old={LongName}&handle=Fresh");  // 40 characters: more than a new name may have
         Assert.Equal(302, done.Status);
         Assert.Equal("Fresh", state.Store.HandleOf(state.Store.AccountBySteam("99999999999999995")!.Value));
