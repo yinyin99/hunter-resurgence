@@ -67,11 +67,14 @@ jobs:
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
           # the launcher's settings.json: the example (placeholders mean "not configured") with the community server's address, the game's identity and file names, and the two host names the launcher points at that server.
           # Only when PLAY_SERVER_URL and STEAM_APP_ID are set; without them the release has the backup tool alone.
-          if (-not $env:PLAY_SERVER_URL) { Write-Host "PLAY_SERVER_URL is not set: no launcher in this release" }
-          elseif (-not $env:STEAM_APP_ID) { Write-Host "STEAM_APP_ID is not set: no launcher in this release" }
+          $playUrl = "$env:PLAY_SERVER_URL".Trim()
+          $steamId = "$env:STEAM_APP_ID".Trim()
+          if (-not $playUrl) { Write-Host "PLAY_SERVER_URL is not set or blank: no launcher in this release" }
+          elseif (-not $steamId) { Write-Host "STEAM_APP_ID is not set or blank: no launcher in this release" }
+          elseif ($playUrl -notmatch '^https://\S+$') { throw "repository secret PLAY_SERVER_URL must be an https:// address" }
           else {
             $l = Get-Content src\Launcher\settings.example.json -Raw | ConvertFrom-Json
-            $l.server_url = $env:PLAY_SERVER_URL.Trim()
+            $l.server_url = $playUrl
             # the keys the launcher needs to find and start the game, edit its settings and set up the player kit (game_web_host: everything the game sends, the backup tool's web host; crash_host: crash reports); all required with the launcher
             foreach ($m in @(@("steam_app_id", "STEAM_APP_ID"), @("client_exe", "LAUNCHER_CLIENT_EXE"), @("graphics_file", "GRAPHICS_FILE"), @("options_file", "OPTIONS_FILE"), @("options_key_prefix", "OPTIONS_KEY_PREFIX"), @("game_web_host", "WEB_HOST"), @("crash_host", "CRASH_HOST"))) {
               $v = "$([Environment]::GetEnvironmentVariable($m[1]))".Trim()

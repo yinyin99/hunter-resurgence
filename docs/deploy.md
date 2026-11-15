@@ -151,6 +151,8 @@ While `server` or `web` is recreated (about 12 s), Caddy holds a request and dia
 
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
+The release trims `PLAY_SERVER_URL` and `STEAM_APP_ID` before use: unset or blank builds no launcher, and a `PLAY_SERVER_URL` that is not an `https://` address (no spaces) fails the release.
+
 | Secret | Value |
 |---|---|
 | `DEPLOY_HOST` | the VPS address |
