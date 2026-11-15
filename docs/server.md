@@ -661,10 +661,10 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 
 | The zip | Result | `status` |
 |---|---|---|
-| Not a zip, or refused by the reader (caps, unsafe names, no manifest, a claim key that does not match) | `400`, nothing kept | `invalid` |
+| Not a zip, or refused by the reader (caps, unsafe names, not a backup zip, a claim key that does not match) | `400`, nothing kept | `invalid` |
 | A user id that was restored before (by this account or any other) | Refused, nothing kept: "a backup can be restored once" | `already` |
 | A user id another account holds | Refused, nothing kept | `taken` |
-| Any other zip | Kept as `restores/<account id>/<SHA-256>.zip`, a row in `uploads`; nothing is restored. The player is told that an operator will check it | `review` |
+| Any other zip (ours, or another tool's: [restore.md](restore.md#backups-of-other-tools); the Steam id in our manifest is the only claim of ownership, so another tool's zip is never a Steam match) | Kept as `restores/<account id>/<SHA-256>.zip`, a row in `uploads`; nothing is restored. The player is told that an operator will check it | `review` |
 
 When a zip is kept, the server also sends one message to the `review_webhook` of the settings file, if set.
 

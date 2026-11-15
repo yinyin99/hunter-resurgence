@@ -135,4 +135,20 @@ sealed class TestZip
             Put(m.Path, m.Body);
         return path;
     }
+
+    /// <summary>A zip in another tool's layout (a folder with index.json and one json_&lt;section&gt;.json per API section): no manifest, claim key or Steam id. The profile has a wallet, the inventory one item.</summary>
+    public static string WriteSections(string dir, string name, string uid = "1001", string handle = "sample")
+    {
+        var path = Path.Combine(dir, name);
+        using var zip = ZipFile.Open(path, ZipArchiveMode.Create);
+        void Put(string entry, string body)
+        {
+            using var s = new StreamWriter(zip.CreateEntry($"backup_{uid}/{entry}").Open(), new UTF8Encoding(false));
+            s.Write(body);
+        }
+        Put("index.json", $$"""{"captured_at":"2026-01-02T03:04:05.000Z","user_id":"{{uid}}","handle":"{{handle}}","files":["json_me.json","json_inventory_dict.json"]}""");
+        Put("json_me.json", $$"""{"id":{{uid}},"handle":"{{handle}}","hostname":"sample","gender":1,"hunterscore":1234,"membershipType":"freeplay","ems":12.5,"gms":20000.25}""");
+        Put("json_inventory_dict.json", """{"500":[{"id":9001,"slot":1,"units":3,"metadata":{},"location":null}]}""");
+        return path;
+    }
 }
