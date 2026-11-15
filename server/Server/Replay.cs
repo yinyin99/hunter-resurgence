@@ -228,6 +228,8 @@ public static class Replay
         catch (ArgumentException) { return null; }
     }
 
+    static readonly Regex OrganUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png)\z", RegexOptions.ECMAScript);
+
     /// <summary>Bytes the client would load from the install's archives for this URL, or null. The client resolves
     /// static image and map URLs through the archives. exact: only files found through the relative path (a basename
     /// that exists in several directories, flags 1), so in the URL's directory; else only the single archived file
@@ -237,7 +239,12 @@ public static class Replay
         var url = host + path;
         var mapHost = S(cfg, "map_host").ToLowerInvariant();
         string name;
-        if (url.Contains("static/img")) name = "webgui/" + url[url.IndexOf("static/img", StringComparison.Ordinal)..];
+        if (OrganUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures: only the species' own folder, never another species' picture of the same name
+        {
+            if (!exact || host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
+            name = "webgui/static/img/" + o.Groups[1].Value;
+        }
+        else if (url.Contains("static/img")) name = "webgui/" + url[url.IndexOf("static/img", StringComparison.Ordinal)..];
         else if (url.Contains(mapHost)) name = "webgui/static/map" + url[(url.IndexOf(mapHost, StringComparison.Ordinal) + mapHost.Length)..];
         else if (url.Contains("webguiv2/img")) name = url[url.IndexOf("webguiv2/img", StringComparison.Ordinal)..];
         else return null;
@@ -468,6 +475,10 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
+        /// <summary>The kill screen's organ pictures, when the archive lacks one: the static host's folder of the mirror.</summary>
+        string? OrganMirror(Req r) => r.Host == GameWeb && OrganUrl.Match(r.Path) is { Success: true } m
+            ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
+
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 
         /// <summary>The game web host asks for map tiles under /content/map/; its own folder holds only some, so a tile inside the zoom's grid (2^z per side) is read from the map host's folder.</summary>
@@ -502,7 +513,7 @@ public static class Replay
             }
             if (get)
             {
-                var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r);
+                var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r) ?? OrganMirror(r);
                 if (f != null) return new(200, [("Content-Type", ContentType(System.IO.Path.GetFileName(f)))], File.ReadAllBytes(f), "mirror");
                 data = ArchiveFile(Cfg, r.Host, r.Path, exact: false);
                 if (data != null) return new(200, [("Content-Type", ContentType(r.Path))], data, "archive");

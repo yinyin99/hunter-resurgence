@@ -1449,12 +1449,12 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Valitse nimesi</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Tämän nimen muut metsästäjät näkevät.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Nimesi</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3–20 kirjainta, numeroa, - tai _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3–30 kirjainta, numeroa, - tai _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Olen uusi täällä</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Olen pelannut ennen: palauta se, mitä vanhasta profiilistani säilytettiin</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Säilytimme osan julkisista profiileista: esineet, trofeet, majat, taidot, tilastot ja saavutukset. Metsästyksiä, kuvia ja rahaa ei säilytetty. Ylläpitäjä tarkistaa korkean pistemäärän profiilit ensin.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Jätä tyhjäksi, jos haluat käyttää vanhaa nimeäsi, kun se on vapaa.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nimessä on 3–20 kirjainta, numeroa, - tai _, ja se alkaa kirjaimella tai numerolla.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nimessä on 3–30 kirjainta, numeroa, - tai _, ja se alkaa kirjaimella tai numerolla.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Tämä nimi on jo käytössä.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Valitse nimi: vanha on jo käytössä.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Kirjataanko sisään sovellus, joka näyttää tämän koodin?</value></data>

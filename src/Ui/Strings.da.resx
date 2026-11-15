@@ -1449,12 +1449,12 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Vælg dit navn</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Det er det navn, andre jægere ser.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Dit navn</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 til 20 bogstaver, cifre, - eller _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 til 30 bogstaver, cifre, - eller _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jeg er ny her</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Jeg har spillet før: gendan det, der blev gemt af min gamle profil</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Vi gemte en del af de offentlige profiler: genstande, trofæer, hytter, færdigheder, statistik og præstationer. Jagter, fotos og penge blev ikke gemt. Profiler med høj score tjekkes først af operatøren.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Lad feltet stå tomt for at bruge dit gamle navn, når det er ledigt.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Et navn har 3 til 20 bogstaver, cifre, - eller _ og begynder med et bogstav eller et ciffer.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Et navn har 3 til 30 bogstaver, cifre, - eller _ og begynder med et bogstav eller et ciffer.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dette navn er optaget.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Vælg et navn: det gamle er optaget.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Log ind i appen, der viser denne kode?</value></data>

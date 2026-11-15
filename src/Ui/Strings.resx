@@ -1449,12 +1449,12 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Choose your name</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>This is the name other hunters see.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Your name</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 to 20 letters, digits, - or _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 to 30 letters, digits, - or _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>I am new here</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>I played before: restore what was kept of my old profile</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>We kept part of the public profiles: items, trophies, lodges, skills, statistics and achievements. Hunts, photos and money were not kept. High-score profiles are checked by the operator first.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Leave it empty to use your old name when it is free.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>A name has 3 to 20 letters, digits, - or _ and starts with a letter or a digit.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>A name has 3 to 30 letters, digits, - or _ and starts with a letter or a digit.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>This name is taken.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choose a name: the old one is taken.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Sign in the app that shows this code?</value></data>

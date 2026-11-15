@@ -1449,12 +1449,12 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Adınızı seçin</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Diğer avcılar bu adı görür.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Adınız</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 ile 20 arasında harf, rakam, - veya _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 ile 30 arasında harf, rakam, - veya _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Buraya yeniyim</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Daha önce oynadım: eski profilimden saklananları geri yükle</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Herkese açık profillerin bir bölümünü sakladık: eşyalar, kupalar, kulübeler, beceriler, istatistikler ve başarımlar. Avlar, fotoğraflar ve para saklanmadı. Yüksek puanlı profilleri önce operatör kontrol eder.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Eski adınızı, boşsa kullanmak için boş bırakın.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Bir ad 3 ile 20 arasında harf, rakam, - veya _ içerir ve harf ya da rakamla başlar.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Bir ad 3 ile 30 arasında harf, rakam, - veya _ içerir ve harf ya da rakamla başlar.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Bu ad alınmış.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Bir ad seçin: eski ad alınmış.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bu kodu gösteren uygulamada oturum açılsın mı?</value></data>

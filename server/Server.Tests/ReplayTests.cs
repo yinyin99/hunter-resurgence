@@ -236,6 +236,9 @@ public class ReplayTests : IAsyncLifetime
             (ArcList.NameHash("x.png"), "item"u8.ToArray(), 0),  // only x.png in the archives, any directory
             (ArcList.NameHash("0.jpg"), "other dir"u8.ToArray(), 1),  // basename in several dirs
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\map\v7\tiles\1\0\0.jpg")), "tile"u8.ToArray(), 0),
+            (ArcList.NameHash("0.png"), "other 0"u8.ToArray(), 0),  // an unrelated archived 0.png (a heart hit asks for <species>/0.png)
+            (ArcList.NameHash("5.png"), Array.Empty<byte>(), 1),  // an organ overlay name shared by species folders
+            (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\animal_organs\24\5.png")), "organ"u8.ToArray(), 0),
         ];
         var arc = new MemoryStream();
         using (var tab = new BinaryWriter(File.Create(Path.Combine(d, "pc0.tab"))))
@@ -251,7 +254,7 @@ public class ReplayTests : IAsyncLifetime
             }
         }
         File.WriteAllBytes(Path.Combine(d, "pc0.arc"), arc.ToArray());
-        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg") })
+        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png") })
         {
             var f = Path.Combine(mirror, host, path.TrimStart('/'));
             Directory.CreateDirectory(Path.GetDirectoryName(f)!);
@@ -266,6 +269,10 @@ public class ReplayTests : IAsyncLifetime
         Same(("item"u8.ToArray(), "archive"), await Get("static.test", "/static/img/items/1024/x.png"));
         Same(("mirror"u8.ToArray(), "mirror"), await Get("map.test", "/v7/tiles/2/0/0.jpg"));
         Assert.Equal("miss", (await Get("map.test", "/v7/tiles/3/0/0.jpg")).Source);
+        Same(("organ"u8.ToArray(), "archive"), await Get("game_web.test", "/content/animal_organs/24/5.png"));
+        Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/animal_organs/26/female.png"));
+        Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/25/5.png")).Source);  // another species' overlay of that name is never served
+        Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/24/0.png")).Source);  // an unrelated archived 0.png is never the overlay
     }
 
     [Fact]
