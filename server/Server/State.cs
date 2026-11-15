@@ -162,7 +162,7 @@ public sealed partial class State
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
-                                      Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore)
+                                      Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -194,8 +194,13 @@ public sealed partial class State
                 }
             }
             else if (Is(e["event"], 6) && Py.IsDigit(Py.Str(G(e, "item", ""))) && Py.Truthy(G(e, "quantity", 0)))  // the first heartbeat lists every item with 0
-                con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
-                         + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), long.Parse(Py.Str(e["item"])));
+            {
+                var guid = long.Parse(Py.Str(e["item"]));
+                // a negative quantity refills, up to the catalogue's stack size and never lowering a larger stack; an item without a stack size is not refilled
+                var cap = con.Scalar("SELECT item_id FROM items WHERE account_id = $a AND guid = ?", guid) is long itemId ? box(itemId) ?? 0 : 0;
+                con.Exec("UPDATE items SET units = CASE WHEN units - ?1 > units THEN MAX(units, MIN(units - ?1, ?3)) ELSE units - ?1 END, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
+                         + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), guid, cap);
+            }
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
                 var dog = con.Rows("SELECT item_id, json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"]))).FirstOrDefault();
@@ -538,10 +543,10 @@ public sealed partial class State
 
     /// <summary>Apply an Inventory/move_multiple2 call in one transaction.
     ///
-    /// cloned: [{"item_guid": "new_item_&lt;ts&gt;", "item_id": N}] creates items; the reply maps each placeholder to its
-    /// new guid, or is null when nothing was cloned (the reply is `null`).
+    /// cloned: [{"item_guid": "new_item_&lt;ts&gt;", "item_id": N}] creates a stack of one full box for each entry; the reply maps each placeholder to its
+    /// new guid, or is null when nothing was cloned (the reply is `null`). `box(item)` is the stack size of an item that may be cloned, null for any other: an entry for it creates nothing.
     /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.</summary>
-    public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Dictionary<long, JsonNode?> defaultUnits)
+    public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Func<long, long?> box)
     {
         var @new = new List<(JsonNode? Key, long Guid)>();  // Python dict: keys compared with ==
         con.Begin();
@@ -549,8 +554,9 @@ public sealed partial class State
         foreach (var node in cloned)
         {
             var c = node!.AsObject();
-            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)",
-                     nextGuid, c["item_id"], TryKey(c["item_id"], out var id) ? defaultUnits.GetValueOrDefault(id) : null);
+            if (!TryKey(c["item_id"], out var id) || box(id) is not { } units)
+                continue;
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", nextGuid, id, units);  // a full box, whatever the request says
             var i = @new.FindIndex(x => Py.Eq(x.Key, c["item_guid"]));
             if (i >= 0) @new[i] = (@new[i].Key, nextGuid);
             else @new.Add((c["item_guid"], nextGuid));
@@ -588,7 +594,7 @@ public sealed partial class State
     // installItems: the install's items the store catalogue does not list (a restored inventory may still hold one), for their definitions only
     readonly Dictionary<long, JsonObject> species = new(), items = new(), installItems = new(), infos = new(), ballistics = new();
     readonly Dictionary<long, string?> reserves = new();
-    readonly Dictionary<long, JsonNode?> locations = new(), defaultUnits = new();
+    readonly Dictionary<long, JsonNode?> locations = new();
     readonly JsonObject locale, connect, start;
     readonly Dictionary<long, string> textures;
     readonly Dictionary<int, JsonObject> reserveData = new();
@@ -601,6 +607,9 @@ public sealed partial class State
     /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
     /// (<see cref="UnlimitedLicenses"/>); it cannot be bought. Off: licenses are items like any other.</summary>
     public bool AllLicenses { get; init; }
+    /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
+    /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
+    public bool UnlimitedAmmo { get; init; }
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -665,8 +674,6 @@ public sealed partial class State
         var connectInfos = connect["inventory"]!["infos"]!.AsArray();
         foreach (var i in Arr(sampleInfos).Concat(connectInfos))
             infos[Py.L(i!["item_id"])] = i.AsObject();
-        foreach (var i in connectInfos)
-            defaultUnits[Py.L(i!["item_id"])] = i["units"];
         // permitted ammo per species id, all species (species_ammo is the reserve's subset)
         ethicalAmmo = G(connect, "ethical", null) as JsonArray ?? new JsonArray();
         // a species the recorded connect lists with no ammo (the event creatures, in a recording from before the event) is permitted what the facts file says, not every ammo
@@ -1201,6 +1208,12 @@ public sealed partial class State
             var inv = (JsonObject)inventory.DeepClone();
             inv["items"] = rows;
             inv["infos"] = infosOut;
+            if (UnlimitedAmmo)  // exactly 1 switches the game's mode on; the other services stay as recorded
+            {
+                var services = inv["active_services"] as JsonObject ?? [];
+                services["UNLIMITED_AMMO"] = 1;
+                inv["active_services"] = services;
+            }
             rows = new JsonArray();  // moved into inv
             inventory = inv;
             var toast = Py.Dumps(new JsonObject
@@ -1407,7 +1420,8 @@ public sealed partial class State
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
                 ["gms"] = Whole(G(item, "silver_price", null)),
-                ["buyable"] = StoreSells(item, "price") || StoreSells(item, "silver_price"),
+                ["buyable"] = !IsUnlimitedAmmo(item) && (StoreSells(item, "price") || StoreSells(item, "silver_price")),
+                ["unlimited"] = IsUnlimitedAmmo(item),
             });
         }
         var categories = new JsonArray();
@@ -1524,12 +1538,27 @@ public sealed partial class State
     static bool StoreSells(JsonObject item, string key) => !Py.Truthy(G(item, "hidden", null)) && Whole(G(item, key, null)) > 0 && Sellable(item, key);
 
     /// <summary>The items a bundle gives, or null when the store does not sell it: a price of at least 1 and only items of the catalogue,
-    /// none of them a license while `all_licenses` is on (every player owns it).</summary>
+    /// none of them a license while `all_licenses` is on (every player owns it) or an ammunition while `unlimited_ammo` is on.</summary>
     long[]? BundleSale(JsonNode b)
     {
         long[] ids = [.. Arr(b["items"]).Select(x => Py.L(x))];
-        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) ? ids : null;
+        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) && !ids.Any(i => IsUnlimitedAmmo(items[i])) ? ids : null;
     }
+
+    /// <summary>The catalogue's ammunition (category 3), the item type <see cref="UnlimitedAmmo"/> makes unlimited.</summary>
+    bool IsAmmo(long itemId) => (items.GetValueOrDefault(itemId) ?? installItems.GetValueOrDefault(itemId)) is { } item && Is(G(item, "cat", null), AmmoCategory);
+
+    bool IsUnlimitedAmmo(JsonObject item) => UnlimitedAmmo && Is(G(item, "cat", null), AmmoCategory);
+
+    /// <summary>The item's stack size, the catalogue's `units` of one box; null when it has none.</summary>
+    long? Box(long itemId) => ItemInfo(itemId)?["units"] is { } u && Py.IsNum(u) && Py.L(u) > 0 ? Py.L(u) : null;
+
+    /// <summary>Whether unlimited ammunition is on: the setting, or a connect template that has the service (as a recorded one may).</summary>
+    bool UnlimitedService => UnlimitedAmmo || Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
+
+    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition the account already owns; null for any other item.</summary>
+    long? CloneBox(Db con, long itemId) =>
+        UnlimitedService && IsAmmo(itemId) && con.Scalar("SELECT 1 FROM items WHERE account_id = $a AND item_id = ?", itemId) is not null ? Box(itemId) : null;
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
     /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0
@@ -1558,7 +1587,7 @@ public sealed partial class State
     {
         if (items.GetValueOrDefault(itemId) is not { } item)
             return false;
-        if (AllLicenses && IsLicense(item))
+        if (AllLicenses && IsLicense(item) || IsUnlimitedAmmo(item))
             return true;
         var limit = Py.Truthy(item["ownLimit"]) ? Py.L(item["ownLimit"]) : long.MaxValue;
         if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]) && !Py.Truthy(item["units"]))
@@ -1895,7 +1924,7 @@ public sealed partial class State
         var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
         var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
         using var con = Con(account);
-        return Py.DumpBytes(MoveMultiple2(con, mapping, cloned, defaultUnits));
+        return Py.DumpBytes(MoveMultiple2(con, mapping, cloned, id => CloneBox(con, id)));
     }
 
     public byte[] HeartbeatReply(long account, byte[] body)
@@ -1916,7 +1945,7 @@ public sealed partial class State
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore);
+                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box);
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
@@ -1960,15 +1989,15 @@ public sealed partial class State
     }
 
     /// <summary>At every hunt's start: the free ammunition (<see cref="Facts.FreeAmmo"/>) is topped up to its full boxes, a box being the item's stack size. A stack the player has used is filled
-    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. The rows are in the connect that follows.</summary>
+    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. With <see cref="UnlimitedAmmo"/> every other ammunition stack the player owns is
+    /// then filled to a full box too (a larger stack stays). The rows are in the connect that follows.</summary>
     void RefillAmmo(Db con)
     {
         var (ammo, boxes) = facts.FreeAmmo();
         foreach (var id in ammo)
         {
-            if (ItemInfo(id)?["units"] is not { } u || !Py.IsNum(u) || Py.L(u) <= 0)
+            if (Box(id) is not { } box)
                 continue;
-            var box = Py.L(u);
             var rows = con.Rows("SELECT guid, units FROM items WHERE account_id = $a AND item_id = ? AND units IS NOT NULL ORDER BY guid", id)
                 .Select(r => (Guid: Convert.ToInt64(r[0]), Units: Math.Max(0, Convert.ToInt64(r[1])))).ToList();
             var missing = box * boxes - rows.Sum(r => r.Units);
@@ -1981,6 +2010,11 @@ public sealed partial class State
             for (; missing > 0; missing -= box)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", NextId(con, "items", "guid"), id, Math.Min(box, missing));
         }
+        if (!UnlimitedAmmo)
+            return;
+        foreach (var id in con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a AND units IS NOT NULL").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo))
+            if (Box(id) is { } box)
+                con.Exec("UPDATE items SET units = ?1 WHERE account_id = $a AND item_id = ?2 AND units IS NOT NULL AND units < ?1", box, id);
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()

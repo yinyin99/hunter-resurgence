@@ -37,7 +37,7 @@
                     @if (item.Contents is { } contents) { <p>@L["Store.Contains"] @Units(contents)</p> }
                 </div>
             }
-            <OwnedLine Owned="item.Owned" Counted="item.Counted" Expires="item.Expires" DaysLeft="item.DaysLeft" Full />
+            <OwnedLine Owned="item.Owned" Counted="item.Counted" Expires="item.Expires" DaysLeft="item.DaysLeft" Unlimited="item.Unlimited" Full />
             @if (!Mode.Live)
             {
                 @if (!item.Buyable || item.DisabledByServices) { <p class="own">@L["Store.CantBuy"]</p> }

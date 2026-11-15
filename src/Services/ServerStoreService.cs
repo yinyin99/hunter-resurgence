@@ -121,7 +121,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
 
     static StoreItem Item(ServerItem i, Dictionary<int, (int Owned, bool Counted, long? Expires)> own) =>
         new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, own.GetValueOrDefault(i.Id).Owned, i.Buyable, Capacity: 0, i.Description,
-            Counted: own.GetValueOrDefault(i.Id).Counted, Expires: own.GetValueOrDefault(i.Id).Expires);
+            Counted: own.GetValueOrDefault(i.Id).Counted, Expires: own.GetValueOrDefault(i.Id).Expires, Unlimited: i.Unlimited);
 
     // a line is one unit of an item at its full price; the page adds up the lines of one item
     static StoreBundle Bundle(ServerBundle b, ServerStore s) => new(b.Id, b.Name, b.Description, b.Price, b.Buyable,

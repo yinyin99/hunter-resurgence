@@ -698,6 +698,7 @@
   <data name="Store.Expires" xml:space="preserve"><value>Sona Erme Tarihi:</value></data>
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Lisansınız bu tarihe kadar geçerli:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Limitsiz bir lisansa sahipsiniz</value></data>
+  <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Sınırsız mühimmat</value></data>
   <data name="Store.Or" xml:space="preserve"><value>veya</value></data>
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>

@@ -30,8 +30,8 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         return app;
     }
 
-    State Start(JsonObject? connect = null) =>
-        new(Db, Py.DumpBytes(connect ?? Fixtures.CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES, offline: false);
+    State Start(JsonObject? connect = null, bool unlimitedAmmo = false) =>
+        new(Db, Py.DumpBytes(connect ?? Fixtures.CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES, offline: false) { UnlimitedAmmo = unlimitedAmmo };
 
     /// <summary>The owner has two rifles in the backpack and the lodge, a scope, two dogs, an ammunition, and a placed item.</summary>
     public async ValueTask InitializeAsync()
@@ -329,6 +329,17 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         unlimited.NoteLaunch(OWNER, form);
         Assert.Equal([8L, 9, 10], Ammo(unlimited));  // cloned for the other two slots; a rifle is not an ammunition
         Assert.Equal(2, unlimited.Inventory(OWNER).Count(i => (long)i!["item_id"]! == 5 && (long)i["slot"]! > 0));
+    }
+
+    [Fact]
+    public void TestTheUnlimitedAmmoSettingAloneClonesTheAmmunitionForTheOtherSlots()
+    {
+        state.GrantItems(OWNER, 811);
+        var id = Ids(OWNER)[0];
+        Assert.Equal(200, state.SaveLoadout(OWNER, id, Encoding.UTF8.GetBytes(Items(
+            """{"slot_id": 8, "item_id": 15}""", """{"slot_id": 9, "item_id": 15}""", """{"slot_id": 10, "item_id": 15}"""))).Status);
+        Start(unlimitedAmmo: true).NoteLaunch(OWNER, Encoding.ASCII.GetBytes($"start=100&reserve=2&loadout_id={id}"));
+        Assert.Equal([8L, 9, 10], state.Inventory(OWNER).Where(i => (long)i!["item_id"]! == 15).Select(i => (long)i!["slot"]!).Order());
     }
 
     // ---- purchases

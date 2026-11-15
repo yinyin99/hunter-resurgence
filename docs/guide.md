@@ -46,7 +46,7 @@ The launcher signs you in, sets up your PC for the community server (the player 
 
 **Keep the launcher open** while you play: it answers the game. Next time: press **Play** in Steam (or the website's **Hunt now**, or the Start menu shortcut). The launcher keeps you signed in for 30 days; sign in again when it asks.
 
-**A new account** starts with a free kit: a 12 GA shotgun and a .243 rifle, ammunition for both, binoculars, clothes, 1,000 em$ and 15,000 gm$. At every hunt start the server tops the free ammunition up to three boxes each (what you bought beyond that stays). A restore keeps what the backup brings and adds any of these items it lacks.
+**A new account** starts with a free kit: a 12 GA shotgun and a .243 rifle, ammunition for both, binoculars, clothes, 1,000 em$ and 15,000 gm$. At every hunt start the server tops the free ammunition up to three boxes each (what you bought beyond that stays); on a server with unlimited ammunition (the default) it also fills every other ammunition you own, and ammunition is not for sale. A restore keeps what the backup brings and adds any of these items it lacks.
 
 **Remove the setup**: in the launcher choose Settings, **Remove the setup**, and **Yes** to Windows' questions (the certificate, and permission to edit the hosts file). The game then talks to its own servers again, which are closed, so it cannot play until you set up again.
 

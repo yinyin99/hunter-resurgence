@@ -77,6 +77,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void UnlimitedAmmoDefaultsToTrueAndNeedsTrueOrFalse()
+    {
+        Assert.True((bool)Load(Minimal()).Cfg["unlimited_ammo"]!);
+        var off = Minimal();
+        off["unlimited_ammo"] = false;
+        Assert.False((bool)Load(off).Cfg["unlimited_ammo"]!);
+        foreach (var bad in new JsonNode[] { 0, "true" })
+        {
+            var o = Minimal();
+            o["unlimited_ammo"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void MinimalFileGetsDefaultsAndPathsRelativeToTheFile()
     {
         var s = Load(Minimal());

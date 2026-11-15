@@ -247,6 +247,16 @@ public class AccountIsolationTests : StateTestBase
         Scoring.OwnLogo = "testlogo";
     }
 
+    /// <summary>The state with unlimited ammunition on and item 10 an ammunition: the only items a cloned entry may create.</summary>
+    void Unlimited()
+    {
+        var app = APP;
+        app["items"]!.AsArray().Single(i => (long)i!["id"]! == 10)!["cat"] = 3;
+        var connect = CONNECT;
+        connect["skills"] = LEVELS;
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, discounts: DISCOUNTS, skillList: NUMBERS, itemDefs: ITEM_DEFS) { UnlimitedAmmo = true };
+    }
+
     JsonArray Hb(long account, params JsonNode[] events) => Reply(state.HeartbeatReply(account, Events(events)))["updates"]!.AsArray();
 
     JsonObject Inventory(long account)
@@ -300,6 +310,7 @@ public class AccountIsolationTests : StateTestBase
     [Fact]
     public void TestInventoryMovesClonesAndGuidsStayInTheirAccount()
     {
+        Unlimited();
         state.MoveMultiple2Reply(B, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!));
         Eq("0", Inventory(A)["100"]!["slot"]);
         Eq("12", Inventory(B)["100"]!["slot"]);
