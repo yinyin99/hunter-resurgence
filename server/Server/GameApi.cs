@@ -474,18 +474,21 @@ public static class GameApi
             var edit = Handle(game, r =>
             {
                 var (lodge, trophy) = (LodgeEdit.Match(r.Path), TrophyEdit.Match(r.Path));
-                if (!s.Online || r.Method != "PUT" || !(lodge.Success || trophy.Success))
+                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge: form `name`, `style_id`
+                if (!s.Online || !(r.Method == "PUT" || form) || !(lodge.Success || trophy.Success))
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
                 var status = !long.TryParse((lodge.Success ? lodge : trophy).Groups[1].Value, out var id) ? 404
                     : trophy.Success ? s.HideTrophy(a, id, r.Body)
+                    : form ? s.SaveLodgeSettings(a, id, LeaveForm(r.Body))
                     : lodge.Groups[2].Success ? s.SaveLodgeSettings(a, id, r.Body) : s.SaveLodge(a, id, r.Body);
                 return status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state") : Rejected(game, r, status);
             });
             foreach (var (router, prefix) in new[] { (apiv2, ""), (api, "/v1") })
             {
                 var current = prefix.Length > 0;  // the current build's paths are not documented twice
+                if (current) router.MapPost(prefix + "/game/user/lodges/{id}", edit).ExcludeFromDescription();
                 var save = router.MapPut(prefix + "/game/user/lodges/{id}", edit);
                 var settings = router.MapPut(prefix + "/game/user/lodges/{id}/settings", edit);
                 var hide = router.MapPut(prefix + "/game/user/trophies/{id}", edit);
@@ -651,6 +654,16 @@ public static class GameApi
     /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
     /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
     /// server. ponytail: the game server's and the game client's own reply to an expired session is not known; err 1 is a guess.</summary>
+    /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number.</summary>
+    static byte[] LeaveForm(byte[] body)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(body));
+        var sent = new JsonObject();
+        if (form.TryGetValue("name", out var name)) sent["name"] = name[0];
+        if (form.TryGetValue("style_id", out var style) && long.TryParse(style[0], out var id)) sent["style_id"] = id;
+        return Encoding.UTF8.GetBytes(sent.ToJsonString());
+    }
+
     static Reply Denied(Game game, Req r) =>
         r.Host == game.Api ? new(200, JsonAnyOrigin(), "{\"errorCode\": 5, \"message\": \"token expired\"}"u8.ToArray(), "denied")
         : r.Host == game.Apiv2 ? new(401, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)],
