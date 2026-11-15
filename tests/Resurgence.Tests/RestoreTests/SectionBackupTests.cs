@@ -252,4 +252,20 @@ public class SectionBackupTests
         var deep = Sections().Section("poll", new string('[', 70) + new string(']', 70)).Read();
         Assert.Contains("json_poll.json: not JSON, nested deeper than 64 or with a duplicate key", deep.Report.Rejected);
     }
+
+    /// <summary>A zip of tens of thousands of folders, each with an index.json (within the entry cap): refused at once, not after a scan per folder.</summary>
+    [Fact]
+    public void ManyFoldersAreRefusedQuickly()
+    {
+        using var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
+            for (var i = 0; i < 30_000; i++)
+            {
+                zip.CreateEntry($"f{i}/index.json");
+                zip.CreateEntry($"f{i}/x");
+            }
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        Assert.Equal("not a backup zip", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(ms.ToArray()))).Message);
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(3), watch.Elapsed.ToString());
+    }
 }

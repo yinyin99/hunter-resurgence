@@ -53,10 +53,19 @@ static partial class SectionBackup
     static string? Section(ZipArchiveEntry e, string prefix) =>
         e.FullName.StartsWith(prefix, StringComparison.Ordinal) && SectionFile().Match(e.FullName[prefix.Length..]) is { Success: true } m ? m.Groups[1].Value : null;
 
-    /// <summary>The folders with an index.json next to at least one section file, as their prefixes in the zip.</summary>
-    static List<(ZipArchiveEntry Index, string Prefix)> Folders(ZipArchive zip) =>
-        [.. zip.Entries.Where(e => BackupReader.IsAt(e, "index.json")).Select(e => (e, e.FullName[..^"index.json".Length]))
-            .Where(f => zip.Entries.Any(e => Section(e, f.Item2) is not null))];
+    /// <summary>The folders (the root or one level down) with an index.json next to at least one section file, as their prefixes in the zip. One pass over the entries.</summary>
+    static List<(ZipArchiveEntry Index, string Prefix)> Folders(ZipArchive zip)
+    {
+        var indexes = new List<(ZipArchiveEntry Index, string Prefix)>();
+        var withSection = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var e in zip.Entries.Where(e => e.FullName.AsSpan().Count('/') <= 1))
+        {
+            var cut = e.FullName.LastIndexOf('/') + 1;
+            if (e.FullName[cut..] == "index.json") indexes.Add((e, e.FullName[..cut]));
+            else if (SectionFile().IsMatch(e.FullName.AsSpan(cut))) withSection.Add(e.FullName[..cut]);
+        }
+        return [.. indexes.Where(i => withSection.Contains(i.Prefix))];
+    }
 
     public static bool IsOne(ZipArchive zip) => Folders(zip).Count > 0;
 
