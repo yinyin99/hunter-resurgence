@@ -105,6 +105,9 @@
     --w-sidebar: 240px;
     --h-statusbar: 70px;
     --h-patchbar: 75px;
+
+    /* layers: the page is isolated at 0 (its z-indexes stay inside it), shell menus above it, the status bar 1001, banners 9000+, modals 100000+ */
+    --z-menu: 10;
     --w-modal: 980px;
     --w-modal-confirm: 450px;
     --w-modal-confirm-wide: 550px;
