@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Неофициальный сервер сообщества для {game_full}: продолжайте играть после закрытия официальных серверов, с профилем, восстановленным из резервной копии.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Неофициальный сервер сообщества для {game_full}: продолжайте играть, с профилем, восстановленным из резервной копии.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: сервер сообщества для {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Такой страницы не существует.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Нет</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Закрыть</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ВОЗРАСТНЫЕ РЕЙТИНГИ</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Работа ведётся: некоторые страницы пока показывают демонстрационное содержимое. Официальные серверы работают до 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Сохраните профиль заранее: скачайте инструмент резервного копирования</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Работа ведётся: некоторые страницы пока показывают демонстрационное содержимое. Официальные серверы работали до 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Официальные серверы работали до 2026-11-11: об инструменте резервного копирования</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Сохраните профиль с помощью инструмента резервного копирования</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Инструмент резервного копирования — небольшое приложение для Windows, которое сохраняет ваш профиль (статистику, инвентарь, трофеи, историю охоты и многое другое) в виде файлов на вашем ПК, пока официальные серверы ещё работают, до 2026-11-11. Он только читает данные и ничего не меняет на сервере.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Инструмент резервного копирования — небольшое приложение для Windows, которое сохраняет ваш профиль (статистику, инвентарь, трофеи, историю охоты и многое другое) в виде файлов на вашем ПК, пока официальные серверы ещё работали, до 2026-11-11. Он только читает данные и ничего не меняет на сервере.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Скачайте backup-win-x64.zip и распакуйте его. Держите backup.exe и settings.json в одной папке.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Запустите backup.exe. Для своей учётной записи откройте игру и начните охоту (инструмент можно открыть до или после); или выберите «Публичный профиль» и введите имя или id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Отметьте, что сохранить, и нажмите «Начать». Результат — папка резервной копии и zip-архив резервной копии в Documents\game-backup. Никому не передавайте этот архив.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence в разработке</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Сервер сообщества создаётся открыто. Аккаунты, восстановление вашей резервной копии и этот сайт обретают форму, а сервер скоро откроется для всех.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Скоро откроется для всех.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Сохраните аккаунт до закрытия официальных серверов</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Официальные серверы закроются 11 ноября 2026 года. Скачайте инструмент резервного копирования и сохраните профиль уже сейчас: инвентарь, трофеи, статистику и многое другое. Вы сможете восстановить его на сервере сообщества, когда он откроется.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Сохраните профиль до 11 ноября 2026 года.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Официальные серверы закрыты</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Официальные серверы закрылись 11 ноября 2026 года. Инструмент резервного копирования сохранил ваш профиль: инвентарь, трофеи, статистику и многое другое. Сервер сообщества теперь открыт.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Официальные серверы закрылись 11 ноября 2026 года.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Читать</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Пойти на охоту</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ОДИНОЧНАЯ ИГРА</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Руководство игрока: все шаги и решения частых проблем</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Скачать лаунчер</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Шаг {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер предлагает открываться по кнопке «Играть» в Steam: выберите «Закрыть Steam и задать». Steam сам запустится снова. Затем нажмите «Играть» в Steam. Лаунчер перечисляет, что он меняет на ПК: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Файлы игры никогда не изменяются.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>При первом запуске лаунчер открывает окно настройки: выберите «Настроить» и отвечайте «Да», когда Windows спросит об установке сертификата и изменении файла hosts. Окно кнопки «Играть» в Steam появится при следующем запуске лаунчера (или сразу после «Не сейчас»): выберите «Закрыть Steam и задать». Steam сам запустится снова. Файлы игры никогда не изменяются.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Нажмите «Войти через Steam» в лаунчере и войдите в открывшемся браузере с тем аккаунтом Steam, на котором играете. Выберите заповедник и точку старта и нажмите «Начать игру». В первый раз брандмауэр Windows спросит об игре: выберите «Разрешить». Не закрывайте лаунчер во время игры.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Устранение неполадок</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Восстановить резервную копию</value></data>
@@ -1454,14 +1454,14 @@
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Выберите имя: старое занято.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Войти в приложении, которое показывает этот код?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Вы — {0}. Приложение, которое показывает этот код (лаунчер или инструмент резервного копирования), войдёт под вашим именем.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Вы — {0}. Стартовая страница старого лаунчера, которая показывает этот код, войдёт под вашим именем.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Подтверждайте, только если этот код сейчас на вашем экране.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Войти в приложении на этом ПК?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Вы — {0}. Приложение, которое вы только что запустили на этом ПК (лаунчер или инструмент резервного копирования), войдёт под вашим именем.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Подтверждайте, только если вы только что нажали «{0}» в одном из них.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Да, войти</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Готово</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Вернитесь в приложение, которое показало код (лаунчер или инструмент резервного копирования).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Вернитесь на стартовую страницу старого лаунчера, которая показала код.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Присоединяйтесь к Discord: новости, помощь и оператор</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Извините</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Этот вход устарел или был начат в другом браузере. Начните заново.</value></data>

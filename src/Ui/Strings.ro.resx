@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Server comunitar neoficial pentru {game_full}: continuați să jucați după închiderea serverelor oficiale, cu profilul restaurat dintr-o copie de rezervă.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Server comunitar neoficial pentru {game_full}: continuați să jucați, cu profilul restaurat dintr-o copie de rezervă.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: server comunitar pentru {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina nu a fost găsită</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Această pagină nu există.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nu</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Închideți</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASIFICĂRI</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Lucru în desfășurare: unele pagini încă arată conținut de exemplu. Serverele oficiale funcționează până la 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Salvați-vă profilul până atunci: descărcați instrumentul de backup</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Lucru în desfășurare: unele pagini încă arată conținut de exemplu. Serverele oficiale au funcționat până la 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Serverele oficiale au funcționat până la 2026-11-11: despre instrumentul de backup</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Salvați-vă profilul cu instrumentul de backup</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Instrumentul de backup este o mică aplicație Windows care vă salvează profilul (statistici, inventar, trofee, istoricul vânătorilor și altele) ca fișiere pe PC-ul dvs. cât timp serverele oficiale încă funcționează, până la 2026-11-11. Doar citește; nu modifică nimic pe server.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Instrumentul de backup este o mică aplicație Windows care vă salvează profilul (statistici, inventar, trofee, istoricul vânătorilor și altele) ca fișiere pe PC-ul dvs. cât timp serverele oficiale încă funcționau, până la 2026-11-11. Doar citește; nu modifică nimic pe server.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Descărcați backup-win-x64.zip și dezarhivați-l. Păstrați backup.exe și settings.json în același folder.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Porniți backup.exe. Pentru contul propriu, deschideți jocul și începeți o vânătoare (instrumentul poate fi deschis înainte sau după); sau alegeți „Public profile” și tastați un nume sau un id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Bifați ce doriți să salvați și apăsați „Start”. Rezultatul este un folder de backup și un zip de backup în Documents\game-backup. Păstrați acel zip privat.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence este în dezvoltare</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Serverul comunității este construit în mod deschis. Conturile, restaurarea backup-ului dvs. și acest site prind contur, iar serverul se deschide în curând publicului.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Jocul se deschide în curând.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Salvați-vă contul înainte ca serverele oficiale să se închidă</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Serverele oficiale se închid pe 11 noiembrie 2026. Descărcați instrumentul de backup și salvați-vă profilul acum: inventar, trofee, statistici și altele. Îl puteți restaura pe serverul comunității când se va deschide.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Faceți backup profilului înainte de 11 noiembrie 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Serverele oficiale s-au închis</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026. Instrumentul de backup v-a salvat profilul: inventar, trofee, statistici și altele. Serverul comunității este deschis acum.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Citiți aici</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Mergeți la vânătoare</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE-PLAYER</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Ghidul jucătorului: fiecare pas și soluții pentru problemele frecvente</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Descarcă launcherul</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Pasul {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>La prima pornire, launcherul se oferă să se deschidă din butonul Joacă al Steam: alege „Închide Steam și setează”. Steam pornește din nou singur. Apoi apasă Joacă în Steam. Launcherul arată ce schimbă pe PC: alege Configurează și răspunde Da când Windows cere să instaleze un certificat și să editeze fișierul hosts. Fișierele jocului nu sunt modificate niciodată.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>La prima pornire, launcherul deschide fereastra de configurare: alege Configurează și răspunde Da când Windows cere să instaleze un certificat și să editeze fișierul hosts. Dialogul butonului Joacă din Steam apare la următoarea pornire a launcherului (sau imediat după „Nu acum”): alege „Închide Steam și setează”. Steam pornește din nou singur. Fișierele jocului nu sunt modificate niciodată.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Apasă „Conectare cu Steam” în launcher și conectează-te în browserul care se deschide, cu contul Steam cu care joci. Alege o rezervație și un punct de start, apoi apasă Începeți jocul. Prima dată, Windows Firewall întreabă despre joc: alege Permite. Ține launcherul deschis cât joci.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Depanare</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurați backup-ul</value></data>
@@ -1454,14 +1454,14 @@ Numele:</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Acest nume este deja folosit.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Alegeți un nume: cel vechi este deja folosit.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Conectați aplicația care afișează acest cod?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sunteți {0}. Aplicația care afișează acest cod (launcherul sau instrumentul de backup) va fi conectată ca dvs.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sunteți {0}. Pagina de start a vechiului launcher care afișează acest cod va fi conectată ca dvs.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirmați doar dacă acest cod este chiar acum pe ecranul dvs.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Conectați aplicația de pe acest PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Sunteți {0}. Aplicația pe care tocmai ați pornit-o pe acest PC (launcherul sau instrumentul de backup) va fi conectată ca dvs.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirmați doar dacă tocmai ați apăsat „{0}” într-una dintre ele.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Da, conectează</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Gata</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Reveniți la aplicația care a afișat codul (launcherul sau instrumentul de backup).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Reveniți la pagina de start a vechiului launcher care a afișat codul.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Alăturați-vă Discordului: noutăți, ajutor și operatorul</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Ne pare rău</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Această conectare a expirat sau a fost pornită în alt browser. Începeți din nou.</value></data>

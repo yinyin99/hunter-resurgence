@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Inofficiell communityserver för {game_full}: fortsätt spela när de officiella servrarna stänger, med din profil återställd från en säkerhetskopia.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Inofficiell communityserver för {game_full}: fortsätt spela, med din profil återställd från en säkerhetskopia.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: communityserver för {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Sidan hittades inte</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Den här sidan finns inte.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nej</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Stäng</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ÅLDERSGRÄNSER</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Under utveckling: vissa sidor visar fortfarande exempelinnehåll. De officiella servrarna är igång till 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Spara din profil innan dess: ladda ned säkerhetskopieringsverktyget</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Under utveckling: vissa sidor visar fortfarande exempelinnehåll. De officiella servrarna var igång till 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>De officiella servrarna var igång till 2026-11-11: om säkerhetskopieringsverktyget</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Spara din profil med säkerhetskopieringsverktyget</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Säkerhetskopieringsverktyget är en liten Windows-app som sparar din profil (statistik, inventarie, troféer, jakthistorik med mera) som filer på din dator medan de officiella servrarna fortfarande är igång, till 2026-11-11. Det läser bara; det ändrar ingenting på servern.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Säkerhetskopieringsverktyget är en liten Windows-app som sparar din profil (statistik, inventarie, troféer, jakthistorik med mera) som filer på din dator medan de officiella servrarna fortfarande var igång, till 2026-11-11. Det läser bara; det ändrar ingenting på servern.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Ladda ned backup-win-x64.zip och packa upp den. Ha backup.exe och settings.json i samma mapp.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Starta backup.exe. För ditt eget konto: öppna spelet och starta en jakt (verktyget kan vara öppet före eller efter); eller välj ”Public profile” och skriv ett handle eller id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Kryssa i det som ska sparas och tryck på ”Start”. Resultatet är en säkerhetskopieringsmapp och en säkerhetskopierings-zip i Documents\game-backup. Håll den zip-filen privat.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence är under utveckling</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Communityservern byggs öppet. Konton, återställning av din säkerhetskopia och den här webbplatsen tar form, och servern öppnar för allmänheten snart.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Öppnar för alla snart.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Spara ditt konto innan de officiella servrarna stänger</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>De officiella servrarna stänger den 11 november 2026. Ladda ned säkerhetskopieringsverktyget och spara din profil nu: inventarie, troféer, statistik med mera. Du kan återställa den på communityservern när den öppnar.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Säkerhetskopiera din profil före den 11 november 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>De officiella servrarna har stängts</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>De officiella servrarna stängdes den 11 november 2026. Säkerhetskopieringsverktyget sparade din profil: inventarie, troféer, statistik och mer. Community-servern är öppen nu.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>De officiella servrarna stängdes den 11 november 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Läs här</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Jaga</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ENSPELARLÄGE</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelarguide: varje steg och lösningar på vanliga problem</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Ladda ner launchern</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Steg {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Vid första starten erbjuder launchern att öppnas från Steams Spela-knapp: välj ”Stäng Steam och ställ in”. Steam startar om av sig självt. Tryck sedan på Spela i Steam. Launchern visar vad den ändrar på datorn: välj Konfigurera och svara Ja när Windows frågar om att installera ett certifikat och redigera hosts-filen. Spelets filer ändras aldrig.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Vid första starten öppnar launchern installationsfönstret: välj Konfigurera och svara Ja när Windows frågar om att installera ett certifikat och redigera hosts-filen. Steams dialogruta för Spela-knappen kommer vid nästa start av launchern (eller direkt efter ”Inte nu”): välj ”Stäng Steam och ställ in”. Steam startar om av sig självt. Spelets filer ändras aldrig.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Tryck på ”Logga in med Steam” i launchern och logga in i webbläsaren som öppnas, med det Steam-konto du spelar med. Välj ett reservat och en startpunkt och tryck på Starta spel. Första gången frågar Windows-brandväggen om spelet: välj Tillåt. Låt launchern vara öppen medan du spelar.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Felsökning</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Återställ din säkerhetskopia</value></data>
@@ -1454,14 +1454,14 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Det här namnet är upptaget.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Välj ett namn: det gamla är upptaget.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Logga in appen som visar den här koden?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du är {0}. Appen som visar den här koden (launchern eller säkerhetskopieringsverktyget) loggas in som du.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du är {0}. Startsidan i den gamla launchern som visar den här koden loggas in som du.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bekräfta bara om den här koden står på din skärm just nu.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Logga in appen på den här datorn?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du är {0}. Appen som du nyss startade på den här datorn (launchern eller säkerhetskopieringsverktyget) loggas in som du.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bekräfta bara om du nyss tryckte på ”{0}” i en av dem.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, logga in</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Klart</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gå tillbaka till appen som visade koden (launchern eller säkerhetskopieringsverktyget).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gå tillbaka till startsidan i den gamla launchern som visade koden.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Gå med i Discord: nyheter, hjälp och operatören</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Tyvärr</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Den här inloggningen har gått ut eller startades i en annan webbläsare. Börja om.</value></data>

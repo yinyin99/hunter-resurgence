@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Server della community non ufficiale per {game_full}: continua a giocare dopo la chiusura dei server ufficiali, con il tuo profilo ripristinato da un backup.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Server della community non ufficiale per {game_full}: continua a giocare, con il tuo profilo ripristinato da un backup.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: server della community per {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina non trovata</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Questa pagina non esiste.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>No</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICAZIONI</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Lavori in corso: alcune pagine mostrano ancora contenuti di esempio. I server ufficiali restano attivi fino al 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Salva il tuo profilo prima di allora: scarica lo strumento di backup</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Lavori in corso: alcune pagine mostrano ancora contenuti di esempio. I server ufficiali sono rimasti attivi fino al 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>I server ufficiali sono rimasti attivi fino al 2026-11-11: sullo strumento di backup</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Salva il tuo profilo con lo strumento di backup</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Lo strumento di backup è una piccola app per Windows che salva il tuo profilo (statistiche, inventario, trofei, cronologia delle cacce e altro) come file sul tuo PC finché i server ufficiali restano attivi, fino al 2026-11-11. Legge soltanto; non modifica nulla sul server.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Lo strumento di backup è una piccola app per Windows che salva il tuo profilo (statistiche, inventario, trofei, cronologia delle cacce e altro) come file sul tuo PC finché i server ufficiali erano ancora attivi, fino al 2026-11-11. Legge soltanto; non modifica nulla sul server.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Scarica backup-win-x64.zip ed estrailo. Tieni backup.exe e settings.json nella stessa cartella.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Avvia backup.exe. Per il tuo account, apri il gioco e inizia una caccia (lo strumento può essere aperto prima o dopo); oppure scegli «Public profile» e digita un nome utente o un id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Spunta cosa salvare e premi «Start». Il risultato è una cartella di backup e uno zip di backup in Documents\game-backup. Tieni privato quello zip.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence è in sviluppo</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Il server della community viene costruito in modo aperto. Gli account, il ripristino del tuo backup e questo sito stanno prendendo forma, e il server aprirà presto al pubblico.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Il gioco pubblico apre presto.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Salva il tuo account prima che i server ufficiali chiudano</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>I server ufficiali chiudono l’11 novembre 2026. Scarica lo strumento di backup e salva subito il tuo profilo: inventario, trofei, statistiche e altro. Potrai ripristinarlo sul server della community quando aprirà.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Fai il backup del tuo profilo prima dell’11 novembre 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>I server ufficiali sono chiusi</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>I server ufficiali sono stati chiusi l’11 novembre 2026. Lo strumento di backup ha salvato il tuo profilo: inventario, trofei, statistiche e altro. Il server della community è aperto.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>I server ufficiali sono stati chiusi l’11 novembre 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Leggi qui</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Vai a caccia</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>GIOCATORE SINGOLO</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guida del giocatore: ogni passaggio e le soluzioni ai problemi comuni</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Scarica il launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passaggio {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Al primo avvio, il launcher propone di aprirsi dal pulsante Gioca di Steam: scegli «Chiudi Steam e imposta». Steam si riavvia da solo. Poi premi Gioca in Steam. Il launcher elenca cosa cambia sul tuo PC: scegli Configura e rispondi Sì quando Windows chiede di installare un certificato e di modificare il file hosts. I file del gioco non vengono mai modificati.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Al primo avvio, il launcher apre la finestra di configurazione: scegli Configura e rispondi Sì quando Windows chiede di installare un certificato e di modificare il file hosts. La finestra del pulsante Gioca di Steam arriva al successivo avvio del launcher (o subito dopo «Non ora»): scegli «Chiudi Steam e imposta». Steam si riavvia da solo. I file del gioco non vengono mai modificati.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Premi «Accedi con Steam» nel launcher e accedi nel browser che si apre, con l’account Steam con cui giochi. Scegli una riserva e un punto di partenza, poi premi Inizia partita. La prima volta, Windows Firewall chiede del gioco: scegli Consenti. Tieni aperto il launcher mentre giochi.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Risoluzione dei problemi</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Ripristina il tuo backup</value></data>
@@ -1454,14 +1454,14 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Questo nome è già in uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Scegli un nome: quello vecchio è già in uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Accedere all’app che mostra questo codice?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sei {0}. L’app che mostra questo codice (il launcher o lo strumento di backup) accederà come te.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sei {0}. La pagina iniziale del vecchio launcher che mostra questo codice accederà come te.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Conferma solo se questo codice è sul tuo schermo in questo momento.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Accedere all’app su questo PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Sei {0}. L’app che hai appena avviato su questo PC (il launcher o lo strumento di backup) accederà come te.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Conferma solo se hai appena premuto «{0}» in una di esse.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sì, accedi</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fatto</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Torna all’app che ha mostrato il codice (il launcher o lo strumento di backup).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Torna alla pagina iniziale del vecchio launcher che ha mostrato il codice.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Unisciti al Discord: novità, aiuto e operatore</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Spiacenti</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Questo accesso è scaduto o è stato avviato in un altro browser. Ricomincia.</value></data>

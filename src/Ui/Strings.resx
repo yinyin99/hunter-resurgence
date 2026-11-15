@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Unofficial community server for {game_full}: keep playing after the official servers close, with your profile restored from a backup.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Unofficial community server for {game_full}: keep playing, with your profile restored from a backup.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: community server for {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Page not found</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>This page does not exist.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>No</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Close</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>RATINGS</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Work in progress: some pages still show sample content. The official servers run until 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Save your profile before then: download the backup tool</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Work in progress: some pages still show sample content. The official servers ran until 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>The official servers ran until 2026-11-11: about the backup tool</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Save your profile with the backup tool</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers are still up, until 2026-11-11. It only reads; it changes nothing on the server.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>The backup tool is a small Windows app that saves your profile (statistics, inventory, trophies, hunt history and more) as files on your PC while the official servers were still up, until 2026-11-11. It only reads; it changes nothing on the server.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Download backup-win-x64.zip and unpack it. Keep backup.exe and settings.json in the same folder.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Start backup.exe. For your own account, open the game and start a hunt (the backup tool can be open before or after); or choose "Public profile" and type a handle or id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Tick what to save, press Start. The result is a backup folder and a backup zip in Documents\game-backup. Keep that backup zip private.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence is in development</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>The community server is being built in the open. Accounts, restoring your backup and this website are taking shape, and the server opens to the public soon.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Public play opens soon.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Save your account before the official servers close</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>The official servers close on 11 November 2026. Download the backup tool and save your profile now: inventory, trophies, statistics and more. You can restore it on the community server once it opens.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Back up your profile before 11 November 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>The official servers have closed</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>The official servers closed on 11 November 2026. The backup tool saved your profile: inventory, trophies, statistics and more. The community server is open now.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>The official servers closed on 11 November 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Read it here</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Go Hunting</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Player guide: every step, and fixes for common problems</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download the launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Step {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>On its first start, the launcher offers to open from Steam's Play button: choose “Close Steam and set it”. Steam starts again by itself. Then press Play in Steam. The launcher lists what it changes on your PC: choose Set up, and answer Yes when Windows asks to install a certificate and to edit the hosts file. The game's files are never changed.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>On its first start, the launcher opens the setup window: choose Set up, and answer Yes when Windows asks to install a certificate and to edit the hosts file. Steam's Play button dialog follows at the next launcher start (or at once after “Not now”): choose “Close Steam and set it”. Steam starts again by itself. The game's files are never changed.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Press “Sign in with Steam” in the launcher and sign in in the browser that opens, with the Steam account you play with. Choose a reserve and a start, then press Start Game. The first time, Windows Firewall asks about the game: choose Allow. Keep the launcher open while you play.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Troubleshooting</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restore your backup</value></data>
@@ -1454,14 +1454,14 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>This name is taken.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choose a name: the old one is taken.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Sign in the app that shows this code?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool that shows this code will be signed in as you.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>You are {0}. The old launcher's start page that shows this code will be signed in as you.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirm only if this code is on your screen right now.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Sign in the app on this PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool that you just started on this PC will be signed in as you.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirm only if you pressed “{0}” in one of them a moment ago.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Yes, sign in</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Done</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Go back to the app that showed the code (the launcher or the backup tool).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Go back to the old launcher's start page that showed the code.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Join the Discord: news, help and the operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>This sign-in ran out of time, or was started in another browser. Start again.</value></data>

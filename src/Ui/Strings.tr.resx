@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>{game_full} için resmî olmayan topluluk sunucusu: resmî sunucular kapandıktan sonra da oynamaya devam edin, profiliniz bir yedekten geri yüklenir.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>{game_full} için resmî olmayan topluluk sunucusu: oynamaya devam edin, profiliniz bir yedekten geri yüklenir.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: {game_full} topluluk sunucusu</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Sayfa bulunamadı</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Bu sayfa mevcut değil.</value></data>
@@ -118,8 +118,8 @@
   <data name="Alert.No" xml:space="preserve"><value>Hayır</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Kapat</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>YAŞ DERECELENDİRMELERİ</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Çalışma sürüyor: bazı sayfalar hâlâ örnek içerik gösteriyor. Resmi sunucular 2026-11-11 tarihine kadar çalışır.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Profilinizi o zamana kadar kaydedin: yedekleme aracını indirin</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Çalışma sürüyor: bazı sayfalar hâlâ örnek içerik gösteriyor. Resmi sunucular 2026-11-11 tarihine kadar çalıştı.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Resmi sunucular 2026-11-11 tarihine kadar çalıştı: yedekleme aracı hakkında</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Profilinizi yedekleme aracıyla kaydedin</value></data>
   <data name="Backup.Intro" xml:space="preserve"><value>Yedekleme aracı, resmi sunucular hâlâ açıkken, 2026-11-11 tarihine kadar profilinizi (istatistikler, envanter, ödüller, av geçmişi ve daha fazlası) bilgisayarınıza dosya olarak kaydeden küçük bir Windows uygulamasıdır. Yalnızca okur; sunucuda hiçbir şeyi değiştirmez.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>backup-win-x64.zip dosyasını indirip açın. backup.exe ile settings.json aynı klasörde kalsın.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence geliştirme aşamasında</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Topluluk sunucusu herkesin gözü önünde geliştiriliyor. Hesaplar, yedeğinizi geri yükleme ve bu web sitesi şekilleniyor; sunucu yakında herkese açılacak.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Herkese açılış çok yakında.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Resmi sunucular kapanmadan hesabınızı kaydedin</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Resmi sunucular 11 Kasım 2026'da kapanıyor. Yedekleme aracını indirin ve profilinizi hemen kaydedin: envanter, ödüller, istatistikler ve daha fazlası. Topluluk sunucusu açıldığında geri yükleyebilirsiniz.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Profilinizi 11 Kasım 2026'dan önce yedekleyin.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Resmi sunucular kapandı</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Resmi sunucular 11 Kasım 2026'da kapandı. Yedekleme aracı profilinizi kaydetti: envanter, ödüller, istatistikler ve daha fazlası. Topluluk sunucusu şimdi açık.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Resmi sunucular 11 Kasım 2026'da kapandı.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Buradan okuyun</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Ava Çık</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>TEK OYUNCULU MOD</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Oyuncu rehberi: her adım ve sık görülen sorunların çözümleri</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Başlatıcıyı indir</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Adım {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı, Steam'in Oyna düğmesinden açılmayı önerir: “Steam'i kapat ve ayarla” seçeneğini seç. Steam kendiliğinden yeniden başlar. Sonra Steam'de Oyna'ya bas. Başlatıcı PC'nde neyi değiştirdiğini listeler: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Oyunun dosyaları asla değiştirilmez.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>İlk açılışta başlatıcı kurulum penceresini açar: Kur'u seç ve Windows bir sertifika kurmak ve hosts dosyasını düzenlemek için sorduğunda Evet de. Steam'in Oyna düğmesi penceresi başlatıcının sonraki açılışında gelir (veya “Şimdi değil”den hemen sonra): “Steam'i kapat ve ayarla” seçeneğini seç. Steam kendiliğinden yeniden başlar. Oyunun dosyaları asla değiştirilmez.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Başlatıcıda “Steam ile oturum aç” düğmesine bas ve açılan tarayıcıda oynadığın Steam hesabıyla giriş yap. Bir av alanı ve başlangıç noktası seç, sonra Oyunu Başlat'a bas. İlk seferde Windows Güvenlik Duvarı oyunu sorar: İzin ver'i seç. Oynarken başlatıcıyı açık tut.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Sorun Giderme</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Yedeği geri yükle</value></data>
@@ -1454,14 +1454,14 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Bu ad alınmış.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Bir ad seçin: eski ad alınmış.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bu kodu gösteren uygulamada oturum açılsın mı?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Siz {0} kullanıcısınız. Bu kodu gösteren uygulama (launcher veya yedekleme aracı) sizin adınıza oturum açacak.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Siz {0} kullanıcısınız. Bu kodu gösteren eski launcher'ın başlangıç sayfası sizin adınıza oturum açacak.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Yalnızca bu kod şu anda ekranınızdaysa onaylayın.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Bu bilgisayardaki uygulamada oturum açılsın mı?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Siz {0} kullanıcısınız. Bu bilgisayarda az önce başlattığınız uygulama (launcher veya yedekleme aracı) sizin adınıza oturum açacak.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Yalnızca az önce bunlardan birinde “{0}” düğmesine bastıysanız onaylayın.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Evet, oturum aç</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Tamam</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Kodu gösteren uygulamaya (launcher veya yedekleme aracı) geri dönün.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Kodu gösteren eski launcher'ın başlangıç sayfasına geri dönün.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Discord’a katılın: haberler, yardım ve operatör</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Üzgünüz</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Bu oturum açma süresi doldu veya başka bir tarayıcıda başlatıldı. Yeniden başlayın.</value></data>

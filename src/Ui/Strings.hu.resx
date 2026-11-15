@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Nem hivatalos közösségi szerver ({game_full}): játssz tovább a hivatalos szerverek bezárása után, a profilodat egy biztonsági mentésből visszaállítva.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Nem hivatalos közösségi szerver ({game_full}): játssz tovább, a profilodat egy biztonsági mentésből visszaállítva.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: közösségi szerver ({game_full})</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nem</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Bezár</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>KORBESOROLÁSOK</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Munkában: néhány oldal még mintatartalmat mutat. A hivatalos szerverek 2026-11-11-ig működnek.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Mentsd el a profilodat addig: töltsd le a mentőeszközt</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Munkában: néhány oldal még mintatartalmat mutat. A hivatalos szerverek 2026-11-11-ig működtek.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>A hivatalos szerverek 2026-11-11-ig működtek: a mentőeszközről</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Mentsd el a profilodat a mentőeszközzel</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>A mentőeszköz egy kis Windows-alkalmazás, amely fájlokként menti a profilodat (statisztikák, felszerelés, trófeák, vadászati előzmények és más) a számítógépedre, amíg a hivatalos szerverek működnek, 2026-11-11-ig. Csak olvas; a szerveren semmit sem módosít.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>A mentőeszköz egy kis Windows-alkalmazás, amely fájlokként menti a profilodat (statisztikák, felszerelés, trófeák, vadászati előzmények és más) a számítógépedre, amíg a hivatalos szerverek még működtek, 2026-11-11-ig. Csak olvas; a szerveren semmit sem módosít.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Töltsd le a backup-win-x64.zip fájlt, és csomagold ki. A backup.exe és a settings.json maradjon ugyanabban a mappában.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Indítsd el a backup.exe fájlt. A saját fiókodhoz nyisd meg a játékot, és kezdj egy vadászatot (a mentőeszköz lehet nyitva előtte vagy utána); vagy válaszd a „Public profile” lehetőséget, és írj be egy nevet vagy id-t.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Jelöld be, mit mentesz, és nyomd meg a „Start” gombot. Az eredmény egy mentési mappa és egy mentési zip a Documents\game-backup mappában. Ezt a zipet ne oszd meg senkivel.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>A Hunter Resurgence fejlesztés alatt áll</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>A közösségi szerver nyilvánosan épül. A fiókok, a mentésed visszaállítása és ez a weboldal készülőben van, a szerver hamarosan megnyílik a nyilvánosság előtt.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Hamarosan nyílik a nyilvános játék.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Mentsd el a fiókodat, mielőtt a hivatalos szerverek bezárnak</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezárnak. Töltsd le a mentőeszközt, és mentsd el a profilodat most: felszerelés, trófeák, statisztikák és más. A közösségi szerveren visszaállíthatod, amint megnyílik.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Mentsd el a profilod 2026. november 11. előtt.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>A hivatalos szerverek bezártak</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezártak. A mentőeszköz elmentette a profilodat: felszerelést, trófeákat, statisztikákat és mást. A közösségi szerver most nyitva van.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezártak.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Olvasd el itt</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Irány vadászni</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EGYJÁTÉKOS</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Játékosútmutató: minden lépés és a gyakori problémák megoldása</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Az indító letöltése</value></data>
   <data name="Download.Step" xml:space="preserve"><value>{0}. lépés</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Első indításkor az indító felajánlja, hogy a Steam Játék gombjáról nyíljon meg: válaszd ezt: „Steam bezárása és beállítás”. A Steam magától újraindul. Ezután nyomd meg a Játék gombot a Steamben. Az indító felsorolja, mit változtat a gépeden: válaszd a Beállítás lehetőséget, és felelj Igennel, amikor a Windows tanúsítvány telepítésére és a hosts fájl szerkesztésére kér engedélyt. A játék fájljai sosem változnak.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Első indításkor az indító megnyitja a beállítóablakot: válaszd a Beállítás lehetőséget, és felelj Igennel, amikor a Windows tanúsítvány telepítésére és a hosts fájl szerkesztésére kér engedélyt. A Steam Játék gombjának párbeszédablaka az indító következő indításakor jön (vagy rögtön a „Most nem” után): válaszd ezt: „Steam bezárása és beállítás”. A Steam magától újraindul. A játék fájljai sosem változnak.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Nyomd meg az indítóban ezt: „Bejelentkezés Steammel”, és jelentkezz be a megnyíló böngészőben azzal a Steam-fiókkal, amellyel játszol. Válassz egy rezervátumot és egy kezdőpontot, majd nyomd meg a Játék indítása gombot. Első alkalommal a Windows tűzfal rákérdez a játékra: válaszd az Engedélyezés lehetőséget. Játék közben hagyd nyitva az indítót.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Hibaelhárítás</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Mentés visszaállítása</value></data>
@@ -1454,14 +1454,14 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ez a név foglalt.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Válassz nevet: a régi foglalt.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bejelentkezteted az alkalmazást, amely ezt a kódot mutatja?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Te vagy {0}. Az alkalmazás, amely ezt a kódot mutatja (a launcher vagy a mentőeszköz), a te fiókodba jelentkezik be.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Te vagy {0}. A régi launcher kezdőlapja, amely ezt a kódot mutatja, a te fiókodba jelentkezik be.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha ez a kód éppen most van a képernyődön.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Bejelentkezteted a számítógépen lévő alkalmazást?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Te vagy {0}. Az alkalmazás, amelyet az imént indítottál el ezen a számítógépen (a launcher vagy a mentőeszköz), a te fiókodba jelentkezik be.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha az imént a(z) „{0}” gombra kattintottál az egyikben.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Igen, bejelentkezés</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Kész</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Térj vissza az alkalmazáshoz, amely a kódot mutatta (a launcher vagy a mentőeszköz).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Térj vissza a régi launcher kezdőlapjához, amely a kódot mutatta.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Csatlakozz a Discordhoz: hírek, segítség és az üzemeltető</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sajnáljuk</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ez a bejelentkezés lejárt, vagy másik böngészőben indult. Kezdd elölről.</value></data>

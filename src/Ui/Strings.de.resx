@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Inoffizieller Community-Server für {game_full}: weiterspielen, wenn die offiziellen Server schließen, mit deinem Profil aus einer Sicherung.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Inoffizieller Community-Server für {game_full}: weiterspielen, mit deinem Profil aus einer Sicherung.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: Community-Server für {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Seite nicht gefunden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Diese Seite existiert nicht.</value></data>
@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nein</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>ALTERSFREIGABEN</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>In Arbeit: einige Seiten zeigen noch Beispielinhalte. Die offiziellen Server laufen bis zum 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Sichern Sie Ihr Profil vorher: Backup-Tool herunterladen</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>In Arbeit: einige Seiten zeigen noch Beispielinhalte. Die offiziellen Server liefen bis zum 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Die offiziellen Server liefen bis zum 2026-11-11: zum Backup-Tool</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Profil mit dem Backup-Tool sichern</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Das Backup-Tool ist eine kleine Windows-App, die Ihr Profil (Statistiken, Inventar, Trophäen, Jagdverlauf und mehr) als Dateien auf Ihrem PC speichert, solange die offiziellen Server noch laufen, bis zum 2026-11-11. Es liest nur; auf dem Server ändert es nichts.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Das Backup-Tool ist eine kleine Windows-App, die Ihr Profil (Statistiken, Inventar, Trophäen, Jagdverlauf und mehr) als Dateien auf Ihrem PC speichert, solange die offiziellen Server noch liefen, bis zum 2026-11-11. Es liest nur; auf dem Server ändert es nichts.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Laden Sie backup-win-x64.zip herunter und entpacken Sie es. Lassen Sie backup.exe und settings.json im selben Ordner.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Starten Sie backup.exe. Für Ihr eigenes Konto öffnen Sie das Spiel und starten eine Jagd (das Backup-Tool kann vorher oder nachher geöffnet werden); oder wählen Sie „Öffentliches Profil“ und geben Sie einen Handle oder eine ID ein.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Haken Sie an, was gesichert werden soll, und klicken Sie auf „Starten“. Das Ergebnis ist ein Backup-Ordner und ein Backup-Zip in Documents\game-backup. Behalten Sie dieses Backup-Zip für sich.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence ist in Entwicklung</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Der Community-Server entsteht in aller Öffentlichkeit. Konten, die Wiederherstellung Ihres Backups und diese Website nehmen Gestalt an; der Server öffnet bald für alle.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Öffentliches Spielen startet bald.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Sichern Sie Ihr Konto, bevor die offiziellen Server schließen</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server schließen am 11. November 2026. Laden Sie das Backup-Tool herunter und sichern Sie jetzt Ihr Profil: Inventar, Trophäen, Statistiken und mehr. Nach der Eröffnung des Community-Servers können Sie es dort wiederherstellen.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Sichern Sie Ihr Profil vor dem 11. November 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Die offiziellen Server sind geschlossen</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen. Das Backup-Tool hat Ihr Profil gesichert: Inventar, Trophäen, Statistiken und mehr. Der Community-Server ist jetzt geöffnet.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Hier lesen</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Zur Jagd</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EINZELSPIELER</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spielerhandbuch: jeder Schritt und Lösungen für häufige Probleme</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Launcher herunterladen</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Schritt {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Beim ersten Start bietet der Launcher an, sich über den Spielen-Knopf von Steam zu öffnen: Wählen Sie „Steam schließen und einstellen“. Steam startet von selbst neu. Drücken Sie dann in Steam auf Spielen. Der Launcher listet auf, was er an Ihrem PC ändert: Wählen Sie Einrichten und antworten Sie mit Ja, wenn Windows fragt, ob ein Zertifikat installiert und die hosts-Datei bearbeitet werden darf. Die Dateien des Spiels werden nie verändert.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Beim ersten Start öffnet der Launcher das Einrichtungsfenster: Wählen Sie Einrichten und antworten Sie mit Ja, wenn Windows fragt, ob ein Zertifikat installiert und die hosts-Datei bearbeitet werden darf. Der Dialog von Steam zum Spielen-Knopf folgt beim nächsten Start des Launchers (oder sofort nach „Nicht jetzt“): Wählen Sie „Steam schließen und einstellen“. Steam startet von selbst neu. Die Dateien des Spiels werden nie verändert.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Drücken Sie im Launcher auf „Mit Steam anmelden“ und melden Sie sich im sich öffnenden Browser mit dem Steam-Konto an, mit dem Sie spielen. Wählen Sie ein Revier und einen Startpunkt und drücken Sie auf Spiel starten. Beim ersten Mal fragt die Windows-Firewall nach dem Spiel: Wählen Sie Zulassen. Lassen Sie den Launcher offen, während Sie spielen.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Fehlerbehebung</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Ihr Backup wiederherstellen</value></data>
@@ -1454,14 +1454,14 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dieser Name ist vergeben.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wähle einen Namen: Der alte ist vergeben.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Die App anmelden, die diesen Code zeigt?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du bist {0}. Die App, die diesen Code zeigt (der Launcher oder das Backup-Tool), wird als du angemeldet.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du bist {0}. Die Startseite des alten Launchers, die diesen Code zeigt, wird als du angemeldet.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bestätige nur, wenn dieser Code gerade auf deinem Bildschirm steht.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Die App auf diesem PC anmelden?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du bist {0}. Die App, die du gerade auf diesem PC gestartet hast (der Launcher oder das Backup-Tool), wird als du angemeldet.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bestätige nur, wenn du gerade in einer von ihnen auf „{0}“ geklickt hast.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, anmelden</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fertig</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gehe zurück zur App, die den Code gezeigt hat (der Launcher oder das Backup-Tool).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gehe zurück zur Startseite des alten Launchers, die den Code gezeigt hat.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Tritt dem Discord bei: Neuigkeiten, Hilfe und der Betreiber</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Entschuldigung</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Diese Anmeldung ist abgelaufen oder wurde in einem anderen Browser gestartet. Beginne von vorn.</value></data>
