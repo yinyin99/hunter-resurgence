@@ -274,7 +274,7 @@ public static class Importer
             double[] Track(string key)
             {
                 var a = (s[key] as JsonArray ?? []).Select(n => Dbl(n) ?? 0).ToArray();
-                if (a.Length != 59) warnings.Add($"skills {key}: {a.Length} values, 59 expected");
+                if (a.Length is not (59 or 60)) warnings.Add($"skills {key}: {a.Length} values, 59 or 60 expected");
                 return a;
             }
             var set = new SkillSet(weapon, Track("tracking"), Track("spotting"));

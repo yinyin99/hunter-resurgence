@@ -122,7 +122,7 @@ public sealed partial class State
             return new JsonObject
             {
                 ["id"] = killId, ["species"] = Py.IsStr(k["speciesName"]) ? Py.Str(k["speciesName"]) : "#" + Py.Str(k["species"]), ["weapon"] = ItemOf(hit, "weapon_id"), ["ammo"] = ItemOf(hit, "ammo_id"),
-                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null,
+                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null, ["photo"] = C(info?["photo"]),
             };
         }
         return new JsonObject

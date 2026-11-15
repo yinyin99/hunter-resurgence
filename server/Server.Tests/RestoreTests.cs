@@ -438,6 +438,36 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestASavedKillWithoutAPhotoGetsItsRestoredTrophyShotInBothReplies()
+    {
+        var zip = TestZip.Own().Gallery("""
+            [{"id":3,"type":2,"url":"https://photos.example/p/new.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":"9","id":777,"species":"Test Deer"}},
+             {"id":2,"type":2,"url":"https://photos.example/p/old.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":"9","id":777,"species":"Test Deer"}}]
+            """).Media("photos/photos.example_p_new.jpg", TestZip.Jpeg("new")).Media("photos/photos.example_p_old.jpg", TestZip.Jpeg("old"))
+            .Reply("Public_user_expedition__user_id=1001__expedition_id=9100.json", "/v1/Public_user/expedition",
+                   """{"stats":null,"kills":[{"id":777,"speciesName":"Test Deer","kill":{"score":9,"photo":null},"hits":[]},{"id":779,"speciesName":"Test Deer","kill":{"score":8,"photo":null},"hits":[]}],"expedition":{"id":9100,"reserve":2}}""",
+                   ("user_id", "1001"), ("expedition_id", "9100"));
+        Restorer.Import(state, Zip(zip), null, tmp);
+        var kills = JsonNode.Parse(state.ExpeditionReply(1001, "null"u8.ToArray(), "expedition_id=9100"u8.ToArray()))!["kills"]!.AsArray();
+        Assert.Equal(TestZip.Jpeg("new"), File.ReadAllBytes(state.PhotoFile(Link(kills[0]!["kill"]!["photo"]))!));  // the newest picture of kill 777
+        Assert.Null(kills[1]!["kill"]!["photo"]);
+        var hunt = state.PublicHunt(1001, 9100)!["kills"]!.AsArray();
+        Assert.Equal(Link(kills[0]!["kill"]!["photo"]), Link(hunt[0]!["photo"]));
+        Assert.Null(hunt[1]!["photo"]);
+    }
+
+    [Fact]
+    public void AdminGalleryDetailsRestoresTheSavedProfileBackgroundTheAccountLacks()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Reply("game_user_1001_profile.json", "/game/user/1001/profile", """{"background":"b.png","ribbon":"r.png"}""")), null, tmp);
+        using (var con = state.Store.Open(1001)) con.Exec("DELETE FROM extras WHERE account_id = $a AND path LIKE 'game!_user!_%' ESCAPE '!'");
+        Assert.Null(state.ProfileBackground(1001));
+        Assert.EndsWith(", profile background restored", Assert.Single(state.SweepGalleryDetails(tmp, 1001)));
+        Assert.Equal("b.png", (string)state.ProfileBackground(1001)!);
+        Assert.DoesNotContain("profile", Assert.Single(state.SweepGalleryDetails(tmp, 1001)));
+    }
+
+    [Fact]
     public void AdminGalleryDetailsGivesTheRestoredPicturesTheirDetailsFromTheKeptZipAndChangesNothingElse()
     {
         Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);

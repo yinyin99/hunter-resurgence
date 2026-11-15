@@ -588,8 +588,8 @@ public class ImporterTests
         var z = SyntheticZip.Own();
         z.Reply("/v1/Skill/list", """{"weapon":{},"tracking":[1,2],"spotting":[]}""", ("user_id", SyntheticZip.Uid));
         var w = z.Read().Report.Warnings;
-        Assert.Contains("skills tracking: 2 values, 59 expected", w);
-        Assert.Contains("skills spotting: 0 values, 59 expected", w);
+        Assert.Contains("skills tracking: 2 values, 59 or 60 expected", w);
+        Assert.Contains("skills spotting: 0 values, 59 or 60 expected", w);
     }
 
     [Fact]
