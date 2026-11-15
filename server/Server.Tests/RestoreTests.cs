@@ -391,7 +391,7 @@ public class RestoreTests : StateTestBase
     public void TestTheGalleryPicturesOfAZipAreListedAtTheServersLinksWithTheirSavedLabels()
     {
         var result = Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);
-        Assert.Contains("pictures stored: gallery 2, kill photos and score pages 2, avatar and background pictures 1; 1 gallery entry without a picture in the zip", result.Report);
+        Assert.Contains("pictures stored: gallery 2, kill photos and score pages 2, avatar and background pictures 1; pictures from links: 0 of 1", result.Report);
         var gallery = Gallery(1001);
         Eq("""[2, 2, "120.5", "Test Deer", 3, "", ""]""", T(JsonNode.Parse(state.GalleryListReply(1001, []))!["total"], gallery[0]!["type"], gallery[0]!["label"], gallery[0]!["animal"],
             gallery[1]!["type"], gallery[1]!["label"], gallery[1]!["animal"]));  // newest first, as saved
@@ -412,7 +412,7 @@ public class RestoreTests : StateTestBase
              {"id":1,"type":2,"url":"https://photos.example/p/a.jpg","thumbnail":"","label":"","animal":""}]
             """).Media("kills/photos.example_p_a.jpg", TestZip.Jpeg("old")).Media("kills/photos.example_p_b.jpg", TestZip.Jpeg("old-b")).Media("photos/photos.example_p_b.jpg", TestZip.Jpeg("new-b"));
         var result = Restorer.Import(state, Zip(zip), null, tmp);
-        Assert.DoesNotContain("without a picture", result.Report);
+        Assert.DoesNotContain("pictures from links", result.Report);
         var gallery = Gallery(1001);
         Assert.Equal(TestZip.Jpeg("new-b"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
         Assert.Equal(TestZip.Jpeg("old"), File.ReadAllBytes(state.PhotoFile(Link(gallery[1]!["url"]))!));

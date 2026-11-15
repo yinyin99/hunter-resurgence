@@ -50,10 +50,11 @@ public static class Restorer
         return Apply(state, zipPath, sha, read, id, id, handle, exists, backupDatabase: true, dataDir, null);
     }
 
-    /// <summary>Restore only the pictures of the zip onto an existing account (<see cref="State.PreparePictures"/>) and its avatar; nothing else of the account changes.
-    /// Returns the pictures report and the avatar link.</summary>
+    /// <summary>Restore only the pictures of the zip onto an existing account (<see cref="State.PreparePictures"/>) and its avatar; nothing else of the account changes, and no picture of it is removed:
+    /// only what the account lacks is added. The pictures of the gallery links the zip lacks come from the zip of fetched pictures kept with it (<see cref="PicturesZip"/>); when none was kept and `links` is
+    /// given, they are fetched now. Returns the pictures report and the avatar link.</summary>
     /// <exception cref="RestoreException">The zip is refused or the account does not exist.</exception>
-    public static (string Report, string Avatar) ImportPictures(State state, string zipPath, long id, string dataDir)
+    public static (string Report, string Avatar) ImportPictures(State state, string zipPath, long id, string dataDir, PictureLinks? links = null)
     {
         var read = Importer.Read(zipPath, state.Catalogue);
         var store = state.Store;
@@ -69,9 +70,13 @@ public static class Restorer
         State.Unpacking pictures;
         try
         {
+            var linked = PicturesZip(kept);
+            if (links is not null && !File.Exists(linked) && State.MissingPictures(read) is { Count: > 0 } missing)
+                links.Fetch(missing, linked).GetAwaiter().GetResult();  // ponytail: a command line has no other work for this thread; fetched before the transaction opens
+            var hashes = state.HashPictures(read, id, kept, File.Exists(linked) ? linked : null, replace: false);  // before the transaction: it holds the database for writing
             using var con = store.Open(id);
             con.Begin();
-            pictures = state.PreparePictures(con, read);
+            pictures = state.PreparePictures(con, read, hashes, replace: false);
             var account = store.AccountJson(id);
             SetAvatar(account, read.Model, avatar);
             con.Exec("UPDATE accounts SET account = ? WHERE id = ?", Py.Dumps(account), id);
@@ -84,12 +89,19 @@ public static class Restorer
         }
         catch
         {
-            if (copied) File.Delete(kept);
+            if (copied)
+            {
+                File.Delete(kept);
+                File.Delete(PicturesZip(kept));
+            }
             throw;
         }
         state.Unpack(id, kept, pictures);
         return (pictures.Report, avatar);
     }
+
+    /// <summary>The zip of the pictures fetched from the links of a kept backup zip (<see cref="PictureLinks"/>), beside it: `restores/&lt;account&gt;/&lt;sha256&gt;.pictures.zip`.</summary>
+    public static string PicturesZip(string keptZip) => keptZip[..^".zip".Length] + ".pictures.zip";
 
     public static string Sha256(string path)
     {
@@ -116,11 +128,14 @@ public static class Restorer
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
             File.Copy(zipPath!, kept);
         }
+        // the pictures fetched at upload time sit beside the kept zip: under the account's id here, or under the one it had before it adopted the zip's
+        var linked = zipPath is null ? null : new[] { kept, Path.Combine(dataDir, "restores", current.ToString(), sha + ".zip") }.Select(PicturesZip).FirstOrDefault(File.Exists);
+        var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
         var report = "";
         State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            pictures = state.PreparePictures(con, read);
+            pictures = state.PreparePictures(con, read, hashes, replace: true);
             report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);

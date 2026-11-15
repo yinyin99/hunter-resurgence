@@ -32,6 +32,9 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>Called with the text for the operator when a zip is kept (the server sets it to the review webhook).</summary>
     public Action<string> Alert { get; init; } = _ => { };
 
+    /// <summary>The links of a save's gallery pictures the zip lacks are fetched at upload time and kept with the zip (<see cref="Restorer.PicturesZip"/>); null: none are.</summary>
+    public PictureLinks? Pictures { get; init; }
+
     internal static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
 
     readonly ConcurrentDictionary<long, bool> inFlight = new();
@@ -166,12 +169,12 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>Apply the rules to the joined zip (read from its file) for the signed-in account; the upload ends whatever the outcome.</summary>
-    public UploadOutcome Finish(long account, string id)
+    public async Task<UploadOutcome> Finish(long account, string id)
     {
         if (Claim(account, id, out var u) is { } no) return no;
         try
         {
-            return Decide(account, u.Path);
+            return await Decide(account, u.Path);
         }
         finally
         {
@@ -202,7 +205,7 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
-    UploadOutcome Decide(long account, string path)
+    async Task<UploadOutcome> Decide(long account, string path)
     {
         var sha = Restorer.Sha256(path);
         Restored read;
@@ -219,13 +222,33 @@ public sealed class Uploads(State state, string dataDir)
             return new(400, "invalid", $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
         }
         var uid = long.Parse(read.Model.Identity.Uid);
-        lock (decide)
+        // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
+        UploadOutcome? Refused()
         {
-            // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
-            if (Refusal(account, uid) is { Kind: "already" or "taken" } refused) return refused;
-            return Review(account, sha, path, uid, "waiting for the operator", read.Model.Profile.Handle ?? read.Model.Identity.Handle);
+            lock (decide) return Refusal(account, uid) is { Kind: "already" or "taken" } refused ? refused : null;
+        }
+        if (Refused() is { } early) return early;
+        bool known;
+        using (var con = Store.Open(account))  // the refusals of Review that are cheap to know, before a fetch that may take a minute
+        {
+            known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
+            if (!known && (long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview) return Crowded;
+        }
+        // the pictures the zip lists by link and does not hold: fetched now, so that a wait for review does not lose them (not inside the lock: a photo host may be slow); a zip already waiting has its own
+        string? links = path + ".pictures";
+        try
+        {
+            if (known || Pictures is null || State.MissingPictures(read) is not { Count: > 0 } missing || await Pictures.Fetch(missing, links) == 0) links = null;
+            lock (decide)
+                return Refused() ?? Review(account, sha, path, uid, "waiting for the operator", read.Model.Profile.Handle ?? read.Model.Identity.Handle, links);
+        }
+        finally
+        {
+            if (links is not null) File.Delete(links);
         }
     }
+
+    static readonly UploadOutcome Crowded = new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
 
     /// <summary>The rules of a restore (the operator's approve runs them again): once per game user id, no user id another
     /// account holds. Uploading is the player's consent to replace the profile, so an account that has played is restored too
@@ -242,7 +265,7 @@ public sealed class Uploads(State state, string dataDir)
     }
 
     /// <summary>Keep the zip for the operator and write nothing of it into the account.</summary>
-    UploadOutcome Review(long account, string sha, string path, long uid, string note, string? handle)
+    UploadOutcome Review(long account, string sha, string path, long uid, string note, string? handle, string? links)
     {
         long? keptId = null;
         using (var con = Store.Open(account))
@@ -252,10 +275,11 @@ public sealed class Uploads(State state, string dataDir)
             if (!known)
             {
                 if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
-                    return new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
+                    return Crowded;
                 var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
                 Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
                 File.Copy(path, kept, overwrite: true);
+                if (links is not null) File.Move(links, Restorer.PicturesZip(kept), overwrite: true);
                 con.Exec("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, ?, ?, ?, ?)", Store.Now(), sha, uid, note);
                 keptId = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
             }
@@ -383,6 +407,7 @@ public sealed class Uploads(State state, string dataDir)
                 con.Commit();
             }
             File.Delete(Kept(row));
+            File.Delete(Restorer.PicturesZip(Kept(row)));
             return true;
         }
     }

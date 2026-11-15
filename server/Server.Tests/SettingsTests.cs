@@ -225,4 +225,18 @@ public class SettingsTests : IDisposable
         o["event"]!["end"] = "2031-03-01T00:00:00Z";
         Assert.Throws<InvalidDataException>(() => Load(o));
     }
+
+    [Fact]
+    public void ThePictureLinkHostsAreHostNamesAndNoneByDefault()
+    {
+        Assert.Empty((JsonArray)Load(Minimal()).Cfg["picture_link_hosts"]!);
+        var o = Minimal();
+        o["picture_link_hosts"] = new JsonArray("Photos.Example", "cdn.example");
+        Assert.Equal(["photos.example", "cdn.example"], ((JsonArray)Load(o).Cfg["picture_link_hosts"]!).Select(h => (string)h!));
+        foreach (var bad in new JsonNode[] { "photos.example", new JsonArray("https://photos.example"), new JsonArray("photos.example:8443"), new JsonArray("photos.example/p"), new JsonArray("127.0.0.1"), new JsonArray(5) })
+        {
+            o["picture_link_hosts"] = bad;
+            Assert.Contains("picture_link_hosts", Assert.Throws<InvalidDataException>(() => Load(o)).Message);
+        }
+    }
 }
