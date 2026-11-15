@@ -50,7 +50,6 @@ The git tag is the only version: `vMAJOR.MINOR.PATCH` or `vMAJOR.MINOR.PATCH-suf
 - Patch: fixes only.
 - Minor: anything new, including any change to the manifest format.
 - `-rc.N` (for example `v0.2.0-rc.1`): test builds. A tag with a suffix is published as a prerelease.
-- `1.0.0`: when the community server accepts these backups.
 
 Tag with an annotated tag whose message lists the changes; it becomes the "Changes" section of the release notes:
 
