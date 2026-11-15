@@ -273,7 +273,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             Eq("[]", await Read(host, path, viewer));  // a new account starts with none
         }
         Assert.Equal(401, (await Call("GET", V2, "/game/user/lodges", "unknown")).Status);
-        Assert.DoesNotContain("lodge 3", (await Call("GET", Web, "/v1/game/user/lodges", null)).Body);
+        Assert.Equal((200, """{"errorCode": 5, "message": "token expired"}"""), await Call("GET", Web, "/v1/game/user/lodges", null));
         Eq(Reply(state.TrophiesReply(OWNER)), await Read(Web, "/v1/game/user/trophies", owner));  // the editor's trophy list, on the current build too
     }
 

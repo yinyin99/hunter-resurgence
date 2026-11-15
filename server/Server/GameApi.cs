@@ -651,9 +651,6 @@ public static class GameApi
         return new(200, JsonAnyOrigin(), Py.DumpBytes(reply), "patch");
     }
 
-    /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
-    /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
-    /// server. ponytail: the game server's and the game client's own reply to an expired session is not known; err 1 is a guess.</summary>
     /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number.</summary>
     static byte[] LeaveForm(byte[] body)
     {
@@ -664,6 +661,9 @@ public static class GameApi
         return Encoding.UTF8.GetBytes(sent.ToJsonString());
     }
 
+    /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
+    /// (token expired, HTTP 200: the web client renews its token and retries), a 401 on the game API v2 and on the game
+    /// server. ponytail: the game server's and the game client's own reply to an expired session is not known; err 1 is a guess.</summary>
     static Reply Denied(Game game, Req r) =>
         r.Host == game.Api ? new(200, JsonAnyOrigin(), "{\"errorCode\": 5, \"message\": \"token expired\"}"u8.ToArray(), "denied")
         : r.Host == game.Apiv2 ? new(401, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)],
