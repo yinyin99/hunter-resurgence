@@ -100,6 +100,34 @@ public class PictureLinksTests : StateTestBase
         Assert.Empty(Directory.GetFiles(tmp, "*.part"));
     }
 
+    /// <summary>The first picture answers at once; the others hang until the fetch is cut (`Hang`) or answer at once too.</summary>
+    sealed class Slow : HttpMessageHandler
+    {
+        public volatile bool Hang = true;
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            if (Hang && request.RequestUri!.AbsolutePath != "/p/1.jpg") await Task.Delay(Timeout.Infinite, ct);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(TestZip.Jpeg(request.RequestUri!.AbsolutePath)) };
+        }
+    }
+
+    [Fact]
+    public async Task AFetchThatRunsOutOfItsBudgetLeavesTheRestAndALaterFetchAddsItKeepingWhatCame()
+    {
+        var host = new Slow();
+        var links = new PictureLinks([Host], host);
+        var urls = Enumerable.Range(1, 6).Select(n => $"https://photos.example/p/{n}.jpg").ToList();
+        var path = Path.Combine(tmp, "budget.zip");
+        Assert.Equal(1, await links.Fetch(urls, path, TimeSpan.FromMilliseconds(500)));  // the other five were cut
+        host.Hang = false;
+        Assert.Equal(5, await links.Fetch(urls, path));  // only the five left are fetched; the first stays
+        Assert.Equal(0, await links.Fetch(urls, path));  // nothing left to fetch
+        using var zip = ZipFile.OpenRead(path);
+        Assert.Equal(urls.Select(PictureLinks.EntryName).Order(), zip.Entries.Select(e => e.Name).Order());
+        Assert.Empty(Directory.GetFiles(tmp, "*.part"));
+    }
+
     [Theory]
     [InlineData("93.184.216.34", true)]
     [InlineData("2606:4700:4700::1111", true)]
@@ -154,7 +182,7 @@ public class PictureLinksTests : StateTestBase
         var done = uploads.Approve(Row(player));
         Assert.Equal("restored", done.Kind);
         Assert.Contains(Report, done.Report);
-        Assert.Equal(asked, host.Asked.Count);  // the approve fetches nothing: it uses what the upload kept
+        Assert.DoesNotContain(host.Asked.Skip(asked), u => u.AbsolutePath is "/p/ok.jpg" or "/p/hop.jpg");  // the approve fetches only what the upload did not get (the links that failed are tried again), not what it kept
         var gallery = Gallery(1001);  // the account adopted the zip's user id: the pictures follow it
         Assert.Equal(3, gallery.Count);
         Assert.Equal(["ok", "ok2", "a"], gallery.Select(p => System.Text.Encoding.ASCII.GetString(Bytes(p)[4..])));  // newest first, as saved
@@ -212,7 +240,7 @@ public class PictureLinksTests : StateTestBase
         var (second, _) = Restorer.ImportPictures(state, linkOnly, 1001, tmp, links);
         Assert.Contains("pictures stored: gallery 0", second);
         Assert.Contains("1 gallery picture already in the gallery", second);
-        Assert.Equal(asked, host.Asked.Count);  // what was fetched is kept: no second fetch
+        Assert.DoesNotContain(host.Asked.Skip(asked), u => u.AbsolutePath == "/p/ok.jpg");  // what was fetched is kept: no second fetch (a link that failed is tried again)
         Assert.Equal(2, Gallery(1001).Count);
 
         // a picture with the same bytes under another link is the same picture

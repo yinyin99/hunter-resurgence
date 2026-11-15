@@ -39,19 +39,35 @@ public sealed class PictureLinks
     /// <summary>The name of a link's picture in the pictures zip: the hash of the link as the save wrote it.</summary>
     public static string EntryName(string url) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(url))) + ".jpg";
 
-    /// <summary>Fetch what can be fetched of `urls` and write it to the zip `path` (not created when nothing came); returns how many pictures it holds.</summary>
-    public async Task<int> Fetch(IEnumerable<string> urls, string path)
+    /// <summary>Fetch what can be fetched of `urls` and add it to the zip `path` (created when absent, not when nothing came); a link the zip already holds is not fetched again. Returns how many pictures it added.
+    /// `budget`: how long all of it may take (default: the time of an upload request, which a proxy cuts after about 100 seconds; links not fetched by then are left for a later call).</summary>
+    public async Task<int> Fetch(IEnumerable<string> urls, string path, TimeSpan? budget = null)
     {
         if (hosts.Count == 0) return 0;
+        HashSet<string> have = [];
+        if (File.Exists(path))
+            using (var old = ZipFile.OpenRead(path)) have = [.. old.Entries.Select(e => e.Name)];
+        var todo = urls.Distinct().Where(u => !have.Contains(EntryName(u))).Take(MaxPictures).ToList();
+        if (todo.Count == 0) return 0;
         var ok = 0;
         long total = 0;
         var part = path + ".part";
-        using var cancel = new CancellationTokenSource(Total);
+        using var cancel = new CancellationTokenSource(budget ?? Total);
         try
         {
             await using (var file = File.Create(part))
             using (var zip = new ZipArchive(file, ZipArchiveMode.Create))
-                await System.Threading.Tasks.Parallel.ForEachAsync(urls.Take(MaxPictures), new ParallelOptions { MaxDegreeOfParallelism = AtOnce }, async (url, _) =>
+            {
+                if (have.Count > 0)  // the pictures already fetched stay
+                    using (var old = ZipFile.OpenRead(path))
+                        foreach (var e in old.Entries)
+                        {
+                            using var from = e.Open();
+                            using var to = zip.CreateEntry(e.Name, CompressionLevel.NoCompression).Open();
+                            from.CopyTo(to);
+                            total += e.Length;
+                        }
+                await System.Threading.Tasks.Parallel.ForEachAsync(todo, new ParallelOptions { MaxDegreeOfParallelism = AtOnce }, async (url, _) =>
                 {
                     if (await Get(url, cancel.Token) is not { } bytes) return;
                     lock (zip)  // a zip is written by one thread at a time
@@ -63,6 +79,7 @@ public sealed class PictureLinks
                         ok++;
                     }
                 });
+            }
             if (ok > 0) File.Move(part, path, overwrite: true);
         }
         finally

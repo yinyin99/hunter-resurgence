@@ -362,7 +362,7 @@ public sealed class Uploads(State state, string dataDir)
                         con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'restored', ?, ?, ?, '')",
                                  Store.Now(), finalId, handle, adopt ? 0 : 1);
                         Notify(con, $"{summary} Your user id is {finalId} and your name is {handle}.");
-                    });
+                    }, pictureLinks: Pictures);
                 return new(200, "restored", summary, result.Report);
             }
             catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the user id or the handle was taken between the check and the write
