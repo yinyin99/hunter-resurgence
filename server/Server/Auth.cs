@@ -34,11 +34,11 @@ public static class Lifetimes
 
 public static class Handles
 {
-    static readonly Regex Valid = new(@"\A[A-Za-z0-9][A-Za-z0-9_-]{2,19}\z", RegexOptions.ECMAScript);
+    static readonly Regex Valid = new(@"\A[A-Za-z0-9][A-Za-z0-9_-]{2,29}\z", RegexOptions.ECMAScript);
 
     /// <summary>What is wrong with a handle, null when it is fine. Uniqueness (case-insensitive) is the database's.</summary>
     public static string? Problem(string handle) =>
-        Valid.IsMatch(handle) ? null : "A name has 3 to 20 letters, digits, - or _ and starts with a letter or a digit.";
+        Valid.IsMatch(handle) ? null : "A name has 3 to 30 letters, digits, - or _ and starts with a letter or a digit.";
 }
 
 /// <summary>The game's credentials for one account: what Launch/start, User/jwt and Oauth/token hand out, and the signed
@@ -392,7 +392,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             }
         if (error is not null)
         {
-            (login.Typed, login.Old, login.Restore, login.Error) = (handle.Length > 20 ? handle[..20] : handle, old.Length > 20 ? old[..20] : old, restore, error);
+            (login.Typed, login.Old, login.Restore, login.Error) = (handle.Length > 30 ? handle[..30] : handle, old.Length > 50 ? old[..50] : old, restore, error);
             return Redirect(Page(r, "handle"));
         }
         var outcome = "fresh start";

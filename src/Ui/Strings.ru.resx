@@ -1449,12 +1449,12 @@
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Выберите имя</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Это имя увидят другие охотники.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Ваше имя</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>От 3 до 20 букв, цифр, - или _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>От 3 до 30 букв, цифр, - или _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Я здесь новичок</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Я играл раньше: восстановить то, что сохранилось от моего старого профиля</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, домики, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Оставьте пустым, чтобы использовать старое имя, если оно свободно.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Имя содержит от 3 до 20 букв, цифр, - или _ и начинается с буквы или цифры.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Имя содержит от 3 до 30 букв, цифр, - или _ и начинается с буквы или цифры.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Выберите имя: старое занято.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Войти в приложении, которое показывает этот код?</value></data>

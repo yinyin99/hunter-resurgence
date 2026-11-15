@@ -1449,12 +1449,12 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Izberite svoje ime</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>To ime vidijo drugi lovci.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Vaše ime</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 do 20 črk, števk, - ali _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 do 30 črk, števk, - ali _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Tu sem nov</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Že sem igral: obnovi, kar je bilo shranjeno od mojega starega profila</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Shranili smo del javnih profilov: predmete, trofeje, koče, spretnosti, statistiko in dosežke. Lovi, fotografije in denar niso bili shranjeni. Profile z visokim izidom najprej preveri operater.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Pustite prazno, če želite uporabiti staro ime, ko je prosto.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Ime ima 3 do 20 črk, števk, - ali _ in se začne s črko ali števko.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Ime ima 3 do 30 črk, števk, - ali _ in se začne s črko ali števko.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>To ime je zasedeno.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Izberite ime: staro je zasedeno.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Prijavim aplikacijo, ki prikazuje to kodo?</value></data>
