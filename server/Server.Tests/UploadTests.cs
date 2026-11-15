@@ -433,6 +433,25 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(("player", true), ((string)decision["handle"]!, (bool)decision["handleKept"]!));
     }
 
+    /// <summary>An account that claimed an archived profile and never played takes the zip's user id at approve: its claim, its lookups
+    /// and its community counts move with it (the foreign keys refused the restore while they stayed under the old id).</summary>
+    [Fact]
+    public async Task TestAnAccountThatClaimedAndNeverPlayedTakesTheZipsUserIdWithItsClaim()
+    {
+        using (var con = state.Store.Open())
+        {
+            con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, decided_ts, note, keep_handle) VALUES (?, 1001, 'Sample', 10, 'restored', 1, 1, '', 1)", player);
+            con.Exec("INSERT INTO claim_lookups (account_id, day, n) VALUES (?, 1, 1)", player);
+            con.Exec("INSERT INTO community_progress (event, mission_id, account_id, count) VALUES ('made_up', 1, ?, 2)", player);
+        }
+        var done = Operator.Approve(await Keep(TestZip.Own(), "claimed.zip", player, cookie), keepHandle: true);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.False(state.Store.AccountExists(player));
+        using var check = state.Store.Open();
+        foreach (var table in new[] { "claims", "claim_lookups", "community_progress" })
+            Assert.Equal(1L, check.Scalar($"SELECT count(*) FROM {table} WHERE account_id = 1001"));
+    }
+
     [Fact]
     public async Task TestUploadLimitsAndAFileThatIsNotABackup()
     {

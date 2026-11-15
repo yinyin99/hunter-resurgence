@@ -197,7 +197,7 @@ public static class Restorer
         con.Script("PRAGMA defer_foreign_keys = ON");
         foreach (var table in Store.PlayerTables)
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = $a", to);
-        foreach (var table in new[] { "tokens", "web_sessions", "restored_ids" })
+        foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
