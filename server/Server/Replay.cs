@@ -374,8 +374,8 @@ public static class Replay
 
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
-    /// (the record's `time`). Each rewrite is an exact text replacement; when the text is not found the file is served
-    /// unchanged and one warning is logged. The script is also served with `Cache-Control: no-cache`, and the start page
+    /// (the record's `time`). Each rewrite is an exact text replacement; when each text is not found exactly once the file is served
+    /// unchanged and one warning is logged. The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
@@ -393,14 +393,14 @@ public static class Replay
             if (reply.Status != 200 || r.Method != "GET") return reply;
             if (r.Path == "/client")
             {
-                var page = Encoding.UTF8.GetString(reply.Body);
-                return Token.IsMatch(page) ? NoCache(reply, Encoding.UTF8.GetBytes(Token.Replace(page, "$1?t=" + Version))) : reply;
+                var page = Encoding.Latin1.GetString(reply.Body);
+                return Token.IsMatch(page) ? NoCache(reply, Encoding.Latin1.GetBytes(Token.Replace(page, "$1?t=" + Version))) : reply;
             }
             if (!Script.IsMatch(r.Path)) return reply;
-            var text = Encoding.UTF8.GetString(reply.Body);
+            var text = Encoding.Latin1.GetString(reply.Body);  // Latin1 keeps every byte of the rest of the script as it was
             foreach (var (from, to) in Reads)
             {
-                if (!text.Contains(from, StringComparison.Ordinal))
+                if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
                 {
                     if (Interlocked.Exchange(ref warned, 1) == 0)
                         Console.Error.WriteLine("warning: the in-game page's round timer read was not found; the page is served unchanged");
@@ -408,7 +408,7 @@ public static class Replay
                 }
                 text = text.Replace(from, to, StringComparison.Ordinal);
             }
-            return NoCache(reply, Encoding.UTF8.GetBytes(text));
+            return NoCache(reply, Encoding.Latin1.GetBytes(text));
         }
 
         static Reply NoCache(Reply reply, byte[] body) =>

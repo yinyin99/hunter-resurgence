@@ -203,6 +203,8 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("(e[4])", text);
         Assert.Contains("(e[2])", text);
         Assert.Contains(("Cache-Control", "no-cache"), fixedScript.Headers);
+        Put("static/app/9.9.7/client.js", "a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});");
+        Same(("a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.7/client.js"));
         Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
         var page = await R("GET", "game_web.test", "/client");
         Assert.Contains("client.js?t=timer1", Encoding.UTF8.GetString(page.Body));
