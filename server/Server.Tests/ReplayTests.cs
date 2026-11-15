@@ -185,6 +185,30 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTeamsTimerReadAcceptsTheRecordAndStaysFailSafe()
+    {
+        void Put(string path, string text)
+        {
+            var f = Path.Combine(mirror, "game_web.test", path);
+            Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+            File.WriteAllText(f, text);
+        }
+        Put("static/app/9.9.9/client.js", "a({timer:e[4],x:1});b({timer:e[2]});");
+        Put("static/app/9.9.8/client.js", "unrelated script");
+        Put("client/index.html", "<script src=\"/static/app/9.9.9/client.js?t=v1\"></script>");
+        var fixedScript = await R("GET", "game_web.test", "/static/app/9.9.9/client.js");
+        var text = Encoding.UTF8.GetString(fixedScript.Body);
+        Assert.Equal("patch", fixedScript.Source);
+        Assert.DoesNotContain("timer:e[", text);
+        Assert.Contains("(e[4])", text);
+        Assert.Contains("(e[2])", text);
+        Assert.Contains(("Cache-Control", "no-cache"), fixedScript.Headers);
+        Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
+        var page = await R("GET", "game_web.test", "/client");
+        Assert.Contains("client.js?t=timer1", Encoding.UTF8.GetString(page.Body));
+    }
+
+    [Fact]
     public async Task TestGameWebMapTilesFallBackToTheMapHostFolder()
     {
         foreach (var (host, path, bytes) in new[] { ("map.test", "v7/tiles/2/3/3.jpg", "map"u8.ToArray()), ("map.test", "v7/tiles/2/4/0.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/2/0/4.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/6/0/0.jpg", "out"u8.ToArray()), ("game_web.test", "content/map/v7/tiles/1/0/0.jpg", "own"u8.ToArray()), ("map.test", "v7/tiles/1/0/0.jpg", "map"u8.ToArray()) })
