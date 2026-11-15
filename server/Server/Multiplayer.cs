@@ -79,7 +79,7 @@ public sealed class Games
         }
     }
 
-    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `not_allowed` (its host, a friends-only session of a stranger, or a hunterscore out of
+    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game` (the player hosts it), `not_allowed` (a friends-only session of a stranger, or a hunterscore out of
     /// its range), `host_not_ready` (the host's port and network id are not known yet), `password`, `full`. `session` makes the player's session token once it is let in.</summary>
     public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session)
     {
@@ -87,7 +87,8 @@ public sealed class Games
         {
             Prune(now);
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
-            if (g.Host == account || (!g.Public && !friendOf(g.Host)) || score < g.HsMin || score > g.HsMax) return (null, "not_allowed", null);
+            if (g.Host == account) return (null, "own_game", null);
+            if ((!g.Public && !friendOf(g.Host)) || score < g.HsMin || score > g.HsMax) return (null, "not_allowed", null);
             if (!g.Ready) return (null, "host_not_ready", null);
             if (g.Password != "" && !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password))) return (null, "password", null);
             if (g.Members.Count(m => m.Account != account) >= g.Max) return (null, "full", null);
@@ -145,6 +146,9 @@ public sealed partial class State
 
     static string Cut(string s, int n) => s.Length > n ? s[..n] : s;
 
+    /// <summary>A hunterscore limit of the form: whole, at most 99999 (the website's slider ends at 3000).</summary>
+    static long? Hs(string s) => Num(s) is { } n ? Math.Min(n, 99999) : null;
+
     /// <summary>A world coordinate as the game sends it: whole numbers without a fraction.</summary>
     static JsonNode Coord(double d) => d == Math.Floor(d) ? (JsonNode)(long)d : d;
 
@@ -159,7 +163,7 @@ public sealed partial class State
             Host = account, Reserve = Num(Form1(form, "reserve")) ?? 0, Time = Form1(form, "time"),
             Name = Form1(form, "name") is { Length: > 0 } name ? Cut(name, 25) : $"{Store.HandleOf(account)}'s game",
             Description = Cut(Form1(form, "description"), 255), Public = Form1(form, "public_game") != "0", Free = Form1(form, "free_players") != "0",
-            HsMin = Num(Form1(form, "hs_min")), HsMax = Num(Form1(form, "hs_max")), Password = Cut(Form1(form, "password"), 20),
+            HsMin = Hs(Form1(form, "hs_min")), HsMax = Hs(Form1(form, "hs_max")), Password = Cut(Form1(form, "password"), 20),
             Max = (int)Math.Clamp(Num(Form1(form, "max_players")) ?? 8, 2, 8),
         }, session);
         NoteLaunch(account, form);

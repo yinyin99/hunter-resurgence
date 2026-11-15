@@ -258,9 +258,20 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         var entry = (await Connect(Session(joined), GUEST))["network"]!["clients"]![0]!;
         Assert.Equal(($"{HOST}", "32303", Guid1), (entry["user_id"]!.ToString(), entry["port"]!.ToString(), (string)entry["guid"]!));
         Assert.Equal("full", Error(await Page(THIRD, $"mp=join&network_id={id}&lodge=101&loadout=0&password=pw")));
-        Assert.Equal("not_allowed", Error(await Page(HOST, $"mp=join&network_id={id}&lodge=101&loadout=0&password=pw")));  // its own
+        Assert.Equal("own_game", Error(await Page(HOST, $"mp=join&network_id={id}&lodge=101&loadout=0&password=pw")));
         Assert.Equal(400, (await Page(GUEST, $"mp=watch&network_id={id}&lodge=101")).Status);
         Assert.Equal(400, (await Page(GUEST, "mp=host&lodge=101")).Status);  // a host needs a reserve
+    }
+
+    [Fact]
+    public async Task TestTheWebsiteHostListsTheSameGamesWithoutACookie()
+    {
+        Eq("[]", Json(await Send("GET", "web.test", "/catalog/games")));
+        await Host();
+        var reply = await Send("GET", "web.test", "/catalog/games");
+        Assert.Equal(("catalog", 200), (reply.Source, reply.Status));
+        Eq(await List(), Json(reply));
+        Assert.Equal("Test Camp", (string)Json(reply)[0]!["name"]!);
     }
 
     [Fact]
