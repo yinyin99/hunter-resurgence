@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -21,7 +22,28 @@ public static class Importer
     }
 
     public static Restored Read(Stream zip, IItemCatalogue? catalogue = null, Limits? limits = null) =>
-        new Mapper(BackupReader.Read(zip, limits ?? Limits.Default), catalogue).Map();
+        new Mapper(Content(zip, limits ?? Limits.Default), catalogue).Map();
+
+    /// <summary>The readers, one per backup format: the first whose files match reads the zip. The zip's own files decide, never what an upload says of it.
+    /// A reader only turns its files into a <see cref="BackupContent"/>; the mapping and the restore rules are shared. A new format is one line here and its reader.
+    /// The format decides the parser and nothing else: a zip without our manifest's Steam id and claim hash has neither in its identity, so an operator reviews it.</summary>
+    static readonly (Func<ZipArchive, bool> IsOne, Func<ZipArchive, Limits, BackupContent> Read)[] Formats =
+    [
+        (BackupReader.IsOne, BackupReader.Read),   // ours: manifest.json
+        (SectionBackup.IsOne, SectionBackup.Read), // index.json + json_<section>.json
+    ];
+
+    static BackupContent Content(Stream stream, Limits lim)
+    {
+        using var zip = BackupReader.Open(stream, lim);
+        try
+        {
+            foreach (var (isOne, read) in Formats)
+                if (isOne(zip)) return read(zip, lim);
+        }
+        catch (InvalidDataException e) { throw new RestoreException("damaged zip: " + e.Message); }
+        throw new RestoreException("not a backup zip");
+    }
 
     /// <summary>A public profile from replies kept elsewhere (the operator's archive) instead of a zip: the content a public-mode zip of that player would give,
     /// mapped the same way. The caps are the zip's; a reply that is not JSON is rejected, like a zip's.</summary>
@@ -97,7 +119,7 @@ public static class Importer
 
             var completed = Date(m["completed_utc"]);
             var identity = new Identity(c.Uid, BackupReader.Text(m["handle"]) ?? Str(me?["handle"]), own ? BackupReader.Text(m["steam_id64"]) : null, mode,
-                c.Format, BackupReader.Text(m["tool_version"]), BackupReader.Text(m["claim_hash"])!, Date(m["started_utc"]), completed);
+                c.Format, BackupReader.Text(m["tool_version"]), BackupReader.Text(m["claim_hash"]), Date(m["started_utc"]), completed);
 
             var profile = Profile(me ?? byHandle, identity);
             var wallet = Wallet(me);
@@ -131,7 +153,7 @@ public static class Importer
 
             var model = new PlayerModel(identity, profile, account, wallet, items, skills, stats, achievements, trophies, lodges, extras);
             var report = new Report(own ? "my-account" : byHandle is not null ? "public by handle" : "public by id", restored, unsupported, missing, warnings,
-                c.Failed, c.Rejected, completed is not null ? "yes" : c.Format == 1 ? "unknown" : "no", catalogue is null ? "zero-only" : "catalogue", inferred);
+                c.Failed, c.Rejected, completed is not null ? "yes" : c.Format < 2 ? "unknown" : "no", catalogue is null ? "zero-only" : "catalogue", inferred);
             return new(model, report, c.Media);
         }
 

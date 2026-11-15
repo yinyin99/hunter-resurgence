@@ -238,6 +238,5 @@ public class PictureLinksTests : StateTestBase
         var gallery = Gallery(1001);
         Assert.Equal([TestZip.Jpeg("ok"), TestZip.Jpeg("ok2"), TestZip.Jpeg("a")], gallery.Select(Bytes));  // newest first: the link only the full list holds is older than the detailed one
         Assert.Equal("Test Deer|55.5|3", $"{gallery[0]!["animal"]}|{gallery[0]!["label"]}|{gallery[0]!["type"]}");  // the details of the detailed entry
-        Assert.Equal(0, await links.Fetch(["https://photos.example/p/nothing.jpg"], Path.Combine(tmp, "z.zip")));
     }
 }

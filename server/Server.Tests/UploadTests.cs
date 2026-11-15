@@ -314,6 +314,26 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.DoesNotContain("reset", (string)again.Body["message"]!);
     }
 
+    /// <summary>The trust rule: a zip of another tool's layout has no Steam id and no claim key, so it is kept for the operator whoever uploads it; the operator's approve restores it like one of ours.</summary>
+    [Fact]
+    public async Task TestAZipOfAnotherToolIsKeptForReviewAndRestoredOnlyWhenApproved()
+    {
+        var before = Count(player, "items");
+        var (reply, body) = await Upload(File.ReadAllBytes(TestZip.WriteSections(tmp, "foreign.zip")));
+        Assert.Equal((200, "review"), (reply.Status, Status(body)));
+        Assert.Null(body["report"]);
+        Assert.Equal(before, Count(player, "items"));
+        Assert.Null(state.Store.RestoredBy(1001));
+        var listed = Assert.Single(Operator.List());
+        Assert.Equal((player, 1001L, "sample", false), (listed.Account, listed.UserId, listed.Handle, listed.SteamMatch));
+
+        var done = Operator.Approve(listed.Id);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Equal(1001L, state.Store.AccountBySteam(Steam));
+        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
+        Assert.Equal(1L, Count(1001, "restore_audit"));
+    }
+
     [Fact]
     public async Task TestAZipWithAnotherOrNoSteamIdIsKeptForReviewAndNothingIsRestored()
     {
