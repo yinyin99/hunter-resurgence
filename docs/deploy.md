@@ -7,7 +7,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | File | Purpose |
 |---|---|
 | `src/Web/Dockerfile` | the image (build context: the repository root). It listens on port 8080 as a non-root user. Its SDK tag is the version of `global.json` and its `aspnet` tag the runtime that SDK ships: a new SDK means `global.json`, both tags and every `packages.lock.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate` with that SDK) in one change, or the locked restore fails with NU1004 |
-| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web` and `server`, plus `server-backup` ([Backups](#backups)) and `natpt` (UDP 10000 straight on the host, [Punch-through server](#punch-through-server)). `server` and `server-backup` are on `internal` only (`server-backup` on no network). The named volume `dataprotection` keeps the website's cookie-signing keys (`/home/app/.aspnet/DataProtection-Keys`) across deploys, so cookies stay valid; the Dockerfile gives that folder to the app user, and a new named volume takes its owner. `serverdata` holds the server's databases at `/data`, `serverbackups` the copies. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
+| `deploy/compose.yml` | production stack: `caddy` (ports 80 and 443) in front of `web` and `server`, plus `server-backup` ([Backups](#backups)) and `natpt` (UDP 10000 straight on the host, [Punch-through server](#punch-through-server)). `web` and `server` are on `internal` only, `server-backup` on no network. The named volume `dataprotection` keeps the website's cookie-signing keys (`/home/app/.aspnet/DataProtection-Keys`) across deploys, so cookies stay valid; the Dockerfile gives that folder to the app user, and a new named volume takes its owner. `serverdata` holds the server's databases at `/data`, `serverbackups` the copies. The Caddy image is pinned to a minor tag (`caddy:2.11`); Dependabot's `docker-compose` entry for `/deploy` updates it weekly |
 | `deploy/Caddyfile` | the site `{$SITE_DOMAIN}` with the Cloudflare origin certificate: game requests and the server's own paths (`/auth/*`, `/account/*`, `/hunters`, `/hunters/*`, `/catalog/*`, `/photos/*`, the minigame boards under `/leaderboards/*`) to `server`, the rest to `web` ([routing](#the-community-server)); then `import sites/*.caddy` |
 | `deploy/.env.example` | the values of `.env` |
 | `server/Server/Dockerfile` | the community server's image, like the website's (same SDK and runtime tags, bumped together; build context: the repository root): non-root, listens on plain HTTP on port 8080 (the proxy's side), `SERVER_SETTINGS=/srv/settings.json`, and creates `/data` and `/backups` owned by the app user, because an empty named volume takes the owner of the folder it is mounted over |
@@ -290,7 +290,7 @@ Its certificate files go in the same `certs/` folder, named per site. Then `dock
 
 ## Local test
 
-Needs Docker with the Compose plugin; ports 80 and 443 free.
+Needs Docker with the Compose plugin; ports 80 and 443 (TCP) and 10000 (UDP) free.
 
 ```
 docker network create edge
