@@ -83,7 +83,7 @@ public sealed partial class State
         if (!long.TryParse(loadoutId, out var id) || con.Scalar("SELECT entries FROM loadouts WHERE account_id = $a AND id = ?", id) is not string list)
             return;
         con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND slot <> ?", PLACED_SLOT);
-        var unlimited = UnlimitedAmmo || Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
+        var unlimited = UnlimitedService;
         foreach (var entry in JsonNode.Parse(list) as JsonArray ?? [])
         {
             if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;

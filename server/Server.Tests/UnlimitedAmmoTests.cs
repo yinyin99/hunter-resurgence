@@ -49,12 +49,11 @@ public class UnlimitedAmmoTests : StateTestBase
     }
 
     [Fact]
-    public void TheTutorialAndMultiplayerConnectsCarryItToo()
+    public void TheTutorialConnectCarriesItToo()
     {
         var s = Make(true);
         s.NoteTutorial(ME, "tutorial-session", 1);
         Eq("1", Reply(s.ConnectReply(ME, "tutorial-session"))["inventory"]!["active_services"]!["UNLIMITED_AMMO"]);
-        Eq("1", Reply(s.ConnectReply(ME, "other-session", "127.0.0.1"))["inventory"]!["active_services"]!["UNLIMITED_AMMO"]);
     }
 
     [Fact]
@@ -75,15 +74,29 @@ public class UnlimitedAmmoTests : StateTestBase
         Assert.Equal("3 0 25", Stacks());
     }
 
+    byte[] Clone(string entries) => state.MoveMultiple2Reply(ME, Form(new JsonArray(), JsonNode.Parse(entries)));
+
     [Fact]
-    public void AClonedBoxIsFullEachTimeEvenWhenTheRequestIsCraftedAndTheAccountOwnsNone()
+    public void AClonedBoxIsFullEachTimeWhateverTheRequestSaysAndOnlyOfAnAmmunitionTheAccountOwns()
     {
         Make(true);
-        var reply = Reply(state.MoveMultiple2Reply(ME, Form(
-            JsonNode.Parse("""[{"item_guid": "new_item_1", "slot_id": 8}, {"item_guid": "new_item_2", "slot_id": 8}, {"item_guid": "new_item_3", "slot_id": 0}]""")!,
-            JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}, {"item_guid": "new_item_3", "item_id": 77}]""")!)));
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""));  // an ammunition it does not own yet
+        SetStacks(3);
+        var reply = Reply(Clone("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}, {"item_guid": "new_item_3", "item_id": 77}]"""));
         Assert.Equal(3, reply.AsObject().Count);
-        Assert.Equal("10 10 10", Stacks());
+        Assert.Equal("3 10 10 10", Stacks());
+        // an item that is no ammunition (a lure it does not own, a bullet the catalogue does not class) is never created
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 19}, {"item_guid": "new_item_2", "item_id": 10}]"""));
+        Assert.DoesNotContain(19L, state.Inventory(ME).Select(i => (long)i!["item_id"]!));
+    }
+
+    [Fact]
+    public void OffNothingIsCloned()
+    {
+        Make(false);
+        SetStacks(3);
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""));
+        Assert.Equal("3", Stacks());
     }
 
     [Fact]

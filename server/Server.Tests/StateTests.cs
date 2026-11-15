@@ -101,6 +101,10 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestCloneGetsNewGuidAndSlot()
     {
+        // a clone is an ammunition the account owns, with unlimited ammunition on
+        var app = APP;
+        app["items"]!.AsArray().Single(i => (long)i!["id"]! == 10)!["cat"] = 3;
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES) { UnlimitedAmmo = true };
         var reply = Reply(state.MoveMultiple2Reply(ME, Form(
             JsonNode.Parse("""[{"item_guid": "new_item_1", "slot_id": 13}, {"item_guid": 200, "slot_id": 0}]""")!,
             JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 10}]"""))));
