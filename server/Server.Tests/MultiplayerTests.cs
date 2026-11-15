@@ -286,7 +286,8 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal("2001:db8::1", (string?)await Ip("2001:db8::1"));
         Assert.Null(await Ip(null));  // a proxy that names none
         Assert.Null(await Ip("not an address"));
-        Assert.Equal("127.0.0.1", (string?)(await Connect(session, HOST))["network"]!["ip"]);  // a peer that is no proxy: the header counts for nothing
+        var direct = await server.SendAsync("POST", Gs, Replay.CONNECT, [("X-Hun-Session", session), ("X-Forwarded-For", "203.0.113.5")], "{}"u8.ToArray());
+        Assert.Equal("127.0.0.1", (string?)Json(direct)["network"]!["ip"]);  // a peer that is no proxy: the header counts for nothing
     }
 
     [Fact]
