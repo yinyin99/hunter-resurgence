@@ -40,6 +40,10 @@ public static class Install
         ["locations"] = facts.ApplicationLocations(),
     };
 
+    /// <summary>`config.nat.pt_server`: settings `nat_host` (empty counts as unset), else `web_host`; never the game's host name, which the player kit maps to loopback.</summary>
+    public static JsonObject PtServer(JsonObject cfg) =>
+        new() { ["ip"] = cfg["nat_host"] is JsonValue { } v && v.GetValue<string>() is { Length: > 0 } n ? n : (string)cfg["web_host"]!, ["port"] = 10000 };
+
     /// <summary>The connect reply a new account starts from, or null when the install has no connect sample. The
     /// sample is a reply of a test account: everything of that account is replaced (identity, e-mail, address, stats,
     /// inventory, wallet, skills) by the neutral start of the facts file; the game data of the reply (species, items
@@ -82,8 +86,8 @@ public static class Install
                 ["subdomains"] = new JsonObject { ["avatar"] = $"https://{web}/media/avatar/", ["static"] = $"https://{web}/" },
             },
             ["enable_logging"] = false,
-            // multiplayer: a punch-through server (UDP 10000) on the game's own host when one runs; with none the name still resolves, so the game's start does not hang
-            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = host("gameserver_host"), ["port"] = 10000 } },
+            // multiplayer: the punch-through server (UDP 10000, server/natpt). Not the game's host name: the player kit maps that to loopback. The name must resolve, or the game's start hangs
+            ["nat"] = new JsonObject { ["pt_server"] = PtServer(cfg) },
         };
         if (c["expedition"] is JsonObject e) e["expedition_id"] = 0;
 

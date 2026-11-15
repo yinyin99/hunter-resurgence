@@ -103,6 +103,15 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void NatHostIsReadFromTheFile()
+    {
+        var o = Minimal();
+        Assert.Null(Load(o).Cfg["nat_host"]);
+        o["nat_host"] = "nat.test";
+        Assert.Equal("nat.test", (string)Load(o).Cfg["nat_host"]!);
+    }
+
+    [Fact]
     public void AllOptionsAreRead()
     {
         var o = Minimal();
