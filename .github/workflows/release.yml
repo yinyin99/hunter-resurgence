@@ -66,12 +66,13 @@ jobs:
           if ("$env:SERVER_URL".Trim()) { $s["server_url"] = $env:SERVER_URL.Trim() }
           $s | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$env:RUNNER_TEMP\settings.json"
           # the launcher's settings.json: the example (placeholders mean "not configured") with the community server's address, the game's identity and file names, and the two host names the launcher points at that server.
-          # Only when PLAY_SERVER_URL and STEAM_APP_ID are set; without them the release has the backup tool alone.
+          # Only when PLAY_SERVER_URL and STEAM_APP_ID are set and not blank; without them the release has the backup tool alone.
           $playUrl = "$env:PLAY_SERVER_URL".Trim()
           $steamId = "$env:STEAM_APP_ID".Trim()
           if (-not $playUrl) { Write-Host "PLAY_SERVER_URL is not set or blank: no launcher in this release" }
-          elseif (-not $steamId) { Write-Host "STEAM_APP_ID is not set or blank: no launcher in this release" }
           elseif ($playUrl -notmatch '^https://\S+$') { throw "repository secret PLAY_SERVER_URL must be an https:// address" }
+          elseif (-not $steamId) { Write-Host "STEAM_APP_ID is not set or blank: no launcher in this release" }
+          elseif ($steamId -notmatch '^\d+$') { throw "repository secret STEAM_APP_ID must be digits only" }
           else {
             $l = Get-Content src\Launcher\settings.example.json -Raw | ConvertFrom-Json
             $l.server_url = $playUrl

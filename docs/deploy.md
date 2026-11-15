@@ -151,8 +151,6 @@ While `server` or `web` is recreated (about 12 s), Caddy holds a request and dia
 
 Repository secrets, separate from the release secrets in [CONTRIBUTING.md](../CONTRIBUTING.md#releases):
 
-The release trims `PLAY_SERVER_URL` and `STEAM_APP_ID` before use: unset or blank builds no launcher, and a `PLAY_SERVER_URL` that is not an `https://` address (no spaces) fails the release.
-
 | Secret | Value |
 |---|---|
 | `DEPLOY_HOST` | the VPS address |
@@ -171,7 +169,7 @@ Repository secrets (Settings, Secrets and variables, Actions, Secrets), the same
 | `GAME_NAME` | the game's short name, for `{game}` in the texts | `game_name` of `settings.json`, else "the game" |
 | `GAME_FULL` | the name with its edition, for `{game_full}` (the meta tags) | `game_full` of `settings.json`, else the short name |
 
-An unset secret removes its line; spaces and line breaks around a value are trimmed. A `LINK_BACKUP`, `LINK_DISCORD` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
+An unset secret removes its line; spaces and line breaks around a value are trimmed. The launcher release trims `PLAY_SERVER_URL` and `STEAM_APP_ID` the same way: unset or blank builds no launcher, a `PLAY_SERVER_URL` that is not an `https://` address (no spaces) or a `STEAM_APP_ID` that is not digits only fails the release. A `LINK_BACKUP`, `LINK_DISCORD` or `LINK_SOURCE` that is not a plain `https://` URL (no spaces, `'`, `$` or `#`), or a name with anything but letters, digits, spaces and `. : -`, fails the deploy before the rollout, after the image is pushed. The deploy also ends `.env` with a newline before it appends the lines.
 
 ## Rollback
 
