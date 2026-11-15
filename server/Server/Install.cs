@@ -82,7 +82,8 @@ public static class Install
                 ["subdomains"] = new JsonObject { ["avatar"] = $"https://{web}/media/avatar/", ["static"] = $"https://{web}/" },
             },
             ["enable_logging"] = false,
-            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = "127.0.0.1", ["port"] = 10000 } },
+            // multiplayer: a punch-through server (UDP 10000) on the game's own host when one runs; with none the name still resolves, so the game's start does not hang
+            ["nat"] = new JsonObject { ["pt_server"] = new JsonObject { ["ip"] = host("gameserver_host"), ["port"] = 10000 } },
         };
         if (c["expedition"] is JsonObject e) e["expedition_id"] = 0;
 

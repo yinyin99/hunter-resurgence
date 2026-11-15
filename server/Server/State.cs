@@ -1179,8 +1179,9 @@ public sealed partial class State
     }
 
     /// <summary>Connect: the recorded reply with the current inventory and the open expedition (opened here if no
-    /// Launch/start came first, e.g. a direct launch), starting at its location.</summary>
-    public byte[] ConnectReply(long account, string? session = null)
+    /// Launch/start came first, e.g. a direct launch), starting at its location. `session` is the token the game connects with and `ip` the address it came from:
+    /// the token of a multiplayer session (<see cref="Games"/>) gets that session's `network`, any other a single-player one.</summary>
+    public byte[] ConnectReply(long account, string? session = null, string? ip = null)
     {
         var tutorial = session is not null && latestTutorial.TryGetValue(account, out var latest) && latest.Session == session ? Tutorial(latest.Id) : null;
         var inventory = connect["inventory"]!.AsObject();
@@ -1285,6 +1286,9 @@ public sealed partial class State
                     network["ip"] = null;  // single player sends none
             }
         }
+        // a player of a multiplayer session: who the host is and how to reach it
+        if (Online && session is not null && games.Connect(Clock(), session, ip) is { } mp)
+            reply["network"] = Network(mp.Game, mp.Me, Store.HandleOf(mp.Me.Account), Store.HandleOf(mp.Game.Host));
         // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
         reply["ingame_event"] = null;
         if (reply["species_ammo"] is JsonArray ammo)
@@ -1731,6 +1735,7 @@ public sealed partial class State
         {
             distance = null;
         }
+        games.Leave(account);  // the host leaving ends the session for all
         using var con = Con(account);
         con.Begin();
         var closed = con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Clock(), distance) > 0;
@@ -1878,6 +1883,7 @@ public sealed partial class State
     /// <summary>start_tutorial: the session opens that tutorial, and the account's latest launch is a tutorial until the next hunt starts.</summary>
     public void NoteTutorial(long account, string session, long tutorialId)
     {
+        games.Leave(account);
         latestTutorial[account] = (session, tutorialId);
     }
 
@@ -1895,15 +1901,18 @@ public sealed partial class State
     public byte[] HeartbeatReply(long account, byte[] body)
     {
         JsonArray events;
+        JsonNode? positions = null;
         try
         {
-            var events_ = (JsonNode.Parse(body, documentOptions: new() { AllowDuplicateProperties = false }) as JsonObject ?? throw new JsonException("not a dict"))["events"]; // a duplicate key (at any depth) is a JsonException here, not an ArgumentException at the first read
-            events = events_ as JsonArray ?? new JsonArray();
+            var root = JsonNode.Parse(body, documentOptions: new() { AllowDuplicateProperties = false }) as JsonObject ?? throw new JsonException("not a dict"); // a duplicate key (at any depth) is a JsonException here, not an ArgumentException at the first read
+            events = root["events"] as JsonArray ?? new JsonArray();
+            positions = root["player_positions"];
         }
         catch (JsonException)
         {
             events = new JsonArray();
         }
+        NoteNetwork(account, events, positions);
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
@@ -1919,7 +1928,12 @@ public sealed partial class State
     /// reads the reserve as `lodge / 100`); a `start` that is no such tent opens the hunt with no location.</summary>
     public void NoteLaunch(long account, byte[] formBody)
     {
-        var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
+        games.Leave(account);  // a hunt of one's own ends the session one was in
+        NoteLaunch(account, Py.ParseQs(Encoding.UTF8.GetString(formBody)));
+    }
+
+    void NoteLaunch(long account, OrderedDictionary<string, List<string>> form)
+    {
         latestTutorial.TryRemove(account, out _);
         var time = Form1(form, "time");
         var (reserve, start) = (Form1(form, "reserve"), Form1(form, "start") is { Length: > 0 } s ? s : Form1(form, "lodge_id"));  // the current build calls the lodge `lodge_id`
