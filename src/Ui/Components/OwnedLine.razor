@@ -1,5 +1,6 @@
 @* what the player owns of a store item, as the original's store shows it: a license's end (or "unlimited"), the days of a timed item, the amount, "Owned" for one single item; nothing for none, and nothing for a license that has ended (the original has no words for it) *@
-@if (Expires is { } end)
+@if (Unlimited) { <p class="own">@L["Store.UnlimitedAmmo"]</p> }
+else if (Expires is { } end)
 {
     @if (end == 0) { <p class="own">@L["Store.UnlimitedLicense"]</p> }
     else if (end > DateTimeOffset.UtcNow.ToUnixTimeSeconds()) { <p class="own">@(Full ? L["Store.LicenseUntil"] : L["Store.Expires"]) @DateTimeOffset.FromUnixTimeSeconds(Math.Min(end, 253402300799)).ToString("yyyy-MM-dd")</p> }
@@ -14,6 +15,8 @@ else if (Owned > 0) { <p class="own">@L["Store.Own"] @Owned</p> }
     [Parameter] public bool Counted { get; set; }
     /// <summary>The end of a license in unix seconds, 0 when unlimited.</summary>
     [Parameter] public long? Expires { get; set; }
+    /// <summary>An ammunition the server gives every player without limit.</summary>
+    [Parameter] public bool Unlimited { get; set; }
     [Parameter] public double? DaysLeft { get; set; }
     /// <summary>The item's page words a license in full; the list and the buy dialog say when it expires.</summary>
     [Parameter] public bool Full { get; set; }

@@ -41,4 +41,18 @@ public sealed class UnlimitedLicenseTests : UiContext
         var page = Render<ItemDetail>(p => p.Add(i => i.Id, 5));
         Assert.NotNull(page.Find("#buy-item"));
     }
+
+    [Fact]
+    public void AnUnlimitedAmmunitionShowsTheUnlimitedLineAndNoBuyButton()
+    {
+        Services.AddSingleton<IStoreService>(new One(new StoreItem(6, "Made-up Cartridge", "", "0", 5, null, 100, 2, false, 0, "", Unlimited: true)));
+
+        var list = Render<Store>(p => p.Add(s => s.Key, "all"));
+        list.WaitForAssertion(() => Assert.Equal("Unlimited ammunition", list.Find(".card .own").TextContent));
+        Assert.Empty(list.FindAll(".card .btn-primary"));
+
+        var page = Render<ItemDetail>(p => p.Add(i => i.Id, 6));
+        Assert.Equal("Unlimited ammunition", page.Find(".own").TextContent);
+        Assert.Empty(page.FindAll("#buy-item"));
+    }
 }

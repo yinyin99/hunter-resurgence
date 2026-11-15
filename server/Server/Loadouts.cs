@@ -76,14 +76,14 @@ public sealed partial class State
 
     /// <summary>The launch's `loadout_id`, inside the launch's transaction: the account's loadout of that id sets the item slots as the page does when it is clicked.
     /// Every owned item goes to slot 0 (a placed one stays), then each entry in order takes the owned row of its `item_guid`, else the first row of its `item_id` still in
-    /// slot 0, and gives it the entry's slot; an entry with no such row is skipped. While the connect template has unlimited ammunition on, an ammunition entry with no
+    /// slot 0, and gives it the entry's slot; an entry with no such row is skipped. While unlimited ammunition is on (<see cref="UnlimitedAmmo"/>, or the connect template has it), an ammunition entry with no
     /// free row clones a row the account owns of it. 0, a loadout of another account or none: nothing changes.</summary>
     void ApplyLoadout(Db con, string loadoutId)
     {
         if (!long.TryParse(loadoutId, out var id) || con.Scalar("SELECT entries FROM loadouts WHERE account_id = $a AND id = ?", id) is not string list)
             return;
         con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND slot <> ?", PLACED_SLOT);
-        var unlimited = Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
+        var unlimited = UnlimitedAmmo || Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
         foreach (var entry in JsonNode.Parse(list) as JsonArray ?? [])
         {
             if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;
@@ -93,7 +93,7 @@ public sealed partial class State
             else if (unlimited && items.TryGetValue(itemId, out var definition) && Is(G(definition, "cat", null), AmmoCategory)
                      && con.Scalar("SELECT 1 FROM items WHERE account_id = $a AND item_id = ?", itemId) is not null)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, '{}', ?)",
-                         NextId(con, "items", "guid"), itemId, slot, defaultUnits.GetValueOrDefault(itemId));
+                         NextId(con, "items", "guid"), itemId, slot, Box(itemId));
         }
     }
 }

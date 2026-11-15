@@ -66,6 +66,13 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var all) => all,
             _ => throw new InvalidDataException("all_licenses: true or false"),
         };
+        // true: every player has unlimited ammunition (docs/server.md#unlimited-ammunition)
+        cfg["unlimited_ammo"] = root["unlimited_ammo"] switch
+        {
+            null => true,
+            JsonValue flag when flag.TryGetValue<bool>(out var unlimited) => unlimited,
+            _ => throw new InvalidDataException("unlimited_ammo: true or false"),
+        };
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch
