@@ -12,7 +12,7 @@
                 else { <Icon Name="@IconOf(m.Kind)" /> }
             </button>
         }
-        @foreach (var (p, i) in Players.Select((p, i) => (p, i)))
+        @foreach (var (p, i) in Players.Select((p, i) => (p, i)).Where(t => t.p.X is not null && t.p.Y is not null))
         {
             <span class="hunter c@(i % 2)" style="left:@(p.X)%;top:@(p.Y)%"></span>
             @if (p.Handle == HoverPlayer)

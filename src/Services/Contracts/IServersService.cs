@@ -5,12 +5,12 @@ public enum MarkerKind { Lodge, Tent, Campsite, Tower, Interest, Bait, Feeder, T
 /// <summary>A place on a reserve map; X and Y are percent of the map pane (the reserve's map picture). A start's Id is the catalogue's location number; a placed item of the player
 /// (tent, caller, blind, stand) has the negated guid of the item, so no two markers of a map share an Id.</summary>
 public sealed record MapMarker(int Id, MarkerKind Kind, string Name, double X, double Y);
-/// <summary>A hunter in a game; X and Y are percent of the reserve map, where the join map draws the hunter.</summary>
-public sealed record GamePlayer(string Handle, int HunterScore, int X = 50, int Y = 50, string Avatar = Avatars.Default);
+/// <summary>A hunter in a game; X and Y are percent of the reserve map, where the join map draws the hunter (not drawn without them).</summary>
+public sealed record GamePlayer(string Handle, int HunterScore, int? X = 50, int? Y = 50, string Avatar = Avatars.Default);
 /// <summary>A saved equipment set the player can start with. The choice "last used equipment" (id 0) is not listed.</summary>
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }
-public sealed record GameServer(int Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, string Country, Distance Distance,
+public sealed record GameServer(long Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, string Country, Distance Distance,
     int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster)
 {
     /// <summary>The host limited the hunter score: the game shows its limits (0 and 99999 mean none).</summary>
@@ -31,7 +31,7 @@ public interface IServersService
     Task<IReadOnlyList<Loadout>> LoadoutsAsync();
     Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout);
     Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout);
-    /// <summary>Joins at a lodge or tent marker of the game's reserve. A wrong password fails with a message key.</summary>
-    Task<Result> JoinAsync(int server, int marker, string? password, int loadout);
+    /// <summary>Joins at a lodge or tent marker of the game's reserve. A refusal (wrong password, full, not allowed, host not ready) fails with its message key.</summary>
+    Task<Result> JoinAsync(long server, int marker, string? password, int loadout);
     Task<Result> StartTutorialAsync(int id);
 }

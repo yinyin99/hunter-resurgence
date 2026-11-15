@@ -259,6 +259,9 @@
   <data name="Join.Go" xml:space="preserve"><value>Gå med i spel</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Stäng</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Fel lösenord. Försök igen.</value></data>
+  <data name="Join.Full" xml:space="preserve"><value>Det här spelet är fullt. Prova ett annat spel.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Du kan inte gå med i det här spelet: det är bara för värdens vänner, eller dina Hunterpoäng ligger utanför värdens gränser.</value></data>
+  <data name="Join.HostNotReady" xml:space="preserve"><value>Värden är inte redo än. Försök igen om en stund.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Klar med jakten för tillfället?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Visa jaktstatistik</value></data>
   <data name="Done.HuntNow" xml:space="preserve"><value>JAGA NU</value></data>

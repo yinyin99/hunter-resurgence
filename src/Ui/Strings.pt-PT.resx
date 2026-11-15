@@ -259,6 +259,9 @@
   <data name="Join.Go" xml:space="preserve"><value>Entrar no jogo</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Fechar</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Palavra-passe errada. Tenta novamente.</value></data>
+  <data name="Join.Full" xml:space="preserve"><value>Este jogo está cheio. Tenta outro jogo.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Não podes entrar neste jogo: é só para amigos do anfitrião ou a tua Pontuação de Caçador está fora dos limites dele.</value></data>
+  <data name="Join.HostNotReady" xml:space="preserve"><value>O anfitrião ainda não está pronto. Tenta novamente daqui a pouco.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Já chega de caçar por agora?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Ver estatísticas de caça</value></data>
   <data name="Done.HuntNow" xml:space="preserve"><value>CAÇAR AGORA</value></data>

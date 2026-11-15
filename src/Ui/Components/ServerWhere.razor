@@ -1,4 +1,7 @@
-<i class="dot @Server.Distance.ToString().ToLowerInvariant()" data-tip="@tip"></i><img class="flag" src="_content/Resurgence.Ui/flags/@(Server.Country).svg" alt="" data-tip="@tip" />
+@if (Server.Country.Length > 0)
+{
+    <i class="dot @Server.Distance.ToString().ToLowerInvariant()" data-tip="@tip"></i><img class="flag" src="_content/Resurgence.Ui/flags/@(Server.Country).svg" alt="" data-tip="@tip" />
+}
 
 @code {
     /// <summary>The coloured distance dot and the country flag of a game; both show "Server location: ..." as a tip.</summary>

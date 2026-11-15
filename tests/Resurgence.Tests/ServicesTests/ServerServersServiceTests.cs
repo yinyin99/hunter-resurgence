@@ -181,13 +181,99 @@ public class ServerServersServiceTests
         Assert.Empty(bridge.Started);
     }
 
+    // the shape of the server's games list; ids are 10 digits, the host is the game's handle, a game without a Hunter Score range has null for it, and no game of a community server has a country.
+    // The third game was hosted with limits outside the game's own range: they are kept within 0 to 99999 and do not break the list
+    const string Games = """
+        [{"id": 4000000001, "name": "Test game", "handle": "HostOne", "host": 7, "description": "Come and hunt.", "password": false, "public": true, "singleplayer": false, "freeplayers": true,
+          "hs_min": 100, "hs_max": 2000, "max_players": 4, "start_ts": 1700000000, "clients_len": 2,
+          "clients": [{"user_id": 7, "handle": "HostOne", "guid": "1", "color": 1, "avatar": "https://site.test/images/avatars/12.png", "x": 1.5, "y": 2, "z": 3, "hunterscore": 1500},
+                      {"user_id": 8, "handle": "Guest", "guid": "2", "color": 2, "avatar": null, "x": 4, "y": 5, "z": 6, "hunterscore": 300}],
+          "reserve": {"id": 2, "name": "Test Reserve"}},
+         {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800,
+          "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}},
+         {"id": 4000000003, "name": "Wide game", "handle": "HostThree", "password": false, "hs_min": -5, "hs_max": 99999999999, "max_players": 8, "start_ts": 1700000000,
+          "clients": [{"user_id": 10, "handle": "HostThree", "guid": "4", "hunterscore": 99999999999}], "reserve": {"id": 4}}]
+        """;
+
     [Fact]
-    public async Task ThereIsNoMultiplayer()
+    public async Task TheGamesAreTheCatalogsListWithoutACookieAndAFutureStartIsAgeZero()
+    {
+        var fake = new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, Games) : Answer(r));
+        var games = await Make(fake, new Bridge()).ServersAsync();  // signed in: the cookie is still not sent
+
+        Assert.Equal([(HttpMethod.Get, ServerCatalogApi.Games, (string?)null)], fake.Seen.Select(s => (s.Method, s.Path, s.Cookie)));
+        Assert.Equal([(4000000001L, "Test game", "HostOne", 2, 2, 4, false, 100, 2000), (4000000002L, "Locked game", "HostTwo", 4, 1, 8, true, 0, 99999), (4000000003L, "Wide game", "HostThree", 4, 1, 8, false, 0, 99999)],
+            games.Select(g => (g.Id, g.Name, g.Host, g.Reserve, g.Players, g.Max, g.Password, g.MinScore, g.MaxScore)));
+        Assert.Equal(["Come and hunt.", "", ""], games.Select(g => g.Description));
+        Assert.Equal([("HostOne", 1500, "avatar-12"), ("Guest", 300, Avatars.Default)], games[0].Roster.Select(p => (p.Handle, p.HunterScore, p.Avatar)));
+        Assert.Equal(int.MaxValue, games[2].Roster.Single().HunterScore);
+        Assert.Equal([true, false, false], games.Select(g => g.Limited));
+        Assert.All(games, g => Assert.Equal("", g.Country));
+        Assert.True(games[0].Seconds > 0);
+        Assert.Equal(0, games[1].Seconds);
+    }
+
+    [Fact]
+    public async Task AServerThatDoesNotAnswerHasNoGames()
+    {
+        Assert.Empty(await Make(new Fake(_ => Json(HttpStatusCode.InternalServerError, "{}")), new Bridge()).ServersAsync());
+        Assert.Empty(await Make(new Fake(_ => Json(HttpStatusCode.OK, "not json")), new Bridge()).ServersAsync());
+    }
+
+    [Fact]
+    public async Task HostingAsksTheServerForAGameWithEveryFieldOfTheForm()
+    {
+        var fake = new Fake(Answer);
+        var bridge = new Bridge();
+        Assert.True((await Make(fake, bridge).CreateAsync(new("Test game", "Come & hunt", true, "letmein", 4, 100, 2000), 2, 101, 480, 4)).Ok);
+        Assert.Equal(["game://play.test/session"], bridge.Started);
+        var post = Assert.Single(fake.Seen);
+        Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret",
+            "mp=host&reserve=2&lodge=101&time=480&loadout=4&name=Test+game&description=Come+%26+hunt&public_game=0&free_players=1&max_players=4&hs_min=100&hs_max=2000&password=letmein"),
+            (post.Method, post.Path, post.Cookie, post.Body));
+    }
+
+    [Fact]
+    public async Task HostingWithoutPasswordOrLimitSendsNeitherAndAtATentSendsItsGuid()
+    {
+        var fake = new Fake(Answer);
+        Assert.True((await Make(fake, new Bridge()).CreateAsync(new("Test game", "", false, null, 8, null, null), 2, -501, 480, 0)).Ok);
+        Assert.Equal("mp=host&reserve=2&tent=501&time=480&loadout=0&name=Test+game&description=&public_game=1&free_players=1&max_players=8", Assert.Single(fake.Seen).Body);
+    }
+
+    [Fact]
+    public async Task JoiningSendsTheNetworkIdTheStartAndThePasswordButNeitherReserveNorTime()
     {
         var fake = new Fake(Answer);
         var bridge = new Bridge();
         var service = Make(fake, bridge);
-        Assert.Empty(await service.ServersAsync());
+        Assert.True((await service.JoinAsync(4000000002, 101, "letmein", 4)).Ok);
+        Assert.True((await service.JoinAsync(4000000001, -501, null, 0)).Ok);
+        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein", "mp=join&network_id=4000000001&tent=501&loadout=0"], fake.Seen.Select(s => s.Body));
+        Assert.Equal(2, bridge.Started.Count);
+    }
+
+    [Theory]
+    [InlineData("password", "Join.WrongPassword")]
+    [InlineData("full", "Join.Full")]
+    [InlineData("not_allowed", "Join.NotAllowed")]
+    [InlineData("host_not_ready", "Join.HostNotReady")]
+    [InlineData("gone", "Launch.Failed")]
+    [InlineData("something else", "Launch.Failed")]
+    public async Task ARefusedJoinFailsWithTheMessageOfItsReasonAndTheGameIsNotStarted(string why, string key)
+    {
+        var bridge = new Bridge();
+        var result = await Make(new Fake(_ => Json(HttpStatusCode.BadRequest, $$"""{"error": "{{why}}"}""")), bridge).JoinAsync(4000000001, 101, null, 0);
+        Assert.Equal((false, key), (result.Ok, result.Error));
+        Assert.Empty(bridge.Started);
+    }
+
+    [Fact]
+    public async Task SignedOutNothingIsHostedOrJoined()
+    {
+        var fake = new Fake(Answer);
+        var bridge = new Bridge();
+        var service = Make(fake, bridge, session: null);
         Assert.False((await service.CreateAsync(new("Test game", "", false, null, 4, null, null), 2, 101, 480, 0)).Ok);
         Assert.False((await service.JoinAsync(1, 101, null, 0)).Ok);
         Assert.Empty(fake.Seen);

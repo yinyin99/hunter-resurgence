@@ -259,6 +259,9 @@
   <data name="Join.Go" xml:space="preserve"><value>Csatlakozás</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Bezár</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Hibás jelszó. Kérjük, próbáld újra.</value></data>
+  <data name="Join.Full" xml:space="preserve"><value>Ez a játék megtelt. Próbálj meg egy másikat.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: csak a házigazda barátainak szól, vagy a vadászpontod a házigazda határain kívül esik.</value></data>
+  <data name="Join.HostNotReady" xml:space="preserve"><value>A házigazda még nem áll készen. Próbáld újra egy pillanat múlva.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Egyelőre befejezted a vadászatot?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Vadászati statisztikák megtekintése</value></data>
   <data name="Done.HuntNow" xml:space="preserve"><value>VADÁSZAT INDÍTÁSA</value></data>
