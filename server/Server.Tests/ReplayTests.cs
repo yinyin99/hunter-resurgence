@@ -211,6 +211,25 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestLocaleScriptGetsTheHideLabelOnlyWhenItLacksIt()
+    {
+        void Put(string name, string text)
+        {
+            var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.9/locale", name);
+            Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+            File.WriteAllText(f, text);
+        }
+        Put("en_us.js", "hunterSetLocale({\n\"a\": \"A\"\n});\n");
+        Put("ru_ru.js", "hunterSetLocale({\n\"hun_web_gui_hide\": \"X\",\n\"a\": \"A\"\n});\n");
+        Put("xx_xx.js", "something else");
+        var en = await R("GET", "game_web.test", "/static/app/9.9.9/locale/en_us.js");
+        Assert.Equal("patch", en.Source);
+        Assert.Equal("hunterSetLocale({\n\"hun_web_gui_hide\": \"Hide\",\n\"a\": \"A\"\n});\n", Encoding.UTF8.GetString(en.Body));
+        Assert.Equal("mirror", (await R("GET", "game_web.test", "/static/app/9.9.9/locale/ru_ru.js")).Source);
+        Assert.Equal("mirror", (await R("GET", "game_web.test", "/static/app/9.9.9/locale/xx_xx.js")).Source);
+    }
+
+    [Fact]
     public async Task TestGameWebMapTilesFallBackToTheMapHostFolder()
     {
         foreach (var (host, path, bytes) in new[] { ("map.test", "v7/tiles/2/3/3.jpg", "map"u8.ToArray()), ("map.test", "v7/tiles/2/4/0.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/2/0/4.jpg", "out"u8.ToArray()), ("map.test", "v7/tiles/6/0/0.jpg", "out"u8.ToArray()), ("game_web.test", "content/map/v7/tiles/1/0/0.jpg", "own"u8.ToArray()), ("map.test", "v7/tiles/1/0/0.jpg", "map"u8.ToArray()) })
@@ -239,6 +258,8 @@ public class ReplayTests : IAsyncLifetime
             (ArcList.NameHash("0.png"), "other 0"u8.ToArray(), 0),  // an unrelated archived 0.png (a heart hit asks for <species>/0.png)
             (ArcList.NameHash("5.png"), Array.Empty<byte>(), 1),  // an organ overlay name shared by species folders
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\animal_organs\24\5.png")), "organ"u8.ToArray(), 0),
+            (ArcList.NameHash("classy.png"), Array.Empty<byte>(), 1),  // a picture name shared by folders (the lodge's layout has one too)
+            (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\lodge\lodges\classy.png")), "lodge"u8.ToArray(), 0),
         ];
         var arc = new MemoryStream();
         using (var tab = new BinaryWriter(File.Create(Path.Combine(d, "pc0.tab"))))
@@ -254,7 +275,7 @@ public class ReplayTests : IAsyncLifetime
             }
         }
         File.WriteAllBytes(Path.Combine(d, "pc0.arc"), arc.ToArray());
-        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png") })
+        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png"), ("static.test", "/static/img/lodge/lodges/rustic.png") })
         {
             var f = Path.Combine(mirror, host, path.TrimStart('/'));
             Directory.CreateDirectory(Path.GetDirectoryName(f)!);
@@ -273,6 +294,10 @@ public class ReplayTests : IAsyncLifetime
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/animal_organs/26/female.png"));
         Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/25/5.png")).Source);  // another species' overlay of that name is never served
         Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/24/0.png")).Source);  // an unrelated archived 0.png is never the overlay
+        Same(("lodge"u8.ToArray(), "archive"), await Get("game_web.test", "/content/lodge/lodges/classy.png"));
+        Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/lodges/rustic.png"));
+        Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
+        Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern
     }
 
     [Fact]

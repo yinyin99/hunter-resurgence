@@ -18,6 +18,9 @@ public static class GameApi
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
     static readonly Regex Lodges = new(@"\A(?:/v1)?/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex LodgeEdit = new(@"\A(?:/v1)?/game/user/lodges/(\d+)(/settings)?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex OwnLodges = new(@"\A(?:/v1)?/game/user/lodges\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex LodgeCatalogue = new(@"\A(?:/v1)?/gameengine/trophylodge/(animal|skull|weapon|slot/animal|slot/weapon|lodge/\d+)\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+    static readonly Regex TrophyList = new(@"\A(?:/v1)?/game/user/trophies\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex TrophyEdit = new(@"\A(?:/v1)?/game/user/trophies/(\d+)\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex Loadouts = new(@"\A(?:/v1)?/game/user/loadout(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex UserProfile = new(@"\A(?:/v1)?/game/user/(\d+)/profile\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
@@ -427,21 +430,36 @@ public static class GameApi
             // the account's trophies and the lodges of any account here (community server only); a locked lodge is sent too: the game hides it
             var restored = Handle(game, r =>
             {
-                var lodges = Lodges.Match(r.Path);
-                if (!s.Online || r.Method != "GET" || (r.Path != "/game/user/trophies" && !lodges.Success))
+                var (lodges, own, trophies) = (Lodges.Match(r.Path), OwnLodges.IsMatch(r.Path), TrophyList.IsMatch(r.Path));
+                if (!s.Online || r.Method != "GET" || !(trophies || lodges.Success || own))
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
-                long? owner = !lodges.Success ? null : s.IsUser(a, lodges.Groups[1].Value) ? a
+                long? owner = own ? a : !lodges.Success ? null : s.IsUser(a, lodges.Groups[1].Value) ? a
                     : long.TryParse(lodges.Groups[1].Value, out var userId) ? s.PublicAccount(userId) : null;  // the player's own lodges, else a public account's
-                var (body, type) = r.Path == "/game/user/trophies" ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
+                var (body, type) = trophies ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
                     : owner is not { } o ? (null, "")
-                    : !lodges.Groups[2].Success ? (s.LodgesReply(o), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection")
+                    : own || !lodges.Groups[2].Success ? (s.LodgesReply(o), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection")
                     : (long.TryParse(lodges.Groups[2].Value, out var lodge) ? s.LodgeReply(o, lodge) : null, "application/vnd.game.user.trophy_lodge.lodge+json");
                 return Has(body) ? new(200, [("Content-Type", type), .. Cors(r.Header)], body!, "state") : null;
             });
+            // the lodge pages' catalogue (the same for everyone, so no token and no player state needed): from the facts file
+            var lodgeCatalogue = Handle(game, r =>
+                r.Method == "GET" && LodgeCatalogue.Match(r.Path) is { Success: true } m && s.LodgeCatalogueReply(m.Groups[1].Value.ToLowerInvariant()) is { } page
+                    ? new(200, [("Content-Type", "application/json"), .. Cors(r.Header)], page, "state") : null);
+            apiv2.MapGet("/gameengine/trophylodge/{**kind}", lodgeCatalogue).WithName("LodgeCatalogue").WithSummary("What the lodge pages draw: icons, slot types and the lodge layouts")
+                 .WithDescription("`animal`, `skull`, `weapon`, `slot/animal`, `slot/weapon` and `lodge/<layout number>` (1, 3, 5 and 6; the layout's picture, styles, animal and weapon slots) "
+                                  + "from the facts file; the miss reply for any other. No token. Also at `/v1/gameengine/trophylodge/...` (the current build).")
+                 .PathParams(("kind", "the catalogue page")).Produces(200, contentType: "application/json");
+            api.MapGet("/v1/gameengine/trophylodge/{**kind}", lodgeCatalogue).ExcludeFromDescription();
+            apiv2.MapGet("/game/user/lodges", restored).WithName("OwnLodges").WithSummary("The token's own lodges")
+                 .WithDescription("As Lodges for the account of the token, with no user id in the path; `[]` for an account with none. Needs the player's token (the expired-token reply without). "
+                                  + "Also at `/v1/game/user/lodges` (the current build, whose lodge selection page asks here).")
+                 .Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
+            api.MapGet("/v1/game/user/lodges", restored).ExcludeFromDescription();
             apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's trophies: restored, then harvested here")
                  .Produces(200, contentType: "application/json");
+            api.MapGet("/v1/game/user/trophies", restored).ExcludeFromDescription();
             apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The lodges of any account here, with their slots' trophies")
                  .WithDescription("The lodge rows of a restore, as edited since; each animal slot with a `trophy_id` also has its `trophy_details` (the trophy's row of "
                                   + "`/game/user/trophies`). `locked` is kept: the game hides those lodges from other players. Needs any player's token; an unknown or "
@@ -456,18 +474,21 @@ public static class GameApi
             var edit = Handle(game, r =>
             {
                 var (lodge, trophy) = (LodgeEdit.Match(r.Path), TrophyEdit.Match(r.Path));
-                if (!s.Online || r.Method != "PUT" || !(lodge.Success || trophy.Success))
+                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge: form `name`, `style_id`
+                if (!s.Online || !(r.Method == "PUT" || form) || !(lodge.Success || trophy.Success))
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
                 var status = !long.TryParse((lodge.Success ? lodge : trophy).Groups[1].Value, out var id) ? 404
                     : trophy.Success ? s.HideTrophy(a, id, r.Body)
+                    : form ? s.SaveLodgeSettings(a, id, LeaveForm(r.Body))
                     : lodge.Groups[2].Success ? s.SaveLodgeSettings(a, id, r.Body) : s.SaveLodge(a, id, r.Body);
                 return status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state") : Rejected(game, r, status);
             });
             foreach (var (router, prefix) in new[] { (apiv2, ""), (api, "/v1") })
             {
                 var current = prefix.Length > 0;  // the current build's paths are not documented twice
+                if (current) router.MapPost(prefix + "/game/user/lodges/{id}", edit).ExcludeFromDescription();
                 var save = router.MapPut(prefix + "/game/user/lodges/{id}", edit);
                 var settings = router.MapPut(prefix + "/game/user/lodges/{id}/settings", edit);
                 var hide = router.MapPut(prefix + "/game/user/trophies/{id}", edit);
@@ -628,6 +649,16 @@ public static class GameApi
         catch (JsonException) { }
         reply["splashes"] = JsonNode.Parse(SplashWithNotice(Py.DumpBytes(reply["splashes"] as JsonArray ?? [])));
         return new(200, JsonAnyOrigin(), Py.DumpBytes(reply), "patch");
+    }
+
+    /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number.</summary>
+    static byte[] LeaveForm(byte[] body)
+    {
+        var form = Py.ParseQs(Encoding.UTF8.GetString(body));
+        var sent = new JsonObject();
+        if (form.TryGetValue("name", out var name)) sent["name"] = name[0];
+        if (form.TryGetValue("style_id", out var style) && long.TryParse(style[0], out var id)) sent["style_id"] = id;
+        return Encoding.UTF8.GetBytes(sent.ToJsonString());
     }
 
     /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5

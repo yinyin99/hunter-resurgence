@@ -16,7 +16,13 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        var app = APP;  // item 780 is the store's rustic lodge (item type 32)
+        app["items"]!.AsArray().Add(O("""
+            {"id": 780, "name": "Rustic Lodge", "description": "", "define": "TROPHY_LODGE_RUSTIC", "type": 32, "group": 19, "cat": 19, "client_type": 4,
+             "image": "x", "variationname": null, "units": null, "fit": {}, "inventory": {"slots": [0], "capacity": 0, "weight": 0},
+             "price": 50, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 87}, "hidden": 0}
+            """));
+        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
         state.CreateAccount(OWNER, "owner");
         state.CreateAccount(VIEWER, "viewer");
         (owner, viewer) = (state.Store.CreateToken(OWNER), state.Store.CreateToken(VIEWER));
@@ -63,6 +69,19 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
                           {"slot_id": 2, "trophy_id": null, "pose_id": null, "rotation": 0, "base_texture": null, "is_skull": false}],
          "weapon_slots": [{"slot_id": 0, "weapon_id": 5, "rotation": 1.5}]}
         """;
+
+    [Fact]
+    public async Task TestLeavingALodgePostsItsNameAndStyleAsAForm()
+    {
+        const string Form = "application/x-www-form-urlencoded";
+        Assert.Equal((200, ""), await Call("POST", Web, "/v1/game/user/lodges/3", owner, "name=left+lodge&style_id=4", Form));
+        var one = await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer);
+        Eq("""["left lodge", 4]""", T(one["name"], one["style_id"]));
+        Assert.Equal((200, """{"errorCode": 404}"""), await Call("POST", Web, "/v1/game/user/lodges/3", viewer, "name=x&style_id=1", Form));  // own lodges only
+        Assert.Equal((200, """{"errorCode": 404}"""), await Call("POST", Web, "/v1/game/user/lodges/99", owner, "name=x", Form));
+        Assert.Equal(200, (await Call("POST", Web, "/v1/game/user/lodges/3", null, "name=x", Form)).Status);  // the web API's token-expired answer
+        Assert.Equal("left lodge", (string)(await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer))["name"]!);
+    }
 
     [Fact]
     public async Task TestSavedSlotsAreReadByEveryPlayerWithTheirTrophies()
@@ -241,6 +260,52 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/3", owner, """{"animal_slots": [], "weapon_slots": []}"""));  // a lodge emptied; the name stays
         var emptied = await Read(V2, $"/game/user/{OWNER}/lodges/3", owner);
         Eq("""["my cabin", [], []]""", T(emptied["name"], emptied["animal_slots"], emptied["weapon_slots"]));
+    }
+
+    [Fact]
+    public async Task TestTheOwnListIsTheTokensAccountsLodgesOnBothHosts()
+    {
+        foreach (var (host, path) in new[] { (V2, "/game/user/lodges"), (Web, "/v1/game/user/lodges") })
+        {
+            var own = await Read(host, path, owner);
+            Eq("[3, 4]", new JsonArray(own.AsArray().Select(l => (JsonNode?)l!["id"]!.DeepClone()).ToArray()));
+            Eq(await Read(V2, $"/game/user/{OWNER}/lodges", viewer), own);  // the rows of the list by user id
+            Eq("[]", await Read(host, path, viewer));  // a new account starts with none
+        }
+        Assert.Equal(401, (await Call("GET", V2, "/game/user/lodges", "unknown")).Status);
+        Assert.Equal((200, """{"errorCode": 5, "message": "token expired"}"""), await Call("GET", Web, "/v1/game/user/lodges", null));
+        Eq(Reply(state.TrophiesReply(OWNER)), await Read(Web, "/v1/game/user/trophies", owner));  // the editor's trophy list, on the current build too
+    }
+
+    [Fact]
+    public async Task TestTheLodgePagesCatalogueIsServedToEveryoneOnBothHosts()
+    {
+        foreach (var (host, prefix) in new[] { (V2, ""), (Web, "/v1") })
+        {
+            var type = await Read(host, $"{prefix}/gameengine/trophylodge/lodge/3", owner);
+            Eq("""[3, "rustic.png", "TROPHY_LODGE_RUSTIC"]""", T(type["id"], type["image_url"], type["item_define"]));
+            Assert.Equal(54, (await Read(host, $"{prefix}/gameengine/trophylodge/animal", owner)).AsArray().Count);
+            foreach (var kind in new[] { "skull", "weapon", "slot/animal", "slot/weapon", "lodge/1", "lodge/5", "lodge/6" })
+                Assert.NotEmpty((await Read(host, $"{prefix}/gameengine/trophylodge/{kind}", owner)).ToJsonString());
+        }
+        Assert.Equal(200, (await Call("GET", V2, "/gameengine/trophylodge/slot/weapon", null)).Status);  // no token
+        Assert.Equal(404, (await Call("GET", V2, "/gameengine/trophylodge/lodge/2", owner)).Status);  // a layout there is none of
+    }
+
+    [Fact]
+    public async Task TestALodgeBoughtInTheStoreIsListedEnteredAndEdited()
+    {
+        Eq("""{"price": 100.0, "success": true}""", Reply(state.BuyReply(OWNER, "item_id=780&amount=2&wallet=GOLD"u8.ToArray())));
+        var list = (await Read(V2, "/game/user/lodges", owner)).AsArray();
+        Eq("[3, 4, 5, 6]", new JsonArray(list.Select(l => (JsonNode?)l!["id"]!.DeepClone()).ToArray()));
+        Eq("""[5, "Rustic Lodge", 3, 780, "TROPHY_LODGE_RUSTIC", false, 0]""",
+           T(list[2]!["id"], list[2]!["name"], list[2]!["lodge_engine_id"], list[2]!["lodge_type_id"], list[2]!["lodge_type_define"], list[2]!["locked"], list[2]!["style_id"]));
+        var entered = await Read(Web, $"/v1/game/user/{OWNER}/lodges/6", viewer);  // another player enters it too
+        Eq("""[6, [], []]""", T(entered["id"], entered["animal_slots"], entered["weapon_slots"]));
+        Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/lodges/6", owner, Slots));
+        var edited = await Read(V2, $"/game/user/{OWNER}/lodges/6", owner);
+        Eq("""["my cabin", 21]""", T(edited["name"], edited["animal_slots"]![0]!["trophy_id"]));
+        Assert.Empty((await Read(V2, "/game/user/lodges", viewer)).AsArray());  // the other account has none
     }
 
     [Fact]

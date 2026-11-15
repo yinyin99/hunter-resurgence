@@ -1573,7 +1573,7 @@ public sealed partial class State
         var balance = AddCurrency(con, currency, -price, PAYMENT, ids);
         if (balance is null)
             return null;
-        Deliver(con, ids, ItemInfo);
+        Give(con, ids);
         con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = currency, ["update"] = 15 }));
         con.Commit();
         return balance;
@@ -1635,7 +1635,7 @@ public sealed partial class State
             return false;
         using var con = Con(account);
         con.Begin();
-        Deliver(con, Enumerable.Repeat(itemId, (int)count), ItemInfo);
+        Give(con, Enumerable.Repeat(itemId, (int)count));
         con.Commit();
         return true;
     }

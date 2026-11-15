@@ -1,5 +1,5 @@
-// Lodge edits and trophy visibility (community server): the lodge rows a restore wrote, edited in place, and the lodge
-// reads of any account. A lodge exists when its rows do; nothing here creates one.
+// Lodge edits and trophy visibility (community server): the lodge rows a restore wrote or a store purchase made, edited in place, and the
+// lodge reads of any account. A lodge exists when its rows do; a restore brings its own and the store item of a lodge type adds one (<see cref="GrantLodge"/>).
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -9,6 +9,35 @@ public sealed partial class State
 {
     const string LodgeList = "/game/user/lodges", LodgeOne = "/game/user/lodge";
     const int MaxText = 100, MaxSlots = 200;  // generous (the largest lodge has 163 animal slots): other players download the whole lodge
+
+    /// <summary>Deliver the items (<see cref="Deliver"/>), and a lodge for each unit of a lodge item of the facts file (inside the caller's transaction).</summary>
+    void Give(Db con, IEnumerable<long> itemIds)
+    {
+        long[] ids = [.. itemIds];
+        Deliver(con, ids, ItemInfo);
+        foreach (var id in ids)
+            if (facts.LodgeOfItem(id) is { } type)
+                GrantLodge(con, id, type);
+    }
+
+    /// <summary>One new lodge of the layout, named for it, unlocked, empty, style 0: the two rows of a lodge (the list's and the single's) under the account's next lodge id.</summary>
+    static void GrantLodge(Db con, long item, (long Engine, string Name, string Define) type)
+    {
+        var id = (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM lodges WHERE account_id = $a")!;
+        var row = new JsonObject
+        {
+            ["id"] = id, ["locked"] = false, ["lodge_engine_id"] = type.Engine, ["lodge_type_define"] = type.Define, ["lodge_type_id"] = item, ["name"] = type.Name, ["style_id"] = 0,
+        };
+        PlayerRows.AddLodge(con, LodgeList, id.ToString(), row);
+        row["weapon_slots_unlocked"] = false;
+        row["animal_slots"] = new JsonArray();
+        row["weapon_slots"] = new JsonArray();
+        PlayerRows.AddLodge(con, LodgeOne, id.ToString(), row);
+    }
+
+    /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
+    public byte[]? LodgeCatalogueReply(string key) => facts.LodgeCatalogue(key) is { } node ? Py.DumpBytes(node) : null;
+
     static readonly string[] AnimalSlotKeys = ["slot_id", "trophy_id", "pose_id", "rotation", "base_texture", "is_skull"];
     static readonly string[] WeaponSlotKeys = ["slot_id", "weapon_id", "rotation"];
 

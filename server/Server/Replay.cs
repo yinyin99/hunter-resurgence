@@ -228,7 +228,7 @@ public static class Replay
         catch (ArgumentException) { return null; }
     }
 
-    static readonly Regex OrganUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png)\z", RegexOptions.ECMAScript);
+    static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/lodges/[a-z0-9_]{1,40}\.png)\z", RegexOptions.ECMAScript);
 
     /// <summary>Bytes the client would load from the install's archives for this URL, or null. The client resolves
     /// static image and map URLs through the archives. exact: only files found through the relative path (a basename
@@ -239,7 +239,7 @@ public static class Replay
         var url = host + path;
         var mapHost = S(cfg, "map_host").ToLowerInvariant();
         string name;
-        if (OrganUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures: only the species' own folder, never another species' picture of the same name
+        if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures
         {
             if (!exact || host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
             name = "webgui/static/img/" + o.Groups[1].Value;
@@ -384,7 +384,7 @@ public static class Replay
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
     /// (the record's `time`). Each rewrite is an exact text replacement; when each text is not found exactly once the file is served
-    /// unchanged and one warning is logged. The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// unchanged and one warning is logged. The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
@@ -405,6 +405,7 @@ public static class Replay
                 var page = Encoding.Latin1.GetString(reply.Body);
                 return Token.IsMatch(page) ? NoCache(reply, Encoding.Latin1.GetBytes(Token.Replace(page, "$1?t=" + Version))) : reply;
             }
+            if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
             if (!Script.IsMatch(r.Path)) return reply;
             var text = Encoding.Latin1.GetString(reply.Body);  // Latin1 keeps every byte of the rest of the script as it was
             foreach (var (from, to) in Reads)
@@ -418,6 +419,17 @@ public static class Replay
                 text = text.Replace(from, to, StringComparison.Ordinal);
             }
             return NoCache(reply, Encoding.Latin1.GetBytes(text));
+        }
+
+        static readonly Regex Locale = new(@"\A/static/app/[^/]+/locale/[a-z_]+\.js\z", RegexOptions.ECMAScript);
+        const string HideKey = "\"hun_web_gui_hide\"", Opening = "hunterSetLocale({";
+
+        /// <summary>The lodge selection page labels its hide button with a key some locale scripts lack (it then shows the key itself): add it, in English, to a script that wraps its labels the usual way and does not have it; else serve the script unchanged.</summary>
+        static Reply AddHide(Reply reply)
+        {
+            var text = Encoding.Latin1.GetString(reply.Body);
+            return text.StartsWith(Opening, StringComparison.Ordinal) && !text.Contains(HideKey, StringComparison.Ordinal)
+                ? NoCache(reply, Encoding.Latin1.GetBytes(Opening + "\n" + HideKey + ": \"Hide\"," + text[Opening.Length..])) : reply;
         }
 
         static Reply NoCache(Reply reply, byte[] body) =>
@@ -475,8 +487,8 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        /// <summary>The kill screen's organ pictures, when the archive lacks one: the static host's folder of the mirror.</summary>
-        string? OrganMirror(Req r) => r.Host == GameWeb && OrganUrl.Match(r.Path) is { Success: true } m
+        /// <summary>The kill screen's organ pictures and the lodge pictures, when the archive lacks one: the static host's folder of the mirror.</summary>
+        string? PictureMirror(Req r) => r.Host == GameWeb && PictureUrl.Match(r.Path) is { Success: true } m
             ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
 
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
@@ -513,7 +525,7 @@ public static class Replay
             }
             if (get)
             {
-                var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r) ?? OrganMirror(r);
+                var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r) ?? PictureMirror(r);
                 if (f != null) return new(200, [("Content-Type", ContentType(System.IO.Path.GetFileName(f)))], File.ReadAllBytes(f), "mirror");
                 data = ArchiveFile(Cfg, r.Host, r.Path, exact: false);
                 if (data != null) return new(200, [("Content-Type", ContentType(r.Path))], data, "archive");
