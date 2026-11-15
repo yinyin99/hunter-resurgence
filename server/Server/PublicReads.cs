@@ -151,14 +151,15 @@ public sealed partial class State
         return true;
     }
 
-    JsonNode? RestoredProfile(Db con, long account) =>
-        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", $"game_user_{account}_profile.json") is string s ? JsonNode.Parse(s) : null;
+    /// <summary>The restored `/game/user/&lt;uid&gt;/profile` reply, by whatever user id the zip or the archive named: the account may keep an id of its own (a restore into an existing account, a claim).</summary>
+    JsonNode? RestoredProfile(Db con) =>
+        con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path LIKE 'game!_user!_%!_profile.json' ESCAPE '!'") is string s ? JsonNode.Parse(s) : null;
 
     /// <summary>The `background` of an account's restored `/game/user/&lt;id&gt;/profile` reply, the header picture the player chose: a string, null when it has none.</summary>
     public JsonNode? ProfileBackground(long account)
     {
         using var con = Con(account);
-        return RestoredProfile(con, account)?["background"] is { } b && Py.IsStr(b) ? C(b) : null;
+        return RestoredProfile(con)?["background"] is { } b && Py.IsStr(b) ? C(b) : null;
     }
 
     /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
@@ -166,7 +167,7 @@ public sealed partial class State
     public byte[] UserProfileReply(long account)
     {
         using var con = Con(account);
-        var restored = RestoredProfile(con, account);
+        var restored = RestoredProfile(con);
         return Py.DumpBytes(new JsonObject
         {
             ["background"] = C(restored?["background"]), ["ribbon"] = C(restored?["ribbon"]), ["hunterscore"] = C(MeOf(con, account)["hunterscore"]),

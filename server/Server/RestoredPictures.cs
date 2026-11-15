@@ -93,7 +93,6 @@ public sealed partial class State
         var media = MediaByPath(read);
         var files = new List<(string, string, bool)>();
         int missing = 0, fetched = 0, gallery = 0, already = 0;
-        static string Text(JsonNode? n) => Py.IsStr(n) ? (string)n! : Py.IsNum(n) ? Py.Str(n) : "";
         foreach (var p in GalleryEntries(read))
         {
             var url = (string)p["url"]!;
@@ -108,8 +107,7 @@ public sealed partial class State
                 continue;
             }
             long? type = Py.IsNum(p["type"]) ? Py.L(p["type"]) : Py.IsStr(p["type"]) && long.TryParse((string)p["type"]!, out var t) ? t : null;
-            var saved = new JsonObject { ["label"] = Text(p["label"]), ["animal"] = Text(p["animal"]) };
-            if (Text(p["kill_id"]) is { Length: > 0 } kill) saved["kill_id"] = kill;
+            var saved = SavedDetails(p);
             var id = con.Insert("INSERT INTO photos (account_id, photo_type, saved) VALUES ($a, ?, ?)", type, Py.Dumps(saved));
             var name = PhotoName(con.Account!.Value, id, $"{type ?? 0}");
             con.Exec("UPDATE photos SET file = ? WHERE account_id = $a AND id = ?", name, id);
@@ -125,6 +123,54 @@ public sealed partial class State
                      + (missing > 0 ? $"; pictures from links: {fetched} of {missing}" : "")
                      + (already > 0 ? $"; {already} gallery picture{(already == 1 ? "" : "s")} already in the gallery" : "");
         return new(files, stale, report, replace);
+    }
+
+    /// <summary>What a gallery entry keeps in `photos.saved`: `animal` the species, `label` the entry's label else its kill's score (as saved, text), `kill_id` the entry's else its kill's id. In a real `Gallery/list` the entry's
+    /// `animal` is the kill, `{scoreType, species_id, score, id, species}` (null for a camera photo) and its `label` null; another save format has the species as text.</summary>
+    static JsonObject SavedDetails(JsonObject p)
+    {
+        static string Text(JsonNode? n) => Py.IsStr(n) ? (string)n! : Py.IsNum(n) ? Py.Str(n) : "";
+        var kill = p["animal"] as JsonObject;
+        var saved = new JsonObject { ["label"] = Text(p["label"]) is { Length: > 0 } label ? label : Text(kill?["score"]), ["animal"] = kill is null ? Text(p["animal"]) : Text(kill["species"]) };
+        if ((Text(p["kill_id"]) is { Length: > 0 } id ? id : Text(kill?["id"])) is { Length: > 0 } killId) saved["kill_id"] = killId;
+        return saved;
+    }
+
+    /// <summary>`admin gallery-details`: for each account that has kept zips (`restores/&lt;account&gt;/*.zip`, newest first; `only` limits it to one), set the details of every restored gallery picture (`photos.saved`: species, score, kill id)
+    /// from the zip's entry for the same picture (the same file hash). It reads the zips and the pictures already on disk, and neither fetches, adds nor removes a picture. One line per account: id, handle, rows updated of rows restored.</summary>
+    public List<string> SweepGalleryDetails(string dataDir, long? only)
+    {
+        var lines = new List<string>();
+        var root = Path.Combine(dataDir, "restores");
+        foreach (var dir in Directory.Exists(root) ? Directory.GetDirectories(root).Order(StringComparer.Ordinal) : Enumerable.Empty<string>())
+        {
+            if (!long.TryParse(Path.GetFileName(dir), out var account) || (only is not null && only != account) || !Store.AccountExists(account)) continue;
+            var zips = Directory.GetFiles(dir, "*.zip").Where(f => !f.EndsWith(".pictures.zip", StringComparison.Ordinal)).OrderByDescending(File.GetLastWriteTimeUtc).ToList();
+            Dictionary<string, long> rows = [];  // the file hash of each restored picture the account has, and its row
+            using (var con = Con(account))
+                foreach (var r in con.Rows("SELECT id, file FROM photos WHERE account_id = $a AND saved IS NOT NULL AND file IS NOT NULL"))
+                    if (Path.Combine(AccountPhotos(account), (string)r[1]) is var file && File.Exists(file)) rows.TryAdd(Restorer.Sha256(file), (long)r[0]);
+            var total = rows.Count;
+            var updates = new List<(long Id, string Saved)>();
+            foreach (var zip in zips.TakeWhile(_ => rows.Count > 0))
+            {
+                var read = Importer.Read(zip, Catalogue);
+                var linked = Restorer.PicturesZip(zip);
+                var hashes = HashPictures(read, account, zip, File.Exists(linked) ? linked : null, replace: false);
+                var media = MediaByPath(read);
+                foreach (var p in GalleryEntries(read))
+                    if (hashes.Entries.TryGetValue(ZipPicture(media, (string)p["url"]!)?.Entry ?? PictureLinks.EntryName((string)p["url"]!), out var hash) && rows.Remove(hash, out var id))
+                        updates.Add((id, Py.Dumps(SavedDetails(p))));
+            }
+            using (var con = Con(account))
+            {
+                con.Begin();
+                foreach (var (id, saved) in updates) con.Exec("UPDATE photos SET saved = ? WHERE account_id = $a AND id = ?", saved, id);
+                con.Commit();
+            }
+            lines.Add($"{account} {(string)Store.AccountJson(account)["handle"]!} {updates.Count} of {total} gallery pictures updated");
+        }
+        return lines;
     }
 
     /// <summary>After the restore's commit: with Replace, remove the pictures of the restore before (the stale gallery files, every kill and image file); then read each stored file from the backup zip, or from

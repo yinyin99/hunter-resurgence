@@ -202,6 +202,16 @@ public class SectionBackupTests
         Assert.DoesNotContain(r.Report.Warnings, x => x.Contains("Trophy/list", StringComparison.Ordinal));
     }
 
+    /// <summary>The first tool names the saved loadouts `v2_loadout`, like its other `v2_` sections (`v2_trophies`, `v2_lodges`): they are the loadouts, not an unknown section.</summary>
+    [Fact]
+    public void TheV2LoadoutSectionIsTheSavedLoadouts()
+    {
+        var r = new SectionZip().Section("me", Me).Section("v2_loadout", """[{"id":5,"name":"Deer","items":[{"item_id":500,"slot_id":11}]}]""").Read();
+        Assert.Contains("game_user_loadout.json", r.Model.Extras.Keys);
+        Assert.DoesNotContain("json_v2_loadout.json", r.Model.Extras.Keys);
+        Assert.DoesNotContain(r.Report.Missing, x => x.StartsWith("loadout", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void FilesThatBreakTheIndexAreRejectedOrMissing()
     {

@@ -137,6 +137,33 @@ public class AvatarLinksTests : StateTestBase
     }
 
     [Fact]
+    public async Task TheSweepDoesNotCountTheDefaultAvatarARestoreWroteAsTheChoiceOfThePlayer()
+    {
+        const string StockOnWeb = "https://site.example/media/avatar/256/1000000.png";  // the default avatar, as the profile of a restored account names it
+        void Restored(long account, string handle, string? extra = null, string? avatar = null, long? archived = null)
+        {
+            state.CreateAccount(account, handle);
+            state.Store.SetAvatar(account, Default, null);
+            using var con = state.Store.Open(account);
+            PlayerRows.SetProfile(con, new JsonObject { ["avatar"] = StockOnWeb });
+            if (extra is not null) PlayerRows.SetExtra(con, extra, new JsonObject { ["avatar"] = avatar });
+            if (archived is { } uid) con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES ($a, ?, ?, 0, 'restored', 0, '', 0)", uid, handle);
+        }
+        Restored(61, "me", "Me_me.json", "https://avatar.test/uploads/thumb/242x242/12345.jpg?h1");  // the upload is in the saved Me/me
+        Restored(62, "host", "Public_user_getByHostname__hostname=host.json", "https://site.example/media/avatar/uploads/thumb/242x242/777.jpg?h2");  // or in the saved profile page
+        Restored(63, "claim", archived: 3001);  // no avatar in the data at all: the claim's archived user id
+        Restored(64, "chosen", "Me_me.json", "https://other.test/a.png");  // a stock avatar the player chose
+        var host = new AvatarHost();
+        var links = new PictureLinks([Host], host);
+
+        Assert.Equal(["61 me would fetch the avatar of user 12345", "62 host would fetch the avatar of user 777", "63 claim would fetch the avatar of user 3001", "64 chosen no uploaded avatar"],
+                     await state.SweepAvatars(links, null, dry: true));
+        Assert.Equal(["61 me set", "62 host set", "63 claim set", "64 chosen no uploaded avatar"], await state.SweepAvatars(links, null, dry: false));
+        Assert.Equal([$"{BASE}/photos/61/avatar.jpg", $"{BASE}/photos/62/avatar.jpg", $"{BASE}/photos/63/avatar.jpg", Default], new[] { 61L, 62, 63, 64 }.Select(AvatarUrl));
+        Assert.Equal(TestZip.Jpeg("avatar3001"), File.ReadAllBytes(state.PhotoFile("/photos/63/avatar.jpg")!));
+    }
+
+    [Fact]
     public async Task TheAvatarUploadsSettingNamesTheHostTheAvatarIsFetchedFrom()
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false) { AvatarUploads = "https://uploads.test" };  // the avatar list's own base is not used

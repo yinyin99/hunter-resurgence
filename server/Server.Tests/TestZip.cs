@@ -40,13 +40,13 @@ sealed class TestZip
     public TestZip Gallery(string photos) =>
         Reply($"Gallery_list__user_id={Uid}__offset=0__limit=24.json", "/v1/Gallery/list", $$"""{"total":3,"photos":{{photos}}}""", ("user_id", Uid), ("offset", "0"), ("limit", "24"));
 
-    /// <summary>Gallery pictures a and b (b with its kill's score and species) and c whose picture is not in the zip; a hunt of two kills, the first with its photo and its score sheet page, the second with neither;
+    /// <summary>Gallery pictures a and b (b with its kill, the real shape of an entry's `animal`: an object) and c whose picture is not in the zip; a hunt of two kills, the first with its photo and its score sheet page, the second with neither;
     /// an avatar. Every link is a made-up one.</summary>
     public TestZip Pictures() =>
         Gallery("""
-                [{"id":53,"type":2,"url":"https://photos.example/p/c.jpg","thumbnail":"https://photos.example/p/c-t.jpg","label":"","animal":""},
-                 {"id":52,"type":2,"url":"https://photos.example/p/b.jpg","thumbnail":"https://photos.example/p/b-t.jpg","label":"120.5","animal":"Test Deer"},
-                 {"id":51,"type":3,"url":"https://photos.example/p/a.jpg","thumbnail":"https://photos.example/p/a-t.jpg","label":"","animal":""}]
+                [{"id":53,"type":2,"url":"https://photos.example/p/c.jpg","thumbnail":"https://photos.example/p/c-t.jpg","label":null,"animal":null},
+                 {"id":52,"type":2,"url":"https://photos.example/p/b.jpg","thumbnail":"https://photos.example/p/b-t.jpg","label":null,"animal":{"scoreType":0,"species_id":1,"score":"120.5","id":777,"species":"Test Deer"}},
+                 {"id":51,"type":3,"url":"https://photos.example/p/a.jpg","thumbnail":"https://photos.example/p/a-t.jpg","label":null,"animal":null}]
                 """)
         .Reply($"Public_user_expedition__user_id={Uid}__expedition_id=9100.json", "/v1/Public_user/expedition", """
             {"stats":null,

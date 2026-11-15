@@ -16,6 +16,8 @@ const string AdminUsage = """
     --account names another account (user id or handle); without it the local account gets it.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
+    admin gallery-details [--account <id or handle>] sets the species, score and kill of every restored gallery picture (or of one account's) from the zips the server kept (restores/<account>/): nothing is fetched, added or removed;
+    it prints one line per account: id, handle, pictures updated of pictures restored.
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
@@ -103,6 +105,18 @@ Replay.HarTable Table(out List<string> hars)
 
 void Admin(string[] a)
 {
+    if (a.Length > 0 && a[0] == "gallery-details")
+    {
+        if (a[1..] is not ([] or ["--account", _])) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (a.Length == 3 && (only = AdminApi.ResolveAccount(loaded, a[2])) is null) Die($"no account {a[2]}");
+        try { foreach (var line in loaded.SweepGalleryDetails(settings.DataDir, only)) Console.WriteLine(line); }
+        catch (RestoreException e) { Die($"refused: {e.Message}"); }
+        return;
+    }
     if (a.Length > 0 && a[0] == "avatars")
     {
         var dry = a.Contains("--dry-run");

@@ -113,7 +113,8 @@ public sealed record ServerBestRow(string Species, double Score, double Range, s
 /// <summary>One page of a hunter's gallery of <see cref="ServerSessionApi.GallerySuffix"/>: <c>Label</c> is the score of the kill the photo shows ("" without one).</summary>
 public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPhoto[] Rows);
 
-public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail);
+/// <param name="Kill">The kill the photo shows when <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c> answers; null otherwise.</param>
+public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail, long? Kill = null);
 
 /// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open; <c>Avatar</c> the URL of their picture (null for none).</summary>
 public sealed record ServerPlayer(string Handle, bool Online, string? Avatar = null);
