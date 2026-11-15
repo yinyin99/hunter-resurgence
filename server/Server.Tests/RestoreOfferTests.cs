@@ -28,8 +28,7 @@ public class RestoreOfferTests : StateTestBase
     [Theory]
     [InlineData("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 1, 'x', 'm', 'r')")]
     [InlineData("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, 1, 'x', 1, 'n')")]
-    [InlineData("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, 'waiting', 1, 'n', 0)")]
-    public void TestAnAccountWithARestoreAnUploadOrAClaimIsNeverOffered(string insert)
+    public void TestAnAccountWithAZipRestoreOrAnUploadIsNeverOffered(string insert)
     {
         var store = new Store(Path.Combine(tmp, "has.db"));
         store.CreateAccount(5, "old", new JsonObject());
@@ -40,12 +39,15 @@ public class RestoreOfferTests : StateTestBase
         Assert.False(store.NoteRestoreOffer(6));
     }
 
-    [Fact]
-    public void TestARejectedClaimIsStillOffered()
+    [Theory]
+    [InlineData("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, '{0}', 1, 'n', 0)", "waiting")]
+    [InlineData("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, '{0}', 1, 'n', 0)", "rejected")]
+    [InlineData("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 1, 'archive:7', 'm', 'r')", "")]
+    public void TestAnArchiveClaimNeverBlocksTheOffer(string insert, string state)
     {
-        var store = new Store(Path.Combine(tmp, "rejected.db"));
+        var store = new Store(Path.Combine(tmp, "claim.db"));
         store.CreateAccount(5, "old", new JsonObject());
-        using (var con = store.Open(5)) con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, 'rejected', 1, 'n', 0)");
+        using (var con = store.Open(5)) con.Exec(insert.Replace("{0}", state));
         Assert.True(store.NoteRestoreOffer(5));
     }
 
