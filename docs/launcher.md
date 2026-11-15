@@ -187,7 +187,7 @@ With `link_discord` set (the `LINK_DISCORD` variable of the website's deploy win
 
 ## The restore offer
 
-Right after the Discord invitation is closed (or at once without `link_discord`) a dialog asks "Do you have a backup of your profile?" with "Restore my profile", which opens the restore page, and "Later" (`RestoreOfferModal`; [website.md](website.md) has the details). Once per account, not per PC: the server remembers it (`ServerRestoreOfferService`, `POST /account/restore-offer`) and never offers it to an account that has a restore, an upload or a claim. It never opens over another dialog.
+Right after the Discord invitation is closed (or at once without `link_discord`) a dialog asks "Do you have a backup of your profile?" with "Restore my profile", which opens the restore page, and "Later" (`RestoreOfferModal`; [website.md](website.md) has the details). Once per account, not per PC: the server remembers it (`ServerRestoreOfferService`, `POST /account/restore-offer`) and never offers it to an account that has a restore, an upload or a claim (waiting or restored). It never opens over another dialog.
 
 ## Files on the PC
 

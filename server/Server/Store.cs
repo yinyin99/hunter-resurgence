@@ -404,12 +404,12 @@ public sealed class Store
         return con.Exec("UPDATE accounts SET discord_invited = 1 WHERE id = ? AND discord_invited = 0", id) > 0;
     }
 
-    /// <summary>True the first time it is asked for the account, false after or when the account has a restore, an upload or a claim waiting: the one-time restore offer of the website and the launcher.</summary>
+    /// <summary>True the first time it is asked for the account, false after or when the account has a restore, an upload or a claim (waiting or restored, not a rejected one): the one-time restore offer of the website and the launcher.</summary>
     public bool NoteRestoreOffer(long id)
     {
         using var con = Open(id);
         return con.Exec("UPDATE accounts SET restore_offered = 1 WHERE id = ? AND restore_offered = 0", id) > 0
-            && con.Scalar("SELECT 1 WHERE EXISTS (SELECT 1 FROM restore_audit WHERE account_id = $a) OR EXISTS (SELECT 1 FROM uploads WHERE account_id = $a) OR EXISTS (SELECT 1 FROM claims WHERE account_id = ?)", id) is null;
+            && con.Scalar("SELECT 1 WHERE EXISTS (SELECT 1 FROM restore_audit WHERE account_id = $a) OR EXISTS (SELECT 1 FROM uploads WHERE account_id = $a) OR EXISTS (SELECT 1 FROM claims WHERE account_id = ? AND state <> 'rejected')", id) is null;
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
