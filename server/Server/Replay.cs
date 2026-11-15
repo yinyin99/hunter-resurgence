@@ -228,12 +228,12 @@ public static class Replay
         catch (ArgumentException) { return null; }
     }
 
+    static readonly Regex OrganUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png)\z", RegexOptions.ECMAScript);
+
     /// <summary>Bytes the client would load from the install's archives for this URL, or null. The client resolves
     /// static image and map URLs through the archives. exact: only files found through the relative path (a basename
     /// that exists in several directories, flags 1), so in the URL's directory; else only the single archived file
     /// with that basename (flags 0), which can sit in another directory and be a different picture.</summary>
-    static readonly Regex OrganUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png)\z", RegexOptions.ECMAScript);
-
     public static byte[]? ArchiveFile(JsonObject cfg, string host, string path, bool exact)
     {
         var url = host + path;
