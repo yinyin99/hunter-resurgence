@@ -18,13 +18,15 @@ public sealed partial class State
 
     static readonly string[] StoredFolders = ["kills", "images"];
 
-    /// <summary>The saved `Gallery/list` and `Gallery/list_all` entries with a link, once per link, oldest first (so the newest gets the highest id).</summary>
+    /// <summary>The saved `Gallery/list` and `Gallery/list_all` entries with a link, once per link, oldest first (so the newest gets the highest id). An entry is an object with the details
+    /// (`type`, `label`, `animal`, `kill_id`) or, in a `Gallery/list_all` of another save format, a plain link; a link no detailed entry names comes after the detailed ones (it is the older).</summary>
     static List<JsonObject> GalleryEntries(Restored read)
     {
         static long Page(string key) => Regex.Match(key, @"__offset=(\d+)").Groups[1] is { Length: > 0 } g && long.TryParse(g.Value, out var n) ? n : 0;
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        return [.. read.Model.Extras.Where(e => e.Key.StartsWith("Gallery_list", StringComparison.Ordinal) && e.Value?["photos"] is JsonArray)
-                     .OrderBy(e => Page(e.Key)).SelectMany(e => e.Value!["photos"]!.AsArray().OfType<JsonObject>())
+        var all = read.Model.Extras.Where(e => e.Key.StartsWith("Gallery_list", StringComparison.Ordinal) && e.Value?["photos"] is JsonArray)
+                      .OrderBy(e => Page(e.Key)).SelectMany(e => e.Value!["photos"]!.AsArray()).ToList();
+        return [.. all.OfType<JsonObject>().Concat(all.Where(Py.IsStr).Select(n => new JsonObject { ["url"] = (string)n! }))
                      .Where(p => Py.IsStr(p["url"]) && seen.Add((string)p["url"]!)).Reverse()];
     }
 

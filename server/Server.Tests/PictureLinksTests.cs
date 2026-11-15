@@ -222,4 +222,22 @@ public class PictureLinksTests : StateTestBase
         Assert.Equal(2, Gallery(1001).Count);
         Assert.Equal(2, Directory.GetFiles(Path.Combine(tmp, "photos", "1001")).Length);
     }
+
+    [Fact]
+    public async Task LinksOnlyListedAsPlainStringsInTheFullListAreFetchedAndTheDetailedEntryWins()
+    {
+        var host = new Fake();
+        var links = new PictureLinks([Host], host);
+        var zip = TestZip.Own()  // the shape of a save of another format: one page with details, the full list as plain links
+            .Gallery("""[{"id":9,"type":3,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":"55.5","animal":"Test Deer"}]""")
+            .Reply("Gallery_list_all.json", "/v1/Gallery/list_all", """{"photos":["https://photos.example/p/ok.jpg","https://photos.example/p/ok2.jpg","https://other.example/p/x.jpg"]}""")
+            .Write(tmp, "foreign.zip");
+        Restorer.Import(state, Zip().Write(tmp, "mine.zip"), null, tmp);  // an account to import onto
+        var (report, _) = Restorer.ImportPictures(state, zip, 1001, tmp, links);
+        Assert.Contains("pictures from links: 2 of 3", report);
+        var gallery = Gallery(1001);
+        Assert.Equal([TestZip.Jpeg("ok"), TestZip.Jpeg("ok2"), TestZip.Jpeg("a")], gallery.Select(Bytes));  // newest first: the link only the full list holds is older than the detailed one
+        Assert.Equal("Test Deer|55.5|3", $"{gallery[0]!["animal"]}|{gallery[0]!["label"]}|{gallery[0]!["type"]}");  // the details of the detailed entry
+        Assert.Equal(0, await links.Fetch(["https://photos.example/p/nothing.jpg"], Path.Combine(tmp, "z.zip")));
+    }
 }
