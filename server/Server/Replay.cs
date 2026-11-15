@@ -372,6 +372,49 @@ public static class Replay
 
     static string ContentType(string name) => Mime.TryGetContentType(name, out var ct) ? ct : "application/octet-stream";
 
+    /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
+    /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
+    /// (the record's `time`). Each rewrite is an exact text replacement; when each text is not found exactly once the file is served
+    /// unchanged and one warning is logged. The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
+    static class TimerFix
+    {
+        static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
+        static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
+        public const string Version = "timer1";
+        // the two places the script fills the Teams model's timer: the first read of the page and the refresh
+        public static readonly (string From, string To)[] Reads =
+            [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
+             ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
+        static int warned;
+
+        public static Reply Apply(Req r, Reply reply)
+        {
+            if (reply.Status != 200 || r.Method != "GET") return reply;
+            if (r.Path == "/client")
+            {
+                var page = Encoding.Latin1.GetString(reply.Body);
+                return Token.IsMatch(page) ? NoCache(reply, Encoding.Latin1.GetBytes(Token.Replace(page, "$1?t=" + Version))) : reply;
+            }
+            if (!Script.IsMatch(r.Path)) return reply;
+            var text = Encoding.Latin1.GetString(reply.Body);  // Latin1 keeps every byte of the rest of the script as it was
+            foreach (var (from, to) in Reads)
+            {
+                if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
+                {
+                    if (Interlocked.Exchange(ref warned, 1) == 0)
+                        Console.Error.WriteLine("warning: the in-game page's round timer read was not found; the page is served unchanged");
+                    return reply;
+                }
+                text = text.Replace(from, to, StringComparison.Ordinal);
+            }
+            return NoCache(reply, Encoding.Latin1.GetBytes(text));
+        }
+
+        static Reply NoCache(Reply reply, byte[] body) =>
+            new(reply.Status, [.. reply.Headers.Where(h => !h.Name.Equals("Cache-Control", StringComparison.OrdinalIgnoreCase)), ("Cache-Control", "no-cache")], body, "patch");
+    }
+
     /// <summary>The game hosts, the recorded replies, the player state and the replay every game request falls back
     /// to. GameApi's endpoints answer what the player state owns and hand everything else to Fallback.</summary>
     public sealed class Game
@@ -438,7 +481,9 @@ public static class Replay
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
         /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
         /// (<see cref="ReplayScope"/>); a per-player one gets its empty reply, an unlisted one the miss.</summary>
-        public Reply Fallback(Req r)
+        public Reply Fallback(Req r) => TimerFix.Apply(r, Served(r));
+
+        Reply Served(Req r)
         {
             var get = r.Method is "GET" or "HEAD";
             var data = get ? ArchiveFile(Cfg, r.Host, r.Path, exact: true) : null;
