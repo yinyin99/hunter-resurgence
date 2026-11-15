@@ -20,8 +20,8 @@ public sealed record PlayerModel(Identity Identity, Profile Profile, AccountDefa
     StatsBlock? Stats, IReadOnlyList<AchievementRow> Achievements, IReadOnlyList<RawRow> Trophies, IReadOnlyList<RawRow> Lodges,
     IReadOnlyDictionary<string, JsonNode?> Extras);
 
-/// <summary>Mode: "my-account" or "public". Format: 1 for a manifest without one (every release before format 2). ClaimHash is a hint only: the key is per PC, not per account.</summary>
-public sealed record Identity(string Uid, string? Handle, string? SteamId64, string Mode, int Format, string? ToolVersion, string ClaimHash, DateTime? StartedUtc, DateTime? CompletedUtc);
+/// <summary>Mode: "my-account" or "public". Format: 1 for a manifest without one (every release before format 2), 0 for another tool's zip (no manifest). ClaimHash is a hint only: the key is per PC, not per account; null with no manifest claim hash (another tool's zip, an archive claim), as is SteamId64.</summary>
+public sealed record Identity(string Uid, string? Handle, string? SteamId64, string Mode, int Format, string? ToolVersion, string? ClaimHash, DateTime? StartedUtc, DateTime? CompletedUtc);
 
 public sealed record Profile(long Id, string? Handle, string? Hostname, int Gender, int Hunterscore, string? AvatarUrl, string? MembershipType, int MembershipInt,
     string? Uuid, string? Locale, string? Timezone, string? Country, long? MemberSince, int UserGroup, int? Rank);

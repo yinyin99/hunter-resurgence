@@ -31,16 +31,24 @@ static class BackupReader
     /// <summary>The newest manifest format this reader knows.</summary>
     public const int KnownFormat = 2;
 
-    public static BackupContent Read(Stream stream, Limits lim)
+    /// <summary>Opens the zip once and checks what every format shares, in this order: the entries counted in the central directory, then the entry cap and the entry names. The caller disposes it.</summary>
+    public static ZipArchive Open(Stream stream, Limits lim)
     {
         if (stream.CanSeek) CheckEntries(stream, lim.Entries);
         ZipArchive zip;
         try { zip = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true); }
         catch (InvalidDataException) { throw new RestoreException("not a zip"); }
-        using (zip)
+        try
         {
-            try { return Read(zip, lim); }
-            catch (InvalidDataException e) { throw new RestoreException("damaged zip: " + e.Message); }
+            if (zip.Entries.Count > lim.Entries) throw new RestoreException($"too many entries: {zip.Entries.Count} (cap {lim.Entries})");
+            foreach (var e in zip.Entries)
+                if (!SafeName(e.FullName)) throw new RestoreException($"unsafe entry name: {e.FullName}");
+            return zip;
+        }
+        catch
+        {
+            zip.Dispose();
+            throw;
         }
     }
 
@@ -86,26 +94,33 @@ static class BackupReader
         s.Position = at;
     }
 
-    static BackupContent Read(ZipArchive zip, Limits lim)
+    /// <summary>Ours: a manifest.json at the root or one folder down.</summary>
+    public static bool IsOne(ZipArchive zip) => zip.Entries.Any(e => IsAt(e, "manifest.json"));
+
+    /// <summary>A user id as an id: digits only, small enough for a long. <paramref name="where"/> names the file it came from in the message.</summary>
+    internal static string CheckUid(string? uid, string where)
     {
-        if (zip.Entries.Count > lim.Entries) throw new RestoreException($"too many entries: {zip.Entries.Count} (cap {lim.Entries})");
-        foreach (var e in zip.Entries)
-            if (!SafeName(e.FullName)) throw new RestoreException($"unsafe entry name: {e.FullName}");
+        if (uid is null) throw new RestoreException($"{where} has no uid");
+        if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new RestoreException($"{where} uid is not digits only");
+        if (!long.TryParse(uid, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _)) throw new RestoreException($"{where} uid is too large for an id");
+        return uid;
+    }
+
+    /// <summary>Called once <see cref="IsOne"/> holds and the shared checks (<see cref="Open"/>) passed.</summary>
+    internal static BackupContent Read(ZipArchive zip, Limits lim)
+    {
         var entries = zip.Entries.Where(e => !e.FullName.EndsWith('/')).ToList();
         long total = 0;
 
         // the tool zips the folder's content; a zip made by hand may keep the folder as one level
-        var mEntry = entries.FirstOrDefault(e => IsAt(e, "manifest.json")) ?? throw new RestoreException("no manifest.json");
+        var mEntry = entries.First(e => IsAt(e, "manifest.json"));
         var prefix = mEntry.FullName[..^"manifest.json".Length];
         var mBytes = Bytes(mEntry, lim.ManifestBytes, lim, ref total, null) ?? throw new RestoreException($"manifest.json is over {lim.ManifestBytes} bytes");
         long jsonTotal = mBytes.Length; // the manifest is parsed JSON too
         if (jsonTotal > lim.JsonTotalBytes) throw new RestoreException($"JSON content over {lim.JsonTotalBytes} bytes");
         var m = Parse(mBytes, lim) as JsonObject ?? throw new RestoreException("manifest.json is not a JSON object (or nested too deep, or has a duplicate key)");
 
-        var uid = Text(m["uid"]) ?? throw new RestoreException("manifest has no uid");
-        if (uid.Length == 0 || !uid.All(char.IsAsciiDigit)) throw new RestoreException("manifest uid is not digits only");
-        if (!long.TryParse(uid, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _))
-            throw new RestoreException("manifest uid is too large for an id");
+        var uid = CheckUid(Text(m["uid"]), "manifest");
         var format = 1; // no format: every release before format 2
         if (m["format"] is { } f)
         {
@@ -158,7 +173,7 @@ static class BackupReader
         n.Length > 0 && !n.Contains('\\') && !n.Contains(':') && !n.StartsWith('/') && n.Split('/').All(p => p != ".." && p != ".");
 
     /// <summary>name at the root or one folder down.</summary>
-    static bool IsAt(ZipArchiveEntry e, string name) =>
+    internal static bool IsAt(ZipArchiveEntry e, string name) =>
         e.FullName == name || (e.FullName.EndsWith("/" + name, StringComparison.Ordinal) && e.FullName.Count(c => c == '/') == 1);
 
     static JsonNode? Parse(byte[] b, Limits lim) => TryParse(b, lim, out var node) ? node : null;
@@ -184,7 +199,7 @@ static class BackupReader
     internal static string? Text(JsonNode? n) => n is JsonValue v ? v.TryGetValue<string>(out var s) ? s : v.GetValueKind() == JsonValueKind.Number ? v.ToJsonString() : null : null;
 
     /// <summary>The entry's bytes (hashed into h when given), or null over the cap. The declared sizes are not trusted: the bytes are counted as they come.</summary>
-    static byte[]? Bytes(ZipArchiveEntry e, int cap, Limits lim, ref long total, IncrementalHash? h)
+    internal static byte[]? Bytes(ZipArchiveEntry e, int cap, Limits lim, ref long total, IncrementalHash? h)
     {
         using var s = e.Open();
         using var ms = new MemoryStream();

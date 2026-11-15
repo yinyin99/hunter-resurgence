@@ -529,7 +529,7 @@ public class ImporterTests
     public void AMissingManifestOrClaimKeyIsRefused()
     {
         var zip = SyntheticZip.Own().Build();
-        Assert.Equal("no manifest.json", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(Without(zip, "manifest.json")))).Message);
+        Assert.Equal("not a backup zip", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(Without(zip, "manifest.json")))).Message);
         Assert.Equal("no claim.key", Assert.Throws<RestoreException>(() => Importer.Read(new MemoryStream(Without(zip, "claim.key")))).Message);
     }
 
