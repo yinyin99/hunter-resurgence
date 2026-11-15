@@ -10,7 +10,7 @@ Also searched as theHunter (2009), the Hunter Classic, theHunter private server.
 
 ## Status
 
-**2026-11-14: online, early.** You can hunt on the community server today, [for free](#is-it-free). You need Windows 10 or 11, Steam and your own copy of the game: this project contains no game files.
+**2026-11-15: online, early.** You can hunt alone or with others on the community server today, [for free](#is-it-free). You need Windows 10 or 11, Steam and your own copy of the game: this project contains no game files.
 
 ## Open source, so it can't shut down again
 
@@ -35,11 +35,13 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Works now | Not yet |
 |---|---|
 | Sign in with Steam: one account for the launcher, website and game | Offline / LAN play on your own PC |
-| Hunt on all 12 reserves; pick the start on a map and the time of day | Multiplayer |
-| Every species licensed for every player, for now | Competitions and season boards |
-| Kills, harvest, score sheets, gold and XP | Bait-site pages in the game |
-| Tutorial for new players | Full in-game map tiles |
-| Store: buy with em$ and gm$, in the game and on the website; it shows what you already own | |
+| Hunt on all 12 reserves; pick the start on a map and the time of day | Competitions and season boards |
+| Multiplayer: host a game or join one from the launcher's list (2 to 8 hunters, friends only or open, optional password) | Bait-site pages in the game |
+| Every species licensed for every player, for now | Full in-game map tiles |
+| A free start kit (two weapons, ammunition, binoculars); the free ammunition is topped up at every hunt start | |
+| Kills, harvest, score sheets, gold and XP | |
+| Tutorial for new players | |
+| Store: buy with em$ and gm$, in the game and on the website; a page per item; it shows what you already own | |
 | Loadouts, saved and chosen at launch | |
 | Placed items, pick-ups and stack transfers | |
 | Skills, statistics, achievements, ranks, milestones and personal bests | |
@@ -48,7 +50,7 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Avatars you can choose | |
 | Friends and friend requests, messages (read only), wallet history | |
 | Public player profiles with hunt history and score sheets, in the game and on the website | |
-| Halloween 2026 event on its 5 reserves, on or off per player on the hunt start screen (its missions and trophies are not in yet) | |
+| Halloween 2026 event on its 5 reserves while the operator runs it, with its panel and one personal mission, on or off per player in Settings and on the hunt start screen (its trophies and community missions are not in yet) | |
 | Get your old profile back ([below](#get-your-old-profile-back)); delete your data | |
 | Launcher that installs and updates itself; Steam's Play button opens it | |
 | Website and launcher in 19 languages | |
@@ -68,11 +70,10 @@ Either way works even if you already hunted on the community server: hunts, kill
 
 Planned, with no dates:
 
-- Halloween 2026 missions and trophies
+- Halloween 2026 trophies and community missions
 - Competitions and seasons
 - The remaining in-game pages (bait sites, map tiles)
 - Offline / LAN play
-- Multiplayer
 
 ## Get involved
 
@@ -113,7 +114,7 @@ Often, yes: by your old in-game name or from a backup zip. See [Get your old pro
 
 ### Can I hunt with friends?
 
-Not yet. Multiplayer is on the [roadmap](#roadmap); friends, messages and profiles already work.
+Yes. In the launcher, host a game (friends only or open, 2 to 8 hunters, optional password) or join one from the games list. The hunters' games connect to each other; a punch-through server helps players behind a home router, but some strict routers can still fail. Friends, messages and profiles work too.
 
 ### What if this server shuts down too?
 
@@ -141,8 +142,9 @@ One document per part:
 - [docs/launcher.md](docs/launcher.md): the launcher and its player kit.
 - [docs/website.md](docs/website.md): the website and the shared UI library.
 - [docs/restore.md](docs/restore.md): the restore library.
-- [docs/server.md](docs/server.md): the server (local and community).
-- [docs/deploy.md](docs/deploy.md): the website's container image and deploy.
+- [docs/server.md](docs/server.md): the server (local and community), including multiplayer.
+- [docs/deploy.md](docs/deploy.md): the community server and the website in containers, the punch-through server, and deploys.
+- [docs/images.md](docs/images.md): the picture slots of the website and launcher (the repository holds no game pictures).
 - [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md): the third-party fonts, icons, flags and libraries bundled in the website, launcher, backup tool and server, and their licences.
 
 ## Disclaimer and license
