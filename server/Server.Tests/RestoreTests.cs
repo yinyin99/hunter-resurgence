@@ -402,6 +402,55 @@ public class RestoreTests : StateTestBase
         Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(state.PublicGallery(1001, 1, "https://web.test")["rows"]![0]!["url"]))!));
         using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(1001)));
         Assert.Equal(2, zip.Entries.Count);
+        var rows = state.PublicGallery(1001, 1, "https://web.test")["rows"]!.AsArray();  // the website's rows: the species and score of the real entry's object `animal`, and the kill whose score page the zip saved
+        Eq("""["Test Deer", "120.5", 777, "", "", null]""", T(rows[0]!["animal"], rows[0]!["label"], rows[0]!["kill"], rows[1]!["animal"], rows[1]!["label"], rows[1]!["kill"]));
+    }
+
+    [Fact]
+    public void TestAGalleryEntryWhoseAnimalIsTextStillKeepsItsDetails()
+    {
+        var zip = TestZip.Own().Gallery("""[{"id":1,"type":2,"url":"https://photos.example/p/t.jpg","thumbnail":"","label":"9.5","animal":"Test Deer","kill_id":777}]""")
+            .Media("photos/photos.example_p_t.jpg", TestZip.Jpeg("t")).Media("kills/score_777.html", "<div>saved sheet</div>"u8.ToArray());
+        Restorer.Import(state, Zip(zip), null, tmp);
+        var row = state.PublicGallery(1001, 1, "https://web.test")["rows"]![0]!;
+        Eq("""["Test Deer", "9.5", 777]""", T(row["animal"], row["label"], row["kill"]));
+    }
+
+    [Fact]
+    public void TestAGalleryEntryWithAScoreThatIsANumberOrNullKeepsItsDetails()
+    {
+        var zip = TestZip.Own().Gallery("""
+            [{"id":2,"type":2,"url":"https://photos.example/p/n.jpg","thumbnail":"","label":null,"animal":{"scoreType":1,"species_id":1,"score":null,"id":778,"species":"Test Deer"}},
+             {"id":1,"type":2,"url":"https://photos.example/p/f.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":318.3466,"id":777,"species":"Test Deer"}}]
+            """).Media("photos/photos.example_p_n.jpg", TestZip.Jpeg("n")).Media("photos/photos.example_p_f.jpg", TestZip.Jpeg("f")).Media("kills/score_777.html", "<div>saved sheet</div>"u8.ToArray());
+        Restorer.Import(state, Zip(zip), null, tmp);
+        var rows = state.PublicGallery(1001, 1, "https://web.test")["rows"]!.AsArray();
+        Eq("""[["Test Deer", "", null], ["Test Deer", "318.3466", 777]]""", T(T(rows[0]!["animal"], rows[0]!["label"], rows[0]!["kill"]), T(rows[1]!["animal"], rows[1]!["label"], rows[1]!["kill"])));  // no score page saved for kill 778: no link
+    }
+
+    [Fact]
+    public void TestTheSavedProfileBackgroundIsFoundWhenTheAccountKeepsAnIdOfItsOwn()
+    {
+        state.CreateAccount(555, "mine");
+        Restorer.Import(state, Zip(TestZip.Own().Reply("game_user_1001_profile.json", "/game/user/1001/profile", """{"background":"b.png","ribbon":"r.png"}""")), 555, tmp);  // the zip's user id is 1001
+        Assert.Equal("b.png", (string)state.ProfileBackground(555)!);
+        Assert.Equal("r.png", (string)JsonNode.Parse(state.UserProfileReply(555))!["ribbon"]!);
+    }
+
+    [Fact]
+    public void AdminGalleryDetailsGivesTheRestoredPicturesTheirDetailsFromTheKeptZipAndChangesNothingElse()
+    {
+        Restorer.Import(state, Zip(TestZip.Own().Pictures()), null, tmp);
+        var urls = Gallery(1001).Select(g => (string)g!["url"]!).ToList();
+        using (var con = state.Store.Open(1001))  // as the restore stored them when it read `animal` as text
+            con.Exec("""UPDATE photos SET saved = '{"label":"","animal":""}' WHERE account_id = $a""");
+        Assert.Equal("", (string)Gallery(1001)[0]!["animal"]!);
+        Assert.Empty(state.SweepGalleryDetails(tmp, 555));
+        Assert.Equal(["1001 sample 2 of 2 gallery pictures updated"], state.SweepGalleryDetails(tmp, 1001));
+        var gallery = Gallery(1001);
+        Eq("""["Test Deer", "120.5", "", ""]""", T(gallery[0]!["animal"], gallery[0]!["label"], gallery[1]!["animal"], gallery[1]!["label"]));
+        Assert.Equal(urls, gallery.Select(g => (string)g!["url"]!));
+        Assert.Equal(["1001 sample 2 of 2 gallery pictures updated"], state.SweepGalleryDetails(tmp, null));
     }
 
     [Fact]

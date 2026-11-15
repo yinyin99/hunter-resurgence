@@ -14,15 +14,15 @@ public class PictureLinksTests : StateTestBase
     /// <summary>A saved gallery: one picture the zip holds (a), a good one (ok, with its kill), a redirect to the host's other picture, and every link that must not be fetched or taken:
     /// another host, plain http, a redirect to another host, a body that is no JPEG, and two pictures over the cap.</summary>
     static TestZip Zip() => TestZip.Own().Gallery("""
-        [{"id":9,"type":2,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":"55.5","animal":"Test Deer","kill_id":777},
-         {"id":8,"type":3,"url":"https://photos.example/p/hop.jpg","thumbnail":"","label":"","animal":""},
-         {"id":7,"type":2,"url":"https://other.example/p/x.jpg","thumbnail":"","label":"","animal":""},
-         {"id":6,"type":2,"url":"http://photos.example/p/plain.jpg","thumbnail":"","label":"","animal":""},
-         {"id":5,"type":2,"url":"https://photos.example/p/moved.jpg","thumbnail":"","label":"","animal":""},
-         {"id":4,"type":2,"url":"https://photos.example/p/text.jpg","thumbnail":"","label":"","animal":""},
-         {"id":3,"type":2,"url":"https://photos.example/p/big.jpg","thumbnail":"","label":"","animal":""},
-         {"id":2,"type":2,"url":"https://photos.example/p/huge.jpg","thumbnail":"","label":"","animal":""},
-         {"id":1,"type":2,"url":"https://photos.example/p/a.jpg","thumbnail":"","label":"","animal":""}]
+        [{"id":9,"type":2,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":"55.5","id":777,"species":"Test Deer"}},
+         {"id":8,"type":3,"url":"https://photos.example/p/hop.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":7,"type":2,"url":"https://other.example/p/x.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":6,"type":2,"url":"http://photos.example/p/plain.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":5,"type":2,"url":"https://photos.example/p/moved.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":4,"type":2,"url":"https://photos.example/p/text.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":3,"type":2,"url":"https://photos.example/p/big.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":2,"type":2,"url":"https://photos.example/p/huge.jpg","thumbnail":"","label":null,"animal":null},
+         {"id":1,"type":2,"url":"https://photos.example/p/a.jpg","thumbnail":"","label":null,"animal":null}]
         """).Media("photos/photos.example_p_a.jpg", TestZip.Jpeg("a"));
 
     const string Report = "pictures from links: 2 of 8";
@@ -198,9 +198,9 @@ public class PictureLinksTests : StateTestBase
         var host = new Fake();
         var links = new PictureLinks([Host], host);
         var linkOnly = TestZip.Own().Gallery("""
-            [{"id":9,"type":2,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":"55.5","animal":"Test Deer"},
-             {"id":7,"type":2,"url":"https://other.example/p/x.jpg","thumbnail":"","label":"","animal":""},
-             {"id":4,"type":2,"url":"https://photos.example/p/text.jpg","thumbnail":"","label":"","animal":""}]
+            [{"id":9,"type":2,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":"55.5","id":777,"species":"Test Deer"}},
+             {"id":7,"type":2,"url":"https://other.example/p/x.jpg","thumbnail":"","label":null,"animal":null},
+             {"id":4,"type":2,"url":"https://photos.example/p/text.jpg","thumbnail":"","label":null,"animal":null}]
             """).Write(tmp, "link-only.zip");
 
         var (first, _) = Restorer.ImportPictures(state, linkOnly, 1001, tmp, links);
@@ -216,7 +216,7 @@ public class PictureLinksTests : StateTestBase
         Assert.Equal(2, Gallery(1001).Count);
 
         // a picture with the same bytes under another link is the same picture
-        var again = TestZip.Own().Gallery("""[{"id":1,"type":2,"url":"https://photos.example/p/z.jpg","thumbnail":"","label":"","animal":""}]""")
+        var again = TestZip.Own().Gallery("""[{"id":1,"type":2,"url":"https://photos.example/p/z.jpg","thumbnail":"","label":null,"animal":null}]""")
             .Media("photos/photos.example_p_z.jpg", TestZip.Jpeg("a")).Write(tmp, "same.zip");
         Assert.Contains("gallery 0", Restorer.ImportPictures(state, again, 1001, tmp).Report);
         Assert.Equal(2, Gallery(1001).Count);
@@ -229,7 +229,7 @@ public class PictureLinksTests : StateTestBase
         var host = new Fake();
         var links = new PictureLinks([Host], host);
         var zip = TestZip.Own()  // the shape of a save of another format: one page with details, the full list as plain links
-            .Gallery("""[{"id":9,"type":3,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":"55.5","animal":"Test Deer"}]""")
+            .Gallery("""[{"id":9,"type":3,"url":"https://photos.example/p/ok.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":"55.5","id":777,"species":"Test Deer"}}]""")
             .Reply("Gallery_list_all.json", "/v1/Gallery/list_all", """{"photos":["https://photos.example/p/ok.jpg","https://photos.example/p/ok2.jpg","https://other.example/p/x.jpg"]}""")
             .Write(tmp, "foreign.zip");
         Restorer.Import(state, Zip().Write(tmp, "mine.zip"), null, tmp);  // an account to import onto

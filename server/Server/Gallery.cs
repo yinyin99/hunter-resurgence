@@ -54,11 +54,11 @@ public sealed partial class State
 
     /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded camera photo or trophy shot (<see cref="GalleryTypes"/>), or a picture a restore unpacked;
     /// `animal` is the species of the kill with the photo's individual ("" without one), `label` that kill's score ("" without one); `thumbnail` is the
-    /// picture's own link when the game sent no thumbnail. The links are on the game's host, or on `site` (the website's) when given. ponytail: the whole gallery is read and each thumbnail looked up on disk per request; page it in SQL if galleries grow past a few hundred photos.</summary>
-    List<JsonObject> GalleryRows(long account, string? site = null)
+    /// picture's own link when the game sent no thumbnail; with `kills`, `kill` is the id of the kill whose score sheet page the website has (<see cref="PublicSheet"/>), else null. The links are on the game's host, or on `site` (the website's) when given. ponytail: the whole gallery is read and each thumbnail looked up on disk per request; page it in SQL if galleries grow past a few hundred photos.</summary>
+    List<JsonObject> GalleryRows(long account, string? site = null, bool kills = false)
     {
         using var con = Con(account);
-        return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score'), p.saved FROM photos p"
+        return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score'), p.saved, k.kill_id FROM photos p"
                             + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest")
                             + " LEFT JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                             + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND (p.photo_type IN ({GalleryTypes}) OR p.saved IS NOT NULL) GROUP BY p.id ORDER BY p.id DESC")
@@ -67,13 +67,16 @@ public sealed partial class State
                 var file = (string)r[2];
                 var url = PhotoUrl(account, file, site);
                 var saved = r[5] is string s ? JsonNode.Parse(s) : null;  // a restored picture has no kill here: its saved label and animal
-                return new JsonObject
+                var row = new JsonObject
                 {
                     ["id"] = (long)r[0], ["type"] = Py.FromSql(r[1]), ["url"] = url,
                     ["thumbnail"] = File.Exists(Path.Combine(AccountPhotos(account), ThumbName(file))) ? PhotoUrl(account, ThumbName(file), site) : url,
                     ["label"] = r[4] is DBNull ? C(saved?["label"]) ?? "" : Py.Str(Py.FromSql(r[4])),
                     ["animal"] = r[3] is DBNull ? C(saved?["animal"]) ?? "" : SpeciesName(Py.FromSql(r[3])) ?? "",
                 };
+                if (kills)
+                    row["kill"] = r[6] is not DBNull ? (long?)(long)r[6] : long.TryParse((string?)saved?["kill_id"], out var kill) && SavedPage(account, kill) is not null ? kill : (long?)null;
+                return row;
             })];
     }
 
@@ -95,10 +98,10 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["photos"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).Cast<JsonNode?>().ToArray()) });
     }
 
-    /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal}]}`.</summary>
+    /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill}]}`.</summary>
     public JsonObject PublicGallery(long account, int page, string site)
     {
-        var all = GalleryRows(account, site);
+        var all = GalleryRows(account, site, kills: true);
         var pages = Math.Max(1, (all.Count + GalleryPageSize - 1) / GalleryPageSize);
         page = Math.Clamp(page, 1, pages);
         return new JsonObject

@@ -45,6 +45,7 @@ static partial class SectionBackup
         ["v2_lodges"] = ("/game/user/@/lodges", []),
         ["v2_backgrounds"] = ("/game/user/backgrounds", []),
         ["v2_trophies"] = ("/game/user/trophies", []),
+        ["v2_loadout"] = ("/game/user/loadout", []),
         // the same layout from another tool, under its own section names
         ["trophy_list"] = ("/v1/Trophy/list", ["user_id=@", "offset=0", "limit=100000"]),
         ["user_challenges"] = ("/v1/Challenge/get_user_challenges", ["user_id=@"]),

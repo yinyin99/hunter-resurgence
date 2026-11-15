@@ -488,7 +488,7 @@ public sealed class LiveSiteTests : UiContext
     [InlineData(false, 0, 0)]
     public void TheGalleryTabShowsTheServersPicturesAndTheOwnerDeletesAndDownloads(bool own, int deletes, int downloads)
     {
-        const string page = """{"page":1,"pages":1,"total":2,"rows":[{"id":7,"animal":"Red Deer","label":"88.5","url":"https://game.test/a.jpg","thumbnail":"https://game.test/a-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/b.jpg","thumbnail":"https://game.test/b.jpg"}]}""";
+        const string page = """{"page":1,"pages":1,"total":2,"rows":[{"id":7,"animal":"Red Deer","label":"88.5","kill":1107254527,"url":"https://game.test/a.jpg","thumbnail":"https://game.test/a-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/b.jpg","thumbnail":"https://game.test/b.jpg"}]}""";
         Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, page)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
@@ -496,6 +496,7 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal(["https://game.test/a-thumb.jpg", "https://game.test/b.jpg"], cut.FindAll("ul.grid img").Select(i => i.GetAttribute("src"))));
         Assert.StartsWith("Red Deer", cut.FindAll("ul.grid li > span")[0].TextContent);
         Assert.Equal("", cut.FindAll("ul.grid li > span")[1].TextContent);  // no kill, no score
+        Assert.Equal(["/profile/Fox/score/1107254527"], cut.FindAll("ul.grid li > span a").Select(x => x.GetAttribute("href")));  // the kill whose score sheet the server has is linked
         Assert.Equal((deletes, downloads), (cut.FindAll("button.del").Count, cut.FindAll("p.dl a").Count));
     }
 

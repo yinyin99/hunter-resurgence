@@ -374,12 +374,12 @@ public class ServerProfileServiceTests
     [Fact]
     public async Task TheGalleryIsTheServersPageOfTheHandleWithEachPhotosScoreAndSmallPicture()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"id":7,"type":2,"animal":"Red Deer","label":"88.5","url":"https://game.test/photos/1/7-2.jpg","thumbnail":"https://game.test/photos/1/7-2-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/photos/1/6-3.jpg","thumbnail":"https://game.test/photos/1/6-3.jpg"}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page":2,"pages":3,"total":50,"rows":[{"id":7,"type":2,"animal":"Red Deer","label":"88.5","kill":1107254527,"url":"https://game.test/photos/1/7-2.jpg","thumbnail":"https://game.test/photos/1/7-2-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/photos/1/6-3.jpg","thumbnail":"https://game.test/photos/1/6-3.jpg"}]}"""));
         var page = await Make(fake).GalleryAsync("fox", 2);
         Assert.Equal("/hunters/fox/gallery", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
         Assert.Equal("page=2", fake.Seen[0].RequestUri!.Query.TrimStart('?'));
         Assert.Equal((2, 3), (page.Number, page.Pages));
-        Assert.Equal([new Photo(7, "Red Deer", 88.5, "https://game.test/photos/1/7-2.jpg", "https://game.test/photos/1/7-2-thumb.jpg"),
+        Assert.Equal([new Photo(7, "Red Deer", 88.5, "https://game.test/photos/1/7-2.jpg", "https://game.test/photos/1/7-2-thumb.jpg", 1107254527),
                       new Photo(6, "", 0, "https://game.test/photos/1/6-3.jpg", "https://game.test/photos/1/6-3.jpg")], page.Rows);
     }
 

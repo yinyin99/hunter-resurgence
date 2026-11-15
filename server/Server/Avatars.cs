@@ -105,7 +105,7 @@ public sealed partial class State
             .Select(r => JsonNode.Parse((string)r[0]) as JsonObject).Select(o => o?["avatar"]).Where(Py.IsStr).Select(n => (string)n!).Where(u => u.Length > 0).Distinct()];
     }
 
-    /// <summary>`admin avatars`: for each account (or `only`) whose avatar is the default or a dead upload link, find the uploaded avatar its restored data names (or, with no avatar in it, the archived
+    /// <summary>`admin avatars`: for each account (or `only`) whose avatar is the default or a dead upload link, find the uploaded avatar its restored data names (the default avatar, which a restore writes, is no choice and never names one; with no other avatar in it, the archived
     /// user id of its claim), download it (<see cref="PictureLinks"/>) and set it as after a restore. A stored picture and a stock avatar other than the default are never touched.
     /// One line per account: id, handle, result. `dry`: nothing is fetched or changed; the line says what would be tried.</summary>
     public async Task<List<string>> SweepAvatars(PictureLinks links, long? only, bool dry)
@@ -116,8 +116,9 @@ public sealed partial class State
             if (new ItemCatalogue(items, avatars).AvatarId(url) is { } stock ? stock != DefaultAvatar : !url.Contains("/uploads/", StringComparison.Ordinal)) continue;
             var saved = SavedAvatarLinks(account);
             if (UploadUid(url) is not null) saved.Add(url);
+            saved.RemoveAll(u => new ItemCatalogue(items, avatars).AvatarId(u) == DefaultAvatar);  // the stock avatar every account starts with (and a restore writes) is no choice
             string? uid = null;
-            if (saved.Any(IsListedAvatar)) { }  // the player chose a stock avatar: no fetch
+            if (saved.Any(IsListedAvatar)) { }  // the player chose another stock avatar: no fetch
             else if (saved.Select(UploadUid).FirstOrDefault(u => u is not null) is { } named) uid = named;
             else if (saved.Count == 0) uid = Store.ArchivedUid(account)?.ToString();
             var handle = (string)Store.AccountJson(account)["handle"]!;
