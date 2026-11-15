@@ -41,12 +41,12 @@ public static class ServerApp
         return nets.Any(n => n.Contains(peer));
     }
 
-    /// <summary>The address a request came from, as text: the peer's, or, from a trusted proxy, the last address of its `X-Forwarded-For` (the one that proxy appended). Null when it cannot be told.</summary>
+    /// <summary>The address a request came from, as text: the peer's, or, for a trusted proxy, the last address of its `X-Forwarded-For` (the one that proxy appended; null when it sent none, never the proxy's own). Null when it cannot be told.</summary>
     static string? ClientIp(HttpContext ctx, IReadOnlyList<IPNetwork>? proxies)
     {
         var peer = ctx.Connection.RemoteIpAddress;
-        if (InAny(peer, proxies) && ctx.Request.Headers["X-Forwarded-For"].ToString().Split(',')[^1].Trim() is { Length: > 0 } forwarded && IPAddress.TryParse(forwarded, out var client))
-            peer = client;
+        if (InAny(peer, proxies))
+            peer = IPAddress.TryParse(ctx.Request.Headers["X-Forwarded-For"].ToString().Split(',')[^1].Trim(), out var client) ? client : null;
         return (peer is { IsIPv4MappedToIPv6: true } ? peer.MapToIPv4() : peer)?.ToString();
     }
 

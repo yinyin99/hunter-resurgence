@@ -275,6 +275,21 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheAddressIsTheLastForwardedOneOfATrustedProxyAndNeverTheProxysOwn()
+    {
+        var session = await Host();
+        Settings.TryNetwork("127.0.0.0/8", out var loopback);
+        await using var proxied = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp, [loopback]);
+        async Task<JsonNode?> Ip(string? forwarded) => Json(await proxied.SendAsync("POST", Gs, Replay.CONNECT,
+            [("X-Hun-Session", session), .. forwarded is null ? Array.Empty<(string, string)>() : [("X-Forwarded-For", forwarded)]], "{}"u8.ToArray()))["network"]!["ip"];
+        Assert.Equal("203.0.113.5", (string?)await Ip("198.51.100.7, 203.0.113.5"));  // the one the proxy appended
+        Assert.Equal("2001:db8::1", (string?)await Ip("2001:db8::1"));
+        Assert.Null(await Ip(null));  // a proxy that names none
+        Assert.Null(await Ip("not an address"));
+        Assert.Equal("127.0.0.1", (string?)(await Connect(session, HOST))["network"]!["ip"]);  // a peer that is no proxy: the header counts for nothing
+    }
+
+    [Fact]
     public async Task TestMapLocationsAreThoseOfTheSessionsReserve()
     {
         await Host();

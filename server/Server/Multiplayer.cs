@@ -176,8 +176,9 @@ public sealed partial class State
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         if (Num(Form1(form, "network_id")) is not { } id) return ("gone", null);
         var score = Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
+        var friends = Store.FriendsOf(account, LocalAccount).Friends;  // read before the lock: every heartbeat waits on it
         var (joined, error, session) = games.Join(Clock(), id, account, Form1(form, "password"), score,
-            host => Store.FriendsOf(account, LocalAccount).Friends.Contains(host), () => Store.CreateToken(account, Lifetimes.Session));
+            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session));  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
         if (joined is null) return (error, null);
         form["reserve"] = [joined.Reserve.ToString()];
         if (Form1(form, "time") == "") form["time"] = [joined.Time];
