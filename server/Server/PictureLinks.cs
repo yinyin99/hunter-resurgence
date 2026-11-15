@@ -72,6 +72,9 @@ public sealed class PictureLinks
         return ok;
     }
 
+    /// <summary>One picture under the same rules as <see cref="Fetch"/>; null when it is refused or fails.</summary>
+    public Task<ReadOnlyMemory<byte>?> Download(string url) => hosts.Count == 0 ? Task.FromResult<ReadOnlyMemory<byte>?>(null) : Get(url, CancellationToken.None);
+
     async Task<ReadOnlyMemory<byte>?> Get(string url, CancellationToken total)
     {
         try

@@ -1,5 +1,6 @@
 // Player avatars: the picture of an account is one of the game's avatars (`avatar_url` is `<base>/256/<id>.png`, `face` the id) or the one imported from its backup
 // (`photos/<account>/avatar.jpg`, served at the photo link). What a page is told of it, and the player's own choice.
+using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 using Resurgence.Restore;
 
@@ -29,10 +30,33 @@ public sealed partial class State
         read.Model.Profile.AvatarUrl is { } url && !IsListedAvatar(url) && ImportedAvatarEnd(url) is { } end
             ? read.Media.FirstOrDefault(m => m.Path.StartsWith("images/", StringComparison.Ordinal) && m.Path.EndsWith(end, StringComparison.Ordinal)) : null;
 
-    /// <summary>The `avatar_url` an account has after a restore: the zip's address for an avatar of the game's list, the imported picture's link when the zip holds it, else the default avatar.</summary>
-    internal string RestoredAvatarUrl(Restored read, long account) =>
+    /// <summary>The numeric user id an uploaded-avatar link names (`.../uploads/thumb/242x242/<uid>.jpg?<hash>`); null for any other address.</summary>
+    static string? UploadUid(string url) => Regex.Match(url.Split('?')[0], @"/uploads/(?:.*/)?(\d+)\.[A-Za-z]+$") is { Success: true } m ? m.Groups[1].Value : null;
+
+    /// <summary>Where the player's uploaded avatar still is: the avatar host (`avatar_uploads`, else the game's avatar list's own base) serves it by user id, whatever host the saved link named.</summary>
+    /// <summary>The settings' `avatar_uploads`: the base the uploaded avatars are fetched from; null: the avatar list's own base.</summary>
+    public string? AvatarUploads { get; init; }
+
+    string AvatarFetchUrl(string uid) => $"{AvatarUploads ?? avatarBase}/uploads/thumb/242x242/{uid}.jpg";
+
+    /// <summary>The address to fetch the player's own avatar from when the zip has none of it: the saved link is an uploaded-avatar one (its uid), or the save has no avatar at all (the zip's user id);
+    /// null when the zip holds the picture, or the save names a stock avatar or anything else (the player chose it).</summary>
+    internal string? UploadedAvatarLink(Restored read)
+    {
+        if (ImportedAvatarOf(read) is not null) return null;
+        var url = read.Model.Profile.AvatarUrl;
+        var uid = url is null ? read.Model.Identity.Uid : !IsListedAvatar(url) ? UploadUid(url) : null;
+        return uid is null ? null : AvatarFetchUrl(uid);
+    }
+
+    /// <summary>Was the player's own avatar among the pictures fetched for the restore?</summary>
+    internal bool AvatarFetched(Restored read, PictureHashes hashes) =>
+        UploadedAvatarLink(read) is { } link && hashes.Entries.ContainsKey(PictureLinks.EntryName(link));
+
+    /// <summary>The `avatar_url` an account has after a restore: the zip's address for an avatar of the game's list, the imported picture's link when the zip holds it or it was fetched (`fetched`), else the default avatar.</summary>
+    internal string RestoredAvatarUrl(Restored read, long account, bool fetched = false) =>
         read.Model.Profile.AvatarUrl is { } url && IsListedAvatar(url) ? url
-        : ImportedAvatarOf(read) is not null ? PhotoUrl(account, ImportedAvatar) : ListedAvatarUrl(DefaultAvatar);
+        : fetched || ImportedAvatarOf(read) is not null ? PhotoUrl(account, ImportedAvatar) : ListedAvatarUrl(DefaultAvatar);
 
     /// <summary>The avatar of an account as a page draws it: a URL on `site` (the website's) for the imported picture, the game's address for an avatar of the list; null for anything else
     /// (an address that is none of the list, an imported picture that is gone), where the page shows its default.</summary>
@@ -71,5 +95,45 @@ public sealed partial class State
                 File.Copy(file, Path.Combine(AccountPhotos(account), ImportedAvatar), overwrite: true);
                 Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), null);
             }
+    }
+
+    /// <summary>The avatar links the account's restored data holds: `avatar` of its profile and of the saved Me/me and Public_user/getByHostname replies. Empty: the data names no avatar at all.</summary>
+    List<string> SavedAvatarLinks(long account)
+    {
+        using var con = Con(account);
+        return [.. con.Rows("SELECT body FROM profile WHERE account_id = $a UNION ALL SELECT body FROM extras WHERE account_id = $a AND (path = 'Me_me.json' OR path LIKE 'Public!_user!_getByHostname%' ESCAPE '!')")
+            .Select(r => JsonNode.Parse((string)r[0]) as JsonObject).Select(o => o?["avatar"]).Where(Py.IsStr).Select(n => (string)n!).Where(u => u.Length > 0).Distinct()];
+    }
+
+    /// <summary>`admin avatars`: for each account (or `only`) whose avatar is the default or a dead upload link, find the uploaded avatar its restored data names (or, with no avatar in it, the archived
+    /// user id of its claim), download it (<see cref="PictureLinks"/>) and set it as after a restore. A stored picture and a stock avatar other than the default are never touched.
+    /// One line per account: id, handle, result. `dry`: nothing is fetched or changed; the line says what would be tried.</summary>
+    public async Task<List<string>> SweepAvatars(PictureLinks links, long? only, bool dry)
+    {
+        var lines = new List<string>();
+        foreach (var (account, url) in Store.AvatarUrls().Where(a => only is null || a.Id == only))
+        {
+            if (new ItemCatalogue(items, avatars).AvatarId(url) is { } stock ? stock != DefaultAvatar : !url.Contains("/uploads/", StringComparison.Ordinal)) continue;
+            var saved = SavedAvatarLinks(account);
+            if (UploadUid(url) is not null) saved.Add(url);
+            string? uid = null;
+            if (saved.Any(IsListedAvatar)) { }  // the player chose a stock avatar: no fetch
+            else if (saved.Select(UploadUid).FirstOrDefault(u => u is not null) is { } named) uid = named;
+            else if (saved.Count == 0) uid = Store.ArchivedUid(account)?.ToString();
+            var handle = (string)Store.AccountJson(account)["handle"]!;
+            string result;
+            if (uid is null) result = "no uploaded avatar";
+            else if (dry) result = $"would fetch the avatar of user {uid}";
+            else if (await links.Download(AvatarFetchUrl(uid)) is not { } bytes) result = "fetch failed";
+            else
+            {
+                Directory.CreateDirectory(AccountPhotos(account));
+                File.WriteAllBytes(Path.Combine(AccountPhotos(account), ImportedAvatar), bytes.ToArray());
+                Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), DefaultAvatar);
+                result = "set";
+            }
+            lines.Add($"{account} {handle} {result}");
+        }
+        return lines;
     }
 }

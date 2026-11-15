@@ -239,4 +239,18 @@ public class SettingsTests : IDisposable
             Assert.Contains("picture_link_hosts", Assert.Throws<InvalidDataException>(() => Load(o)).Message);
         }
     }
+
+    [Fact]
+    public void TheAvatarUploadsBaseIsAnHttpsUrlAndNoneByDefault()
+    {
+        Assert.Null(Load(Minimal()).Cfg["avatar_uploads"]);
+        var o = Minimal();
+        o["avatar_uploads"] = "https://avatar.example/";
+        Assert.Equal("https://avatar.example", (string)Load(o).Cfg["avatar_uploads"]!);
+        foreach (var bad in new[] { "http://avatar.example", "avatar.example", "https://avatar.example/?x=1" })
+        {
+            o["avatar_uploads"] = bad;
+            Assert.Contains("avatar_uploads", Assert.Throws<InvalidDataException>(() => Load(o)).Message);
+        }
+    }
 }

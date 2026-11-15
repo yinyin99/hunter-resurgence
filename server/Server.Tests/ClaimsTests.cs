@@ -139,6 +139,19 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public void TestAClaimOfAProfileWithoutAnAvatarFetchesTheUploadedOneByTheArchivedUid()
+    {
+        var (player, _) = SignedIn("player");
+        var host = new AvatarHost();
+        var claims = new Claims(state, new Archive(ArchivePath), tmp) { Pictures = new PictureLinks(["avatar.test"], host) };
+        Assert.Equal("restored", claims.Claim(player, "alpha", false, false).Kind);
+        Assert.Equal(["/uploads/thumb/242x242/3001.jpg"], host.Asked);
+        Assert.Equal($"{BASE}/photos/{player}/avatar.jpg", (string)state.Store.AccountJson(player)["avatar_url"]!);
+        Assert.Equal(TestZip.Jpeg("avatar3001"), File.ReadAllBytes(state.PhotoFile($"/photos/{player}/avatar.jpg")!));
+        Assert.Empty(Directory.GetFiles(tmp, "claim-*"));  // the temporary pictures zip is gone
+    }
+
+    [Fact]
     public void TestAClaimLeavesTheStartingKitOnceEachItemId()
     {
         var (player, _) = SignedIn("player");

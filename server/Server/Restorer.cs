@@ -66,14 +66,15 @@ public static class Restorer
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
             File.Copy(zipPath, kept);
         }
-        var avatar = state.RestoredAvatarUrl(read, id);
+        string avatar;
         State.Unpacking pictures;
         try
         {
             var linked = PicturesZip(kept);
-            if (links is not null && !File.Exists(linked) && State.MissingPictures(read) is { Count: > 0 } missing)
+            if (links is not null && !File.Exists(linked) && state.MissingPictures(read) is { Count: > 0 } missing)
                 links.Fetch(missing, linked).GetAwaiter().GetResult();  // ponytail: a command line has no other work for this thread; fetched before the transaction opens
             var hashes = state.HashPictures(read, id, kept, File.Exists(linked) ? linked : null, replace: false);  // before the transaction: it holds the database for writing
+            avatar = state.RestoredAvatarUrl(read, id, state.AvatarFetched(read, hashes));
             using var con = store.Open(id);
             con.Begin();
             pictures = state.PreparePictures(con, read, hashes, replace: false);
@@ -96,7 +97,7 @@ public static class Restorer
             }
             throw;
         }
-        state.Unpack(id, kept, pictures);
+        state.Unpack(id, kept, PicturesZip(kept), pictures);
         return (pictures.Report, avatar);
     }
 
@@ -114,12 +115,10 @@ public static class Restorer
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
     /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.</summary>
     internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
-                                 bool backupDatabase, string dataDir, Action<Db>? within)
+                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null)
     {
         var model = read.Model;
         var store = state.Store;
-        var avatarUrl = state.RestoredAvatarUrl(read, finalId);
-        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl);
         var kept = Path.Combine(dataDir, "restores", finalId.ToString(), sha + ".zip");
         var copied = zipPath is not null && !File.Exists(kept);
         var backup = exists && backupDatabase ? store.Backup() : null;
@@ -128,9 +127,11 @@ public static class Restorer
             Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
             File.Copy(zipPath!, kept);
         }
-        // the pictures fetched at upload time sit beside the kept zip: under the account's id here, or under the one it had before it adopted the zip's
-        var linked = zipPath is null ? null : new[] { kept, Path.Combine(dataDir, "restores", current.ToString(), sha + ".zip") }.Select(PicturesZip).FirstOrDefault(File.Exists);
+        // the pictures fetched at upload time sit beside the kept zip: under the account's id here, or under the one it had before it adopted the zip's; an archive claim has no zip: the caller's own (`linksZip`)
+        var linked = zipPath is null ? linksZip : new[] { kept, Path.Combine(dataDir, "restores", current.ToString(), sha + ".zip") }.Select(PicturesZip).FirstOrDefault(File.Exists);
         var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
+        var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
+        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl);
         var report = "";
         State.Unpacking? pictures = null;
         void Write(Db con)
@@ -170,7 +171,7 @@ public static class Restorer
         }
         if (finalId != current)  // the photos taken here follow the account; a name clash keeps the account's own photo
             state.MovePhotos(current, finalId);
-        state.Unpack(finalId, kept, pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
+        state.Unpack(finalId, zipPath is null ? null : kept, zipPath is null ? linksZip : PicturesZip(kept), pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
     }
 
