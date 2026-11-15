@@ -38,11 +38,15 @@ function launch(e) {
     const seen = () => { opened = true; };
     window.addEventListener('blur', seen);
     document.addEventListener('visibilitychange', seen);
-    location.href = a.dataset.launch;
+    // in a hidden frame: Firefox shows an error page when a top-level address has no application, a frame stays silent
+    const frame = Object.assign(document.createElement('iframe'), { hidden: true, src: a.dataset.launch });
+    const here = location.href;
+    document.body.append(frame);
     setTimeout(() => {
+        frame.remove();
         window.removeEventListener('blur', seen);
         document.removeEventListener('visibilitychange', seen);
-        if (!opened) location.assign(a.href);
+        if (!opened && location.href === here) location.assign(a.href);
     }, 2000);
 }
 
