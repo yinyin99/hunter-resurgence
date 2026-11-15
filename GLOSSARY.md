@@ -1,11 +1,11 @@
 # Hunter Resurgence
 
-A community replacement for the game's online services after the official servers close: profile backups, a server, a launcher and a website.
+A community replacement for the game's online services after the official servers closed: profile backups, a server, a launcher and a website.
 
 ## Servers
 
 **Official servers**:
-The game publisher's servers, which close on 2026-11-11.
+The game publisher's servers, which closed on 2026-11-11.
 _Avoid_: live servers, old servers
 
 **Local server**:
@@ -16,10 +16,13 @@ _Avoid_: offline server
 The shared server run by this project's maintainer; anyone can run the same code.
 _Avoid_: restore server
 
+**Operator**:
+The person who runs the community server and checks backups and large claims by hand.
+
 ## Backup
 
 **Backup tool**:
-The Windows app that copies a profile from the official servers to the player's PC.
+The Windows app that copied a profile from the official servers to the player's PC; it no longer works since they closed.
 _Avoid_: the app, backup app
 
 **Profile**:
@@ -91,7 +94,7 @@ The restored statistics of a profile, which play never changes; the statistics s
 
 **Launcher**:
 This project's Windows app that signs in, picks a server and starts the game.
-_Avoid_: new launcher (outside the roadmap)
+_Avoid_: new launcher
 
 **Old launcher**:
 The game's original launcher.
@@ -130,3 +133,19 @@ _Avoid_: hunter score (in code and docs), trophy score
 **Hunterscore board**:
 The players of the community server in hunterscore order; a player's rank is their place on it.
 _Avoid_: ladder, leaderboard (the website's boards of the other kinds)
+
+## Restore by name
+
+**Claim**:
+A signed-in player taking the archived profile of their old in-game name onto their account; one per account. Below hunterscore 10,000 it is restored at once, above it waits for the operator.
+
+## Multiplayer and events
+
+**Multiplayer game**:
+A hunt one player hosts and others join from the launcher's games list. The games connect to each other; the community server creates the game and lists it.
+
+**Punch-through server**:
+The small UDP server that introduces a joiner to a host behind a home router, so no port needs forwarding.
+
+**Seasonal event**:
+A themed event the operator switches on for a window of time on some reserves, with its own creatures and missions. Each player can turn it off ("Play seasonal events").

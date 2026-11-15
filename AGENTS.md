@@ -11,8 +11,10 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
   - `docs/launcher.md`: `src/Launcher`
   - `docs/website.md`: `src/Web` and `src/Ui`
   - `docs/restore.md`: `src/Restore`
-  - `docs/server.md`: `server/Server`
-  - `docs/deploy.md`: `deploy/` and the workflows
+  - `docs/server.md`: `server/Server` and `server/facts`
+  - `docs/deploy.md`: `deploy/`, `server/natpt` and the workflows
+  - `docs/images.md`: the picture slots of `src/Ui` (`AssetSlot`)
+  - `docs/guide.md`: the player guide, across the tools and the website
 - A change in behaviour updates its doc in the same pull request.
 
 ## Working
@@ -35,7 +37,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 - Changing UI text means changing every translation. The backup tool has six in `tools/backup/Strings*.resx`; the launcher and website have 19 in `src/Ui/Strings*.resx`. `TranslationsTests` checks that every file has the same keys and `{0}` placeholders; for `src/Ui` it also fails when a key keeps its English text in all 18 translations, so a new key must be translated, not copied.
 - The player kit lives in the launcher (`src/Launcher`); its texts are the `Kit.*` keys in the 19 `src/Ui/Strings*.resx`, checked by `LauncherApp/TranslationsTests`. The launcher's `settings.example.json` lists `server_url` and the `*_host` keys the game asks for (`game_web_host`, `crash_host`); they are the server's keys of the same names (`server/Server/settings.example.json`): change them together.
 - The backup tool's "What isn't saved?" dialog (resx keys `NotCovered_<n>`) mirrors the "What is not saved" section of `docs/backup.md`. Change both together.
-- The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`) mirrors the backup tool's steps and quotes its `Public_Radio` and `Start` labels; `Restore.Rule1` quotes its `Own_Radio` label ("My account", in English where the backup tool has no translation). Change them together.
+- The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`; the dialog itself is offered only until the official servers closed) mirrors the backup tool's steps and quotes its `Public_Radio` and `Start` labels; `Backup.SmartScreen` is also the Download page's note for the launcher's Setup and matches README's "Windows protected your PC" step. `Restore.Rule1` quotes the backup tool's `Own_Radio` label ("My account", in English where the backup tool has no translation). Change them together.
 - The footer's credit "Hunter Resurgence © yinyin99" (`src/Ui/Shell/Footer.razor`) is the attribution README's AGPL-3.0 section 7(b) term requires. Never remove or reword it; a change to it changes README too.
 
 ## Agent skills
