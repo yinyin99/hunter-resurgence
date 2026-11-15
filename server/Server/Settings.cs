@@ -78,6 +78,7 @@ public sealed class Settings
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["picture_link_hosts"] = PictureHosts(root["picture_link_hosts"]);  // the hosts a backup's gallery links are fetched from (PictureLinks.cs); none: nothing is fetched
+        cfg["avatar_uploads"] = AvatarUploads(root);  // where a player's uploaded avatar is fetched from by user id (State.AvatarFetchUrl); unset: the avatar list's own base
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");
@@ -125,6 +126,12 @@ public sealed class Settings
             MaxBodyBytes = maxBody,
         };
     }
+
+    /// <summary>`avatar_uploads`: an https base URL (no query or fragment; a trailing `/` is dropped); absent: null.</summary>
+    static string? AvatarUploads(JsonObject o) =>
+        Text(o, "avatar_uploads") is not { } s ? null
+        : Uri.TryCreate(s, UriKind.Absolute, out var u) && u.Scheme == Uri.UriSchemeHttps && u.UserInfo.Length == 0 && u.Query.Length == 0 && u.Fragment.Length == 0 ? s.TrimEnd('/')
+        : throw new InvalidDataException("avatar_uploads: an https URL (no credentials, query or fragment)");
 
     static string? Text(JsonObject o, string key) =>
         o[key] is JsonValue v && v.TryGetValue<string>(out var s) && s.Length > 0 ? s : null;

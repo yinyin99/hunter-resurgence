@@ -238,7 +238,7 @@ public sealed class Uploads(State state, string dataDir)
         string? links = path + ".pictures";
         try
         {
-            if (known || Pictures is null || State.MissingPictures(read) is not { Count: > 0 } missing || await Pictures.Fetch(missing, links) == 0) links = null;
+            if (known || Pictures is null || state.MissingPictures(read) is not { Count: > 0 } missing || await Pictures.Fetch(missing, links) == 0) links = null;
             lock (decide)
                 return Refused() ?? Review(account, sha, path, uid, "waiting for the operator", read.Model.Profile.Handle ?? read.Model.Identity.Handle, links);
         }

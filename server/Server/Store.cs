@@ -503,6 +503,13 @@ public sealed class Store
         return con.Scalar("SELECT json_extract(account, '$.avatar_url') FROM accounts WHERE id = ?", id) as string;
     }
 
+    /// <summary>The user id of the archived profile the account claimed and had restored; null for none.</summary>
+    public long? ArchivedUid(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT archived_uid FROM claims WHERE account_id = ? AND state = 'restored'", id) as long?;
+    }
+
     /// <summary>The `avatar_url` of every account that has one, by user id.</summary>
     public List<(long Id, string Url)> AvatarUrls()
     {

@@ -31,6 +31,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
 
     Store Store => state.Store;
 
+    /// <summary>Where a claim's avatar is fetched from (<see cref="PictureLinks"/>); null: none is.</summary>
+    public PictureLinks? Pictures { get; init; }
+
     /// <summary>Is there an archive: without one every lookup is "not found" and the website hides the claim box.</summary>
     public bool Enabled => archive.Enabled;
 
@@ -143,8 +146,12 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         var text = $"Your old profile was restored: {m.Items.Count} items, {m.Trophies.Count} trophies and {m.Lodges.Count} lodges, and its skills, statistics and achievements where the archive had them. "
                    + $"Your user id is unchanged and your name is {handle}.";
         if (useOldName && !adopt) text += " The old name was not used: it is not allowed or belongs to another player.";
+        // the player's own avatar, when the archive holds no picture of it, is fetched now as an upload's gallery links are (a claim has no zip, so the fetched picture is a temporary zip)
+        string? links = Path.Combine(dataDir, $"claim-{account}.pictures");
         try
         {
+            // ponytail: one picture fetched under the decision lock (15 s at most); claims are rare
+            if (Pictures is null || state.UploadedAvatarLink(read) is not { } avatar || Pictures.Fetch([avatar], links).GetAwaiter().GetResult() == 0) links = null;
             Restorer.Apply(state, null, "archive:" + p.Uid.ToString(CultureInfo.InvariantCulture), read, account, account, handle, exists: true, backupDatabase: false, dataDir, con =>
             {
                 con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, decided_ts, note, keep_handle) VALUES (?1, ?2, ?3, ?4, 'restored', ?5, ?5, '', ?6) "
@@ -153,11 +160,15 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                 PlayerRows.SetWallet(con, "em", em);
                 PlayerRows.SetWallet(con, "gm", gm);
                 Uploads.Notify(con, text);
-            });
+            }, links);
         }
         catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the name was taken between the check and the write
         {
             return new(409, "refused", "This name was taken a moment ago. Nothing was changed.");
+        }
+        finally
+        {
+            File.Delete(Path.Combine(dataDir, $"claim-{account}.pictures"));
         }
         return new(200, "restored", text);
     }

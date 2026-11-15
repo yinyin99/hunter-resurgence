@@ -14,6 +14,8 @@ const string AdminUsage = """
     Usage (repo root): dotnet run --project server/Server -- admin item <item_id> [count] | admin em|gm <amount> [--account <id or handle>]
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
     --account names another account (user id or handle); without it the local account gets it.
+    admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
+    it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
@@ -101,6 +103,19 @@ Replay.HarTable Table(out List<string> hars)
 
 void Admin(string[] a)
 {
+    if (a.Length > 0 && a[0] == "avatars")
+    {
+        var dry = a.Contains("--dry-run");
+        var rest = a[1..].Where(x => x != "--dry-run").ToArray();
+        if (rest is not ([] or ["--account", _])) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
+        foreach (var line in loaded.SweepAvatars(PictureLinks.FromCfg(settings.Cfg), only, dry).GetAwaiter().GetResult()) Console.WriteLine(line);
+        return;
+    }
     if (a.Length > 0 && a[0] == "spawn")
     {
         var n = a.Skip(3).Select(s => int.TryParse(s, out var v) ? (int?)v : null).ToArray();
@@ -232,7 +247,7 @@ void Review(string[] a)
     }
 }
 
-Claims OpenClaims(State state) => new(state, new Archive((string)settings.Cfg["archive_db"]!), settings.DataDir);
+Claims OpenClaims(State state) => new(state, new Archive((string)settings.Cfg["archive_db"]!), settings.DataDir) { Pictures = PictureLinks.FromCfg(settings.Cfg) };
 
 void ClaimCommand(string[] a)
 {

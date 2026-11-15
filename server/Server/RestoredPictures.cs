@@ -41,11 +41,13 @@ public sealed partial class State
     static MediaFile? ZipPicture(Dictionary<string, MediaFile> media, string url) =>
         Importer.MediaPath("photos", url) is { } path && (media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)) ? file : null;
 
-    /// <summary>The links of the gallery entries whose picture the zip lacks: what <see cref="PictureLinks"/> fetches.</summary>
-    internal static List<string> MissingPictures(Restored read)
+    /// <summary>The links of the gallery entries whose picture the zip lacks, and the player's own avatar when the zip lacks it (<see cref="UploadedAvatarLink"/>): what <see cref="PictureLinks"/> fetches.</summary>
+    internal List<string> MissingPictures(Restored read)
     {
         var media = MediaByPath(read);
-        return [.. GalleryEntries(read).Select(p => (string)p["url"]!).Where(url => ZipPicture(media, url) is null)];
+        List<string> missing = [.. GalleryEntries(read).Select(p => (string)p["url"]!).Where(url => ZipPicture(media, url) is null)];
+        if (UploadedAvatarLink(read) is { } avatar) missing.Add(avatar);
+        return missing;
     }
 
     /// <summary>The SHA-256 of what is not stored yet and of what the account has, read before the restore's transaction opens (the files can be many and large): Have, the hashes of the account's
@@ -70,6 +72,11 @@ public sealed partial class State
             if ((inZip is not null ? zip : linked)?.GetEntry(entry) is not { } found) continue;
             using var content = found.Open();
             entries[entry] = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(content));
+        }
+        if (linked is not null && UploadedAvatarLink(read) is { } avatar && linked.GetEntry(PictureLinks.EntryName(avatar)) is { } picture)
+        {
+            using var content = picture.Open();
+            entries[picture.Name] = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(content));
         }
         return new(have, entries);
     }
@@ -112,6 +119,7 @@ public sealed partial class State
         var others = media.Values.Where(m => StoredFolders.Any(f => m.Path.StartsWith(f + "/", StringComparison.Ordinal))).ToList();
         files.AddRange(others.Select(m => (Importer.CleanName(m.Path), m.Entry, false)));
         if (ImportedAvatarOf(read) is { } avatar) files.Add((ImportedAvatar, avatar.Entry, false));  // the player's own picture, again at its stable link
+        else if (UploadedAvatarLink(read) is { } link && hashes.Entries.ContainsKey(PictureLinks.EntryName(link))) files.Add((ImportedAvatar, PictureLinks.EntryName(link), true));  // or the one fetched for it
         var report = $"pictures stored: gallery {gallery}, kill photos and score pages {others.Count(m => m.Path.StartsWith("kills/", StringComparison.Ordinal))}, "
                      + $"avatar and background pictures {others.Count(m => m.Path.StartsWith("images/", StringComparison.Ordinal))}"
                      + (missing > 0 ? $"; pictures from links: {fetched} of {missing}" : "")
@@ -122,7 +130,7 @@ public sealed partial class State
     /// <summary>After the restore's commit: with Replace, remove the pictures of the restore before (the stale gallery files, every kill and image file); then read each stored file from the backup zip, or from
     /// the zip of fetched pictures beside it (<see cref="Restorer.PicturesZip"/>), into the account's folder; without Replace nothing of the account's is removed.
     /// The zip's bytes were counted against the caps when it was read (a picture at most <see cref="Limits.EntryBytes"/>, all of it <see cref="Limits.TotalBytes"/>); they are copied from the entry as they are, never held whole.</summary>
-    internal void Unpack(long account, string zipPath, Unpacking u)
+    internal void Unpack(long account, string? zipPath, string? linksPath, Unpacking u)
     {
         var dir = AccountPhotos(account);
         if (u.Replace && Directory.Exists(dir))
@@ -136,12 +144,12 @@ public sealed partial class State
         if (u.Files.Count == 0)
             return;
         Directory.CreateDirectory(dir);
-        using var zip = ZipFile.OpenRead(zipPath);
-        using var linked = u.Files.Any(f => f.Linked) ? ZipFile.OpenRead(Restorer.PicturesZip(zipPath)) : null;
+        using var zip = u.Files.Any(f => !f.Linked) ? ZipFile.OpenRead(zipPath!) : null;
+        using var linked = u.Files.Any(f => f.Linked) ? ZipFile.OpenRead(linksPath!) : null;
         foreach (var (name, entry, link) in u.Files)
         {
             var target = Path.Combine(dir, name);
-            using var from = ((link ? linked! : zip).GetEntry(entry) ?? throw new InvalidDataException($"{entry} is not in the zip")).Open();
+            using var from = ((link ? linked! : zip!).GetEntry(entry) ?? throw new InvalidDataException($"{entry} is not in the zip")).Open();
             using var to = File.Create(target);
             from.CopyTo(to);
         }
