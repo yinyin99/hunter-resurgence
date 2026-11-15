@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Cum joci {game} pe Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>De ce ai nevoie</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Un PC cu Windows 10 sau 11, Steam și propria copie a {game}, instalată din biblioteca Steam. Hunter Resurgence nu conține fișiere ale jocului: launcherul său conectează copia ta la serverul comunității.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>L-ai instalat deja? Pornește Hunter Resurgence din meniul Start.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Descarcă launcherul Hunter Resurgence și rulează-l. Se instalează doar pentru utilizatorul tău (fără cerere de administrator), adaugă o scurtătură și se actualizează singur.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Ai mai jucat? Recuperează-ți profilul</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Conectează-te pe acest site și deschide {0}Restaurați backup-ul{1}. Ai o arhivă zip de backup? Încarc-o acolo: operatorul o verifică manual, apoi o restaurează. Nu ai arhiva zip de backup? Folosește acolo „Revendicați vechiul profil” cu vechiul tău nume de vânător.</value></data>

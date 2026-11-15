@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Come giocare a {game} su Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Cosa ti serve</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Un PC con Windows 10 o 11, Steam e la tua copia di {game}, installata dalla tua libreria di Steam. Hunter Resurgence non contiene file del gioco: il suo launcher collega la tua copia al server della community.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Già installato? Avvia Hunter Resurgence dal menu Start.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Scarica il launcher di Hunter Resurgence ed eseguilo. Si installa solo per il tuo utente (senza richiesta di amministratore), aggiunge un collegamento e si aggiorna da solo.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Giocavi già? Recupera il tuo profilo</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Accedi a questo sito e apri {0}Ripristina il tuo backup{1}. Hai uno zip di backup? Caricalo lì: l’operatore lo controlla a mano, poi lo ripristina. Niente zip di backup? Usa lì «Rivendica il tuo vecchio profilo» con il tuo vecchio nome da cacciatore.</value></data>

@@ -1326,6 +1326,7 @@
   <data name="Download.Title" xml:space="preserve"><value>Hunter Resurgence'ta {game} nasıl oynanır</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Neye ihtiyacın var</value></data>
   <data name="Download.Need.Text" xml:space="preserve"><value>Windows 10 veya 11 yüklü bir PC, Steam ve Steam kütüphanenden kurulmuş kendi {game} kopyan. Hunter Resurgence oyun dosyası içermez: başlatıcısı kopyanı topluluk sunucusuna bağlar.</value></data>
+  <data name="Download.Installed" xml:space="preserve"><value>Zaten yüklü mü? Hunter Resurgence'ı Başlat menüsünden aç.</value></data>
   <data name="Download.Step1.Text" xml:space="preserve"><value>Hunter Resurgence başlatıcısını indir ve çalıştır. Yalnızca senin kullanıcın için kurulur (yönetici sorusu yok), bir kısayol ekler ve kendini günceller.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Daha önce oynadın mı? Profilini geri al</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Bu sitede giriş yap ve {0}Yedeği geri yükle{1} sayfasını aç. Yedek zip dosyan var mı? Onu oraya yükle: operatör elle kontrol eder, sonra geri yükler. Yedek zip dosyan yok mu? Orada eski avcı adınla “Eski profilinizi geri alın” seçeneğini kullan.</value></data>

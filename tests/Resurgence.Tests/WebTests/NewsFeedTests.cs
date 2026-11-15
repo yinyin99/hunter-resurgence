@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Resurgence.Services;
 using Resurgence.Ui;
 using Resurgence.Ui.Pages;
 
@@ -31,5 +32,15 @@ public sealed class NewsFeedTests : UiContext
         cut.FindAll(".thumb")[1].Click();
 
         Assert.Equal("#news-dev", cut.Find(".caption a").GetAttribute("href"));
+    }
+
+    [Fact]
+    public async Task ThePlayButtonOfThePublicHeroOpensTheLauncherAndFallsBackToTheDownloadPage()
+    {
+        await Services.GetRequiredService<ISessionService>().SignOutAsync();
+        var play = Render<Feed>().Find("a.hero-button");
+
+        Assert.Equal("/download", play.GetAttribute("href"));
+        Assert.Equal("hunter-resurgence://open", play.GetAttribute("data-launch"));
     }
 }
