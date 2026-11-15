@@ -1,8 +1,11 @@
 // The account's gallery: the photos the game uploaded (Heartbeat event 4, UploadReply), listed by Gallery/list and the website's gallery tab,
-// deleted by their owner, and the picture a kill links. A photo of type SHOT_EVIDENCE is the picture of a shot, not a gallery picture.
+// deleted by their owner, and the picture a kill links. Only a camera photo and a trophy shot (GalleryTypes), and a picture a restore unpacked (a saved gallery entry,
+// whatever its saved type), are gallery pictures; the game's other photos (its automatic screenshots, the avatar picture) are stored and never listed or linked, and every file name carries a token nobody can guess.
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Resurgence.Server;
 
@@ -10,11 +13,46 @@ public sealed partial class State
 {
     public const int GalleryPageSize = 24;
 
+    const string GalleryTypes = "1, 2";  // photo_type of a camera photo and of a trophy shot
+    const long TrophyShot = 2;
+
     string PhotoUrl(long account, string file, string? site = null) => $"{site ?? baseUrl}{PHOTO_PREFIX}{account}/{file}";
 
     static string ThumbName(string file) => file[..^".jpg".Length] + "-thumb.jpg";
 
-    /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded photo that is not a shot screenshot;
+    /// <summary>The stored name of a photo, `&lt;id&gt;-&lt;photo_type&gt;-&lt;token&gt;[-&lt;part&gt;].jpg`. The token is the first 32 hex digits of an HMAC-SHA256 of the account and the photo id,
+    /// keyed with the server's secret: nobody can guess a link from the sequential ids, and a picture and its thumbnail (uploaded in either order) share it without any stored state.</summary>
+    public string PhotoName(long account, long photoId, string type, string part = "") =>
+        $"{photoId}-{type}-{Convert.ToHexStringLower(HMACSHA256.HashData(Store.JwtKey, Encoding.ASCII.GetBytes($"photo:{account}:{photoId}")))[..32]}{(part != "" ? "-" + part : "")}.jpg";
+
+    static readonly Regex OldPhotoName = new(@"\A[0-9]+-([0-9]+)\.jpg\z", RegexOptions.ECMAScript);
+
+    /// <summary>Once, at start: every photo stored as `&lt;id&gt;-&lt;photo_type&gt;.jpg` (the names before <see cref="PhotoName"/>, which anyone could guess) is renamed to its new name,
+    /// its thumbnail with it, and its row follows; a file that is gone just updates the row. Files of every type are renamed (the automatic screenshots stay stored, only unlinked). A second start changes nothing.</summary>
+    public void MigratePhotoNames()
+    {
+        List<long> accounts;
+        using (var all = Store.Open())
+            accounts = [.. all.Rows("SELECT id FROM accounts").Select(r => (long)r[0])];
+        foreach (var account in accounts)
+        {
+            var dir = AccountPhotos(account);
+            using var con = Con(account);
+            foreach (var r in con.Rows("SELECT id, file FROM photos WHERE account_id = $a AND file IS NOT NULL").ToList())
+            {
+                var old = (string)r[1];
+                if (OldPhotoName.Match(old) is not { Success: true } m)
+                    continue;
+                var name = PhotoName(account, (long)r[0], m.Groups[1].Value);
+                foreach (var (from, to) in new[] { (old, name), (ThumbName(old), ThumbName(name)) })
+                    if (File.Exists(Path.Combine(dir, from)))
+                        File.Move(Path.Combine(dir, from), Path.Combine(dir, to), overwrite: true);
+                con.Exec("UPDATE photos SET file = ? WHERE account_id = $a AND id = ?", name, (long)r[0]);
+            }
+        }
+    }
+
+    /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded camera photo or trophy shot (<see cref="GalleryTypes"/>), or a picture a restore unpacked;
     /// `animal` is the species of the kill with the photo's individual ("" without one), `label` that kill's score ("" without one); `thumbnail` is the
     /// picture's own link when the game sent no thumbnail. The links are on the game's host, or on `site` (the website's) when given. ponytail: the whole gallery is read and each thumbnail looked up on disk per request; page it in SQL if galleries grow past a few hundred photos.</summary>
     List<JsonObject> GalleryRows(long account, string? site = null)
@@ -23,7 +61,7 @@ public sealed partial class State
         return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score'), p.saved FROM photos p"
                             + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest")
                             + " LEFT JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
-                            + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND p.photo_type IS NOT {SHOT_EVIDENCE} GROUP BY p.id ORDER BY p.id DESC")
+                            + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND (p.photo_type IN ({GalleryTypes}) OR p.saved IS NOT NULL) GROUP BY p.id ORDER BY p.id DESC")
             .Select(r =>
             {
                 var file = (string)r[2];
@@ -103,9 +141,9 @@ public sealed partial class State
         $"(SELECT MAX(s.id) FROM events s WHERE s.account_id = $a AND s.event = 7 AND s.individual = {individual}"
         + $" AND s.id < (SELECT MAX(t.id) FROM events t WHERE t.account_id = $a AND t.event = 3 AND t.body = {harvest}))";
 
-    /// <summary>The link of the picture of a kill, among the photos asked for while its animal was the individual: its shot screenshot, else the newest other photo; null without one.</summary>
+    /// <summary>The link of the picture of a kill: the newest trophy shot among the photos asked for while its animal was the individual; null without one. No other photo type is a kill's picture.</summary>
     string? KillPhoto(Db con, long account, object? individual, string harvest) =>
-        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
-                   + $" ORDER BY photo_type IS {SHOT_EVIDENCE} DESC, id DESC LIMIT 1", individual, harvest) is string file
+        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND photo_type = {TrophyShot} AND individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
+                   + " ORDER BY id DESC LIMIT 1", individual, harvest) is string file
             ? PhotoUrl(account, file) : null;
 }

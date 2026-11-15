@@ -105,7 +105,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var url = new Uri((string)Body(beat)["updates"]![0]!["url"]!);
         var upload = await server.SendAsync("POST", Host, url.PathAndQuery, [.. client, Bearer(access), ("Content-Type", "application/json")], [0xff, 0xd8]);
         Assert.Equal(("state", 200), (upload.Source, upload.Status));
-        Assert.NotNull(state.PhotoFile($"/photos/{Account}/1-2.jpg"));
+        Assert.NotNull(state.PhotoFile(new Uri((string)JsonNode.Parse(upload.Body)!["mediaLink"]!).AbsolutePath));
         // the refresh JWT lasts as long as the session (7 days), not 30
         Assert.InRange((long)Claims((string)Body(refresh)["refresh_token"]!)["exp"]! - DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 604700, 604800);
         // the placeholder alone, with a session that is not the server's, or with a JWT in the session header, is no credential

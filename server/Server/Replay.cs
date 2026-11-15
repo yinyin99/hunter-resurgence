@@ -352,6 +352,7 @@ public static class Replay
             challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null,
             seasonal: SeasonalEvent.Parse(cfg["event"])) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
                 Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")) };
+        state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
         if (!offline) state.MigrateAvatars();  // a community server: the pictures its accounts imported before the avatars were served
         return state;
     }

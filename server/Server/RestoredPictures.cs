@@ -104,7 +104,7 @@ public sealed partial class State
             var saved = new JsonObject { ["label"] = Text(p["label"]), ["animal"] = Text(p["animal"]) };
             if (Text(p["kill_id"]) is { Length: > 0 } kill) saved["kill_id"] = kill;
             var id = con.Insert("INSERT INTO photos (account_id, photo_type, saved) VALUES ($a, ?, ?)", type, Py.Dumps(saved));
-            var name = $"{id}-{type ?? 0}.jpg";
+            var name = PhotoName(con.Account!.Value, id, $"{type ?? 0}");
             con.Exec("UPDATE photos SET file = ? WHERE account_id = $a AND id = ?", name, id);
             files.Add((name, entry, inZip is null));
             gallery++;
