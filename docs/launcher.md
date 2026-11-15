@@ -10,7 +10,7 @@ The screens follow the old launcher and its website screen for screen: the same 
 
 Behind the screens the data is a **mock** (fixed, fictional data and fake actions) unless `server_url` is set; then the services listed under "What is real" are the community server's. The pictures are not included: the launcher shows the operator's pictures from the website at `server_url` ([images.md](images.md)); without it, or when the website does not answer within 5 s, each one is a neutral labelled box. To play on the community server the launcher also sets up the PC and answers the game ([The player kit](#the-player-kit)).
 
-Until the official servers close, a large orange backup tool button shows under the top bar's logo; see [website.md](website.md#backup-tool).
+Until the official servers closed (2026-11-11), a large orange backup tool button showed under the top bar's logo; see [website.md](website.md#backup-tool).
 
 ## The service layer
 
