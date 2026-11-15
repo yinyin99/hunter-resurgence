@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nee</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Sluiten</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>LEEFTIJDSCLASSIFICATIES</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Werk in uitvoering: sommige pagina's tonen nog voorbeeldinhoud. De officiële servers draaien tot 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Bewaar je profiel voor die tijd: download de back-uptool</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Werk in uitvoering: sommige pagina's tonen nog voorbeeldinhoud. De officiële servers draaiden tot 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>De officiële servers draaiden tot 2026-11-11: over de back-uptool</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Bewaar je profiel met de back-uptool</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>De back-uptool is een kleine Windows-app die je profiel (statistieken, inventaris, trofeeën, jachtgeschiedenis en meer) als bestanden op je pc opslaat zolang de officiële servers nog draaien, tot 2026-11-11. Hij leest alleen; hij verandert niets op de server.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>De back-uptool is een kleine Windows-app die je profiel (statistieken, inventaris, trofeeën, jachtgeschiedenis en meer) als bestanden op je pc opslaat zolang de officiële servers nog draaiden, tot 2026-11-11. Hij leest alleen; hij verandert niets op de server.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Download backup-win-x64.zip en pak het uit. Houd backup.exe en settings.json in dezelfde map.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Start backup.exe. Voor je eigen account: open het spel en start een jacht (de back-uptool mag ervoor of erna open zijn); of kies "Public profile" en typ een handle of id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Vink aan wat je wilt bewaren en druk op "Start". Het resultaat is een back-upmap en een back-upzip in Documents\game-backup. Houd die back-upzip privé.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence is in ontwikkeling</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>De communityserver wordt openlijk gebouwd. Accounts, het terugzetten van je back-up en deze website krijgen vorm, en de server opent binnenkort voor het publiek.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Publiek spelen opent binnenkort.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Bewaar je account voordat de officiële servers sluiten</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>De officiële servers sluiten op 11 november 2026. Download de back-uptool en bewaar nu je profiel: inventaris, trofeeën, statistieken en meer. Je kunt het terugzetten op de communityserver zodra die opent.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Maak vóór 11 november 2026 een back-up van je profiel.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>De officiële servers zijn gesloten</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>De officiële servers sloten op 11 november 2026. De back-uptool heeft je profiel bewaard: inventaris, trofeeën, statistieken en meer. De communityserver is nu open.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>De officiële servers sloten op 11 november 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Lees het hier</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Op jacht gaan</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLEPLAYER</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Spelersgids: elke stap en oplossingen voor veelvoorkomende problemen</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Download de launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Stap {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start biedt de launcher aan om te openen via de Spelen-knop van Steam: kies "Steam sluiten en instellen". Steam start vanzelf opnieuw. Druk dan in Steam op Spelen. De launcher toont wat hij op je pc verandert: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. De bestanden van het spel worden nooit veranderd.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Bij de eerste start opent de launcher het installatievenster: kies Instellen en antwoord Ja wanneer Windows vraagt om een certificaat te installeren en het hosts-bestand te bewerken. Het dialoogvenster van de Spelen-knop van Steam volgt bij de volgende start van de launcher (of meteen na "Niet nu"): kies "Steam sluiten en instellen". Steam start vanzelf opnieuw. De bestanden van het spel worden nooit veranderd.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Druk in de launcher op "Inloggen met Steam" en meld je aan in de browser die opent, met het Steam-account waarmee je speelt. Kies een reservaat en een startpunt en druk op Spel starten. De eerste keer vraagt Windows Firewall naar het spel: kies Toestaan. Laat de launcher open terwijl je speelt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Problemen oplossen</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Je back-up herstellen</value></data>
@@ -1454,14 +1454,14 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Deze naam is al in gebruik.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Kies een naam: de oude is al in gebruik.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>De app inloggen die deze code toont?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Je bent {0}. De app die deze code toont (de launcher of de back-uptool) wordt als jou ingelogd.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Je bent {0}. De launcher of de back-uptool logt je zonder code in.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bevestig alleen als deze code nu op je scherm staat.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>De app op deze pc inloggen?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Je bent {0}. De app die je net op deze pc hebt gestart (de launcher of de back-uptool) wordt als jou ingelogd.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bevestig alleen als je zojuist in een van beide op ‘{0}’ hebt gedrukt.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, inloggen</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Klaar</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Ga terug naar de app die de code toonde (de launcher of de back-uptool).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Ga terug naar de launcher of de back-uptool: die logt zelf in, een code is niet nodig.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Word lid van de Discord: nieuws, hulp en de operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Deze inlogpoging is verlopen of is in een andere browser gestart. Begin opnieuw.</value></data>

@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Não</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Fechar</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICAÇÃO ETÁRIA</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: algumas páginas ainda mostram conteúdo de exemplo. Os servidores oficiais funcionam até 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Guarde o seu perfil antes disso: transfira a ferramenta de cópia de segurança</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: algumas páginas ainda mostram conteúdo de exemplo. Os servidores oficiais funcionaram até 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Os servidores oficiais funcionaram até 2026-11-11: sobre a ferramenta de cópia de segurança</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Guarde o seu perfil com a ferramenta de cópia de segurança</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>A ferramenta de cópia de segurança é uma pequena aplicação para Windows que guarda o seu perfil (estatísticas, inventário, troféus, histórico de caçadas e mais) como ficheiros no seu PC enquanto os servidores oficiais ainda funcionam, até 2026-11-11. Apenas lê; não altera nada no servidor.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>A ferramenta de cópia de segurança é uma pequena aplicação para Windows que guarda o seu perfil (estatísticas, inventário, troféus, histórico de caçadas e mais) como ficheiros no seu PC enquanto os servidores oficiais ainda funcionavam, até 2026-11-11. Apenas lê; não altera nada no servidor.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Transfira backup-win-x64.zip e extraia-o. Mantenha backup.exe e settings.json na mesma pasta.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Inicie backup.exe. Para a sua própria conta, abra o jogo e comece uma caçada (a ferramenta pode ser aberta antes ou depois); ou escolha «Perfil público» e escreva um nome de utilizador ou id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Assinale o que quer guardar e clique em «Iniciar». O resultado é uma pasta de cópia e um zip de cópia em Documents\game-backup. Não partilhe esse zip.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence está em desenvolvimento</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>O servidor da comunidade está a ser construído de forma aberta. As contas, a restauração da sua cópia de segurança e este site estão a ganhar forma, e o servidor abre ao público em breve.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>O jogo abre ao público em breve.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Guarde a sua conta antes de os servidores oficiais encerrarem</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Os servidores oficiais encerram a 11 de novembro de 2026. Transfira a ferramenta de cópia de segurança e guarde já o seu perfil: inventário, troféus, estatísticas e mais. Poderá restaurá-lo no servidor da comunidade quando este abrir.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Faça uma cópia do perfil antes de 11 de novembro de 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Os servidores oficiais fecharam</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Os servidores oficiais fecharam a 11 de novembro de 2026. A ferramenta de cópia de segurança guardou o seu perfil: inventário, troféus, estatísticas e mais. O servidor da comunidade já está aberto.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Os servidores oficiais fecharam a 11 de novembro de 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Leia aqui</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Caçar</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>UM JOGADOR</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guia do jogador: cada passo e soluções para problemas comuns</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Transferir o launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passo {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>No primeiro arranque, o launcher propõe abrir-se a partir do botão Jogar do Steam: escolha «Fechar o Steam e definir». O Steam volta a abrir sozinho. Depois carregue em Jogar no Steam. O launcher indica o que altera no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o ficheiro hosts. Os ficheiros do jogo nunca são alterados.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>No primeiro arranque, o launcher abre a janela de configuração: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o ficheiro hosts. A caixa de diálogo do botão Jogar do Steam surge no arranque seguinte do launcher (ou logo após «Agora não»): escolha «Fechar o Steam e definir». O Steam volta a abrir sozinho. Os ficheiros do jogo nunca são alterados.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Carregue em «Iniciar sessão com o Steam» no launcher e inicie sessão no navegador que abrir, com a conta Steam com que joga. Escolha uma reserva e um ponto de partida e carregue em Iniciar jogo. Da primeira vez, a Firewall do Windows pergunta sobre o jogo: escolha Permitir. Mantenha o launcher aberto enquanto joga.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Resolução de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar a cópia de segurança</value></data>
@@ -1454,14 +1454,14 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Este nome já está em uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Escolha um nome: o antigo já está em uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Iniciar sessão na aplicação que mostra este código?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>É {0}. A aplicação que mostra este código (o launcher ou a ferramenta de cópia de segurança) inicia sessão como o utilizador.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>É {0}. O launcher ou a ferramenta de cópia de segurança inicia sessão como o utilizador, sem código.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirme só se este código estiver agora no seu ecrã.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Iniciar sessão na aplicação neste PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>É {0}. A aplicação que acabou de iniciar neste PC (o launcher ou a ferramenta de cópia de segurança) inicia sessão como o utilizador.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirme só se acabou de premir «{0}» numa delas.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sim, iniciar sessão</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Concluído</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte à aplicação que mostrou o código (o launcher ou a ferramenta de cópia de segurança).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte ao launcher ou à ferramenta de cópia de segurança: inicia sessão sozinho, sem precisar de código.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Junte-se ao Discord: novidades, ajuda e o operador</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Pedimos desculpa</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Este início de sessão expirou ou foi iniciado noutro navegador. Comece de novo.</value></data>

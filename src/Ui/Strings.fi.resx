@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Ei</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Sulje</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>IKÄRAJAT</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Työn alla: osa sivuista näyttää vielä esimerkkisisältöä. Viralliset palvelimet ovat käytössä 2026-11-11 asti.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Tallenna profiilisi ennen sitä: lataa varmuuskopiotyökalu</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Työn alla: osa sivuista näyttää vielä esimerkkisisältöä. Viralliset palvelimet olivat käytössä 2026-11-11 asti.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Viralliset palvelimet olivat käytössä 2026-11-11 asti: tietoa varmuuskopiotyökalusta</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Tallenna profiilisi varmuuskopiotyökalulla</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Varmuuskopiotyökalu on pieni Windows-sovellus, joka tallentaa profiilisi (tilastot, varusteet, palkinnot, metsästyshistorian ja muuta) tiedostoina tietokoneellesi niin kauan kuin viralliset palvelimet ovat käytössä, 2026-11-11 asti. Se vain lukee; se ei muuta palvelimella mitään.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Varmuuskopiotyökalu on pieni Windows-sovellus, joka tallentaa profiilisi (tilastot, varusteet, palkinnot, metsästyshistorian ja muuta) tiedostoina tietokoneellesi niin kauan kuin viralliset palvelimet vielä olivat käytössä, 2026-11-11 asti. Se vain lukee; se ei muuta palvelimella mitään.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Lataa backup-win-x64.zip ja pura se. Pidä backup.exe ja settings.json samassa kansiossa.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Käynnistä backup.exe. Omalle tilillesi: avaa peli ja aloita metsästys (työkalu voi olla auki ennen tai jälkeen); tai valitse ”Public profile” ja kirjoita käyttäjänimi tai id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Valitse tallennettavat kohteet ja paina ”Start”. Tuloksena on varmuuskopiokansio ja varmuuskopio-zip kansiossa Documents\game-backup. Pidä se zip yksityisenä.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence on kehitteillä</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Yhteisöpalvelinta rakennetaan avoimesti. Tilit, varmuuskopion palautus ja tämä sivusto ovat muotoutumassa, ja palvelin avautuu pian kaikille.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Julkinen pelaaminen alkaa pian.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Tallenna tilisi ennen kuin viralliset palvelimet sulkeutuvat</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Viralliset palvelimet sulkeutuvat 11. marraskuuta 2026. Lataa varmuuskopiotyökalu ja tallenna profiilisi nyt: varusteet, palkinnot, tilastot ja muuta. Voit palauttaa sen yhteisöpalvelimelle, kun se avautuu.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Varmuuskopioi profiilisi ennen 11. marraskuuta 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Viralliset palvelimet on suljettu</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Viralliset palvelimet suljettiin 11. marraskuuta 2026. Varmuuskopiotyökalu tallensi profiilisi: varusteet, palkinnot, tilastot ja muuta. Yhteisöpalvelin on nyt auki.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Viralliset palvelimet suljettiin 11. marraskuuta 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Lue se täältä</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Metsästämään</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>YKSINPELI</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Pelaajan opas: jokainen vaihe ja ratkaisut yleisiin ongelmiin</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Lataa käynnistin</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Vaihe {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Ensimmäisellä käynnistyskerralla käynnistin tarjoutuu avautumaan Steamin Pelaa-painikkeesta: valitse ”Sulje Steam ja aseta se”. Steam käynnistyy itse uudelleen. Paina sitten Steamissa Pelaa. Käynnistin luettelee, mitä se muuttaa PC:lläsi: valitse Määritä ja vastaa Kyllä, kun Windows kysyy varmenteen asentamisesta ja hosts-tiedoston muokkaamisesta. Pelin tiedostoja ei koskaan muuteta.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ensimmäisellä käynnistyskerralla käynnistin avaa asennusikkunan: valitse Määritä ja vastaa Kyllä, kun Windows kysyy varmenteen asentamisesta ja hosts-tiedoston muokkaamisesta. Steamin Pelaa-painikkeen ikkuna tulee käynnistimen seuraavalla käynnistyskerralla (tai heti valinnan ”Ei nyt” jälkeen): valitse ”Sulje Steam ja aseta se”. Steam käynnistyy itse uudelleen. Pelin tiedostoja ei koskaan muuteta.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Paina käynnistimessä ”Kirjaudu Steamilla” ja kirjaudu avautuvassa selaimessa sillä Steam-tilillä, jolla pelaat. Valitse alue ja aloituspaikka ja paina Aloita peli. Ensimmäisellä kerralla Windowsin palomuuri kysyy pelistä: valitse Salli. Pidä käynnistin auki pelatessasi.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Vianmääritys</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Palauta varmuuskopiosi</value></data>
@@ -1454,14 +1454,14 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Tämä nimi on jo käytössä.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Valitse nimi: vanha on jo käytössä.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Kirjataanko sisään sovellus, joka näyttää tämän koodin?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Olet {0}. Sovellus, joka näyttää tämän koodin (launcher tai varmuuskopiotyökalu), kirjataan sisään sinuna.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Olet {0}. Launcher tai varmuuskopiotyökalu kirjautuu sisään sinuna ilman koodia.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Vahvista vain, jos tämä koodi on juuri nyt näytölläsi.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Kirjataanko sisään tämän tietokoneen sovellus?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Olet {0}. Sovellus, jonka juuri käynnistit tällä tietokoneella (launcher tai varmuuskopiotyökalu), kirjataan sisään sinuna.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Vahvista vain, jos painoit juuri jossakin niistä kohtaa ”{0}”.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Kyllä, kirjaa sisään</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Valmis</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Palaa sovellukseen, joka näytti koodin (launcher tai varmuuskopiotyökalu).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Palaa launcheriin tai varmuuskopiotyökaluun: se kirjautuu itse sisään, koodia ei tarvita.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Liity Discordiin: uutiset, apu ja ylläpitäjä</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Valitettavasti</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Tämä kirjautuminen vanheni tai se aloitettiin toisessa selaimessa. Aloita alusta.</value></data>

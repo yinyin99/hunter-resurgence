@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Não</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Fechar</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>CLASSIFICAÇÃO INDICATIVA</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: algumas páginas ainda mostram conteúdo de exemplo. Os servidores oficiais funcionam até 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Salve seu perfil antes disso: baixe a ferramenta de backup</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Em desenvolvimento: algumas páginas ainda mostram conteúdo de exemplo. Os servidores oficiais funcionaram até 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Os servidores oficiais funcionaram até 2026-11-11: sobre a ferramenta de backup</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Salve seu perfil com a ferramenta de backup</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>A ferramenta de backup é um pequeno app para Windows que salva seu perfil (estatísticas, inventário, troféus, histórico de caçadas e mais) como arquivos no seu PC enquanto os servidores oficiais ainda funcionam, até 2026-11-11. Ela só lê; não altera nada no servidor.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>A ferramenta de backup é um pequeno app para Windows que salva seu perfil (estatísticas, inventário, troféus, histórico de caçadas e mais) como arquivos no seu PC enquanto os servidores oficiais ainda funcionavam, até 2026-11-11. Ela só lê; não altera nada no servidor.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Baixe backup-win-x64.zip e descompacte. Mantenha backup.exe e settings.json na mesma pasta.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Inicie backup.exe. Para a sua própria conta, abra o jogo e comece uma caçada (a ferramenta pode ser aberta antes ou depois); ou escolha “Perfil público” e digite um nome de usuário ou id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Marque o que salvar e clique em “Iniciar”. O resultado é uma pasta de backup e um zip de backup em Documents\game-backup. Não compartilhe esse zip.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>O Hunter Resurgence está em desenvolvimento</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>O servidor comunitário está sendo construído de forma aberta. Contas, a restauração do seu backup e este site estão tomando forma, e o servidor abre ao público em breve.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>O jogo público abre em breve.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Salve sua conta antes que os servidores oficiais fechem</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Os servidores oficiais fecham em 11 de novembro de 2026. Baixe a ferramenta de backup e salve seu perfil agora: inventário, troféus, estatísticas e mais. Você poderá restaurá-lo no servidor comunitário quando ele abrir.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Faça backup do seu perfil antes de 11 de novembro de 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Os servidores oficiais fecharam</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Os servidores oficiais fecharam em 11 de novembro de 2026. A ferramenta de backup salvou seu perfil: inventário, troféus, estatísticas e mais. O servidor da comunidade já está aberto.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Os servidores oficiais fecharam em 11 de novembro de 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Leia aqui</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Caçar</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guia do jogador: cada passo e soluções para problemas comuns</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Baixar o launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Passo {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Na primeira vez, o launcher oferece abrir pelo botão Jogar da Steam: escolha “Fechar o Steam e configurar”. A Steam abre de novo sozinha. Depois aperte Jogar na Steam. O launcher lista o que muda no seu PC: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o arquivo hosts. Os arquivos do jogo nunca são alterados.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Na primeira vez, o launcher abre a janela de configuração: escolha Configurar e responda Sim quando o Windows pedir para instalar um certificado e editar o arquivo hosts. O diálogo do botão Jogar da Steam vem na próxima abertura do launcher (ou logo após “Agora não”): escolha “Fechar o Steam e configurar”. A Steam abre de novo sozinha. Os arquivos do jogo nunca são alterados.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Aperte “Entrar com a Steam” no launcher e entre no navegador que abrir, com a conta Steam com que você joga. Escolha uma reserva e um ponto de partida e aperte Iniciar Jogo. Na primeira vez, o Firewall do Windows pergunta sobre o jogo: escolha Permitir. Deixe o launcher aberto enquanto joga.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Solução de problemas</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurar seu backup</value></data>
@@ -1454,14 +1454,14 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Este nome já está em uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Escolha um nome: o antigo já está em uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Entrar no aplicativo que mostra este código?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Você é {0}. O aplicativo que mostra este código (o launcher ou a ferramenta de backup) entrará como você.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Você é {0}. O launcher ou a ferramenta de backup entra como você, sem código.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirme só se este código estiver na sua tela agora.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Entrar no aplicativo deste PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Você é {0}. O aplicativo que você acabou de iniciar neste PC (o launcher ou a ferramenta de backup) entrará como você.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirme só se você acabou de clicar em “{0}” em um deles.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sim, entrar</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Pronto</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte ao aplicativo que mostrou o código (o launcher ou a ferramenta de backup).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte ao launcher ou à ferramenta de backup: ele entra sozinho, sem precisar de código.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Entre no Discord: novidades, ajuda e o operador</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Desculpe</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Esta entrada expirou ou foi iniciada em outro navegador. Comece de novo.</value></data>

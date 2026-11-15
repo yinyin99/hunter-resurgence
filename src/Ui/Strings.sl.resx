@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Ne</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Zapri</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>OCENE</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>V izdelavi: nekatere strani še prikazujejo vzorčno vsebino. Uradni strežniki delujejo do 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Pred tem shranite svoj profil: prenesite orodje za varnostno kopiranje</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>V izdelavi: nekatere strani še prikazujejo vzorčno vsebino. Uradni strežniki so delovali do 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Uradni strežniki so delovali do 2026-11-11: o orodju za varnostno kopiranje</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Shranite svoj profil z orodjem za varnostno kopiranje</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Orodje za varnostno kopiranje je majhna aplikacija za Windows, ki vaš profil (statistiko, inventar, trofeje, zgodovino lovov in drugo) shrani kot datoteke na vaš računalnik, dokler uradni strežniki še delujejo, do 2026-11-11. Samo bere; na strežniku ne spremeni ničesar.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Orodje za varnostno kopiranje je majhna aplikacija za Windows, ki vaš profil (statistiko, inventar, trofeje, zgodovino lovov in drugo) shrani kot datoteke na vaš računalnik, dokler so uradni strežniki še delovali, do 2026-11-11. Samo bere; na strežniku ne spremeni ničesar.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Prenesite backup-win-x64.zip in ga razširite. Datoteki backup.exe in settings.json naj bosta v isti mapi.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Zaženite backup.exe. Za svoj račun odprite igro in začnite lov (orodje je lahko odprto prej ali pozneje); ali izberite „Public profile“ in vpišite vzdevek ali id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Označite, kaj želite shraniti, in pritisnite „Start“. Rezultat je mapa varnostne kopije in zip varnostne kopije v Documents\game-backup. Ta zip obdržite zase.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence je v razvoju</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Strežnik skupnosti nastaja odprto. Računi, obnovitev vaše varnostne kopije in to spletno mesto dobivajo obliko, strežnik pa se bo kmalu odprl za javnost.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Javna igra se kmalu začne.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Shranite svoj račun, preden se uradni strežniki zaprejo</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Uradni strežniki se zaprejo 11. novembra 2026. Prenesite orodje za varnostno kopiranje in zdaj shranite svoj profil: inventar, trofeje, statistiko in drugo. Obnovite ga lahko na strežniku skupnosti, ko se odpre.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Varnostno kopirajte profil pred 11. novembrom 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Uradni strežniki so zaprti</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Uradni strežniki so se zaprli 11. novembra 2026. Orodje za varnostno kopiranje je shranilo vaš profil: inventar, trofeje, statistiko in drugo. Strežnik skupnosti je zdaj odprt.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Uradni strežniki so se zaprli 11. novembra 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Preberite tukaj</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Pojdi na lov</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SAMOSTOJNI LOV</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Vodnik za igralce: vsak korak in rešitve pogostih težav</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Prenesi zaganjalnik</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Korak {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Ob prvem zagonu zaganjalnik ponudi, da se odpira z gumbom Igraj v Steamu: izberite „Zapri Steam in nastavi“. Steam se sam znova zažene. Nato v Steamu pritisnite Igraj. Zaganjalnik navede, kaj spremeni na računalniku: izberite Nastavi in odgovorite Da, ko Windows vpraša za namestitev potrdila in urejanje datoteke hosts. Datoteke igre se nikoli ne spremenijo.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Ob prvem zagonu zaganjalnik odpre okno z nastavitvami: izberite Nastavi in odgovorite Da, ko Windows vpraša za namestitev potrdila in urejanje datoteke hosts. Pogovorno okno gumba Igraj v Steamu sledi ob naslednjem zagonu zaganjalnika (ali takoj po „Ne zdaj“): izberite „Zapri Steam in nastavi“. Steam se sam znova zažene. Datoteke igre se nikoli ne spremenijo.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>V zaganjalniku pritisnite „Prijava s Steamom“ in se v brskalniku, ki se odpre, prijavite z računom Steam, s katerim igrate. Izberite lovišče in začetno točko ter pritisnite Zaženi igro. Prvič požarni zid Windows vpraša o igri: izberite Dovoli. Med igranjem pustite zaganjalnik odprt.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Odpravljanje težav</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovitev varnostne kopije</value></data>
@@ -1454,14 +1454,14 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>To ime je zasedeno.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Izberite ime: staro je zasedeno.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Prijavim aplikacijo, ki prikazuje to kodo?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vi ste {0}. Aplikacija, ki prikazuje to kodo (zaganjalnik ali orodje za varnostno kopiranje), bo prijavljena kot vi.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vi ste {0}. Zaganjalnik ali orodje za varnostno kopiranje vas prijavi brez kode.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potrdite le, če je ta koda zdaj na vašem zaslonu.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Prijavim aplikacijo na tem računalniku?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Vi ste {0}. Aplikacija, ki ste jo pravkar zagnali na tem računalniku (zaganjalnik ali orodje za varnostno kopiranje), bo prijavljena kot vi.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potrdite le, če ste pravkar pritisnili »{0}« v eni od njiju.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Da, prijavi</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Končano</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vrnite se v aplikacijo, ki je prikazala kodo (zaganjalnik ali orodje za varnostno kopiranje).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vrnite se v zaganjalnik ali orodje za varnostno kopiranje: prijavi se samo, kode ni treba.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Pridružite se Discordu: novice, pomoč in operater</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Oprostite</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ta prijava je potekla ali je bila začeta v drugem brskalniku. Začnite znova.</value></data>

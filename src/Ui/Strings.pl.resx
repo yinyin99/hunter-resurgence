@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Nie</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Zamknij</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>OCENY WIEKOWE</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Prace w toku: niektóre strony wciąż pokazują przykładowe treści. Oficjalne serwery działają do 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Zapisz swój profil wcześniej: pobierz narzędzie do kopii zapasowej</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Prace w toku: niektóre strony wciąż pokazują przykładowe treści. Oficjalne serwery działały do 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Oficjalne serwery działały do 2026-11-11: o narzędziu do kopii zapasowej</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Zapisz swój profil narzędziem do kopii zapasowej</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Narzędzie do kopii zapasowej to mała aplikacja dla Windows, która zapisuje Twój profil (statystyki, ekwipunek, trofea, historię polowań i więcej) jako pliki na Twoim PC, dopóki oficjalne serwery działają, do 2026-11-11. Tylko odczytuje dane; niczego nie zmienia na serwerze.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Narzędzie do kopii zapasowej to mała aplikacja dla Windows, która zapisuje Twój profil (statystyki, ekwipunek, trofea, historię polowań i więcej) jako pliki na Twoim PC, dopóki oficjalne serwery jeszcze działały, do 2026-11-11. Tylko odczytuje dane; niczego nie zmienia na serwerze.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Pobierz backup-win-x64.zip i rozpakuj go. Trzymaj backup.exe i settings.json w tym samym folderze.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Uruchom backup.exe. Dla własnego konta otwórz grę i rozpocznij polowanie (narzędzie może być otwarte przed lub po); albo wybierz „Public profile” i wpisz nazwę lub id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Zaznacz, co zapisać, i naciśnij „Start”. Wynikiem jest folder kopii i plik zip kopii w Documents\game-backup. Nie udostępniaj tego pliku zip.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence jest w trakcie tworzenia</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Serwer społeczności powstaje otwarcie. Konta, przywracanie kopii zapasowej i ta strona nabierają kształtu, a serwer wkrótce zostanie otwarty dla wszystkich.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Gra publiczna wkrótce.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Zapisz swoje konto, zanim oficjalne serwery zostaną zamknięte</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Oficjalne serwery zostaną zamknięte 11 listopada 2026. Pobierz narzędzie do kopii zapasowej i zapisz swój profil już teraz: ekwipunek, trofea, statystyki i więcej. Przywrócisz go na serwerze społeczności, gdy tylko zostanie otwarty.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Zrób kopię profilu przed 11 listopada 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Oficjalne serwery zostały zamknięte</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026. Narzędzie do kopii zapasowej zapisało Twój profil: ekwipunek, trofea, statystyki i więcej. Serwer społeczności jest już otwarty.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Przeczytaj tutaj</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Poluj</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>GRA JEDNOOSOBOWA</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Poradnik gracza: każdy krok i rozwiązania częstych problemów</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Pobierz launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher proponuje otwieranie go przyciskiem Graj w Steamie: wybierz „Zamknij Steam i ustaw”. Steam sam uruchomi się ponownie. Potem naciśnij Graj w Steamie. Launcher pokazuje, co zmienia na twoim komputerze: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Pliki gry nigdy nie są zmieniane.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Przy pierwszym uruchomieniu launcher otwiera okno konfiguracji: wybierz Skonfiguruj i odpowiedz Tak, gdy Windows zapyta o instalację certyfikatu i edycję pliku hosts. Okno przycisku Graj w Steamie pojawi się przy następnym uruchomieniu launchera (albo od razu po „Nie teraz”): wybierz „Zamknij Steam i ustaw”. Steam sam uruchomi się ponownie. Pliki gry nigdy nie są zmieniane.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>Naciśnij „Zaloguj się przez Steam” w launcherze i zaloguj się w otwartej przeglądarce na konto Steam, na którym grasz. Wybierz rezerwat i punkt startowy, a potem naciśnij Start gry. Za pierwszym razem Zapora systemu Windows zapyta o grę: wybierz Zezwalaj. Nie zamykaj launchera podczas gry.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Rozwiązywanie problemów</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Przywróć kopię zapasową</value></data>
@@ -1454,14 +1454,14 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ta nazwa jest zajęta.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wybierz nazwę: stara jest zajęta.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Zalogować aplikację, która pokazuje ten kod?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jesteś {0}. Aplikacja, która pokazuje ten kod (launcher lub narzędzie do kopii zapasowej), zostanie zalogowana jako Ty.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jesteś {0}. Launcher lub narzędzie do kopii zapasowej zaloguje się jako Ty bez kodu.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy ten kod jest właśnie teraz na Twoim ekranie.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Zalogować aplikację na tym komputerze?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jesteś {0}. Aplikacja uruchomiona przed chwilą na tym komputerze (launcher lub narzędzie do kopii zapasowej) zostanie zalogowana jako Ty.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy w jednej z nich przed chwilą użyto przycisku „{0}”.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Tak, zaloguj</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Gotowe</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Wróć do aplikacji, która pokazała kod (launcher lub narzędzie do kopii zapasowej).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Wróć do launchera lub narzędzia do kopii zapasowej: loguje się samo, kod nie jest potrzebny.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Dołącz do Discorda: nowości, pomoc i operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Przepraszamy</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>To logowanie wygasło lub zostało rozpoczęte w innej przeglądarce. Zacznij od nowa.</value></data>

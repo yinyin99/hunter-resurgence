@@ -118,10 +118,10 @@
   <data name="Alert.No" xml:space="preserve"><value>Ne</value></data>
   <data name="Alert.Close" xml:space="preserve"><value>Zavřít</value></data>
   <data name="Footer.Ratings" xml:space="preserve"><value>HODNOCENÍ</value></data>
-  <data name="Wip.Banner" xml:space="preserve"><value>Rozpracováno: některé stránky zatím ukazují ukázkový obsah. Oficiální servery běží do 2026-11-11.</value></data>
-  <data name="Backup.Banner" xml:space="preserve"><value>Uložte si profil předem: stáhněte zálohovací nástroj</value></data>
+  <data name="Wip.Banner" xml:space="preserve"><value>Rozpracováno: některé stránky zatím ukazují ukázkový obsah. Oficiální servery běžely do 2026-11-11.</value></data>
+  <data name="Backup.Banner" xml:space="preserve"><value>Oficiální servery běžely do 2026-11-11: o zálohovacím nástroji</value></data>
   <data name="Backup.Title" xml:space="preserve"><value>Uložte si profil zálohovacím nástrojem</value></data>
-  <data name="Backup.Intro" xml:space="preserve"><value>Zálohovací nástroj je malá aplikace pro Windows, která uloží váš profil (statistiky, inventář, trofeje, historii lovů a další) jako soubory do vašeho PC, dokud oficiální servery běží, do 2026-11-11. Pouze čte; na serveru nic nemění.</value></data>
+  <data name="Backup.Intro" xml:space="preserve"><value>Zálohovací nástroj je malá aplikace pro Windows, která uloží váš profil (statistiky, inventář, trofeje, historii lovů a další) jako soubory do vašeho PC, dokud oficiální servery ještě běžely, do 2026-11-11. Pouze čte; na serveru nic nemění.</value></data>
   <data name="Backup.Step1" xml:space="preserve"><value>Stáhněte backup-win-x64.zip a rozbalte ho. Nechte backup.exe a settings.json ve stejné složce.</value></data>
   <data name="Backup.Step2" xml:space="preserve"><value>Spusťte backup.exe. Pro vlastní účet otevřete hru a začněte lov (nástroj může být otevřený předtím i potom); nebo zvolte „Public profile“ a zadejte přezdívku nebo id.</value></data>
   <data name="Backup.Step3" xml:space="preserve"><value>Zaškrtněte, co uložit, a stiskněte „Start“. Výsledkem je složka zálohy a zip zálohy v Documents\game-backup. Ten zip zálohy nikomu nedávejte.</value></data>
@@ -156,9 +156,9 @@
   <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence je ve vývoji</value></data>
   <data name="News.Dev.Text" xml:space="preserve"><value>Komunitní server vzniká veřejně. Účty, obnova zálohy i tento web postupně nabírají podobu a server se brzy otevře veřejnosti.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Veřejná hra se brzy otevře.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Uložte si účet dřív, než se oficiální servery zavřou</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Oficiální servery se zavřou 11. listopadu 2026. Stáhněte si zálohovací nástroj a uložte si profil hned teď: inventář, trofeje, statistiky a další. Po otevření komunitního serveru ho můžete obnovit.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Zálohujte si profil před 11. listopadem 2026.</value></data>
+  <data name="News.Backup.Title" xml:space="preserve"><value>Oficiální servery skončily</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Oficiální servery skončily 11. listopadu 2026. Zálohovací nástroj uložil váš profil: inventář, trofeje, statistiky a další. Komunitní server je nyní otevřený.</value></data>
+  <data name="News.Backup.Lead" xml:space="preserve"><value>Oficiální servery skončily 11. listopadu 2026.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Přečtěte si to zde</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Jít na lov</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>HRA PRO JEDNOHO</value></data>
@@ -1333,7 +1333,7 @@
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Průvodce hráče: každý krok a řešení běžných problémů</value></data>
   <data name="Download.Click" xml:space="preserve"><value>Stáhnout launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Krok {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher nabídne, že se bude otevírat tlačítkem Hrát ve Steamu: zvolte „Zavřít Steam a nastavit“. Steam se sám znovu spustí. Pak ve Steamu stiskněte Hrát. Launcher vypíše, co na počítači mění: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Soubory hry se nikdy nemění.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Při prvním spuštění launcher otevře okno nastavení: zvolte Nastavit a odpovězte Ano, když se Windows zeptá na instalaci certifikátu a úpravu souboru hosts. Dialog tlačítka Hrát ve Steamu přijde při dalším spuštění launcheru (nebo hned po „Teď ne“): zvolte „Zavřít Steam a nastavit“. Steam se sám znovu spustí. Soubory hry se nikdy nemění.</value></data>
   <data name="Download.Step3.Text" xml:space="preserve"><value>V launcheru stiskněte „Přihlásit se přes Steam“ a přihlaste se v prohlížeči, který se otevře, účtem Steam, se kterým hrajete. Vyberte revír a start a stiskněte Spustit hru. Poprvé se brána Windows Firewall zeptá na hru: zvolte Povolit. Nechte launcher během hraní otevřený.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Řešení potíží</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Obnovit zálohu</value></data>
@@ -1454,14 +1454,14 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Toto jméno je obsazené.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Zvolte jméno: staré je obsazené.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Přihlásit aplikaci, která ukazuje tento kód?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj, který ukazuje tento kód, bude přihlášen jako vy.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj vás přihlásí bez kódu.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potvrďte jen tehdy, když je tento kód právě teď na vaší obrazovce.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Přihlásit aplikaci na tomto počítači?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj, který jste právě spustili na tomto počítači, bude přihlášen jako vy.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potvrďte jen tehdy, když jste v jednom z nich právě stiskli „{0}“.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ano, přihlásit</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Hotovo</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vraťte se do aplikace, která ukázala kód (launcher nebo zálohovací nástroj).</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vraťte se do launcheru nebo zálohovacího nástroje: přihlásí se sám, kód není potřeba.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Připojte se na Discord: novinky, pomoc a provozovatel</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Omlouváme se</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Toto přihlášení vypršelo nebo bylo zahájeno v jiném prohlížeči. Začněte znovu.</value></data>
