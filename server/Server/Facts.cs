@@ -96,6 +96,14 @@ public sealed class Facts
     /// <summary>{locale key: English text} of the kill page.</summary>
     public JsonObject Labels => (JsonObject)Obj("labels").DeepClone();
 
+    /// <summary>The lodge an item of the store is (`trophy_lodge.lodges`): the layout number (`lodge_engine_id`), the name a new lodge gets and the layout's define; null for any other item.</summary>
+    public (long Engine, string Name, string Define)? LodgeOfItem(long item) =>
+        (Obj("trophy_lodge")["lodges"] as JsonArray ?? []).OfType<JsonObject>().FirstOrDefault(l => Py.L(l["item"]) == item) is { } l
+            ? (Py.L(l["engine"]), (string)l["name"]!, (string)LodgeCatalogue($"lodge/{Py.L(l["engine"])}")!["item_define"]!) : null;
+
+    /// <summary>A reply of `/gameengine/trophylodge/` (`animal`, `skull`, `weapon`, `slot/animal`, `slot/weapon`, `lodge/<layout number>`): the same for everyone; null for any other.</summary>
+    public JsonNode? LodgeCatalogue(string key) => (Obj("trophy_lodge")["catalogue"] as JsonObject)?[key];
+
     /// <summary>The ids of the reserves that have populations.</summary>
     public IEnumerable<int> Reserves => Arr("reserves").Select(r => (int)Py.L(r!["id"]));
 
