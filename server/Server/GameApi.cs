@@ -78,8 +78,8 @@ public static class GameApi
                     : null);
             gs.MapGet(State.PHOTO_PREFIX + "{**name}", photo)
               .WithName("Photo").WithSummary("A stored photo")
-              .WithDescription("Photos uploaded through UploadPhoto, by account id and file name. Public: the link is the access.")
-              .PathParams(("name", "`<account id>/<photo id>-<photo_type>[-thumb].jpg`")).Produces(200, contentType: "image/jpeg");
+              .WithDescription("Photos uploaded through UploadPhoto, by account id and file name. Public: the link is the access, and the file name holds a token nobody can guess.")
+              .PathParams(("name", "`<account id>/<photo id>-<photo_type>-<token>[-thumb].jpg`")).Produces(200, contentType: "image/jpeg");
             gs.MapMethods(State.PHOTO_PREFIX + "{**name}", ["HEAD"], photo).ExcludeFromDescription();
         }
 

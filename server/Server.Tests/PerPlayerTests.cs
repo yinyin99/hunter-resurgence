@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -247,16 +248,21 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         }
         Photo(8, """{"event": 4, "hash": 1, "photo_type": 2, "individual": 71}""", thumb: true);    // 1: the kill's trophy photo
         Photo(8, """{"event": 4, "hash": 2, "photo_type": 14, "individual": 71}""");                // 2: the shot's screenshot, no gallery picture
-        Photo(8, """{"event": 4, "hash": 3, "photo_type": 3, "individual": 99}""");                 // 3: no kill of this individual
+        Photo(8, """{"event": 4, "hash": 3, "photo_type": 1, "individual": 99}""");                 // 3: a camera photo, no kill of this individual
         Photo(8, """{"event": 4, "hash": 4, "photo_type": 2, "individual": 71}""", upload: false);  // 4: asked, never sent
         Photo(ME, """{"event": 4, "hash": 5, "photo_type": 2}""");                                   // 5: the other player's
+        Photo(8, """{"event": 4, "hash": 6, "photo_type": 12}""");                                   // 6: another automatic screenshot, no gallery picture
         var photos = $"{BASE}/photos/8/";
 
         // Gallery/list: any account's, newest first, paged; no user_id is the player's own; a banned or unknown id is the empty reply
         var other = await Api(Replay.GALLERY_LIST, tokenA, "user_id=8");
         Eq("[2, [3, 1]]", T(other["total"], Ids(other["photos"]!)));
-        Eq($$"""{"id": 3, "type": 3, "url": "{{photos}}3-3.jpg", "thumbnail": "{{photos}}3-3.jpg", "label": "", "animal": ""}""", other["photos"]![0]);  // no thumbnail sent: the picture itself
-        Eq($$"""[1, 2, "Test Deer", "{{photos}}1-2.jpg", "{{photos}}1-2-thumb.jpg"]""",
+        var (cameraUrl, trophyUrl) = ((string)other["photos"]![0]!["url"]!, (string)other["photos"]![1]!["url"]!);
+        Assert.Matches($@"\A{Regex.Escape(photos)}3-1-[0-9a-f]{{32}}\.jpg\z", cameraUrl);
+        Assert.Matches($@"\A{Regex.Escape(photos)}1-2-[0-9a-f]{{32}}\.jpg\z", trophyUrl);
+        Eq($$"""{"id": 3, "type": 1, "url": "{{cameraUrl}}", "thumbnail": "{{cameraUrl}}", "label": "", "animal": ""}""", other["photos"]![0]);  // no thumbnail sent: the picture itself
+        var trophyThumb = trophyUrl[..^".jpg".Length] + "-thumb.jpg";
+        Eq($$"""[1, 2, "Test Deer", "{{trophyUrl}}", "{{trophyThumb}}"]""",
            T(other["photos"]![1]!["id"], other["photos"]![1]!["type"], other["photos"]![1]!["animal"], other["photos"]![1]!["url"], other["photos"]![1]!["thumbnail"]));
         Assert.False(string.IsNullOrEmpty((string?)other["photos"]![1]!["label"]));  // the kill's score
         Eq("[1]", Ids((await Api(Replay.GALLERY_LIST, tokenA, "user_id=8&offset=1&limit=1"))["photos"]!));
@@ -265,17 +271,18 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         foreach (var id in new[] { 9, 99 })
             Eq("0", (await Api(Replay.GALLERY_LIST, tokenA, $"user_id={id}"))["total"]);
 
-        // a kill's photo is its shot's screenshot, else its other photo
+        // a kill's photo is its trophy shot, never its shot's screenshot
         JsonNode? KillPhoto() => Reply(state.ExpeditionReply(8, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"];
-        Eq($"\"{photos}2-14.jpg\"", KillPhoto());
+        Eq($"\"{trophyUrl}\"", KillPhoto());
 
         // the website's page: 24 a page, a page past the end is the last, no banned or unknown hunter
         async Task<JsonNode> Page(string query) => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery" + query, null)).Body)!;
         var first = await Page("?page=1");
         Eq("[1, 1, 2, [3, 1]]", T(first["page"], first["pages"], first["total"], Ids(first["rows"]!)));
-        Eq($"\"https://web.test/photos/8/3-3.jpg\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
+        var (cameraFile, trophyFile) = (cameraUrl[photos.Length..], trophyUrl[photos.Length..]);
+        Eq($"\"https://web.test/photos/8/{cameraFile}\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
         Eq("[3, 1]", Ids(first["rows"]!));
-        Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/3-3.jpg", null)).Status);
+        Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/" + cameraFile, null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/photos/8/nothing.jpg", null)).Status);
         using (var con = state.Store.Open(8))
         {
@@ -296,15 +303,15 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
 
         // Gallery/delete: an own photo only, its row and files
         Eq("false", await Api(Replay.GALLERY_DELETE, tokenA, "photo_id=3"));  // another player's
-        Assert.NotNull(state.PhotoFile("/photos/8/3-3.jpg"));
+        Assert.NotNull(state.PhotoFile("/photos/8/" + cameraFile));
         Eq("true", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=1"));
-        Assert.Null(state.PhotoFile("/photos/8/1-2.jpg"));
-        Assert.Null(state.PhotoFile("/photos/8/1-2-thumb.jpg"));
+        Assert.Null(state.PhotoFile("/photos/8/" + trophyFile));
+        Assert.Null(state.PhotoFile("/photos/8/" + trophyFile[..^".jpg".Length] + "-thumb.jpg"));
         Eq("false", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=1"));
         Eq("false", await Api(Replay.GALLERY_DELETE, tokenB, "photo_id=nope"));
         Eq("[3]", Ids((await Api(Replay.GALLERY_LIST, tokenB, "limit=1"))["photos"]!));
-        Assert.True(state.DeletePhoto(8, 2));
-        Assert.Null(KillPhoto());  // the kill's photos are gone
+        Assert.Null(KillPhoto());  // the trophy shot is gone: the screenshot is no kill's picture
+        Assert.True(state.DeletePhoto(8, 2));  // an owner may still delete a photo the galleries do not list
     }
 
     [Fact]
@@ -318,8 +325,35 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Photo("""{"event": 4, "hash": 2, "photo_type": 2, "individual": 71}""");  // the second animal's: no kill
         var photos = state.GalleryListReply(ME, ""u8.ToArray())!;
         Eq("""[2, ["", "Test Deer"]]""", T(Reply(photos)["total"], new JsonArray(Reply(photos)["photos"]!.AsArray().Select(p => (JsonNode?)p!["animal"]!.DeepClone()).ToArray())));
-        Assert.Contains("1-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
-        Assert.DoesNotContain("2-2.jpg", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+        Assert.Contains("/1-2-", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+        Assert.DoesNotContain("/2-2-", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
+    }
+
+    [Fact]
+    public async Task TestAutomaticScreenshotsAreNeverListedAndAKillWithoutATrophyShotHasNoPicture()
+    {
+        state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
+        state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 72270)));
+        string Upload(int type)
+        {
+            var update = Reply(state.HeartbeatReply(8, Events(O($$"""{"event": 4, "hash": 1, "photo_type": {{type}}, "individual": 71}"""))))["updates"]!.AsArray().Single(u => (int)u!["update"]! == 11)!;
+            return new Uri((string)Reply(state.UploadReply(8, new Uri((string)update["url"]!).Query.TrimStart('?'), [1]).Body)["mediaLink"]!).AbsolutePath;
+        }
+        JsonNode? KillPhoto() => Reply(state.ExpeditionReply(8, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"];
+        async Task<JsonNode> Site() => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery", null)).Body)!;
+        var screenshots = new[] { 12, 14 }.Select(Upload).ToList();
+        Assert.Null(KillPhoto());  // a screenshot is no kill's picture
+        Eq("0", (await Api(Replay.GALLERY_LIST, tokenA, "user_id=8"))["total"]);
+        Eq("0", (await Site())["total"]);
+        Assert.All(screenshots, path => Assert.NotNull(state.PhotoFile(path)));  // stored, only unlinked
+
+        var trophy = Upload(2);
+        Eq($"\"{BASE}{trophy}\"", KillPhoto());
+        var list = await Api(Replay.GALLERY_LIST, tokenA, "user_id=8");
+        Eq("[1, [3]]", T(list["total"], new JsonArray(list["photos"]!.AsArray().Select(p => (JsonNode?)p!["id"]!.DeepClone()).ToArray())));
+        Eq("1", (await Site())["total"]);
+        using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(8)));
+        Assert.Equal([Path.GetFileName(trophy)], zip.Entries.Select(e => e.FullName));
     }
 
     [Fact]

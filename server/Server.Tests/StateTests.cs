@@ -144,8 +144,54 @@ public class InventoryTests : StateTestBase
         Assert.Equal(404, state.UploadReply(ME, "upload_id=999", "x"u8.ToArray()).Status);
         Assert.Null(state.PhotoFile("/photos/../state.db"));
         state.UploadReply(ME, new Uri((string)u11["thumb_url"]!).Query.TrimStart('?'), "thumb"u8.ToArray());
-        Assert.Equal("thumb"u8.ToArray(), File.ReadAllBytes(state.PhotoFile("/photos/7/1-2-thumb.jpg")!));
+        Assert.Equal("thumb"u8.ToArray(), File.ReadAllBytes(state.PhotoFile(media[..^".jpg".Length] + "-thumb.jpg")!));
         Assert.Equal([0xff, 0xd8, .. "jpeg"u8], File.ReadAllBytes(state.PhotoFile(media)!));
+    }
+
+    [Fact]
+    public void TestAStoredPhotoNameHoldsATokenOfItsAccountThatItsThumbnailShares()
+    {
+        var u11 = Assert.Single(Hb(O("""{"event": 4, "hash": 77, "photo_type": 2, "individual": 97}""")))!;
+        string Upload(string url) => new Uri((string)Reply(state.UploadReply(ME, new Uri((string)u11[url]!).Query.TrimStart('?'), [1]).Body)["mediaLink"]!).AbsolutePath;
+        var thumb = Upload("thumb_url");  // the thumbnail may come first
+        var picture = Upload("url");
+        Assert.Matches(@"\A/photos/7/1-2-[0-9a-f]{32}\.jpg\z", picture);
+        Assert.Equal(picture[..^".jpg".Length] + "-thumb.jpg", thumb);
+        Assert.Equal("/photos/7/" + state.PhotoName(ME, 1, "2"), picture);
+        Assert.NotEqual(state.PhotoName(7, 1, "2"), state.PhotoName(8, 1, "2"));  // the same photo id of another account
+    }
+
+    [Fact]
+    public void TestAtStartPhotosUnderTheOldNamesGetTheirTokenNamesOnce()
+    {
+        var dir = Path.Combine(tmp, "photos", ME.ToString());
+        Directory.CreateDirectory(dir);
+        using (var con = state.Store.Open(ME))
+            foreach (var (id, type) in new[] { (5, 2), (6, 14), (7, 1) })  // 7 is a photo whose file is gone
+                con.Exec("INSERT INTO photos (id, account_id, photo_type, file) VALUES (?, $a, ?, ?)", id, type, $"{id}-{type}.jpg");
+        File.WriteAllText(Path.Combine(dir, "5-2.jpg"), "picture");
+        File.WriteAllText(Path.Combine(dir, "5-2-thumb.jpg"), "thumb");
+        File.WriteAllText(Path.Combine(dir, "6-14.jpg"), "screenshot");
+        string[] Stored() => [.. Directory.GetFiles(dir).Select(f => Path.GetFileName(f)).Order(StringComparer.Ordinal)];
+        string[] Rows()
+        {
+            using var con = state.Store.Open(ME);
+            return [.. con.Rows("SELECT file FROM photos WHERE account_id = $a ORDER BY id").Select(r => (string)r[0])];
+        }
+
+        state.MigratePhotoNames();
+        string[] names = [state.PhotoName(ME, 5, "2"), state.PhotoName(ME, 6, "14"), state.PhotoName(ME, 7, "1")];
+        var thumb = names[0][..^".jpg".Length] + "-thumb.jpg";
+        Assert.Equal(names, Rows());  // the row of the missing file is updated too
+        Assert.Equal(new[] { names[0], thumb, names[1] }.Order(StringComparer.Ordinal), Stored());
+        Assert.Equal("picture", File.ReadAllText(Path.Combine(dir, names[0])));
+        Assert.Equal("thumb", File.ReadAllText(Path.Combine(dir, thumb)));
+        Assert.Equal("screenshot", File.ReadAllText(Path.Combine(dir, names[1])));
+
+        var (files, rows) = (Stored(), Rows());
+        state.MigratePhotoNames();  // a second start finds no old name
+        Assert.Equal(files, Stored());
+        Assert.Equal(rows, Rows());
     }
 
     [Fact]

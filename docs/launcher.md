@@ -85,7 +85,7 @@ The same states work on the website with `?mock=<state>`; see [website.md](websi
 
 | Key | Meaning |
 |---|---|
-| `steam_app_id` | Steam app id of the game. Digits only. |
+| `steam_app_id` | Steam app id of the game. Digits only (the release fails otherwise). |
 | `client_exe` | Path of the game's client exe, relative to the game folder. (The [backup tool's](backup.md#settingsjson) own `settings.json` uses the same key for a bare exe name.) |
 | `graphics_file` | Name of the game's graphics settings file, relative to `%APPDATA%`. |
 | `options_file` | Name of the game's options file, relative to `%APPDATA%`. |

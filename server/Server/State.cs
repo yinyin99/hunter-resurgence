@@ -519,15 +519,15 @@ public sealed partial class State
         return new JsonObject { ["duration"] = duration, ["distance"] = distance, ["data"] = data };
     }
 
-    /// <summary>Store an upload as &lt;photos_dir&gt;/&lt;id&gt;-&lt;photo_type&gt;[-&lt;part&gt;].jpg; return the file name,
+    /// <summary>Store an upload as &lt;photos_dir&gt;/<see cref="PhotoName"/>; return the file name,
     /// null if unknown id.</summary>
-    public static string? SavePhoto(Db con, string photosDir, long photoId, byte[] data, string part = "")
+    public string? SavePhoto(Db con, string photosDir, long photoId, byte[] data, string part = "")
     {
         con.Begin();
         var row = con.Rows("SELECT photo_type FROM photos WHERE account_id = $a AND id = ?", photoId).FirstOrDefault();
         if (row is null || row[0] is string)  // photo_type comes from the heartbeat: a string could carry a path
             return null;
-        var name = $"{photoId}-{Py.Str(Py.FromSql(row[0]))}{(part != "" ? "-" + part : "")}.jpg";
+        var name = PhotoName(con.Account!.Value, photoId, Py.Str(Py.FromSql(row[0])), part);
         Directory.CreateDirectory(photosDir);
         File.WriteAllBytes(Path.Combine(photosDir, name), data);
         if (part == "")
