@@ -5,7 +5,7 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-/// <summary>The one-time restore offer: `POST /account/restore-offer` is true the first time for an account without a restore, upload or claim (schema 23).</summary>
+/// <summary>The one-time restore offer: `POST /account/restore-offer` is true the first time for an account without a zip restore or an upload (schema 23).</summary>
 public class RestoreOfferTests : StateTestBase
 {
     static readonly JsonObject WebCfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));

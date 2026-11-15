@@ -313,7 +313,7 @@ public static class AccountApi
                     : Refuse(401, "signed_out", "Sign in first.");
             })
             .WithName("AccountRestoreOffer").WithSummary("Whether to offer the player the restore page now")
-            .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account), and false when the account has a restore, an upload or a claim waiting. The website and the launcher show their one-time \"Do you have a backup?\" dialog when it is true.")
+            .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account), and false when the account has restored a backup zip or has an upload waiting (an archive claim does not stop it: the player may have more in a zip). The website and the launcher show their one-time \"Do you have a backup?\" dialog when it is true.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account

@@ -404,7 +404,7 @@ public sealed class Store
         return con.Exec("UPDATE accounts SET discord_invited = 1 WHERE id = ? AND discord_invited = 0", id) > 0;
     }
 
-    /// <summary>True the first time it is asked for the account, false after or when the account has a restore, an upload; an archive claim never blocks it: the one-time restore offer of the website and the launcher.</summary>
+    /// <summary>True the first time it is asked for the account, false after or when the account restored a backup zip or has an upload (an archive claim never blocks it): the one-time restore offer of the website and the launcher.</summary>
     public bool NoteRestoreOffer(long id)
     {
         using var con = Open(id);
