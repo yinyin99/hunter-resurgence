@@ -8,6 +8,7 @@
 @inject ILauncherBridge Bridge
 @inject AssetImages Images
 @inject IDiscordInviteService Invite
+@inject IRestoreOfferService RestoreOffer
 @inject Branding Brand
 
 @* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher shows it too *@
@@ -81,11 +82,12 @@
             if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
             else await module.InvokeVoidAsync("watchLaunch");
         }
-        // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, once per account (docs/website.md)
-        if (!offered && !eula && session is { Handle.Length: > 0 } && Brand.Link("discord") is not null && await Sessions.LicenseAcceptedAsync())
+        // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, then the restore offer, each once per account (docs/website.md)
+        if (!offered && !eula && session is { Handle.Length: > 0 } && await Sessions.LicenseAcceptedAsync())
         {
             offered = true;
-            await Modal.OfferDiscordAsync(Invite);
+            if (Brand.Link("discord") is not null) await Modal.OfferDiscordAsync(Invite);
+            _ = Modal.OfferRestoreAsync(RestoreOffer); // waits for the Discord dialog to close: not awaited here
         }
     }
 

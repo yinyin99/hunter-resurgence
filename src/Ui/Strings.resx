@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>The community meets on Discord: news, help and other hunters. Come and say hello!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join the Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Later</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Do you have a backup of your profile?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>A backup is the zip the backup tool saved, or a save made with another community tool. Restore it now to get your hunts, items and trophies back.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Restore my profile</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Done. Steam's Play button now opens this launcher.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam is starting again.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>This launcher was not installed with the Setup (a development or unpacked copy), so it cannot set Steam's launch option for you.</value></data>

@@ -1,0 +1,11 @@
+@inject ModalService Modal
+
+@* the one-time offer of the restore page after the Discord invitation (ModalService.OfferRestoreAsync, docs/website.md) *@
+<div class="offer dialog-card" role="dialog" aria-modal="true" aria-labelledby="offer-title">
+    <h1 id="offer-title">@L["RestoreOffer.Title"]</h1>
+    <p>@L["RestoreOffer.Text"]</p>
+    <div class="buttons">
+        <a class="btn btn-primary" id="restore-offer-go" href="/restore" autofocus @onclick="Modal.Close">@L["RestoreOffer.Go"]</a>
+        <button type="button" class="btn btn-inverse" id="restore-offer-later" @onclick="Modal.Close">@L["Discord.Later"]</button>
+    </div>
+</div>

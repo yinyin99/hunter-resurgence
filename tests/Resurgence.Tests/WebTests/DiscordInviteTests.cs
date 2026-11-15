@@ -81,6 +81,6 @@ public sealed class DiscordInviteTests : UiContext
         Services.AddSingleton<IDiscordInviteService>(service);
         Render<ShellLayout>();
         Assert.Equal(0, service.Asked);
-        Assert.Null(Services.GetRequiredService<ModalService>().Type);
+        Assert.NotEqual(typeof(DiscordInviteModal), Services.GetRequiredService<ModalService>().Type);
     }
 }

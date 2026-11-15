@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>La community si ritrova su Discord: novità, aiuto e altri cacciatori. Vieni a salutare!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Unisciti al Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Più tardi</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Hai un backup del tuo profilo?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>Un backup è lo zip salvato dallo strumento di backup, oppure un salvataggio fatto con un altro strumento della community. Ripristinalo ora per riavere cacce, oggetti e trofei.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Ripristina il mio profilo</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Fatto. Il pulsante Gioca di Steam ora apre questo launcher.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam si sta riavviando.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Questo launcher non è stato installato con il programma di installazione (copia di sviluppo o non installata), quindi non può impostare l'opzione di avvio di Steam per te.</value></data>
