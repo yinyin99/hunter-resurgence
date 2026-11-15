@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>Yhteisö kokoontuu Discordissa: uutisia, apua ja muita metsästäjiä. Tule moikkaamaan!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Myöhemmin</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Onko sinulla profiilisi varmuuskopio?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>Varmuuskopio on varmuuskopiotyökalun tallentama zip-tiedosto tai toisella yhteisön työkalulla tehty tallennus. Palauta se nyt, niin saat takaisin metsästyksesi, esineesi ja pokaalisi.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Palauta profiilini</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Valmis. Steamin Pelaa-painike avaa nyt tämän käynnistimen.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam käynnistyy uudelleen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Tätä käynnistintä ei asennettu asennusohjelmalla (kehitys- tai puretusta kopiosta), joten se ei voi asettaa Steamin käynnistysvalintaa puolestasi.</value></data>

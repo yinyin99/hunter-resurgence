@@ -185,6 +185,10 @@ While an event runs, the launch map and the tutorials page show a line with the 
 
 With `link_discord` set (the `LINK_DISCORD` variable of the website's deploy wins over it there; the launcher reads only `settings.json`), the feed shows a "Join the Discord" button above Discord's frame, as on the website, and the first time an account is in the launcher's shell after a sign-in a dialog says the community meets on Discord, with "Join the Discord" and "Later" (`DiscordInviteModal`; [website.md](website.md) has the details). Both open the invite in the player's browser. The dialog comes once per account, not per PC: the server remembers it (`ServerDiscordInviteService`, `POST /account/discord`), and it never opens over another dialog, so the first-start dialogs (the older setup, the player kit, Steam's Play button) come first and the invitation, if it was skipped for one of them, at the next start (one that finds a dialog opened while the server answers is dropped, as the server has stored it already). Without `server_url` the mock asks once per run.
 
+## The restore offer
+
+Right after the Discord invitation is closed (or at once without `link_discord`) a dialog asks "Do you have a backup of your profile?" with "Restore my profile", which opens the restore page, and "Later" (`RestoreOfferModal`; [website.md](website.md) has the details). Once per account, not per PC: the server remembers it (`ServerRestoreOfferService`, `POST /account/restore-offer`) and never offers it to an account that has restored a backup zip or has an upload waiting (an archive claim does not stop it). It never opens over another dialog.
+
 ## Files on the PC
 
 | File | Who writes it | Content |

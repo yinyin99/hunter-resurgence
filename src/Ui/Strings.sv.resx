@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>Gemenskapen träffas på Discord: nyheter, hjälp och andra jägare. Kom och säg hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Gå med i Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senare</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en säkerhetskopia av din profil?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>En säkerhetskopia är zip-filen som säkerhetskopieringsverktyget sparade, eller en sparning gjord med ett annat gemenskapsverktyg. Återställ den nu och få tillbaka dina jakter, föremål och troféer.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Återställ min profil</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Klart. Steams Spela-knapp öppnar nu det här startprogrammet.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam startar igen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Det här startprogrammet installerades inte med installationsprogrammet (en utvecklings- eller uppackad kopia), så det kan inte ställa in Steams startalternativ åt dig.</value></data>

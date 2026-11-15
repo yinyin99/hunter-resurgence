@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 22;
+    public const int Version = 23;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -157,6 +157,7 @@ public sealed class Store
             banned INTEGER NOT NULL DEFAULT 0,
             seasonal_events INTEGER NOT NULL DEFAULT 1,       -- 0: the player opted out of seasonal events
             discord_invited INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher showed the player the Discord invite once
+            restore_offered INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher offered the player the restore page once
             start_kit INTEGER NOT NULL DEFAULT 0,             -- 1: the account has the start kit (a new account is seeded with it; an older one gets it once, at the first start of the server that has it)
             account TEXT NOT NULL);                          -- the connect reply's `account` object
         CREATE TABLE tokens (
@@ -325,6 +326,8 @@ public sealed class Store
                 con.Script("ALTER TABLE expeditions ADD COLUMN tent INTEGER");
             if (version < 22 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'start_kit'")! == 0)
                 con.Script("ALTER TABLE accounts ADD COLUMN start_kit INTEGER NOT NULL DEFAULT 0");
+            if (version < 23 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'restore_offered'")! == 0)
+                con.Script("ALTER TABLE accounts ADD COLUMN restore_offered INTEGER NOT NULL DEFAULT 0");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -399,6 +402,14 @@ public sealed class Store
     {
         using var con = Open();
         return con.Exec("UPDATE accounts SET discord_invited = 1 WHERE id = ? AND discord_invited = 0", id) > 0;
+    }
+
+    /// <summary>True the first time it is asked for the account, false after or when the account restored a backup zip or has an upload (an archive claim never blocks it): the one-time restore offer of the website and the launcher.</summary>
+    public bool NoteRestoreOffer(long id)
+    {
+        using var con = Open(id);
+        return con.Exec("UPDATE accounts SET restore_offered = 1 WHERE id = ? AND restore_offered = 0", id) > 0
+            && con.Scalar("SELECT 1 WHERE EXISTS (SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%') OR EXISTS (SELECT 1 FROM uploads WHERE account_id = $a)") is null;
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie

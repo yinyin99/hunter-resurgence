@@ -46,6 +46,7 @@ static class LauncherServices
         services.AddSingleton<IAccountService>(new MockAccountService(mock));
         services.AddSingleton<ISeasonalEventsService>(new MockSeasonalEventsService(mock));
         services.AddSingleton<IDiscordInviteService>(new MockDiscordInviteService());
+        services.AddSingleton<IRestoreOfferService>(new MockRestoreOfferService());
         // the feed's Discord frame for link_discord, as on the website (docs/website.md); without the link there is none
         var discord = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
         discord.DefaultRequestHeaders.UserAgent.ParseAdd("hunter-resurgence");
@@ -85,6 +86,7 @@ static class LauncherServices
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
         services.AddSingleton<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>()));
+        services.AddSingleton<IRestoreOfferService>(sp => new ServerRestoreOfferService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreOfferService>>()));
         // the avatar (settings, sign-up) is the server's; the rest of the account settings is the mock's, which the live pages do not offer
         services.AddSingleton<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             new MockAccountService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerAccountService>>()));

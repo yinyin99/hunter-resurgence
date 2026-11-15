@@ -305,6 +305,17 @@ public static class AccountApi
             .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account). The website and the launcher show their one-time Discord dialog when it is true.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/restore-offer", (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                return Account(ctx) is { } account
+                    ? Json(200, new JsonObject { ["first"] = state.Store.NoteRestoreOffer(account) })
+                    : Refuse(401, "signed_out", "Sign in first.");
+            })
+            .WithName("AccountRestoreOffer").WithSummary("Whether to offer the player the restore page now")
+            .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account), and false when the account has restored a backup zip or has an upload waiting (an archive claim does not stop it: the player may have more in a zip). The website and the launcher show their one-time \"Do you have a backup?\" dialog when it is true.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/friends", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebFriends(account, site))
                 : Refuse(401, "signed_out", "Sign in first."))

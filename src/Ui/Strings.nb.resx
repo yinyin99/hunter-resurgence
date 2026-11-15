@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>Fellesskapet møtes på Discord: nyheter, hjelp og andre jegere. Kom og si hei!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Bli med på Discord</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senere</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en sikkerhetskopi av profilen din?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>En sikkerhetskopi er zip-filen som sikkerhetskopiverktøyet lagret, eller en lagring gjort med et annet fellesskapsverktøy. Gjenopprett den nå og få tilbake jaktene, gjenstandene og trofeene dine.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Gjenopprett profilen min</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Ferdig. Steams Spill-knapp åpner nå denne starteren.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam starter igjen.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Denne starteren ble ikke installert med installasjonsprogrammet (en utviklings- eller utpakket kopi), så den kan ikke sette Steams startvalg for deg.</value></data>

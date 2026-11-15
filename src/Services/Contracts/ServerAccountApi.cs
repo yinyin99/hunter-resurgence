@@ -46,6 +46,8 @@ public static class ServerAccountApi
     public const string Events = "/account/events";
     /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerDiscordInvite"/>, <c>First</c> true only the first time for the account.</summary>
     public const string Discord = "/account/discord";
+    /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerRestoreOffer"/>, <c>First</c> true only the first time for the account, and never for one that restored a backup zip or has an upload (an archive claim does not count).</summary>
+    public const string RestoreOffer = "/account/restore-offer";
     /// <summary>GET with the cookie: 200 <see cref="ServerEventPanel"/> for a player who plays the running event, else <c>{"event": null}</c> (no <c>Name</c>).</summary>
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
@@ -75,6 +77,9 @@ public sealed record ServerEvents(bool Play, ServerEvent? Event);
 
 /// <summary><see cref="ServerAccountApi.Discord"/>: <c>First</c> is true the first time the account is asked.</summary>
 public sealed record ServerDiscordInvite(bool First);
+
+/// <summary><see cref="ServerAccountApi.RestoreOffer"/>: <c>First</c> is true the first time the account is asked and it has neither restored a backup zip nor an upload.</summary>
+public sealed record ServerRestoreOffer(bool First);
 
 public sealed record ServerCommunityMission(string Title, int Progress, int Target, int Gm, int Em);
 

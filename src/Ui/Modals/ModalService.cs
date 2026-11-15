@@ -82,6 +82,21 @@ public sealed class ModalService
         if (Type is null && await invite.FirstAsync() && Type is null) Show<DiscordInviteModal>();
     }
 
+    /// <summary>After the Discord invitation is closed, or at once when there is none: the one-time "Do you have a backup of your profile?" dialog, never over another dialog.</summary>
+    public async Task OfferRestoreAsync(IRestoreOfferService offer)
+    {
+        if (Type == typeof(DiscordInviteModal)) await WhenClosedAsync();
+        if (Type is null && await offer.FirstAsync() && Type is null) Show<RestoreOfferModal>();
+    }
+
+    Task WhenClosedAsync()
+    {
+        var closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void Watch() { if (Type != typeof(DiscordInviteModal)) { Changed -= Watch; closed.TrySetResult(); } }
+        Changed += Watch;
+        return closed.Task;
+    }
+
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
     /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.

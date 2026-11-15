@@ -67,6 +67,9 @@
   <data name="Discord.Text" xml:space="preserve"><value>Topluluk Discord'da buluşuyor: haberler, yardım ve diğer avcılar. Gel, bir merhaba de!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Daha sonra</value></data>
+  <data name="RestoreOffer.Title" xml:space="preserve"><value>Profilinizin bir yedeği var mı?</value></data>
+  <data name="RestoreOffer.Text" xml:space="preserve"><value>Yedek, yedekleme aracının kaydettiği zip dosyası ya da başka bir topluluk aracıyla yapılmış bir kayıttır. Şimdi geri yükleyin; avlarınızı, eşyalarınızı ve kupalarınızı geri alın.</value></data>
+  <data name="RestoreOffer.Go" xml:space="preserve"><value>Profilimi geri yükle</value></data>
   <data name="Steam.Done" xml:space="preserve"><value>Tamam. Steam'in Oyna düğmesi artık bu başlatıcıyı açıyor.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam yeniden başlatılıyor.</value></data>
   <data name="Steam.NotInstalled" xml:space="preserve"><value>Bu başlatıcı kurulum programıyla kurulmadı (geliştirme veya açılmış kopya), bu yüzden Steam'in başlatma seçeneğini sizin için ayarlayamaz.</value></data>
