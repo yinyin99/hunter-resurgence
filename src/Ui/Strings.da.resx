@@ -1454,7 +1454,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dette navn er optaget.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Vælg et navn: det gamle er optaget.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Log ind i appen, der viser denne kode?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du er {0}. Det gamle launcher-startside, der viser denne kode, bliver logget ind som dig.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du er {0}. Den gamle launcher-startside, der viser denne kode, bliver logget ind som dig.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bekræft kun, hvis denne kode står på din skærm lige nu.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Log ind i appen på denne pc?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du er {0}. Launcheren eller backupværktøjet, som du lige har startet på denne pc, bliver logget ind som dig.</value></data>
