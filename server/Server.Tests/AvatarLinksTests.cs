@@ -80,7 +80,7 @@ public class AvatarLinksTests : StateTestBase
 
         var xml = new AvatarHost();  // user 404 has no upload: an XML body
         report = await Approved(TestZip.Own(uid: "1002", handle: "other", avatar: "https://site.example/media/avatar/uploads/thumb/242x242/404.jpg"), new PictureLinks([Host], xml));
-        Assert.Equal(["/uploads/thumb/242x242/404.jpg"], xml.Asked);
+        Assert.Equal(["/uploads/thumb/242x242/404.jpg", "/uploads/thumb/242x242/404.jpg"], xml.Asked);  // at upload, and again at approve
         Assert.Contains("matches no avatar", report);
         Assert.Equal(Default, AvatarUrl(1002));
     }
@@ -173,6 +173,113 @@ public class AvatarLinksTests : StateTestBase
         await Approved(TestZip.Own(avatar: Dead), new PictureLinks(["uploads.test"], spy));
         Assert.Equal(["uploads.test/uploads/thumb/242x242/12345.jpg"], asked);
         Assert.Equal($"{BASE}/photos/1001/avatar.jpg", AvatarUrl(1001));
+    }
+
+    /// <summary>The hosts of an upload from the website: the avatar host serves the avatar by user id, the photo host the gallery pictures /p/1.jpg to /p/`gallery`.jpg (the others answer 404); every ask is recorded.
+    /// With `gate`, a gallery picture waits (3 s at most) until the avatar was asked for, so the order the links are fetched in shows in `Asked`.</summary>
+    sealed class TwoHosts(int gallery = 6, bool gate = true) : HttpMessageHandler
+    {
+        public readonly List<string> Asked = [];
+        readonly TaskCompletionSource avatarAsked = new();
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var uri = request.RequestUri!;
+            if (gate && uri.Host == "photos.test") await Task.WhenAny(avatarAsked.Task, Task.Delay(3000, ct));
+            lock (Asked) Asked.Add(uri.Host + uri.AbsolutePath);
+            if (uri.Host == "avatar.test") avatarAsked.TrySetResult();
+            return uri.AbsolutePath is "/uploads/thumb/242x242/12345.jpg" || (uri.AbsolutePath.StartsWith("/p/", StringComparison.Ordinal) && int.Parse(uri.Segments[^1].Split('.')[0]) <= gallery)
+                ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(TestZip.Jpeg(uri.Segments[^1])) }
+                : new HttpResponseMessage(HttpStatusCode.NotFound);
+        }
+    }
+
+    /// <summary>A zip of another tool's layout (index.json and json_&lt;section&gt;.json): the player's own avatar is the uploaded one, by the website's address with a hash query, in `me` and in the public profile; two gallery links.</summary>
+    string SectionZip()
+    {
+        const string Link = "https://site.example/media/avatar/uploads/thumb/242x242/12345.jpg?5f3a9c";
+        var path = Path.Combine(tmp, "sections.zip");
+        using (var zip = System.IO.Compression.ZipFile.Open(path, System.IO.Compression.ZipArchiveMode.Create))
+        {
+            void Put(string entry, string body)
+            {
+                using var s = new StreamWriter(zip.CreateEntry($"backup_1001/{entry}").Open(), new System.Text.UTF8Encoding(false));
+                s.Write(body);
+            }
+            Put("index.json", """{"captured_at":"2026-01-02T03:04:05.000Z","user_id":"1001","handle":"sample","files":["json_me.json","json_public_profile.json","json_gallery.json"]}""");
+            Put("json_me.json", $$"""{"id":1001,"handle":"sample","hostname":"sample","gender":1,"hunterscore":1234,"membershipType":"freeplay","ems":12.5,"gms":20000.25,"avatar":"{{Link}}"}""");
+            Put("json_public_profile.json", $$"""{"id":1001,"handle":"sample","hostname":"sample","avatar":"{{Link}}"}""");
+            Put("json_gallery.json", $$"""{"photos":[{{string.Join(",", Enumerable.Range(1, 6).Select(n => $$"""{"url":"https://photos.test/p/{{n}}.jpg","type":1}"""))}}]}""");
+        }
+        return path;
+    }
+
+    /// <summary>The website's upload of such a zip through `upload`, then the operator's approve through `approve` (an Uploads with the pictures setting or not); returns the restore's report.</summary>
+    async Task<string> UploadedAndApproved(string zipPath, Uploads upload, Uploads approve)
+    {
+        var player = state.Store.NextServerId();
+        state.CreateAccount(player, "player", "76561190000000001");
+        var id = upload.Start(player)!;
+        await upload.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zipPath)));
+        Assert.Equal("review", (await upload.Finish(player, id)).Kind);
+        var done = approve.Approve(Row(player));
+        Assert.Equal("restored", done.Kind);
+        return done.Report;
+    }
+
+    void AssertAvatarStored(string report)
+    {
+        Assert.DoesNotContain("matches no avatar", report);
+        Assert.Equal($"{BASE}/photos/1001/avatar.jpg", AvatarUrl(1001));
+        Assert.Equal(TestZip.Jpeg("12345.jpg"), File.ReadAllBytes(state.PhotoFile("/photos/1001/avatar.jpg")!));
+    }
+
+    [Fact]
+    public async Task ASectionZipWithTheWebHostsAvatarLinkAndAGalleryGetsTheAvatarAtUploadAndAtApprove()
+    {
+        var host = new TwoHosts();
+        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], host) };
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(), uploads, uploads));
+        Assert.Equal("avatar.test/uploads/thumb/242x242/12345.jpg", host.Asked[0]);  // the avatar is fetched first: a long gallery cannot use up the fetch's time before it
+        Assert.Equal(7, host.Asked.Count);  // fetched once, at upload; approve found it in the kept pictures zip
+        Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
+    }
+
+    [Fact]
+    public async Task AZipKeptWithoutAPicturesZipGetsEveryLinkFetchedAtApprove()
+    {
+        var host = new TwoHosts();
+        var kept = new Uploads(state, tmp);  // no pictures setting at upload: the kept zip has no pictures zip, as one kept before the fix
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(), kept, new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], host) }));
+        Assert.Equal("avatar.test/uploads/thumb/242x242/12345.jpg", host.Asked[0]);  // the avatar first, then the gallery
+        Assert.Equal(7, host.Asked.Count);
+        Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
+    }
+
+    [Fact]
+    public async Task ALinkTheUploadDidNotGetIsFetchedAtApproveAndWhatTheUploadGotIsNotFetchedAgain()
+    {
+        var partial = new TwoHosts(gallery: 3, gate: false);  // the upload's budget ran out after the avatar and three pictures, or the host failed for the others
+        var rest = new TwoHosts(gate: false);
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(), new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], partial) },
+                                                     new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], rest) }));
+        Assert.Equal(["photos.test/p/4.jpg", "photos.test/p/5.jpg", "photos.test/p/6.jpg"], rest.Asked.Order());  // only the three left
+        Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
+    }
+
+    [Fact]
+    public void ImportPicturesCompletesAPicturesZipThatLacksLinks()
+    {
+        var zip = SectionZip();
+        Restorer.Import(state, zip, null, tmp);
+        var partial = new TwoHosts(gallery: 3, gate: false);
+        Restorer.ImportPictures(state, zip, 1001, tmp, new PictureLinks(["avatar.test", "photos.test"], partial));
+        Assert.Equal(3, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
+        var rest = new TwoHosts(gate: false);
+        var (_, avatar) = Restorer.ImportPictures(state, zip, 1001, tmp, new PictureLinks(["avatar.test", "photos.test"], rest));
+        Assert.Equal(["photos.test/p/4.jpg", "photos.test/p/5.jpg", "photos.test/p/6.jpg"], rest.Asked.Order());
+        Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
+        Assert.Equal($"{BASE}/photos/1001/avatar.jpg", avatar);
     }
 
     sealed class Spy(HttpMessageHandler inner, List<string> asked) : DelegatingHandler(inner)

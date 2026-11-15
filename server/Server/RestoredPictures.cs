@@ -41,12 +41,13 @@ public sealed partial class State
     static MediaFile? ZipPicture(Dictionary<string, MediaFile> media, string url) =>
         Importer.MediaPath("photos", url) is { } path && (media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)) ? file : null;
 
-    /// <summary>The links of the gallery entries whose picture the zip lacks, and the player's own avatar when the zip lacks it (<see cref="UploadedAvatarLink"/>): what <see cref="PictureLinks"/> fetches.</summary>
+    /// <summary>The player's own avatar when the zip lacks it (<see cref="UploadedAvatarLink"/>), then the links of the gallery entries whose picture the zip lacks: what <see cref="PictureLinks"/> fetches.
+    /// The avatar comes first: a save with hundreds of gallery links can use up the fetch's time budget, and what is last is what is skipped.</summary>
     internal List<string> MissingPictures(Restored read)
     {
         var media = MediaByPath(read);
         List<string> missing = [.. GalleryEntries(read).Select(p => (string)p["url"]!).Where(url => ZipPicture(media, url) is null)];
-        if (UploadedAvatarLink(read) is { } avatar) missing.Add(avatar);
+        if (UploadedAvatarLink(read) is { } avatar) missing.Insert(0, avatar);
         return missing;
     }
 

@@ -200,7 +200,7 @@ void Import(string[] a)
         account = state.LocalAccount;  // a local server has one account, the one the client connects as
     try
     {
-        Console.Write(Restorer.Import(state, a[1], account, settings.DataDir).Report);
+        Console.Write(Restorer.Import(state, a[1], account, settings.DataDir, PictureLinks.FromCfg(settings.Cfg)).Report);
     }
     catch (RestoreException e) { Die($"refused: {e.Message}"); }
     catch (IOException e) { Die($"cannot read: {e.Message}"); }
