@@ -1,6 +1,6 @@
 # Restore library
 
-`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md) and returns a neutral player model and a report (layer A). It has no database and no server types. Storing the model is layer B, in the server (`server/Server/Restorer.cs`, [below](#storing-the-model)), in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
+`src/Restore` (`Resurgence.Restore`) reads a backup zip made by any version of the [backup tool](backup.md), or by another community tool ([below](#backups-of-other-tools)), and returns a neutral player model and a report (layer A). It has no database and no server types. Storing the model is layer B, in the server (`server/Server/Restorer.cs`, [below](#storing-the-model)), in SQLite ([ADR 0001](adr/0001-sqlite-for-profiles.md)).
 
 ## Run it
 
@@ -10,11 +10,30 @@ In code: `Importer.Read(path or stream, catalogue, limits)` returns `Restored(Mo
 
 ## What is refused, what is rejected
 
-The backup zip is read once, in memory; nothing is extracted (a picture or score sheet page is checked against its hash and only its name is kept: the server reads its bytes when it stores it, [below](#pictures)). The whole backup zip is **refused** when it breaks a cap (`Limits`: 100,000 entries, counted in the zip's central directory before it is opened, which may hold 64 MiB at most, 1 GiB of content, 64 MiB per entry, 32 MiB for the manifest, 128 MiB of JSON in total, `manifest.json` included, and 32 MiB per JSON entry (a real backup holds under 4 MiB of JSON), JSON nesting 64, more than 100:1 compression for an entry of 1 MiB or more), has an unsafe entry name (`..`, a rooted path, a drive letter, a backslash), has no `manifest.json` at the root or one folder down, a manifest that does not parse (a duplicate key included), a `uid` that is not digits only or too large for a 64-bit id, no `claim.key` or one that does not hash to `claim_hash`, a `format` newer than 2, or an identity reply whose `id` is not the manifest `uid`. A single file is **rejected** (and reported) when its SHA-256 differs from the manifest or it is not valid JSON (a duplicate key included); a file the manifest does not list is rejected too. Manifest entries with an `error` or no `sha256` are missing data, listed under `failed`, not a fault of the backup zip.
+The backup zip is read once, in memory; nothing is extracted (a picture or score sheet page is checked against its hash and only its name is kept: the server reads its bytes when it stores it, [below](#pictures)). The whole backup zip is **refused** when it breaks a cap (`Limits`: 100,000 entries, counted in the zip's central directory before it is opened, which may hold 64 MiB at most, 1 GiB of content, 64 MiB per entry, 32 MiB for the manifest, 128 MiB of JSON in total, `manifest.json` included, and 32 MiB per JSON entry (a real backup holds under 4 MiB of JSON), JSON nesting 64, more than 100:1 compression for an entry of 1 MiB or more), has an unsafe entry name (`..`, a rooted path, a drive letter, a backslash), matches no known format (`not a backup zip`: no `manifest.json` and no `index.json` with section files, [below](#backups-of-other-tools)), a manifest that does not parse (a duplicate key included), a `uid` that is not digits only or too large for a 64-bit id, no `claim.key` or one that does not hash to `claim_hash`, a `format` newer than 2, or an identity reply whose `id` is not the manifest `uid`. A single file is **rejected** (and reported) when its SHA-256 differs from the manifest or it is not valid JSON (a duplicate key included); a file the manifest does not list is rejected too. Manifest entries with an `error` or no `sha256` are missing data, listed under `failed`, not a fault of the backup zip.
 
 ## Version and mode
 
 No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is-saved)); `format: 2` adds `mode`, `identity`, a per-file `date` and `checks`. `tool_version` is copied, never compared. The mode comes from the files: `Me_me.json` present = my account, otherwise public (by handle when the `Public_user/getByHostname` reply is there, else by id). A manifest `mode` that disagrees gives a warning and the files win.
+
+## Backups of other tools
+
+`Importer.Read` picks the reader from the zip's own files, never from what an upload says of it: the table `Importer.Formats` pairs each format's `IsOne` check with its reader, the first match reads, and a zip that matches none is refused (`not a backup zip`). Every reader only turns its files into the saved replies the mapper reads (the same `SavedFile` list `Importer.FromReplies` builds), so the mapping, the field rules and the restore are shared. The caps, the entry names and the entry count above are checked once before any reader. A new format is one line in the table and its reader.
+
+**The format decides only the parser, never the trust.** A zip without our manifest has no Steam id and no claim hash: its `Identity.SteamId64` and `ClaimHash` stay null whatever its files say, so an upload of it is never a Steam match and always waits for an operator ([docs/server.md](server.md#upload-a-backup-zip)), like any upload.
+
+**One file per API section** (`SectionBackup`): a folder at the root of the zip or one level down with `index.json` (`user_id`, `handle`, `captured_at`, `files`) and a `json_<section>.json` for each section, each the original server's reply as it came. A second folder in the zip (a converted copy for another server) is ignored, like anything outside the folder with the `index.json`; two folders with an `index.json` refuse the zip. The `user_id` is checked like the manifest's `uid`. The identity's format is 0 and `complete` is `unknown`; the handle is the index's and `captured_at` the start time. A file in the folder that is no `json_<section>.json` is rejected (`not a section file`), a section the index does not list is rejected (`not listed in index.json`) and a listed file that is not in the zip is missing; the zip holds no checksum to check and no picture. A section becomes the reply our own zips save, under the same file name and params (so the server finds it by name):
+
+| Section | Reply |
+|---|---|
+| `me`, `inventory`, `inventory_dict`, `skills`, `statistics`, `achievements`, `trophies` | `Me/me`, `Inventory/list`, `Inventory/dict`, `Skill/list`, `Statistics/total`, `Achievement/stats`, `Trophy/list` |
+| `missions`, `challenges`, `daily_missions_calendar`, `friends`, `friendslist`, `chat_conversations`, `leaderboard` | `Mission/missions`, `Challenge/get_user_challenges`, `Daily_Mission/get_daily_missions_calendar`, `Me/friends`, `User/friendslist`, `Chat/conversations`, `Leaderboard/personal` (season 0) |
+| `expeditions`, `hunt_details` | `Expedition/list` (one page), and `Public_user/expedition` once per key of the object (a key that is not a hunt id is rejected) |
+| `gallery`, `gallery_all` | `Gallery/list` (one page), `Gallery/list_all`: the saved gallery replies the pictures are read from (the zip holds the links, not the pictures) |
+| `wallet_transactions`, `wallet_silver`, `wallet_bank`, `wallet_spent` | `Wallet/transactions`, `Wallet/silver_transactions`, `Wallet/bank_transactions`, `Wallet/spent` |
+| `v2_profile`, `v2_ranks`, `v2_lodges`, `v2_backgrounds` | `/game/user/<uid>/profile`, `/game/user/<uid>/ranks`, `/game/user/<uid>/lodges`, `/game/user/backgrounds` |
+
+Every other section (competitions, lodge catalogues, `observed`, `poll` and the rest) is kept whole in `Extras` under its file name and counted as `unknown endpoint`.
 
 ## Field rules
 
