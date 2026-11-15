@@ -11,6 +11,7 @@ namespace Resurgence.Server.Tests;
 /// <summary>The first sign-in's "I played before" choice, with a fake archive.db of one made-up player (Alpha, hunterscore 500, one item).</summary>
 public class SignUpClaimTests : StateTestBase, IAsyncLifetime
 {
+    const string LongName = "Long_Archived_Name_Of_Forty_Characters_X";  // 40 characters
     static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))).Append(KeyValuePair.Create("signup_webhook", (JsonNode?)"https://hooks.test/s/1")));
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     readonly FakeSteam fake = new();
@@ -68,6 +69,7 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
             + "CREATE UNIQUE INDEX player_hostname ON player(hostname);"
             + "CREATE TABLE reply(uid INTEGER NOT NULL, path TEXT NOT NULL, endpoint TEXT NOT NULL, params TEXT NOT NULL, status INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(uid, path));");
         Run("INSERT INTO player VALUES (3001, 'Alpha', 'alpha', 500)");
+        Run("INSERT INTO player VALUES (3002, $h, $l, 500)", ("$h", LongName), ("$l", LongName.ToLowerInvariant()));
         void Reply(string path, string endpoint, string body, string key, string value) =>
             Run("INSERT INTO reply VALUES (3001, $p, $e, $q, 200, $b)", ("$p", path), ("$e", endpoint),
                 ("$q", new JsonObject { [key] = value }.ToJsonString()), ("$b", Encoding.UTF8.GetBytes(body)));
@@ -104,6 +106,16 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var account = state.Store.AccountBySteam("99999999999999991")!.Value;
         Assert.Equal("Alpha", state.Store.HandleOf(account));
         Assert.Contains(state.Inventory(account), i => (string)i!["guid"]! == "9001");
+    }
+
+    [Fact]
+    public async Task TestAnArchivedNameLongerThanANewNameIsFoundAtTheFirstSignIn()
+    {
+        var login = await NewLogin("99999999999999995");
+        var done = await Post(login, $"kind=old&old={LongName}&handle=Fresh");  // 40 characters: more than a new name may have
+        Assert.Equal(302, done.Status);
+        Assert.Equal("Fresh", state.Store.HandleOf(state.Store.AccountBySteam("99999999999999995")!.Value));
+        Assert.Contains("claimed ", await OneAlert());
     }
 
     [Fact]
