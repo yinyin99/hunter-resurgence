@@ -10,58 +10,122 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    /// <summary>What a restore puts on disk once its rows are committed: Files (stored name, entry of the zip), Stale (the gallery files of the pictures an earlier restore unpacked) and the report line.</summary>
-    internal sealed record Unpacking(List<(string Name, string Entry)> Files, List<string> Stale, string Report);
+    /// <summary>What a restore puts on disk once its rows are committed: Files (stored name, entry, and whether the entry is in the zip of fetched pictures (<see cref="PictureLinks"/>) instead of the backup zip),
+    /// Stale (the gallery files of the pictures an earlier restore unpacked), the report line, and Replace: a restore replaces the account's earlier pictures, `import pictures` only adds what is missing.</summary>
+    internal sealed record Unpacking(List<(string Name, string Entry, bool Linked)> Files, List<string> Stale, string Report, bool Replace);
 
     // a saved file is stored under its path in the zip with every `/` and other odd character as `_` (`kills/score_5.html` is `kills_score_5.html`): Importer.CleanName
 
     static readonly string[] StoredFolders = ["kills", "images"];
 
-    /// <summary>Inside the restore's transaction: delete the account's restored gallery rows, and add one per saved `Gallery/list` entry whose picture the zip holds (oldest first, so the
-    /// newest has the highest id; its `type`, `label` and `animal` as saved). The kill photos, score pages and images need no row: they are named by their zip path.
-    /// Nothing is written to disk here: <see cref="Unpack"/> does that once the transaction has committed.</summary>
-    internal Unpacking PreparePictures(Db con, Restored read)
+    /// <summary>The saved `Gallery/list` and `Gallery/list_all` entries with a link, once per link, oldest first (so the newest gets the highest id). An entry is an object with the details
+    /// (`type`, `label`, `animal`, `kill_id`) or, in a `Gallery/list_all` of another save format, a plain link; a link no detailed entry names comes after the detailed ones (it is the older).</summary>
+    static List<JsonObject> GalleryEntries(Restored read)
     {
-        var stale = con.Rows("SELECT file FROM photos WHERE account_id = $a AND saved IS NOT NULL AND file IS NOT NULL").Select(r => (string)r[0]).ToList();
-        con.Exec("DELETE FROM photos WHERE account_id = $a AND saved IS NOT NULL");
+        static long Page(string key) => Regex.Match(key, @"__offset=(\d+)").Groups[1] is { Length: > 0 } g && long.TryParse(g.Value, out var n) ? n : 0;
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var all = read.Model.Extras.Where(e => e.Key.StartsWith("Gallery_list", StringComparison.Ordinal) && e.Value?["photos"] is JsonArray)
+                      .OrderBy(e => Page(e.Key)).SelectMany(e => e.Value!["photos"]!.AsArray()).ToList();
+        return [.. all.OfType<JsonObject>().Concat(all.Where(Py.IsStr).Select(n => new JsonObject { ["url"] = (string)n! }))
+                     .Where(p => Py.IsStr(p["url"]) && seen.Add((string)p["url"]!)).Reverse()];
+    }
+
+    static Dictionary<string, MediaFile> MediaByPath(Restored read)
+    {
         var media = new Dictionary<string, MediaFile>(StringComparer.Ordinal);
         foreach (var m in read.Media) media.TryAdd(m.Path, m);
-        var files = new List<(string, string)>();
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-        int listed = 0, gallery = 0;
-        static string Text(JsonNode? n) => Py.IsStr(n) ? (string)n! : Py.IsNum(n) ? Py.Str(n) : "";
-        static long Page(string key) => Regex.Match(key, @"__offset=(\d+)").Groups[1] is { Length: > 0 } g && long.TryParse(g.Value, out var n) ? n : 0;
-        foreach (var p in read.Model.Extras.Where(e => e.Key.StartsWith("Gallery_list", StringComparison.Ordinal) && e.Value?["photos"] is JsonArray)
-                     .OrderBy(e => Page(e.Key)).SelectMany(e => e.Value!["photos"]!.AsArray().OfType<JsonObject>())
-                     .Where(p => Py.IsStr(p["url"]) && seen.Add((string)p["url"]!)).Reverse())
+        return media;
+    }
+
+    /// <summary>The zip's picture of a gallery link; a zip of backup tool 0.9.0 held a listed gallery picture only under `kills/`.</summary>
+    static MediaFile? ZipPicture(Dictionary<string, MediaFile> media, string url) =>
+        Importer.MediaPath("photos", url) is { } path && (media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)) ? file : null;
+
+    /// <summary>The links of the gallery entries whose picture the zip lacks: what <see cref="PictureLinks"/> fetches.</summary>
+    internal static List<string> MissingPictures(Restored read)
+    {
+        var media = MediaByPath(read);
+        return [.. GalleryEntries(read).Select(p => (string)p["url"]!).Where(url => ZipPicture(media, url) is null)];
+    }
+
+    /// <summary>The SHA-256 of what is not stored yet and of what the account has, read before the restore's transaction opens (the files can be many and large): Have, the hashes of the account's
+    /// pictures that stay (with `replace`, those of an earlier restore go); Entries, the hash of every gallery picture the backup zip or the fetched pictures hold, by entry name.</summary>
+    internal sealed record PictureHashes(HashSet<string> Have, Dictionary<string, string> Entries);
+
+    internal PictureHashes HashPictures(Restored read, long account, string? zipPath, string? linksPath, bool replace)
+    {
+        var dir = AccountPhotos(account);
+        HashSet<string> have;
+        using (var con = Con(account))
+            have = con.Rows("SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL" + (replace ? " AND saved IS NULL" : ""))
+                .Select(r => Path.Combine(dir, (string)r[0])).Where(File.Exists).Select(Restorer.Sha256).ToHashSet(StringComparer.Ordinal);
+        var media = MediaByPath(read);
+        using var zip = zipPath is not null && File.Exists(zipPath) ? ZipFile.OpenRead(zipPath) : null;
+        using var linked = linksPath is not null && File.Exists(linksPath) ? ZipFile.OpenRead(linksPath) : null;
+        var entries = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var url in GalleryEntries(read).Select(p => (string)p["url"]!))
         {
-            listed++;
-            // a zip of backup tool 0.9.0 held a listed gallery picture only under `kills/`
-            if (Importer.MediaPath("photos", (string)p["url"]!) is not { } path
-                || !(media.TryGetValue(path, out var file) || media.TryGetValue("kills/" + path["photos/".Length..], out file)))
+            var inZip = ZipPicture(media, url);
+            var entry = inZip?.Entry ?? PictureLinks.EntryName(url);
+            if ((inZip is not null ? zip : linked)?.GetEntry(entry) is not { } found) continue;
+            using var content = found.Open();
+            entries[entry] = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(content));
+        }
+        return new(have, entries);
+    }
+
+    /// <summary>Inside the restore's transaction: with `replace`, delete the account's restored gallery rows; then add one per saved gallery entry whose picture the zip holds, or the fetched pictures
+    /// hold under its link (oldest first; its `type`, `label`, `animal` and `kill_id` as saved). A picture the account already has (the same file hash, from <see cref="HashPictures"/>) is not added again.
+    /// The kill photos, score pages and images need no row: they are named by their zip path.
+    /// Nothing is written to disk here: <see cref="Unpack"/> does that once the transaction has committed.</summary>
+    internal Unpacking PreparePictures(Db con, Restored read, PictureHashes hashes, bool replace)
+    {
+        List<string> stale = replace ? con.Rows("SELECT file FROM photos WHERE account_id = $a AND saved IS NOT NULL AND file IS NOT NULL").Select(r => (string)r[0]).ToList() : [];
+        if (replace) con.Exec("DELETE FROM photos WHERE account_id = $a AND saved IS NOT NULL");
+        var have = hashes.Have;
+        var media = MediaByPath(read);
+        var files = new List<(string, string, bool)>();
+        int missing = 0, fetched = 0, gallery = 0, already = 0;
+        static string Text(JsonNode? n) => Py.IsStr(n) ? (string)n! : Py.IsNum(n) ? Py.Str(n) : "";
+        foreach (var p in GalleryEntries(read))
+        {
+            var url = (string)p["url"]!;
+            var inZip = ZipPicture(media, url);
+            if (inZip is null) missing++;
+            var entry = inZip?.Entry ?? PictureLinks.EntryName(url);
+            if (!hashes.Entries.TryGetValue(entry, out var hash)) continue;
+            if (inZip is null) fetched++;
+            if (!have.Add(hash))
+            {
+                already++;
                 continue;
+            }
             long? type = Py.IsNum(p["type"]) ? Py.L(p["type"]) : Py.IsStr(p["type"]) && long.TryParse((string)p["type"]!, out var t) ? t : null;
-            var id = con.Insert("INSERT INTO photos (account_id, photo_type, saved) VALUES ($a, ?, ?)", type, Py.Dumps(new JsonObject { ["label"] = Text(p["label"]), ["animal"] = Text(p["animal"]) }));
+            var saved = new JsonObject { ["label"] = Text(p["label"]), ["animal"] = Text(p["animal"]) };
+            if (Text(p["kill_id"]) is { Length: > 0 } kill) saved["kill_id"] = kill;
+            var id = con.Insert("INSERT INTO photos (account_id, photo_type, saved) VALUES ($a, ?, ?)", type, Py.Dumps(saved));
             var name = $"{id}-{type ?? 0}.jpg";
             con.Exec("UPDATE photos SET file = ? WHERE account_id = $a AND id = ?", name, id);
-            files.Add((name, file.Entry));
+            files.Add((name, entry, inZip is null));
             gallery++;
         }
         var others = media.Values.Where(m => StoredFolders.Any(f => m.Path.StartsWith(f + "/", StringComparison.Ordinal))).ToList();
-        files.AddRange(others.Select(m => (Importer.CleanName(m.Path), m.Entry)));
-        if (ImportedAvatarOf(read) is { } avatar) files.Add((ImportedAvatar, avatar.Entry));  // the player's own picture, again at its stable link
+        files.AddRange(others.Select(m => (Importer.CleanName(m.Path), m.Entry, false)));
+        if (ImportedAvatarOf(read) is { } avatar) files.Add((ImportedAvatar, avatar.Entry, false));  // the player's own picture, again at its stable link
         var report = $"pictures stored: gallery {gallery}, kill photos and score pages {others.Count(m => m.Path.StartsWith("kills/", StringComparison.Ordinal))}, "
                      + $"avatar and background pictures {others.Count(m => m.Path.StartsWith("images/", StringComparison.Ordinal))}"
-                     + (listed > gallery ? $"; {listed - gallery} gallery entr{(listed - gallery == 1 ? "y" : "ies")} without a picture in the zip" : "");
-        return new(files, stale, report);
+                     + (missing > 0 ? $"; pictures from links: {fetched} of {missing}" : "")
+                     + (already > 0 ? $"; {already} gallery picture{(already == 1 ? "" : "s")} already in the gallery" : "");
+        return new(files, stale, report, replace);
     }
 
-    /// <summary>After the restore's commit: remove the pictures of the restore before (the stale gallery files, every kill and image file), then read each stored file from the zip into the account's folder.
+    /// <summary>After the restore's commit: with Replace, remove the pictures of the restore before (the stale gallery files, every kill and image file); then read each stored file from the backup zip, or from
+    /// the zip of fetched pictures beside it (<see cref="Restorer.PicturesZip"/>), into the account's folder; without Replace nothing of the account's is removed.
     /// The zip's bytes were counted against the caps when it was read (a picture at most <see cref="Limits.EntryBytes"/>, all of it <see cref="Limits.TotalBytes"/>); they are copied from the entry as they are, never held whole.</summary>
     internal void Unpack(long account, string zipPath, Unpacking u)
     {
         var dir = AccountPhotos(account);
-        if (Directory.Exists(dir))
+        if (u.Replace && Directory.Exists(dir))
         {
             foreach (var name in u.Stale.SelectMany(f => new[] { f, ThumbName(f) }))
                 File.Delete(Path.Combine(dir, name));
@@ -73,10 +137,12 @@ public sealed partial class State
             return;
         Directory.CreateDirectory(dir);
         using var zip = ZipFile.OpenRead(zipPath);
-        foreach (var (name, entry) in u.Files)
+        using var linked = u.Files.Any(f => f.Linked) ? ZipFile.OpenRead(Restorer.PicturesZip(zipPath)) : null;
+        foreach (var (name, entry, link) in u.Files)
         {
-            using var from = (zip.GetEntry(entry) ?? throw new InvalidDataException($"{entry} is not in the zip")).Open();
-            using var to = File.Create(Path.Combine(dir, name));
+            var target = Path.Combine(dir, name);
+            using var from = ((link ? linked! : zip).GetEntry(entry) ?? throw new InvalidDataException($"{entry} is not in the zip")).Open();
+            using var to = File.Create(target);
             from.CopyTo(to);
         }
     }

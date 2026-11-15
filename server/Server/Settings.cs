@@ -77,6 +77,7 @@ public sealed class Settings
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
+        cfg["picture_link_hosts"] = PictureHosts(root["picture_link_hosts"]);  // the hosts a backup's gallery links are fetched from (PictureLinks.cs); none: nothing is fetched
 
         if (root["listeners"] is not JsonArray { Count: > 0 } rows)
             throw new InvalidDataException("listeners: needs at least one {address, port}");
@@ -127,6 +128,16 @@ public sealed class Settings
 
     static string? Text(JsonObject o, string key) =>
         o[key] is JsonValue v && v.TryGetValue<string>(out var s) && s.Length > 0 ? s : null;
+
+    /// <summary>`picture_link_hosts`: a list of host names (lower-cased; no scheme, port, path or address); absent: none.</summary>
+    static JsonArray PictureHosts(JsonNode? node)
+    {
+        const string Bad = "picture_link_hosts: a list of host names (no scheme, port, path or IP address)";
+        var hosts = new JsonArray();
+        foreach (var h in node as JsonArray ?? (node is null ? new JsonArray() : throw new InvalidDataException(Bad)))
+            hosts.Add(h is JsonValue v && v.TryGetValue<string>(out var s) && Uri.CheckHostName(s) == UriHostNameType.Dns ? s.ToLowerInvariant() : throw new InvalidDataException(Bad));
+        return hosts;
+    }
 
     /// <summary>"10.0.0.0/8", or a single address (a /32 or /128).</summary>
     public static bool TryNetwork(string text, out IPNetwork net)

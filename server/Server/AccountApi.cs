@@ -136,7 +136,7 @@ public static class AccountApi
                 try
                 {
                     var part = await uploads.Part(account, id, 0, ctx.Request.Body);
-                    return Logged(account, part.Kind == "received" ? uploads.Finish(account, id) : part);
+                    return Logged(account, part.Kind == "received" ? await uploads.Finish(account, id) : part);
                 }
                 finally
                 {
@@ -164,7 +164,7 @@ public static class AccountApi
                              + "Answers `{status: received}`; `409` `invalid` for a part out of order, `404` `invalid` for an upload not open, `413` `too_large` when the zip passes 1 GiB (the upload ends).")
             .Produces(200, contentType: "application/json");
 
-        group.MapPost("/restore/{id}/finish", (HttpContext ctx, string id) => Upload(ctx, account => Task.FromResult(Logged(account, uploads.Finish(account, id)))))
+        group.MapPost("/restore/{id}/finish", (HttpContext ctx, string id) => Upload(ctx, async account => Logged(account, await uploads.Finish(account, id))))
             .WithName("AccountRestoreFinish").WithSummary("Finish an upload: the joined zip is read like a zip sent at once")
             .WithDescription("Answers what `POST /account/restore` answers; the upload ends whatever the outcome.")
             .Produces(200, contentType: "application/json");
