@@ -1449,12 +1449,12 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Kies je naam</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Dit is de naam die andere jagers zien.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Je naam</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 tot 20 letters, cijfers, - of _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 tot 30 letters, cijfers, - of _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Ik ben nieuw hier</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Ik heb eerder gespeeld: herstel wat is bewaard van mijn oude profiel</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>We hebben een deel van de openbare profielen bewaard: voorwerpen, trofeeën, jachthutten, vaardigheden, statistieken en prestaties. Jachten, foto's en geld zijn niet bewaard. Profielen met een hoge score worden eerst door de operator gecontroleerd.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Laat dit leeg om je oude naam te gebruiken als die vrij is.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Een naam heeft 3 tot 20 letters, cijfers, - of _ en begint met een letter of een cijfer.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Een naam heeft 3 tot 30 letters, cijfers, - of _ en begint met een letter of een cijfer.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Deze naam is al in gebruik.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Kies een naam: de oude is al in gebruik.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>De app inloggen die deze code toont?</value></data>

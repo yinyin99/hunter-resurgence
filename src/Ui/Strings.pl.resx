@@ -1449,12 +1449,12 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Wybierz swoją nazwę</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>To nazwa, którą widzą inni myśliwi.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Twoja nazwa</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Od 3 do 20 liter, cyfr, - lub _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>Od 3 do 30 liter, cyfr, - lub _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jestem tu nowy</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Grałem wcześniej: przywróć to, co zachowano z mojego starego profilu</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Zachowaliśmy część profili publicznych: przedmioty, trofea, chaty, umiejętności, statystyki i osiągnięcia. Polowań, zdjęć i pieniędzy nie zachowano. Profile z wysokim wynikiem najpierw sprawdza operator.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Zostaw puste, aby użyć starej nazwy, jeśli jest wolna.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nazwa ma od 3 do 20 liter, cyfr, - lub _ i zaczyna się od litery lub cyfry.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Nazwa ma od 3 do 30 liter, cyfr, - lub _ i zaczyna się od litery lub cyfry.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ta nazwa jest zajęta.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wybierz nazwę: stara jest zajęta.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Zalogować aplikację, która pokazuje ten kod?</value></data>

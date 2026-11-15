@@ -1449,12 +1449,12 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Zvolte si jméno</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>Toto jméno uvidí ostatní lovci.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Vaše jméno</value></data>
-  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 až 20 písmen, číslic, - nebo _.</value></data>
+  <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>3 až 30 písmen, číslic, - nebo _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Jsem tu nový</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Hrál jsem dříve: obnovit, co se uchovalo z mého starého profilu</value></data>
   <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Uchovali jsme část veřejných profilů: předměty, trofeje, chaty, dovednosti, statistiky a úspěchy. Lovy, fotky a peníze uchovány nebyly. Profily s vysokým skóre nejdřív zkontroluje provozovatel.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Nechte prázdné, pokud chcete použít staré jméno, když je volné.</value></data>
-  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Jméno má 3 až 20 písmen, číslic, - nebo _ a začíná písmenem nebo číslicí.</value></data>
+  <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Jméno má 3 až 30 písmen, číslic, - nebo _ a začíná písmenem nebo číslicí.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Toto jméno je obsazené.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Zvolte jméno: staré je obsazené.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Přihlásit aplikaci, která ukazuje tento kód?</value></data>

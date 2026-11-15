@@ -143,13 +143,13 @@ public class HandleTests
     [InlineData("Hunter_One")]
     [InlineData("abc")]
     [InlineData("a-b")]
-    [InlineData("12345678901234567890")]
+    [InlineData("123456789012345678901234567890")]
     public void TestGoodHandles(string handle) => Assert.Null(Handles.Problem(handle));
 
     [Theory]
     [InlineData("")]
     [InlineData("ab")]
-    [InlineData("123456789012345678901")]
+    [InlineData("1234567890123456789012345678901")]
     [InlineData("_abc")]
     [InlineData("-abc")]
     [InlineData("two words")]
@@ -803,11 +803,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     {
         var begun = await Begin("web.test");
         await Return("web.test", begun);
-        const string Hostile = "\"><script>alert(1)</script>";
+        const string Hostile = "\"><script>alert(1)</script>0123456789";
         var again = await PostForm("web.test", "/auth/handle", $"csrf={begun.Login}&handle={HttpUtility.UrlEncode(Hostile)}", Ck("hr_login", begun.Login));
         Assert.Equal("/signin/handle", Location(again));
         var shown = await Pending("web.test", begun.Login);
-        Assert.Equal(Hostile[..20], (string)JsonNode.Parse(shown.Body)!["handle"]!);  // data for the website's page, which encodes it; cut to the 20 characters a name has
+        Assert.Equal(Hostile[..30], (string)JsonNode.Parse(shown.Body)!["handle"]!);  // data for the website's page, which encodes it; cut to the 30 characters a name has
         Assert.Contains(("Content-Type", "application/json"), shown.Headers);
     }
 
