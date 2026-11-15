@@ -16,9 +16,12 @@ public sealed class PictureLinks
     public const int MaxBytes = 16 << 20;
     /// <summary>The most links fetched for one save (a zip may list any number).</summary>
     public const int MaxPictures = 1000;
+    /// <summary>The most bytes fetched for one save: the cap of a backup zip's content.</summary>
+    public const long MaxTotalBytes = 1L << 30;
     const int AtOnce = 4;
     const int MaxHops = 3;
-    static readonly TimeSpan PerPicture = TimeSpan.FromSeconds(20), Total = TimeSpan.FromMinutes(10);
+    // the whole fetch is part of the player's upload request, which a proxy in front ends after about 100 seconds: links not fetched by then are skipped and counted in the report
+    static readonly TimeSpan PerPicture = TimeSpan.FromSeconds(15), Total = TimeSpan.FromSeconds(80);
 
     readonly HashSet<string> hosts;
     readonly HttpClient http;
@@ -41,26 +44,35 @@ public sealed class PictureLinks
     {
         if (hosts.Count == 0) return 0;
         var ok = 0;
+        long total = 0;
         var part = path + ".part";
         using var cancel = new CancellationTokenSource(Total);
-        await using (var file = File.Create(part))
-        using (var zip = new ZipArchive(file, ZipArchiveMode.Create))
-            await System.Threading.Tasks.Parallel.ForEachAsync(urls.Take(MaxPictures), new ParallelOptions { MaxDegreeOfParallelism = AtOnce }, async (url, _) =>
-            {
-                if (await Get(url, cancel.Token) is not { } bytes) return;
-                lock (zip)  // a zip is written by one thread at a time
+        try
+        {
+            await using (var file = File.Create(part))
+            using (var zip = new ZipArchive(file, ZipArchiveMode.Create))
+                await System.Threading.Tasks.Parallel.ForEachAsync(urls.Take(MaxPictures), new ParallelOptions { MaxDegreeOfParallelism = AtOnce }, async (url, _) =>
                 {
-                    using var to = zip.CreateEntry(EntryName(url), CompressionLevel.NoCompression).Open();
-                    to.Write(bytes);
-                    ok++;
-                }
-            });
-        if (ok == 0) File.Delete(part);
-        else File.Move(part, path, overwrite: true);
+                    if (await Get(url, cancel.Token) is not { } bytes) return;
+                    lock (zip)  // a zip is written by one thread at a time
+                    {
+                        if (total + bytes.Length > MaxTotalBytes) return;
+                        total += bytes.Length;
+                        using var to = zip.CreateEntry(EntryName(url), CompressionLevel.NoCompression).Open();
+                        to.Write(bytes.Span);
+                        ok++;
+                    }
+                });
+            if (ok > 0) File.Move(part, path, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(part);  // nothing came, or the fetch failed half way
+        }
         return ok;
     }
 
-    async Task<byte[]?> Get(string url, CancellationToken total)
+    async Task<ReadOnlyMemory<byte>?> Get(string url, CancellationToken total)
     {
         try
         {
@@ -77,7 +89,7 @@ public sealed class PictureLinks
                 }
                 if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > MaxBytes) return null;
                 await using var body = await response.Content.ReadAsStreamAsync(cancel.Token);
-                using var bytes = new MemoryStream();
+                var bytes = new MemoryStream();
                 var buffer = new byte[81920];
                 int n;
                 while ((n = await body.ReadAsync(buffer, cancel.Token)) > 0)
@@ -85,7 +97,9 @@ public sealed class PictureLinks
                     if (bytes.Length + n > MaxBytes) return null;
                     bytes.Write(buffer, 0, n);
                 }
-                return IsJpeg(bytes.GetBuffer().AsSpan(0, (int)bytes.Length)) ? bytes.ToArray() : null;
+                var picture = bytes.GetBuffer().AsMemory(0, (int)bytes.Length);
+                if (!IsJpeg(picture.Span)) return null;
+                return picture;
             }
             return null;
         }

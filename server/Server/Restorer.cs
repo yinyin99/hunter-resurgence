@@ -73,9 +73,10 @@ public static class Restorer
             var linked = PicturesZip(kept);
             if (links is not null && !File.Exists(linked) && State.MissingPictures(read) is { Count: > 0 } missing)
                 links.Fetch(missing, linked).GetAwaiter().GetResult();  // ponytail: a command line has no other work for this thread; fetched before the transaction opens
+            var hashes = state.HashPictures(read, id, kept, File.Exists(linked) ? linked : null, replace: false);  // before the transaction: it holds the database for writing
             using var con = store.Open(id);
             con.Begin();
-            pictures = state.PreparePictures(con, read, id, kept, File.Exists(linked) ? linked : null, replace: false);
+            pictures = state.PreparePictures(con, read, hashes, replace: false);
             var account = store.AccountJson(id);
             SetAvatar(account, read.Model, avatar);
             con.Exec("UPDATE accounts SET account = ? WHERE id = ?", Py.Dumps(account), id);
@@ -129,11 +130,12 @@ public static class Restorer
         }
         // the pictures fetched at upload time sit beside the kept zip: under the account's id here, or under the one it had before it adopted the zip's
         var linked = zipPath is null ? null : new[] { kept, Path.Combine(dataDir, "restores", current.ToString(), sha + ".zip") }.Select(PicturesZip).FirstOrDefault(File.Exists);
+        var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
         var report = "";
         State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            pictures = state.PreparePictures(con, read, current, zipPath, linked, replace: true);
+            pictures = state.PreparePictures(con, read, hashes, replace: true);
             report = Rows(con, model, read.Report, finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);

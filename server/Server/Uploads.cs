@@ -228,11 +228,17 @@ public sealed class Uploads(State state, string dataDir)
             lock (decide) return Refusal(account, uid) is { Kind: "already" or "taken" } refused ? refused : null;
         }
         if (Refused() is { } early) return early;
-        // the pictures the zip lists by link and does not hold: fetched now, so that a wait for review does not lose them (not inside the lock: a photo host may be slow)
+        bool known;
+        using (var con = Store.Open(account))  // the refusals of Review that are cheap to know, before a fetch that may take a minute
+        {
+            known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
+            if (!known && (long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview) return Crowded;
+        }
+        // the pictures the zip lists by link and does not hold: fetched now, so that a wait for review does not lose them (not inside the lock: a photo host may be slow); a zip already waiting has its own
         string? links = path + ".pictures";
         try
         {
-            if (Pictures is null || State.MissingPictures(read) is not { Count: > 0 } missing || await Pictures.Fetch(missing, links) == 0) links = null;
+            if (known || Pictures is null || State.MissingPictures(read) is not { Count: > 0 } missing || await Pictures.Fetch(missing, links) == 0) links = null;
             lock (decide)
                 return Refused() ?? Review(account, sha, path, uid, "waiting for the operator", read.Model.Profile.Handle ?? read.Model.Identity.Handle, links);
         }
@@ -241,6 +247,8 @@ public sealed class Uploads(State state, string dataDir)
             if (links is not null) File.Delete(links);
         }
     }
+
+    static readonly UploadOutcome Crowded = new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
 
     /// <summary>The rules of a restore (the operator's approve runs them again): once per game user id, no user id another
     /// account holds. Uploading is the player's consent to replace the profile, so an account that has played is restored too
@@ -267,7 +275,7 @@ public sealed class Uploads(State state, string dataDir)
             if (!known)
             {
                 if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
-                    return new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
+                    return Crowded;
                 var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
                 Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
                 File.Copy(path, kept, overwrite: true);

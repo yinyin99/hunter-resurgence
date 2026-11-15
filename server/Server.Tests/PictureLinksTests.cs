@@ -122,6 +122,15 @@ public class PictureLinksTests : StateTestBase
     [InlineData("::ffff:10.0.0.1", false)]
     [InlineData("2002:7f00:1::1", false)]
     [InlineData("2001:db8::1", false)]
+    [InlineData("2001::1", false)]
+    [InlineData("64:ff9b::7f00:1", false)]
+    [InlineData("::127.0.0.1", false)]
+    [InlineData("192.88.99.1", false)]
+    [InlineData("198.18.0.1", false)]
+    [InlineData("198.20.0.1", true)]
+    [InlineData("100.63.255.255", true)]
+    [InlineData("100.127.255.255", false)]
+    [InlineData("100.128.0.1", true)]
     public void OnlyPublicAddressesAreConnectedTo(string address, bool allowed) => Assert.Equal(allowed, PictureLinks.IsPublic(IPAddress.Parse(address)));
 
     [Fact]
