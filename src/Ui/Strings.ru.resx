@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Неофициальный сервер сообщества для {game_full}: продолжайте играть после закрытия официальных серверов, с профилем, восстановленным из резервной копии.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Неофициальный сервер сообщества для {game_full}: продолжайте играть, с профилем, восстановленным из резервной копии.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: сервер сообщества для {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Такой страницы не существует.</value></data>
@@ -1454,14 +1454,14 @@
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Выберите имя: старое занято.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Войти в приложении, которое показывает этот код?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Вы — {0}. Лаунчер или инструмент резервного копирования войдёт под вашим именем без кода.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Вы — {0}. Стартовая страница старого лаунчера, которая показывает этот код, войдёт под вашим именем.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Подтверждайте, только если этот код сейчас на вашем экране.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Войти в приложении на этом ПК?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Вы — {0}. Приложение, которое вы только что запустили на этом ПК (лаунчер или инструмент резервного копирования), войдёт под вашим именем.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Подтверждайте, только если вы только что нажали «{0}» в одном из них.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Да, войти</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Готово</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Вернитесь в лаунчер или инструмент резервного копирования: он входит сам, код не нужен.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Вернитесь на стартовую страницу старого лаунчера, которая показала код.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Присоединяйтесь к Discord: новости, помощь и оператор</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Извините</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Этот вход устарел или был начат в другом браузере. Начните заново.</value></data>

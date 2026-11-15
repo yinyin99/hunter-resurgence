@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Epävirallinen yhteisöpalvelin pelille {game_full}: jatka pelaamista virallisten palvelinten sulkeuduttua, profiilisi palautettuna varmuuskopiosta.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Epävirallinen yhteisöpalvelin pelille {game_full}: jatka pelaamista, profiilisi palautettuna varmuuskopiosta.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: yhteisöpalvelin pelille {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Sivua ei löytynyt</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tätä sivua ei ole olemassa.</value></data>
@@ -1454,14 +1454,14 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Tämä nimi on jo käytössä.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Valitse nimi: vanha on jo käytössä.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Kirjataanko sisään sovellus, joka näyttää tämän koodin?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Olet {0}. Launcher tai varmuuskopiotyökalu kirjautuu sisään sinuna ilman koodia.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Olet {0}. Vanhan launcherin aloitussivu, joka näyttää tämän koodin, kirjataan sisään sinuna.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Vahvista vain, jos tämä koodi on juuri nyt näytölläsi.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Kirjataanko sisään tämän tietokoneen sovellus?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Olet {0}. Sovellus, jonka juuri käynnistit tällä tietokoneella (launcher tai varmuuskopiotyökalu), kirjataan sisään sinuna.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Vahvista vain, jos painoit juuri jossakin niistä kohtaa ”{0}”.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Kyllä, kirjaa sisään</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Valmis</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Palaa launcheriin tai varmuuskopiotyökaluun: se kirjautuu itse sisään, koodia ei tarvita.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Palaa vanhan launcherin aloitussivulle, joka näytti koodin.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Liity Discordiin: uutiset, apu ja ylläpitäjä</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Valitettavasti</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Tämä kirjautuminen vanheni tai se aloitettiin toisessa selaimessa. Aloita alusta.</value></data>

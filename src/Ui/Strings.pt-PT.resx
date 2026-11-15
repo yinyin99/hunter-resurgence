@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Servidor comunitário não oficial de {game_full}: continua a jogar depois de os servidores oficiais fecharem, com o teu perfil restaurado a partir de uma cópia de segurança.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Servidor comunitário não oficial de {game_full}: continua a jogar, com o teu perfil restaurado a partir de uma cópia de segurança.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: servidor comunitário de {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Página não encontrada</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Esta página não existe.</value></data>
@@ -1454,14 +1454,14 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Este nome já está em uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Escolha um nome: o antigo já está em uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Iniciar sessão na aplicação que mostra este código?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>É {0}. O launcher ou a ferramenta de cópia de segurança inicia sessão como o utilizador, sem código.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>É {0}. A página inicial do launcher antigo que mostra este código inicia sessão como o utilizador.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirme só se este código estiver agora no seu ecrã.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Iniciar sessão na aplicação neste PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>É {0}. A aplicação que acabou de iniciar neste PC (o launcher ou a ferramenta de cópia de segurança) inicia sessão como o utilizador.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirme só se acabou de premir «{0}» numa delas.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sim, iniciar sessão</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Concluído</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte ao launcher ou à ferramenta de cópia de segurança: inicia sessão sozinho, sem precisar de código.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Volte à página inicial do launcher antigo que mostrou o código.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Junte-se ao Discord: novidades, ajuda e o operador</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Pedimos desculpa</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Este início de sessão expirou ou foi iniciado noutro navegador. Comece de novo.</value></data>

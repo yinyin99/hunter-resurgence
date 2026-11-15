@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Nem hivatalos közösségi szerver ({game_full}): játssz tovább a hivatalos szerverek bezárása után, a profilodat egy biztonsági mentésből visszaállítva.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Nem hivatalos közösségi szerver ({game_full}): játssz tovább, a profilodat egy biztonsági mentésből visszaállítva.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: közösségi szerver ({game_full})</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
@@ -1454,14 +1454,14 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ez a név foglalt.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Válassz nevet: a régi foglalt.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Bejelentkezteted az alkalmazást, amely ezt a kódot mutatja?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Te vagy {0}. A launcher vagy a mentőeszköz kód nélkül jelentkezik be a nevedben.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Te vagy {0}. A régi launcher kezdőlapja, amely ezt a kódot mutatja, a te fiókodba jelentkezik be.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha ez a kód éppen most van a képernyődön.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Bejelentkezteted a számítógépen lévő alkalmazást?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Te vagy {0}. Az alkalmazás, amelyet az imént indítottál el ezen a számítógépen (a launcher vagy a mentőeszköz), a te fiókodba jelentkezik be.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Csak akkor erősítsd meg, ha az imént a(z) „{0}” gombra kattintottál az egyikben.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Igen, bejelentkezés</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Kész</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Térj vissza a launcherhez vagy a mentőeszközhöz: magától bejelentkezik, kód nem kell.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Térj vissza a régi launcher kezdőlapjához, amely a kódot mutatta.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Csatlakozz a Discordhoz: hírek, segítség és az üzemeltető</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sajnáljuk</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ez a bejelentkezés lejárt, vagy másik böngészőben indult. Kezdd elölről.</value></data>

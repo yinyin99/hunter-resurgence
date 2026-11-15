@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Neuradni skupnostni strežnik za {game_full}: igrajte naprej tudi po zaprtju uradnih strežnikov, s profilom, obnovljenim iz varnostne kopije.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Neuradni skupnostni strežnik za {game_full}: igrajte naprej, s profilom, obnovljenim iz varnostne kopije.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: skupnostni strežnik za {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Strani ni mogoče najti</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ta stran ne obstaja.</value></data>
@@ -1454,14 +1454,14 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>To ime je zasedeno.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Izberite ime: staro je zasedeno.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Prijavim aplikacijo, ki prikazuje to kodo?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vi ste {0}. Zaganjalnik ali orodje za varnostno kopiranje vas prijavi brez kode.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Vi ste {0}. Začetna stran starega zaganjalnika, ki prikazuje to kodo, bo prijavljena kot vi.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potrdite le, če je ta koda zdaj na vašem zaslonu.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Prijavim aplikacijo na tem računalniku?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Vi ste {0}. Aplikacija, ki ste jo pravkar zagnali na tem računalniku (zaganjalnik ali orodje za varnostno kopiranje), bo prijavljena kot vi.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potrdite le, če ste pravkar pritisnili »{0}« v eni od njiju.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Da, prijavi</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Končano</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vrnite se v zaganjalnik ali orodje za varnostno kopiranje: prijavi se samo, kode ni treba.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vrnite se na začetno stran starega zaganjalnika, ki je prikazala kodo.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Pridružite se Discordu: novice, pomoč in operater</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Oprostite</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Ta prijava je potekla ali je bila začeta v drugem brskalniku. Začnite znova.</value></data>

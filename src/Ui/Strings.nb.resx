@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Uoffisiell fellesskapsserver for {game_full}: spill videre etter at de offisielle serverne stenger, med profilen din gjenopprettet fra en sikkerhetskopi.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Uoffisiell fellesskapsserver for {game_full}: spill videre, med profilen din gjenopprettet fra en sikkerhetskopi.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: fellesskapsserver for {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Siden ble ikke funnet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne siden finnes ikke.</value></data>
@@ -1454,14 +1454,14 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dette navnet er opptatt.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Velg et navn: det gamle er opptatt.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Logge inn appen som viser denne koden?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du er {0}. Launcheren eller sikkerhetskopiverktøyet logger deg inn uten kode.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du er {0}. Startsiden til den gamle launcheren som viser denne koden, blir logget inn som deg.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bekreft bare hvis denne koden står på skjermen din akkurat nå.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Logge inn appen på denne PC-en?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du er {0}. Appen du nettopp startet på denne PC-en (launcheren eller sikkerhetskopiverktøyet) blir logget inn som deg.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bekreft bare hvis du nettopp trykket på «{0}» i en av dem.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, logg inn</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Ferdig</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gå tilbake til launcheren eller sikkerhetskopiverktøyet: det logger inn selv, ingen kode trengs.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gå tilbake til startsiden til den gamle launcheren som viste koden.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Bli med på Discord: nyheter, hjelp og operatøren</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Beklager</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Denne påloggingen har utløpt eller ble startet i en annen nettleser. Start på nytt.</value></data>

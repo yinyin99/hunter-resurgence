@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Nieoficjalny serwer społeczności dla {game_full}: graj dalej po zamknięciu oficjalnych serwerów, z profilem przywróconym z kopii zapasowej.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Nieoficjalny serwer społeczności dla {game_full}: graj dalej, z profilem przywróconym z kopii zapasowej.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: serwer społeczności dla {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Nie znaleziono strony</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ta strona nie istnieje.</value></data>
@@ -1454,14 +1454,14 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Ta nazwa jest zajęta.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wybierz nazwę: stara jest zajęta.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Zalogować aplikację, która pokazuje ten kod?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jesteś {0}. Launcher lub narzędzie do kopii zapasowej zaloguje się jako Ty bez kodu.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jesteś {0}. Strona startowa starego launchera, która pokazuje ten kod, zostanie zalogowana jako Ty.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy ten kod jest właśnie teraz na Twoim ekranie.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Zalogować aplikację na tym komputerze?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jesteś {0}. Aplikacja uruchomiona przed chwilą na tym komputerze (launcher lub narzędzie do kopii zapasowej) zostanie zalogowana jako Ty.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potwierdź tylko wtedy, gdy w jednej z nich przed chwilą użyto przycisku „{0}”.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Tak, zaloguj</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Gotowe</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Wróć do launchera lub narzędzia do kopii zapasowej: loguje się samo, kod nie jest potrzebny.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Wróć na stronę startową starego launchera, która pokazała kod.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Dołącz do Discorda: nowości, pomoc i operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Przepraszamy</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>To logowanie wygasło lub zostało rozpoczęte w innej przeglądarce. Zacznij od nowa.</value></data>

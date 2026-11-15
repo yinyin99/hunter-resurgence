@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Server della community non ufficiale per {game_full}: continua a giocare dopo la chiusura dei server ufficiali, con il tuo profilo ripristinato da un backup.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Server della community non ufficiale per {game_full}: continua a giocare, con il tuo profilo ripristinato da un backup.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: server della community per {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina non trovata</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Questa pagina non esiste.</value></data>
@@ -1454,14 +1454,14 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Questo nome è già in uso.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Scegli un nome: quello vecchio è già in uso.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Accedere all’app che mostra questo codice?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sei {0}. Il launcher o lo strumento di backup accede come te, senza codice.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Sei {0}. La pagina iniziale del vecchio launcher che mostra questo codice accederà come te.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Conferma solo se questo codice è sul tuo schermo in questo momento.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Accedere all’app su questo PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Sei {0}. L’app che hai appena avviato su questo PC (il launcher o lo strumento di backup) accederà come te.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Conferma solo se hai appena premuto «{0}» in una di esse.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Sì, accedi</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fatto</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Torna al launcher o allo strumento di backup: accede da solo, non serve alcun codice.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Torna alla pagina iniziale del vecchio launcher che ha mostrato il codice.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Unisciti al Discord: novità, aiuto e operatore</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Spiacenti</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Questo accesso è scaduto o è stato avviato in un altro browser. Ricomincia.</value></data>

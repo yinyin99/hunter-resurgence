@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Neoficiální komunitní server pro {game_full}: hrajte i po uzavření oficiálních serverů, s profilem obnoveným ze zálohy.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Neoficiální komunitní server pro {game_full}: hrajte dál, s profilem obnoveným ze zálohy.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: komunitní server pro {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Stránka nenalezena</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tato stránka neexistuje.</value></data>
@@ -1454,14 +1454,14 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Toto jméno je obsazené.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Zvolte jméno: staré je obsazené.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Přihlásit aplikaci, která ukazuje tento kód?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj vás přihlásí bez kódu.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Jste {0}. Úvodní stránka starého launcheru, která ukazuje tento kód, bude přihlášena jako vy.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Potvrďte jen tehdy, když je tento kód právě teď na vaší obrazovce.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Přihlásit aplikaci na tomto počítači?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Jste {0}. Launcher nebo zálohovací nástroj, který jste právě spustili na tomto počítači, bude přihlášen jako vy.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Potvrďte jen tehdy, když jste v jednom z nich právě stiskli „{0}“.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ano, přihlásit</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Hotovo</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vraťte se do launcheru nebo zálohovacího nástroje: přihlásí se sám, kód není potřeba.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Vraťte se na úvodní stránku starého launcheru, která ukázala kód.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Připojte se na Discord: novinky, pomoc a provozovatel</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Omlouváme se</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Toto přihlášení vypršelo nebo bylo zahájeno v jiném prohlížeči. Začněte znovu.</value></data>

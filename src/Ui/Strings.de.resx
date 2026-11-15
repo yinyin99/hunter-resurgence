@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Inoffizieller Community-Server für {game_full}: weiterspielen, wenn die offiziellen Server schließen, mit deinem Profil aus einer Sicherung.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Inoffizieller Community-Server für {game_full}: weiterspielen, mit deinem Profil aus einer Sicherung.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: Community-Server für {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Seite nicht gefunden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Diese Seite existiert nicht.</value></data>
@@ -157,7 +157,7 @@
   <data name="News.Dev.Text" xml:space="preserve"><value>Der Community-Server entsteht in aller Öffentlichkeit. Konten, die Wiederherstellung Ihres Backups und diese Website nehmen Gestalt an; der Server öffnet bald für alle.</value></data>
   <data name="News.Dev.Lead" xml:space="preserve"><value>Öffentliches Spielen startet bald.</value></data>
   <data name="News.Backup.Title" xml:space="preserve"><value>Die offiziellen Server sind geschlossen</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen. Das Backup-Tool hat dein Profil gesichert: Inventar, Trophäen, Statistiken und mehr. Der Community-Server ist jetzt geöffnet.</value></data>
+  <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen. Das Backup-Tool hat Ihr Profil gesichert: Inventar, Trophäen, Statistiken und mehr. Der Community-Server ist jetzt geöffnet.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Hier lesen</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Zur Jagd</value></data>
@@ -1454,14 +1454,14 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Dieser Name ist vergeben.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Wähle einen Namen: Der alte ist vergeben.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Die App anmelden, die diesen Code zeigt?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du bist {0}. Der Launcher oder das Backup-Tool meldet dich ohne Code an.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Du bist {0}. Die Startseite des alten Launchers, die diesen Code zeigt, wird als du angemeldet.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bestätige nur, wenn dieser Code gerade auf deinem Bildschirm steht.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Die App auf diesem PC anmelden?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Du bist {0}. Die App, die du gerade auf diesem PC gestartet hast (der Launcher oder das Backup-Tool), wird als du angemeldet.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bestätige nur, wenn du gerade in einer von ihnen auf „{0}“ geklickt hast.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, anmelden</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Fertig</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gehe zurück zum Launcher oder zum Backup-Tool: Es meldet sich selbst an, ein Code ist nicht nötig.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Gehe zurück zur Startseite des alten Launchers, die den Code gezeigt hat.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Tritt dem Discord bei: Neuigkeiten, Hilfe und der Betreiber</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Entschuldigung</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Diese Anmeldung ist abgelaufen oder wurde in einem anderen Browser gestartet. Beginne von vorn.</value></data>

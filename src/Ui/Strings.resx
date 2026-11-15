@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Unofficial community server for {game_full}: keep playing after the official servers close, with your profile restored from a backup.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Unofficial community server for {game_full}: keep playing, with your profile restored from a backup.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: community server for {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Page not found</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>This page does not exist.</value></data>
@@ -1454,14 +1454,14 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>This name is taken.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Choose a name: the old one is taken.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>Sign in the app that shows this code?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool signs in as you, without a code.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>You are {0}. The old launcher's start page that shows this code will be signed in as you.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Confirm only if this code is on your screen right now.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>Sign in the app on this PC?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>You are {0}. The launcher or the backup tool that you just started on this PC will be signed in as you.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Confirm only if you pressed “{0}” in one of them a moment ago.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Yes, sign in</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Done</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Go back to the launcher or the backup tool: it signs in by itself, no code needed.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Go back to the old launcher's start page that showed the code.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Join the Discord: news, help and the operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>This sign-in ran out of time, or was started in another browser. Start again.</value></data>

@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="App.Name" xml:space="preserve"><value>Hunter Resurgence</value></data>
-  <data name="App.Description" xml:space="preserve"><value>Onofficiële communityserver voor {game_full}: blijf spelen nadat de officiële servers sluiten, met je profiel hersteld uit een back-up.</value></data>
+  <data name="App.Description" xml:space="preserve"><value>Onofficiële communityserver voor {game_full}: blijf spelen, met je profiel hersteld uit een back-up.</value></data>
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: communityserver voor {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina niet gevonden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Deze pagina bestaat niet.</value></data>
@@ -1454,14 +1454,14 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Deze naam is al in gebruik.</value></data>
   <data name="SignInPage.Handle.OldTaken" xml:space="preserve"><value>Kies een naam: de oude is al in gebruik.</value></data>
   <data name="SignInPage.Confirm.CodeTitle" xml:space="preserve"><value>De app inloggen die deze code toont?</value></data>
-  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Je bent {0}. De launcher of de back-uptool logt je zonder code in.</value></data>
+  <data name="SignInPage.Confirm.CodeText" xml:space="preserve"><value>Je bent {0}. De startpagina van de oude launcher die deze code toont, wordt als jou ingelogd.</value></data>
   <data name="SignInPage.Confirm.CodeNote" xml:space="preserve"><value>Bevestig alleen als deze code nu op je scherm staat.</value></data>
   <data name="SignInPage.Confirm.AppTitle" xml:space="preserve"><value>De app op deze pc inloggen?</value></data>
   <data name="SignInPage.Confirm.AppText" xml:space="preserve"><value>Je bent {0}. De app die je net op deze pc hebt gestart (de launcher of de back-uptool) wordt als jou ingelogd.</value></data>
   <data name="SignInPage.Confirm.AppNote" xml:space="preserve"><value>Bevestig alleen als je zojuist in een van beide op ‘{0}’ hebt gedrukt.</value></data>
   <data name="SignInPage.Confirm.Yes" xml:space="preserve"><value>Ja, inloggen</value></data>
   <data name="SignInPage.Done.Title" xml:space="preserve"><value>Klaar</value></data>
-  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Ga terug naar de launcher of de back-uptool: die logt zelf in, een code is niet nodig.</value></data>
+  <data name="SignInPage.Done.Text" xml:space="preserve"><value>Ga terug naar de startpagina van de oude launcher die de code toonde.</value></data>
   <data name="SignInPage.Discord" xml:space="preserve"><value>Word lid van de Discord: nieuws, hulp en de operator</value></data>
   <data name="SignInPage.Problem.Title" xml:space="preserve"><value>Sorry</value></data>
   <data name="SignInPage.Problem.Expired" xml:space="preserve"><value>Deze inlogpoging is verlopen of is in een andere browser gestart. Begin opnieuw.</value></data>
