@@ -50,7 +50,7 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Avatars you can choose | |
 | Friends and friend requests, messages (read only), wallet history | |
 | Public player profiles with hunt history and score sheets, in the game and on the website | |
-| Halloween 2026 event on its 5 reserves, with its panel and one personal mission, on or off per player in Settings and on the hunt start screen (its trophies and community missions are not in yet) | |
+| Halloween 2026 event on its 5 reserves while the operator runs it, with its panel and one personal mission, on or off per player in Settings and on the hunt start screen (its trophies and community missions are not in yet) | |
 | Get your old profile back ([below](#get-your-old-profile-back)); delete your data | |
 | Launcher that installs and updates itself; Steam's Play button opens it | |
 | Website and launcher in 19 languages | |

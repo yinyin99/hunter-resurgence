@@ -64,7 +64,10 @@ The version number of a backup zip's layout, separate from the backup tool's ver
 ## Restore
 
 **Restore**:
-Bringing a profile back on a server from a backup zip.
+Bringing a profile back on a server from a backup zip, or from the operator's archive by a claim.
+
+**Claim**:
+A signed-in player taking the archived profile of their old in-game name onto their account; one per account. It is restored at once below hunterscore 10,000, and waits for the operator at 10,000 or more or when another account claimed the same profile.
 
 **Refused**:
 Said of a whole backup zip that a restore does not read.
@@ -133,11 +136,6 @@ _Avoid_: hunter score (in code and docs), trophy score
 **Hunterscore board**:
 The players of the community server in hunterscore order; a player's rank is their place on it.
 _Avoid_: ladder, leaderboard (the website's boards of the other kinds)
-
-## Restore by name
-
-**Claim**:
-A signed-in player taking the archived profile of their old in-game name onto their account; one per account. Below hunterscore 10,000 it is restored at once, above it waits for the operator.
 
 ## Multiplayer and events
 
