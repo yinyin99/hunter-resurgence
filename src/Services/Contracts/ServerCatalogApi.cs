@@ -9,6 +9,8 @@ public static class ServerCatalogApi
     public const string Reserves = "/catalog/reserves";
     /// <summary>GET: this path and an item's id: 200 <see cref="ServerItemPage"/> of an item the store lists, or 404.</summary>
     public const string Item = "/catalog/item/";
+    /// <summary>GET: 200 the open multiplayer games, a JSON array of <see cref="ServerGame"/> (empty without one).</summary>
+    public const string Games = "/catalog/games";
 }
 
 /// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)
@@ -19,28 +21,26 @@ public static class ServerCatalogApi
 public static class ServerLaunchApi
 {
     public const string Launch = "/auth/launch";
-    /// <summary>GET, no cookie: the open games, a JSON array of <see cref="ServerGame"/>.</summary>
-    public const string Games = "/v1/Network/list";
 }
 
 public sealed record ServerLaunch(string Url);
 
 public sealed record ServerRefusal(string? Error);
 
-/// <summary>A game of <see cref="ServerLaunchApi.Games"/>, as the original's list has it (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
-/// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one), <c>Country</c> is missing on a community server.</summary>
+/// <summary>A game of <see cref="ServerCatalogApi.Games"/>, in the shape of the game's own list (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
+/// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one; a host can set any number, so they are wide), <c>Country</c> is missing on a community server.</summary>
 public sealed record ServerGame(
     long Id, string? Name, string? Handle, string? Description, bool Password,
-    [property: System.Text.Json.Serialization.JsonPropertyName("hs_min")] int? Min,
-    [property: System.Text.Json.Serialization.JsonPropertyName("hs_max")] int? MaxScore,
-    [property: System.Text.Json.Serialization.JsonPropertyName("max_players")] int Max,
+    [property: System.Text.Json.Serialization.JsonPropertyName("hs_min")] long? Min,
+    [property: System.Text.Json.Serialization.JsonPropertyName("hs_max")] long? MaxScore,
+    [property: System.Text.Json.Serialization.JsonPropertyName("max_players")] long Max,
     [property: System.Text.Json.Serialization.JsonPropertyName("start_ts")] long Started,
     [property: System.Text.Json.Serialization.JsonPropertyName("country_code")] string? Country,
     ServerGamePlayer[]? Clients, ServerGameReserve? Reserve);
 
-public sealed record ServerGamePlayer(string? Handle, int Hunterscore, string? Avatar);
+public sealed record ServerGamePlayer(string? Handle, long Hunterscore, string? Avatar);
 
-public sealed record ServerGameReserve(int Id);
+public sealed record ServerGameReserve(long Id);
 
 /// <summary>The JSON of <see cref="ServerCatalogApi.Reserves"/>.</summary>
 public sealed record ServerLaunchCatalogue(ServerReserve[] Reserves, ServerTutorial[] Tutorials);

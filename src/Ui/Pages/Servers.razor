@@ -27,7 +27,7 @@
                         <th aria-sort='@Sorted("reserve")'><a href="#" @onclick='() => Sort("reserve")' @onclick:preventDefault>@L["Servers.Reserve"]</a></th>
                         <th class="players" aria-sort='@Sorted("players")'><a href="#" @onclick='() => Sort("players")' @onclick:preventDefault>@L["Servers.Players"]</a></th>
                         <th aria-sort='@Sorted("host")'><a href="#" @onclick='() => Sort("host")' @onclick:preventDefault>@L["Servers.Host"]</a></th>
-                        <th aria-sort='@Sorted("country")'><a href="#" @onclick='() => Sort("country")' @onclick:preventDefault>@L["Servers.Country"]</a></th>
+                        <th aria-sort='@Sorted("country")'>@if (located) { <a href="#" @onclick='() => Sort("country")' @onclick:preventDefault>@L["Servers.Country"]</a> }</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,9 +52,12 @@
                 <a class="btn btn-primary" href="/launch-map/2">@L["Servers.HostOwn"]</a>
             </div>
         }
-        <h5 class="info-title">@L["Servers.InfoTitle"]</h5>
-        <p class="info">@L["Servers.Info"] <ExternalLink Key="support_connections">@L["Servers.InfoLink"]</ExternalLink></p>
-        <p class="legend"><i class="dot short"></i> = @L["Servers.Short"] <i class="dot medium"></i> = @L["Servers.Medium"] <i class="dot long"></i> = @L["Servers.Long"]</p>
+        @if (located)
+        {
+            <h5 class="info-title">@L["Servers.InfoTitle"]</h5>
+            <p class="info">@L["Servers.Info"] <ExternalLink Key="support_connections">@L["Servers.InfoLink"]</ExternalLink></p>
+            <p class="legend"><i class="dot short"></i> = @L["Servers.Short"] <i class="dot medium"></i> = @L["Servers.Medium"] <i class="dot long"></i> = @L["Servers.Long"]</p>
+        }
     </div>
     @if (active is { } s)
     {
@@ -92,6 +95,9 @@
 
     // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
     bool ready => Status.State is PatchState.Ready or PatchState.Done;
+
+    /// <summary>A community server does not say where a game is: then the list has no location column, no dots and no text about them (an empty list keeps the text).</summary>
+    bool located => all.Count == 0 || all.Any(g => g.Country.Length > 0);
 
     /// <summary>The preview follows the list: a game that is filtered away gives way to the first one, an empty list closes it.</summary>
     GameServer? active => shown.FirstOrDefault(g => g == selected) ?? shown.FirstOrDefault();

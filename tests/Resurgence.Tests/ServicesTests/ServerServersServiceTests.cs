@@ -181,7 +181,8 @@ public class ServerServersServiceTests
         Assert.Empty(bridge.Started);
     }
 
-    // the shape of the server's games list; ids are 10 digits, the host is the first hunter, a game without a Hunter Score range has null for it, and no game of a community server has a country
+    // the shape of the server's games list; ids are 10 digits, the host is the game's handle, a game without a Hunter Score range has null for it, and no game of a community server has a country.
+    // The third game was hosted with limits outside the game's own range: they are kept within 0 to 99999 and do not break the list
     const string Games = """
         [{"id": 4000000001, "name": "Test game", "handle": "HostOne", "host": 7, "description": "Come and hunt.", "password": false, "public": true, "singleplayer": false, "freeplayers": true,
           "hs_min": 100, "hs_max": 2000, "max_players": 4, "start_ts": 1700000000, "clients_len": 2,
@@ -189,21 +190,24 @@ public class ServerServersServiceTests
                       {"user_id": 8, "handle": "Guest", "guid": "2", "color": 2, "avatar": null, "x": 4, "y": 5, "z": 6, "hunterscore": 300}],
           "reserve": {"id": 2, "name": "Test Reserve"}},
          {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800,
-          "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}}]
+          "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}},
+         {"id": 4000000003, "name": "Wide game", "handle": "HostThree", "password": false, "hs_min": -5, "hs_max": 99999999999, "max_players": 8, "start_ts": 1700000000,
+          "clients": [{"user_id": 10, "handle": "HostThree", "guid": "4", "hunterscore": 99999999999}], "reserve": {"id": 4}}]
         """;
 
     [Fact]
-    public async Task TheGamesAreTheServersListWithoutACookieAndAFutureStartIsAgeZero()
+    public async Task TheGamesAreTheCatalogsListWithoutACookieAndAFutureStartIsAgeZero()
     {
-        var fake = new Fake(r => r.RequestUri!.AbsolutePath == ServerLaunchApi.Games ? Json(HttpStatusCode.OK, Games) : Answer(r));
-        var games = await Make(fake, new Bridge(), session: null).ServersAsync();
+        var fake = new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, Games) : Answer(r));
+        var games = await Make(fake, new Bridge()).ServersAsync();  // signed in: the cookie is still not sent
 
-        Assert.Equal([(HttpMethod.Get, ServerLaunchApi.Games, (string?)null)], fake.Seen.Select(s => (s.Method, s.Path, s.Cookie)));
-        Assert.Equal([(4000000001L, "Test game", "HostOne", 2, 2, 4, false, 100, 2000), (4000000002L, "Locked game", "HostTwo", 4, 1, 8, true, 0, 99999)],
+        Assert.Equal([(HttpMethod.Get, ServerCatalogApi.Games, (string?)null)], fake.Seen.Select(s => (s.Method, s.Path, s.Cookie)));
+        Assert.Equal([(4000000001L, "Test game", "HostOne", 2, 2, 4, false, 100, 2000), (4000000002L, "Locked game", "HostTwo", 4, 1, 8, true, 0, 99999), (4000000003L, "Wide game", "HostThree", 4, 1, 8, false, 0, 99999)],
             games.Select(g => (g.Id, g.Name, g.Host, g.Reserve, g.Players, g.Max, g.Password, g.MinScore, g.MaxScore)));
-        Assert.Equal(["Come and hunt.", ""], games.Select(g => g.Description));
+        Assert.Equal(["Come and hunt.", "", ""], games.Select(g => g.Description));
         Assert.Equal([("HostOne", 1500, "avatar-12"), ("Guest", 300, Avatars.Default)], games[0].Roster.Select(p => (p.Handle, p.HunterScore, p.Avatar)));
-        Assert.Equal([true, false], games.Select(g => g.Limited));
+        Assert.Equal(int.MaxValue, games[2].Roster.Single().HunterScore);
+        Assert.Equal([true, false, false], games.Select(g => g.Limited));
         Assert.All(games, g => Assert.Equal("", g.Country));
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);

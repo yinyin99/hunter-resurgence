@@ -42,6 +42,10 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Equal(["Test game", "Test Reserve", "2/4", "HostOne"], rows[0].QuerySelectorAll("td").Take(4).Select(td => td.TextContent.Trim()));
         Assert.Empty(rows[0].QuerySelectorAll(".lock"));
         Assert.NotEmpty(rows[1].QuerySelectorAll(".lock"));
+        // the games have no country: no location column, no dots, no text about them
+        Assert.DoesNotContain("Country", cut.Find("table.tbl thead").TextContent);
+        Assert.Empty(cut.FindAll("i.dot"));
+        Assert.Empty(cut.FindAll("p.legend"));
         // the first game's details: its Hunter Score range and its players
         var preview = cut.Find("aside.preview").TextContent;
         Assert.Contains("Min Hunter Score: 100", preview);

@@ -5,7 +5,7 @@ namespace Resurgence.Services;
 
 /// <summary>The launch map of the community server: the reserves, their starts and the tutorials are its catalogue (<see cref="ServerCatalogApi.Reserves"/>), the loadouts are the player's
 /// (<see cref="ServerAccountApi.Loadouts"/>), and a start asks the server to open the hunt (<see cref="ServerLaunchApi.Launch"/>) and hands the launch URL it answers to
-/// <see cref="ILauncherBridge.StartGame"/>. The open multiplayer games are the server's list (<see cref="ServerLaunchApi.Games"/>); hosting and joining one are starts with <c>mp=host</c> and <c>mp=join</c>, and a
+/// <see cref="ILauncherBridge.StartGame"/>. The open multiplayer games are the server's list (<see cref="ServerCatalogApi.Games"/>); hosting and joining one are starts with <c>mp=host</c> and <c>mp=join</c>, and a
 /// refused join fails with the message of its reason. A server that does not answer is an empty map and no games, never the mock's.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The catalogue is the same for everyone and is asked without the session cookie; the loadouts and a start carry it.</param>
@@ -18,31 +18,34 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
         [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
 
-    /// <summary>The open games of the server (<see cref="ServerLaunchApi.Games"/>); none when the server does not answer. The players of a game are not placed on its map (the list has world coordinates).</summary>
+    /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, as the catalogue: the browser's host, no cookie); none when the server does not answer. The players of a game are not placed on its map (the list has world coordinates).</summary>
     public async Task<IReadOnlyList<GameServer>> ServersAsync()
     {
         try
         {
-            using var request = cookie.Request(HttpMethod.Get, ServerLaunchApi.Games);
+            using var request = new HttpRequestMessage(HttpMethod.Get, ServerCatalogApi.Games);
+            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGame[]>() is { } games)
             {
                 var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 return [.. games.Where(g => g.Reserve is not null).Select(g => Game(g, now))];
             }
-            log.LogWarning("The server answered {Path} with {Status}: no games", ServerLaunchApi.Games, (int)response.StatusCode);
+            log.LogWarning("The server answered {Path} with {Status}: no games", ServerCatalogApi.Games, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
-            log.LogWarning("The server did not answer {Path} ({Reason}): no games", ServerLaunchApi.Games, e.Message);
+            log.LogWarning("The server did not answer {Path} ({Reason}): no games", ServerCatalogApi.Games, e.Message);
         }
         return [];
     }
 
-    /// <summary>The host is the first of the game's hunters; the game's age is the time since it was created. No Hunter Score limit is 0 to 99999, as the list shows it.</summary>
-    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", g.Reserve!.Id, g.Clients?.Length ?? 0, g.Max, g.Handle ?? "", g.Password, g.Country ?? "", Distance.Short,
-        (int)Math.Clamp(now - g.Started, 0, int.MaxValue), g.Min ?? 0, g.MaxScore ?? 99999,
-        [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", c.Hunterscore, null, null, Avatars.Slot(c.Avatar)))]);
+    /// <summary>The host is the game's own handle; the game's age is the time since it was created. A host can set any Hunter Score limit: it is kept within 0 to 99999, and no limit is that whole range, as the list shows it.</summary>
+    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", Whole(g.Reserve!.Id), g.Clients?.Length ?? 0, Whole(g.Max), g.Handle ?? "", g.Password, g.Country ?? "", Distance.Short,
+        Whole(now - g.Started), Whole(g.Min ?? 0, 99999), Whole(g.MaxScore ?? 99999, 99999),
+        [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", Whole(c.Hunterscore), null, null, Avatars.Slot(c.Avatar)))]);
+
+    static int Whole(long n, int max = int.MaxValue) => (int)Math.Clamp(n, 0, max);
 
     public async Task<IReadOnlyList<Tutorial>> TutorialsAsync() => [.. (await LoadAsync()).Tutorials.Select(t => new Tutorial(t.Id, t.Name, "", t.Reserve))];
 
