@@ -112,6 +112,12 @@ static partial class SectionBackup
             if (section == "hunt_details") Hunts(uid, name, json, files, rejected);
             // `trophies` is Trophy/list ({total, trophies}) in one tool and the own trophies and harvests (an array) in the other
             else if (section == "trophies" && json is JsonArray) files.Add(Reply("/game/user/trophies", [], uid, json));
+            // `profile` is the public profile (`hostname`: Public_user/getByHostname) in one tool and the API v2 profile in the other; a `v2_profile` section, when there is one, wins
+            else if (section == "profile" && json is JsonObject { } profile && BackupReader.Text(profile["hostname"]) is { } hostname) files.Add(Reply("/v1/Public_user/getByHostname", [$"hostname={hostname}"], uid, json));
+            else if (section == "profile" && json is JsonObject { } v2 && (v2.ContainsKey("background") || v2.ContainsKey("ribbon") || v2.ContainsKey("earned_achievements")))
+            {
+                if (!zip.Entries.Any(x => x.FullName == prefix + "json_v2_profile.json")) files.Add(Reply("/game/user/@/profile", [], uid, json));
+            }
             else if (LodgeFile().Match(section) is { Success: true } lodge) files.Add(Reply($"/game/user/@/lodges/{lodge.Groups[1].Value}", [], uid, json));
             else if (Known.TryGetValue(section, out var k)) files.Add(Reply(k.Endpoint, k.Params, uid, json));
             else files.Add(new(name, "", new Dictionary<string, string>(), null, json));

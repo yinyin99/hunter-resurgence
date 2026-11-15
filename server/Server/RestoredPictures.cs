@@ -152,7 +152,11 @@ public sealed partial class State
                     if (Path.Combine(AccountPhotos(account), (string)r[1]) is var file && File.Exists(file)) rows.TryAdd(Restorer.Sha256(file), (long)r[0]);
             var total = rows.Count;
             var updates = new List<(long Id, string Saved)>();
-            foreach (var zip in zips.TakeWhile(_ => rows.Count > 0))
+            (string Path, JsonNode? Body)? profile = null;  // the saved v2 profile (`game_user_<uid>_profile.json`: background and ribbon) the account lacks, from the newest zip that has it
+            bool needProfile;
+            using (var con = Con(account))
+                needProfile = RestoredProfile(con) is null;
+            foreach (var zip in zips.TakeWhile(_ => rows.Count > 0 || (needProfile && profile is null)))
             {
                 var read = Importer.Read(zip, Catalogue);
                 var linked = Restorer.PicturesZip(zip);
@@ -161,14 +165,17 @@ public sealed partial class State
                 foreach (var p in GalleryEntries(read))
                     if (hashes.Entries.TryGetValue(ZipPicture(media, (string)p["url"]!)?.Entry ?? PictureLinks.EntryName((string)p["url"]!), out var hash) && rows.Remove(hash, out var id))
                         updates.Add((id, Py.Dumps(SavedDetails(p))));
+                if (needProfile && profile is null && read.Model.Extras.FirstOrDefault(e => Regex.IsMatch(e.Key, @"^game_user_\d+_profile\.json$")) is { Key: not null } saved)
+                    profile = (saved.Key, saved.Value);
             }
             using (var con = Con(account))
             {
                 con.Begin();
                 foreach (var (id, saved) in updates) con.Exec("UPDATE photos SET saved = ? WHERE account_id = $a AND id = ?", saved, id);
+                if (profile is { } p) PlayerRows.SetExtra(con, p.Path, p.Body);
                 con.Commit();
             }
-            lines.Add($"{account} {(string)Store.AccountJson(account)["handle"]!} {updates.Count} of {total} gallery pictures updated");
+            lines.Add($"{account} {(string)Store.AccountJson(account)["handle"]!} {updates.Count} of {total} gallery pictures updated" + (profile is null ? "" : ", profile background restored"));
         }
         return lines;
     }
@@ -226,13 +233,19 @@ public sealed partial class State
     public byte[]? SavedScorePage(long account, long killId) =>
         SavedPage(account, killId) is { } file && LoadKill(account, killId) is null ? File.ReadAllBytes(file) : null;
 
-    /// <summary>The saved hunt with each kill's `photo` (a link on the official host) replaced by the link of the stored picture, where the zip had it.</summary>
-    JsonNode LinkPhotos(long account, JsonNode hunt)
+    /// <summary>The saved hunt with each kill's `photo` (a link on the official host) replaced by the link of the stored picture, where the zip had it; else by the link of the restored trophy shot (type 2) whose saved
+    /// `kill_id` is the kill's id (the newest). A kill with neither keeps its photo as saved.</summary>
+    JsonNode LinkPhotos(Db con, long account, JsonNode hunt)
     {
-        foreach (var info in ((hunt as JsonObject)?["kills"] as JsonArray ?? []).OfType<JsonObject>().Select(k => k["kill"] as JsonObject))
-            if (info is not null && Py.IsStr(info["photo"]) && Importer.MediaPath("kills", (string)info["photo"]!) is { } path
-                && File.Exists(Path.Combine(AccountPhotos(account), Importer.CleanName(path))))
-                info["photo"] = PhotoUrl(account, Importer.CleanName(path));
+        var shots = new Dictionary<string, string>(StringComparer.Ordinal);  // kill id -> file of its newest trophy shot
+        foreach (var r in con.Rows("SELECT json_extract(saved, '$.kill_id'), file FROM photos WHERE account_id = $a AND saved IS NOT NULL AND file IS NOT NULL AND photo_type = 2 ORDER BY id DESC"))
+            if (r[0] is not DBNull) shots.TryAdd(Py.Str(Py.FromSql(r[0])), (string)r[1]);
+        foreach (var k in ((hunt as JsonObject)?["kills"] as JsonArray ?? []).OfType<JsonObject>())
+            if (k["kill"] is JsonObject info)
+                if (Py.IsStr(info["photo"]) && Importer.MediaPath("kills", (string)info["photo"]!) is { } path
+                    && File.Exists(Path.Combine(AccountPhotos(account), Importer.CleanName(path))))
+                    info["photo"] = PhotoUrl(account, Importer.CleanName(path));
+                else if (Py.IsNum(k["id"]) && shots.TryGetValue(Py.Str(k["id"]), out var file)) info["photo"] = PhotoUrl(account, file);
         return hunt;
     }
 

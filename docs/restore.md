@@ -31,6 +31,7 @@ No `format` in the manifest = format 1 (defined in [backup.md](backup.md#what-is
 | `expeditions`, `hunt_details` | `Expedition/list` (one page), and `Public_user/expedition` once per key of the object (a key that is not a hunt id is rejected) |
 | `gallery`, `gallery_all` | `Gallery/list` (one page), `Gallery/list_all`: the saved gallery replies the pictures are read from (the zip holds the links, not the pictures) |
 | `wallet_transactions`, `wallet_silver`, `wallet_bank`, `wallet_spent` | `Wallet/transactions`, `Wallet/silver_transactions`, `Wallet/bank_transactions`, `Wallet/spent` |
+| `profile` (by shape: a `hostname` key is the public profile, `Public_user/getByHostname` with `hostname=<handle>`; `background`, `ribbon` or `earned_achievements` without `hostname` is the v2 profile, dropped when the zip has a `v2_profile` section) | as the shape says |
 | `v2_profile`, `v2_ranks`, `v2_lodges`, `v2_backgrounds`, `v2_loadout` | `/game/user/<uid>/profile`, `/game/user/<uid>/ranks`, `/game/user/<uid>/lodges`, `/game/user/backgrounds`, `/game/user/loadout` |
 
 Every other section (competitions, lodge catalogues, `observed`, `poll` and the rest) is kept whole in `Extras` under its file name and counted as `unknown endpoint`.

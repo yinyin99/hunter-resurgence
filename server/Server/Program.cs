@@ -16,7 +16,7 @@ const string AdminUsage = """
     --account names another account (user id or handle); without it the local account gets it.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
-    admin gallery-details [--account <id or handle>] sets the species, score and kill of every restored gallery picture (or of one account's) from the zips the server kept (restores/<account>/): nothing is fetched, added or removed;
+    admin gallery-details [--account <id or handle>] sets the species, score and kill of every restored gallery picture (or of one account's), and restores the saved profile background and ribbon an account lacks, from the zips the server kept (restores/<account>/): nothing is fetched, added or removed;
     it prints one line per account: id, handle, pictures updated of pictures restored.
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
