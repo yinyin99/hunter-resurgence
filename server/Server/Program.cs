@@ -28,6 +28,7 @@ const string ImportUsage = """
     replaced, not merged; hunt history stays; the old database is copied beside it first. Without --account the account is the zip's
     user id (created when it does not exist), on a local server (offline_mode true) the local account. The zip is kept in the data folder.
     import pictures restores only the zip's pictures (gallery, kill photos, score pages, avatar) onto an existing account and leaves everything else as it is.
+    It only adds pictures: none of the account's is removed, and one it already has is not added twice. Gallery links the zip holds no file for are read from what the upload kept, or fetched from picture_link_hosts.
     """;
 
 const string ReviewUsage = """
@@ -152,7 +153,7 @@ void Import(string[] a)
         if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
         try
         {
-            var (report, avatar) = Restorer.ImportPictures(loaded, zip, target, settings.DataDir);
+            var (report, avatar) = Restorer.ImportPictures(loaded, zip, target, settings.DataDir, PictureLinks.FromCfg(settings.Cfg));
             Console.WriteLine(report);
             Console.WriteLine($"avatar: {avatar}");
         }
