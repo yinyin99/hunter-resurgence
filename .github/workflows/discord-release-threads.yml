@@ -1,0 +1,40 @@
+name: discord-release-threads
+# After the release workflow succeeds (its last step publishes the release), resolves the Discord forum threads linked in the merged pull requests of the release and in the issues they close (docs/deploy.md, "Discord threads at release").
+# A release published with the workflow's GITHUB_TOKEN does not fire `release: published`, so this follows the release run (workflow_run). By hand: Actions, discord-release-threads, Run workflow, with the tag.
+# The tag comes from the run, never from a shell line. Without the secrets DISCORD_BOT_TOKEN and DISCORD_GUILD_ID (a fork) the script ends with a notice.
+on:
+  workflow_run:
+    workflows: [release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The release tag, vMAJOR.MINOR.PATCH (a thread that is already resolved is skipped, so a re-run posts nothing twice)"
+        required: true
+      from:
+        description: "Start the range at this tag instead of the previous stable release (optional)"
+        required: false
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+concurrency:
+  group: discord-release-threads
+  cancel-in-progress: false
+jobs:
+  threads:
+    # a tag push of release that succeeded: for those, head_branch is the tag
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.event.workflow_run.head_branch }}
+      FROM: ${{ inputs.from }}
+      GH_TOKEN: ${{ github.token }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - run: node .github/scripts/discord-release-threads.mjs
