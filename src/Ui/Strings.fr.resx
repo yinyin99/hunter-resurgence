@@ -1521,5 +1521,5 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ce compte n’est pas autorisé à se connecter.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ce formulaire ne provient pas de ce serveur.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Le jeu est en cours. Fermer le lanceur déconnecte le jeu du serveur communautaire. Garder le lanceur ouvert ?&#10;&#10;Oui : le garder ouvert. Non : le réduire.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Le jeu est en cours. Fermer le launcher déconnecte le jeu du serveur communautaire. Garder le launcher ouvert ?&#10;&#10;Oui : le garder ouvert. Non : le réduire.</value></data>
 </root>

@@ -1521,5 +1521,5 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne kontoen kan ikke logge inn.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dette skjemaet kommer ikke fra denne serveren.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Denne påloggingen er allerede bekreftet.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spillet kjører. Hvis du lukker oppstarteren, kobles spillet fra fellesskapsserveren. Vil du la oppstarteren være åpen?&#10;&#10;Ja: la den være åpen. Nei: minimer den.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spillet kjører. Hvis du lukker launcheren, kobles spillet fra community-serveren. Vil du la launcheren være åpen?&#10;&#10;Ja: la den være åpen. Nei: minimer den.</value></data>
 </root>

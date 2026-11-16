@@ -19,18 +19,18 @@ public partial class MainWindow : Window
         Closing += (_, e) =>
         {
             var d = Decide(ending, () => GameFiles.ClientRunning(Settings.Load().ClientExe), AskKeepOpen);
-            if (d == Close.Exit) return;
+            if (d == CloseChoice.Exit) return;
             e.Cancel = true;
-            if (d == Close.Minimize) WindowState = WindowState.Minimized;
+            if (d == CloseChoice.Minimize) WindowState = WindowState.Minimized;
         };
         Blazor.StartPath = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--route="))?[8..] ?? "/splash";
     }
 
-    public enum Close { Exit, KeepOpen, Minimize }
+    public enum CloseChoice { Exit, KeepOpen, Minimize }
 
     /// <summary>The window exits at a Windows shutdown or sign-out and when the game is not running; else the player's answer (keepOpen false: Minimize), and the launcher stays up either way.</summary>
-    public static Close Decide(bool sessionEnding, Func<bool> gameRunning, Func<bool> keepOpen) =>
-        sessionEnding || !gameRunning() ? Close.Exit : keepOpen() ? Close.KeepOpen : Close.Minimize;
+    public static CloseChoice Decide(bool sessionEnding, Func<bool> gameRunning, Func<bool> keepOpen) =>
+        sessionEnding || !gameRunning() ? CloseChoice.Exit : keepOpen() ? CloseChoice.KeepOpen : CloseChoice.Minimize;
 
     static bool AskKeepOpen() =>
         MessageBox.Show(Kit.S("Launcher.CloseWhileRunning"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
