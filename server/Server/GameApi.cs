@@ -651,12 +651,11 @@ public static class GameApi
         return new(200, JsonAnyOrigin(), Py.DumpBytes(reply), "patch");
     }
 
-    /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number.</summary>
+    /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number. The `name` is not taken: the game sends the one it read when it loaded the lodge, which would undo a rename made since.</summary>
     static byte[] LeaveForm(byte[] body)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(body));
         var sent = new JsonObject();
-        if (form.TryGetValue("name", out var name)) sent["name"] = name[0];
         if (form.TryGetValue("style_id", out var style) && long.TryParse(style[0], out var id)) sent["style_id"] = id;
         return Encoding.UTF8.GetBytes(sent.ToJsonString());
     }
