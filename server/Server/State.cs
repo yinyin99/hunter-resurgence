@@ -541,42 +541,19 @@ public sealed partial class State
         return name;
     }
 
-    /// <summary>Apply an Inventory/move_multiple2 call in one transaction.
-    ///
-    /// cloned: [{"item_guid": "new_item_&lt;ts&gt;", "item_id": N}] creates a stack of one full box for each entry; the reply maps each placeholder to its
-    /// new guid, or is null when nothing was cloned (the reply is `null`). `box(item)` is the stack size of an item that may be cloned, null for any other: an entry for it creates nothing.
-    /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.</summary>
-    public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Func<long, long?> box)
+    /// <summary>Apply an Inventory/move_multiple2 call in one transaction: mapping `[{"item_guid": guid, "slot_id": N}]` sets slots; unknown guids and `new_item_*` placeholders are ignored.
+    /// The reply is always `null`: a `clonedItems` entry creates nothing, the game knows no row the connect did not carry, and an update of a slot with a guid it does not know empties that slot.</summary>
+    public static void MoveMultiple2(Db con, JsonArray mapping)
     {
-        var @new = new List<(JsonNode? Key, long Guid)>();  // Python dict: keys compared with ==
         con.Begin();
-        var nextGuid = NextId(con, "items", "guid");
-        foreach (var node in cloned)
-        {
-            var c = node!.AsObject();
-            if (!TryKey(c["item_id"], out var id) || box(id) is not { } units)
-                continue;
-            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", nextGuid, id, units);  // a full box, whatever the request says
-            var i = @new.FindIndex(x => Py.Eq(x.Key, c["item_guid"]));
-            if (i >= 0) @new[i] = (@new[i].Key, nextGuid);
-            else @new.Add((c["item_guid"], nextGuid));
-            nextGuid++;
-        }
         foreach (var node in mapping)
         {
             var m = node!.AsObject();
-            var i = @new.FindIndex(x => Py.Eq(x.Key, m["item_guid"]));
-            var guid = i >= 0 ? @new[i].Guid.ToString() : Py.Str(m["item_guid"]);
+            var guid = Py.Str(m["item_guid"]);
             if (Py.IsDigit(guid))
                 con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", m["slot_id"], long.Parse(guid));
         }
         con.Commit();
-        if (@new.Count == 0)
-            return null;
-        var reply = new JsonObject();
-        foreach (var (key, guid) in @new)
-            reply[Py.IsStr(key) ? Py.Str(key) : Py.Dumps(key)] = guid;  // json.dumps turns non-str keys into their JSON text
-        return reply;
     }
 
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
@@ -1556,10 +1533,6 @@ public sealed partial class State
     /// <summary>Whether unlimited ammunition is on: the setting, or a connect template that has the service (as a recorded one may).</summary>
     bool UnlimitedService => UnlimitedAmmo || Py.Truthy(connect["inventory"]?["active_services"]?["UNLIMITED_AMMO"]);
 
-    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition the account already owns; null for any other item.</summary>
-    long? CloneBox(Db con, long itemId) =>
-        UnlimitedService && IsAmmo(itemId) && con.Scalar("SELECT 1 FROM items WHERE account_id = $a AND item_id = ?", itemId) is not null ? Box(itemId) : null;
-
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
     /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0
     /// or the player would own more of an item than the catalogue allows (<see cref="OverOwnLimit"/>).</summary>
@@ -1922,9 +1895,9 @@ public sealed partial class State
             return "null"u8.ToArray();  // the tutorial's own item numbers are not the account's
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
-        var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
         using var con = Con(account);
-        return Py.DumpBytes(MoveMultiple2(con, mapping, cloned, id => CloneBox(con, id)));
+        MoveMultiple2(con, mapping);
+        return "null"u8.ToArray();
     }
 
     public byte[] HeartbeatReply(long account, byte[] body)

@@ -4,7 +4,7 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-/// <summary>`unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition full, a cloned box is full and never past its stack size,
+/// <summary>`unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition full, no box is cloned by the inventory page (the game would not know it),
 /// and no ammunition is sold. Off: ammunition is an item like any other. Item 77 is an ammunition (a box of 10) that is not the free kit's; 19 is a lure.</summary>
 public class UnlimitedAmmoTests : StateTestBase
 {
@@ -77,17 +77,12 @@ public class UnlimitedAmmoTests : StateTestBase
     byte[] Clone(string entries) => state.MoveMultiple2Reply(ME, Form(new JsonArray(), JsonNode.Parse(entries)));
 
     [Fact]
-    public void AClonedBoxIsFullEachTimeWhateverTheRequestSaysAndOnlyOfAnAmmunitionTheAccountOwns()
+    public void AClonedEntryCreatesNothingWhateverTheSettingAndTheReplyIsNull()
     {
         Make(true);
-        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""));  // an ammunition it does not own yet
         SetStacks(3);
-        var reply = Reply(Clone("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}, {"item_guid": "new_item_3", "item_id": 77}]"""));
-        Assert.Equal(3, reply.AsObject().Count);
-        Assert.Equal("3 10 10 10", Stacks());
-        // an item that is no ammunition (a lure it does not own, a bullet the catalogue does not class) is never created
-        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 19}, {"item_guid": "new_item_2", "item_id": 10}]"""));
-        Assert.DoesNotContain(19L, state.Inventory(ME).Select(i => (long)i!["item_id"]!));
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}]"""));
+        Assert.Equal("3", Stacks());
     }
 
     [Fact]

@@ -398,12 +398,16 @@ public static class Replay
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
         static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
-        public const string Version = "timer1";
+        public const string Version = "timer2";
         // the two places the script fills the Teams model's timer: the first read of the page and the refresh
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
-        static int warned, warnedApp, warnedFrame;
+        /// <summary>With the unlimited-ammunition service on, the page copies an ammunition stack dragged out of the lodge under a placeholder guid and expects the server to create it; it creates nothing,
+        /// and a placeholder in the page's update of the game's slots empties the slot. Served here, the page never copies a stack: the stack itself is moved.</summary>
+        public static readonly (string From, string To)[] Clones =
+            [("isItemClonable:function(e){return 3===e.get(\"cat\")&&1==this.unlimited_ammo", "isItemClonable:function(e){return!1&&1==this.unlimited_ammo")];
+        static int warned, warnedClone, warnedApp, warnedFrame;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
@@ -473,7 +477,10 @@ w();}).then(go,go);})();</script>
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
-            return ReplaceOnce(Encoding.Latin1.GetString(reply.Body), Reads, ref warned, "the in-game page's round timer read") is { } text ? NoCache(reply, Encoding.Latin1.GetBytes(text)) : reply;
+            var script = Encoding.Latin1.GetString(reply.Body);
+            var fixedScript = ReplaceOnce(script, Reads, ref warned, "the in-game page's round timer read") ?? script;
+            fixedScript = ReplaceOnce(fixedScript, Clones, ref warnedClone, "the in-game page's ammunition copy") ?? fixedScript;
+            return ReferenceEquals(fixedScript, script) ? reply : NoCache(reply, Encoding.Latin1.GetBytes(fixedScript));
         }
 
         static readonly Regex Locale = new(@"\A/static/app/[^/]+/locale/[a-z_]+\.js\z", RegexOptions.ECMAScript);
