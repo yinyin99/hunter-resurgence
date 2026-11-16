@@ -1521,4 +1521,5 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta não pode entrar.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>O jogo está em execução. Fechar o launcher desconecta o jogo do servidor da comunidade. Manter o launcher aberto?&#10;&#10;Sim: manter aberto. Não: minimizar.</value></data>
 </root>

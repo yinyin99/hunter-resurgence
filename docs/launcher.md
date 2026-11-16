@@ -134,7 +134,7 @@ The kit exists only when `server_url` is an `https://` address (without it, or w
    - A permission window for the launcher (administrator): choose **Yes**. Only the edit of the hosts file runs as administrator.
 
    You do this once. **Not now** keeps the launcher usable, but the game cannot reach the community server until you set up: Settings, **Set up for the community server** opens the same window again.
-2. **Keep the launcher open** while you play, and start the game from it. The forwarder starts with the launcher and stops when it closes.
+2. **Keep the launcher open** while you play, and start the game from it. The forwarder starts with the launcher and stops when it closes. So while the game runs (`GameFiles.ClientRunning`), closing the launcher window (the X, Alt+F4, the taskbar's close) does not exit: it asks "Keep the launcher open?" with **Yes** (the default: stay open) and **No** (minimize to the taskbar); both keep the forwarder running, and there is no "close anyway". Once the game has exited the window closes as usual, and a Windows shutdown or sign-out is never held up (`MainWindow.Decide`).
 3. The first time the game starts, **Windows Firewall asks about the game: click Allow**. Without it the game cannot hunt.
 4. To undo everything, choose Settings, **Remove the setup**. Windows asks to remove the certificate authority (choose Yes) and, as in setup, for administrator permission to edit the hosts file (choose Yes). After that the game talks to its own servers again (if they still exist).
 

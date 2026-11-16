@@ -1521,4 +1521,5 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Det här kontot får inte logga in.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spelet körs. Om du stänger launchern kopplas spelet från communityservern. Vill du låta launchern vara öppen?&#10;&#10;Ja: låt den vara öppen. Nej: minimera den.</value></data>
 </root>
