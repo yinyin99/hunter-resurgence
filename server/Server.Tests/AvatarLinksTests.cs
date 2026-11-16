@@ -268,6 +268,25 @@ public class AvatarLinksTests : StateTestBase
     }
 
     [Fact]
+    public async Task AFetchWithABudgetStopsAtTheCapAndOneWithoutTakesEveryLinkLeft()
+    {
+        var links = new PictureLinks(["photos.test"], new TwoHosts(gallery: 2050, gate: false));
+        var urls = Enumerable.Range(1, 2050).Select(n => $"https://photos.test/p/{n}.jpg").ToList();
+        var path = Path.Combine(tmp, "cap.zip");
+        Assert.Equal(PictureLinks.MaxPictures, await links.Fetch(urls, path));  // the upload's call: at most the cap
+        Assert.Equal(1050, await links.Fetch(urls, path, Timeout.InfiniteTimeSpan));  // a restore's call: every link left, past the cap
+    }
+
+    [Fact]
+    public async Task AGalleryLargerThanTheUploadCapIsCompletedByTheApproveThatAdoptsTheZipsUserId()
+    {
+        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], new TwoHosts(gallery: 2100, gate: false)) };
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(2100), uploads, uploads));  // the never-played account takes the zip's user id 1001; approve fetches more than the cap
+        using var con = state.Store.Open(1001);
+        Assert.Equal(2100L, con.Scalar("SELECT count(*) FROM photos WHERE account_id = $a AND saved IS NOT NULL"));
+    }
+
+    [Fact]
     public void ImportPicturesCompletesAPicturesZipThatLacksLinks()
     {
         var zip = SectionZip();
