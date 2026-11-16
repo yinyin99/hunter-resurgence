@@ -145,7 +145,7 @@ static partial class SectionBackup
     }
 
     /// <summary>The saved reply of an endpoint, named the way the backup tool names it: the path without its `/v1` and `/`, then `__key=value` per param, as <see cref="Importer.CleanName"/>.</summary>
-    static SavedFile Reply(string endpoint, string[] ps, string uid, JsonNode? json)
+    internal static SavedFile Reply(string endpoint, string[] ps, string uid, JsonNode? json)
     {
         endpoint = endpoint.Replace(U, uid);
         var pairs = ps.Select(p => p.Replace(U, uid).Split('=', 2)).ToList();
