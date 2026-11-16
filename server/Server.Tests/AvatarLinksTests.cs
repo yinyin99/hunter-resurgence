@@ -195,7 +195,7 @@ public class AvatarLinksTests : StateTestBase
     }
 
     /// <summary>A zip of another tool's layout (index.json and json_&lt;section&gt;.json): the player's own avatar is the uploaded one, by the website's address with a hash query, in `me` and in the public profile; two gallery links.</summary>
-    string SectionZip()
+    string SectionZip(int links = 6)
     {
         const string Link = "https://site.example/media/avatar/uploads/thumb/242x242/12345.jpg?5f3a9c";
         var path = Path.Combine(tmp, "sections.zip");
@@ -209,7 +209,7 @@ public class AvatarLinksTests : StateTestBase
             Put("index.json", """{"captured_at":"2026-01-02T03:04:05.000Z","user_id":"1001","handle":"sample","files":["json_me.json","json_public_profile.json","json_gallery.json"]}""");
             Put("json_me.json", $$"""{"id":1001,"handle":"sample","hostname":"sample","gender":1,"hunterscore":1234,"membershipType":"freeplay","ems":12.5,"gms":20000.25,"avatar":"{{Link}}"}""");
             Put("json_public_profile.json", $$"""{"id":1001,"handle":"sample","hostname":"sample","avatar":"{{Link}}"}""");
-            Put("json_gallery.json", $$"""{"photos":[{{string.Join(",", Enumerable.Range(1, 6).Select(n => $$"""{"url":"https://photos.test/p/{{n}}.jpg","type":1}"""))}}]}""");
+            Put("json_gallery.json", $$"""{"photos":[{{string.Join(",", Enumerable.Range(1, links).Select(n => $$"""{"url":"https://photos.test/p/{{n}}.jpg","type":1}"""))}}]}""");
         }
         return path;
     }
