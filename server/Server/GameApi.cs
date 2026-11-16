@@ -474,14 +474,14 @@ public static class GameApi
             var edit = Handle(game, r =>
             {
                 var (lodge, trophy) = (LodgeEdit.Match(r.Path), TrophyEdit.Match(r.Path));
-                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge: form `name`, `style_id`, both echoes of what it read when it loaded the lodge
+                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge or opening the editor: form `name`, `style_id`, both echoes of what it read when it loaded the lodge
                 if (!s.Online || !(r.Method == "PUT" || form) || !(lodge.Success || trophy.Success))
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
                 var status = !long.TryParse((lodge.Success ? lodge : trophy).Groups[1].Value, out var id) ? 404
                     : trophy.Success ? s.HideTrophy(a, id, r.Body)
-                    : form ? s.SaveLodgeSettings(a, id, "{}"u8.ToArray())  // an edit with no keys: 200 for the account's own lodge, 404 otherwise, nothing stored
+                    : form ? s.SaveLodgeSettings(a, id, "{}"u8.ToArray())  // an edit with no key: 200 for the account's own lodge, 404 otherwise, nothing changes
                     : lodge.Groups[2].Success ? s.SaveLodgeSettings(a, id, r.Body) : s.SaveLodge(a, id, r.Body);
                 return status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state") : Rejected(game, r, status);
             });
