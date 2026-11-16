@@ -237,19 +237,19 @@ public class ReplayTests : IAsyncLifetime
         var cfg = (JsonObject)Cfg.DeepClone();
         cfg["install_dir"] = tmp;
         await using var own = await Loopback.StartAsync(new Game(table, cfg, null, mirror));
-        Put("dist/main.js", "function a(){return 'https://api.' + getObj().getServer() + '/v1';}function b(){return 'https://apiv2.' + getObj().getServer();}function c(){return 'https://static.' + getObj().getServer();}var i=s + '/static/img/lodge/slots/' + n,j='https://static.example.test/static/img/lodge/slots/' + m;");
+        Put("dist/main.js", "function a(){return 'https://api.' + getObj().getServer() + '/v1';}function b(){return 'https://apiv2.' + getObj().getServer();}function c(){return 'https://static.' + getObj().getServer();}var i=s + '/static/img/lodge/slots/' + n,j='https://static.example.test/static/img/lodge/slots/' + m,k=s + '/static/img/items/256/' + n,l=s + '/static/img/map/' + n;");
         Put("static/app/9.9.9/webgui/index.html", "<script src=\"/dist/main.js\"></script>");
         var script = await own.SendAsync("GET", "game_web.test", "/dist/main.js");
         Assert.Equal("patch", script.Source);
-        Assert.Equal("function a(){return window.location.origin + '/v1';}function b(){return window.location.origin + '/v1';}function c(){return window.location.origin;}var i=s + '/content/lodge/slots/' + n,j='/content/lodge/slots/' + m;", Encoding.UTF8.GetString(script.Body));  // the pictures are asked for under /content, which this server answers
+        Assert.Equal("function a(){return window.location.origin + '/v1';}function b(){return window.location.origin + '/v1';}function c(){return window.location.origin;}var i=s + '/content/lodge/slots/' + n,j='/content/lodge/slots/' + m,k=s + '/content/items/256/' + n,l=s + '/static/img/map/' + n;", Encoding.UTF8.GetString(script.Body));  // the lodge and item pictures are asked for under /content, which this server answers
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<script>(function(){var n=window.hunter,f=window.fetch;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
-        Assert.EndsWith("go();},go);})();</script>", page);
+        Assert.StartsWith("<script>(function(){var n=window.hunter,f=window.fetch,g=0;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
+        Assert.EndsWith(".then(go,go);})();</script>", page);
         Assert.DoesNotContain("<script src=\"/dist/main.js\">", page);  // the page's own tag is replaced: the script is added once the answers are in, under the new token
         Assert.Contains("s.src=\"/dist/main.js?t=urls2\"", page);
-        Assert.Contains("n.getAuthToken()", page);
+        Assert.Contains("window.hunter.getAuthToken()", page);
         Assert.Contains("hunterSetLocale", page);
         Assert.Contains(("Cache-Control", "no-cache"), frame.Headers);
         Put("static/app/9.9.8/webgui/index.html", "<script src=\"/other.js\"></script>");
@@ -349,6 +349,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/24/0.png")).Source);  // an unrelated archived 0.png is never the overlay
         Same(("lodge"u8.ToArray(), "archive"), await Get("game_web.test", "/content/lodge/lodges/classy.png"));
         Same(("layout"u8.ToArray(), "archive"), await Get("game_web.test", "/content/lodge/layouts/only.svg"));
+        Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/slots/x.png")).Source);  // only a layout takes the archive's one file of its name: x.png there is the item picture
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/lodges/rustic.png"));
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern
