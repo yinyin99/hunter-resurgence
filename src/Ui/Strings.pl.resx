@@ -1521,4 +1521,5 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>To konto nie może się zalogować.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Gra jest uruchomiona. Zamknięcie launchera rozłączy ją z serwerem społeczności. Zostawić launcher otwarty?&#10;&#10;Tak: zostaw otwarty. Nie: zminimalizuj.</value></data>
 </root>
