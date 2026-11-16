@@ -21,8 +21,11 @@ public sealed class MultiplayerPagesTests : UiContext
         public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>([]);
         public Task<IReadOnlyList<Loadout>> LoadoutsAsync() => Task.FromResult<IReadOnlyList<Loadout>>([]);
         public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) => Task.FromResult(Result.Success);
-        public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) { Hosted = (game, reserve, marker, minutes); return Task.FromResult(Result.Success); }
-        public Task<Result> JoinAsync(long server, int marker, string? password, int loadout) { Joined = (server, marker, password); return Task.FromResult(Join(password)); }
+        /// <summary>When set, a create or join waits for it: the launch is "in flight".</summary>
+        public TaskCompletionSource<Result>? Pending;
+        public int Launches;
+        public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) { Hosted = (game, reserve, marker, minutes); Launches++; return Pending?.Task ?? Task.FromResult(Result.Success); }
+        public Task<Result> JoinAsync(long server, int marker, string? password, int loadout) { Joined = (server, marker, password); Launches++; return Pending?.Task ?? Task.FromResult(Join(password)); }
         public Task<Result> StartTutorialAsync(int id) => Task.FromResult(Result.Success);
     }
 
@@ -140,5 +143,44 @@ public sealed class MultiplayerPagesTests : UiContext
 
         cut.WaitForAssertion(() => Assert.Equal("letmein", fake.Joined!.Value.Password));
         cut.WaitForAssertion(() => Assert.Empty(cut.FindAll("form#mp-password-dialog")));
+    }
+
+    [Fact]
+    public void TwoQuickClicksOnStartSendOneLaunchAndAFailedStartEnablesTheButtonAgain()
+    {
+        var fake = new Fake { Pending = new() };
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 2));
+
+        cut.WaitForAssertion(() => Assert.Null(cut.Find(".start button.btn-primary").GetAttribute("disabled")));
+        cut.Find(".start button.btn-primary").Click();
+        cut.WaitForAssertion(() => Assert.NotNull(cut.Find(".start button.btn-primary").GetAttribute("disabled")));
+        cut.Find(".start button.btn-primary").Click();
+        Assert.Equal(1, fake.Launches);
+
+        fake.Pending.SetResult(Result.Fail("Launch.Failed"));
+        cut.WaitForAssertion(() => Assert.Null(cut.Find(".start button.btn-primary").GetAttribute("disabled")));
+        fake.Pending = null;
+        cut.Find(".start button.btn-primary").Click();
+        cut.WaitForAssertion(() => Assert.Equal(2, fake.Launches));
+    }
+
+    [Fact]
+    public void TwoQuickClicksOnAMapMarkerSendOneJoin()
+    {
+        var fake = new Fake { Pending = new() };
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Open));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
+        cut.Find("button.marker").Click();
+        cut.Find("button.marker").Click();
+        Assert.Equal(1, fake.Launches);
+
+        fake.Pending.SetResult(Result.Fail("Join.Full"));
+        cut.WaitForAssertion(() => Assert.Equal("This game is full. Please try another game.", AlertText));
+        fake.Pending = null;
+        cut.Find("button.marker").Click();
+        cut.WaitForAssertion(() => Assert.Equal(2, fake.Launches));
     }
 }
