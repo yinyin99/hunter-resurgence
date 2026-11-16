@@ -528,17 +528,32 @@ public sealed class Store
         return [.. con.Rows("SELECT id, json_extract(account, '$.avatar_url') FROM accounts WHERE json_extract(account, '$.avatar_url') IS NOT NULL").Select(r => ((long)r[0], (string)r[1]))];
     }
 
-    /// <summary>Point the account's picture at `url`: its `avatar_url` and the `avatar` of its restored profile. A `face` also sets the account's `face`, `avatar` and `avatar_id` (the last two where it has them), as a restore does.</summary>
-    public void SetAvatar(long id, string url, long? face)
+    /// <summary>Point the account's picture at `url`: its `avatar_url` and the `avatar` of its restored profile. A `face` also sets the account's `face`, `avatar` and `avatar_id` (the last two where it has them), as a restore does; a `gender` sets the account's `gender`.</summary>
+    public void SetAvatar(long id, string url, long? face, long? gender = null)
     {
         using (var con = Open())
         {
             con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar_url', ?) WHERE id = ?", url, id);
             if (face is { } f)
                 con.Exec("UPDATE accounts SET account = json_replace(json_set(account, '$.face', ?1), '$.avatar', ?1, '$.avatar_id', ?1) WHERE id = ?2", f, id);
+            if (gender is { } g)
+                con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', ?) WHERE id = ?", g, id);
         }
         using var mine = Open(id);
         mine.Exec("UPDATE profile SET body = json_set(body, '$.avatar', ?) WHERE account_id = $a", url);
+        if (gender is { } g2)
+            mine.Exec("UPDATE profile SET body = json_set(body, '$.gender', ?) WHERE account_id = $a", g2);
+    }
+
+    /// <summary>Set the account's `gender` when it differs and the account never restored anything (no restored id, no restore audit, no claim); true when it changed.</summary>
+    public bool FixGenderUnlessRestored(long id, long gender)
+    {
+        using var con = Open();
+        if (con.Scalar("SELECT 1 FROM accounts WHERE id = ? AND json_extract(account, '$.gender') IS NOT ?", id, gender) is null
+            || con.Scalar("SELECT 1 FROM restored_ids WHERE account_id = ? UNION ALL SELECT 1 FROM claims WHERE account_id = ?", id, id) is not null) return false;
+        using (var mine = Open(id))
+            if (mine.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a") is not null) return false;
+        return con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', ?) WHERE id = ?", gender, id) > 0;
     }
 
     /// <summary>The minigames' boards by kind: the game id of heartbeat event 17 (<see cref="RestoredReads.BestScore"/>).</summary>

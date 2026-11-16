@@ -221,7 +221,7 @@ void Review(string[] a)
     Directory.CreateDirectory(settings.DataDir);
     var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
-    var uploads = new Uploads(state, settings.DataDir);
+    var uploads = new Uploads(state, settings.DataDir) { Pictures = PictureLinks.FromCfg(settings.Cfg) };
     var claims = OpenClaims(state);
     switch (a[0])
     {

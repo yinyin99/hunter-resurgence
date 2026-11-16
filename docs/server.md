@@ -417,7 +417,9 @@ Every account shows one picture: an avatar of the game's list, or the one import
 
 An address is an avatar of the list when its path ends with the path of that avatar's picture in the list, whatever its host: an account's `…/media/avatar/256/<id>.png` on the web host is the list's `…/256/<id>.png`.
 
-- **A new account** has the default avatar, `1000000`.
+- **A new account** has the default avatar, `1000000`, and the `gender` of its list entry (`m` is 1, `f` is 0; the male default gives a male body). The game draws the character from `gender` and `face` of the connect `account`, so a choice shows at the player's next game start.
+- **Choosing a listed avatar** (`POST /account/avatar`, which the website, the launcher and the sign-up carousel use) sets `gender` from its list entry together with `face`; choosing the imported picture leaves `gender` as it is.
+- **At start**, a community server also gives an account that never restored anything (no restored id, restore audit or claim) the `gender` of its listed avatar when they disagree. A restored account keeps its own until the player picks a listed avatar. A second start changes nothing.
 - **A restore** ([Pictures](restore.md#pictures)) sets them from the zip's profile: the picture's address is an avatar of the list: `avatar_url` is that address and `face` the avatar's id (as before); else, when the zip holds the picture, it is the account's *imported avatar*: stored as `photos/<account id>/avatar.jpg` (besides its `images_` copy), `avatar_url` is its link on the game host (`/photos/<account id>/avatar.jpg`) and `face` the default avatar; else (no picture in the zip, or no address) the default avatar. A restore again replaces the imported avatar; the account's choice of a game avatar is replaced like the rest of the profile.
 - **At start**, a community server gives an account whose `avatar_url` is the address of a picture the player uploaded on the official site, and whose restored copy (`photos/<account id>/images_…`) is in its photo folder, that picture as its imported avatar (a copy at `avatar.jpg`, `avatar_url` and the restored profile's `avatar` the link above; its `face` stays). A picture with no copy stays as it is and shows the default avatar.
 - **The picture** of the imported avatar is the photo link `/photos/<account id>/avatar.jpg`, on the game host and on `web_host` ([Gallery](#gallery)), served as `image/jpeg` whatever the bytes are.
@@ -428,7 +430,7 @@ What the website is told (`avatar` in `GET /hunters/<handle>`, the board rows, t
 | Call | Answer |
 |---|---|
 | `GET /account/avatars` | `{current, ids, imported}`: the player's avatar as above (`null` for none), the ids of the game's avatars in the order of the list, and the link of the imported avatar (`null` without one). 401 when signed out |
-| `POST /account/avatar` | Form `id`: an id of the list, or `imported`; same checks as buy. Sets `avatar_url`, `face`, `avatar` and `avatar_id` (and the restored profile's `avatar`) as a restore does (`imported`: the link above and the default `face`), and answers like the `GET`. `404` `invalid` for an id that is not in the list, or `imported` without an imported avatar; 401 when signed out |
+| `POST /account/avatar` | Form `id`: an id of the list, or `imported`; same checks as buy. Sets `avatar_url`, `face`, `avatar` and `avatar_id` (and the restored profile's `avatar`) as a restore does, and for a listed avatar `gender` (account and restored profile) from its list entry (`imported`: the link above and the default `face`), and answers like the `GET`. `404` `invalid` for an id that is not in the list, or `imported` without an imported avatar; 401 when signed out |
 
 ## Wallet history
 

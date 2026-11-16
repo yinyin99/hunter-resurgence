@@ -14,7 +14,7 @@ public sealed class PictureLinks
 {
     /// <summary>The largest picture taken.</summary>
     public const int MaxBytes = 16 << 20;
-    /// <summary>The most links fetched for one save (a zip may list any number).</summary>
+    /// <summary>The most links fetched by one upload-time fetch (a restore fetches all that are left).</summary>
     public const int MaxPictures = 1000;
     /// <summary>The most bytes fetched for one save: the cap of a backup zip's content.</summary>
     public const long MaxTotalBytes = 1L << 30;
@@ -47,7 +47,8 @@ public sealed class PictureLinks
         HashSet<string> have = [];
         if (File.Exists(path))
             using (var old = ZipFile.OpenRead(path)) have = [.. old.Entries.Select(e => e.Name)];
-        var todo = urls.Distinct().Where(u => !have.Contains(EntryName(u))).Take(MaxPictures).ToList();
+        var todo = urls.Distinct().Where(u => !have.Contains(EntryName(u))).ToList();
+        if (budget is null) todo = todo.Take(MaxPictures).ToList();  // the cap is for the upload request; a restore (own budget) completes the gallery
         if (todo.Count == 0) return 0;
         var ok = 0;
         long total = 0;
