@@ -275,6 +275,10 @@ public class ReplayTests : IAsyncLifetime
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\animal_organs\24\5.png")), "organ"u8.ToArray(), 0),
             (ArcList.NameHash("classy.png"), Array.Empty<byte>(), 1),  // a picture name shared by folders (the lodge's layout has one too)
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\lodge\lodges\classy.png")), "lodge"u8.ToArray(), 0),
+            (ArcList.NameHash("index.html"), Array.Empty<byte>(), 1),  // two index.html pages: the classic page and the app's
+            (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\index.html")), "classic page"u8.ToArray(), 0),
+            (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webguiv2\index.html")), "app page"u8.ToArray(), 0),
+            (ArcList.NameHash("main.js"), "bundle"u8.ToArray(), 0),
         ];
         var arc = new MemoryStream();
         using (var tab = new BinaryWriter(File.Create(Path.Combine(d, "pc0.tab"))))
@@ -313,6 +317,10 @@ public class ReplayTests : IAsyncLifetime
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/lodges/rustic.png"));
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern
+        Same(("app page"u8.ToArray(), "archive"), await Get("game_web.test", "/static/app/3.0.81/webgui/index.html"));  // the lodge editor frame: the app's page, not the other index.html
+        Same(("bundle"u8.ToArray(), "archive"), await Get("game_web.test", "/dist/main.js"));
+        Assert.Equal("miss", (await Get("static.test", "/static/app/3.0.81/webgui/index.html")).Source);  // only the game web host's page
+        Assert.Equal("miss", (await Get("game_web.test", "/static/app/3.0.81/webgui/other.html")).Source);
     }
 
     [Fact]

@@ -230,6 +230,9 @@ public static class Replay
 
     static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/lodges/[a-z0-9_]{1,40}\.png)\z", RegexOptions.ECMAScript);
 
+    /// <summary>The in-game app's trophy lodge editor page: the lodge editor frame (`client#lodge_edit`) loads `/static/app/<version>/webgui/index.html`, and that page loads `/dist/main.js`. Both are the app pages of the install's archives (`webguiv2/`).</summary>
+    static readonly Regex AppPage = new(@"\A/(?:static/app/[^/]+/webgui/(index\.html)|dist/main\.js)\z", RegexOptions.ECMAScript);
+
     /// <summary>Bytes the client would load from the install's archives for this URL, or null. The client resolves
     /// static image and map URLs through the archives. exact: only files found through the relative path (a basename
     /// that exists in several directories, flags 1), so in the URL's directory; else only the single archived file
@@ -239,7 +242,12 @@ public static class Replay
         var url = host + path;
         var mapHost = S(cfg, "map_host").ToLowerInvariant();
         string name;
-        if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures
+        if (AppPage.Match(path) is { Success: true } page)
+        {
+            if (host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
+            name = page.Groups[1].Success ? "webguiv2/index.html" : "webguiv2/dist/main.js";
+        }
+        else if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures
         {
             if (!exact || host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
             name = "webgui/static/img/" + o.Groups[1].Value;
