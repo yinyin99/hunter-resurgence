@@ -514,7 +514,11 @@ public static class Replay
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
         /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
         /// (<see cref="ReplayScope"/>); a per-player one gets its empty reply, an unlisted one the miss.</summary>
-        public Reply Fallback(Req r) => TimerFix.Apply(r, Served(r));
+        public Reply Fallback(Req r) => TimerFix.Apply(r, NoStoreMiss(Served(r)));
+
+        /// <summary>A miss may be answered later (a picture the server learns to serve), so the client must not keep it in its disk cache.</summary>
+        static Reply NoStoreMiss(Reply reply) =>
+            reply.Source == "miss" ? reply with { Headers = [.. reply.Headers, ("Cache-Control", "no-store")] } : reply;
 
         Reply Served(Req r)
         {
