@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>ULTIMELE ȘTIRI</value></data>
   <data name="Feed.News" xml:space="preserve"><value>ȘTIRI {GAME}</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>DEZVOLTAT DE</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>URMĂRIȚI {GAME}</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>URMĂRIȚI</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Meniul principal</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>MAGAZIN</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>AJUTOR</value></data>

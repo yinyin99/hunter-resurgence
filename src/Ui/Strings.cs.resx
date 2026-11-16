@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>NEJNOVĚJŠÍ NOVINKY</value></data>
   <data name="Feed.News" xml:space="preserve"><value>{GAME} – NOVINKY</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>VYVINUL</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>SLEDUJTE {GAME}</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>SLEDUJTE</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Hlavní menu</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>OBCHOD</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>POMOC</value></data>

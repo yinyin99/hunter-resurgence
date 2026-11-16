@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>VIIMEISIMMÄT UUTISET</value></data>
   <data name="Feed.News" xml:space="preserve"><value>{GAME}-UUTISET</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>KEHITTÄJÄ</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>SEURAA {GAME}-PELIÄ</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>SEURAA</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Päävalikko</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>KAUPPA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>APU</value></data>

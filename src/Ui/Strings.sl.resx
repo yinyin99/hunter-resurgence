@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>NAJNOVEJŠE NOVICE</value></data>
   <data name="Feed.News" xml:space="preserve"><value>NOVICE: {GAME}</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>RAZVIJALEC</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>SLEDI: {GAME}</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>SLEDI</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Glavni meni</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>TRGOVINA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>POMOČ</value></data>

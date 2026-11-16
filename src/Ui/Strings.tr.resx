@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>SON HABERLER</value></data>
   <data name="Feed.News" xml:space="preserve"><value>{GAME} HABERLERİ</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>GELİŞTİREN</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>{GAME} OYUNUNU TAKİP EDİN</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>TAKİP EDİN</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Ana menü</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>MAĞAZA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>YARDIM</value></data>
