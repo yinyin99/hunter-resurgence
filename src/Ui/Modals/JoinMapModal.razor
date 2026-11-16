@@ -39,7 +39,7 @@
             <button type="button" class="close" aria-label="@L["Join.Close"]" @onclick="() => asking = null">&times;</button>
             <label for="join-password">@L["Join.Password"]</label>
             <input id="join-password" type="password" maxlength="20" placeholder="@L["Join.PasswordPlaceholder"]" @bind="password" autofocus />
-            <button class="btn btn-primary">@L["Join.Go"]</button>
+            <button class="btn btn-primary" disabled="@joining">@L["Join.Go"]</button>
         </form>
     }
 </div>
@@ -74,11 +74,19 @@
 
     Task Submit() => Join(asking!, password);
 
+    bool joining;  // a second click while the join runs would open another hunt
+
     async Task Join(MapMarker marker, string? pass)
     {
-        if (!await Modal.SetUpFirst(GameSettings)) return;
-        var result = await Servers.JoinAsync(Server.Id, marker.Id, pass, loadout);
-        // the map stays until the "Done hunting" window replaces it, as in the old app
-        if (result.Ok) { asking = null; Modal.GameStarted(Bridge); } else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
+        if (joining) return;
+        joining = true;
+        try
+        {
+            if (!await Modal.SetUpFirst(GameSettings)) return;
+            var result = await Servers.JoinAsync(Server.Id, marker.Id, pass, loadout);
+            // the map stays until the "Done hunting" window replaces it, as in the old app
+            if (result.Ok) { asking = null; Modal.GameStarted(Bridge); } else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
+        }
+        finally { joining = false; }
     }
 }

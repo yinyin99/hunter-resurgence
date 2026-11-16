@@ -17,7 +17,7 @@
             <button type="button" class="su-btn medium" @onclick="Change">@L["Signup.P4.Change"]</button>
             <button type="button" class="su-btn medium" @onclick="Resend">@L["Signup.P4.Resend"]</button>
         }
-        <button type="button" class="su-btn large" disabled="@(!ready)" @onclick="Launch">@L["Signup.P4.Launch"]</button>
+        <button type="button" class="su-btn large" disabled="@(!ready || starting)" @onclick="Launch">@L["Signup.P4.Launch"]</button>
         @if (!confirmed)
         {
             <button type="button" class="su-btn medium su-cog" aria-label="@L["Signup.P4.Settings"]" @onclick="Settings"><Icon Name="gear" /></button>
@@ -65,11 +65,19 @@
 
     void Settings() => Modal.Show<TutorialDialog>(backdrop: "none");
 
+    bool starting;  // a second click while the launch runs would open another hunt
+
     async Task Launch()
     {
-        var r = await Servers.StartTutorialAsync(1);
-        if (!r.Ok) { Modal.Alert(L[r.Error ?? "Launch.Failed"]); return; }
-        Nav.NavigateTo("/signup/page5");
+        if (starting) return;
+        starting = true;
+        try
+        {
+            var r = await Servers.StartTutorialAsync(1);
+            if (!r.Ok) { Modal.Alert(L[r.Error ?? "Launch.Failed"]); return; }
+            Nav.NavigateTo("/signup/page5");
+        }
+        finally { starting = false; }
     }
 
     public override void Dispose()

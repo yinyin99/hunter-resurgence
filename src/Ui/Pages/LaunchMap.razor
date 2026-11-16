@@ -57,7 +57,7 @@ else
             <label class="muted">@L["Launch.StartTime"]</label>
             <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
-            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.Create"].Value : L["Launch.Patching"].Value)</button>
+            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready || starting)" @onclick="Go">@(ready ? L["Launch.Create"].Value : L["Launch.Patching"].Value)</button>
         </div>
     </form>
 }
@@ -75,7 +75,7 @@ else
             <label class="muted">@L["Launch.StartTime"]</label>
             <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
-            <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
+            <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready || starting)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
         }
         <h3>@reserves.FirstOrDefault(r => r.Id == reserve)?.Name</h3>
         <div class="strip">
@@ -168,13 +168,21 @@ else
         return run.Length > 0 ? run[..Math.Min(run.Length, 5)] : fallback;  // at most 99999, the game's "no limit"
     }
 
+    bool starting;  // a second click while the launch runs would open another hunt
+
     async Task Go()
     {
-        if (!await Modal.SetUpFirst(GameSettings)) return;
-        var result = single
-            ? await Service.StartSingleAsync(reserve, marker, hour * 60, loadout)
-            : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
-                limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60, loadout);
-        if (result.Ok) Modal.GameStarted(Bridge); else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
+        if (starting) return;
+        starting = true;
+        try
+        {
+            if (!await Modal.SetUpFirst(GameSettings)) return;
+            var result = single
+                ? await Service.StartSingleAsync(reserve, marker, hour * 60, loadout)
+                : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
+                    limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60, loadout);
+            if (result.Ok) Modal.GameStarted(Bridge); else Modal.Alert(L[result.Error ?? "Launch.Failed"]);
+        }
+        finally { starting = false; }
     }
 }
