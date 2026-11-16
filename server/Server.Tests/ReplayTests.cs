@@ -245,7 +245,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
+        Assert.StartsWith("<style>._2nkM,._2m_7,._1bAk{zoom:1}</style><script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
         Assert.EndsWith(".then(go,go);})();</script>", page);
         Assert.DoesNotContain("<script src=\"/dist/main.js\">", page);  // the page's own tag is replaced: the script is added once the answers are in, under the new token
         Assert.Contains("s.src=\"/dist/main.js?t=urls2\"", page);

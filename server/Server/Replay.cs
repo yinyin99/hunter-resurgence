@@ -424,8 +424,9 @@ public static class Replay
         // ponytail: the inventory is read once, when the page loads; the editor's later refreshes of it show that list.
         // The page's other calls (`getSelectedPlatformId`, the mounted and unmounted trophy deltas, `getWeaponPlatformTypeID`, `selectTrophyMount`, `selectWeaponMount`: the trophy and weapon menus' own routes;
         // `getLoggedInUserID`, `confirmBuy`: only when the page sits in the website) are not on the game's object and not made up here.
+        // The editor's own style zooms its container to 0.9, and in this build the tooltips (`position: fixed`, placed from the icon's measured position) then land scaled on the icon they belong to: it loses the pointer and the tooltip closes at once. The zoom is cancelled for the three containers that have it (the editor's and the two menus'; a name the script does not have changes nothing); the container is sized in screen height, so it still fits.
         const string FrameScript = """
-<script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;
+<style>._2nkM,._2m_7,._1bAk{zoom:1}</style><script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;
 function go(){if(g)return;g=1;var s=document.createElement("script");s.src="/dist/main.js?t=urls2";s.onload=function(){if(u!==undefined&&window.setURL!==z)window.setURL(u);};document.body.appendChild(s);}
 if(f)window.fetch=function(r,o){var s=this,u;try{u=typeof r==="string"?r:r.url;}catch(e){}
 var d=function(){return f.call(s,r,o);};if(typeof u!=="string"||!(u.indexOf(location.origin+"/")===0||(u.charAt(0)==="/"&&u.charAt(1)!=="/")))return d();
