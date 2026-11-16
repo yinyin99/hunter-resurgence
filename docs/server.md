@@ -430,7 +430,7 @@ What the website is told (`avatar` in `GET /hunters/<handle>`, the board rows, t
 | Call | Answer |
 |---|---|
 | `GET /account/avatars` | `{current, ids, imported}`: the player's avatar as above (`null` for none), the ids of the game's avatars in the order of the list, and the link of the imported avatar (`null` without one). 401 when signed out |
-| `POST /account/avatar` | Form `id`: an id of the list, or `imported`; same checks as buy. Sets `avatar_url`, `face`, `avatar` and `avatar_id` (and the restored profile's `avatar`) as a restore does (`imported`: the link above and the default `face`), and answers like the `GET`. `404` `invalid` for an id that is not in the list, or `imported` without an imported avatar; 401 when signed out |
+| `POST /account/avatar` | Form `id`: an id of the list, or `imported`; same checks as buy. Sets `avatar_url`, `face`, `avatar` and `avatar_id` (and the restored profile's `avatar`) as a restore does, and for a listed avatar `gender` (account and restored profile) from its list entry (`imported`: the link above and the default `face`), and answers like the `GET`. `404` `invalid` for an id that is not in the list, or `imported` without an imported avatar; 401 when signed out |
 
 ## Wallet history
 

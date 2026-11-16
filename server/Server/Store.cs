@@ -541,6 +541,8 @@ public sealed class Store
         }
         using var mine = Open(id);
         mine.Exec("UPDATE profile SET body = json_set(body, '$.avatar', ?) WHERE account_id = $a", url);
+        if (gender is { } g2)
+            mine.Exec("UPDATE profile SET body = json_set(body, '$.gender', ?) WHERE account_id = $a", g2);
     }
 
     /// <summary>Set the account's `gender` when it differs and the account never restored anything (no restored id, no restore audit, no claim); true when it changed.</summary>

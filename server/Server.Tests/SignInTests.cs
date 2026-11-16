@@ -569,10 +569,20 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
                 con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', 0) WHERE id = ?", id);
         using (var con = state.Store.Open(62))
             con.Exec("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 0, 'x', 'import', '')");
+        state.CreateAccount(63, "ids");
+        state.CreateAccount(64, "claim");
+        using (var con = state.Store.Open())
+        {
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', 0) WHERE id IN (63, 64)");
+            con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (5, 63, 0)");
+            con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (64, 6, 'claim', 0, 'pending', 0, '', 0)");
+        }
         state.MigrateAvatarGenders();
         state.MigrateAvatarGenders();  // idempotent
         Assert.Equal(1L, (long)state.Store.AccountJson(61)["gender"]!);  // the male default avatar
         Assert.Equal(0L, (long)state.Store.AccountJson(62)["gender"]!);  // restored: its own
+        Assert.Equal(0L, (long)state.Store.AccountJson(63)["gender"]!);
+        Assert.Equal(0L, (long)state.Store.AccountJson(64)["gender"]!);
         Assert.Equal(0L, (long)state.Store.AccountJson(me)["gender"]!);  // an imported picture is no listed avatar
     }
 

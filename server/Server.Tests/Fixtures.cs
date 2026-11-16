@@ -83,7 +83,7 @@ public static class Fixtures
                     "infos": [{"item_id": 10, "units": 10}, {"item_id": 512, "units": null}],
                     "active_services": {}},
                  "expedition": {"expedition_id": 730218845, "lodge": 100, "x": -9150.0, "y": 140.0, "z": 4875.0},
-                 "account": {"handle": "hunter", "user_id": 7, "avatar_url": "https://avatar.test/256/1.png"},
+                 "account": {"handle": "hunter", "user_id": 7, "gender": 0, "avatar_url": "https://avatar.test/256/1.png"},
                  "wallet": {"em": 182.0, "gm": 33.0},
                  "dog_skills": [{"id": 1, "lvl": 1, "xp": 0, "unlocks": [{"type": "loyalty", "skill": "DOG_SKILL_LOYALTY_ONE"}]},
                                 {"id": 2, "lvl": 2, "xp": 100, "unlocks": [{"type": "pointing", "skill": "DOG_SKILL_POINT_TWO"}, {"type": "trophy", "define": "RIBBON"}]},
