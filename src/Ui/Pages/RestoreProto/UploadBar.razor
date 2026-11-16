@@ -1,0 +1,11 @@
+@* PROTOTYPE: the progress of the upload being sent (a bar and the file's name). Known share when the model has one, else a sliding bar. *@
+@if (M.Uploading)
+{
+    <div class="bar @(M.Progress is null ? "ind" : "")" role="progressbar" aria-label="@L["Restore.Working"]" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@(M.Progress is { } p ? (int)(p * 100) : null)"><i style="@(M.Progress is { } q ? $"width:{(int)(q * 100)}%" : null)"></i></div>
+    @if (Caption) { <p class="sub">@M.FileName (@L.Size(M.FileSize))@(M.Progress is { } r ? $" · {(int)(r * 100)} %" : "")</p> }
+}
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+    [Parameter] public bool Caption { get; set; } = true;
+}

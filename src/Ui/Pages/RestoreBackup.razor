@@ -1,186 +1,52 @@
 @page "/restore"
-@using Microsoft.AspNetCore.Components.Forms
+@using Resurgence.Ui.Pages.RestoreProto
 @inject IRestoreService Service
-@inject NavigationManager Nav
+@inject HostMode Host
 
 <PageTitle>@L["Restore.Title"]</PageTitle>
 
+@* PROTOTYPE (UI.md sub-shape A): the data is loaded as before; ?variant= (0 = today's page, A, B, C) picks the markup, and, in Development, ?state= / ?claim= swap in stub data
+   (RestoreModel.LoadFake: read-only, no service call). The bar below flips between them. *@
 <div class="page-min">
     <h2 class="page-title">@L["Restore.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
-    @if (archive is { Enabled: true })
+    @if (m is not null)
     {
-        <section class="panel box">
-            <h3>@L["Claim.Title"]</h3>
-            @if (archive.Claimed is { } claimed)
-            {
-                <p class="alert @(claimed.State == "restored" ? "ok" : claimed.State == "rejected" ? "bad" : "")">@L["Claim.State." + claimed.State, claimed.Handle, At(claimed.Ts)]</p>
-            }
-            else
-            {
-                <div class="pick">
-                    <label for="oldname">@L["Claim.Name"]</label>
-                    <input id="oldname" type="text" maxlength="64" @bind="oldName" @bind:event="oninput" disabled="@busy" />
-                    <button type="button" class="btn btn-primary" disabled="@(busy || oldName.Trim().Length == 0)" @onclick="Find">@L["Claim.Find"]</button>
-                </div>
-                @if (found is { Status: not "found" })
-                {
-                    <p class="alert @(found.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + found.Status]</p>
-                }
-                @if (found?.Profile is { } p)
-                {
-                    <div class="alert">
-                        <b>@p.Handle</b> · @L["Claim.Score", p.Hunterscore]<br />
-                        @L["Claim.Counts", p.Items, p.Trophies, p.Lodges]<br />
-                        @L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]
-                    </div>
-                    <p><label><input type="checkbox" class="tick" @bind="useOldName" disabled="@(!p.NameFree || busy)" /> @L["Claim.UseName"]</label></p>
-                    <p class="alert bad">@L["Claim.Warning"]</p>
-                    <button type="button" class="btn btn-danger" disabled="@busy" @onclick="Claim">@L["Claim.Button"]</button>
-                }
-            }
-            @if (claimResult is not null)
-            {
-                <div class="alert @(claimResult.Status == "restored" ? "ok" : claimResult.Status == "review" ? "" : "bad")" role="alert">
-                    @if (claimResult.Status is "restored" or "review") { <b>@L["Claim.Result." + claimResult.Status]</b> }
-                    else { @claimResult.Message }
-                </div>
-            }
-        </section>
+        @switch (variant)
+        {
+            case "0": <RestoreCurrent M="m" /> break;
+            case "B": <RestoreB @key="loadKey" M="m" /> break;
+            case "C": <RestoreC M="m" /> break;
+            default: <RestoreA M="m" /> break;
+        }
+        <RestoreDelete M="m" />
     }
-    <section class="panel box">
-        <p>@L["Restore.Intro"]</p>
-        <p>@L["Restore.Hint"]</p>
-        <ul>
-            <li>@L["Restore.Rule1"]</li>
-            <li>@L["Restore.Rule2"]</li>
-            <li>@L["Restore.Rule3"]</li>
-            <li>@L["Restore.Rule4"]</li>
-        </ul>
-        @if (status?.RestoredUserId is { } restored) { <p class="alert ok">@L["Restore.Restored", restored]</p> }
-        @if (status?.Review.Count > 0)
-        {
-            <p class="alert">@L["Restore.Waiting", status.Review.Count]</p>
-            <ul class="kept">
-                @foreach (var kept in status.Review)
-                {
-                    <li><b>@L["Restore.Kept", At(kept.Ts)]</b><br />@kept.Note</li>
-                }
-            </ul>
-        }
-        @if (status is not null)
-        {
-            foreach (var done in status.Decisions)
-            {
-                <div class="alert @(done.Kind == "restored" ? "ok" : "bad")">
-                    @if (done.Kind == "restored")
-                    {
-                        <b>@L["Restore.Done.restored", At(done.Ts), done.UserId ?? 0, done.Handle ?? ""]</b><br />
-                        @L[done.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"]
-                    }
-                    else
-                    {
-                        <b>@L[done.Kind == "refused" ? "Restore.Done.refused" : "Restore.Done.rejected", At(done.Ts)]</b>
-                        if (done.Reason.Length > 0) { <br />@done.Reason }
-                    }
-                </div>
-            }
-        }
-        <div class="pick">
-            <label for="zip">@L["Restore.Choose"]</label>
-            <InputFile id="zip" OnChange="Picked" accept=".zip,application/zip" disabled="@busy" />
-            <button type="button" class="btn btn-primary" disabled="@(busy || file is null)" @onclick="Send">@L[busy ? "Restore.Working" : "Restore.Upload"]</button>
-        </div>
-        @if (result is not null)
-        {
-            <div class="alert @(result.Status == "restored" ? "ok" : result.Status == "review" ? "" : "bad")" role="alert">
-                <b>@L["Restore.Result." + result.Status]</b>
-                @if (result.Message.Length > 0) { <p>@result.Message</p> }
-                @if (result.Report is { Length: > 0 }) { <details><summary>@L["Restore.Details"]</summary><pre>@result.Report</pre></details> }
-            </div>
-        }
-        <p><a href="/your-data">@L["Restore.DataLink"]</a></p>
-    </section>
-    <section class="panel box">
-        <h3>@L["Restore.Delete.Title"]</h3>
-        <p>@L["Restore.Delete.Text"]</p>
-        <p><label><input type="checkbox" class="tick" @bind="confirmDelete" /> @L["Restore.Delete.Confirm"]</label></p>
-        <button type="button" class="btn btn-danger" disabled="@(!confirmDelete || busy)" @onclick="Delete">@L["Restore.Delete.Button"]</button>
-        @if (deleteFailed) { <p class="alert bad" role="alert">@L["Restore.Delete.Failed"]</p> }
-    </section>
 </div>
+@if (Host.Dev)
+{
+    <PrototypeSwitcher Keys="Variants" Current="@variant" Names="VariantNames" States="RestoreModel.States" State="@State" />
+}
 
 @code {
-    RestoreStatus? status;
-    RestoreResult? result;
-    IBrowserFile? file;
-    bool busy, confirmDelete, deleteFailed;
+    static readonly string[] Variants = ["0", "A", "B", "C"];
+    static readonly Dictionary<string, string> VariantNames = new() { ["0"] = "Today's page", ["A"] = "Status first, timeline", ["B"] = "Step wizard", ["C"] = "Two columns, inbox" };
 
-    ArchiveStatus? archive;
-    ArchiveFind? found;
-    RestoreResult? claimResult;
-    string oldName = "";
-    bool useOldName;
+    [SupplyParameterFromQuery] public string? Variant { get; set; }
+    [SupplyParameterFromQuery] public string? State { get; set; }
+    [SupplyParameterFromQuery] public string? Claim { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    RestoreModel? m;
+    string? loadKey;
+    string variant => Host.Dev && Variant is { } v && Variants.Contains(v) ? v : "A";
+
+    protected override async Task OnParametersSetAsync()
     {
-        status = await Service.StatusAsync();
-        archive = await Service.ArchiveStatusAsync();
+        m ??= new(Service, L, () => InvokeAsync(StateHasChanged));
+        // stub data only in Development; a stub state resets the variant's own state (the wizard's step) through @key
+        var key = Host.Dev && (State is not null || Claim is not null) ? $"{State ?? "empty"}/{Claim ?? "open"}" : "";
+        if (key == loadKey) return;
+        loadKey = key;
+        if (key.Length == 0) await m.LoadAsync();
+        else m.LoadFake(State ?? "empty", Claim ?? "open");
     }
 
-    async Task Find()
-    {
-        busy = true;
-        claimResult = null;
-        useOldName = false;
-        found = await Service.FindArchivedAsync(oldName.Trim());
-        busy = false;
-    }
-
-    async Task Claim()
-    {
-        if (found?.Profile is not { } p) return;
-        busy = true;
-        claimResult = await Service.ClaimArchivedAsync(p.Handle, useOldName);
-        if (claimResult.Status is "restored" or "review")
-        {
-            found = null;
-            archive = await Service.ArchiveStatusAsync();
-            status = await Service.StatusAsync();
-        }
-        busy = false;
-    }
-
-    static string At(long ts) => DateTimeOffset.FromUnixTimeSeconds(ts).ToString("yyyy-MM-dd HH:mm 'UTC'", System.Globalization.CultureInfo.InvariantCulture);
-
-    void Picked(InputFileChangeEventArgs e)
-    {
-        file = e.File;
-        result = null;
-    }
-
-    async Task Send()
-    {
-        if (file is null) return;
-        busy = true;
-        result = null;
-        if (file.Size > ServerAccountApi.MaxZipBytes)
-            result = new("too_large", "");
-        else
-        {
-            await using var zip = file.OpenReadStream(ServerAccountApi.MaxZipBytes);
-            result = await Service.UploadAsync(zip, file.Size);
-        }
-        status = await Service.StatusAsync();
-        file = null;
-        busy = false;
-    }
-
-    async Task Delete()
-    {
-        busy = true;
-        deleteFailed = !await Service.DeleteAsync();
-        busy = false;
-        // the account is gone: a full page load shows the public site
-        if (!deleteFailed) Nav.NavigateTo("/feed", forceLoad: true);
-    }
 }

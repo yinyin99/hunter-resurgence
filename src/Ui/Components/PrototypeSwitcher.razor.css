@@ -1,0 +1,6 @@
+.proto-bar { position: fixed; inset-block-end: 14px; inset-inline: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; gap: 10px; width: max-content; max-width: calc(100% - 24px); margin-inline: auto; padding: 6px 10px; border-radius: 999px; background: #fff; color: #111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); font: 500 14px/20px Roboto, Arial, sans-serif; }
+.proto-btn { width: 32px; height: 32px; border: 0; border-radius: 50%; background: #111; color: #fff; font-size: 16px; cursor: pointer; }
+.proto-btn:hover { background: var(--accent); }
+.proto-label { min-width: 150px; text-align: center; }
+.proto-label small { font-weight: 400; color: #555; }
+.proto-sel { max-width: 160px; padding: 4px 6px; border: 1px solid #bbb; border-radius: 6px; background: #f3f3f3; color: #111; font: inherit; }

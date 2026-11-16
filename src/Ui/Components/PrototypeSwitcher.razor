@@ -1,0 +1,56 @@
+@implements IAsyncDisposable
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@* PROTOTYPE (UI.md sub-shape A): the floating bar that flips between the variants of a page, in the URL (?variant=), with the arrow keys too. The host page renders it only in
+   Development. Delete it with the variants once one has won. *@
+<div class="proto-bar" role="toolbar" aria-label="Prototype variants">
+    <button type="button" class="proto-btn" aria-label="Previous variant" @onclick="() => Step(-1)">&#8592;</button>
+    <span class="proto-label">@Current <small>@Names.GetValueOrDefault(Current)</small></span>
+    <button type="button" class="proto-btn" aria-label="Next variant" @onclick="() => Step(1)">&#8594;</button>
+    @if (States.Length > 0)
+    {
+        <select class="proto-sel" aria-label="State" @onchange='e => Go("state", e.Value?.ToString())'>
+            <option value="">state: live data</option>
+            @foreach (var s in States) { <option value="@s" selected="@(s == State)">@s</option> }
+        </select>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string[] Keys { get; set; } = [];
+    [Parameter, EditorRequired] public string Current { get; set; } = "";
+    /// <summary>The variants' names, by key, for the label.</summary>
+    [Parameter] public Dictionary<string, string> Names { get; set; } = [];
+    [Parameter] public string[] States { get; set; } = [];
+    [Parameter] public string? State { get; set; }
+
+    DotNetObjectReference<PrototypeSwitcher>? self;
+    IJSObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        self = DotNetObjectReference.Create(this);
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/Components/PrototypeSwitcher.razor.js");
+        await module.InvokeVoidAsync("bind", self);
+    }
+
+    [JSInvokable]
+    public void Step(int by)
+    {
+        var i = Array.IndexOf(Keys, Current);
+        Go("variant", Keys[((i < 0 ? 0 : i) + by + Keys.Length) % Keys.Length]);
+    }
+
+    void Go(string name, string? value) => Nav.NavigateTo(Nav.GetUriWithQueryParameter(name, string.IsNullOrEmpty(value) ? null : value), replace: true);
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (module is not null) { await module.InvokeVoidAsync("unbind"); await module.DisposeAsync(); }
+        }
+        catch (JSDisconnectedException) { }
+        self?.Dispose();
+    }
+}

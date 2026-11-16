@@ -1,0 +1,19 @@
+@inject NavigationManager Nav
+@* PROTOTYPE: the page's "Delete my data" section, unchanged in meaning; the same under every variant. *@
+<section class="panel box">
+    <h3>@L["Restore.Delete.Title"]</h3>
+    <p>@L["Restore.Delete.Text"]</p>
+    <p><label><input type="checkbox" class="tick" @bind="M.ConfirmDelete" /> @L["Restore.Delete.Confirm"]</label></p>
+    <button type="button" class="btn btn-danger" disabled="@(!M.ConfirmDelete || M.Busy)" @onclick="Delete">@L["Restore.Delete.Button"]</button>
+    @if (M.DeleteFailed) { <p class="alert" role="alert">@L["Restore.Delete.Failed"]</p> }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+
+    async Task Delete()
+    {
+        // the account is gone: a full page load shows the public site
+        if (await M.Delete()) Nav.NavigateTo("/feed", forceLoad: true);
+    }
+}

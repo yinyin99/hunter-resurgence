@@ -1,0 +1,38 @@
+@* PROTOTYPE: find and claim an old profile (the archive claim). Shown by the variants while the account has not claimed yet; what a claim became is an entry of the history. *@
+<div class="claim">
+    @if (M.Archive?.Claimed is null)
+    {
+        <label for="oldname">@L["Claim.Name"]</label>
+        <div class="row">
+            <input id="oldname" class="field" type="text" maxlength="64" @bind="M.OldName" @bind:event="oninput" disabled="@M.Busy" />
+            <button type="button" class="btn btn-primary" disabled="@(M.Busy || M.OldName.Trim().Length == 0)" @onclick="M.Find">@L["Claim.Find"]</button>
+        </div>
+        @if (M.Found is { Status: not "found" } f)
+        {
+            <p class="note @(f.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + f.Status]</p>
+        }
+        @if (M.Found?.Profile is { } p)
+        {
+            <div class="prof">
+                <b>@p.Handle</b>
+                <span>@L["Claim.Score", p.Hunterscore]</span>
+                <span>@L["Claim.Counts", p.Items, p.Trophies, p.Lodges]</span>
+                <span>@L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]</span>
+            </div>
+            <label class="use"><input type="checkbox" class="tick" @bind="M.UseOldName" disabled="@(!p.NameFree || M.Busy)" /> @L["Claim.UseName"]</label>
+            <p class="note warn">@L["Claim.Warning"]</p>
+            <button type="button" class="btn btn-danger" disabled="@M.Busy" @onclick="M.Claim">@L["Claim.Button"]</button>
+        }
+    }
+    @if (M.ClaimResult is { } r)
+    {
+        <p class="note @(r.Status is "restored" or "review" ? "ok" : "bad")" role="alert">
+            @if (r.Status is "restored" or "review") { <b>@L["Claim.Result." + r.Status]</b> }
+            else { @r.Message }
+        </p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+}

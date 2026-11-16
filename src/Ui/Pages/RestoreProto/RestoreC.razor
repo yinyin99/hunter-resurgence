@@ -1,0 +1,85 @@
+@using Microsoft.AspNetCore.Components.Forms
+@* PROTOTYPE variant C, "Two columns": left, one upload card with three short rules; right, an inbox of what became of each upload (the present pinned on top, the past below). *@
+@{ var now = M.Now; var past = M.Entries; }
+<div class="cw">
+<div class="c">
+    <section class="send" aria-labelledby="c-send">
+        <h3 id="c-send">Upload a backup</h3> @* TODO resx *@
+        <div class="drop @(M.HasFile ? "has" : "")">
+            <span class="di"><Icon Name="arrow-up" /></span>
+            <b>@(M.HasFile ? M.FileName : L["Restore.Choose"].Value)</b>
+            <small>@(M.HasFile ? L.Size(M.FileSize) : "A .zip file, up to 1 GiB")</small> @* TODO resx *@
+            <label class="vh" for="zip">@L["Restore.Choose"]</label>
+            <InputFile id="zip" class="pick" OnChange="e => M.Pick(e.File)" accept=".zip,application/zip" disabled="@M.Busy" />
+        </div>
+        <button type="button" class="btn btn-primary btn-large btn-block" disabled="@(M.Busy || !M.HasFile)" @onclick="M.Send">@L[M.Uploading ? "Restore.Working" : "Restore.Upload"]</button>
+        <UploadBar M="M" />
+        @if (M.Result is not null || M.Uploading)
+        {
+            @* the inbox is below on a narrow page: say the outcome here too *@
+            <p class="inline" data-tone="@now.Tone" aria-live="polite"><Icon Name="@now.Icon" /> <b>@now.Title</b></p>
+        }
+
+        <ul class="rules">
+            <li><span class="ri"><Icon Name="user" /></span><span><b>Made in <i>My account</i> mode</b><small>With our backup tool, signed in with your own Steam account.</small></span></li>
+            <li><span class="ri"><Icon Name="lock" /></span><span><b>Restores once</b><small>It replaces your profile on this server. Hunts you played here stay.</small></span></li>
+            <li><span class="ri"><Icon Name="envelope" /></span><span><b>Checked by a person</b><small>Nothing is automatic, so it can take a while. You get a message.</small></span></li>
+        </ul>
+        <details class="more">
+            <summary>All the rules</summary> @* TODO resx *@
+            <p>@L["Restore.Intro"]</p>
+            <p>@L["Restore.Hint"]</p>
+            <ul><li>@L["Restore.Rule1"]</li><li>@L["Restore.Rule2"]</li><li>@L["Restore.Rule3"]</li><li>@L["Restore.Rule4"]</li></ul>
+        </details>
+        @if (M.Archive is { Enabled: true, Claimed: null })
+        {
+            <details class="more claim" open="@(M.Found is not null || M.ClaimResult is not null)">
+                <summary>No backup? @L["Claim.Title"]</summary> @* TODO resx for "No backup?" *@
+                <ClaimForm M="M" />
+            </details>
+        }
+        <p class="data"><a href="/your-data">@L["Restore.DataLink"]</a></p>
+    </section>
+
+    <aside class="inbox" aria-labelledby="c-inbox">
+        <h3 id="c-inbox">Your uploads <span class="count">@past.Count</span></h3> @* TODO resx *@
+        <div class="pin" data-tone="@now.Tone" aria-live="polite">
+            <span class="ico"><Icon Name="@now.Icon" /></span>
+            <div class="txt">
+                <b class="t">@now.Title</b>
+                @if (now.Detail.Length > 0) { <p class="detail">@now.Detail</p> }
+                <p class="next"><strong>Next:</strong> @now.Next</p>
+            </div>
+        </div>
+        @if (M.Result?.Report is { Length: > 0 } report)
+        {
+            <details class="more"><summary>@L["Restore.Details"]</summary><pre>@report</pre></details>
+        }
+        <h4>Earlier</h4> @* TODO resx *@
+        @if (past.Count == 0)
+        {
+            <p class="muted">Nothing yet.</p> @* TODO resx *@
+        }
+        else
+        {
+            <ul class="rows">
+                @foreach (var e in past)
+                {
+                    <li data-tone="@e.Tone">
+                        <span class="ri"><Icon Name="@e.Icon" /></span>
+                        <div class="rc">
+                            <p class="top"><b>@e.Label</b><time>@RestoreModel.At(e.Ts)</time></p>
+                            <p class="what">@e.What@(e.Short.Length > 0 ? " · " + e.Short : "")</p>
+                            @if (e.Detail.Length > 0) { <p class="why">@e.Detail</p> }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </aside>
+</div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+}

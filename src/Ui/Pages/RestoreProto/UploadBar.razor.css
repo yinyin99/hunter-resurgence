@@ -1,0 +1,6 @@
+.bar { height: 8px; margin-top: 12px; overflow: hidden; border-radius: var(--r-pill); background: var(--surface-5); }
+.bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width var(--t-slow) var(--ease); }
+.bar.ind i { width: 35%; animation: slide 1.1s var(--ease) infinite alternate; }
+@keyframes slide { from { margin-inline-start: 0; } to { margin-inline-start: 65%; } }
+.sub { margin: 6px 0 0; color: var(--text-3); overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .bar.ind i { animation: none; margin-inline-start: 30%; } }

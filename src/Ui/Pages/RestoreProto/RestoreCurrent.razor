@@ -1,0 +1,99 @@
+@using Microsoft.AspNetCore.Components.Forms
+@* PROTOTYPE: the page as it is today (?variant=0), for comparison. Same markup as RestoreBackup.razor, fed by the model. *@
+@if (M.Archive is { Enabled: true })
+{
+    <section class="panel box">
+        <h3>@L["Claim.Title"]</h3>
+        @if (M.Archive.Claimed is { } claimed)
+        {
+            <p class="alert @(claimed.State == "restored" ? "ok" : claimed.State == "rejected" ? "bad" : "")">@L["Claim.State." + claimed.State, claimed.Handle, RestoreModel.At(claimed.Ts)]</p>
+        }
+        else
+        {
+            <div class="pick">
+                <label for="oldname">@L["Claim.Name"]</label>
+                <input id="oldname" type="text" maxlength="64" @bind="M.OldName" @bind:event="oninput" disabled="@M.Busy" />
+                <button type="button" class="btn btn-primary" disabled="@(M.Busy || M.OldName.Trim().Length == 0)" @onclick="M.Find">@L["Claim.Find"]</button>
+            </div>
+            @if (M.Found is { Status: not "found" })
+            {
+                <p class="alert @(M.Found.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + M.Found.Status]</p>
+            }
+            @if (M.Found?.Profile is { } p)
+            {
+                <div class="alert">
+                    <b>@p.Handle</b> · @L["Claim.Score", p.Hunterscore]<br />
+                    @L["Claim.Counts", p.Items, p.Trophies, p.Lodges]<br />
+                    @L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]
+                </div>
+                <p><label><input type="checkbox" class="tick" @bind="M.UseOldName" disabled="@(!p.NameFree || M.Busy)" /> @L["Claim.UseName"]</label></p>
+                <p class="alert bad">@L["Claim.Warning"]</p>
+                <button type="button" class="btn btn-danger" disabled="@M.Busy" @onclick="M.Claim">@L["Claim.Button"]</button>
+            }
+        }
+        @if (M.ClaimResult is { } cr)
+        {
+            <div class="alert @(cr.Status == "restored" ? "ok" : cr.Status == "review" ? "" : "bad")" role="alert">
+                @if (cr.Status is "restored" or "review") { <b>@L["Claim.Result." + cr.Status]</b> }
+                else { @cr.Message }
+            </div>
+        }
+    </section>
+}
+<section class="panel box">
+    <p>@L["Restore.Intro"]</p>
+    <p>@L["Restore.Hint"]</p>
+    <ul>
+        <li>@L["Restore.Rule1"]</li>
+        <li>@L["Restore.Rule2"]</li>
+        <li>@L["Restore.Rule3"]</li>
+        <li>@L["Restore.Rule4"]</li>
+    </ul>
+    @if (M.Status?.RestoredUserId is { } restored) { <p class="alert ok">@L["Restore.Restored", restored]</p> }
+    @if (M.Status?.Review.Count > 0)
+    {
+        <p class="alert">@L["Restore.Waiting", M.Status.Review.Count]</p>
+        <ul class="kept">
+            @foreach (var kept in M.Status.Review)
+            {
+                <li><b>@L["Restore.Kept", RestoreModel.At(kept.Ts)]</b><br />@kept.Note</li>
+            }
+        </ul>
+    }
+    @if (M.Status is not null)
+    {
+        foreach (var done in M.Status.Decisions)
+        {
+            <div class="alert @(done.Kind == "restored" ? "ok" : "bad")">
+                @if (done.Kind == "restored")
+                {
+                    <b>@L["Restore.Done.restored", RestoreModel.At(done.Ts), done.UserId ?? 0, done.Handle ?? ""]</b><br />
+                    @L[done.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"]
+                }
+                else
+                {
+                    <b>@L[done.Kind == "refused" ? "Restore.Done.refused" : "Restore.Done.rejected", RestoreModel.At(done.Ts)]</b>
+                    if (done.Reason.Length > 0) { <br />@done.Reason }
+                }
+            </div>
+        }
+    }
+    <div class="pick">
+        <label for="zip">@L["Restore.Choose"]</label>
+        <InputFile id="zip" OnChange="e => M.Pick(e.File)" accept=".zip,application/zip" disabled="@M.Busy" />
+        <button type="button" class="btn btn-primary" disabled="@(M.Busy || !M.HasFile)" @onclick="M.Send">@L[M.Busy ? "Restore.Working" : "Restore.Upload"]</button>
+    </div>
+    @if (M.Result is { } result)
+    {
+        <div class="alert @(result.Status == "restored" ? "ok" : result.Status == "review" ? "" : "bad")" role="alert">
+            <b>@L["Restore.Result." + result.Status]</b>
+            @if (result.Message.Length > 0) { <p>@result.Message</p> }
+            @if (result.Report is { Length: > 0 }) { <details><summary>@L["Restore.Details"]</summary><pre>@result.Report</pre></details> }
+        </div>
+    }
+    <p><a href="/your-data">@L["Restore.DataLink"]</a></p>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+}

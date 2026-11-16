@@ -1,0 +1,17 @@
+.claim { min-width: 0; }
+label { display: block; margin: 0 0 6px; color: var(--text-1); font-weight: 500; }
+label.use { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-weight: 400; color: var(--text-2); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.field { flex: 1 1 200px; min-width: 0; padding: 7px 10px; }
+.row .btn { flex: none; }
+.prof { display: grid; gap: 2px; margin: 14px 0 0; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: var(--r-3); background: var(--surface-1); color: var(--text-2); overflow-wrap: anywhere; }
+.prof b { color: #fff; font-size: 16px; font-weight: 500; }
+.note { margin: 12px 0 0; padding: 10px 12px; border-radius: var(--r-2); background: var(--surface-3); color: var(--text-2); overflow-wrap: anywhere; }
+.note.warn { background: rgba(251, 203, 54, .1); color: #f3deb0; }
+.note.bad { background: rgba(240, 128, 128, .12); color: #ffd0d0; }
+.note.ok { background: rgba(126, 206, 40, .12); color: #d4f2b0; }
+.note b { color: #fff; font-weight: 500; }
+.btn-danger { background-color: #b33; color: #fff; }
+.btn-danger:hover { background-color: #c44; }
+.btn-danger:disabled { opacity: .5; }
+.note + .btn-danger { margin-top: 12px; }

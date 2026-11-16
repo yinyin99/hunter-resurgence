@@ -1,0 +1,67 @@
+@* PROTOTYPE variant A, "Status first": the present on top (one card: what happened to the last upload and what to do next), the past as a timeline, the upload form last. *@
+@{ var now = M.Now; var past = M.Entries; }
+<div class="a">
+    <section class="now" data-tone="@now.Tone" aria-live="polite">
+        <span class="ico"><Icon Name="@now.Icon" /></span>
+        <div class="txt">
+            <h3>@now.Title</h3>
+            @if (now.Detail.Length > 0) { <p class="detail">@now.Detail</p> }
+            <UploadBar M="M" Caption="false" />
+            <p class="next"><strong>Next:</strong> @now.Next</p>
+        </div>
+    </section>
+    @if (M.Result?.Report is { Length: > 0 } report)
+    {
+        <details class="report"><summary>@L["Restore.Details"]</summary><pre>@report</pre></details>
+    }
+
+    <section class="hist" aria-labelledby="a-hist">
+        <h4 id="a-hist">History</h4> @* TODO resx *@
+        @if (past.Count == 0)
+        {
+            <p class="muted">Nothing yet. Each upload and what became of it will be listed here.</p> @* TODO resx *@
+        }
+        else
+        {
+            <ol class="tl">
+                @foreach (var e in past)
+                {
+                    <li data-tone="@e.Tone" class="@(e.Tone == "wait" ? "pending" : "")">
+                        <span class="dot"><Icon Name="@e.Icon" /></span>
+                        <p class="sent">@e.Sentence</p>
+                        @if (e.Detail.Length > 0) { <p class="why">@e.Detail</p> }
+                    </li>
+                }
+            </ol>
+        }
+    </section>
+
+    <section class="send" aria-labelledby="a-send">
+        <h4 id="a-send">Upload a backup</h4> @* TODO resx *@
+        <p class="lead">Upload the zip the backup tool made in <b>My account</b> mode, up to 1 GiB. It can be restored once, and an operator checks every zip by hand.</p> @* TODO resx *@
+        <details class="rules">
+            <summary>All the rules</summary> @* TODO resx *@
+            <p>@L["Restore.Intro"]</p>
+            <p>@L["Restore.Hint"]</p>
+            <ul>
+                <li>@L["Restore.Rule1"]</li>
+                <li>@L["Restore.Rule2"]</li>
+                <li>@L["Restore.Rule3"]</li>
+                <li>@L["Restore.Rule4"]</li>
+            </ul>
+        </details>
+        <UploadControl M="M" ShowProgress="false" />
+        @if (M.Archive is { Enabled: true, Claimed: null })
+        {
+            <details class="claim" open="@(M.Found is not null || M.ClaimResult is not null)">
+                <summary>No backup? @L["Claim.Title"]</summary> @* TODO resx for "No backup?" *@
+                <ClaimForm M="M" />
+            </details>
+        }
+        <p class="data"><a href="/your-data">@L["Restore.DataLink"]</a></p>
+    </section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+}

@@ -1,0 +1,125 @@
+@* PROTOTYPE variant B, "Wizard": 1 what do you have, 2 upload (or claim), 3 what happens next. The past is a compact table in step 3. *@
+@{ var now = M.Now; var past = M.Entries; }
+<div class="b">
+    <ol class="steps">
+        @foreach (var (n, label) in Steps)
+        {
+            <li class="@(n == step ? "cur" : n < step ? "done" : "")">
+                <button type="button" @onclick="() => step = n" aria-current="@(n == step ? "step" : null)">
+                    <span class="num">@if (n < step) { <Icon Name="check" /> } else { @n }</span>
+                    <span class="lab">@label</span>
+                </button>
+            </li>
+        }
+    </ol>
+
+    <section class="stage panel">
+        @if (step == 1)
+        {
+            <h3>What do you have?</h3> @* TODO resx *@
+            <div class="choices">
+                <button type="button" class="choice" @onclick='() => Choose("zip")'>
+                    <span class="ci"><Icon Name="download" /></span>
+                    <span class="ct"><b>I have a backup zip</b><small>Made with our backup tool or another save tool. Upload it as it is, without unzipping it.</small></span>
+                    <span class="go"><Icon Name="angle-right" /></span>
+                </button>
+                @if (M.Archive is { Enabled: true })
+                {
+                    <button type="button" class="choice" @onclick='() => Choose("none")'>
+                        <span class="ci"><Icon Name="user" /></span>
+                        <span class="ct"><b>I have no backup</b><small>Find your old hunter name in the profiles this server kept, and claim it.</small></span>
+                        <span class="go"><Icon Name="angle-right" /></span>
+                    </button>
+                }
+            </div>
+        }
+        else if (step == 2 && kind == "none")
+        {
+            <h3>@L["Claim.Title"]</h3>
+            @if (M.Archive?.Claimed is { } c)
+            {
+                <p class="note" data-tone="@(c.State == "restored" ? "ok" : c.State == "rejected" ? "bad" : "wait")">@L["Claim.State." + c.State, c.Handle, RestoreModel.At(c.Ts)]</p>
+            }
+            <ClaimForm M="M" />
+            <p class="actions"><button type="button" class="btn btn-inverse" @onclick="() => step = 1">Back</button></p> @* TODO resx *@
+        }
+        else if (step == 2)
+        {
+            <h3>Upload your zip</h3> @* TODO resx *@
+            <ul class="rules">
+                <li><Icon Name="check" /> <span>The zip your backup tool made, as it is: our tool's zip or another tool's export (for example a <i>_PRIVATE.zip</i>).</span></li>
+                <li><Icon Name="check" /> <span>One zip up to 1 GiB. It can be restored once and replaces your profile here.</span></li>
+                <li><Icon Name="check" /> <span>An operator checks it by hand: nothing is restored automatically.</span></li>
+            </ul>
+            <details class="more">
+                <summary>All the rules</summary> @* TODO resx *@
+                <p>@L["Restore.Intro"]</p>
+                <p>@L["Restore.Hint"]</p>
+                <ul><li>@L["Restore.Rule1"]</li><li>@L["Restore.Rule2"]</li><li>@L["Restore.Rule3"]</li><li>@L["Restore.Rule4"]</li></ul>
+            </details>
+            <UploadControl M="M" />
+            <p class="actions"><button type="button" class="btn btn-inverse" disabled="@M.Busy" @onclick="() => step = 1">Back</button></p> @* TODO resx *@
+        }
+        else
+        {
+            <h3>What happens next</h3> @* TODO resx *@
+            <div class="now" data-tone="@now.Tone" aria-live="polite">
+                <span class="ico"><Icon Name="@now.Icon" /></span>
+                <div class="txt">
+                    <b class="t">@now.Title</b>
+                    @if (now.Detail.Length > 0) { <p class="detail">@now.Detail</p> }
+                    <p class="next"><strong>Next:</strong> @now.Next</p>
+                </div>
+            </div>
+            @if (M.Result?.Report is { Length: > 0 } report)
+            {
+                <details class="more"><summary>@L["Restore.Details"]</summary><pre>@report</pre></details>
+            }
+            <h4>Your uploads</h4> @* TODO resx *@
+            @if (past.Count == 0)
+            {
+                <p class="muted">Nothing yet.</p> @* TODO resx *@
+            }
+            else
+            {
+                <table class="tbl">
+                    <thead><tr><th scope="col">Date</th><th scope="col">What</th><th scope="col">Result</th><th scope="col">Details</th></tr></thead> @* TODO resx *@
+                    <tbody>
+                        @foreach (var e in past)
+                        {
+                            <tr data-tone="@e.Tone">
+                                <td data-label="Date">@RestoreModel.At(e.Ts)</td>
+                                <td data-label="What">@e.What</td>
+                                <td data-label="Result"><span class="badge"><Icon Name="@e.Icon" /> @e.Label</span></td>
+                                <td data-label="Details">@e.Short@(e.Short.Length > 0 && e.Detail.Length > 0 ? " · " : "")@e.Detail</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            <p class="actions"><button type="button" class="btn btn-primary" @onclick="() => step = 1">Upload another backup</button></p> @* TODO resx *@
+        }
+        <p class="data"><a href="/your-data">@L["Restore.DataLink"]</a></p>
+    </section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+
+    static readonly (int, string)[] Steps = [(1, "What you have"), (2, "Upload"), (3, "What happens next")]; // TODO resx
+
+    int step;
+    string kind = "zip";
+    bool wasUploading, wasClaimed;
+
+    protected override void OnParametersSet()
+    {
+        if (step == 0)
+            step = M.Uploading ? 2 : M.Result is not null || M.Entries.Count > 0 || M.Archive?.Claimed is not null ? 3 : 1;
+        // a finished upload or claim moves on to "what happens next"
+        if ((wasUploading && !M.Uploading) || (!wasClaimed && M.Archive?.Claimed is not null && kind == "none")) step = 3;
+        (wasUploading, wasClaimed) = (M.Uploading, M.Archive?.Claimed is not null);
+    }
+
+    void Choose(string what) => (kind, step) = (what, 2);
+}

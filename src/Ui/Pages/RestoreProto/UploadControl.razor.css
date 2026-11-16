@@ -1,0 +1,7 @@
+.up { min-width: 0; }
+label { display: block; margin: 0 0 6px; color: var(--text-1); font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.row .btn { flex: none; }
+.row ::deep .file { flex: 1 1 220px; min-width: 0; padding: 6px; border: 1px dashed var(--line-3); border-radius: var(--r-2); background: var(--surface-1); color: var(--text-2); font: inherit; }
+.row ::deep .file:hover { border-color: #777; }
+.row ::deep .file::file-selector-button { margin-inline-end: 10px; padding: 6px 12px; border: 0; border-radius: var(--r-2); background: var(--surface-7); color: #fff; font: inherit; cursor: pointer; }

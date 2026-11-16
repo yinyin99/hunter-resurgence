@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Components.Forms
+@* PROTOTYPE: the file picker, the Upload button and the progress of the upload; shared by the variants, which wrap it in their own layout. *@
+<div class="up">
+    <label for="zip">@L["Restore.Choose"]</label>
+    <div class="row">
+        <InputFile id="zip" class="file" OnChange="e => M.Pick(e.File)" accept=".zip,application/zip" disabled="@M.Busy" />
+        <button type="button" class="btn btn-primary" disabled="@(M.Busy || !M.HasFile)" @onclick="M.Send">@L[M.Uploading ? "Restore.Working" : "Restore.Upload"]</button>
+    </div>
+    @if (ShowProgress) { <UploadBar M="M" /> }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestoreModel M { get; set; } = default!;
+    /// <summary>False when the variant shows the progress elsewhere.</summary>
+    [Parameter] public bool ShowProgress { get; set; } = true;
+}
