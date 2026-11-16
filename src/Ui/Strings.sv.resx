@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Laddar upp…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Din säkerhetskopia av användar-id {0} har återställts på det här kontot.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Säkerhetskopior som väntar på operatörens granskning: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Sparad {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Återställd {0}: ditt användar-id är {1} och ditt namn är {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Namnet är det från din säkerhetskopia.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ditt namn behölls: namnet i säkerhetskopian är inte tillåtet eller tillhör en annan spelare.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Uppladdningar är pausade just nu, försök igen senare</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Utloggad</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Inte tillgängligt här</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Vad du har</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Ladda upp</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Hämta</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Vad händer sedan</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Vad har du?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Jag har en säkerhetskopia som zip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Gjord med vårt verktyg för säkerhetskopiering eller ett annat sparverktyg. Ladda upp den som den är, utan att packa upp den.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Jag har ingen säkerhetskopia</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Hitta ditt gamla jägarnamn bland de profiler som den här servern sparat och hämta det.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Ladda upp din zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Zip-filen som ditt verktyg för säkerhetskopiering gjorde, som den är: vårt verktygs zip eller ett annat verktygs export (till exempel en _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>En zip på högst 1 GiB. Den kan återställas en gång och ersätter din profil här.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>En operatör granskar den för hand: inget återställs automatiskt.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Alla regler</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Tillbaka</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Nästa:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Dina uppladdningar</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Inget än.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Vad</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Resultat</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Gammal profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Väntar på granskning</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Kunde inte läsas</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Avvisad av operatören</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Gjord med vårt verktyg för säkerhetskopiering</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Gjord med ett annat verktyg</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Användar-id {0}, namn {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Mottagen: en säkerhetskopia från ett annat verktyg. En operatör granskar den.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Ingen säkerhetskopia uppladdad än</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Ladda upp en annan säkerhetskopia</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Du kan inte ladda upp en annan säkerhetskopia just nu: gränsen för zip-filer som sparas åt operatören är nådd, eller så är uppladdningarna pausade. Försök igen när en operatör har granskat dem.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Inget att göra just nu. En operatör granskar varje zip för hand, så det kan ta en stund.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Inget mer att göra: din profil finns på det här kontot. En säkerhetskopia kan bara återställas en gång.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Ladda upp zip-filen som ditt verktyg för säkerhetskopiering gjorde, som den är. Har du ingen, gör först en ny säkerhetskopia.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Läs orsaken och ladda sedan upp en annan säkerhetskopia.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Vänta tills en operatör har granskat en av zip-filerna i kön och ladda sedan upp igen.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Inget har gått förlorat. Försök igen senare.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>En zip är högst 1 GiB. Gör en mindre säkerhetskopia.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Logga in och ladda sedan upp igen.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Kontrollera meddelandet och ladda sedan upp igen.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Inget att göra just nu. En operatör granskar din begäran, och du får ett meddelande i din inkorg.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Du kan bara hämta en profil. Har du en säkerhetskopia som zip, ladda upp den i stället.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Välj din zip med säkerhetskopian och ladda upp den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Radera mina uppgifter</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Detta raderar ditt konto på den här servern och allt som lagrats med det: ditt Steam-id, ditt namn, dina speldata, de sparade zip-filerna med säkerhetskopior och dina foton. Du loggas ut och inloggningen i launchern slutar fungera. Det går inte att ångra.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jag förstår, radera allt</value></data>

@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Uploader…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Din backup af bruger-id {0} er gendannet på denne konto.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backups gemt til gennemgang af operatøren: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Gemt {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Gendannet {0}: dit bruger-id er {1}, og dit navn er {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Navnet er det fra din backup.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Dit navn blev beholdt: navnet i backuppen er ikke tilladt eller tilhører en anden spiller.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Uploads er sat på pause i øjeblikket, prøv igen senere</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Logget ud</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Ikke tilgængelig her</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Hvad du har</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Upload</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Krav</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Hvad sker der nu</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Hvad har du?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Jeg har en backup-zip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Lavet med vores backupværktøj eller et andet værktøj. Upload den, som den er, uden at pakke den ud.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Jeg har ingen backup</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Find dit gamle jægernavn blandt de profiler, serveren har gemt, og gør krav på det.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Upload din zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Den zip, dit backupværktøj har lavet, som den er: vores værktøjs zip eller et andet værktøjs eksport (for eksempel en _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Én zip på op til 1 GiB. Den kan kun gendannes én gang og erstatter din profil her.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>En operatør tjekker den manuelt: intet gendannes automatisk.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Alle reglerne</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Tilbage</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Næste:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Dine uploads</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Intet endnu.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Dato</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Hvad</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Resultat</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Gammel profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Venter på gennemgang</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Kunne ikke læses</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Afvist af operatøren</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Lavet med vores backupværktøj</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Lavet med et andet værktøj</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Bruger-id {0}, navn {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Modtaget: en backup fra et andet værktøj. En operatør tjekker den.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Ingen backup uploadet endnu</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Upload endnu en backup</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Du kan ikke uploade endnu en backup nu: grænsen for zips gemt til operatøren er nået, eller uploads er sat på pause. Prøv igen, når en operatør har gennemgået dem.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Intet at gøre nu. En operatør tjekker hver zip manuelt, så det kan tage et stykke tid.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Intet mere at gøre: din profil er på denne konto. En backup kan kun gendannes én gang.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Upload den zip, dit backupværktøj har lavet, som den er. Hvis du ikke har nogen, så lav en ny backup først.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Læs årsagen, og upload derefter en anden backup.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Vent, til en operatør har gennemgået en af de ventende zips, og upload så igen.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Intet er tabt. Prøv igen senere.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>En zip er højst 1 GiB. Lav en mindre backup.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Log ind, og upload derefter igen.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Tjek beskeden, og upload derefter igen.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Intet at gøre nu. En operatør tjekker dit krav, og du får en besked i din indbakke.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Du kan kun gøre krav på én profil. Har du en backup-zip, så upload den i stedet.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Vælg din backup-zip, og upload den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Slet mine data</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter din konto på denne server og alt, der er gemt med den: dit Steam-id, dit navn, dine spildata, de gemte backup-zips og dine fotos. Du bliver logget ud, og launcherens login holder op med at virke. Det kan ikke fortrydes.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jeg forstår det, slet alt</value></data>

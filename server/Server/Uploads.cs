@@ -2,6 +2,7 @@
 // Every zip is kept for the operator and never restored automatically: `review approve <id>` runs the rules and the restore.
 // A Steam id match is shown to the operator as information, not proof of ownership.
 using System.Collections.Concurrent;
+using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using Resurgence.Restore;
@@ -332,6 +333,26 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
+    static readonly string[] ProgramFiles = [".py", ".exe", ".bat", ".dll"], PictureFiles = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+
+    /// <summary>Why a readable zip that holds no backup is none, in words the player can act on, from its entry names alone (cheap); null: no better reason than the reader's.
+    /// A backup inside a folder or a zip (nested), a program and no backup data, or only pictures.</summary>
+    static string? Diagnose(string path, Exception why)
+    {
+        if (why.Message != "not a backup zip") return null;
+        try
+        {
+            using var zip = ZipFile.OpenRead(path);
+            var names = zip.Entries.Where(e => !e.FullName.EndsWith('/')).Select(e => e.FullName.ToLowerInvariant()).ToList();
+            bool Has(string[] ends) => names.Any(n => ends.Any(n.EndsWith));
+            if (Has([".zip", "/manifest.json", "/index.json", "/archive_manifest.json"])) return "Your backup is inside another folder or zip: upload the backup zip itself";
+            if (Has(ProgramFiles)) return "This zip holds a program, not a backup: upload the file the program made (it ends in _PRIVATE.zip)";
+            if (names.Count > 0 && names.All(n => PictureFiles.Any(n.EndsWith))) return "This zip holds only pictures, not a backup";
+        }
+        catch (Exception e) when (e is IOException or InvalidDataException) { }
+        return null;
+    }
+
     async Task<UploadOutcome> Decide(long account, string path)
     {
         var sha = Restorer.Sha256(path);
@@ -342,7 +363,7 @@ public sealed class Uploads(State state, string dataDir)
         }
         catch (Exception e) when (e is RestoreException or InvalidDataException)
         {
-            return Refuse(account, path, sha, $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
+            return Refuse(account, path, sha, Diagnose(path, e) ?? $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
         }
         var uid = long.Parse(read.Model.Identity.Uid);
         // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
@@ -557,16 +578,30 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>What the operator decided about a kept zip. Kind: restored (UserId, Handle, HandleKept: the account kept its own name), rejected (UserId, Reason) or refused (the server could not read the upload: Reason).</summary>
     public sealed record Decision(long Ts, string Kind, long? UserId, string? Handle, bool HandleKept, string Reason);
 
-    /// <summary>What the account page shows: the user id restored (once), the zips waiting for review, and what was decided about the others.</summary>
-    public (long? RestoredUserId, List<(long Ts, string Note)> Review, List<Decision> Decisions) Status(long account)
+    /// <summary>A zip waiting for review as the account page shows it. Format: <c>ours</c> (our backup tool's manifest.json, read by the first reader) or <c>other</c> (another tool's, read by another).</summary>
+    public sealed record Waiting(long Ts, string Note, string Format);
+
+    /// <summary>What the account page shows: the user id restored (once), the zips waiting for review, what was decided about the others, and whether the account can
+    /// store one more zip (Room: under its file and byte limits; the server-wide limits answer an upload with <c>paused</c>).</summary>
+    public (long? RestoredUserId, List<Waiting> Review, List<Decision> Decisions, bool Room) Status(long account)
     {
         using var con = Store.Open();
         var restored = con.Scalar("SELECT user_id FROM restored_ids WHERE account_id = ?", account) as long?;
         using var mine = Store.Open(account);
-        var review = mine.Rows("SELECT ts, note FROM uploads WHERE account_id = $a ORDER BY id").Select(r => ((long)r[0], (string)r[1])).ToList();
+        var review = mine.Rows("SELECT ts, note, zip_sha256 FROM uploads WHERE account_id = $a ORDER BY id").Select(r => new Waiting((long)r[0], (string)r[1], FormatOf(Path.Combine(dataDir, "restores", account.ToString(), (string)r[2] + ".zip")))).ToList();
         var decisions = mine.Rows("SELECT ts, kind, user_id, handle, handle_kept, reason FROM upload_results WHERE account_id = $a ORDER BY id")
             .Select(r => new Decision((long)r[0], (string)r[1], r[2] as long?, r[3] as string, (long)r[4] != 0, (string)r[5])).ToList();
-        return (restored, review, decisions);
+        var (files, bytes) = Stored(account);
+        return (restored, review, decisions, files < AccountFiles && bytes < AccountBytes);
+    }
+
+    static string FormatOf(string kept)
+    {
+        try
+        {
+            return Importer.FormatOf(kept);
+        }
+        catch (Exception e) when (e is IOException or InvalidDataException) { return "other"; }
     }
 
     /// <summary>Delete the account and everything of it: its rows, tokens and sessions (the foreign keys), the kept zips and the photos.</summary>

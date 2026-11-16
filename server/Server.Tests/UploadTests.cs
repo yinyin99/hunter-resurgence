@@ -1005,4 +1005,38 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(2, texts.Count);
         Assert.Equal(3L, Count(player, "upload_results"));  // the player is still told
     }
+
+    [Fact]
+    public async Task TestAWaitingZipSaysWhichReaderParsedItAndWhetherThereIsRoomForMore()
+    {
+        Assert.Equal((200, "review"), ((await Upload(TestZip.Own(), "ours.zip")).Reply.Status, "review"));
+        Assert.Equal("review", Status((await Upload(File.ReadAllBytes(TestZip.WriteSections(tmp, "foreign.zip")))).Body));
+        var status = await RestoreStatusOf(cookie);
+        Assert.Equal(["ours", "other"], status["review"]!.AsArray().Select(k => (string)k!["format"]!));
+        Assert.True((bool)status["room"]!);
+        await Keep(TestZip.Own(wallet: "\"ems\":1.0,\"gms\":2.0"), "third.zip", player, cookie);
+        Assert.False((bool)(await RestoreStatusOf(cookie))["room"]!);
+    }
+
+    static byte[] ZipOf(params string[] names)
+    {
+        using var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+            foreach (var n in names) zip.CreateEntry(n).Open().Dispose();
+        return ms.ToArray();
+    }
+
+    [Theory]
+    [InlineData("This zip holds a program, not a backup: upload the file the program made (it ends in _PRIVATE.zip)", "backup.py", "tool.exe", "readme.txt")]
+    [InlineData("This zip holds only pictures, not a backup", "a.jpg", "photos/b.PNG")]
+    [InlineData("Your backup is inside another folder or zip: upload the backup zip itself", "x_PRIVATE.zip")]
+    [InlineData("Your backup is inside another folder or zip: upload the backup zip itself", "a/b/manifest.json", "a/b/data.json")]
+    [InlineData("This file cannot be read as a backup: not a backup zip. Nothing was changed.", "notes.txt")]
+    public async Task TestARefusedZipSaysWhatToDoInsteadOfNotABackup(string message, params string[] entries)
+    {
+        var (reply, body) = await Upload(ZipOf(entries));
+        Assert.Equal((400, "invalid", message), (reply.Status, Status(body), (string)body["message"]!));
+        var done = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
+        Assert.Equal(("refused", message), ((string)done["kind"]!, (string)done["reason"]!));
+    }
 }

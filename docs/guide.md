@@ -22,7 +22,7 @@ Open [hunter-resurgence.com](https://hunter-resurgence.com), choose **Already a 
 
 ## 3. Claim your old profile or send your backup
 
-**No backup zip?** Open **Restore your backup** in the **Settings** menu. In **Claim your old profile**, type your old hunter name and press **Find** (5 searches a day). A found profile shows its hunterscore and what a claim brings back: items, trophies, lodges, skills, statistics and achievements, but not your wallet. Players with over 500 hunterscore are the most likely to be found. Tick **Use my old name** to take that name back (shown only when it is free), then press **Claim**. One claim per account. The page then says "restored", or that an operator will check the claim (a very high hunterscore, or a profile someone else claimed too); for those, go to step 4.
+**No backup zip?** Open **Restore your backup** in the **Settings** menu. Choose **I have no backup**, type your old hunter name and press **Find** (5 searches a day). A found profile shows its hunterscore and what a claim brings back: items, trophies, lodges, skills, statistics and achievements, but not your wallet. Players with over 500 hunterscore are the most likely to be found. Tick **Use my old name** to take that name back (shown only when it is free), then press **Claim**. One claim per account. The page then says "restored", or that an operator will check the claim (a very high hunterscore, or a profile someone else claimed too); for those, go to step 4.
 
 **Have a backup zip?** Send it once, on the website: open **Restore your backup** in the **Settings** menu, choose the backup zip, press **Upload**. It says "Received: an operator will check it".
 

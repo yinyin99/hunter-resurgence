@@ -9,7 +9,7 @@ namespace Resurgence.Services;
 /// <param name="http">Base address is the server, <c>UseCookies</c> off, and a timeout long enough for an upload (the sign-in's is 5 s).</param>
 public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, ILogger<ServerRestoreService> log) : IRestoreService
 {
-    sealed record StatusJson(long? RestoredUserId, KeptZip[]? Review, RestoreDecision[]? Decisions);
+    sealed record StatusJson(long? RestoredUserId, KeptZip[]? Review, RestoreDecision[]? Decisions, bool? Room);
 
     sealed record ResultJson(string? Status, string? Message, string? Report, string? Id);
 
@@ -29,7 +29,7 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
             var json = await response.Content.ReadFromJsonAsync<StatusJson>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-            return json is null ? null : new RestoreStatus(json.RestoredUserId, json.Review ?? [], json.Decisions ?? []);
+            return json is null ? null : new RestoreStatus(json.RestoredUserId, json.Review ?? [], json.Decisions ?? [], json.Room ?? true);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException)
         {
@@ -39,8 +39,8 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
     }
 
     /// <summary>The zip in parts of <see cref="ServerAccountApi.PartBytes"/>, each request under a proxy's limit: start, the parts in order, finish. Each part is
-    /// streamed from the browser's file as it comes, never held whole.</summary>
-    public async Task<RestoreResult> UploadAsync(Stream zip, long length)
+    /// streamed from the browser's file as it comes, never held whole. <paramref name="progress"/> gets the bytes sent as each chunk goes out.</summary>
+    public async Task<RestoreResult> UploadAsync(Stream zip, long length, IProgress<long>? progress = null)
     {
         if (cookie.Value is null) return new("signed_out", "Sign in first.");
         try
@@ -49,7 +49,7 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
             if (started.Status != "started" || id is not { Length: > 0 }) return started;
             for (var (part, sent) = (0, 0L); sent < length; part++, sent += ServerAccountApi.PartBytes)
             {
-                var (received, _) = await PostAsync($"{ServerAccountApi.Restore}/{id}/{part}", new Part(zip, Math.Min(ServerAccountApi.PartBytes, length - sent)));
+                var (received, _) = await PostAsync($"{ServerAccountApi.Restore}/{id}/{part}", new Part(zip, Math.Min(ServerAccountApi.PartBytes, length - sent), n => progress?.Report(sent + n)));
                 if (received.Status != "received") return received;
             }
             return (await PostAsync($"{ServerAccountApi.Restore}/{id}/finish", null)).Result;
@@ -81,7 +81,7 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
     }
 
     /// <summary>The next <paramref name="length"/> bytes of the zip as one request's body.</summary>
-    sealed class Part(Stream zip, long length) : HttpContent
+    sealed class Part(Stream zip, long length, Action<long> wrote) : HttpContent
     {
         protected override async Task SerializeToStreamAsync(Stream stream, System.Net.TransportContext? context)
         {
@@ -92,6 +92,7 @@ public sealed class ServerRestoreService(HttpClient http, ServerCookie cookie, I
                 if (n == 0) throw new IOException("the file ended before its size");
                 await stream.WriteAsync(buf.AsMemory(0, n));
                 left -= n;
+                wrote(length - left);
             }
         }
 

@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Uploaden…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Je back-up van gebruikers-id {0} is hersteld op dit account.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Back-ups die de operator nog moet controleren: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Bewaard op {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Hersteld op {0}: je gebruikers-id is {1} en je naam is {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>De naam is die uit je back-up.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Je naam is behouden: de naam in de back-up is niet toegestaan of is van een andere speler.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Uploaden is voorlopig gepauzeerd, probeer het later opnieuw</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Uitgelogd</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Hier niet beschikbaar</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Wat je hebt</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Uploaden</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Claimen</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Wat er daarna gebeurt</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Wat heb je?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Ik heb een back-upzip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Gemaakt met onze back-uptool of een andere opslagtool. Upload hem zoals hij is, zonder hem uit te pakken.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Ik heb geen back-up</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Zoek je oude jagersnaam tussen de profielen die deze server heeft bewaard en claim hem.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Upload je zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>De zip die je back-uptool heeft gemaakt, zoals hij is: de zip van onze tool of een export van een andere tool (bijvoorbeeld een _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Eén zip tot 1 GiB. Hij kan één keer worden hersteld en vervangt je profiel hier.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Een operator controleert hem met de hand: er wordt niets automatisch hersteld.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Alle regels</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Terug</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Volgende:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Je uploads</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Nog niets.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Wat</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Resultaat</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Oud profiel</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Wacht op controle</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Kon niet worden gelezen</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Afgewezen door de operator</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Gemaakt met onze back-uptool</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Gemaakt met een andere tool</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Gebruikers-id {0}, naam {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Ontvangen: een back-up van een andere tool. Een operator controleert hem.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Nog geen back-up geüpload</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Nog een back-up uploaden</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Je kunt nu geen nieuwe back-up uploaden: de limiet van voor de operator bewaarde zips is bereikt, of uploaden is gepauzeerd. Probeer het opnieuw zodra een operator ze heeft bekeken.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nu hoef je niets te doen. Een operator controleert elke zip met de hand, dus het kan even duren.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Je hoeft niets meer te doen: je profiel staat op dit account. Een back-up kan maar één keer worden hersteld.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Upload de zip die je back-uptool heeft gemaakt, zoals hij is. Heb je er geen, maak dan eerst een nieuwe back-up.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Lees de reden en upload dan een andere back-up.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Wacht tot een operator een van de wachtende zips heeft bekeken en upload dan opnieuw.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Er is niets verloren gegaan. Probeer het later opnieuw.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Een zip is maximaal 1 GiB. Maak een kleinere back-up.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Log in en upload dan opnieuw.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Controleer het bericht en upload dan opnieuw.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nu hoef je niets te doen. Een operator controleert je claim en je krijgt een bericht in je inbox.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Je kunt maar één profiel claimen. Heb je een back-upzip, upload die dan in plaats daarvan.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Kies je back-upzip en upload hem.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dit verwijdert je account op deze server en alles wat daarbij is opgeslagen: je Steam-id, je naam, je spelgegevens, de bewaarde back-upzips en je foto's. Je wordt uitgelogd en inloggen via de launcher werkt niet meer. Dit kan niet ongedaan worden gemaakt.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ik begrijp het, verwijder alles</value></data>
