@@ -474,14 +474,14 @@ public static class GameApi
             var edit = Handle(game, r =>
             {
                 var (lodge, trophy) = (LodgeEdit.Match(r.Path), TrophyEdit.Match(r.Path));
-                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge: form `name`, `style_id`
+                var form = r.Method == "POST" && lodge.Success && !lodge.Groups[2].Success;  // the game's save on leaving a lodge or opening the editor: form `name`, `style_id`, both echoes of what it read when it loaded the lodge
                 if (!s.Online || !(r.Method == "PUT" || form) || !(lodge.Success || trophy.Success))
                     return null;
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
                 var status = !long.TryParse((lodge.Success ? lodge : trophy).Groups[1].Value, out var id) ? 404
                     : trophy.Success ? s.HideTrophy(a, id, r.Body)
-                    : form ? s.SaveLodgeSettings(a, id, LeaveForm(r.Body))
+                    : form ? s.SaveLodgeSettings(a, id, "{}"u8.ToArray())  // an edit with no key: 200 for the account's own lodge, 404 otherwise, nothing changes
                     : lodge.Groups[2].Success ? s.SaveLodgeSettings(a, id, r.Body) : s.SaveLodge(a, id, r.Body);
                 return status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state") : Rejected(game, r, status);
             });
@@ -649,15 +649,6 @@ public static class GameApi
         catch (JsonException) { }
         reply["splashes"] = JsonNode.Parse(SplashWithNotice(Py.DumpBytes(reply["splashes"] as JsonArray ?? [])));
         return new(200, JsonAnyOrigin(), Py.DumpBytes(reply), "patch");
-    }
-
-    /// <summary>The form of the game's save on leaving a lodge (`name`, `style_id`) as the settings body: `style_id` only when a whole number. The `name` is not taken: the game sends the one it read when it loaded the lodge, which would undo a rename made since.</summary>
-    static byte[] LeaveForm(byte[] body)
-    {
-        var form = Py.ParseQs(Encoding.UTF8.GetString(body));
-        var sent = new JsonObject();
-        if (form.TryGetValue("style_id", out var style) && long.TryParse(style[0], out var id)) sent["style_id"] = id;
-        return Encoding.UTF8.GetBytes(sent.ToJsonString());
     }
 
     /// <summary>The reply for a request without a valid token, in the shape of its host: the web API's error code 5
