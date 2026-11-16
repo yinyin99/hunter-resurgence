@@ -156,6 +156,7 @@ jobs:
           for _ in $(seq 1 30); do curl -sf http://localhost:8080/feed > feed.html && break; sleep 1; done
           grep -q "Work in progress" feed.html
           grep -qE '_content/Resurgence\.Ui/shell\.[a-z0-9]+\.js' feed.html # the import map sends shell.js to its fingerprinted file (docs/website.md)
+          grep -qE '_content/Resurgence\.Ui/icons\.[a-z0-9]+\.svg#' feed.html # the sprite too
           grep -qE 'og:image" content="http://localhost:8080/apple-touch-icon\.[a-z0-9]+\.png"' feed.html # docs/website.md#search-engines
           grep -q '<h1 class="visually-hidden"' feed.html
           curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
