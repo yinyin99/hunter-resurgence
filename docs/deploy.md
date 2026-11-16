@@ -22,6 +22,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh`, and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules); then it puts the real `Caddyfile` in front of two stub backends and checks which one each path reaches ([routing](#the-community-server)) and that a request sent while the backends are gone is answered once they are back ([Deploys](#deploys)). The `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
 | `.github/workflows/deploy.yml` | build, push and roll out on a `server-X.Y.Z` tag of a commit of `main` whose `ci` passed |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK or NuGet pull request |
+| `.github/workflows/discord-thread-status.yml`, `.github/scripts/discord-thread-status.mjs` | when an issue is closed or reopened, replies in its linked Discord forum thread and sets the thread's status tag ([Discord thread status](#discord-thread-status)) |
 | `.github/actions/setup-sdk/action.yml` | installs exactly the SDK of `global.json` for `ci`, `release` and `dependabot-locks`: it reads `sdk.version`, turns `rollForward` off in the runner's copy of `global.json` (never committed), runs `setup-dotnet` with that version and prints `dotnet --version` |
 
 **SDK and NuGet updates.** Dependabot opens one weekly pull request, the `dotnet-sdk` multi-ecosystem group in `.github/dependabot.yml`, when a new SDK patch or feature band is out. It is meant to move `global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of both Dockerfiles together, but it may bump only the Dockerfile tags (#386: `global.json` stayed on 10.0.403, so the lock files were not regenerated and `docker` failed with NU1004): then push a commit that sets `global.json` to the Dockerfile's SDK and start `dependabot-locks` on the branch. A new .NET major is ignored, because it is a migration. A NuGet pull request (the `nuget` entry of `.github/dependabot.yml`) changes the bumped project's `.csproj` and `packages.lock.json`, but not the lock files of the projects that reference it (`server/Server.Tests` references `server/Server`; `tests/Resurgence.Tests` references most of `src` and `tools`). `dependabot-locks.yml` runs on every Dependabot pull request that changes `global.json`, a Dockerfile above, a `.csproj` or a `packages.lock.json`; it skips pull requests by anyone else. It restores with exactly the SDK of `global.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate`; the action turns `rollForward` off for the rest of the job, or the newest 10.0 SDK on the runner would write the lock files) and commits any changed lock files to the pull request's branch as "build: regenerate lock files". The `pull_request` runs on that commit by `github-actions[bot]` are held for approval ("action required"), so the ruleset `main: reviewed changes` sees no required check `build` and the pull request stays blocked (#124 and #117: the ruleset's records of those merges show only `required_status_checks` failing, "Required status check "build" is expected."). The maintainer approves the held `ci` run (Actions, the run, Approve and run; or `gh api -X POST repos/{owner}/{repo}/actions/runs/<id>/approve`; `gh run list --commit <sha> --workflow ci.yml` gives the id). Its checks then count for the pull request, and once they pass it merges with `gh pr merge <n> --squash --delete-branch`, without `--admin` (#386). The held `dependabot-locks` run needs no approval: it would skip the bot's commit. For an SDK update, check that the `aspnet` tag is the runtime that the new SDK ships: Dependabot bumps each tag to its own latest version. If the lock-file job fails, or `build` or `docker` fails with NU1004: start the job again with Actions, `dependabot-locks`, Run workflow, on the pull request's branch, or run the restore with that SDK yourself and push the lock files. After the bot's lock-file commit Dependabot no longer updates the pull request (no rebase, no newer version): comment `@dependabot recreate` to start over from `main`, and the job runs again on the new commit.
@@ -308,6 +309,35 @@ curl -sS https://localhost/ -o /dev/null                                     # f
 In the browser's network tab a WebSocket to `/_blazor` (status 101) stays open while you move between pages. Stop with `docker compose -f deploy/compose.yml -f deploy/compose.dev.yml down`.
 
 Do not make your browser trust Caddy's local CA: the app's HSTS header would then force `localhost` to https for a year, and `dotnet run` on `http://localhost:5080` would stop loading in that browser.
+
+## Discord thread status
+
+`.github/workflows/discord-thread-status.yml` runs when an issue is **closed** or **reopened** and tells the Discord post it came from, through Discord's REST API (the bot does not have to be online). The Discord server has two forum channels, where each post is a thread: `bug-reports` (tags `Open`, `In progress`, `Resolved`, `Won't fix`) and `ideas` (tags `Idea`, `Planned`, `Done`, `Not planned`).
+
+**Maintainer step:** when you open an issue from a Discord post, paste the post's link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the issue's **body**. A body can hold several links. An issue without a link is skipped quietly.
+
+For each link the script (`.github/scripts/discord-thread-status.mjs`, Node 20+, no packages) checks that the server is the secret's one and that the channel is a thread of a forum named exactly `bug-reports` or `ideas`; any other link (another server, `#announcements`, a normal channel) is logged and skipped, so an issue body cannot make the bot post elsewhere. Then:
+
+| Event | `bug-reports` | `ideas` |
+|---|---|---|
+| closed as completed | `Resolved` | `Done` |
+| closed for another reason (not planned, duplicate, ...) | `Won't fix` | `Not planned` |
+| reopened | `Open` | `Idea` |
+
+- The tag is found by name in the forum's tags; it replaces the thread's status tag (one of the four of its forum) and the thread's other tags stay. A forum without the tag is an error.
+- The reply is one short English message with the issue's number and link; it never quotes the title and mentions nobody.
+- Closed: reply, set the tag, archive the thread (not locked: a reply from the reporter unarchives it). Reopened: unarchive and set the tag, then reply.
+- `In progress` and `Planned` are set by hand; the next close or reopen replaces them.
+- The run fails only on a real API failure (a missing thread, a missing tag, no permission), not on a missing or skipped link.
+
+The issue's title and body are untrusted: the script reads the event file itself and nothing of it reaches a shell line. The bot needs, on both forums, the permissions to view them, send messages in posts and manage threads (tags and archiving). Repository secrets:
+
+| Secret | Value |
+|---|---|
+| `DISCORD_BOT_TOKEN` | the bot's token |
+| `DISCORD_GUILD_ID` | the Discord server's id |
+
+Without them (a fork) the run ends with a notice. The runs of one issue go one at a time.
 
 ## Known limits
 
