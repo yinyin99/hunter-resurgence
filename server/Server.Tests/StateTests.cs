@@ -99,19 +99,16 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
-    public void TestCloneGetsNewGuidAndSlot()
+    public void TestAClonedEntryCreatesNothingAndTheReplyIsNull()
     {
-        // a clone is an ammunition the account owns, with unlimited ammunition on
         var app = APP;
         app["items"]!.AsArray().Single(i => (long)i!["id"]! == 10)!["cat"] = 3;
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES) { UnlimitedAmmo = true };
-        var reply = Reply(state.MoveMultiple2Reply(ME, Form(
+        Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(
             JsonNode.Parse("""[{"item_guid": "new_item_1", "slot_id": 13}, {"item_guid": 200, "slot_id": 0}]""")!,
             JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 10}]"""))));
-        var guid = Py.Str(reply["new_item_1"]);
-        Assert.Equal("201", guid);
         var items = Items();
-        Eq("[10, 13, 10]", T(items[guid]!["item_id"], items[guid]!["slot"], items[guid]!["units"]));
+        Assert.Equal(["100", "200"], items.Select(kv => kv.Key).Order(StringComparer.Ordinal));
         Eq("0", items["200"]!["slot"]);
     }
 

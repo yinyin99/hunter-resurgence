@@ -90,8 +90,8 @@ public static class GameApi
         if (s != null)
         {
             api.MapExactPost(game, MOVE_MULTIPLE2, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.MoveMultiple2Reply(a, r.Body), "state")))
-               .WithName("MoveItems").WithSummary("Move inventory items between slots, clone stacks")
-               .WithDescription("Reply `null`, or `{placeholder: new guid}` when stacks were cloned. Plain HTTP in the client.")
+               .WithName("MoveItems").WithSummary("Move inventory items between slots")
+               .WithDescription("Reply `null`; a cloned entry creates nothing. Plain HTTP in the client.")
                .Body<MoveMultiple2Form>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, BUY, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.BuyReply(a, r.Body), "state")))
                .WithName("Buy").WithSummary("Buy a catalogue item")
@@ -703,8 +703,8 @@ public static class GameApi
     public sealed record ErrReply(int err);
 
     public sealed record MoveMultiple2Form(
-        [property: Description("JSON list `[{item_guid, slot_id}]`; item_guid is a guid or a clonedItems placeholder")] string mapping,
-        [property: Description("JSON list `[{item_guid: \"new_item_<ts>\", item_id}]`: stacks to create")] string clonedItems,
+        [property: Description("JSON list `[{item_guid, slot_id}]`; item_guid is a guid; a placeholder is ignored")] string mapping,
+        [property: Description("JSON list `[{item_guid: \"new_item_<ts>\", item_id}]`: ignored, nothing is created")] string clonedItems,
         string? oauth_access_token);
 
     public sealed record BuyForm(long item_id,
