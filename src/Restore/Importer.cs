@@ -34,6 +34,14 @@ public static class Importer
         (ArchiveBackup.IsOne, ArchiveBackup.Read), // ARCHIVE_MANIFEST.json + authenticated/ + profile/resume/
     ];
 
+    /// <summary>Which reader parses a zip: <c>ours</c> (our backup tool's manifest.json, the first format) or <c>other</c> (another tool's, or none). Looks at the entry names only.</summary>
+    /// <exception cref="InvalidDataException">Not a zip.</exception>
+    public static string FormatOf(string zipPath)
+    {
+        using var zip = ZipFile.OpenRead(zipPath);
+        return BackupReader.IsOne(zip) ? "ours" : "other";
+    }
+
     static BackupContent Content(Stream stream, Limits lim)
     {
         using var zip = BackupReader.Open(stream, lim);

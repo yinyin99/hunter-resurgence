@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>A enviar…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>A sua cópia de segurança do ID de utilizador {0} foi restaurada nesta conta.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Cópias de segurança guardadas para revisão do operador: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Guardada em {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurada em {0}: o seu ID de utilizador é {1} e o seu nome é {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>O nome é o da sua cópia de segurança.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>O seu nome foi mantido: o nome da cópia de segurança não é permitido ou pertence a outro jogador.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Os envios estão em pausa por agora, tente mais tarde</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Sessão terminada</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Não disponível aqui</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>O que tem</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Reclamar</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>O que acontece a seguir</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>O que tem?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Tenho um zip de cópia de segurança</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Feito com a nossa ferramenta de cópia de segurança ou outra ferramenta de gravação. Envie-o tal como está, sem o descompactar.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Não tenho cópia de segurança</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Procure o seu antigo nome de caçador nos perfis que este servidor guardou e reclame-o.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Envie o seu zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>O zip que a sua ferramenta de cópia de segurança criou, tal como está: o zip da nossa ferramenta ou a exportação de outra (por exemplo, um _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Um só zip até 1 GiB. Só pode ser restaurado uma vez e substitui o seu perfil aqui.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Um operador verifica-o manualmente: nada é restaurado automaticamente.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Todas as regras</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Voltar</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Seguinte:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Os seus envios</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Ainda nada.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>O quê</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Resultado</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Perfil antigo</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>A aguardar revisão</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Não foi possível ler</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Rejeitada pelo operador</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Feita com a nossa ferramenta de cópia de segurança</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Feita com outra ferramenta</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>ID de utilizador {0}, nome {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Recebida: uma cópia de segurança de outra ferramenta. Um operador vai verificá-la.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Ainda nenhuma cópia de segurança enviada</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Enviar outra cópia de segurança</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Não pode enviar outra cópia de segurança agora: o limite de zips guardados para o operador foi atingido, ou os envios estão em pausa. Tente novamente depois de um operador os ter revisto.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nada a fazer por agora. Um operador verifica cada zip manualmente, por isso pode demorar.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nada mais a fazer: o seu perfil está nesta conta. Uma cópia de segurança só pode ser restaurada uma vez.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Envie o zip que a sua ferramenta de cópia de segurança criou, tal como está. Se não tiver nenhum, faça primeiro uma nova cópia de segurança.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Leia o motivo e depois envie outra cópia de segurança.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Aguarde que um operador reveja um dos zips em espera e depois envie novamente.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nada se perdeu. Tente novamente mais tarde.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Um zip tem no máximo 1 GiB. Faça uma cópia de segurança mais pequena.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Inicie sessão e depois envie novamente.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Verifique a mensagem e depois envie novamente.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nada a fazer por agora. Um operador verifica o seu pedido e recebe uma mensagem na sua caixa de entrada.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Só pode reclamar um perfil. Se tiver um zip de cópia de segurança, envie-o em vez disso.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Escolha o seu zip de cópia de segurança e envie-o.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Eliminar os meus dados</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto elimina a sua conta neste servidor e tudo o que está guardado com ela: o seu ID Steam, o seu nome, os dados do jogo, os zips de cópia de segurança guardados e as suas fotografias. A sua sessão é terminada e o início de sessão do launcher deixa de funcionar. Não pode ser anulado.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Compreendo, eliminar tudo</value></data>

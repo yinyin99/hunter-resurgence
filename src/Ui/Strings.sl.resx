@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Nalaganje …</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Vaša varnostna kopija uporabnika z id {0} je obnovljena na tem računu.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Varnostne kopije, ki čakajo na pregled operaterja: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Shranjeno {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Obnovljeno {0}: vaš id uporabnika je {1}, vaše ime pa {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Ime je tisto iz vaše varnostne kopije.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Vaše ime je ostalo: ime iz varnostne kopije ni dovoljeno ali pripada drugemu igralcu.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Nalaganje je za zdaj začasno ustavljeno, poskusite znova pozneje</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odjavljeni ste</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Tukaj ni na voljo</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Kaj imate</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Nalaganje</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Zahtevek</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Kaj sledi</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Kaj imate?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Imam zip z varnostno kopijo</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Narejen z našim orodjem za varnostno kopiranje ali drugim orodjem za shranjevanje. Naložite ga takšnega, kot je, brez razpakiranja.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Nimam varnostne kopije</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Poiščite svoje staro ime lovca med profili, ki jih je ta strežnik shranil, in ga zahtevajte.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Naložite svoj zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Zip, ki ga je naredilo vaše orodje za varnostno kopiranje, takšen, kot je: zip našega orodja ali izvoz drugega orodja (na primer _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>En zip do 1 GiB. Obnovite ga lahko samo enkrat in zamenja vaš profil tukaj.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Operater ga preveri ročno: nič se ne obnovi samodejno.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Vsa pravila</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Nazaj</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Naprej:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Vaša nalaganja</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Še nič.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Kaj</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Rezultat</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Stari profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Čaka na pregled</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Ni bilo mogoče prebrati</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Operater je zavrnil</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Narejeno z našim orodjem za varnostno kopiranje</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Narejeno z drugim orodjem</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Uporabniški id {0}, ime {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Prejeto: varnostna kopija iz drugega orodja. Operater jo bo preveril.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Varnostna kopija še ni naložena</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Naloži drugo varnostno kopijo</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Zdaj ne morete naložiti druge varnostne kopije: dosežena je omejitev zipov, shranjenih za operaterja, ali pa je nalaganje ustavljeno. Poskusite znova, ko jih operater pregleda.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Zdaj ni treba storiti ničesar. Operater vsak zip preveri ročno, zato lahko traja.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Ni več ničesar za storiti: vaš profil je na tem računu. Varnostno kopijo lahko obnovite samo enkrat.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Naložite zip, ki ga je naredilo vaše orodje za varnostno kopiranje, takšen, kot je. Če ga nimate, najprej naredite novo varnostno kopijo.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Preberite razlog, nato naložite drugo varnostno kopijo.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Počakajte, da operater pregleda enega od zipov v čakalni vrsti, nato naložite znova.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nič ni izgubljeno. Poskusite znova pozneje.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Zip je velik največ 1 GiB. Naredite manjšo varnostno kopijo.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Prijavite se, nato naložite znova.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Preverite sporočilo, nato naložite znova.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Zdaj ni treba storiti ničesar. Operater preveri vaš zahtevek, sporočilo pa prejmete v nabiralnik.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Zahtevate lahko samo en profil. Če imate zip z varnostno kopijo, ga raje naložite.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Izberite zip z varnostno kopijo in ga naložite.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Izbriši moje podatke</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>S tem izbrišete svoj račun na tem strežniku in vse, kar je z njim shranjeno: svoj Steam id, svoje ime, svoje podatke o igri, shranjene zip datoteke varnostnih kopij in svoje fotografije. Odjavljeni boste, prijava iz zaganjalnika pa preneha delovati. Tega ni mogoče razveljaviti.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Razumem, izbriši vse</value></data>

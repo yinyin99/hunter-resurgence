@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Se încarcă…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Backup-ul dvs. pentru ID-ul de utilizator {0} a fost restaurat pe acest cont.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backup-uri păstrate pentru verificarea de către operator: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Păstrat la {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurat la {0}: ID-ul dvs. de utilizator este {1}, iar numele dvs. este {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Numele este cel din backup-ul dvs.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Numele dvs. a fost păstrat: numele din backup nu este permis sau aparține altui jucător.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Încărcările sunt oprite momentan, încearcă mai târziu</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Deconectat</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Indisponibil aici</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Ce aveți</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Încărcare</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Revendicare</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Ce urmează</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Ce aveți?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Am un zip de backup</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Creat cu instrumentul nostru de backup sau cu alt instrument de salvare. Încărcați-l așa cum este, fără să-l dezarhivați.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Nu am backup</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Găsiți vechiul dvs. nume de vânător printre profilurile păstrate de acest server și revendicați-l.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Încărcați zip-ul</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Zip-ul creat de instrumentul dvs. de backup, așa cum este: zip-ul instrumentului nostru sau exportul altui instrument (de exemplu un _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Un singur zip de cel mult 1 GiB. Poate fi restaurat o singură dată și înlocuiește profilul dvs. de aici.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Un operator îl verifică manual: nimic nu se restaurează automat.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Toate regulile</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Înapoi</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Următorul pas:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Încărcările dvs.</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Încă nimic.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Ce</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Rezultat</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Profil vechi</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>În așteptarea verificării</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Nu a putut fi citit</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Respins de operator</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Creat cu instrumentul nostru de backup</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Creat cu alt instrument</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>ID de utilizator {0}, nume {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Primit: un backup de la alt instrument. Un operator îl va verifica.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Niciun backup încărcat încă</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Încărcați alt backup</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Nu puteți încărca alt backup acum: limita de zip-uri păstrate pentru operator a fost atinsă sau încărcările sunt oprite. Încercați din nou după ce un operator le-a verificat.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nimic de făcut acum. Un operator verifică fiecare zip manual, deci poate dura.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nimic de făcut: profilul dvs. este pe acest cont. Un backup poate fi restaurat o singură dată.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Încărcați zip-ul creat de instrumentul dvs. de backup, așa cum este. Dacă nu aveți unul, faceți mai întâi un backup nou.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Citiți motivul, apoi încărcați alt backup.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Așteptați ca un operator să verifice unul dintre zip-urile în așteptare, apoi încărcați din nou.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nu s-a pierdut nimic. Încercați din nou mai târziu.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Un zip are cel mult 1 GiB. Faceți un backup mai mic.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Conectați-vă, apoi încărcați din nou.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Verificați mesajul, apoi încărcați din nou.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nimic de făcut acum. Un operator verifică cererea dvs., iar dvs. primiți un mesaj în inbox.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Puteți revendica un singur profil. Dacă aveți un zip de backup, încărcați-l în loc.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Alegeți zip-ul de backup și încărcați-l.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Ștergeți datele mele</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Aceasta șterge contul dvs. de pe acest server și tot ce este stocat împreună cu el: ID-ul dvs. Steam, numele, datele de joc, zip-urile de backup păstrate și fotografiile. Veți fi deconectat, iar autentificarea din launcher nu va mai funcționa. Acțiunea nu poate fi anulată.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Am înțeles, ștergeți totul</value></data>

@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Nahrávání…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Vaše záloha s id uživatele {0} je obnovena na tomto účtu.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Zálohy čekající na kontrolu operátorem: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Uloženo {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Obnoveno {0}: vaše id uživatele je {1} a vaše jméno je {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Jméno je to z vaší zálohy.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Vaše jméno zůstalo: jméno ze zálohy není povolené nebo patří jinému hráči.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Nahrávání je prozatím pozastaveno, zkuste to později</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odhlášeno</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Zde není k dispozici</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Co máte</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Nahrání</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Žádost</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Co se stane dál</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Co máte?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Mám zip se zálohou</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Vytvořený naším zálohovacím nástrojem nebo jiným nástrojem pro ukládání. Nahrajte ho tak, jak je, bez rozbalení.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Zálohu nemám</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Najděte své staré jméno lovce mezi profily, které tento server uchoval, a požádejte o něj.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Nahrajte svůj zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Zip vytvořený vaším zálohovacím nástrojem, tak jak je: zip našeho nástroje nebo export jiného nástroje (například _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Jeden zip do 1 GiB. Lze ho obnovit jednou a nahradí zde váš profil.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Operátor ho zkontroluje ručně: nic se neobnovuje automaticky.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Všechna pravidla</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Zpět</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Dále:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Vaše nahrání</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Zatím nic.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Co</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Výsledek</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Starý profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Čeká na kontrolu</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Nelze přečíst</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Zamítnuto operátorem</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Vytvořeno naším zálohovacím nástrojem</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Vytvořeno jiným nástrojem</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>ID uživatele {0}, jméno {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Přijato: záloha z jiného nástroje. Operátor ji zkontroluje.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Zatím nebyla nahrána žádná záloha</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Nahrát další zálohu</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Teď nelze nahrát další zálohu: byl dosažen limit zipů uchovávaných pro operátora, nebo je nahrávání pozastaveno. Zkuste to znovu, až je operátor zkontroluje.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Teď nemusíte nic dělat. Operátor kontroluje každý zip ručně, takže to může chvíli trvat.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Už nemusíte nic dělat: váš profil je na tomto účtu. Zálohu lze obnovit jen jednou.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Nahrajte zip vytvořený vaším zálohovacím nástrojem, tak jak je. Pokud ho nemáte, nejdřív vytvořte novou zálohu.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Přečtěte si důvod a nahrajte jinou zálohu.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Počkejte, až operátor zkontroluje některý z čekajících zipů, a pak nahrajte znovu.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nic se neztratilo. Zkuste to později.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Zip může mít nejvýše 1 GiB. Vytvořte menší zálohu.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Přihlaste se a nahrajte znovu.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Zkontrolujte zprávu a nahrajte znovu.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Teď nemusíte nic dělat. Operátor vaši žádost zkontroluje a zprávu dostanete do schránky.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Můžete požádat jen o jeden profil. Pokud máte zip se zálohou, nahrajte ho místo toho.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Vyberte svůj zip se zálohou a nahrajte ho.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Smazat mé údaje</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Tím smažete svůj účet na tomto serveru i vše, co je s ním uloženo: své Steam ID, své jméno, herní data, uchované zipy záloh a své fotky. Budete odhlášeni a přihlášení v launcheru přestane fungovat. Nelze to vrátit zpět.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumím, smazat vše</value></data>
