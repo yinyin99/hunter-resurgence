@@ -226,6 +226,33 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestLodgeEditorTalksToThisHostAndStaysFailSafe()
+    {
+        void Put(string path, string text)
+        {
+            var f = Path.Combine(mirror, "game_web.test", path);
+            Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+            File.WriteAllText(f, text);
+        }
+        var cfg = (JsonObject)Cfg.DeepClone();
+        cfg["install_dir"] = tmp;
+        await using var own = await Loopback.StartAsync(new Game(table, cfg, null, mirror));
+        Put("dist/main.js", "function a(){return 'https://api.' + getObj().getServer() + '/v1';}function b(){return 'https://apiv2.' + getObj().getServer();}function c(){return 'https://static.' + getObj().getServer();}");
+        Put("static/app/9.9.9/webgui/index.html", "<script src=\"/dist/main.js\"></script>");
+        var script = await own.SendAsync("GET", "game_web.test", "/dist/main.js");
+        Assert.Equal("patch", script.Source);
+        Assert.Equal("function a(){return window.location.origin + '/v1';}function b(){return window.location.origin + '/v1';}function c(){return window.location.origin;}", Encoding.UTF8.GetString(script.Body));
+        Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
+        var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
+        var page = Encoding.UTF8.GetString(frame.Body);
+        Assert.StartsWith("<script src=\"/dist/main.js?t=urls1\"></script><script>", page);
+        Assert.Contains("hunter.getAuthToken()", page);  // after the script: the requests that carry no token get the player's
+        Assert.Contains(("Cache-Control", "no-cache"), frame.Headers);
+        Put("dist/main.js", "function b(){return 'https://apiv2.' + getObj().getServer();}");  // a script without all three texts is served as it is
+        Same(("function b(){return 'https://apiv2.' + getObj().getServer();}"u8.ToArray(), "mirror"), await own.SendAsync("GET", "game_web.test", "/dist/main.js"));
+    }
+
+    [Fact]
     public async Task TestLocaleScriptGetsTheHideLabelOnlyWhenItLacksIt()
     {
         void Put(string name, string text)
@@ -294,7 +321,7 @@ public class ReplayTests : IAsyncLifetime
             }
         }
         File.WriteAllBytes(Path.Combine(d, "pc0.arc"), arc.ToArray());
-        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png"), ("static.test", "/static/img/lodge/lodges/rustic.png") })
+        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png"), ("static.test", "/static/img/lodge/lodges/rustic.png"), ("static.test", "/static/img/lodge/skulls/skull_x.png"), ("static.test", "/static/img/lodge/other/z.png") })
         {
             var f = Path.Combine(mirror, host, path.TrimStart('/'));
             Directory.CreateDirectory(Path.GetDirectoryName(f)!);
@@ -317,6 +344,8 @@ public class ReplayTests : IAsyncLifetime
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/lodges/rustic.png"));
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern
+        Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/static/img/lodge/skulls/skull_x.png"));  // the editor's own pictures: the static host's folder
+        Assert.Equal("miss", (await Get("game_web.test", "/static/img/lodge/other/z.png")).Source);
         Same(("app page"u8.ToArray(), "archive"), await Get("game_web.test", "/static/app/3.0.81/webgui/index.html"));  // the lodge editor frame: the app's page, not the other index.html
         Same(("bundle"u8.ToArray(), "archive"), await Get("game_web.test", "/dist/main.js"));
         Assert.Equal("miss", (await Get("static.test", "/static/app/3.0.81/webgui/index.html")).Source);  // only the game web host's page

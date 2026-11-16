@@ -403,7 +403,37 @@ public static class Replay
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
-        static int warned;
+        static int warned, warnedApp;
+
+        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page asks for the script under a new `?t=` token and, after it, adds the player's token to the page's requests that have none.</summary>
+        static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
+        public const string AppVersion = "urls1";
+        public static readonly (string From, string To)[] AppUrls =
+            [("'https://api.' + getObj().getServer() + '/v1'", "window.location.origin + '/v1'"),
+             ("'https://apiv2.' + getObj().getServer()", "window.location.origin + '/v1'"),
+             ("'https://static.' + getObj().getServer()", "window.location.origin")];
+        // the page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included): once the script has run,
+        // each request that has none gets the game's own token
+        const string TokenScript = "<script>(function(){var f=window.fetch;if(!f||!window.hunter)return;window.fetch=function(r,o){var t=hunter.getAuthToken();"
+            + "if(t){if(typeof r===\"string\"){o=o||{};var h=new Headers(o.headers||{});if(!h.has(\"Authorization\"))h.set(\"Authorization\",\"Bearer \"+t);o.headers=h;}"
+            + "else if(!r.headers.has(\"Authorization\"))r.headers.set(\"Authorization\",\"Bearer \"+t);}return f.call(this,r,o);};})();</script>";
+        static readonly (string From, string To)[] AppFrameSrc = [("src=\"/dist/main.js\"></script>", "src=\"/dist/main.js?t=" + AppVersion + "\"></script>" + TokenScript)];
+
+        /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
+        static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
+        {
+            foreach (var (from, to) in edits)
+            {
+                if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
+                {
+                    if (Interlocked.Exchange(ref warnedFlag, 1) == 0)
+                        Console.Error.WriteLine($"warning: {what} was not found; the file is served unchanged");
+                    return null;
+                }
+                text = text.Replace(from, to, StringComparison.Ordinal);
+            }
+            return text;
+        }
 
         public static Reply Apply(Req r, Reply reply)
         {
@@ -414,19 +444,13 @@ public static class Replay
                 return Token.IsMatch(page) ? NoCache(reply, Encoding.Latin1.GetBytes(Token.Replace(page, "$1?t=" + Version))) : reply;
             }
             if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
+            // Latin1 keeps every byte of the rest of a file as it was
+            if (AppScript.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppUrls, ref warnedApp, "the lodge editor's server addresses") is { } app)
+                return NoCache(reply, Encoding.Latin1.GetBytes(app));
+            if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedApp, "the lodge editor's script tag") is { } frame)
+                return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
-            var text = Encoding.Latin1.GetString(reply.Body);  // Latin1 keeps every byte of the rest of the script as it was
-            foreach (var (from, to) in Reads)
-            {
-                if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
-                {
-                    if (Interlocked.Exchange(ref warned, 1) == 0)
-                        Console.Error.WriteLine("warning: the in-game page's round timer read was not found; the page is served unchanged");
-                    return reply;
-                }
-                text = text.Replace(from, to, StringComparison.Ordinal);
-            }
-            return NoCache(reply, Encoding.Latin1.GetBytes(text));
+            return ReplaceOnce(Encoding.Latin1.GetString(reply.Body), Reads, ref warned, "the in-game page's round timer read") is { } text ? NoCache(reply, Encoding.Latin1.GetBytes(text)) : reply;
         }
 
         static readonly Regex Locale = new(@"\A/static/app/[^/]+/locale/[a-z_]+\.js\z", RegexOptions.ECMAScript);
@@ -495,9 +519,12 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        /// <summary>The kill screen's organ pictures and the lodge pictures, when the archive lacks one: the static host's folder of the mirror.</summary>
-        string? PictureMirror(Req r) => r.Host == GameWeb && PictureUrl.Match(r.Path) is { Success: true } m
-            ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
+        static readonly Regex LodgeStatic = new(@"\A/static/img/lodge/(?:animals|skulls|weapons|slots|styles|layouts|lodges)/[\w.-]{1,80}\z", RegexOptions.ECMAScript);
+
+        /// <summary>The kill screen's organ pictures and the lodge pictures, and the lodge editor's own (`/static/img/lodge/...`), when the archive lacks one: the static host's folder of the mirror.</summary>
+        string? PictureMirror(Req r) => r.Host != GameWeb ? null
+            : PictureUrl.Match(r.Path) is { Success: true } m ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value)
+            : LodgeStatic.IsMatch(r.Path) ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), r.Path) : null;
 
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 
