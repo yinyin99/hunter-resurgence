@@ -77,7 +77,7 @@ public class UnlimitedAmmoTests : StateTestBase
     byte[] Clone(string entries) => state.MoveMultiple2Reply(ME, Form(new JsonArray(), JsonNode.Parse(entries)));
 
     [Fact]
-    public void AClonedEntryCreatesNothingWhateverTheSettingAndTheReplyIsNull()
+    public void AClonedEntryCreatesNothingAndTheReplyIsNull()
     {
         Make(true);
         SetStacks(3);

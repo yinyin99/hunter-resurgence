@@ -247,7 +247,7 @@ public class AccountIsolationTests : StateTestBase
         Scoring.OwnLogo = "testlogo";
     }
 
-    /// <summary>The state with unlimited ammunition on and item 10 an ammunition: item 10 is one.</summary>
+    /// <summary>The state with unlimited ammunition on and item 10 an ammunition.</summary>
     void Unlimited()
     {
         var app = APP;
