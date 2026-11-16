@@ -46,7 +46,6 @@ With the values the mock services give, the slots have 661 distinct keys, and th
 | `logo-hero` | 485×120 | Feed | yes |
 | `logo-landing` | 1000×250 | AutoLogin | yes |
 | `logo-splash` | 483×65 | Splash | yes |
-| `logo-dev` | 220×72 | Footer | yes |
 | `logo-rating-<1-4>` | 62×82 | Footer | 4 of 4 |
 | `bg-hero` | 980×550 | Feed | yes: `bg-hero.webm`, the original landing page's background video (`landing_page_video.webm`, played muted and looping as there) |
 | `browser-bg` | 1280×760 | BrowserNotice | yes |

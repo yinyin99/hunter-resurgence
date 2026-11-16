@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>LEGFRISSEBB HÍREK</value></data>
   <data name="Feed.News" xml:space="preserve"><value>{GAME} HÍREK</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>FEJLESZTŐ</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>KÖVESD: {GAME}</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>KÖVESS</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Főmenü</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>ÁRUHÁZ</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>SÚGÓ</value></data>

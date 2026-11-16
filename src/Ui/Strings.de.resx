@@ -19,7 +19,7 @@
   <data name="Feed.LatestNews" xml:space="preserve"><value>NEUESTE NACHRICHTEN</value></data>
   <data name="Feed.News" xml:space="preserve"><value>NACHRICHTEN ZU {GAME}</value></data>
   <data name="Footer.DevelopedBy" xml:space="preserve"><value>ENTWICKELT VON</value></data>
-  <data name="Footer.Follow" xml:space="preserve"><value>FOLGEN SIE {GAME}</value></data>
+  <data name="Footer.Follow" xml:space="preserve"><value>FOLGEN</value></data>
   <data name="Menu.Label" xml:space="preserve"><value>Hauptmenü</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>SHOP</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>HILFE</value></data>
