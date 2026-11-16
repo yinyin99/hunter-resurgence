@@ -9,7 +9,7 @@ permissions:
   contents: read
 concurrency:
   group: discord-thread-status-${{ github.event.issue.number }}
-  cancel-in-progress: false # a run is never cut short; a newer event for the issue waits its turn
+  cancel-in-progress: false # a run is never cut short; the newest event for the issue waits its turn
 jobs:
   thread:
     runs-on: ubuntu-latest

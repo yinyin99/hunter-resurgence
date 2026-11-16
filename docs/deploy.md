@@ -314,7 +314,7 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 `.github/workflows/discord-thread-status.yml` runs when an issue is **closed** or **reopened** and tells the Discord post it came from, through Discord's REST API (the bot does not have to be online). The Discord server has two forum channels, where each post is a thread: `bug-reports` (tags `Open`, `In progress`, `Resolved`, `Won't fix`) and `ideas` (tags `Idea`, `Planned`, `Done`, `Not planned`).
 
-**Maintainer step:** when you open an issue from a Discord post, paste the post's link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the issue's **body**. A body can hold several links. An issue without a link is skipped quietly.
+**Maintainer step:** when you open an issue from a Discord post, paste the post's link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the issue's **body**. A body can hold several links. An issue without a link is skipped quietly. Only issues opened by the owner, a member or a collaborator of the repository are acted on, so a link in a stranger's issue cannot make the bot post in other people's threads.
 
 For each link the script (`.github/scripts/discord-thread-status.mjs`, Node 20+, no packages) checks that the server is the secret's one and that the channel is a thread of a forum named exactly `bug-reports` or `ideas`; any other link (another server, `#announcements`, a normal channel) is logged and skipped, so an issue body cannot make the bot post elsewhere. Then:
 

@@ -26,6 +26,11 @@ if (!token || !guild) {
 }
 
 const { action, issue } = JSON.parse(readFileSync(eventPath, 'utf8'));
+// only a maintainer's issue: anyone can open an issue whose body links other people's threads
+if (!['OWNER', 'MEMBER', 'COLLABORATOR'].includes(issue.author_association)) {
+  console.log('Issue not opened by a maintainer: nothing to do');
+  process.exit(0);
+}
 const outcome = action === 'reopened' ? 'reopened' : issue.state_reason === 'completed' ? 'completed' : 'closed';
 const url = `https://github.com/${repo}/issues/${issue.number}`;
 
