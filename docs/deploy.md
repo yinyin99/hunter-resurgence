@@ -22,7 +22,7 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh`, and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules); then it puts the real `Caddyfile` in front of two stub backends and checks which one each path reaches ([routing](#the-community-server)) and that a request sent while the backends are gone is answered once they are back ([Deploys](#deploys)). The `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
 | `.github/workflows/deploy.yml` | build, push and roll out on a `server-X.Y.Z` tag of a commit of `main` whose `ci` passed |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK or NuGet pull request |
-| `.github/workflows/discord-thread-status.yml`, `.github/scripts/discord-thread-status.mjs` | when an issue is closed or reopened, replies in its linked Discord forum thread and sets the thread's status tag ([Discord thread status](#discord-thread-status)) |
+| `.github/workflows/discord-release-threads.yml`, `.github/scripts/discord-release-threads.mjs` | after a release is published, resolves the Discord forum threads linked in the release's pull requests and the issues they close ([Discord threads at release](#discord-threads-at-release)) |
 | `.github/actions/setup-sdk/action.yml` | installs exactly the SDK of `global.json` for `ci`, `release` and `dependabot-locks`: it reads `sdk.version`, turns `rollForward` off in the runner's copy of `global.json` (never committed), runs `setup-dotnet` with that version and prints `dotnet --version` |
 
 **SDK and NuGet updates.** Dependabot opens one weekly pull request, the `dotnet-sdk` multi-ecosystem group in `.github/dependabot.yml`, when a new SDK patch or feature band is out. It is meant to move `global.json` and the `dotnet/sdk` and `dotnet/aspnet` tags of both Dockerfiles together, but it may bump only the Dockerfile tags (#386: `global.json` stayed on 10.0.403, so the lock files were not regenerated and `docker` failed with NU1004): then push a commit that sets `global.json` to the Dockerfile's SDK and start `dependabot-locks` on the branch. A new .NET major is ignored, because it is a migration. A NuGet pull request (the `nuget` entry of `.github/dependabot.yml`) changes the bumped project's `.csproj` and `packages.lock.json`, but not the lock files of the projects that reference it (`server/Server.Tests` references `server/Server`; `tests/Resurgence.Tests` references most of `src` and `tools`). `dependabot-locks.yml` runs on every Dependabot pull request that changes `global.json`, a Dockerfile above, a `.csproj` or a `packages.lock.json`; it skips pull requests by anyone else. It restores with exactly the SDK of `global.json` (`dotnet restore hunter-resurgence.slnx --force-evaluate`; the action turns `rollForward` off for the rest of the job, or the newest 10.0 SDK on the runner would write the lock files) and commits any changed lock files to the pull request's branch as "build: regenerate lock files". The `pull_request` runs on that commit by `github-actions[bot]` are held for approval ("action required"), so the ruleset `main: reviewed changes` sees no required check `build` and the pull request stays blocked (#124 and #117: the ruleset's records of those merges show only `required_status_checks` failing, "Required status check "build" is expected."). The maintainer approves the held `ci` run (Actions, the run, Approve and run; or `gh api -X POST repos/{owner}/{repo}/actions/runs/<id>/approve`; `gh run list --commit <sha> --workflow ci.yml` gives the id). Its checks then count for the pull request, and once they pass it merges with `gh pr merge <n> --squash --delete-branch`, without `--admin` (#386). The held `dependabot-locks` run needs no approval: it would skip the bot's commit. For an SDK update, check that the `aspnet` tag is the runtime that the new SDK ships: Dependabot bumps each tag to its own latest version. If the lock-file job fails, or `build` or `docker` fails with NU1004: start the job again with Actions, `dependabot-locks`, Run workflow, on the pull request's branch, or run the restore with that SDK yourself and push the lock files. After the bot's lock-file commit Dependabot no longer updates the pull request (no rebase, no newer version): comment `@dependabot recreate` to start over from `main`, and the job runs again on the new commit.
@@ -310,34 +310,31 @@ In the browser's network tab a WebSocket to `/_blazor` (status 101) stays open w
 
 Do not make your browser trust Caddy's local CA: the app's HSTS header would then force `localhost` to https for a year, and `dotnet run` on `http://localhost:5080` would stop loading in that browser.
 
-## Discord thread status
+## Discord threads at release
 
-`.github/workflows/discord-thread-status.yml` runs when an issue is **closed** or **reopened** and tells the Discord post it came from, through Discord's REST API (the bot does not have to be online). The Discord server has two forum channels, where each post is a thread: `bug-reports` (tags `Open`, `In progress`, `Resolved`, `Won't fix`) and `ideas` (tags `Idea`, `Planned`, `Done`, `Not planned`).
+`.github/workflows/discord-release-threads.yml` runs after the `release` workflow succeeds (the release is published by then) and tells the Discord posts that the fix or idea has shipped, through Discord's REST API (the bot does not have to be online). It follows the release run (`workflow_run`) because a release published with the workflow's own `GITHUB_TOKEN` does not fire `release: published`. Closing or reopening an issue touches nothing on Discord: a fix is not available to players until it is released. The Discord server has two forum channels, where each post is a thread: `bug-reports` (tags `Open`, `In progress`, `Resolved`, `Won't fix`) and `ideas` (tags `Idea`, `Planned`, `Done`, `Not planned`).
 
-**Maintainer step:** when you open an issue from a Discord post, paste the post's link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the issue's **body**. A body can hold several links. An issue without a link is skipped quietly. Only issues opened by the owner, a member or a collaborator of the repository are acted on, so a link in a stranger's issue cannot make the bot post in other people's threads.
+**Maintainer step:** put the Discord thread link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the **pull request's body**, or in the body of the issue the pull request closes (`Closes #<n>`). A body can hold several links. The thread is resolved when the release that ships the pull request is published. `Won't fix` and `Not planned` are set by hand in Discord.
 
-For each link the script (`.github/scripts/discord-thread-status.mjs`, Node 20+, no packages) checks that the server is the secret's one and that the channel is a thread of a forum named exactly `bug-reports` or `ideas`; any other link (another server, `#announcements`, a normal channel) is logged and skipped, so an issue body cannot make the bot post elsewhere. Then:
+The script (`.github/scripts/discord-release-threads.mjs`, Node 20+, no packages) takes the commits from the previous stable release to the new tag (GitHub's compare), each commit's pull requests merged into the default branch, and the issues each of those closes. It reads the Discord links in:
 
-| Event | `bug-reports` | `ideas` |
-|---|---|---|
-| closed as completed | `Resolved` | `Done` |
-| closed for another reason (not planned, duplicate, ...) | `Won't fix` | `Not planned` |
-| reopened | `Open` | `Idea` |
+- the bodies of those pull requests (a maintainer merged them);
+- the bodies of those issues, only when the issue was opened by the owner, a member or a collaborator of the repository, so a link in a stranger's issue cannot make the bot post in other people's threads.
 
-- The tag is found by name in the forum's tags; it replaces the thread's status tag (one of the four of its forum) and the thread's other tags stay. A forum without the tag is an error.
-- The reply is one short English message with the issue's number and link; it never quotes the title and mentions nobody.
-- Closed: reply, set the tag, archive the thread (not locked: a reply from the reporter unarchives it). Reopened: unarchive and set the tag, then reply.
-- `In progress` and `Planned` are set by hand; the next close or reopen replaces them.
-- The run fails only on a real API failure (a missing thread, a missing tag, no permission), not on a missing or skipped link.
+The links are deduplicated. For each one the script checks that the server is the secret's one and that the channel is a thread of a forum named exactly `bug-reports` or `ideas`; any other link (another server, `#announcements`, a normal channel) is logged and skipped. Then, unless the thread already has the tag (a re-run posts nothing twice):
 
-The issue's title and body are untrusted: the script reads the event file itself and nothing of it reaches a shell line. The bot needs, on both forums, the permissions to view them, send messages in posts and manage threads (tags and archiving). Repository secrets:
+- it posts one short English message, "✅ Fixed in vX.Y.Z: <release link>. The launcher updates itself." (`ideas`: "✅ Done in vX.Y.Z: ..."), and mentions nobody;
+- it sets `Resolved` (`bug-reports`) or `Done` (`ideas`), found by name in the forum's tags, in place of the thread's other status tags of that forum (`In progress`, `Planned`, ...); the thread's other tags stay;
+- it archives the thread, not locked: a reply from the reporter unarchives it.
+
+A prerelease (`vX.Y.Z-rc.N`) resolves nothing, and the next stable release's range includes its commits. The run fails only on a real API failure (a missing thread, a missing tag, no permission), not on a missing or skipped link. The tag comes from the run and is checked against `vMAJOR.MINOR.PATCH`; nothing of a pull request or issue reaches a shell line. The workflow has `contents`, `pull-requests` and `issues` read permissions, and the bot needs, on both forums, the permissions to view them, send messages in posts and manage threads (tags and archiving). Repository secrets:
 
 | Secret | Value |
 |---|---|
 | `DISCORD_BOT_TOKEN` | the bot's token |
 | `DISCORD_GUILD_ID` | the Discord server's id |
 
-Without them (a fork) the run ends with a notice. The runs of one issue go one at a time.
+Without them (a fork) the run ends with a notice. To run it again for a release (or to catch up after the secrets were added), start the workflow by hand (Actions, discord-release-threads, Run workflow) with the tag, and optionally `from`, the tag where the range starts. The release is the launcher's `vX.Y.Z`: a change of the server or the website reaches players only with the next `server-X.Y.Z` tag ([Deploys](#deploys)), so the reply is sent when a release ships, which can be before that deploy.
 
 ## Known limits
 
