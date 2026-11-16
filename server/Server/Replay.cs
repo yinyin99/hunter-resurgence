@@ -391,8 +391,7 @@ public static class Replay
 
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
-    /// (the record's `time`). Each rewrite is an exact text replacement; when each text is not found exactly once the file is served
-    /// unchanged and one warning is logged. The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// (the record's `time`). Each rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The same class switches off the page's copy of an ammunition stack (<see cref="Clones"/>) and adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
@@ -454,7 +453,7 @@ w();}).then(go,go);})();</script>
                 if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
                 {
                     if (Interlocked.Exchange(ref warnedFlag, 1) == 0)
-                        Console.Error.WriteLine($"warning: {what} was not found; the file is served unchanged");
+                        Console.Error.WriteLine($"warning: {what} was not found; that rewrite is skipped");
                     return null;
                 }
                 text = text.Replace(from, to, StringComparison.Ordinal);
